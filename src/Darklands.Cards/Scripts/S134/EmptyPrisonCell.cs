@@ -31,9 +31,10 @@ public sealed class EmptyPrisonCell : Card
         // text as an option list without lines (which also waits for the player).
         Show(c, Picture);
         c.Next = Number;
-        // DIVERGENCE: the C calls card-option-lines(0) R043+0x0F2A, which draws block 0 as an option list and does not wait; with no
-        //   menu after it the text would only flash before the battle screen. The C# shows it as a text and waits.
-        c.Screen.Text(0);
+        // orig: R134+0x1F26 card-option-lines(0) R043+0x0F2A and no card-choice-menu: the block is drawn as an option list, waited for
+        //   (press-to-continue R043+0x32B6 at R043+0x10D0, mode 1) and the picture fades as before a choice; then the battle. vis10 session
+        //   D-99119d: the original takes the Enter in that wait (key 1C0D read under R134+0x1EDA) and fades the picture before the battle
+        c.Screen.OptionLines(0);
         c.BattleMode = 1;
         return -2;
     }

@@ -1554,11 +1554,26 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>Save Game (Alt-S): while DS:9920 offers it, the game's save in its battle form.</summary>
     // orig: R037+0x2A68 (1462:2A68) draft through its thunk, from the hot keys (root 0000:0CAA) and the Game menu when DS:9920 is 1; the
     // battle-state save R003+0x00DC ends with the level switch to the shown level
+    // orig: R037+0x2A68 / R037+0x2ACE over a battle: text-prompt shows the driver's pointer after the comment box (R037+0x4544) and
+    //   R037+0x2ACE shows it again after drawing the "Saving Game" box (R037+0x2B97, root 047C:1293), in the shape the battle's last pass
+    //   set (R014+0x33A2; no shape is set meanwhile), at the mouse while the file is written; vis10 session D-b797f7: the original's
+    //   "saving" shot has the order pointer at the mouse (65 px at x 77..92, y 76..83); tests: BattleUiTests
     private void SaveGame()
     {
         if (_battle!.Menus.SaveGame == 1 && _owner.Save is { } save)
         {
-            save(_battle);
+            ErasePointer();
+            var (image, hotX, hotY) = PointerShape(_ui.Mouse.X, _ui.Mouse.Y);
+            var (visible, shape, hotSpot) = (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot);
+            (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (true, _assets.Images[image], (hotX, hotY));
+            try
+            {
+                save(_battle);
+            }
+            finally
+            {
+                (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (visible, shape, hotSpot);
+            }
             _battle.SwitchLevel(_battle.Battle.FloorShown);
         }
     }

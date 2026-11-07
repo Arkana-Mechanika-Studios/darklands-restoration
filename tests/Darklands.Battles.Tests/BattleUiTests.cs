@@ -642,6 +642,42 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// Alt-S in a battle: while the game is written the driver's pointer shows at the mouse in the battle's last shape (R037+0x2ACE's
+    /// pointer-show R037+0x2B97 after the "Saving Game" box; vis10 session D-b797f7: the order pointer in the original's "saving" shot);
+    /// the battle draws its own pointer again afterwards.
+    /// </summary>
+    [Fact]
+    public void ABattlesSaveShowsTheBattlesPointerWhileItWrites()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        (bool Visible, Darklands.Content.Formats.Battles.RowRunSprite? Shape, (int, int) HotSpot)? during = null;
+        run.Screens.Save = _ => during = (run.Ui.PointerVisible, run.Ui.PointerShape, run.Ui.PointerHotSpot);
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5");
+        run.Screen.Tactics!.Menus.SaveGame = 1;
+        run.Play("key:alts", "wait:5");
+        Assert.NotNull(during);
+        Assert.True(during.Value.Visible);
+        Assert.NotNull(during.Value.Shape);
+        Screen Drawn(Darklands.Content.Formats.Battles.RowRunSprite sprite)
+        {
+            var screen = new Screen();
+            Darklands.Presentation.Graphics.SpriteDrawing.Draw(new Darklands.Presentation.Graphics.Canvas(screen), sprite, 100, 100);
+            return screen;
+        }
+        // the battle's shape at the mouse: the glove while running, the order hand while paused (R014+0x33A2)
+        var shape = Drawn(during.Value.Shape!).Pixels;
+        Assert.Contains(new[] { BattleImages.NormalPointer, BattleImages.OrderPointer }, image => Drawn(run.Assets.Images[image]).Pixels.AsSpan().SequenceEqual(shape));
+        Assert.False(Drawn(run.Ui.Assets.CommonSprites.Pointer).Pixels.AsSpan().SequenceEqual(shape));
+        Assert.Equal((0, 0), during.Value.HotSpot);
+        Assert.False(run.Ui.PointerVisible);
+        Assert.Null(run.Ui.PointerShape);
+    }
+
+    /// <summary>
     /// The battle's party panel as the panel rows (root 0000:1716) draws it: each name at (4, 0x28 * i + 2); an away member's row holds the bars' (root 0000:1A9C)
     /// "???? ???? ????" instead of the bars and no order letter; a dead member's row is hatched; the order letter is in the name's colour (vis10 sessions
     /// tleads-battle-difficulty, the synthetic save DKSAVE0-away24).

@@ -143,7 +143,7 @@
     "run": "*",
     "contains": "",
     "dropCSharp": "text 0 0 ",
-    "why": "EmptyPrisonCell DIVERGENCE: the original draws block 0 as an option list (card-option-lines) and returns at once, with no menu (the oracle records texts and menus as they are read); the C# shows the block as a text and waits. Everything else is compared."
+    "why": "EmptyPrisonCell: the original draws block 0 as an option list (card-option-lines R043+0x0F2A: drawn, waited for, the picture faded) with no menu after it, which the oracle does not record (it records texts and menus as they are read); the C#'s scripted trace screen shows it as a text (ICardScreen.OptionLines). Everything else is compared."
   },
   {
     "card": "151",
