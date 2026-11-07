@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 58165,
-  "blocks_hit": 52694,
-  "functions": 8496,
-  "outcomes": 43718,
-  "outcomes_hit": 36354,
+  "blocks": 58185,
+  "blocks_hit": 52844,
+  "functions": 8506,
+  "outcomes": 43726,
+  "outcomes_hit": 36520,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9958,6 +9958,30 @@
   "outcomes": 8038,
   "outcomes_hit": 3478,
   "runs": 1
+ },
+ "new-mutcards-i1": {
+  "blocks": 12793,
+  "blocks_hit": 7970,
+  "functions": 1578,
+  "outcomes": 8704,
+  "outcomes_hit": 4488,
+  "runs": 502
+ },
+ "new-mutcards-i2": {
+  "blocks": 4714,
+  "blocks_hit": 2569,
+  "functions": 340,
+  "outcomes": 3404,
+  "outcomes_hit": 1432,
+  "runs": 160
+ },
+ "new-mutcards-i3": {
+  "blocks": 3161,
+  "blocks_hit": 1516,
+  "functions": 155,
+  "outcomes": 2142,
+  "outcomes_hit": 789,
+  "runs": 62
  },
  "new-mutpilot-j1": {
   "blocks": 12756,

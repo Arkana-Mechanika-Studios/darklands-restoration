@@ -14,7 +14,7 @@ namespace Darklands.Cards.Tests.Oracle;
 /// <item><c>fu&lt;n&gt;</c>, <c>me&lt;n&gt;</c>, <c>ha&lt;n&gt;</c> the standing with the Fugger, Medici, Hanse banks</item>
 /// <item><c>sk&lt;skill&gt;_&lt;v&gt;</c> and <c>at&lt;attribute&gt;_&lt;v&gt;</c> every member's skill / attribute (and its maximum)</item>
 /// <item><c>sa&lt;n&gt;</c> every member knows saint n; <c>fo&lt;n&gt;</c> every member knows formula n; <c>it&lt;code&gt;</c> every member carries item code</item>
-/// <item><c>st&lt;member&gt;_&lt;status&gt;</c> a member's status; <c>sz&lt;n&gt;</c> the party size (members dropped from the end); <c>ld&lt;member&gt;</c> the leader</item>
+/// <item><c>st&lt;member&gt;_&lt;status&gt;</c> a member's status; <c>sz&lt;n&gt;</c> the party size (members dropped from the end); <c>ad&lt;n&gt;</c> members added (copies of the last one) up to n; <c>ld&lt;member&gt;</c> the leader</item>
 /// <item><c>ev&lt;kind&gt;_&lt;type&gt;_&lt;tag&gt;_&lt;value&gt;_&lt;owner&gt;_&lt;location&gt;</c> a started event (trailing numbers optional: type 0, tag 0, value 0 (9999: the current place), owner -2, here; location -1: nowhere in particular, 0..: that place)</item>
 /// <item><c>ps&lt;n&gt;</c> the party's seed (<c>Party.Seed</c>, apart from the generator's <c>rn</c>); <c>px&lt;n&gt;</c>, <c>py&lt;n&gt;</c> the map position (DS:E3D0 / DS:E3D2)</item>
 /// <item><c>ed&lt;d1&gt;_&lt;d2&gt;_&lt;d3&gt;</c> the three data words of the event created last (<c>ev..</c> before it); <c>er&lt;kind&gt;_&lt;type&gt;_&lt;tag&gt;</c> removes the matching events (-1: any)</item>
@@ -129,6 +129,13 @@ public static class CardOracleAtoms
                     members.RemoveAt(members.Count - 1);
                 }
                 state.Party.LeaderIndex = Math.Min(state.Party.LeaderIndex, members.Count - 1);
+                return true;
+            case "ad":
+                // members added: copies of the last member until the party has n (at most the five slots)
+                while (members.Count < Math.Min(n[0], Party.MaxMembers))
+                {
+                    members.Add(members[^1].Copy());
+                }
                 return true;
             case "ld":
                 state.Party.LeaderIndex = Math.Min(n[0], members.Count - 1);
