@@ -28,7 +28,14 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private SdlNative.SdlRect _textViewport;
     // how the renderer stretches the picture, which the mouse follows (SDL's software renderer: no graphics card, or SDL_RENDER_DRIVER=software)
     private readonly PictureSampling _sampling;
-    private MouseState _mouse;
+    // orig: the mouse driver's reset (INT 33h function 0, the game's mouse start) puts the pointer at the middle of the screen: (160, 100) in
+    //   the game's coordinates (the tester's mouse start, orig_side._mouse_init; Host.Headless starts there too). Until the host's pointer
+    //   moves over the window the game's pointer stays there, not at (0, 0) (the top-left corner, partly off the screen with the map's
+    //   hot spot (5, 0)); tests: MouseMappingTests.TheGamesPointerStartsAtTheMiddleOfTheScreen
+    private MouseState _mouse = new(StartX, StartY, MouseButtons.None);
+
+    /// <summary>Where the game's pointer is before the host's pointer moves over the window: the middle of the screen.</summary>
+    internal const int StartX = 160, StartY = 100;
     private bool _shift;
     private bool _framePresented;
     private bool _showingText;

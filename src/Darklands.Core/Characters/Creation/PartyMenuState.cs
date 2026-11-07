@@ -24,6 +24,12 @@ public sealed class PartyMenuState
     /// <summary>The roster entry each row of the inn's list shows (DS:8D06); rows past the last listing keep older entries.</summary>
     public int[] Rows { get; } = new int[RowTableLength];
 
+    /// <summary>
+    /// The rows the inn's list showed last (not in the original, which keeps only <see cref="Count"/>): the fixed colour keys'
+    /// test for a row without a character (OriginalBehaviour.FixRosterColourRow).
+    /// </summary>
+    public int Listed { get; set; }
+
     /// <summary>The figure image chosen last with S (DS:E7E0), an index into the figure list.</summary>
     public int Image { get; set; }
 

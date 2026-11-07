@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 101 | 22 | 79 |
+| rules | 102 | 23 | 79 |
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
 | battles | 31 | 13 | 18 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 11 | 6 | 5 |
-| total | 231 | 50 | 181 |
+| total | 232 | 51 | 181 |
 
-## Core logic (220)
+## Core logic (221)
 
-### rules (101)
+### rules (102)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -81,6 +81,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-074e99** `bug`, no fix flag - `src/Darklands.Core/Rules/DayJobs.cs:61` `DayJobs.static`  
   original: `R036+0x197E` (1462:197E, draft)  
   why: the second contents test is written `!cats2 & city.cats`, so a job with cats2 != 0 is never open.
+- **B-9db08d** `bug`, flag `FixRosterColourRow` - `src/Darklands.Core/Rules/InnRoster.cs:262` `InnRoster.CycleColour`  
+  original: `R038+0x02F8` (1462:02F8, draft)  
+  why: OriginalBehaviour.FixRosterColourRow - the colour keys compare the highlighted ROW number with the slots' roster entries, not the row's entry DS:8D06[row] as H and S do: once a record before a member is not listed (left at another inn, away), the row and the entry differ and a colour key changes the figure colours of ANOTHER member (the one whose entry equals the row number), or of nobody; the colours are saved with the game. Measured: vis10 roster-colour (synthetic save DKSAVE0-unlist0, record 0 not listed): key 1 on Ebhard's row 2 (entry 3, slot 1) changes slot 2's (Hans's) colours in the original's member data. Fixed (data safety, DataSafe): the highlighted row's own character's slot (none on a row the list did not show).
 - **B-b28ef4** `bug`, flag `FixItemQualityByFlags` - `src/Darklands.Core/Rules/Inventory.cs:134` `Inventory.BestQualityByFlags`  
   original: `R031+0x5F6C` (18E7:171C, draft)  
   why: item-definition-table[0]->flags is tested for every stack (FixItemQualityByFlags).

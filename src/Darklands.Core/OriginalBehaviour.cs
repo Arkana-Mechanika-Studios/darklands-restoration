@@ -58,7 +58,7 @@ public sealed class OriginalBehaviour
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
-        FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true,
+        FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true,
     };
 
@@ -117,6 +117,16 @@ public sealed class OriginalBehaviour
     // orig: R038+0x02F8 (the arrows, R038+0x045F..0x04CA): "pics\" (DS:4A3D) + the 4-byte entry DS:E7E2 + 4 x DS:E7DA + "small.pic" (DS:4A43),
     //   root 0617:045C, whose opener root 0617:000E ends the program on a missing file (root 0617:067E: mode 3, perror, exit(99)); data safety, a crash
     public bool FixRosterMissingFigure { get; set; }
+
+    /// <summary>
+    /// The inn's roster ("reform your party"): the colour keys 1, 2, 3 act on the party slot whose roster entry equals the highlighted ROW
+    /// number, not on the row's character (as Heraldry and Select Character Image do): once a record before a member is not listed (a
+    /// character left at another inn), a colour key changes another member's figure colours, which the saved game keeps, or nobody's.
+    /// Fixed: the highlighted row's own character's colours change (none on a row without a character).
+    /// </summary>
+    // orig: R038+0x02F8 keys 0x231 / 0x332 / 0x433 (R038+0x127F, 0x1807, 0x1E87: the five slots' ids compared with DS:E7DA itself); the
+    //   part's bytes written into the slot's colours (segment DS:7ED2 + 0x33FC + 0x18 x slot); measured: vis10 roster-colour; data safety, data-damaging
+    public bool FixRosterColourRow { get; set; }
 
     /// <summary>
     /// The inn's roster's figure preview shows the wrong figure in the wrong place: Up, Left and Right draw it at the bottom of the

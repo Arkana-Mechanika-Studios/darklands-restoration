@@ -8,6 +8,8 @@ variants:
   pots3   the same for three members (DKSAVE99's fourth member's picture is missing from the game folder)
   kitchen every item of DARKLAND.LST once over the first four members' packs (kitchen3: three), before the items they hold
   weak<card>, card<card>  controls: as away<card> without the Away member / with the party unchanged (any card, hex)
+  unlist0 record 0 left at another place (status 0 at the last record's location): the inn roster's rows after it are one less than their
+          records (DKSAVE0's Gasthaus: Gunther, Hans, Ebhard, Albrecht on rows 0..3, records 1..4)
   away<card>  (24, 7b, a0, 16, 7a, a5) member 4 Away, members 0..3 at endurance 1, the game saved at card <card> (0x24 Footpads, 0x7B RebelMobInTheStreets, 0xA0 WolfPackOnTheTrail, 0x16 MarketAtNight ...): see local/batch/res5
   dup<a><b>  party slot <b> names the record of slot <a> (party id word +0xF3 + 2b = that of slot a): two slots naming one record
   ev300   the event table full: the game's events and fillers (a place fact of type 0x7F at place 413) up to the 300 slots (full_events)
@@ -125,6 +127,18 @@ def sea(b: bytearray) -> None:
 def away(b: bytearray) -> None:
     """member 4 away (status 5)."""
     b[HEAD_END + 4 * CHAR + STATUS] = 5
+
+
+def unlisted(record: int):
+    """record <record> left at another place (status 0 at the location of the save's last record, which the inn's roster of DKSAVE0's
+    Gasthaus does not list): the roster's rows after it then show the next records, so a row number differs from its character's
+    record index (the inn roster's colour keys, R038+0x02F8: vis10 roster-colour)."""
+    def edit(b: bytearray) -> None:
+        last = HEAD_END + (struct.unpack_from("<H", b, 0xF1)[0] - 1) * CHAR
+        base = HEAD_END + record * CHAR
+        b[base:base + 2] = b[last:last + 2]
+        b[base + STATUS] = 0
+    return edit
 
 
 def hurt_status(b: bytearray) -> None:
@@ -344,7 +358,7 @@ def night_hunt(drop: bool, full: bool):
 
 
 VARIANTS = {"dragonev": dragon_events, "ev300": full_events, "q7night": night_hunt(True, True), "q7nightfree": night_hunt(True, False),
-            "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+            "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "unlist0": unlisted(0), "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 

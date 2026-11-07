@@ -79,6 +79,7 @@ public static class InnRoster
             }
         }
         menu.Count = count;
+        menu.Listed = rows.Count;
         return rows;
     }
 
@@ -250,15 +251,24 @@ public static class InnRoster
 
     /// <summary>
     /// "1st / 2nd / 3rd color" (key 1, 2, 3): the next colours of one part of the figure of the slot whose roster entry equals the
-    /// highlighted ROW (the arrows' stale index), with the inn's tables; the slot or −1.
+    /// highlighted ROW (the arrows' stale index), with the inn's tables; the slot or −1. Fixed (<see cref="OriginalBehaviour.FixRosterColourRow"/>):
+    /// the slot of the highlighted row's own character, none on a row without one.
     /// </summary>
-    // orig: R038+0x02F8 keys 0x231/0x4F31, 0x332/0x5032, 0x433/0x5133: the first of five slots whose id equals DS:E7DA itself, then
-    // the chain on the slot's figure code (PortraitColours.CycleAtInn) and the palette set (root 047C:058B)
+    // orig: R038+0x02F8 keys 0x231/0x4F31, 0x332/0x5032, 0x433/0x5133: the first of five slots whose id equals DS:E7DA itself
+    // (R038+0x127F, 0x1807, 0x1E87: `mov ax, DS:E7DA` where H R038+0x0EB7 and S R038+0x1083 load DS:8D06[DS:E7DA]), then the chain on the
+    // slot's figure code (PortraitColours.CycleAtInn), the part's bytes into the slot's 24 (segment DS:7ED2 + 0x33FC + 0x18 x slot, the
+    // member's figure colours the saved game keeps) and the palette set (root 047C:058B)
     // C: unlike H and S, the row number itself is compared with the slots' entries.
+    // BUG: OriginalBehaviour.FixRosterColourRow - the colour keys compare the highlighted ROW number with the slots' roster entries, not
+    //   the row's entry DS:8D06[row] as H and S do: once a record before a member is not listed (left at another inn, away), the row and
+    //   the entry differ and a colour key changes the figure colours of ANOTHER member (the one whose entry equals the row number), or of
+    //   nobody; the colours are saved with the game. Measured: vis10 roster-colour (synthetic save DKSAVE0-unlist0, record 0 not listed):
+    //   key 1 on Ebhard's row 2 (entry 3, slot 1) changes slot 2's (Hans's) colours in the original's member data. Fixed (data safety,
+    //   DataSafe): the highlighted row's own character's slot (none on a row the list did not show).
     public static int CycleColour(GameState s, PartyMenuState menu, int key)
     {
         s.Roster.Reconcile(s.Party);
-        var slot = Array.IndexOf(s.Roster.PartySlots, menu.Selected);
+        var slot = s.Behaviour.FixRosterColourRow ? CharacterSlotOfRow(s, menu) : Array.IndexOf(s.Roster.PartySlots, menu.Selected);
         if (slot >= 0)
         {
             var member = s.Party.Slot(slot);
@@ -274,6 +284,12 @@ public static class InnRoster
         made.RosterLocation = s.CurrentLocation;
         s.Roster.Characters.Add(made);
     }
+
+    /// <summary>The slot of the character the highlighted row shows (a row the last list showed, its roster entry), or −1 (the fixed colour keys).</summary>
+    private static int CharacterSlotOfRow(GameState s, PartyMenuState menu) =>
+        menu.Selected >= 0 && menu.Selected < menu.Listed && RowEntry(menu, menu.Selected) is var entry && entry >= 0
+            ? Array.IndexOf(s.Roster.PartySlots, entry)
+            : -1;
 
     /// <summary>The slot of the highlighted row's character (its roster entry), or −1: H and S, and the fixed figure preview.</summary>
     // C: H and S search the five slots for the highlighted row's ROSTER ENTRY (DS:8D06[DS:E7DA]).

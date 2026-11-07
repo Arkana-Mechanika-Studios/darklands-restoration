@@ -161,6 +161,28 @@ public sealed class MouseMappingTests
             $"window {ww}x{wh}, drawable {rw}x{rh}{(hd ? ", HD" : "")}{(fullscreen ? ", fullscreen" : "")}:\n" + string.Join("\n", failures));
     }
 
+    /// <summary>
+    /// Before the host's pointer moves over the window the game's pointer is where the mouse driver's reset puts it, the middle of
+    /// the screen (160, 100) as in the original and the headless host, not the top-left corner (0, 0) (a report of the gauntlet at the
+    /// top-left on the inn roster, where no key moves the pointer: vis10 roster-colour); the host's motion events then move it.
+    /// </summary>
+    [Fact]
+    public void TheGamesPointerStartsAtTheMiddleOfTheScreen()
+    {
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        if (!File.Exists(library))
+        {
+            return;
+        }
+        SdlNative.ConfigureLibrary(library);
+        using var host = new SdlHost("mouse start test");
+        Assert.Equal(new MouseState(160, 100, MouseButtons.None), host.Mouse);
+        // no motion events: the real pointer over the window would queue its own
+        SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
+        host.Pump();
+        Assert.Equal(new MouseState(160, 100, MouseButtons.None), host.Mouse);
+    }
+
     private static void Push(uint type, int x, int y)
     {
         var e = new SdlNative.SdlEvent { Type = type };

@@ -128,6 +128,15 @@ after 1.0.
     `ProgramStartTests.ASecondAltQOnTheMapAfterNoEndsTheProgramUnlessFixed`); fixed: the map keeps its buffers. The C# gives a single
     Alt-Q to the hot keys first (which look a press meets is host timing, D-644ab8) and takes the map's case for the second of two keys
     read in one pass, as the tester gives it (tick_keys.py).
+  * `FixRosterColourRow`: the inn roster's colour keys 1 / 2 / 3 (R038+0x02F8, R038+0x127F / 0x1807 / 0x1E87) search the five slots for
+    the highlighted ROW number itself, where Heraldry (0x0EB7) and Select Character Image (0x1083) take the row's roster entry
+    DS:8D06[row]; once a record before a member is not listed (left at another inn), the row and the record differ and a key changes
+    another member's figure colours (the slot's 24 bytes, segment DS:7ED2 + 0x33FC + 0x18 x slot, saved with the game), or nobody's.
+    Measured: vis10 roster-colour (synthetic save DKSAVE0-unlist0, Gretchen not listed: rows 0..3 = records 1..4), read-only hooks on
+    the original's member data: key 1 on Ebhard's row 2 changes Hans's colours (slot 2), on Albrecht's row 3 Ebhard's (slot 1), on
+    Hans's row 1 nobody's; the 13 shots of the original and the Faithful C# agree. Faithful keeps it (B-9db08d,
+    `InnRosterTests.TheColourKeysChangeTheSlotOfTheRowNumberUnlessFixed`); fixed: the highlighted row's own character's colours,
+    nobody's on a row the list did not show.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
@@ -533,8 +542,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 231 original bugs registered
-(50 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 355 registered divergences,
+markers in the code, each with its reason and original coordinate: 232 original bugs registered
+(51 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 355 registered divergences,
 873 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
 measured as host timing and registered, D-d22f94). Every core-logic divergence has a
@@ -672,6 +681,24 @@ fixed, 42 jobs redone, all agree. One was an old two-argument job of R039+0x0000
 location) differ and are open leads, not triaged (probably the documented uninitialised sort and item of region kinds 1, 2, 9 and 11);
 there is no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the other corpora unchanged: 630 rules, 1,673 travel,
 2,448 map entry); the contents of the events a call creates are now compared in all of them.
+
+Round rostercol (2026-11-07, branch rostercol): two leads of the inn roster. (1) The colour keys act on the slot whose id equals the
+highlighted ROW number (asm R038+0x127F / 0x1807 / 0x1E87 against H's and S's DS:8D06[row]), proven on the original: the synthetic
+save DKSAVE0-unlist0 (synth_saves.py unlist0: record 0 left at another place, so rows 0..3 show records 1..4) and the new vis10 job
+roster-colour, with read-only hooks on the key handler (row, row table [1, 2, 3, 4], slot ids [4, 3, 2, -1, -1] and the five slots'
+colour bytes): key 1 on Ebhard's row changes Hans's colours, on Albrecht's row Ebhard's, on Hans's row nobody's; the colours are saved
+with the game, so by the data-safety policy `FixRosterColourRow` (B-9db08d, in `DataSafe`) acts on the row's own character (none on
+a row the list did not show), Faithful keeps the original; the 13 shots agree at 0 px. Heraldry and Select Character Image already
+take the row's entry (agreed). (2) The pointer the user saw at the top-left of the roster: the original never moves it there (no
+pointer move in R038; the hooks show DS:6EEC / DS:6EEE unchanged and the drawn gauntlet in place through the arrows and colour
+keys), and neither does the C# roster. Host.Sdl differed in one place: its pointer started at (0, 0), the top-left corner (partly
+off the screen with the map's hot spot (5, 0)), until the host's pointer moved over the window, where the original's mouse reset and
+Host.Headless put it at the middle of the screen (160, 100): fixed (SdlHost, test
+`MouseMappingTests.TheGamesPointerStartsAtTheMiddleOfTheScreen`). The user's two pictures show the gauntlet near (9, 7) and (35, 1),
+not (0, 0): what remains is where the host's pointer last was over the window (the gauntlet stays there while the host's pointer is
+outside it), not a jump the game makes. Tests: InnRosterTests, MouseMappingTests; golden card traces written again (only their state
+digests change: the state dump holds the new flag). Checks: dotnet test (whole solution, all pass: Core 420, Host.Sdl 52, Cards 605,
+Battles 453, Architecture 8, ...); rerun_all --replay-only (4 workers): 1000 of 1000 agree. Notes: local/rostercol-2026-11-07.md.
 
 Round roster (2026-11-07, branch roster): the user's report on the inn roster's figure preview (Host.Sdl, DKSAVE0): the figure drawn
 over the previous one, in other colours, sometimes below the commands, and changed by the arrows but not by a click. vis10 session
