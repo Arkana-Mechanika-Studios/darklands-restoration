@@ -140,6 +140,39 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// The loot screen shows the driver's pointer (loot-split-entry's pointer-show R040+0x0194) as the gauntlet with hot spot (0, 0), which
+    /// loot-view sets before it (R014+0xE598); the battle draws its own pointer again afterwards (vis10 session D-56a675: the original's loot
+    /// screen has the gauntlet at the mouse, the C#'s had no pointer).
+    /// </summary>
+    [Fact]
+    public void TheLootScreenShowsTheGauntlet()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var steps = new List<string> { "wait:5", "key:space" };
+        for (var k = 0; k < 30; k++)
+        {
+            steps.Add("wait:600");
+            steps.Add("key:esc");
+        }
+        (bool Visible, Darklands.Content.Formats.Battles.RowRunSprite? Shape, (int, int) HotSpot)? during = null;
+        Session? session = null;
+        session = new Session(files, new BattleRequest(0x11, 60256, [(18, 0, 1), (-1, 0, 0), (-1, 0, 0)]), loot: (screens, items, money) =>
+        {
+            during ??= (session!.Ui.PointerVisible, session.Ui.PointerShape, session.Ui.PointerHotSpot);
+            screens.Loot(items, money);
+        });
+        Assert.Equal(0, session.Fight(steps));
+        Assert.NotNull(during);
+        Assert.True(during.Value.Visible);
+        Assert.Null(during.Value.Shape);   // the gauntlet
+        Assert.Equal((0, 0), during.Value.HotSpot);
+        Assert.Null(session.Ui.PointerShape);
+    }
+
+    /// <summary>
     /// A won fight: the loot screen, then the battle view again in the battle's colours (palette-reload, floor-view-paint, fight-draw), the
     /// "BattleResults - victory" box over it, the box taken away. The picture of before the battle never comes back in the battle's colours.
     /// </summary>
@@ -312,6 +345,29 @@ public sealed class BattleUiTests
         run.Play("key:esc", "wait:30");
         Assert.True(clock != tb.Battle.Clock, $"clock {clock}, paused {tb.Paused}");
         Assert.False(tb.InOrderMode);
+    }
+
+    /// <summary>
+    /// The bar over a battle shows the driver's pointer as the battle's hand with hot spot (0, 0): root 0000:0000+0x0084..0x00C4 sets
+    /// DS:A693 (running) or DS:A691 (paused) when another shape is in use, nothing when the hand is (vis10 session uncert-cme-menus: the
+    /// order hand over the Orders menu in the original's screen, the gauntlet in the C#'s); the battle draws its own pointer again after.
+    /// </summary>
+    [Fact]
+    public void TheBarOverABattleShowsTheBattlesHand()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5", "key:f10", "wait:2");
+        var tb = run.Screen.Tactics!;
+        Assert.True(run.Ui.PointerVisible);
+        Assert.Equal(run.Assets.Images[tb.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer]!.AssetName, run.Ui.PointerShape?.AssetName);
+        Assert.Equal((0, 0), run.Ui.PointerHotSpot);
+        run.Play("key:esc", "wait:5");
+        Assert.False(run.Ui.PointerVisible);
+        Assert.Null(run.Ui.PointerShape);
     }
 
     /// <summary>

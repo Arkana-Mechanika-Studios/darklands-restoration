@@ -1337,12 +1337,20 @@ public sealed class BattleScreen : ITacticalView
         // orig: loot-view R014+0xE410..0xE42D: the menu titles and DS:9893 are 2 while the loot screen is up, put back at
         //   R014+0xE716..0xE72B (as around the combat sheet)
         var menus = GreyMenusForAScreen();
+        // orig: loot-view R014+0xE584..0xE5A3 (DS:9C4C == 1): pointer-hide, pointer-shape-set(0, 0, DS:9C42: the gauntlet), DS:A68F = DS:9C42
+        //   before the loot screen; R014+0xE67A..0xE6A7 after it: the battle's hand again (DS:A693 running / DS:A691 paused). loot-split-entry
+        //   shows the driver's pointer (R040+0x0194, root 047C:1293) and its page redraws hide and show it again (R040+0x06FB / 0x0948,
+        //   0x096B / 0x0C19): the gauntlet at the mouse over the loot page (vis10 session D-56a675: the original's loot screen has it, the
+        //   C#'s had no pointer); tests: BattleUiTests
+        var (visible, shape, hotSpot) = (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot);
+        (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (true, null, (0, 0));
         try
         {
             _owner.TakeLoot(list, money);
         }
         finally
         {
+            (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (visible, shape, hotSpot);
             menus();
         }
         // orig: the party record is the combatant record: what the screen changed in a member comes back whole, not only the pack: an item
@@ -1674,7 +1682,16 @@ public sealed class BattleScreen : ITacticalView
     {
         MenuPass = Passes;
         ErasePointer();
-        _ui.PointerVisible = true;
+        // orig: root 0000:0000+0x0084..0x00C4 as the bar comes up in a battle (DS:907A == 1, DS:9C4C == 1) with a shape other than the hand in
+        //   use (DS:A68F != DS:9C42: an edge arrow of R014+0x33A2): pointer-hide, pointer-shape-set(0, 0, DS:A693 while the pause byte DS:A695
+        //   is 0, else DS:A691), DS:A68F = DS:9C42, pointer-show; with the hand in use nothing is set. So the driver's pointer over the bar is
+        //   the battle's hand at the mouse (the glove running, the order hand paused), until an item's screen sets the gauntlet
+        //   (vis10 session uncert-cme-menus: the order hand over the opened Orders menu in the original's screen); tests: BattleUiTests
+        // C: DS:9C4C is 1 while the game runs: root 03A1:000A+0x016E sets it from the driver call root 047C:11F6 (1 when it answers 1 or
+        //   more) and R000+0x0551 sets it to 1 at start-up; no other writer (scan of the EXE).
+        var image = _battle!.PauseByte == 0 ? BattleImages.NormalPointer : BattleImages.OrderPointer;
+        var (shape, hotSpot) = (_ui.PointerShape, _ui.PointerHotSpot);
+        (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (true, _assets.Images[image], (0, 0));
         var opened = _ui.Clock.Milliseconds;
         try
         {
@@ -1682,7 +1699,7 @@ public sealed class BattleScreen : ITacticalView
         }
         finally
         {
-            _ui.PointerVisible = false;
+            (_ui.PointerVisible, _ui.PointerShape, _ui.PointerHotSpot) = (false, shape, hotSpot);
         }
         HeldClockTime(_ui.Clock.Milliseconds - opened);
         if (OneTickPerPass && MenuCallbacks is { Count: > 0 } measured)
@@ -2427,6 +2444,8 @@ public sealed class BattleScreen : ITacticalView
         {
             return;
         }
+        // C: yes-no-prompt (root 0000:2522) hides the driver's pointer (the battle's shape) while the question waits: the drawn one comes off
+        ErasePointer();
         if (new MessageBox(_ui).Ask(_owner.SurrenderQuestion))
         {
             tb.Surrender();

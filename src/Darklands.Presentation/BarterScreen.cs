@@ -460,7 +460,12 @@ public sealed class BarterScreen
 
     /// <summary>The whole page again (after another member is chosen or a character sheet).</summary>
     // orig: trade-screen-repaint R032+0x0B30 (1462:0B30) draft (byte-matched function)
-    // DIVERGENCE: the original redraws the picture without palette-load (the palette left by a character sheet stays); the picture's colours are applied here.
+    // C: R032+0x0B30 loads the picture without its palette, but none of its three callers leaves another palette on: after a sheet
+    //   (a click on a member's row, R032+0x064D) R032+0x0657..0x066F loads the picture and its palette (root 047C:058B) first; after
+    //   the menu bar with the party icons stale (DS:9C46, set by the party information's close R034+0x119C: F6 or the Party menu)
+    //   R032+0x06CC..0x06E4 does the same; D (R032+0x1384..0x13CB) follows nothing. The bar's other screens over the barter draw boxes
+    //   only (Quit to DOS, the difficulty notice, the marching order's box) and Save / Load are off (DS:9920 / 9934 = 2). vis10
+    //   session D-af566f: the original's palette after the sheet is the barter's (0 entries differ from before it), as here.
     private void Redraw()
     {
         _page.DrawBackground(Party);

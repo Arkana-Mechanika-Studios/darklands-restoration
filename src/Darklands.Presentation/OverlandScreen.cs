@@ -108,7 +108,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         LoadPictures();
         // orig: world-map-start R030+0x0242: pointer-shape-set(5, 0, DS:9C42) after the pictures: the map's gauntlet stands 5 pixels left of the
         //   mouse, and stays so after the map (GameUi.PointerHotSpot); tests: PointerHotSpotTests
-        ui.PointerHotSpot = (5, 0);
+        (ui.PointerHotSpot, ui.PointerShape) = ((5, 0), null);
         UseMapPalette(state);
         var travel = new OverlandTravel(state, map, eventStarted);
         travel.HourPassed = () =>

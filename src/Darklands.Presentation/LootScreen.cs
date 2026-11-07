@@ -403,7 +403,10 @@ public sealed class LootScreen
     }
 
     // orig: R040+0x0952 (1462:0952) draft (byte-matched function)
-    // DIVERGENCE: the original redraws the picture without palette-load; the picture's colours are applied here.
+    // C: R040+0x0952 loads the picture without its palette, but its only caller is D (R040+0x0DE1, after the panel R040+0x0D88 and at
+    //   most the notice R022+0x04E4 for a member gone through an exit), and nothing changes the palette while the loot page is up: the
+    //   page's full drawing R040+0x06E2 set it (R040+0x0703), the party information is off in a battle (DS:987F = 2, R002+0x0223..0x0258)
+    //   and the menu titles and DS:9893 are 2 (R014+0xE422..0xE42D). vis10 session D-56a675: the palettes agree after D (0 entries).
     private void Redraw()
     {
         _page.DrawBackground(Party, drawParty: false);
