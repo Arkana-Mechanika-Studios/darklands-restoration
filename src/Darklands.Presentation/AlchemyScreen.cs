@@ -106,7 +106,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     /// <summary>The screen's exit (both ways out of the loop: Esc / D and a brew).</summary>
     // orig: R033+0x0628 from R033+0x061D: the fonts back, DARKLAND.ALC freed, pointer-shape-set(0, 0, DS:9C42) at R033+0x064D: a camp opened
     //   from the map has the gauntlet's hot spot (0, 0) after the alchemy (GameUi.PointerHotSpot); tests: PointerHotSpotTests
-    private void Leave() => ui.PointerHotSpot = (0, 0);
+    private void Leave() => (ui.PointerHotSpot, ui.PointerShape) = ((0, 0), null);
 
     /// <summary>The batch or formula page again, as the loop does after the party information (party-icons-stale).</summary>
     // orig: R033+0x047F..0x04DA

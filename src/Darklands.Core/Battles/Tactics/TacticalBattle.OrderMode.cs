@@ -693,6 +693,9 @@ public sealed partial class TacticalBattle
     //   weapon-armed(-1)), route-hand-over-restore(-1), command-queue(-1), the 'PT' name of the animation slot of record -1's kind byte, and the
     //   bytes before other tables (DS:A6C3, DS:CA2F, DS:D6FA, DS:D492, DS:9063, and DS:CA56, the high byte of the palette
     //   buffer's segment DS:CA55 that the loot screen saves the palette through). moving[-1] (DS:A6D2) is the place order's high byte (modelled).
+    //   Seen on the screen: the panel rows drawn after it get bytes of code on their value lines (vis10 session uncert-order-letter-none,
+    //   shot e1: 202 px at x 14..56, y 0x28 x row + 0x21 / + 0x25; a write watch on the panel page D000:2E54 at the Enter's pass: the
+    //   driver's blit 4A44:0E24 copies them from 0A0C:030A, where it took the row's pixels from 4D52:07F6 before).
     private void LeaveWithNobodySelected()
     {
         CursorKeysOn = false;

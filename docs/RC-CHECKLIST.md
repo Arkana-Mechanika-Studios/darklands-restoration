@@ -15,7 +15,7 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (358
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (356
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
 * The eleven data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say

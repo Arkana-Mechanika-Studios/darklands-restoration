@@ -1,4 +1,4 @@
-# vis10 batpal: the full palette on ordinary screens (pressburg-map.steps with shots): the loaded card, the city menu, the inn, the street, the gate, the map; then Alt-Q on the map ("Quit to DOS?", a hot key's box) answered n
+# vis10 batpal: the full palette on ordinary screens (pressburg-map.steps with shots): the loaded card, the city menu, the inn, the street, the gate, the map; then Alt-Q on the map ("Quit to DOS?", a hot key's box) answered n; no walk before it (a walk's length in a fixed wait follows each side's own speed: the emulated original walks less, so the marker and the sky's clock stood elsewhere)
 key:t
 wait:5
 key:l
@@ -53,9 +53,6 @@ wait:150
 key:enter
 wait:150
 shot:map
-click:240,70
-wait:600
-shot:walked
 key:altq
 wait:30
 shot:quit

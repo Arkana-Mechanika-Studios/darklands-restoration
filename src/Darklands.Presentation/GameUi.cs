@@ -370,7 +370,8 @@ public sealed class GameUi
     /// </summary>
     // orig: pointer-shape-set root 047C:124F stores the shape the driver draws; the battle's pass sets its own (R014+0x33A2) and the
     //   hot keys' screens over a battle set none (R037+0x2ACE: pointer-hide, the "Saving Game" box, pointer-show at R037+0x2B97 while
-    //   the file is written)
+    //   the file is written); the menu bar sets the battle's hand (root 0000:0000+0x00B6); every pointer-shape-set of the gauntlet
+    //   (the map, the sheet, the party information, the alchemy's exit, the loot screen's R014+0xE598) sets it back to null
     public Content.Formats.Battles.RowRunSprite? PointerShape { get; set; }
 
     /// <summary>

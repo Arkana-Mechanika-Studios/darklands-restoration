@@ -662,4 +662,30 @@ public sealed class ScreenInputTests
         Assert.All(shown[..^1], Assert.False);
         Assert.True(shown[^1]);   // the screen put back, then the pointer
     }
+
+    /// <summary>
+    /// The y/n question (yes-no-prompt root 0000:2522) hides the pointer before its box (0x257A, root 047C:12C3) and shows it after the box
+    /// is put back (0x25E4, root 047C:1293): no frame shown while it waits has the pointer (vis10 sessions D-751050 "Delete this Game?" and
+    /// batpal-screens "Quit to DOS?": the original's screens have none).
+    /// </summary>
+    [Fact]
+    public void TheYesNoQuestionShowsNoPointerWhileItWaits()
+    {
+        (int, MouseState)[] frames = [Up(20, 20), Up(20, 20), Key(Keys.ForCharacter('x')), Up(20, 20), Key(Keys.ForCharacter('n')), Up(20, 20)];
+        var host = new FrameHost(frames);
+        if (Start(host) is not var (ui, _, _, _))
+        {
+            return;
+        }
+        var shown = new List<bool>();
+        host.Presented = _ => shown.Add(ui.PointerVisible);
+        Assert.True(ui.PointerVisible);
+
+        var yes = new MessageBox(ui).Ask("Quit to DOS?");
+
+        Assert.False(yes);
+        Assert.True(shown.Count > 1);
+        Assert.All(shown[..^1], Assert.False);
+        Assert.True(shown[^1]);   // the screen put back, then the pointer
+    }
 }

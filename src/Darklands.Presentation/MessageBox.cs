@@ -69,7 +69,27 @@ public sealed class MessageBox(GameUi ui)
     // C: c is a char; a lower-case letter (0x60 and up) loses 0x20, so only y/Y and n/N answer; any other key, mouse clicks included, is ignored. getch() of an extended key returns 0 first and the scan code next, both ignored.
     // C: getch() reads the keyboard itself: no hot keys, no menu bar, and the mouse is not looked at (a release made meanwhile stays
     // in the mouse driver's count for later).
+    // C: root 0000:2522 hides the pointer (0x257A, root 047C:12C3) before the box and shows it again (0x25E4, root 047C:1293) after the
+    //   rectangle is put back: no pointer while the question waits (vis10 sessions D-751050 "Delete this Game?" and batpal-screens
+    //   "Quit to DOS?" on the map: the original's screens have none); tests: ScreenInputTests
     public bool Ask(string question)
+    {
+        var pointer = ui.PointerVisible;
+        ui.PointerVisible = false;
+        bool answer;
+        try
+        {
+            answer = AskWithoutPointer(question);
+        }
+        finally
+        {
+            ui.PointerVisible = pointer;
+        }
+        ui.Present();
+        return answer;
+    }
+
+    private bool AskWithoutPointer(string question)
     {
         var saved = Draw(question + " y/n", Centred);
         bool? answer = null;
@@ -90,8 +110,8 @@ public sealed class MessageBox(GameUi ui)
                 }
             }
         }
+        // the rectangle put back, then the pointer: Ask presents the two together (one frame, as before the pointer was hidden)
         ui.Canvas.Restore(saved);
-        ui.Present();
         return answer.Value;
     }
 
