@@ -134,16 +134,30 @@ public sealed class MessageBox(GameUi ui)
     // orig: root 0000:1080: sound-start(2), two text boxes ("Game Paused" at row 0x32 and "Press a key to resume" at mid-screen), getch(), both put back, sound-start(3); the flag DS:07D3 keeps a pause inside a pause from restoring early
     // C: sound-start(2) / sound-start(3) bracket the pause (2 stops and 3 resumes the music? the numbers are sound-driver commands; sound-start(1) is "stop the music")
     // C: what sound-start(2) and (3) do; they are not played here.
+    // C: root 0000:10AE pointer-hide (root 047C:12C3) before the boxes, 0x10E7 pointer-show (root 047C:1293) before getch, 0x10F1 hide
+    //   again before the boxes are put back, 0x113A show: the pointer as it was (no shape set) stands over the boxes while the pause
+    //   waits (over a battle, the battle's shape: BattleScreen); tests: ScreenInputTests
     public void Pause()
     {
-        var first = Draw("Game Paused", 0x32);
-        var second = Draw("Press a key to resume", Centred);
-        // C: getch(): any key, read without the hot keys; the mouse is not looked at
-        while (ui.PollKeyOnly() == 0)
+        var pointer = ui.PointerVisible;
+        ui.PointerVisible = false;
+        try
         {
+            var first = Draw("Game Paused", 0x32);
+            var second = Draw("Press a key to resume", Centred);
+            ui.PointerVisible = pointer;
+            // C: getch(): any key, read without the hot keys; the mouse is not looked at
+            while (ui.PollKeyOnly() == 0)
+            {
+            }
+            ui.PointerVisible = false;
+            ui.Canvas.Restore(second);
+            ui.Canvas.Restore(first);
         }
-        ui.Canvas.Restore(second);
-        ui.Canvas.Restore(first);
+        finally
+        {
+            ui.PointerVisible = pointer;
+        }
         ui.Present();
     }
 

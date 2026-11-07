@@ -733,6 +733,146 @@ public sealed class BattleUiTests
         Assert.Null(run.Ui.PointerShape);
     }
 
+    /// <summary>True when drawing <paramref name="image"/> at (x, y) over <paramref name="frame"/> changes nothing: the sprite is there.</summary>
+    private static bool Shows(byte[] frame, Darklands.Content.Formats.Battles.RowRunSprite? image, int x, int y)
+    {
+        var shown = new Screen();
+        frame.CopyTo(shown.Pixels, 0);
+        Darklands.Presentation.Graphics.SpriteDrawing.Draw(new Darklands.Presentation.Graphics.Canvas(shown), image, x, y);
+        return shown.Pixels.AsSpan().SequenceEqual(frame);
+    }
+
+    /// <summary>
+    /// A member's message after the battle (R021+0x01E2, "... changed from ... to ...") waits with the driver's pointer shown in the battle's
+    /// last shape (pointer-hide R021+0x01F9, pointer-show R021+0x0298, no shape set): the battle's hand at the mouse, not the gauntlet, and the
+    /// battle's own drawn pointer is taken off first (vis10 session leftovers-skill-message).
+    /// </summary>
+    [Fact]
+    public void AMembersMessageWaitsWithTheBattlesPointer()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5");
+        var before = (byte[])run.LastFrame!.Clone();
+        var hands = new[] { BattleImages.NormalPointer, BattleImages.OrderPointer };
+        Assert.Contains(hands, image => Shows(before, run.Assets.Images[image], 150, 120));
+        // the battle waits on its thread for more steps: the message runs here and pumps the steps itself
+        run.QueueOnly("wait:3", "key:x");
+        var frames = new List<byte[]>();
+        run.Presented = screen => frames.Add((byte[])screen.Pixels.Clone());
+        run.Screen.MemberMessage(0, "Edged Weapons changed from 20 to 22", 15);
+        run.Presented = null;
+        Assert.NotEmpty(frames);
+        foreach (var frame in frames)
+        {
+            Assert.Contains(hands, image => Shows(frame, run.Assets.Images[image], 150, 120));
+            Assert.False(Shows(frame, run.Ui.Assets.CommonSprites.Pointer, 150, 120), "the gauntlet over the message");
+        }
+        Assert.False(run.Ui.PointerVisible);
+    }
+
+    /// <summary>
+    /// Alt-P over a battle: the pause box (root 0000:1080) shows the driver's pointer while it waits (pointer-show 0x10E7), in the battle's
+    /// shape (the battle's pointer is the driver's): the hand at the mouse over the paused screen, not the gauntlet (vis10 session leftovers-pause).
+    /// </summary>
+    [Fact]
+    public void ThePauseBoxOverABattleShowsTheBattlesPointer()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Ui.GameKey = key =>
+        {
+            if (key != Keys.AltP)
+            {
+                return false;
+            }
+            new MessageBox(run.Ui).Pause();
+            return true;
+        };
+        run.Play("wait:10", "key:space", "wait:5", "move:150,120", "wait:5");
+        var before = (byte[])run.LastFrame!.Clone();
+        run.Recording = true;
+        run.Play("key:altp", "wait:5", "key:x", "wait:5");
+        var hands = new[] { BattleImages.NormalPointer, BattleImages.OrderPointer };
+        // the frames of the wait: "Game Paused" at row 0x32 drawn (the screen differs there) and the hand at the mouse
+        var waiting = run.Frames.Where(f => !f.Pixels.AsSpan(0x32 * 320, 8 * 320).SequenceEqual(before.AsSpan(0x32 * 320, 8 * 320))).ToList();
+        Assert.NotEmpty(waiting);
+        Assert.Contains(waiting, f => Shows(f.Pixels, run.Assets.Images[hands[0]], 150, 120) || Shows(f.Pixels, run.Assets.Images[hands[1]], 150, 120));
+        Assert.DoesNotContain(waiting, f => Shows(f.Pixels, run.Ui.Assets.CommonSprites.Pointer, 150, 120));
+    }
+
+    /// <summary>
+    /// After a save in a battle the screen keeps what the comment box left in its area (TextInputBox: x 265..267 of the box's own pixels in
+    /// the original) over the next frames: fight-draw's screen copy takes only its sprites' boxes, and the save's level switch paints nothing
+    /// (vis10 session visleads-mines-save, aftersave); a full paint of the view takes it back.
+    /// </summary>
+    [Fact]
+    public void ABattlesScreenKeepsTheCommentBoxsLeftoverAfterASave()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        var (ax, ay, aw, ah) = TextInputBox.Area;
+        var spot = (X: ax + aw - 3, Y: ay + ah / 2);
+        // the box's leftover: one of its pixels the restore does not draw back
+        run.Screens.Save = _ => run.Ui.Canvas.Screen.Pixels[spot.Y * 320 + spot.X] = 0x77;
+        run.Play("wait:10", "key:space", "wait:5", "move:100,30", "wait:5");
+        Assert.NotEqual(0x77, run.LastFrame![spot.Y * 320 + spot.X]);
+        run.Screen.Tactics!.Menus.SaveGame = 1;
+        run.Play("key:alts", "wait:10");
+        Assert.Equal(0x77, run.LastFrame![spot.Y * 320 + spot.X]);
+        run.Play("wait:30");
+        Assert.Equal(0x77, run.LastFrame![spot.Y * 320 + spot.X]);
+    }
+
+    /// <summary>
+    /// The chosen member's cursor is queued only by fight-draw (R014+0x6818, DS:A6B2 as it is then): a member chosen while the battle is paused
+    /// shows his cursor at the next combat tick's frame, not before (vis10 session loadfix-order-cursor, D-e4fbd6); the other members marked as
+    /// selected show none (fight-draw never reads DS:9064).
+    /// </summary>
+    [Fact]
+    public void AMemberChosenWhilePausedShowsHisCursorAtTheNextTicksFrame()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:20", "move:30,150", "wait:5");
+        var tb = run.Screen.Tactics!;
+        Assert.Equal(-1, tb.Selected);
+        var before = (byte[])run.LastFrame!.Clone();
+        var ticks = tb.Ticks;
+        var seen = new List<(int Ticks, byte[] Pixels)>();
+        run.Presented = screen => seen.Add((tb.Ticks, (byte[])screen.Pixels.Clone()));
+        run.Play("key:1", "wait:40");
+        run.Presented = null;
+        Assert.Equal(0, tb.Selected);
+        Assert.True(tb.Ticks > ticks, "no combat tick while paused");
+        static bool SameView(byte[] a, byte[] b)
+        {
+            for (var y = 0; y < 200; y++)
+            {
+                if (!a.AsSpan(y * 320 + 60, 260).SequenceEqual(b.AsSpan(y * 320 + 60, 260)))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // before the first tick after the key the view is the old frame; after it the cursor is there
+        Assert.All(seen.Where(f => f.Ticks == ticks), f => Assert.True(SameView(before, f.Pixels), "the view changed before the next tick"));
+        Assert.False(SameView(before, seen[^1].Pixels), "no cursor after the tick");
+    }
+
     /// <summary>
     /// The battle's party panel as the panel rows (root 0000:1716) draws it: each name at (4, 0x28 * i + 2); an away member's row holds the bars' (root 0000:1A9C)
     /// "???? ???? ????" instead of the bars and no order letter; a dead member's row is hatched; the order letter is in the name's colour (vis10 sessions
@@ -1053,6 +1193,12 @@ public sealed class BattleUiTests
 
         public void MovePointer(int x, int y) => _host.MovePointer(x, y);
 
+        /// <summary>Called with each frame presented (on the battle's thread).</summary>
+        public Action<Screen>? Presented { set => _host.Presented = value; }
+
+        /// <summary>Queues steps for a call made on the test's thread while the battle waits (the call pumps them itself).</summary>
+        public void QueueOnly(params string[] steps) => _host.Queue(steps);
+
         private bool _started;
 
         /// <summary>Plays steps in the battle (starting it the first time) and stops it afterwards; the battle can go on with more steps.</summary>
@@ -1185,8 +1331,12 @@ public sealed class BattleUiTests
             _idle.Release();
         }
 
+        /// <summary>Called with each frame presented (on the battle's thread).</summary>
+        public Action<Screen>? Presented { get; set; }
+
         public void Present(Screen screen)
         {
+            Presented?.Invoke(screen);
             Last = screen;
             if (Recording)
             {
@@ -1245,6 +1395,7 @@ public sealed class BattleUiTests
                         "f1" => Keys.F1,
                         "alts" => Keys.AltS,
                         "altq" => Keys.AltQ,
+                        "altp" => Keys.AltP,
                         "down" => Keys.Down,
                         "up" => Keys.Up,
                         "right" => Keys.Right,

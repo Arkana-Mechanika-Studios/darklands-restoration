@@ -293,6 +293,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>A combat tick ran since the screen last drew after one: the screen's next frame is the tick's fight-draw.</summary>
     private bool _tickToDraw;
 
+    /// <summary>Whether a combat tick ran since the screen last took it: the frame being drawn is the tick's fight-draw (read only).</summary>
+    public bool TickToDraw => _tickToDraw;
+
     /// <summary>Whether a combat tick ran since the last call (the screen asks once per frame, after drawing it).</summary>
     public bool TakeTickToDraw()
     {

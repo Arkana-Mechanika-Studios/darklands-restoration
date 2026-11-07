@@ -29,6 +29,9 @@ public sealed class TextInputBox(GameUi ui)
     private const int RecolorWidth = 0x9B;
     private const byte TextColor = 0;
 
+    /// <summary>The rectangle the box saves and puts back (0xA0 x 0x32 at (0x6E, 0x50)).</summary>
+    public static (int X, int Y, int Width, int Height) Area => (X, Y, 0xA0, Height);
+
     public string Ask(string prompt, int maxLength, string text = "")
     {
         var pointer = ui.PointerVisible;
