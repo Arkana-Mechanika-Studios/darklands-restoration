@@ -607,7 +607,7 @@ public sealed class BattleScreen : ITacticalView
         //   that place, also after a save and a load (the save packs them, the restore writes them back). The real-play state, the
         //   community save DKSAVE2 of bug-sabbath-jan0 (483.07, at the fortress's place 188 with the fortress in its .BSV) set to card
         //   0x16B, goes back onto the fortress in both (vis10 visuals-fortress-cell: 1 px of 64,000 differ, a ground pixel by the party, not
-        //   the field). Only a save with the card set by hand away from the fortress, or a missing .BSV, reaches the case below.
+        //   the field: the dirty-tile redraw order of the registered whole-view redraw, see Draw). Only a save with the card set by hand away from the fortress, or a missing .BSV, reaches the case below.
         // DIVERGENCE: the original goes back onto whatever battlefield its files hold; here a revisit needs the last battlefield to have
         // been fought at the same place (else a new one is built), and mode 3's level is kept within the battlefield's levels.
         if (request.Mode != 0 && _owner.LastField is null && _state.BattleFile is { Levels.Count: > 0 } held)
@@ -2695,6 +2695,12 @@ public sealed class BattleScreen : ITacticalView
     // than sorted in among them, and the 157-sprite limit is not kept (see EffectField.Drawn for its effect on the random numbers);
     // the missiles and the ground cursor are drawn after the sorted list instead of in it, the last frame's logged entries (which
     // draw nothing) are not in it, and a combatant's member and target cursors go with its body.
+    // C: one visible effect of the dirty tiles (round fortpx 2026-11-07): vis10 visuals-fortress-cell, 1 px at (231,101) by the party
+    //   (original 0xBA, C# 0xDA). Write watches on the pixel and on its back-buffer byte (D000:7F27) in the original: the view's full
+    //   paint (floor-view-paint R017+0x0000, pass 8) draws a floor decoration's 0xBA there and then a later slot's floor tile's 0xDA
+    //   over it, the same 0xDA the C# draws; from pass 8 on every fight-draw clears the dirty tile and re-blits it from its list
+    //   (R014+0x74A2, the floor tile from the call before R014+0x753E, the decoration from the one before R014+0x75E7) in the other
+    //   order, so the decoration's 0xBA stays on top. A consequence of the dirty-tile redraw, not of the game's state or its tables.
     // C: R014+0x827A's roll-n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
     // drawn by EffectField.Drawn at each fight-draw, the first one at the battle's start (R014+0x0307).
     // C: while paused the picture changes only at the paused ticks: fight-tick still runs every 8 timer callbacks (DS:07D1) and its
