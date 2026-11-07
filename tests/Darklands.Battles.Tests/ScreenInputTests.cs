@@ -162,6 +162,204 @@ public sealed class ScreenInputTests
         }
     }
 
+    /// <summary>
+    /// With FixRosterMissingFigure (alone), the arrow onto a party member past the figure list is handled as a row without a member: the figure place
+    /// below the commands is the background again, nothing else on the screen changes, and the palette (the figure colours 235..242)
+    /// is left as it was, so a figure an earlier Up drew at the left keeps its colours (the original sets them only after the load).
+    /// </summary>
+    [Fact]
+    public void TheFixedArrowPastTheFigureListLeavesTheScreenAndItsColoursClean()
+    {
+        // rows 0 -> 1 -> 2 -> 3 (Down), 2 (Up: drawn at the left), 3 (Down), then Down onto row 4 (a member, past the list)
+        int[] keys = [Keys.Down, Keys.Down, Keys.Down, Keys.Up, Keys.Down, Keys.Down];
+        var frames = new List<(int, MouseState)> { Up(5, 5), Up(5, 5) };
+        foreach (var key in keys)
+        {
+            frames.AddRange([Key(key), Up(5, 5), Up(5, 5)]);
+        }
+        frames.AddRange([Key(Keys.Escape), Up(5, 5), Up(5, 5)]);
+        var host = new FrameHost([.. frames]);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return;
+        }
+        var saves = DarklandsGame.DefaultSaveDirectory(ui.Assets.Files.Root);
+        if (Directory.GetFiles(saves).FirstOrDefault(f => Path.GetFileName(f).Equals("DKSAVE0.SAV", StringComparison.OrdinalIgnoreCase)) is not { } sav)
+        {
+            return;
+        }
+        state = Darklands.Persistence.OriginalSaves.Read(File.ReadAllBytes(sav), [], "DKSAVE0.SAV", world).State;
+        state.Data = world;
+        Assert.Equal(4, state.Roster.PartySlots[0]);
+        // the missing-figure fix alone (DataSafe also fixes the preview, which shows the character's own figure instead)
+        state.Behaviour = new OriginalBehaviour { FixRosterMissingFigure = true };
+        CharacterCreationScreen.ProgramStart();
+        var shots = new Dictionary<int, (byte[] Pixels, uint[] Palette)>();
+        host.Presented = s => shots[host.Left] = ((byte[])s.Pixels.Clone(), (uint[])s.Palette.Clone());
+        new PartyRosterScreen(ui, panel, world).Run(state, 0);
+        Assert.False(host.QuitRequested);
+        // the last Down is frame 2 + 3 x 5; before: the presents after the frame before it, after: after the two idle frames that follow it
+        var last = 2 + 3 * (keys.Length - 1);
+        var before = shots[frames.Count - last];
+        var after = shots[frames.Count - last - 3];
+        Assert.Equal(before.Palette, after.Palette);
+        var background = ui.Assets.Picture("cretscr3").Image.Pixels.ToArray();
+        for (var y = 0; y < 200; y++)
+        {
+            for (var x = 0; x < 320; x++)
+            {
+                var k = y * 320 + x;
+                if (x >= 0xC6 && x < 0xC6 + 0x71 && y >= 0x16 + 3 * 8 && y < 0x16 + 5 * 8)
+                {
+                    continue; // the highlight moves from row 3 to row 4
+                }
+                if (x >= 0x46 && x < 0x46 + 0x23 && y >= 0xA5 && y < 0xA5 + 0x23)
+                {
+                    Assert.Equal(background[k], after.Pixels[k]);
+                    continue;
+                }
+                Assert.Equal(before.Pixels[k], after.Pixels[k]);
+            }
+        }
+        // the Up onto row 2 drew a figure at the left (0x0C, 0xA4): the screen there is not the background, and it stays
+        Assert.Contains(Enumerable.Range(0xA4, 0x23).SelectMany(y => Enumerable.Range(0x0C, 0x23).Select(x => y * 320 + x)),
+            k => after.Pixels[k] != background[k]);
+    }
+
+    /// <summary>The roster on the game folder's DKSAVE0 with the given behaviour, run through the inputs; the screen after each input and
+    /// its two idle frames, and the state and rows (record index of each listed row).</summary>
+    private static (List<(byte[] Pixels, uint[] Palette)> Shots, GameState State, int[] Rows, byte[] Background, GameUi Ui)? RunRoster(
+        OriginalBehaviour behaviour, params (int Key, int ClickRow)[] inputs)
+    {
+        var frames = new List<(int, MouseState)> { Up(5, 5), Up(5, 5) };
+        var ends = new List<int>();
+        foreach (var (key, clickRow) in inputs)
+        {
+            if (key != 0)
+            {
+                frames.Add(Key(key));
+            }
+            else
+            {
+                var (x, y) = (0xE0, 0x18 + 8 * clickRow);
+                frames.AddRange([Held(x, y), Held(x, y), Up(x, y)]);
+            }
+            frames.AddRange([Up(5, 5), Up(5, 5)]);
+            ends.Add(frames.Count - 1);
+        }
+        frames.AddRange([Key(Keys.Escape), Up(5, 5), Up(5, 5)]);
+        var host = new FrameHost([.. frames]);
+        if (Start(host) is not var (ui, state, panel, world))
+        {
+            return null;
+        }
+        var saves = DarklandsGame.DefaultSaveDirectory(ui.Assets.Files.Root);
+        if (Directory.GetFiles(saves).FirstOrDefault(f => Path.GetFileName(f).Equals("DKSAVE0.SAV", StringComparison.OrdinalIgnoreCase)) is not { } sav)
+        {
+            return null;
+        }
+        state = Darklands.Persistence.OriginalSaves.Read(File.ReadAllBytes(sav), [], "DKSAVE0.SAV", world).State;
+        state.Data = world;
+        state.Behaviour = behaviour;
+        CharacterCreationScreen.ProgramStart();
+        var shots = new Dictionary<int, (byte[] Pixels, uint[] Palette)>();
+        host.Presented = s => shots[host.Left] = ((byte[])s.Pixels.Clone(), (uint[])s.Palette.Clone());
+        new PartyRosterScreen(ui, panel, world).Run(state, 0);
+        Assert.False(host.QuitRequested);
+        var rows = Darklands.Core.Rules.InnRoster.List(state, new Darklands.Core.Characters.Creation.PartyMenuState(), 0).Select(r => r.Entry).ToArray();
+        return (ends.Select(j => shots[frames.Count - j - 1]).ToList(), state, rows, ui.Assets.Picture("cretscr3").Image.Pixels.ToArray(), ui);
+    }
+
+    private static uint Widened(byte[] palette, int i)
+    {
+        static int W(byte v) => (v & 0x3F) << 2 | (v & 0x3F) >> 4;
+        return (uint)(W(palette[3 * i]) << 16 | W(palette[3 * i + 1]) << 8 | W(palette[3 * i + 2]));
+    }
+
+    /// <summary>
+    /// The fixed figure preview (FixRosterFigurePreview, every player game): after each arrow and each click the highlighted
+    /// character's own figure in its own colours at (0x0C, 0xA4) and nothing else there, the previous one gone; nothing for a row whose
+    /// character is not in the party; never anything below the commands; a member past the fourth row shows its figure too.
+    /// </summary>
+    [Fact]
+    public void TheFixedRosterPreviewShowsTheHighlightedMembersOwnFigureInOnePlace()
+    {
+        // rows: 1, 2, 1 (Up), 3 (click), 4 (Down: slot 0's record), 0 (click)
+        (int, int)[] inputs = [(Keys.Down, 0), (Keys.Down, 0), (Keys.Up, 0), (0, 3), (Keys.Down, 0), (0, 0)];
+        int[] selected = [1, 2, 1, 3, 4, 0];
+        if (RunRoster(OriginalBehaviour.DataSafe, inputs) is not var (shots, state, rows, background, ui))
+        {
+            return;
+        }
+        var members = 0;
+        for (var i = 0; i < inputs.Length; i++)
+        {
+            var (pixels, palette) = shots[i];
+            var slot = Array.IndexOf(state.Roster.PartySlots, rows[selected[i]]);
+            Darklands.Content.Formats.Graphics.IndexedImage? figure = null;
+            if (slot >= 0)
+            {
+                members++;
+                var member = state.Party.Slot(slot);
+                figure = ui.Assets.Picture(member.Image + "small").Image;
+                for (var c = 0; c < 8; c++)
+                {
+                    Assert.Equal(Widened(member.ImagePalette, c), palette[235 + c] & 0xFFFFFF);
+                }
+            }
+            var picture = figure?.Pixels.ToArray();
+            // the bottom of the party column (below the fourth panel row) and the place below the commands
+            for (var y = 0xA1; y < 200; y++)
+            {
+                for (var x = 0x03; x < 0x39; x++)
+                {
+                    var k = y * 320 + x;
+                    var (fx, fy) = (x - 0x0C, y - 0xA4);
+                    var expected = figure is not null && fx >= 0 && fy >= 0 && fx < figure.Width && fy < figure.Height && picture![fy * figure.Width + fx] != 0
+                        ? picture[fy * figure.Width + fx] : background[k];
+                    Assert.Equal(expected, pixels[k]);
+                }
+                for (var x = 0x46; x < 0x46 + 0x23 && y >= 0xA5 && y < 0xA5 + 0x23; x++)
+                {
+                    Assert.Equal(background[y * 320 + x], pixels[y * 320 + x]);
+                }
+            }
+        }
+        // the moves meet members (the fifth row among them) and a row without one
+        Assert.InRange(members, 2, inputs.Length - 1);
+        Assert.True(Array.IndexOf(state.Roster.PartySlots, rows[4]) >= 0);
+    }
+
+    /// <summary>
+    /// The original's figure preview (Faithful, R038+0x02F8 and R038+0x0000; vis10 roster-figure): Up draws the row's figure picture at
+    /// (0x0C, 0xA4), where a later Down does not clear it; Down draws below the commands; a click moves only the highlight.
+    /// </summary>
+    [Fact]
+    public void TheOriginalRosterPreviewIsKeptWhenNotFixed()
+    {
+        // rows: 1, 2, 1 (Up), 2 (Down), 0 (click)
+        (int, int)[] inputs = [(Keys.Down, 0), (Keys.Down, 0), (Keys.Up, 0), (Keys.Down, 0), (0, 0)];
+        if (RunRoster(OriginalBehaviour.Faithful, inputs) is not var (shots, state, rows, background, _))
+        {
+            return;
+        }
+        bool Member(int row) => Array.IndexOf(state.Roster.PartySlots, row) >= 0;
+        static bool Same(byte[] a, byte[] b, int x0, int y0, int w, int h) =>
+            Enumerable.Range(y0, h).All(y => Enumerable.Range(x0, w).All(x => a[y * 320 + x] == b[y * 320 + x]));
+        static bool Background(byte[] a, byte[] bg, int x0, int y0, int w, int h) => Same(a, bg, x0, y0, w, h);
+        Assert.True(Member(1) && Member(2), "DKSAVE0's slots hold rows 1 and 2");
+        // Down onto row 2: drawn below the commands
+        Assert.False(Background(shots[1].Pixels, background, 0x46, 0xA5, 0x23, 0x23));
+        // Up onto row 1: drawn at the bottom of the party column
+        Assert.False(Background(shots[2].Pixels, background, 0x0C, 0xA4, 0x23, 0x23));
+        // Down onto row 2 again: the Up figure stays as it was
+        Assert.True(Same(shots[2].Pixels, shots[3].Pixels, 0x0C, 0xA4, 0x23, 0x23));
+        // a click on row 0: neither figure place changes
+        Assert.True(Same(shots[3].Pixels, shots[4].Pixels, 0x0C, 0xA4, 0x23, 0x23));
+        Assert.True(Same(shots[3].Pixels, shots[4].Pixels, 0x46, 0xA5, 0x23, 0x23));
+        _ = rows;
+    }
+
     /// <summary>The creation menu's exit R037+0x0348 clears the mouse driver's left-release count (root 047C:1320(6, 0, 0, 0)).</summary>
     [Fact]
     public void TheCreationMenuLeavesNoReleaseCountBehind()

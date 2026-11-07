@@ -164,6 +164,10 @@ public sealed class PartyRosterScreen
                 Screen.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
                 Menu.Selected = row;
                 Screen.Recolor(0xC6, (row << 3) + 0x16, 0x71, 8, NameColor, Highlight);
+                if (FixedPreview)
+                {
+                    ShowPreview();
+                }
             }
         }
         return 0;
@@ -230,9 +234,14 @@ public sealed class PartyRosterScreen
     //   DS:4A43; the entries past the list are zeros: the list filler R037+0x4562 writes only its files' entries and nothing else writes
     //   DS:E7F2..DS:E809), which does not exist: the picture load root 0617:045C (R038+0x04CA) calls the opener root 0617:000E, which ends
     //   the program (root 0617:067E: mode 3, perror, exit(99)); reproduced: ProgramExitException. Fixed (data safety, DataSafe): nothing is
-    //   drawn and the screen goes on.
+    //   drawn and the screen goes on: the row is handled as one without a member (the figure place below the commands cleared, as
+    //   above, and nothing else): the shared colours and the palette are left as they were (the original sets them only after the
+    //   load), so no figure on the screen changes colour. A figure an earlier Up / Left / Right left at (0x0C, 0xA4) stays, as it
+    //   does when moving onto a row without a member.
     // DIVERGENCE: a row of 10 or more reads its name past DS:E809, in other globals (DS:E80A, written by R037+0x3927, and on): taken as
     //   empty here (the same exit), where the original's name may begin with those bytes (a file named so is still all but surely missing).
+    // C: a click on a list row moves only the highlight (R038+0x0000): the figure stays as it was until the next arrow (vis10
+    //   roster-figure, rows 1-4: the original's screen is the C#'s at 0 px).
     private int Arrow(bool up)
     {
         Screen.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
@@ -246,19 +255,26 @@ public sealed class PartyRosterScreen
         }
         Screen.Recolor(0xC6, 8 * Menu.Selected + 0x16, 0x71, 8, NameColor, Highlight);
         CopyBack(0x46, 0xA5, 0x23, 0x23);
-        if (InnRoster.FigureSlot(_state, Menu) < 0)
+        if (FixedPreview)
+        {
+            ShowPreview();
+            return ResultOfDriver;
+        }
+        var listed = Menu.Selected >= 0 && Menu.Selected < _images.Count;
+        if (InnRoster.FigureSlot(_state, Menu, loadColours: listed) < 0)
         {
             return Menu.Selected;
         }
+        if (!listed)
+        {
+            if (!_state.Behaviour.FixRosterMissingFigure)
+            {
+                throw ProgramExitException.FileNotFound("pics\\small.pic");
+            }
+            return ResultOfDriver;
+        }
         ApplyFigureColours();
-        if (Menu.Selected >= 0 && Menu.Selected < _images.Count)
-        {
-            DrawFigure(_images[Menu.Selected], up ? 0x0C : 0x46, up ? 0xA4 : 0xA5);
-        }
-        else if (Menu.Selected >= _images.Count && !_state.Behaviour.FixRosterMissingFigure)
-        {
-            throw ProgramExitException.FileNotFound("pics\\small.pic");
-        }
+        DrawFigure(_images[Menu.Selected], up ? 0x0C : 0x46, up ? 0xA4 : 0xA5);
         return ResultOfDriver;
     }
 
@@ -282,15 +298,26 @@ public sealed class PartyRosterScreen
                 return ResultOfDriver;
             case InnRosterChange.Left:
                 _panel.DrawRow(Screen, _state.Party, slot);
+                if (FixedPreview)
+                {
+                    ShowPreview();
+                }
                 break;
             case InnRosterChange.Joined:
                 var member = _state.Party.Slot(slot);
                 _panel.SetShieldPicture(slot, member, 'A');
-                ApplyFigureColours();
-                CopyBack(0x46, 0xA5, 0x23, 0x24);
-                if (_images.Count > 0)
+                if (FixedPreview)
                 {
-                    DrawFigure(_images[0], 0x46, 0xA5);
+                    ShowPreview();
+                }
+                else
+                {
+                    ApplyFigureColours();
+                    CopyBack(0x46, 0xA5, 0x23, 0x24);
+                    if (_images.Count > 0)
+                    {
+                        DrawFigure(_images[0], 0x46, 0xA5);
+                    }
                 }
                 PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, slot, lit: _ui.PanelSelection[slot]);
                 _panel.DrawRow(Screen, _state.Party, slot);
@@ -354,8 +381,15 @@ public sealed class PartyRosterScreen
         PressButton(0x59, 0x5D, CreationData.SelectImage);
         if (InnRoster.NextImage(_state, Menu, _images) >= 0)
         {
-            CopyBack(0x46, 0xA5, 0x23, 0x24);
-            DrawFigure(_images[Menu.Image], 0x46, 0xA5);
+            if (FixedPreview)
+            {
+                ShowPreview();
+            }
+            else
+            {
+                CopyBack(0x46, 0xA5, 0x23, 0x24);
+                DrawFigure(_images[Menu.Image], 0x46, 0xA5);
+            }
         }
         CopyBack(0x43, 0x59, 0x82, 0x0E);
         return ResultOfDriver;
@@ -377,6 +411,10 @@ public sealed class PartyRosterScreen
             return Menu.Selected;
         }
         ApplyFigureColours();
+        if (FixedPreview)
+        {
+            ShowPreview();
+        }
         return ResultOfDriver;
     }
 
@@ -412,6 +450,11 @@ public sealed class PartyRosterScreen
                 _panel.DrawRow(Screen, _state.Party, i);
             }
         }
+        if (FixedPreview)
+        {
+            _preview = null;
+            ShowPreview();
+        }
     }
 
     /// <summary>The list (R038+0x23EC) on <paramref name="on"/>: each row's strip copied back to the screen, the '+' and the name, the highlight.</summary>
@@ -445,6 +488,47 @@ public sealed class PartyRosterScreen
     }
 
     private void CopyBack(int x, int y, int width, int height) => Screen.Restore(_back.Save(x, y, width, height));
+
+    private bool FixedPreview => _state.Behaviour.FixRosterFigurePreview;
+
+    /// <summary>The fixed preview's size on the screen at (0x0C, 0xA4), or null when none is shown.</summary>
+    private (int Width, int Height)? _preview;
+
+    /// <summary>
+    /// The fixed figure preview (FixRosterFigurePreview): the previous one cleared, then the highlighted row's character's own figure in
+    /// its own colours at (0x0C, 0xA4), the bottom of the party column (the creation menu's place), if the character is in the party.
+    /// </summary>
+    // orig: R038+0x02F8 (1462:02F8) keys 0x4800/0x4B00/0x4D00/0x5000 and R038+0x0000 (the list click), checked against asm (Arrow, Click)
+    // BUG: OriginalBehaviour.FixRosterFigurePreview - the preview is drawn by Up / Left / Right at (0x0C, 0xA4) (the bottom of the party
+    //   column), where nothing ever clears it (only (0x46, 0xA5, 0x23 x 0x23) is copied back, R038+0x0396 / 0x061E), so each Up figure
+    //   lands over the earlier ones; by Down at (0x46, 0xA5), below the commands; the picture is the figure list's entry of the ROW
+    //   number (DS:E7E2 + 4 x DS:E7DA), not the character's own figure, in the colours of the slot whose id equals the row number; a
+    //   click on the list moves only the highlight (R038+0x0000). Measured: vis10 roster-figure, 11 shots of the original and the
+    //   Faithful C# at 0 px. Reproduced in Arrow and Click. Fixed (an evident display fix, every player game): this preview.
+    // C: the place is the fifth panel row's: with a member in slot 5 the preview is not drawn (the roster fills only the first four).
+    private void ShowPreview()
+    {
+        if (_preview is var (width, height))
+        {
+            CopyBack(0x0C, 0xA4, width, height);
+            _preview = null;
+        }
+        if (_state.Party.Slot(Party.MaxMembers - 1).IsPresent || InnRoster.SlotOfRow(_state, Menu) is var slot && slot < 0)
+        {
+            return;
+        }
+        var member = _state.Party.Slot(slot);
+        var picture = member.Image + "small";
+        if (!_ui.Assets.PictureExists(picture))
+        {
+            return;
+        }
+        Menu.Colours.Load(member.ImagePalette);
+        ApplyFigureColours();
+        var image = _ui.Assets.Picture(picture).Image;
+        Screen.Draw(image, 0x0C, 0xA4, transparent: true);
+        _preview = (image.Width, image.Height);
+    }
 
     /// <summary>A figure (PICS\&lt;code&gt;SMALL.PIC).</summary>
     private void DrawFigure(string code, int x, int y)

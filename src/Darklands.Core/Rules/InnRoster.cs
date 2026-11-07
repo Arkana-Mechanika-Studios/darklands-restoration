@@ -118,11 +118,13 @@ public static class InnRoster
     // colours DS:E753.. = the slot's 24 (the figure picture is the figure list's entry of the ROW: PartyRosterScreen)
     // C: the row is compared with roster entries (a stale index): the figure and colours shown are a member's only while the rows
     // C: before it list every record.
-    public static int FigureSlot(GameState s, PartyMenuState menu)
+    // C: the colours are copied after the figure picture's load (R038+0x04DA..0x059F after the load at R038+0x04CA): a row past the figure
+    // C: list ends the program before it (PartyRosterScreen.Arrow), so with loadColours false nothing is copied (the fixed path).
+    public static int FigureSlot(GameState s, PartyMenuState menu, bool loadColours = true)
     {
         s.Roster.Reconcile(s.Party);
         var slot = Array.IndexOf(s.Roster.PartySlots, menu.Selected, 0, AddSlots);
-        if (slot >= 0)
+        if (slot >= 0 && loadColours)
         {
             menu.Colours.Load(s.Party.Slot(slot).ImagePalette);
         }
@@ -273,8 +275,9 @@ public static class InnRoster
         s.Roster.Characters.Add(made);
     }
 
+    /// <summary>The slot of the highlighted row's character (its roster entry), or −1: H and S, and the fixed figure preview.</summary>
     // C: H and S search the five slots for the highlighted row's ROSTER ENTRY (DS:8D06[DS:E7DA]).
-    private static int SlotOfRow(GameState s, PartyMenuState menu)
+    public static int SlotOfRow(GameState s, PartyMenuState menu)
     {
         s.Roster.Reconcile(s.Party);
         return Array.IndexOf(s.Roster.PartySlots, RowEntry(menu, menu.Selected));

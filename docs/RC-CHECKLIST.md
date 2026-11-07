@@ -26,6 +26,10 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
   a saved game with two slots naming one record loading where the original ends with "pics\shield.pic: No such file or
   directory", and the travel map going on after its own Alt-Q was answered "no" (the original ends with "M - Buffer dealloc
   error" at the next Alt-Q, camp, portrait click or departure). The original may garble, crash or play on from garbage there.
+* One display fix (on by default, C# only): the inn roster's figure preview shows the highlighted character's own figure in its
+  own colours, in one place at the bottom of the party column, and follows clicks too; the original draws the row's figure picture
+  with another member's colours, piles figures at the bottom of the party column, draws below the commands on Down and ignores
+  clicks (kept exactly in the testers' faithful mode).
 * Window, scale, fullscreen, pointer and key timing are the host's. Animation speed and exact frame phase can differ.
 * The battle clouds (potion gas): the depth order and clipping now follow the original (D-09fbc1 is closed); only the colour
   cycling phase and the puffs' random jitter frame by frame can differ, and a paused battle may show one more jitter frame
