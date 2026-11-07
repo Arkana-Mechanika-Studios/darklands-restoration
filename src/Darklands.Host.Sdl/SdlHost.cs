@@ -131,6 +131,12 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public bool CtrlHeld => (SdlNative.SDL_GetModState() & (SdlNative.KeyModLeftCtrl | SdlNative.KeyModRightCtrl)) != 0;
 
+    public bool TakeCtrlBreak() => _keyboard.TakeCtrlBreak();
+
+    /// <summary>Ctrl+Pause (SDL's Pause scancode 72 with a Ctrl key), or SDL's Cancel (155, what some systems report for Break).</summary>
+    // C: plain Pause (the BIOS's pause loop, which holds the program until the next key) is not modelled: the key goes nowhere
+    internal static bool IsCtrlBreak(int scancode, int mod) => scancode == 72 && (mod & SdlNative.KeyModCtrl) != 0 || scancode == 155;
+
     /// <summary>The pointer to a screen pixel: the window point at the middle of that pixel of the picture.</summary>
     public void MovePointer(int x, int y)
     {
@@ -370,6 +376,13 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     if (e.Keyboard.Repeat != 0)
                     {
                         break;   // the operating system's own repeat: the keyboard's typematic (PcKeyboard.Tick below) stands in for it
+                    }
+                    if (IsCtrlBreak(e.Keyboard.Keysym.Scancode, e.Keyboard.Keysym.Mod))
+                    {
+                        // Ctrl+Pause (the PC keyboard's Break, E0 46 with Ctrl) or a key the system calls Break: to the game as the BIOS
+                        // delivers it (PcKeyboard.CtrlBreak; GameUi.QuitCheck ends the program at the card engine's next check)
+                        _keyboard.CtrlBreak();
+                        break;
                     }
                     _keyboard.KeyDown(SdlKeyMap.ToGameKey(e.Keyboard.Keysym.Scancode, e.Keyboard.Keysym.Sym, e.Keyboard.Keysym.Mod),
                         PcScanCode(e.Keyboard.Keysym.Scancode), (int)e.Keyboard.Keysym.Scancode, _keyClock.Elapsed.TotalMilliseconds);

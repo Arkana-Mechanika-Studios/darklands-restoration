@@ -35,6 +35,12 @@ press word DS:6EF2), let go as a `click:` is: a button pressed inside a loop tha
 (the map's rest, R030+0x0F60). The C# host waits n / 60 s of its clock and holds the button as long as the original's log says
 ("tclick held <ms>"). A script with a tclick step is run with tick_mouse.session_class(Session) and its recording hashes
 tick_mouse.py too; the other recordings keep their keys.
+`kbreak:<n>[:<key>]` (ctrl_break.py) is Ctrl-Break at a timer tick in the same way, as the BIOS delivers it: the buffer emptied, the
+word 0000h stored (key-waiting-test sees no key behind it, read-key takes it as key 0) and INT 1Bh run (the game's handler sets
+DS:07F4, which quit-check root 0000:1338 ends the program on). With a key, the key is pressed and the interrupt comes just before the
+read that would take it (the map's look, then its read of 0000h: R030+0x0C44 with key 0). The C# host does the same through
+IInput.TakeCtrlBreak. A tkey, tclick or kbreak right after a tkey or kbreak counts its ticks at once in the C# host. A script with a
+kbreak step is run with ctrl_break.session_class(Session) and its recording hashes ctrl_break.py too.
 
 ## Original side and compare side
 

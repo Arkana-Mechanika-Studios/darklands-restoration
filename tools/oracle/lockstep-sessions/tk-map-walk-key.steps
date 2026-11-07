@@ -1,0 +1,19 @@
+# Lockstep session (ctrlbreak: R030+0x0C44's default case after a walk, R030+0x10AB): DKSAVE17 on the map. Right twice in one pass (a step
+# east: DS:8676 = 3), then X in the next pass: the default case steps again in place in the last direction (its time and encounter roll),
+# the marker unmoved; then Space and Enter in the passes after an idle one (DS:8676 = 0 again: no step)
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+tkey:0:right,right
+tkey:0:x
+wait:100
+state:after-x
+key:space
+wait:60
+state:after-space
+tkey:0:left,left
+tkey:0:enter
+wait:100
+state:after-enter

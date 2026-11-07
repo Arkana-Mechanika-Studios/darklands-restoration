@@ -10,6 +10,8 @@ namespace Darklands.Battles.Tests;
 /// The overland map takes a second waiting key in the same pass (R030+0x0566..0x057B): the two presses a held arrow leaves in
 /// the keyboard buffer make one step, so the party stops within a pass of the key's release.
 /// </summary>
+// the map's trace (OverlandScreen.Trace) is static: the classes that set it run one after the other
+[Collection("OverlandTrace")]
 public sealed class OverlandKeyTests
 {
     /// <summary>A host whose keyboard is the BIOS buffer: each Pump plays the next frame's key events into it.</summary>

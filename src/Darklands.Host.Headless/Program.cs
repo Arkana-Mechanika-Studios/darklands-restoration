@@ -460,6 +460,11 @@ host.ConsoleCommand = line =>
     }
 };
 game.Run();
+if (game.ProgramExit is { } ended)
+{
+    // the program's own end (the original's exit: lockstep.py's original side logs "program exit <code>")
+    Console.WriteLine($"program exit {ended.Code}: {ended.Printed.TrimEnd()}");
+}
 Console.WriteLine($"{host.ShotsTaken} screenshot(s) in {output}");
 return 0;
 
@@ -627,7 +632,43 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         Advanced?.Invoke(_now);
     }
 
-    public bool TryReadKey(out int key) => _keys.TryDequeue(out key);
+    public bool TryReadKey(out int key)
+    {
+        if (!_keys.TryDequeue(out key))
+        {
+            return false;
+        }
+        if (_breakKey != Keys.None && key == _breakKey)
+        {
+            // the kbreak's key, looked at (GameUi.KeyWaiting) or read: the Ctrl-Break comes just before the game's read of it (GameUi.TakeKey)
+            _breakKey = Keys.None;
+            _keys.Clear();
+            _breakArmed = true;
+            Console.WriteLine($"kbreak after the key at {_now} ms");
+        }
+        return true;
+    }
+
+    // kbreak:<n>[:<key>]: Ctrl-Break n ticks of the 60 Hz timer later on the host's clock (tools/oracle/ctrl_break.py), as tkey's keys: the keys
+    // waiting are gone and the game's next look or read finds the word 0000h (IInput.TakeCtrlBreak, GameUi). With a key, the key is pressed
+    // then and the Ctrl-Break comes just before the game's read of it (the read takes 0000h); no step after it is taken before
+    private long _breakAt;
+    private string? _breakStep;
+    private int _breakKey;
+    private bool _breakArmed;
+
+    /// <summary>The next step counts timer ticks from now (tkey, tclick, kbreak).</summary>
+    private bool NextCountsTicks() => _steps.TryPeek(out var next) && (next.StartsWith("tkey:", StringComparison.Ordinal) || next.StartsWith("tclick:", StringComparison.Ordinal) || next.StartsWith("kbreak:", StringComparison.Ordinal));
+
+    public bool TakeCtrlBreak()
+    {
+        if (!_breakArmed)
+        {
+            return false;
+        }
+        _breakArmed = false;
+        return true;
+    }
 
     private int _clickPumps;
 
@@ -730,7 +771,30 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             }
             Console.WriteLine($"tkey {_tickKeys.Length} key(s) at {_now} ms");
             _tickKeys = null;
-            _idleFrames = 2;
+            // a tkey, tclick or kbreak right after it counts its ticks from these keys (the original's from the read that takes them)
+            _idleFrames = NextCountsTicks() ? 0 : 2;
+            return;
+        }
+        if (_breakStep is not null)
+        {
+            if (_now < _breakAt)
+            {
+                return;
+            }
+            if (_breakStep.Length > 0)
+            {
+                _breakKey = KeyFor(_breakStep);
+                _keys.Enqueue(_breakKey);
+                Console.WriteLine($"kbreak {_breakStep} pressed at {_now} ms");
+            }
+            else
+            {
+                _keys.Clear();
+                _breakArmed = true;
+                Console.WriteLine($"kbreak at {_now} ms");
+            }
+            _breakStep = null;
+            _idleFrames = NextCountsTicks() ? 0 : 2;
             return;
         }
         if (_idleFrames > 0)
@@ -759,7 +823,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 // the battle takes it in this pass: the count of still: starts again (orig_side.py: a key ends the battle's pause)
                 _stillPasses = 0;
                 // a tkey or tclick after it counts its ticks from this key (the original's from the read that takes it): taken at the next pump
-                _idleFrames = _steps.TryPeek(out var next) && (next.StartsWith("tkey:", StringComparison.Ordinal) || next.StartsWith("tclick:", StringComparison.Ordinal)) ? 0 : 2;
+                _idleFrames = NextCountsTicks() ? 0 : 2;
                 break;
             case "click":
                 var (x, y) = Point(value);
@@ -807,6 +871,11 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 var (ticks, names) = (value.Split(':', 2)[0], value.Split(':', 2)[1]);
                 _tickKeysAt = _now + (long)Math.Round(int.Parse(ticks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
                 _tickKeys = names.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(KeyFor).ToArray();
+                break;
+            case "kbreak":
+                var (breakTicks, breakKey) = (value.Split(':', 2)[0], value.Contains(':') ? value.Split(':', 2)[1] : "");
+                _breakAt = _now + (long)Math.Round(int.Parse(breakTicks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
+                _breakStep = breakKey;
                 break;
             case "tclick":
                 var (clickTicks, clickAt) = (value.Split(':', 2)[0], value.Split(':', 2)[1].Split(','));

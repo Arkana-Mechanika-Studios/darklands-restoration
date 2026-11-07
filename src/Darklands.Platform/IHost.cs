@@ -66,6 +66,13 @@ public interface IInput
         return false;
     }
 
+    /// <summary>
+    /// True once for each Ctrl-Break (Ctrl+Pause) since the last call, asked at the game's looks and reads of the keyboard: the host has
+    /// emptied its key buffer, as the BIOS does; the game then finds the key word 0000h and its Ctrl-Break flag set. Hosts without
+    /// one say no.
+    /// </summary>
+    bool TakeCtrlBreak() => false;
+
     /// <summary>Puts the mouse pointer at a screen pixel (the mouse driver's function 4, as the game's cursor keys do); hosts that cannot move it ignore it.</summary>
     void MovePointer(int x, int y)
     {

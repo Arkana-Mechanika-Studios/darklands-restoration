@@ -1041,6 +1041,12 @@ def main():
     if tick_mouse.uses(steps):
         entries += ("tick_mouse",)
         orig_side.Session = tick_mouse.session_class(orig_side.Session)
+    # a script with kbreak steps (Ctrl-Break as the BIOS delivers it, ctrl_break.py): its Session wraps the one above, hashed with the
+    # original side (opt-in: every other recording keeps its key)
+    import ctrl_break
+    if ctrl_break.uses(steps):
+        entries += ("ctrl_break",)
+        orig_side.Session = ctrl_break.session_class(orig_side.Session)
     if a.timer_marks:
         # opt-in: timer_marks.py is hashed with the original side and the flag is a part of the key only when given, so every other
         # recording keeps its key
