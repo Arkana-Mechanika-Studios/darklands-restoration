@@ -22,10 +22,10 @@ items there. Where it stands:
 * a divergence found later is fixed with the same tools, and registered with its reason.
 
 It is not a proof that every branch of the original has run: counted over every function the C#
-implements, about 82.4% of the branch outcomes have run in a comparison where the C# agrees with the original, a further
+implements, about 82.5% of the branch outcomes have run in a comparison where the C# agrees with the original, a further
 4.7% are proven unreachable in play (`unreachable.csv`), and the rest is listed (`branches-missed.csv` for the
 functions the oracles enter). The best-covered areas
-are the rules (87%), the overland map (84%) and, counted together, the battles, the battlefield generators and the screens (84%);
+are the rules (88%), the overland map (87%) and, counted together, the battles, the battlefield generators and the screens (84%);
 the card scripts are at 81%, and the least covered are the card engine (73%) and the resident code (68%) (see below). In the card scripts, the open branches lie behind particular quest
 stages, items and location facts; reaching them with start states made for each card continues
 after 1.0.
@@ -165,35 +165,32 @@ new cases or listed in `unreachable.csv` with a justification.
 | scope | blocks | branch outcomes |
 |---|---|---|
 | the 479 functions of the unit corpora, before their gaps were worked on (`branches-summary-before.json`) | 88.6% | 81.2% |
-| the 8,494 functions the oracles enter | 90.1% (52,433 / 58,163) | 82.5% (36,081 / 43,718) |
-| **every function the C# implements (9,281)** | | **82.4% (35,255 / 42,788)** |
-| the same, exercised or proven unreachable (`unreachable.csv`, 2,019 outcomes not exercised = 4.7%) | | 87.1% (37,274 / 42,788) |
+| the 8,494 functions the oracles enter | 90.3% (52,492 / 58,163) | 82.7% (36,142 / 43,718) |
+| **every function the C# implements (9,281)** | | **82.5% (35,316 / 42,788)** |
+| the same, exercised or proven unreachable (`unreachable.csv`, 2,025 outcomes not exercised = 4.7%) | | 87.3% (37,341 / 42,788) |
 
 The third line is the whole-program figure: the functions no oracle enters count with all their
 branch outcomes, decoded from the EXE (`tools/faithfulness/structure_exe.py`). The two decoders
-differ slightly on the resident code, hence the two exercised counts differ. These are the figures of the release-candidate recount of 2026-11-05 (below: only card runs the C# agrees on count, the remnant of batch 36 is rerun exactly, the live pass's coverage replaces the earlier session and fight sources). The area table further down is the count after the first release-candidate coverage round and stays as counted then: the recount could not assign the battles, the battlefield generators and the screens to their areas (counted together, 18,707 of 22,274 outcomes, 84.0%); the other areas of the recount are the rules 2,262 / 2,584 (87.5%), the overland map 827 / 982 (84.2%), the card scripts 11,834 / 14,614 (81.0%), the card engine 499 / 686 (72.7%) and the resident code 1,126 / 1,648 (68.3%). Before the recount, the figures were those of the release-candidate coverage rounds of 2026-11-02/03 (below), on top of the coverage restore of 2026-11-02: the recorded coverage of the earlier batches was lost on 2026-10-30, the regenerated corpora gave 32,524, and the restore's rounds brought it back above batch 24's 35,213. The whole-program line and the areas are the count after the first of the two rounds; the second round added 9 outcomes to the second line (36,326 to 36,335) and was not counted by area. Batch 34 (2026-11-04) added 101 outcomes and 69 blocks to the second line (36,335 to 36,436, 52,996 to 53,065), not counted by area: travel map sessions from land cells at the map's edges, weak alchemists' brews, and direct calls of the card text layout and the party panel's bars compared pixel by pixel. By area (in brackets the change against batch 24):
+differ slightly on the resident code, hence the two exercised counts differ. These are the figures of the recount of 2026-11-07, made as the release-candidate recount of 2026-11-05 (below: only card runs the C# agrees on count, the remnant of batch 36 is rerun exactly, the live pass's coverage replaces the earlier session and fight sources; the sources of that recount are read again as they were, nothing of the expensive corpora is rerun) with the coverage of the live runs recorded since: 1,084 sources (the sessions and fights that agreed live with coverage in the rounds of 2026-11-05 to 07: the full live pass of the saintbox round, 863 sessions and 37 fights, on top of the 2026-11-05 pass; the 145 of the 164 new recordings that record coverage, among them restart, restmouse, northpage, the 86 travel-map sessions of travscripts, the two fortress sessions of lugum, evtable and ctrlbreak; the other 19 recordings have no live run with coverage on record), and the rows added to `unreachable.csv` since (2,019 to 2,025 outcomes). It gives 36,142 of 43,718 outcomes (82.7%) in the functions the oracles enter, against 36,081 (82.5%) on 2026-11-05 (+61), 52,492 of 58,163 blocks (+59) and, over the whole program, 35,316 of 42,788 (82.5%, +61), 87.3% with the proven unreachable (+0.2 points). R030+0x0C44's open blocks 0F65, 12E7 and the paging blocks 11D8 .. now count as exercised. The area table below is the count of the same recount; the battles, the battlefield generators and the screens cannot be told apart in it (the assignment of the records of the 'other' group to them is ambiguous and is counted together). Before the 2026-11-05 recount, the figures were those of the release-candidate coverage rounds of 2026-11-02/03 (below), on top of the coverage restore of 2026-11-02: the recorded coverage of the earlier batches was lost on 2026-10-30, the regenerated corpora gave 32,524, and the restore's rounds brought it back above batch 24's 35,213. The whole-program line and the areas are the count after the first of the two rounds; the second round added 9 outcomes to the second line (36,326 to 36,335) and was not counted by area. Batch 34 (2026-11-04) added 101 outcomes and 69 blocks to the second line (36,335 to 36,436, 52,996 to 53,065), not counted by area: travel map sessions from land cells at the map's edges, weak alchemists' brews, and direct calls of the card text layout and the party panel's bars compared pixel by pixel. By area (in brackets the change against batch 24):
 
-| area | functions run / implemented | branch outcomes exercised / total | |
-|---|---:|---:|---:|
-| battlefield generators | 222 / 226 | 7,014 / 8,524 | 82% |
-| rules | 336 / 358 | 2,264 / 2,590 (-13) | 87% |
-| battles (tactical combat) | 287 / 314 | 6,629 / 7,516 (+21) | 88% |
-| travel (overland map) | 23 / 24 | 783 / 982 (+10) | 80% |
-| screens (inventory, barter, creation ...) | 197 / 202 | 4,947 / 6,072 (+14) | 81% |
-| resident code | 138 / 160 | 1,077 / 1,648 (+13) | 65% |
-| card engine | 35 / 36 | 495 / 686 (+22) | 72% |
-| card scripts | 6,963 / 7,949 | 12,216 / 14,616 (+220) | 84% |
-| other | 10 / 12 | 75 / 162 | 46% |
+| area | functions run / implemented | branch outcomes exercised / total | | change against 2026-11-05 |
+|---|---:|---:|---:|---:|
+| battles, battlefield generators, screens and other records (not told apart) | 717 / 754 | 18,724 / 22,274 | 84% | +17 |
+| rules | 336 / 358 | 2,272 / 2,584 | 88% | +10 |
+| travel (overland map) | 23 / 24 | 856 / 982 | 87% | +29 |
+| card scripts | 6,801 / 7,949 | 11,837 / 14,614 | 81% | +3 |
+| card engine | 35 / 36 | 500 / 686 | 73% | +1 |
+| resident code | 138 / 160 | 1,127 / 1,648 | 68% | +1 |
+| every function the C# implements | 8,050 / 9,281 | 35,316 / 42,788 | 82.5% | +61 |
 
-The rules (-13, 0.5% of the area) are the one area below batch 24: they lost direct-call job sets that the retention rules had removed
-before the wipe; their family was rerun until a round gave fewer than 5 new outcomes per CPU hour, the restore's stop rule, so it stays
-as it is. The battles, the overland map and the screens, below batch 24 after the restore, are above it after the release-candidate
-rounds (sessions that put the marker at the view's edges and the map's foot, aimed at the open groups of R030+0x0C44; direct calls of the
-battle's order and panel functions with their panel state; play-style screen sessions).
+The overland map gains most (+29): the sessions of the restart, restmouse, northpage and travscripts rounds (the party's rest button and key
+on the map, the page of the north map, the travel scripts' clicks and keys) reach the open groups of R030+0x0C44. The area
+figures of the earlier tables of this section (batch 24 and the coverage rounds of 2026-11-02/03) were counted with other rules for the card runs and
+are not comparable; the counts above are those of the recount.
 
 A second figure, kept apart from the first and never counted as exercised: the outcomes exercised
 or justified as unreachable in play (a dormant arm, a compiled form, read from the original's code
-and listed in `unreachable.csv`; 2,019 outcomes not exercised in the release-candidate count, 4.7% of the whole program, 87.1% (37,274 / 42,788) with the exercised. Before batch 36's recount there were 2,009: 366 before batch 23, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch, 747 added in batch 23 from 1,367 rows, less 2 whose rows batch 29 took out of `unreachable.csv` (R113+0x1A12/0x1CA4, below) and 3 of the card handler R052+0x1B46, whose row the restore took out (below), and 901 added in the coverage restore from 1,560 rows (below)): 87.6% (37,509 / 42,796), against 84.9% (36,326 / 42,794) in batch 24. Most of what is open is reachable in
+and listed in `unreachable.csv`; 2,025 outcomes not exercised in the recount of 2026-11-07, 4.7% of the whole program, 87.3% (37,341 / 42,788) with the exercised; 2,019 in the recount of 2026-11-05, 87.1% (37,274 / 42,788). Before batch 36's recount there were 2,009: 366 before batch 23, 37 of them added in batch 14 from the code's dormant markers, each read against the original's branch, 747 added in batch 23 from 1,367 rows, less 2 whose rows batch 29 took out of `unreachable.csv` (R113+0x1A12/0x1CA4, below) and 3 of the card handler R052+0x1B46, whose row the restore took out (below), and 901 added in the coverage restore from 1,560 rows (below)): 87.6% (37,509 / 42,796), against 84.9% (36,326 / 42,794) in batch 24. Most of what is open is reachable in
 play and not yet driven by an oracle (in the resident code: the party panel, the intro).
 
 The whole-game sessions and the battle oracle record the original's coverage where they agree with
