@@ -352,6 +352,12 @@ public sealed class GameUi
     public bool PointerVisible { get; set; } = true;
 
     /// <summary>
+    /// False while the host's pointer is outside the game's window (IInput.PointerInWindow): the drawn pointers are left out of the picture.
+    /// A host enhancement: the mouse state the game reads is not touched.
+    /// </summary>
+    public bool PointerInWindow => _host.Input.PointerInWindow;
+
+    /// <summary>
     /// The hot spot of the pointer's shape (DS:6EF6 / DS:6EF8, pointer-shape-set's first two arguments): the gauntlet is drawn at the mouse
     /// less it. (0, 0) from start-up; the map sets (5, 0) and the screens below put (0, 0) back.
     /// </summary>
@@ -598,7 +604,8 @@ public sealed class GameUi
         source.Palette.CopyTo(_shown.Palette, 0);
         ApplyCycles(_shown.Palette);
         source.CopyOwnershipTo(_shown);
-        if (PointerVisible)
+        // host enhancement (IInput.PointerInWindow): no pointer while the host's pointer is outside the window; the shown copy only
+        if (PointerVisible && PointerInWindow)
         {
             // orig: pointer-shape-set(0, 0, mouse-cursor-default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left
             //   corner; the driver draws the shape at the mouse less the hot spot (PointerHotSpot)

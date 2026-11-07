@@ -77,6 +77,14 @@ public interface IInput
     void MovePointer(int x, int y)
     {
     }
+
+    /// <summary>
+    /// False while the host's own pointer is outside the game's window: the game's drawn pointer (the gauntlet, the battle's hand) is then
+    /// left out of the picture shown, and comes back at the mouse when it re-enters. Only what is shown changes, never the game: the
+    /// mouse position and buttons stay as they were. Hosts without a window (Host.Headless, the oracle tools) say true.
+    /// </summary>
+    // Host enhancement (not the original's: under DOS the mouse cannot leave the screen; DOSBox keeps drawing the pointer where it was)
+    bool PointerInWindow => true;
 }
 
 [Flags]

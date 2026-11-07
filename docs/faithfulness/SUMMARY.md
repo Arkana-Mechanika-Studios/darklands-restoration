@@ -542,8 +542,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 232 original bugs registered
-(51 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 355 registered divergences,
+markers in the code, each with its reason and original coordinate: 233 original bugs registered
+(52 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 356 registered divergences,
 873 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
 measured as host timing and registered, D-d22f94). Every core-logic divergence has a
@@ -681,6 +681,27 @@ fixed, 42 jobs redone, all agree. One was an old two-argument job of R039+0x0000
 location) differ and are open leads, not triaged (probably the documented uninitialised sort and item of region kinds 1, 2, 9 and 11);
 there is no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the other corpora unchanged: 630 rules, 1,673 travel,
 2,448 map entry); the contents of the events a call creates are now compared in all of them.
+
+Round rosterhs (2026-11-07, branch rosterhs): two items of the inn roster and the SDL host. (1) Heraldry (R038+0x0EB7) and Select
+Character Image (R038+0x1083) on a row the list did not fill, proven on the original: the list (R038+0x23EC) writes DS:8D06 only for
+the rows it lists but sets the length DS:E7DC to the number of records (R038+0x259D), so the arrows reach empty rows whose entry is
+what an earlier list in the run left, or the data segment's 0 before any. New vis10 job roster-stale (DKSAVE0 as it is: six records,
+five listed at the Gasthaus; Gunther retires, A on row 0 makes Gretchen, record 0, join slot 3, Up wraps to the empty row 5, then H
+and S), read-only hooks on both keys (row 5, row table [0, 1, 2, 3, 4, 0], slot ids [4, 3, 2, 0, -1]): H finds slot 3 and Gretchen's
+shield letter goes A -> B, S her figure code F01 -> F60, both kept in the saved game; the 5 shots of the original and the Faithful C#
+agree at 0 px. In play: whenever the first character is in the party and some character is left at another inn, H / S on the empty
+rows below the list change the first character's shield and figure. By the data-safety policy `FixRosterStaleRow` (B-1d4d7c, in
+`DataSafe`): nobody's on a row the last list did not show; Faithful keeps the original. The fixed preview (FixRosterFigurePreview) took
+the same stale entry and showed its member's figure on an empty row: it now uses listed rows only (InnRoster.PreviewSlotOfRow).
+Pictures for the user: scratch/roster/stale-*.png (original against the DataSafe C#). (2) The user's decision: Host.Sdl leaves the
+game's drawn pointer (the gauntlet, the battle's hand) out of the picture while the mouse is outside the window
+(SDL_WINDOWEVENT_LEAVE; back at ENTER, where the mouse came in, or at a motion inside; a captured drag outside keeps it hidden):
+IInput.PointerInWindow (true for Host.Headless, the oracle tools and every test host), read by GameUi.Present and
+BattleScreen.DrawPointer; the mouse state the game reads is not touched, so nothing in the game or its number stream depends on it.
+Host divergence D-b2db1c (class host), docs/SETTINGS.md "Mouse (SDL host)". Tests: InnRosterTests (both ways), MouseMappingTests
+(a real SDL window, pushed window and motion events), PointerHotSpotTests. Golden card traces written again (state digests only: the
+new flag). Checks: dotnet test (whole solution, all pass: Core 422, Host.Sdl 53, Cards 613, Battles 459, Architecture 8, ...);
+registers 356 divergences, --check clean; rerun_all --replay-only (4 workers, every fight and session): 1000 of 1000 agree (1,095 s). Notes: local/rosterhs-2026-11-07.md.
 
 Round rostercol (2026-11-07, branch rostercol): two leads of the inn roster. (1) The colour keys act on the slot whose id equals the
 highlighted ROW number (asm R038+0x127F / 0x1807 / 0x1E87 against H's and S's DS:8D06[row]), proven on the original: the synthetic

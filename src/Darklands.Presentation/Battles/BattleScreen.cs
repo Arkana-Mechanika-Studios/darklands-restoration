@@ -2571,16 +2571,19 @@ public sealed class BattleScreen : ITacticalView
         //   tester-einfo-gate: the glove at the mouse in both shots); tests: BattleUiTests
         var shape = PointerShape(_ui.Mouse.X, _ui.Mouse.Y);
         var at = (_ui.Mouse.X, _ui.Mouse.Y);
+        var inWindow = _ui.PointerInWindow;
         DrawPointer(canvas, shape);
         _ui.Present();
         // orig: R021+0x03AF matched C: `while (!root 047C:073D() && !(mouse-button-state & 1));` (no menu bar), root 0000:1384, then R021+0x03BB
         // `while (mouse-button-state & 1);`; tests: BattleUiTests
         while (!_ui.KeyWaiting && !_ui.Mouse.Left)
         {
-            if ((_ui.Mouse.X, _ui.Mouse.Y) != at)
+            // (the host's pointer leaving or entering the window also redraws: host enhancement IInput.PointerInWindow)
+            if ((_ui.Mouse.X, _ui.Mouse.Y) != at || _ui.PointerInWindow != inWindow)
             {
                 ErasePointer();
                 at = (_ui.Mouse.X, _ui.Mouse.Y);
+                inWindow = _ui.PointerInWindow;
                 DrawPointer(canvas, shape);
             }
             _ui.Present();
@@ -3849,6 +3852,12 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>Draws a pointer shape at the mouse (the driver draws the sprite at the mouse less the hot spot), keeping what it covers.</summary>
     private void DrawPointer(Canvas canvas, (int Image, int HotX, int HotY) shape)
     {
+        if (!_ui.PointerInWindow)
+        {
+            // host enhancement (IInput.PointerInWindow): the host's pointer is outside the window, no hand drawn (nothing to take off later)
+            _underPointer = null;
+            return;
+        }
         int x = _ui.Mouse.X - shape.HotX, y = _ui.Mouse.Y - shape.HotY;
         var sprite = _assets.Images[shape.Image];
         _underPointer = sprite is null ? null : canvas.Save(x, y, sprite.Width, sprite.Height);
