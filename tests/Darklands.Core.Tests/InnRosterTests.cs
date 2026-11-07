@@ -138,6 +138,38 @@ public sealed class InnRosterTests
         Assert.Equal(2, InnRoster.CycleColour(s, menu, 1));     // ... colours the slot holding entry 2
     }
 
+    /// <summary>
+    /// The colour keys on rows whose number is not their character's entry (a record before a member not listed): the original
+    /// changes the colours of the slot holding the row NUMBER (another member, or nobody; vis10 roster-colour); fixed (DataSafe,
+    /// FixRosterColourRow): the row's own character, nobody on a row the list did not show.
+    /// </summary>
+    [Theory]
+    [InlineData(false, 2, -1, 3)]
+    [InlineData(true, 3, 2, -1)]
+    public void TheColourKeysChangeTheSlotOfTheRowNumberUnlessFixed(bool fix, int onRow2, int onRow1, int onRow3)
+    {
+        var s = WithRoster();
+        s.Behaviour = fix ? OriginalBehaviour.DataSafe : OriginalBehaviour.Faithful;
+        PartyRules.RemoveFromParty(s, 1);
+        s.CurrentLocation = 8;
+        var menu = new PartyMenuState();
+        InnRoster.List(s, menu, 0);                             // rows: entries 0, 2, 3; ids [0, -1, 2, 3]; 4 records
+        Assert.Equal(3, menu.Listed);
+        foreach (var (row, expected) in new[] { (2, onRow2), (1, onRow1), (3, onRow3) })
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                Array.Fill(s.Party.Slot(i).ImagePalette, (byte)0xAA);
+            }
+            menu.Selected = row;
+            Assert.Equal(expected, InnRoster.CycleColour(s, menu, 1));
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.Equal(i == expected, s.Party.Slot(i).ImagePalette.Any(b => b != 0xAA));
+            }
+        }
+    }
+
     [Fact]
     public void TheArrowsWrapOnTheNumberOfRecords()
     {

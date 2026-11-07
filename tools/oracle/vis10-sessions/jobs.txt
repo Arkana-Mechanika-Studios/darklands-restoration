@@ -36,3 +36,4 @@ V-sheetptr|visuals-sheet-pointer.steps|DKSAVE0.SAV|list1=visuals-sheet-pointer-l
 V-infoptr|visuals-partyinfo-pointer.steps|DKSAVE0.SAV|card=visuals-partyinfo-pointer-card,info=visuals-partyinfo-pointer-info
 V-fortsaint|visuals-fortress-saint.steps|DKSAVE2-fortress297.sav|shown=visuals-fortress-saint-lines,box=visuals-fortress-saint-box
 roster-figure|roster-figure.steps|DKSAVE0.SAV|u2=roster-figure-up-left-uncleared,d3=roster-figure-down-below-menu,c3=roster-figure-click-no-redraw
+roster-colour|roster-colour.steps|synth/DKSAVE0-unlist0.sav|k1=roster-colour-key1-on-ebhard-changes-hans,k1c=roster-colour-key1-on-albrecht-changes-ebhard

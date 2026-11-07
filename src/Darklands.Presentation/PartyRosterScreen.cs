@@ -395,7 +395,7 @@ public sealed class PartyRosterScreen
         return ResultOfDriver;
     }
 
-    /// <summary>1, 2, 3: the next colours of a part of the figure of the slot holding the ROW's number; no button.</summary>
+    /// <summary>1, 2, 3: the next colours of a part of the figure of the slot holding the ROW's number (fixed: the row's character's, InnRoster.CycleColour); no button.</summary>
     // orig: R038+0x02F8 keys 0x231/0x4F31, 0x332/0x5032, 0x433/0x5133: with DS:E7DC > 0; InnRoster.CycleColour, the palette set; no slot: AX is
     // DS:E7DA (the search's last load)
     // C: the shared colours are the current palette's colours 235..242 (DS:E753 is the current palette's colour 235): read from the screen here.
