@@ -423,6 +423,41 @@ public sealed class ScreenDrawingLeadsTests
         Assert.Equal(!clean, untouched);
     }
 
+    // orig: card 0x16B (R134+0x1F26) calls card-option-lines(0) with no card-choice-menu: the text waits for the key (press-to-continue
+    // R043+0x32B6 at R043+0x10D0), then the picture fades (R043+0x3838) and its colours 0x20..0x7F turn grey, before the battle (vis10
+    // session D-99119d: the original takes the Enter in that wait and its palette changes over six shots after it)
+    [Fact]
+    public void TheEmptyPrisonCellWaitsForTheKeyThenFadesItsPicture()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        var host = new ShotHost();
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        Darklands.Cards.CardContext? context = null;
+        var screen = new CardScreen(ui, () => context!, new PartyPanel(ui.Assets));
+        context = new Darklands.Cards.CardContext(state, world, screen);
+        var keysRead = 0;
+        uint[]? atTheKey = null;
+        host.Read = _ =>
+        {
+            keysRead++;
+            atTheKey ??= [.. ui.Canvas.Screen.Palette];
+        };
+        host.Keys.Enqueue(ShotHost.NoKey);
+        host.Keys.Enqueue(Keys.Enter);
+        Assert.Equal(-2, new Darklands.Cards.Scripts.EmptyPrisonCell().Run(context));
+        Assert.Equal(1, keysRead);
+        Assert.Equal(1, context.BattleMode);
+        Assert.NotNull(atTheKey);
+        Assert.NotEqual(atTheKey, ui.Canvas.Screen.Palette);
+        Assert.DoesNotContain(ui.Canvas.Screen.Pixels, p => p is >= 0x20 and < 0x80);
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

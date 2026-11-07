@@ -112,6 +112,15 @@ public interface ICardScreen
     /// <summary>Shows a text block and waits for the player to continue.</summary>
     void Text(int block, TextFrame frame = TextFrame.OnPicture);
 
+    /// <summary>
+    /// Shows a text block as an option list with no menu after it: drawn, waited for like a text, then the picture fades as it does
+    /// before a choice.
+    /// </summary>
+    // orig: card-option-lines R043+0x0F2A alone (key-buffer-clear, then R043+0x0F54 in mode 1: the block drawn, press-to-continue
+    //   R043+0x32B6 at R043+0x10D0, then the fade R043+0x3838 and the grey remap); card-choice-menu is not called
+    // C: a screen that does not fade (the scripted test screens) shows it as a text.
+    void OptionLines(int block) => Text(block);
+
     /// <summary>Shows a text block with option lines and returns the option chosen.</summary>
     int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint = null);
 

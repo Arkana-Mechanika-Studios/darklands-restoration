@@ -365,6 +365,15 @@ public sealed class GameUi
     public (int X, int Y) PointerHotSpot { get; set; }
 
     /// <summary>
+    /// The pointer's shape when a screen set one of its own (pointer-shape-set's third argument), null: the start-up gauntlet. The battle
+    /// sets its current shape for the screens a hot key opens over it, where the driver's pointer shows with the battle's last shape.
+    /// </summary>
+    // orig: pointer-shape-set root 047C:124F stores the shape the driver draws; the battle's pass sets its own (R014+0x33A2) and the
+    //   hot keys' screens over a battle set none (R037+0x2ACE: pointer-hide, the "Saving Game" box, pointer-show at R037+0x2B97 while
+    //   the file is written)
+    public Content.Formats.Battles.RowRunSprite? PointerShape { get; set; }
+
+    /// <summary>
     /// An interface convenience the original does not have (off unless a host turns it on), made of player commands (docs/COMMANDS.md):
     /// at a card menu, with the pointer off the lines, Up / Down put the pointer onto the line they name (<see cref="PointAt"/>), and the
     /// digits 1..9 choose the line of that number as the mouse does (<see cref="ChooseLine"/>; while an item or saint box is up, the
@@ -487,7 +496,7 @@ public sealed class GameUi
         {
             // orig: pointer-shape-set(0, 0, mouse-cursor-default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left
             //   corner; the driver draws the shape at the mouse less the hot spot (PointerHotSpot)
-            SpriteDrawing.Draw(new Canvas(_shown), Assets.CommonSprites.Pointer, Mouse.X - PointerHotSpot.X, Mouse.Y - PointerHotSpot.Y);
+            SpriteDrawing.Draw(new Canvas(_shown), PointerShape ?? Assets.CommonSprites.Pointer, Mouse.X - PointerHotSpot.X, Mouse.Y - PointerHotSpot.Y);
         }
         _host.Video.Present(_shown);
     }

@@ -4,7 +4,8 @@ usage:
   python -I -B vis10.py run <script.steps> <out folder> [--save <DKSAVEn.SAV>] [--headless <exe>]   one lockstep session, both screens dumped
   python -I -B vis10.py compose <out folder> <name> <label-original> <label-restoration> <result stem> [--scale 3]
         <name>: a shot name (one image) or a series name (the frames <name>_00 ... as an animated GIF)
-  python -I -B vis10.py jobs [<id> ...]      the jobs of vis10-sessions/jobs.txt (runs, then composes into scratch/vis10)
+  python -I -B vis10.py jobs [<id> ...] [--keep]   the jobs of vis10-sessions/jobs.txt (runs, then composes into scratch/vis10); each
+                                             job runs again (its run folder replaced); --keep composes from a run folder already there
   python -I -B vis10.py index [<notes.json>]   scratch/vis10/index.html from the pictures there and a {file or id: remark} table
   python -I -B vis10.py wait-commit                                                            blocks until >= 4 GB of commit is free
 
@@ -580,14 +581,19 @@ def find_save(name: str) -> str | None:
     raise SystemExit("saved game %s not found" % name)
 
 
-def jobs(ids: list[str], headless: str, results: Path):
-    """Runs the jobs of vis10-sessions/jobs.txt (one after the other: one oracle worker) and composes their pictures into results."""
+def jobs(ids: list[str], headless: str, results: Path, keep: bool = False):
+    """Runs the jobs of vis10-sessions/jobs.txt (one after the other: one oracle worker) and composes their pictures into results.
+
+    Each job runs again unless keep: a run folder left by an earlier tree would give pictures of that tree's C# and steps (the
+    pictures of round visuals 2026-11-06 were composed from runs of 2026-10-28)."""
     import subprocess
     table = [l.strip().split("|") for l in (HERE / "vis10-sessions" / "jobs.txt").read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")]
     for jid, steps, save, composes in table:
         if ids and jid not in ids:
             continue
         out = results / "run" / jid
+        if not keep:
+            shutil_rm(out)
         if not (out / "report.json").is_file():
             wait_commit()
             cmd = [sys.executable, "-I", "-B", str(HERE / "vis10.py"), "run", str(HERE / "vis10-sessions" / steps), str(out), "--headless", headless]
@@ -605,11 +611,11 @@ def jobs(ids: list[str], headless: str, results: Path):
 
 ROWS = [
     ("D-ecc6f5", "Sneaking card keeps the previous screen",
-     "When the sneaking card opens, the original leaves the previous screen (picture and texts) on show where the restoration draws the card's own picture and text at once."),
+     "When the sneaking card opens after a load, both games leave the previous screen (the load screen's picture, the card frame empty, no party column) on show: the card only names itself. With the clean drawing the restoration draws the card at once."),
     ("D-d4f515", "Before the city walls keeps the previous screen",
      "When the 'before the city walls' card opens, the original leaves the previous screen on show where the restoration draws the card at once."),
     ("D-99119d", "Empty prison cell text",
-     "In the empty prison cell the original draws the text without waiting and goes on to the battle, where the restoration shows the text and waits for a key."),
+     "In the empty prison cell both games show the text, wait for a key and then fade the picture (as before a choice) before the battle; the synthetic save has no fortress files, so the original's battlefield is black there (a real save at the fortress agrees: visuals-fortress-cell)."),
     ("D-af566f", "Barter screen after a character sheet",
      "Back on the barter screen after a character sheet, the original redraws the picture without setting its colours again; the restoration sets the picture's own colours."),
     ("D-56a675", "Loot screen palette",
@@ -619,11 +625,11 @@ ROWS = [
     ("D-5de66d", "Card picture shown at the first text",
      "When a card opens, the original keeps the old screen until the card's first text and then shows picture and text together; the restoration shows the new picture at once."),
     ("D-b0c9a6", "Character creation: new member's row",
-     "In character creation a new member's row in the party column shows the stock shield picture (file SHIELDA.PIC) in the original until H is pressed; the restoration shows the shield of the member's own record."),
+     "In character creation a new member's row in the party column shows the stock shield picture (file SHIELDA.PIC) until H is pressed, with its frame, and only the filled slot is drawn; the figure's colours are the inn's starting colours. Both games alike (0 pixels differ since 2026-11-07's run)."),
     ("D-751050", "Load screen: button after 'no'",
      "On the load screen, after Alt-Q is answered 'no' and a button is pressed again, the original draws no pressed-button picture and the restoration still does."),
     ("D-b797f7", "Saving Game box in a battle",
-     "The 'Saving Game' box of a save made in a battle is drawn in colour 9 by the original; the restoration draws it in the box's own colour."),
+     "The 'Saving Game' box of a save made in a battle: white box, words in colour 9, the battle's pointer shown while the file is written, in both. The legs of the figures behind the railing differ: the original redraws the railing over them (D-420a1f, open)."),
 ]
 
 
@@ -668,7 +674,7 @@ def main():
         run(a[1], a[2], save, headless)
     elif a[0] == "jobs":
         headless = a[a.index("--headless") + 1] if "--headless" in a else str(HERE.parent.parent / "src" / "Darklands.Host.Headless" / "bin" / "Release" / "net10.0" / "Darklands.Host.Headless.exe")
-        jobs([x for x in a[1:] if not x.startswith("--") and x != headless], headless, ROOT / "scratch" / "vis10")
+        jobs([x for x in a[1:] if not x.startswith("--") and x != headless], headless, ROOT / "scratch" / "vis10", keep="--keep" in a)
     elif a[0] == "index":
         import json
         notes = json.loads(Path(a[1]).read_text(encoding="utf-8")) if len(a) > 1 else {}

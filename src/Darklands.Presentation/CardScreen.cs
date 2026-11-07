@@ -182,6 +182,20 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: card-option-lines (draw, press-to-continue, fade), then whatever the card script calls (R061+0x2278: pass-hours(1)), then card-choice-menu
     public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Action? afterOptions)
     {
+        var areas = DrawOptionLines(block, options);
+        afterOptions?.Invoke();
+        ui.FlushKeys();
+        return Select(areas, hint, popupHint);
+    }
+
+    // orig: card-option-lines R043+0x0F2A with no card-choice-menu after it (card 0x16B, R134+0x1F26): the block drawn, press-to-continue
+    //   (R043+0x10D0), the fade and the grey remap; vis10 session D-99119d: after the Enter the original's picture fades over 6 shots
+    //   (183, 96, 165, 109, 135 and 44 palette entries changing) before the battle screen
+    public void OptionLines(int block) => DrawOptionLines(block, []);
+
+    // orig: card-option-lines R043+0x0F2A: key-buffer-clear (root 0000:1384), DS:E959 = idx, R043+0x0F54(card-text-window, idx, 1, 2)
+    private List<OptionArea> DrawOptionLines(int block, IReadOnlyList<OptionState> options)
+    {
         ui.FlushKeys();
         PrepareWindow(TextFrame.OnPicture);
         _block = block;
@@ -191,9 +205,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         WaitToContinue();
         GreyThePicture(areas, animate: true);
         _mode = Mode.OptionsFaded;
-        afterOptions?.Invoke();
-        ui.FlushKeys();
-        return Select(areas, hint, popupHint);
+        return areas;
     }
 
     // orig: R043+0x29D0 (1F40): the message goes into the side window next to member `who` (-2 = the whole column): text centred in a 55-pixel column at x 3, y + 4 (y = 0x51 for the whole column, who * 0x28 + 1 for a member), then it waits for a key or the left button and eats the key
