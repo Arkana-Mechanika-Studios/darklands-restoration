@@ -162,6 +162,19 @@ The launcher is its own project, `Darklands.Launcher`, which references `Darklan
 pixels; the SDL host gives it the window (`SdlLauncherSurface`) and its services (`LauncherHost`). Another launcher fits
 in by implementing `ILauncher`.
 
+## Mouse (SDL host)
+
+The system's mouse pointer is hidden over the window: the game draws its own (the gauntlet, the battle's hand) at the game
+pixel under it, in any window size or fullscreen (`MouseMappingTests`). The game's pointer starts at the middle of the screen,
+where the original's mouse reset puts it, until the mouse first moves over the window. When the game moves the pointer
+itself (the cursor keys, a menu's default line) the system's pointer is moved with it.
+
+While the mouse is outside the window the game's pointer is not drawn, and it comes back where the mouse enters the window
+again (a host addition, not the original's: under DOS the mouse never leaves the screen). Only the picture changes: the game
+keeps reading the mouse where it last was over the window, so nothing in the game and none of its random numbers depend on
+it. With a button held the window still receives the mouse's moves outside it; the pointer stays hidden there too. The
+headless host and the oracle tools always draw the pointer.
+
 ## Developer console (SDL host)
 
 **F11** opens and closes it (Esc also closes it). F11 is free: the original reads the keyboard through

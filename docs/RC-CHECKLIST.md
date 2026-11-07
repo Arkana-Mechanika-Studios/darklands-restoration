@@ -15,14 +15,16 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (355
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (356
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
-* The eleven data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
+* The thirteen data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
   "The innkeeper has no room for more." with 63 stores or 128 entries), the save writer keeping empty party slots, a leaving
   member's record, the Dissolve Lock / Dissolve key using the right Eater-Water, and no ghost party member after a won argument at the
   Devil's Bridge, a refused load of a saved game cut short ("This saved game is damaged and cannot be loaded."), the inn's roster
   going on where the original ends with "pics\small.pic: No such file or directory" (an arrow onto a party member on the fifth row or later),
+  the inn roster's colour keys, Heraldry and Select Character Image changing only the highlighted row's own character (the
+  original can change another member's figure colours, shield or figure, also on an empty row),
   a saved game with two slots naming one record loading where the original ends with "pics\shield.pic: No such file or
   directory", and the travel map going on after its own Alt-Q was answered "no" (the original ends with "M - Buffer dealloc
   error" at the next Alt-Q, camp, portrait click or departure). The original may garble, crash or play on from garbage there.

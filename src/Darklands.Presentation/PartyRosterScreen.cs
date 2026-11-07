@@ -513,7 +513,7 @@ public sealed class PartyRosterScreen
             CopyBack(0x0C, 0xA4, width, height);
             _preview = null;
         }
-        if (_state.Party.Slot(Party.MaxMembers - 1).IsPresent || InnRoster.SlotOfRow(_state, Menu) is var slot && slot < 0)
+        if (_state.Party.Slot(Party.MaxMembers - 1).IsPresent || InnRoster.PreviewSlotOfRow(_state, Menu) is var slot && slot < 0)
         {
             return;
         }

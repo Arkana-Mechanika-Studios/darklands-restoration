@@ -59,7 +59,7 @@ public sealed class OriginalBehaviour
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
-        FixRosterFigurePreview = true,
+        FixRosterFigurePreview = true, FixRosterStaleRow = true,
     };
 
     /// <summary>
@@ -127,6 +127,17 @@ public sealed class OriginalBehaviour
     // orig: R038+0x02F8 keys 0x231 / 0x332 / 0x433 (R038+0x127F, 0x1807, 0x1E87: the five slots' ids compared with DS:E7DA itself); the
     //   part's bytes written into the slot's colours (segment DS:7ED2 + 0x33FC + 0x18 x slot); measured: vis10 roster-colour; data safety, data-damaging
     public bool FixRosterColourRow { get; set; }
+
+    /// <summary>
+    /// The inn's roster ("reform your party"): the highlight goes down to as many rows as the roster has characters, listed here or not,
+    /// and a row the list did not fill keeps the character an earlier list left there (the first character before any list): Heraldry
+    /// and Select Character Image on such an empty row change that character's shield or figure, which the saved game keeps, if the
+    /// character is in the party. Fixed: nobody's changes on a row without a character.
+    /// </summary>
+    // orig: R038+0x02F8 keys 0x2348 (R038+0x0EB7) and 0x1F53 (R038+0x1083): the five slots' ids compared with DS:8D06[DS:E7DA]; the list
+    //   R038+0x23EC writes DS:8D06 only for the rows it lists and sets DS:E7DC to the number of records (R038+0x259D); measured: vis10
+    //   roster-stale; data safety, data-damaging
+    public bool FixRosterStaleRow { get; set; }
 
     /// <summary>
     /// The inn's roster's figure preview shows the wrong figure in the wrong place: Up, Left and Right draw it at the bottom of the

@@ -39,3 +39,4 @@ roster-figure|roster-figure.steps|DKSAVE0.SAV|u2=roster-figure-up-left-uncleared
 leftovers-msg|leftovers-skill-message.steps|DKSAVE0.SAV|msg=leftovers-skill-message,msg2=leftovers-skill-message-after-enter
 leftovers-pause|leftovers-pause.steps|DKSAVE99.SAV|mappause=leftovers-pause-map,bpause=leftovers-pause-battle,bafter=leftovers-pause-battle-after
 roster-colour|roster-colour.steps|synth/DKSAVE0-unlist0.sav|k1=roster-colour-key1-on-ebhard-changes-hans,k1c=roster-colour-key1-on-albrecht-changes-ebhard
+roster-stale|roster-stale.steps|DKSAVE0.SAV|h5=roster-stale-heraldry-on-empty-row,s5=roster-stale-image-on-empty-row

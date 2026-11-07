@@ -67,8 +67,10 @@ public sealed class MouseMappingTests
             host.Pump();
         }
         // The real pointer moving over the shown window (or the window appearing under it) queues motion events of its own,
-        // and one landing after a pushed event would replace it: only the pushed events may reach the host.
+        // and one landing after a pushed event would replace it: only the pushed events may reach the host. Its window "mouse entered"
+        // events too: the host takes the real pointer's place then (SdlHost.PointerInWindow).
         SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
+        SdlNative.SDL_EventState(SdlNative.EventWindow, 0);
         host.Pump();
 
         // The picture, three times: the low byte of x, the high bit of x, then y; the green channel marks the picture.
@@ -177,10 +179,71 @@ public sealed class MouseMappingTests
         SdlNative.ConfigureLibrary(library);
         using var host = new SdlHost("mouse start test");
         Assert.Equal(new MouseState(160, 100, MouseButtons.None), host.Mouse);
-        // no motion events: the real pointer over the window would queue its own
+        // no motion or window events: the real pointer over the window would queue its own (entering: the host takes its place)
         SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
+        SdlNative.SDL_EventState(SdlNative.EventWindow, 0);
         host.Pump();
         Assert.Equal(new MouseState(160, 100, MouseButtons.None), host.Mouse);
+    }
+
+    /// <summary>
+    /// Host enhancement (the user's decision): from the window's "mouse left" event until the mouse is back over it (its "mouse entered"
+    /// event or a motion inside) the host says the pointer is outside, so the game leaves its drawn pointer out of the picture
+    /// (PointerHotSpotTests); the mouse state the game reads keeps its last position meanwhile. A motion outside the window (a button held
+    /// captures the mouse) keeps it hidden.
+    /// </summary>
+    [Fact]
+    public void TheGamesPointerIsHiddenWhileTheMouseIsOutsideTheWindow()
+    {
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        if (!File.Exists(library))
+        {
+            return;
+        }
+        SdlNative.ConfigureLibrary(library);
+        using var host = new SdlHost("mouse leave test");
+        for (var i = 0; i < 10; i++)
+        {
+            host.Pump();
+        }
+        Assert.True(host.PointerInWindow);
+        // only the pushed events: the real pointer would queue motion and enter / leave events of its own
+        SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
+        SdlNative.SDL_EventState(SdlNative.EventWindow, 0);
+        host.Pump();
+        var (ww, wh) = host.WindowSize;
+        Push(SdlNative.EventMouseMotion, ww / 2, wh / 2);
+        host.Pump();
+        var over = host.Mouse;
+        Assert.True(host.PointerInWindow);
+
+        PushWindow(SdlNative.WindowEventLeave);
+        host.Pump();
+        Assert.False(host.PointerInWindow);
+        Assert.Equal(over, host.Mouse);
+        // a motion outside the window (the mouse captured while a button is held) does not show it
+        Push(SdlNative.EventMouseMotion, ww + 20, -5);
+        host.Pump();
+        Assert.False(host.PointerInWindow);
+
+        PushWindow(SdlNative.WindowEventEnter);
+        host.Pump();
+        Assert.True(host.PointerInWindow);
+        PushWindow(SdlNative.WindowEventLeave);
+        host.Pump();
+        Assert.False(host.PointerInWindow);
+        // back over the window by a motion alone: shown at that point
+        Push(SdlNative.EventMouseMotion, ww / 4, wh / 4);
+        host.Pump();
+        Assert.True(host.PointerInWindow);
+        Assert.NotEqual(over, host.Mouse);
+    }
+
+    private static void PushWindow(byte windowEvent)
+    {
+        var e = new SdlNative.SdlEvent { Type = SdlNative.EventWindow };
+        e.WindowEvent = windowEvent;
+        Assert.Equal(1, SdlNative.SDL_PushEvent(ref e));
     }
 
     private static void Push(uint type, int x, int y)

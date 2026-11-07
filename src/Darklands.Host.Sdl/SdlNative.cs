@@ -35,6 +35,8 @@ internal static class SdlNative
     internal const uint EventDropFile = 0x1000;
     internal const uint EventUser = 0x8000;
     internal const byte WindowEventSizeChanged = 6;
+    internal const byte WindowEventEnter = 10;
+    internal const byte WindowEventLeave = 11;
     internal const int WindowCentered = 0x2FFF0000;
     internal const int KeyTab = 9;
     internal const int KeyV = 118;
@@ -318,6 +320,9 @@ internal static class SdlNative
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_WarpMouseInWindow(IntPtr window, int x, int y);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern uint SDL_GetMouseState(out int x, out int y);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     internal static extern void SDL_SetWindowTitle(IntPtr window, string title);

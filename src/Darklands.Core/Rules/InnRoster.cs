@@ -133,6 +133,23 @@ public static class InnRoster
     }
 
     /// <summary>
+    /// The slot of the highlighted row's character (its roster entry), or −1: H and S. Fixed (<see cref="OriginalBehaviour.FixRosterStaleRow"/>):
+    /// none on a row the last list did not show.
+    /// </summary>
+    // orig: R038+0x02F8 keys 0x2348 / 0x2368 (R038+0x0EB7) and 0x1F53 / 0x1F73 (R038+0x1083): the five slots' ids compared with DS:8D06[DS:E7DA]
+    // C: H and S search the five slots for the highlighted row's ROSTER ENTRY (DS:8D06[DS:E7DA]).
+    // BUG: OriginalBehaviour.FixRosterStaleRow - the highlight reaches every row up to the number of records (DS:E7DC), listed or not, and a
+    //   row the list did not fill keeps the entry an earlier listing left there (0 before any: the data segment's start value): H or S on
+    //   such an empty row changes the shield or the figure of the member whose record that entry is (saved with the game). Measured:
+    //   vis10 roster-stale (DKSAVE0: six records, five listed; Gretchen, record 0, joins, then H and S on the empty sixth row change her
+    //   shield and figure in the original's member data). Fixed (data safety, DataSafe): nobody's on a row the list did not show.
+    public static int SlotOfRow(GameState s, PartyMenuState menu)
+    {
+        s.Roster.Reconcile(s.Party);
+        return s.Behaviour.FixRosterStaleRow ? CharacterSlotOfRow(s, menu) : Array.IndexOf(s.Roster.PartySlots, RowEntry(menu, menu.Selected));
+    }
+
+    /// <summary>
     /// "Add to the Party" (A) on the highlighted row's character: a character in one of the first four slots who joined here this
     /// week leaves again (the record is not written back); one in a slot who did not, stays; anybody else takes the first free slot of
     /// the four, read from the file with nothing equipped and no pack, the first figure image and the inn's start colours.
@@ -291,11 +308,12 @@ public static class InnRoster
             ? Array.IndexOf(s.Roster.PartySlots, entry)
             : -1;
 
-    /// <summary>The slot of the highlighted row's character (its roster entry), or −1: H and S, and the fixed figure preview.</summary>
-    // C: H and S search the five slots for the highlighted row's ROSTER ENTRY (DS:8D06[DS:E7DA]).
-    public static int SlotOfRow(GameState s, PartyMenuState menu)
+    /// <summary>The slot of the highlighted row's character for the fixed figure preview: only a row the last list showed, or −1.</summary>
+    // C: the fixed preview (PartyRosterScreen.ShowPreview) is not the original's: it never shows a stale entry's member, whatever the H / S
+    //   setting says.
+    public static int PreviewSlotOfRow(GameState s, PartyMenuState menu)
     {
         s.Roster.Reconcile(s.Party);
-        return Array.IndexOf(s.Roster.PartySlots, RowEntry(menu, menu.Selected));
+        return CharacterSlotOfRow(s, menu);
     }
 }

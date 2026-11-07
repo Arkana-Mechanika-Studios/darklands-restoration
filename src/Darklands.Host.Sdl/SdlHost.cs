@@ -113,6 +113,28 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public MouseState Mouse => _mouse;
 
+    /// <summary>
+    /// False from the window's "mouse left" event (SDL_WINDOWEVENT_LEAVE) to its "mouse entered" event or the next motion over it: the
+    /// game leaves its drawn pointer out of the picture meanwhile. The mouse state the game reads keeps the last position over the window
+    /// (on entering it takes the point where the host's pointer came in). At the start: true (the game's pointer at the middle until the
+    /// host's pointer first moves over the window or enters it, MouseState start above).
+    /// </summary>
+    // orig: root 047C:1293 (pointer-show: the mouse driver draws the pointer; under DOS the mouse never leaves the screen)
+    // DIVERGENCE: a host enhancement (the user's decision): while the host's pointer is outside the window the game's drawn pointer (the
+    //   gauntlet, the battle's hand) is left out of the picture shown and comes back where it enters; only the picture changes, never the
+    //   game or its number stream (the mouse state keeps the last position over the window); Host.Headless and the oracle tools always
+    //   say true (IInput.PointerInWindow); tests: MouseMappingTests.TheGamesPointerIsHiddenWhileTheMouseIsOutsideTheWindow,
+    //   PointerHotSpotTests.TheGauntletIsLeftOutWhileTheHostsPointerIsOutsideTheWindow
+    public bool PointerInWindow => _pointerInWindow;
+
+    private bool _pointerInWindow = true;
+
+    private bool InWindow(int windowX, int windowY)
+    {
+        SdlNative.SDL_GetWindowSize(_window, out var ww, out var wh);
+        return windowX >= 0 && windowY >= 0 && windowX < ww && windowY < wh;
+    }
+
     public bool ShiftHeld => _shift;
 
     public bool TryReadKeyTransition(out int scanCode, out bool released) => _keyboard.TryReadTransition(out scanCode, out released);
@@ -400,6 +422,17 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     break;
                 case SdlNative.EventMouseMotion:
                     _mouse = _mouse with { X = ToScreenX(e.Motion.X), Y = ToScreenY(e.Motion.Y) };
+                    // (a button held captures the mouse: its motion outside the window keeps the pointer hidden)
+                    _pointerInWindow = InWindow(e.Motion.X, e.Motion.Y);
+                    break;
+                case SdlNative.EventWindow when e.WindowEvent == SdlNative.WindowEventLeave:
+                    _pointerInWindow = false;
+                    break;
+                case SdlNative.EventWindow when e.WindowEvent == SdlNative.WindowEventEnter:
+                    // where the host's pointer came back in (the motion events that follow move it on)
+                    SdlNative.SDL_GetMouseState(out var ex, out var ey);
+                    _mouse = _mouse with { X = ToScreenX(ex), Y = ToScreenY(ey) };
+                    _pointerInWindow = true;
                     break;
                 case SdlNative.EventMouseButtonDown:
                 case SdlNative.EventMouseButtonUp:

@@ -170,6 +170,47 @@ public sealed class InnRosterTests
         }
     }
 
+    /// <summary>
+    /// Heraldry and Select Character Image on a row the list did not fill (the highlight goes down to the number of records): the original
+    /// reads the entry an earlier list left there (0 before any) and changes that member's shield and figure (vis10 roster-stale); fixed
+    /// (DataSafe, FixRosterStaleRow): nobody's. On a listed row both act on the row's character either way; the fixed preview never shows
+    /// a stale row's member.
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void HeraldryAndImageOnAnEmptyRowChangeTheStaleEntrysMemberUnlessFixed(bool fix)
+    {
+        var s = WithRoster();
+        s.Behaviour = fix ? OriginalBehaviour.DataSafe : OriginalBehaviour.Faithful;
+        PartyRules.RemoveFromParty(s, 1);
+        s.CurrentLocation = 8;
+        var menu = new PartyMenuState();
+        InnRoster.List(s, menu, 0);                             // rows: entries 0, 2, 3; ids [0, -1, 2, 3]; 4 records
+        Assert.Equal((3, 4), (menu.Listed, menu.Count));
+        Assert.Equal(0, InnRoster.RowEntry(menu, 3));           // never written: the start value, record 0 (slot 0)
+        var images = new[] { "X01", "X02", "X03" };
+        var shields = Enumerable.Range(0, 4).Select(i => s.Party.Slot(i).ShieldLetter).ToArray();
+        var figures = Enumerable.Range(0, 4).Select(i => s.Party.Slot(i).Image).ToArray();
+
+        menu.Selected = 3;                                      // the empty row below the list
+        var stale = fix ? -1 : 0;
+        Assert.Equal(stale, InnRoster.NextShield(s, menu));
+        Assert.Equal(stale, InnRoster.NextImage(s, menu, images));
+        Assert.Equal(-1, InnRoster.PreviewSlotOfRow(s, menu));
+        for (var i = 0; i < 4; i++)
+        {
+            Assert.Equal(i == stale, s.Party.Slot(i).ShieldLetter != shields[i]);
+            Assert.Equal(i == stale, s.Party.Slot(i).Image != figures[i]);
+        }
+
+        menu.Selected = 2;                                      // a listed row: entry 3, slot 3, both ways
+        Assert.Equal(3, InnRoster.NextShield(s, menu));
+        Assert.Equal(3, InnRoster.NextImage(s, menu, images));
+        Assert.Equal(3, InnRoster.PreviewSlotOfRow(s, menu));
+        Assert.NotEqual(shields[3], s.Party.Slot(3).ShieldLetter);
+    }
+
     [Fact]
     public void TheArrowsWrapOnTheNumberOfRecords()
     {

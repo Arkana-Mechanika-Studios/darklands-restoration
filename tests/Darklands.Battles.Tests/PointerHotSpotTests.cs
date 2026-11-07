@@ -27,6 +27,7 @@ public sealed class PointerHotSpotTests
         public IClock Clock => this;
         public bool QuitRequested { get; private set; }
         public MouseState Mouse => new(x, y, MouseButtons.None);
+        public bool PointerInWindow { get; set; } = true;
         public bool ShiftHeld => false;
         public long Milliseconds => _now;
         public byte[]? Last { get; private set; }
@@ -108,5 +109,30 @@ public sealed class PointerHotSpotTests
         Assert.Equal((0, 0), ui.PointerHotSpot);
         Assert.NotNull(host.Last);
         Assert.True(PointerAt(ui, host.Last, 150, 100), "the gauntlet is not at the mouse on the party information");
+    }
+
+    /// <summary>
+    /// Host enhancement (IInput.PointerInWindow, the SDL host's window "mouse left"): while the host's pointer is outside the window the
+    /// gauntlet is left out of the picture shown, the screen the game draws on is not touched, and it comes back at the mouse after.
+    /// </summary>
+    [Fact]
+    public void TheGauntletIsLeftOutWhileTheHostsPointerIsOutsideTheWindow()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var host = new FrameHost(150, 100, 10);
+        var ui = new GameUi(host, new GameAssets(files));
+        var blank = new byte[Screen.Width * Screen.Height];
+        ui.Present();
+        Assert.True(PointerAt(ui, host.Last!, 150, 100), "the gauntlet is not at the mouse");
+        host.PointerInWindow = false;
+        ui.Present();
+        Assert.Equal(blank, host.Last);
+        Assert.Equal(blank, ui.Canvas.Screen.Pixels);
+        host.PointerInWindow = true;
+        ui.Present();
+        Assert.True(PointerAt(ui, host.Last!, 150, 100), "the gauntlet is not back at the mouse");
     }
 }
