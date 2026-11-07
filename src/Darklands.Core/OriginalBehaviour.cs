@@ -51,13 +51,15 @@ public sealed class OriginalBehaviour
     /// The faithful game with the data-safety fixes on: the original's bugs that damage the player's data (saved games, the item
     /// stores in CACHE.TMP) or end the program in play (the game since the last save lost, as a load crash loses it) are fixed, every
     /// other quirk stays. The fixed files are still read by the original. The player's game
-    /// uses this; future data-safety fixes go here (and only these).
+    /// uses this; future data-safety fixes go here, and besides them only the evident display fixes the user chose for every player
+    /// game (<see cref="FixRosterFigurePreview"/>).
     /// </summary>
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true,
+        FixRosterFigurePreview = true,
     };
 
     /// <summary>
@@ -115,6 +117,19 @@ public sealed class OriginalBehaviour
     // orig: R038+0x02F8 (the arrows, R038+0x045F..0x04CA): "pics\" (DS:4A3D) + the 4-byte entry DS:E7E2 + 4 x DS:E7DA + "small.pic" (DS:4A43),
     //   root 0617:045C, whose opener root 0617:000E ends the program on a missing file (root 0617:067E: mode 3, perror, exit(99)); data safety, a crash
     public bool FixRosterMissingFigure { get; set; }
+
+    /// <summary>
+    /// The inn's roster's figure preview shows the wrong figure in the wrong place: Up, Left and Right draw it at the bottom of the
+    /// party column, which is never cleared (each figure lands over the earlier ones); Down draws it below the commands; the picture is
+    /// the figure list's entry of the highlighted ROW number, in the colours of the member whose slot holds that number; a click on a
+    /// row moves only the highlight. Fixed (an evident display fix the user chose for every player game): the highlighted character's
+    /// own figure in its own colours, in one place at the bottom of the party column, the previous one cleared, shown when the roster
+    /// opens and after an arrow, a click, Add, Select Image and the colour keys; nothing for a character not in the party.
+    /// </summary>
+    // orig: R038+0x02F8 keys 0x4800/0x4B00/0x4D00 (draw at (0x0C, 0xA4), R038+0x05AD..0x05B9) and 0x5000 (draw at (0x46, 0xA5)); only
+    //   (0x46, 0xA5, 0x23 x 0x23) is copied back (R038+0x0396 / 0x061E); the name DS:E7E2 + 4 x DS:E7DA (the row); the colours of the slot
+    //   whose id equals DS:E7DA; R038+0x0000's list click moves only the highlight; measured: vis10 roster-figure (11 shots at 0 px)
+    public bool FixRosterFigurePreview { get; set; }
 
     /// <summary>
     /// A saved game whose two party slots name one character record: the load reads the record into the first slot only, the second

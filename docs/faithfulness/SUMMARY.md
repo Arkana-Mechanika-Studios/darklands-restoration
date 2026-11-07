@@ -39,7 +39,7 @@ after 1.0.
   behind a switch in `OriginalBehaviour` (marked `BUG:` at the reproduction, with the original's
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
-  fixes go into `DataSafe`, and only those.
+  fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
 * The eleven fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
@@ -107,8 +107,12 @@ after 1.0.
     "small.pic" (R038+0x045F..0x04C3; the entries past the list are zeros), "pics\small.pic" does not open and the picture loader's opener
     ends the program (root 0617:045C -> 0617:000E -> 0617:067E: text mode, "pics\small.pic: No such file or directory", exit 99): a long
     roster at any inn reaches it. Faithful reproduces the exit (the message on the cleared text screen, then the program ends;
-    B-0fd1d5, test `ScreenInputTests.AnArrowOntoAPartyMemberPastTheFigureListEndsTheProgramUnlessFixed`); fixed: nothing is drawn and
-    the roster goes on, as the C# did before. A row of 10 or more names bytes of other globals (registered D-f7cc67).
+    B-0fd1d5, test `ScreenInputTests.AnArrowOntoAPartyMemberPastTheFigureListEndsTheProgramUnlessFixed`; measured live: vis10 roster-figure, DKSAVE0
+    with Gunther retired, a Down onto row 4, Albrecht, ends the original with that text and exit 99, the Faithful C# the same); fixed:
+    the row is handled like a row without a member: the figure place below the commands is cleared, nothing is drawn, and the figure
+    colours and the palette stay as they were (the original sets them only after the load; test
+    `ScreenInputTests.TheFixedArrowPastTheFigureListLeavesTheScreenAndItsColoursClean`). A row of 10 or more names bytes of other
+    globals (registered D-f7cc67).
   * `FixLoadTwoSlotsOneRecord`: a saved game whose two party slots name one record: the reader (R037+0x8ED4, R037+0x96BE..0x96D3) reads
     the record into the first slot only, and the load screen's shield pictures (R037+0x86DA..0x8754) ask for "pics\shield.pic" for the
     second slot, whose letter is 0: exit 99 (measured live, lockstep session carry-dup-resave of the synthetic save dup01, round carry).
@@ -124,6 +128,18 @@ after 1.0.
     `ProgramStartTests.ASecondAltQOnTheMapAfterNoEndsTheProgramUnlessFixed`); fixed: the map keeps its buffers. The C# gives a single
     Alt-Q to the hot keys first (which look a press meets is host timing, D-644ab8) and takes the map's case for the second of two keys
     read in one pass, as the tester gives it (tick_keys.py).
+* One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
+  * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
+    at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
+    R038+0x0396 / 0x061E), so each such figure lands over the earlier ones; with Down at (0x46, 0xA5), below the commands; the picture
+    is the figure list's entry of the highlighted ROW number (DS:E7E2 + 4 x DS:E7DA), not the character's own figure, in the colours
+    of the slot whose id equals the row number; a click on the list moves only the highlight. Measured: vis10 roster-figure, 11 shots,
+    the original and the Faithful C# at 0 px. Faithful keeps it exactly (B-fd1853, test
+    `ScreenInputTests.TheOriginalRosterPreviewIsKeptWhenNotFixed`; every lockstep session and the vis10 job play Faithful); fixed: the
+    highlighted character's own figure in its own colours at (0x0C, 0xA4) only, the previous one cleared, shown when the roster opens
+    and after an arrow, a click, Add, Select Image and the colour keys, nothing for a character not in the party (test
+    `ScreenInputTests.TheFixedRosterPreviewShowsTheHighlightedMembersOwnFigureInOnePlace`). With it the missing picture of
+    `FixRosterMissingFigure` is never asked for (the character's own figure is drawn).
   The two exits were kept as documented differences until round restart (the roster's as an undefined-memory divergence D-8e26e9, the
   load's as a deliberate fix D-3fba1b); a reachable end of the program is now treated as the load crashes are; the map's was found in the round.
 * The switches are not exposed in the settings; the player's host sets the profile.
@@ -517,8 +533,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 230 original bugs registered
-(49 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 356 registered divergences,
+markers in the code, each with its reason and original coordinate: 231 original bugs registered
+(50 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 356 registered divergences,
 873 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
 measured as host timing and registered, D-d22f94). Every core-logic divergence has a
@@ -656,6 +672,24 @@ fixed, 42 jobs redone, all agree. One was an old two-argument job of R039+0x0000
 location) differ and are open leads, not triaged (probably the documented uninitialised sort and item of region kinds 1, 2, 9 and 11);
 there is no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the other corpora unchanged: 630 rules, 1,673 travel,
 2,448 map entry); the contents of the events a call creates are now compared in all of them.
+
+Round roster (2026-11-07, branch roster): the user's report on the inn roster's figure preview (Host.Sdl, DKSAVE0): the figure drawn
+over the previous one, in other colours, sometimes below the commands, and changed by the arrows but not by a click. vis10 session
+roster-figure (DKSAVE0, the Gasthaus roster with Gunther retired; Down, Up, Left, Right on rows 0..3 several times, clicks on rows 2
+and 3): all 11 shots of the original and the C# agree at 0 px, so all four are the original's own (R038+0x02F8 and R038+0x0000, asm
+checked): Up / Left / Right draw the figure at (0x0C, 0xA4), the bottom of the party column, Down at (0x46, 0xA5), below the
+commands, and only (0x46, 0xA5) is ever cleared, so an Up figure stays under later ones; the picture is the figure list's entry of
+the ROW with the colours of the member whose slot holds that row number; a click on the list moves only the highlight. The user
+chose to fix it in every player game: `FixRosterFigurePreview` (B-fd1853, in `DataSafe`; Faithful keeps the original, so the lockstep
+sessions and the vis10 job still agree): the highlighted character's own figure in its own colours at (0x0C, 0xA4) only, the
+previous one cleared, after arrows, clicks, Add, Select Image and the colour keys and when the roster opens. Past the list (row 4 on): the live run measures the original's exit 99 (FixRosterMissingFigure above), and the fixed path no
+longer sets the member's colours (it set them before skipping the draw, which recoloured a figure still on the screen): it is a row
+without a member now (InnRoster.FigureSlot's loadColours; with the preview fix the character's own figure is drawn instead).
+Tests: ScreenInputTests (the fixed preview, the original one, the missing-figure fix alone). New lead: the colour keys 1/2/3 still
+act on the slot whose id equals the ROW number (InnRoster.CycleColour, the original's), which differs from the highlighted character
+when a record before it is not listed; with the fixed preview the colours shown are the character's own, so a key may seem to do
+nothing there (original behaviour, kept). The card golden traces were written again: only their state digests change (the state dump
+holds the new flag); every random, next-card and text line is the same. Replay: 1000 jobs, 1000 agree.
 
 Round railing (2026-11-07, branch railing): D-420a1f's visible part, the wall pieces drawn in depth order. The original's fight-draw (R014+0x6818) queues, after the animated pieces (R014+0x827A), the clouds' edges, the combatants, the ground cursor and the missiles, the wall pieces of every dirty view slot (R014+0x88E6 through R014+0x8724: the slot record R136+0x4EB8 + 0x12 s that the full paint R017+0x0000 fills; 0x7D00 north wall, 0x7D01 / 0x7D04 the non-animated decorations, 0x7D03 west wall, 0x7D05 east wall, 0x7D0A furniture, 0x7D14 south wall, keys from the slot's map row x 16 and column x 32), then the chosen member's and the target cursor (the body's keys + 1), and sorts list C (R014+0x97A6); a slot is dirty when a sprite's box (R014+0x7BBE: the 23 slots DS:1A72 / 1A8A round its slot, + DS:1AA2 / 1AB6 by its set's size class, + DS:1AC6 with DS:C907) or an animated piece's (14 slots DS:1ACE / 1ADC) touches it, and each piece is blitted within its slot's box; the screen copy then takes only the sprites' own boxes (a write watch on back-page byte D000:55A4 in a city-guard battle: the redrawn east wall reaches the back page but not the screen). The C# now does the same in BattleScreen.Draw (BattlefieldDirtyBoxes, BattlefieldView.WallPieces, CursorEntries; the whole view is still painted first; the number stream untouched). vis10 (scratch/vis-rc2 rebuilt): V-mines aftersave 230 -> 94 px (all of it the comment box's strip x 265..267, dirty-tile leftover), D-b797f7 saving 141 -> 26 and V-mines before 208 -> 74 (the member cursor the original queues at its next tick, D-e4fbd6), ordercarry 119 / 119 -> 0 / 0, D-e4fbd6 frames 3..5 136 -> 0 (frame 0 the tick's pass, 1..2 D-e4fbd6), V-away24 10 -> 2 (colour-cycle phase); the other battles unchanged (V-fortcell 1, D-09fbc1 0, U-00dcd4, B-tleads, U-cb31b9, T-einfo-gate), V-prison +80 px on the C# side only (its original has no battlefield, D-24e8b0); scratch battles of other maps paused at their start: wolf pack and wild boars (wilderness) 0 px, market at night 0, city guard 0 (82 on master), rebel mob 6 (colour-cycle phase, as master). D-420a1f rewritten to what is left (the dirty tiles' history and lists A / B, the logged entries, the bodies' growth by movement, missiles and ground cursor after the list); 356 divergences, --check clean. Tests: WallPieceOrderTests (the tables against the EXE, the slots and boxes, the pieces' keys and order). Checks: dotnet test (whole solution, all pass: Battles 450, Cards 605, Core 418, Rendering 39, Architecture 8, ...); rerun_all --replay-only (4 workers, every fight and session): 1000 of 1000 agree (1,227 s). Notes: local/railing-2026-11-07.md.
 
