@@ -37,63 +37,70 @@ public sealed class WildOracleTests
         foreach (var c in Data.Value.Cases("wild_main"))
         {
             var s = c.Inputs;
-            var bf = s.GetProperty("bf").GetInt32();
-            var forceMap = s.GetProperty("forceMap").GetInt32();
-            var forceSide = s.GetProperty("forceSide").GetInt32();
-            var label = $"scenario {n++} (bf 0x{bf:X2}, seed {s.GetProperty("seed").GetInt32()}, terrain {s.GetProperty("terrain").GetInt32()}, forceMap {forceMap}, forceSide {forceSide})";
-            var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
-            using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
-            var lore = s.GetProperty("lore").GetInt32();
-            var context = new BattlefieldContext
-            {
-                Enemies = catalogue, Items = items, Tables = tables, Maps = maps, Random = random,
-                WorldTerrain = s.GetProperty("terrain").GetInt32(),
-                Month = s.GetProperty("month").GetInt32(),
-                AbleMembers = s.GetProperty("party").EnumerateArray().Count(e => e.GetInt32() == 1),
-                LoreLevel = () => lore,
-                ForceMap = forceMap,
-                ForceSide = forceSide,
-            };
-            var forces = new BattlefieldForces(catalogue, items, tables, random);
-            var state = new GenerationState(context, forces);
-            var specs = s.GetProperty("specs").EnumerateArray()
-                .Select(e => (e[0].GetInt32(), e[1].GetInt32(), e[2].GetInt32())).ToArray();
-            var levels = WildBattlefield.Build(state, bf, specs);
-            Assert.True(s.GetProperty("levels").GetInt32() == levels, $"{label}: levels");
-            Assert.True(state.SavedLevels.Count == 1 && state.SavedLevels.ContainsKey(0), $"{label}: saved levels");
-            foreach (var saved in s.GetProperty("saved").EnumerateObject())
-            {
-                Assert.Equal("level0.flr", saved.Name);
-                var expected = Convert.FromHexString(saved.Value.GetProperty("data").GetString()!);
-                var actual = state.SavedLevels[0].Image;
-                var first = Enumerable.Range(0, expected.Length).FirstOrDefault(i => expected[i] != actual[i], -1);
-                Assert.True(first < 0, $"{label}: {saved.Name} differs first at +0x{first:X4} ({(first >= 0 ? expected[first] : 0):X2} vs {(first >= 0 ? actual[first] : 0):X2})");
-            }
-            var terrain = Convert.FromHexString(s.GetProperty("terrainDescription").GetString()!);
-            var firstTerrain = Enumerable.Range(0, terrain.Length).FirstOrDefault(i => terrain[i] != state.Terrain.Bytes[i], -1);
-            Assert.True(firstTerrain < 0, $"{label}: terrain description differs at +0x{firstTerrain:X2}");
-            for (var level = 0; level < 2; level++)
-            {
-                var kinds = s.GetProperty("kinds")[level].EnumerateArray().Select(e => e.GetString()!).ToList();
-                Assert.True(kinds.Count == forces.Kinds[level].Count, $"{label}: kinds on level {level}");
-                for (var k = 0; k < kinds.Count; k++)
-                {
-                    var actualKind = Convert.ToHexString(EnemyRecords.Write(forces.Kinds[level][k])).ToLowerInvariant();
-                    Assert.True(kinds[k] == actualKind, $"{label}: kind {level}/{k}\n{kinds[k]}\n{actualKind}");
-                }
-                var groups = s.GetProperty("groups")[level].EnumerateArray().Select(e => e.GetString()!).ToList();
-                Assert.True(groups.Count == forces.Groups[level].Count, $"{label}: groups on level {level}");
-                for (var g = 0; g < groups.Count; g++)
-                {
-                    var actual = Convert.ToHexString(EnemyRecords.Write(forces.Groups[level][g])).ToLowerInvariant();
-                    Assert.True(groups[g] == actual, $"{label}: group {level}/{g}\n{groups[g]}\n{actual}");
-                }
-            }
-            Assert.True(s.GetProperty("holdrand").GetUInt32() == random.State, $"{label}: random state");
-            var flags = s.GetProperty("combatFlags").GetInt32();
-            Assert.True(((flags & 0x40) != 0) == state.Timed, $"{label}: timed battle");
-            Assert.False(state.Persistent, $"{label}: persistent");
+            Compare(s, n++, catalogue, items, tables, maps);
         }
         Assert.True(n >= 40, "the corpus has at least 40 scenarios");
+    }
+
+    /// <summary>One scenario against the C# generator (the corpus test's loop; tools/oracle battlefuzz checks its cases one by one).</summary>
+    internal static void Compare(System.Text.Json.JsonElement s, int n, EnemyCatalogue catalogue, IReadOnlyList<Darklands.Core.Items.ItemDefinition> items,
+        CombatTables tables, PreparedMaps maps)
+    {
+        var bf = s.GetProperty("bf").GetInt32();
+        var forceMap = s.GetProperty("forceMap").GetInt32();
+        var forceSide = s.GetProperty("forceSide").GetInt32();
+        var label = $"scenario {n} (bf 0x{bf:X2}, seed {s.GetProperty("seed").GetInt32()}, terrain {s.GetProperty("terrain").GetInt32()}, forceMap {forceMap}, forceSide {forceSide})";
+        var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
+        using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
+        var lore = s.GetProperty("lore").GetInt32();
+        var context = new BattlefieldContext
+        {
+            Enemies = catalogue, Items = items, Tables = tables, Maps = maps, Random = random,
+            WorldTerrain = s.GetProperty("terrain").GetInt32(),
+            Month = s.GetProperty("month").GetInt32(),
+            AbleMembers = s.GetProperty("party").EnumerateArray().Count(e => e.GetInt32() == 1),
+            LoreLevel = () => lore,
+            ForceMap = forceMap,
+            ForceSide = forceSide,
+        };
+        var forces = new BattlefieldForces(catalogue, items, tables, random);
+        var state = new GenerationState(context, forces);
+        var specs = s.GetProperty("specs").EnumerateArray()
+            .Select(e => (e[0].GetInt32(), e[1].GetInt32(), e[2].GetInt32())).ToArray();
+        var levels = WildBattlefield.Build(state, bf, specs);
+        Assert.True(s.GetProperty("levels").GetInt32() == levels, $"{label}: levels");
+        Assert.True(state.SavedLevels.Count == 1 && state.SavedLevels.ContainsKey(0), $"{label}: saved levels");
+        foreach (var saved in s.GetProperty("saved").EnumerateObject())
+        {
+            Assert.Equal("level0.flr", saved.Name);
+            var expected = Convert.FromHexString(saved.Value.GetProperty("data").GetString()!);
+            var actual = state.SavedLevels[0].Image;
+            var first = Enumerable.Range(0, expected.Length).FirstOrDefault(i => expected[i] != actual[i], -1);
+            Assert.True(first < 0, $"{label}: {saved.Name} differs first at +0x{first:X4} ({(first >= 0 ? expected[first] : 0):X2} vs {(first >= 0 ? actual[first] : 0):X2})");
+        }
+        var terrain = Convert.FromHexString(s.GetProperty("terrainDescription").GetString()!);
+        var firstTerrain = Enumerable.Range(0, terrain.Length).FirstOrDefault(i => terrain[i] != state.Terrain.Bytes[i], -1);
+        Assert.True(firstTerrain < 0, $"{label}: terrain description differs at +0x{firstTerrain:X2}");
+        for (var level = 0; level < 2; level++)
+        {
+            var kinds = s.GetProperty("kinds")[level].EnumerateArray().Select(e => e.GetString()!).ToList();
+            Assert.True(kinds.Count == forces.Kinds[level].Count, $"{label}: kinds on level {level}");
+            for (var k = 0; k < kinds.Count; k++)
+            {
+                var actualKind = Convert.ToHexString(EnemyRecords.Write(forces.Kinds[level][k])).ToLowerInvariant();
+                Assert.True(kinds[k] == actualKind, $"{label}: kind {level}/{k}\n{kinds[k]}\n{actualKind}");
+            }
+            var groups = s.GetProperty("groups")[level].EnumerateArray().Select(e => e.GetString()!).ToList();
+            Assert.True(groups.Count == forces.Groups[level].Count, $"{label}: groups on level {level}");
+            for (var g = 0; g < groups.Count; g++)
+            {
+                var actual = Convert.ToHexString(EnemyRecords.Write(forces.Groups[level][g])).ToLowerInvariant();
+                Assert.True(groups[g] == actual, $"{label}: group {level}/{g}\n{groups[g]}\n{actual}");
+            }
+        }
+        Assert.True(s.GetProperty("holdrand").GetUInt32() == random.State, $"{label}: random state");
+        var flags = s.GetProperty("combatFlags").GetInt32();
+        Assert.True(((flags & 0x40) != 0) == state.Timed, $"{label}: timed battle");
+        Assert.False(state.Persistent, $"{label}: persistent");
     }
 }

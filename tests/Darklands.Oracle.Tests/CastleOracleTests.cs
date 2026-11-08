@@ -48,7 +48,7 @@ public sealed class CastleOracleTests
         Assert.True(n >= 30, $"the corpus has {n} scenarios");
     }
 
-    private static void Compare(System.Text.Json.JsonElement s, int n, EnemyCatalogue catalogue, IReadOnlyList<Darklands.Core.Items.ItemDefinition> items, CombatTables tables)
+    internal static void Compare(System.Text.Json.JsonElement s, int n, EnemyCatalogue catalogue, IReadOnlyList<Darklands.Core.Items.ItemDefinition> items, CombatTables tables)
     {
         var bf = s.GetProperty("bf").GetInt32();
         var label = $"scenario {n} (bf 0x{bf:X2}, seed {s.GetProperty("seed").GetInt32()})";

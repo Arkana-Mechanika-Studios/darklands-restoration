@@ -43,7 +43,7 @@ internal sealed class ScenarioDraws : IDisposable
     public static ScenarioDraws? Begin(MscRandom random, JsonElement scenario)
     {
         var draws = Of(scenario);
-        if (draws.Count == 0)
+        if (draws.Count == 0 && !Counting)
         {
             _current = null;
             return null;
@@ -53,8 +53,16 @@ internal sealed class ScenarioDraws : IDisposable
         return _current;
     }
 
+    /// <summary>Opt-in (the generator fuzzer, GenFuzz): every scenario gets a scope, so its draws are counted (forcing unchanged).</summary>
+    internal static bool Counting { get; set; }
+
+    /// <summary>The draws of the last scenario whose scope ended on this thread (with <see cref="Counting"/>).</summary>
+    [field: ThreadStatic]
+    internal static int LastCount { get; private set; }
+
     public void Dispose()
     {
+        LastCount = _count;
         if (ReferenceEquals(_current, this))
         {
             _current = null;
