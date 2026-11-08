@@ -58,7 +58,8 @@ this program's own: **F12** saves a screenshot, and **F11** opens a developer co
 Something crashed, or differs from the original? The program writes a log of every run, and can pack it with your settings,
 the saved game and a screenshot into a zip you attach to a GitHub issue: type `report` in the console (F11), press Ctrl-F12,
 or use "make a problem report" on the launcher; after a crash the program offers it. Nothing is sent anywhere by the program.
-How, and what the zip holds: [docs/REPORTING.md](docs/REPORTING.md).
+How, and what the zip holds: [docs/REPORTING.md](docs/REPORTING.md). To watch the program's messages as it runs, start it
+from a terminal, or with `--log-window` for a window of their own (Windows; no such window opens otherwise).
 
 ## Sound and music
 

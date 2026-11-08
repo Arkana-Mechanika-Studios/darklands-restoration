@@ -11,7 +11,7 @@ using Darklands.Rendering;
 // Darklands, on SDL2.
 //   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
-//                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console]
+//                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console] [--log-window]
 //                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--soundfont file] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
 //                      [--version] [--sound-test] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
 // --sound-test checks the sound without the game window: SDL's audio driver and devices, beeps through each way of feeding SDL,
@@ -40,6 +40,10 @@ using Darklands.Rendering;
 // --no-console turns it off): commands that show and change the game being played, drawn over the window in a TrueType font.
 // Sound diagnostics (environment only): DARKLANDS_AUDIO_TRACE=<file> writes the game's calls to the sound, the numbers the drivers
 // carry out and the MIDI they send; DARKLANDS_AUDIO_RECORD=<file> writes what the audio device is given (raw 16-bit stereo).
+// On Windows the program opens no console window: its messages go to the terminal it was started from, to a redirect, and to the
+// session log; --log-window opens a console window of its own for them (ConsoleWindow).
+
+ConsoleWindow.Connect(ownWindow: args.TakeWhile(a => a != "--").Contains("--log-window"));
 
 // the release version (Directory.Build.props): the window title, the start screen's corner, the console, --version
 var version = typeof(SdlHost).Assembly
@@ -87,6 +91,7 @@ if (writeSettings is not null)
 // settings file's startup.launcher show it, --no-launcher never; else it comes on the first run, when the game cannot be
 // found and when the game could not start
 var setup = arguments.Remove("--setup");
+arguments.Remove("--log-window"); // taken at the start (ConsoleWindow.Connect)
 var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
 // --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods

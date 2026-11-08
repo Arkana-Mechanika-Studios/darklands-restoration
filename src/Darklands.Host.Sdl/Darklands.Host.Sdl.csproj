@@ -26,7 +26,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <!-- a windowed program: no console window opens with the game (ConsoleWindow: the log-window switch opens one for the messages) -->
+    <OutputType>WinExe</OutputType>
     <!-- the program players start: DarklandsRP.exe, with the Darklands Restoration Project badge as its icon -->
     <AssemblyName>DarklandsRP</AssemblyName>
     <RootNamespace>Darklands.Host.Sdl</RootNamespace>
