@@ -37,7 +37,7 @@ Two rules follow from this and apply to every contribution:
 
 ## 2. Building and running
 
-You need the .NET SDK named in `global.json` (10.0.102; a later 10.0 feature band is accepted). The solution is
+You need the .NET SDK named in `global.json` (10.0.403, with the .NET 10.0.14 runtime; a later 10.0 feature band is accepted). The solution is
 `Darklands.slnx`.
 
 ```
