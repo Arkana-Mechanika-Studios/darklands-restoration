@@ -177,15 +177,31 @@ public sealed class CardOracleStates
     /// </summary>
     public static Core.GameState FromSave(string id, int option)
     {
+        if (InMemorySaves.TryGetValue(id, out var held))
+        {
+            return FromBytes(held, option);
+        }
         var dir = Path.Combine(SavesFolder ?? throw new InvalidOperationException("DARKLANDS_CARD_ORACLE_SAVES"), id);
         var file = Directory.EnumerateFiles(dir).First(f => f.EndsWith(".sav", StringComparison.OrdinalIgnoreCase));
+        return FromBytes(File.ReadAllBytes(file), option, Path.GetFileName(file));
+    }
+
+    /// <summary>The bytes of a saved game read by the loader as <see cref="FromSave"/> reads a file.</summary>
+    public static Core.GameState FromBytes(byte[] sav, int option, string name = "FUZZ.SAV")
+    {
         var data = CardHarness.World!;
         var seed = (uint)(option + 7);
         var running = Simulation.NewGame.StartUp(data, seed);
-        var state = OriginalSaves.Read(File.ReadAllBytes(file), [], Path.GetFileName(file), data, running, new MscRandom(seed)).State;
+        var state = OriginalSaves.Read(sav, [], name, data, running, new MscRandom(seed)).State;
         state.Data = data;
         return state;
     }
+
+    /// <summary>
+    /// Saved games held in memory (CardFuzz: the fuzzer's inputs, id -> bytes): <see cref="FromSave"/> takes one before the folder.
+    /// Empty outside the fuzzer.
+    /// </summary>
+    public static readonly System.Collections.Concurrent.ConcurrentDictionary<string, byte[]> InMemorySaves = new();
 
     /// <summary>The golden-trace state with one variation applied.</summary>
     public static Core.GameState New(int location, int option, string variant)

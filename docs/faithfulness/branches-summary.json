@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 58185,
-  "blocks_hit": 52844,
-  "functions": 8506,
-  "outcomes": 43726,
-  "outcomes_hit": 36520,
+  "blocks": 58233,
+  "blocks_hit": 53120,
+  "functions": 8522,
+  "outcomes": 43756,
+  "outcomes_hit": 36838,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9622,6 +9622,62 @@
   "outcomes": 11958,
   "outcomes_hit": 5271,
   "runs": 1
+ },
+ "new-cardfuzz-a67e": {
+  "blocks": 6762,
+  "blocks_hit": 3579,
+  "functions": 548,
+  "outcomes": 4946,
+  "outcomes_hit": 2104,
+  "runs": 101
+ },
+ "new-cardfuzz-f1": {
+  "blocks": 14379,
+  "blocks_hit": 10273,
+  "functions": 1768,
+  "outcomes": 10200,
+  "outcomes_hit": 6338,
+  "runs": 3283
+ },
+ "new-cardfuzz-f2": {
+  "blocks": 11458,
+  "blocks_hit": 7716,
+  "functions": 1539,
+  "outcomes": 7890,
+  "outcomes_hit": 4537,
+  "runs": 2140
+ },
+ "new-cardfuzz-m2a": {
+  "blocks": 4255,
+  "blocks_hit": 2156,
+  "functions": 291,
+  "outcomes": 2920,
+  "outcomes_hit": 1139,
+  "runs": 21
+ },
+ "new-cardfuzz-m2b": {
+  "blocks": 3144,
+  "blocks_hit": 1458,
+  "functions": 142,
+  "outcomes": 2126,
+  "outcomes_hit": 772,
+  "runs": 4
+ },
+ "new-cardfuzz-r21": {
+  "blocks": 14382,
+  "blocks_hit": 10216,
+  "functions": 1749,
+  "outcomes": 10246,
+  "outcomes_hit": 6302,
+  "runs": 3751
+ },
+ "new-cardfuzz-r22": {
+  "blocks": 11415,
+  "blocks_hit": 7699,
+  "functions": 1519,
+  "outcomes": 7882,
+  "outcomes_hit": 4567,
+  "runs": 2841
  },
  "new-coverage_ev1_sessions-ev300-camp": {
   "blocks": 6498,
