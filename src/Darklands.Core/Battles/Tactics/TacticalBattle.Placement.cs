@@ -93,6 +93,11 @@ public sealed partial class TacticalBattle
         }
         Map.StrictWalls = true;
         var cleared = false;
+        // orig: R014+0x4350..0x43AB: the random spots' line tests (1D69:000C, from R014+0x4188's frame) are one run of clip tests: the collision
+        //   test between them (1462:000A) does not reach the clip test's [bp-4] / [bp-2], so each test reads the point the previous one left
+        //   (a read-only hook at R014+0xF284 in a direct call of R014+0x4188, round battlelead: after the first test every one read (702, 170),
+        //   inside the furniture box tested, and was blocked); tests: PlacementOrderTests
+        var residue = new BattleMap.ClipResidue();
         while (k < MarchingOrder.Count)
         {
             var c = Battle[MarchingOrder[k]];
@@ -103,7 +108,7 @@ public sealed partial class TacticalBattle
                 var px = Scaled(0x30) + x;
                 var py = Scaled(0x18) + y;
                 c.Position = new MapPoint(px, py);
-                if (Map.Collides(c.Index, px, py).IsFree && Map.LineBlocked(from, c.Position) == 0)
+                if (Map.Collides(c.Index, px, py).IsFree && Map.LineBlocked(from, c.Position, residue: residue) == 0)
                 {
                     c.SpriteFacing = c.Facing = dir;
                     break;

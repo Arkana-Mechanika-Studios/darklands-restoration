@@ -1103,6 +1103,11 @@ public sealed class EffectField : IEffectClouds
     //   change no draw and no random number.
     public void Drawn(IBattleViewport viewport)
     {
+        // DIVERGENCE: host timing: fight-draw passes the timer's clock DS:07D4 as it is when the drawing starts (R014+0x6818), after the
+        //   pass's work; a long computation before it (a cloud laid out: 135 timer callbacks in the original's emulated time, battle_oracle
+        //   fight [0, 0x50, 4414, 62/2/5], clock 1847 -> 1982, now 1995) moves it on, and the clouds' edge and puff sprites drawn by lot
+        //   against it then take other random numbers (here 3 more; read-only hook at R014+0x72E8, round battlelead). Here the clock
+        //   moves between passes only.
         var now = Paused ? (ushort)0 : Clock;
         var camera = (viewport.CameraX, viewport.CameraY);
         if (camera != _lastCamera)

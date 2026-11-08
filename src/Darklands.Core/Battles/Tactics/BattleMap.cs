@@ -44,6 +44,12 @@ public sealed class BattleMap
     // orig: R014+0xF284's [bp-4] / [bp-2]. Probed in the gate battle: SS:FC44 under enemy-line-of-sight (R018+0x06AB), SS:FC6A under enemy-move-phase's
     // missile test (R018+0x0BE7), SS:FCC6 under close-combat-rounds' (R014+0x2A4A); each run began with leftovers outside the box tested
     // (12358,17201; 4504,-874; 423,9 ...) and within a run held the previous test's point
+    // DIVERGENCE: host timing: the two words lie below the stack pointer between two tests, so a timer interrupt that comes between them
+    //   (root 047C:00A9, the 18.2 Hz callback, and the interrupt frame) writes its own words there, and the next test then reads those: a
+    //   write watch on SS:FC44..FC47 during one enemy-line-of-sight run (round battlelead, the fight [0, 0x47, 5172, 12/2/3, 2/2/2]) saw
+    //   047C:00A9+0x141/0x142 leave (17,16), (14,9), (14,0) and (852,9612) between tests, where the run's previous point would have been;
+    //   with (14,0) enemy 7's test of member 0 found the line free (it saw members 0 and 2), with the previous point it is blocked. When an
+    //   interrupt falls depends on the machine's speed against its timer; the rewrite keeps the uninterrupted run's previous point.
     public sealed class ClipResidue
     {
         public (int X, int Y) Point { get; set; }

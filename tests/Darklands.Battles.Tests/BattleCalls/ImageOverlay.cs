@@ -39,6 +39,10 @@ internal static class ImageOverlay
         new("leave after victory", 0x9084, 1, b => b.LeaveAfterVictory ? 1 : 0, (b, v) => b.LeaveAfterVictory = v != 0),
         new("difficulty", 0x906A, 1, b => b.Difficulty, (b, v) => b.Difficulty = (byte)v),
         new("dragon fight", 0xC21A, 1, b => b.DragonFight, (b, v) => b.DragonFight = (byte)v),
+        // the dragon's blows and its breath interval (melee_frame R014+0x199C breathes when DS:C26E % DS:C21F == 0): a job from a dragon fight's
+        // state carries the fight's own counts (round battlelead: without them the rewrite counted from the battle start's 1 and 3)
+        new("dragon blows", 0xC26E, 1, b => b.DragonBlowCount, (b, v) => b.DragonBlowCount = (byte)v),
+        new("dragon breath interval", 0xC21F, 1, b => b.DragonBreathInterval, (b, v) => b.DragonBreathInterval = (sbyte)v),
     ];
 
     private static readonly Table[] Tables =
@@ -81,6 +85,12 @@ internal static class ImageOverlay
         new("aim end at", 0xDAA3, 2, 13, c => c.AimEndAt, (c, v) => c.AimEndAt = (ushort)v),
         new("damage number until", 0xDA6F, 2, 13, c => c.DamageNumberUntil, (c, v) => c.DamageNumberUntil = (ushort)v),
         new("recover at", 0xDA55, 2, 13, c => c.RecoverAt, (c, v) => c.RecoverAt = (ushort)v),
+        // the casters' spells (enemy-placement R025+0x036E..0x03AA: DS:D1D7[i] the charges left, DS:D37C / DS:D411 [10 i + k] the charges and
+        // power of type k; enemy-move-phase R018+0x0CB0..0x0CF3 takes them): a job from a fight's state carries what the casters have left
+        // (round battlelead: without them the rewrite's caster still had the placement's charges where the original's had none)
+        new("spells left", 0xD1D7, 1, 13, c => c.SpellsLeft, (c, v) => c.SpellsLeft = (byte)v),
+        .. Enumerable.Range(0, 10).Select(k => new Table($"spell charges {k}", 0xD37C + k, 1, 13, c => c.SpellCharges[k], (c, v) => c.SpellCharges[k] = (byte)v, 10)),
+        .. Enumerable.Range(0, 10).Select(k => new Table($"spell power {k}", 0xD411 + k, 1, 13, c => c.SpellPowers[k], (c, v) => c.SpellPowers[k] = (byte)v, 10)),
     ];
 
     private static readonly Table[] MemberTables =
