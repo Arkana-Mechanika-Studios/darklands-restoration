@@ -13,10 +13,10 @@ namespace Darklands.Host.Sdl;
 internal static class LauncherHost
 {
     /// <summary>
-    /// The launcher's window sizes (its design's shape, 1080 x 640), largest first: the first that fits the screen is taken. The
+    /// The launcher's window sizes (its design's shape, 1280 x 720, the painting's), largest first: the first that fits the screen is taken. The
     /// last is the smallest the window can be made while the launcher shows: its texts are laid out to fit down to it.
     /// </summary>
-    internal static readonly (int Width, int Height)[] Sizes = [(1080, 640), (900, 533), (720, 427)];
+    internal static readonly (int Width, int Height)[] Sizes = [(1280, 720), (1080, 608), (960, 540)];
 
     /// <summary>Opens the window at the launcher's size.</summary>
     public static SdlHost Open(string title)

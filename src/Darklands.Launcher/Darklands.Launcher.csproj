@@ -16,6 +16,8 @@
     <!-- fonts (SIL Open Font License 1.1, see THIRD_PARTY_NOTICES.md) and the project's badge -->
     <EmbeddedResource Include="Resources/*.ttf" LogicalName="Darklands.Launcher.%(Filename)%(Extension)" />
     <EmbeddedResource Include="Resources/badge.argb.gz" LogicalName="Darklands.Launcher.badge.argb.gz" />
+    <!-- the art (tools/launcher-art: Convert-LauncherArt.ps1 puts it here, ASSETS.md lists it); a picture missing is drawn in code -->
+    <EmbeddedResource Include="Resources/art/*.png;Resources/art/*.slice.txt" LogicalName="Darklands.Launcher.art.%(Filename)%(Extension)" />
     <!-- full OFL text, shipped next to the launcher in build and publish output -->
     <None Include="Resources/OFL.txt" Link="OFL.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

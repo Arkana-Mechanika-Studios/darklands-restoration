@@ -16,7 +16,7 @@ public sealed class LauncherLayoutTests
     /// <summary>The launcher's window sizes (the smallest is its minimum), and odd shapes a resized window takes.</summary>
     public static readonly TheoryData<int, int> Sizes = new()
     {
-        { 720, 427 }, { 760, 600 }, { 800, 480 }, { 900, 533 }, { 1080, 640 }, { 1280, 720 }, { 1440, 853 }, { 1600, 427 }, { 1920, 1080 }, { 2560, 1440 },
+        { 960, 540 }, { 960, 760 }, { 1024, 576 }, { 1080, 608 }, { 1280, 720 }, { 1366, 768 }, { 1600, 900 }, { 1920, 540 }, { 1920, 1080 }, { 2560, 1440 },
     };
 
     /// <summary>A pack problem as the host reports it: a long path and a long parser message.</summary>
@@ -54,7 +54,7 @@ public sealed class LauncherLayoutTests
     {
         var panel = screen.SettingsPanel;
         var blocks = screen.Blocks;
-        Assert.Contains(blocks, b => b.What == "details");
+        Assert.Contains(blocks, b => b.What == "hints");
         foreach (var (area, what) in blocks)
         {
             Assert.True(area.Width > 0 && area.Height > 0, $"{state}: {what} is empty ({area})");
@@ -106,7 +106,7 @@ public sealed class LauncherLayoutTests
         Assert.Equal("folder a-pack not found", LauncherScreen.ShortProblem(@"E:\x\a-pack", @"HD pack: folder E:\x\a-pack not found"));
 
         // long words (paths) are broken to the width; nothing is lost
-        var face = new TextFace(Assets.Panel, 12, null);
+        var face = new TextFace(Assets.Italic, 12, null);
         var lines = LauncherScreen.WrapAll(face, "Problem: " + BrokenManifest(LongFolder), 200);
         Assert.All(lines, l => Assert.True(face.Measure(l) <= 200, l));
         Assert.Equal(("Problem: " + BrokenManifest(LongFolder)).Replace(" ", ""), string.Concat(lines).Replace(" ", ""));
@@ -118,18 +118,22 @@ public sealed class LauncherLayoutTests
     {
         var asked = new List<string>();
         var context = Broken();
-        var surface = new ScriptedSurface(1080, 640)
+        var surface = new ScriptedSurface(1280, 720)
         {
             PickFolder = title => { asked.Add("folder: " + title); return null; },
             PickFile = title => { asked.Add("file: " + title); return null; },
         };
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
-        screen.Render(new Canvas(1080, 640));
+        screen.Render(new Canvas(1280, 720));
         return (screen, asked);
     }
 
-    private static void Click(LauncherScreen screen, Rect area, int dx = -1) =>
-        screen.Handle(new PointerPressed(dx < 0 ? area.X + area.Width / 2 : area.X + dx, area.Y + area.Height / 2));
+    private static void Click(LauncherScreen screen, Rect area, int dx = -1)
+    {
+        var (x, y) = (dx < 0 ? area.X + area.Width / 2 : area.X + dx, area.Y + area.Height / 2);
+        screen.Handle(new PointerPressed(x, y));
+        screen.Handle(new PointerReleased(x, y));
+    }
 
     [Theory]
     [InlineData("HdPack")]
@@ -144,7 +148,7 @@ public sealed class LauncherLayoutTests
         Assert.Equal(item, screen.Focus);
         Assert.Empty(asked);
 
-        screen.Render(new Canvas(1080, 640));
+        screen.Render(new Canvas(1280, 720));
         Click(screen, screen.Area(item, LauncherScreen.Part.Browse));
         Assert.Single(asked);
         Assert.Equal(item, screen.Focus);
@@ -154,15 +158,43 @@ public sealed class LauncherLayoutTests
     }
 
     [Fact]
+    public void APlateActsWhenLetGoOverItAndNotWhenTheButtonLeavesIt()
+    {
+        var (screen, asked) = Screen();
+        var play = screen.Area(LauncherScreen.Item.Play);
+        var browse = screen.Area(LauncherScreen.Item.HdPack, LauncherScreen.Part.Browse);
+
+        // held down: nothing yet; let go elsewhere: nothing at all
+        Assert.Null(screen.Handle(new PointerPressed(play.X + 4, play.Y + 4)));
+        Assert.Null(screen.Handle(new PointerReleased(play.X - 40, play.Y - 40)));
+        Assert.Null(screen.Handle(new PointerPressed(browse.X + 4, browse.Y + 4)));
+        Assert.Empty(asked);
+        Assert.Null(screen.Handle(new PointerReleased(browse.X + 4, browse.Y + 4)));
+        Assert.Single(asked);
+
+        // pressed and let go over Play: the game starts
+        screen.Render(new Canvas(1280, 720));
+        play = screen.Area(LauncherScreen.Item.Play);
+        Assert.Null(screen.Handle(new PointerPressed(play.X + 4, play.Y + 4)));
+        Assert.Equal(LauncherChoice.Play, screen.Handle(new PointerReleased(play.X + 6, play.Y + 6)));
+    }
+
+    [Fact]
     public void AfterAClickTheArrowsAndTheRowsArrowsStepThePacks()
     {
-        var packs = new[] { @"C:\packs\one", @"C:\packs\two" };
+        // two pack folders that exist (the launcher offers only those)
+        var root = Directory.CreateTempSubdirectory("dkpackrows").FullName;
+        var packs = new[] { Path.Combine(root, "one"), Path.Combine(root, "two") };
+        foreach (var pack in packs)
+        {
+            Directory.CreateDirectory(pack);
+        }
         var context = Broken() with { FindPacks = _ => packs, DescribePack = _ => new PackStatus(1, 1, null) };
         var asked = 0;
-        var surface = new ScriptedSurface(1080, 640) { PickFolder = _ => { asked++; return null; } };
+        var surface = new ScriptedSurface(1280, 720) { PickFolder = _ => { asked++; return null; } };
         var model = new LauncherModel(context, null);
         var screen = new LauncherScreen(model, context, surface);
-        var canvas = new Canvas(1080, 640);
+        var canvas = new Canvas(1280, 720);
         screen.Render(canvas);
 
         Click(screen, screen.Area(LauncherScreen.Item.HdPack), dx: 10);
@@ -180,6 +212,7 @@ public sealed class LauncherLayoutTests
         Click(screen, screen.Area(LauncherScreen.Item.HdPack, LauncherScreen.Part.Previous));
         Assert.Equal(packs[0], model.HdPack);
         Assert.Equal(0, asked);
+        Directory.Delete(root, recursive: true);
     }
 
     private static string? LauncherSettingsPack(LauncherContext context) => context.Settings.HdPack;
@@ -188,9 +221,9 @@ public sealed class LauncherLayoutTests
     public void WithoutASoundFontTheRowSaysWhereToGetAFreeOne()
     {
         var context = Broken() with { Settings = new GameSettings { GameFolder = Game } };
-        var surface = new ScriptedSurface(1080, 640);
+        var surface = new ScriptedSurface(1280, 720);
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
-        screen.Render(new Canvas(1080, 640));
+        screen.Render(new Canvas(1280, 720));
         Assert.Contains(screen.Blocks, b => b.What.StartsWith("status None found: any General MIDI .sf2 works (a free one: FluidR3_GM.sf2, MIT)", StringComparison.Ordinal));
     }
 }

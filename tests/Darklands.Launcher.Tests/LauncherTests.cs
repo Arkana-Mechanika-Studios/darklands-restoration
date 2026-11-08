@@ -433,6 +433,7 @@ public sealed class LauncherTests
             screen.Render(new Drawing.Canvas(1080, 600));
             var change = screen.Area(LauncherScreen.Item.Change);
             screen.Handle(new PointerPressed(change.X + change.Width / 2, change.Y + change.Height / 2));
+            screen.Handle(new PointerReleased(change.X + change.Width / 2, change.Y + change.Height / 2));
             Assert.True(screen.Editing);
             Assert.True(surface.TextInputOn);
             Assert.Equal(LauncherScreen.Item.GameFolder, screen.Focus);
@@ -463,6 +464,7 @@ public sealed class LauncherTests
         Assert.False(screen.Editing);
         var change = screen.Area(LauncherScreen.Item.Change);
         screen.Handle(new PointerPressed(change.X + 2, change.Y + 2));
+        screen.Handle(new PointerReleased(change.X + 2, change.Y + 2));
         Assert.False(screen.Editing);
     }
 
@@ -515,14 +517,14 @@ public sealed class LauncherTests
         }
         // the launcher reworked (2026-11-08): as it opens, with broken packs chosen (the audio pack's row focused), and at its smallest size
         var guide = Context(tests: []) with { PackGuide = "https://example.org/PACKS.md", ReportProblem = () => "Report saved.", ReleaseNotesLink = "https://example.org" };
-        Shot("normal-1080x640", guide, 1080, 640, Escape);
+        Shot("normal-1280x720", guide, 1280, 720, Escape);
         // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (HD pack: 9 tabs, audio pack: 13)
         static LauncherInput[] Tabs(int count) => [.. Enumerable.Repeat<LauncherInput>(Tab, count), Escape];
-        Shot("broken-packs-1080x640", LauncherLayoutTests.Broken(), 1080, 640, Tabs(13));
-        Shot("broken-packs-hd-1080x640", LauncherLayoutTests.Broken(), 1080, 640, Tabs(9));
-        Shot("broken-packs-720x427", LauncherLayoutTests.Broken(), 720, 427, Tabs(13));
-        Shot("no-soundfont-720x427", guide, 720, 427, Tabs(14));
-        Shot("start-failed-720x427", LauncherLayoutTests.Broken(LauncherReason.StartFailed, "The game could not start: " + LauncherLayoutTests.BrokenManifest(@"E:\Games\packs\x")), 720, 427, Escape);
+        Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(13));
+        Shot("broken-packs-hd-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(9));
+        Shot("broken-packs-960x540", LauncherLayoutTests.Broken(), 960, 540, Tabs(13));
+        Shot("no-soundfont-960x540", guide, 960, 540, Tabs(14));
+        Shot("start-failed-960x540", LauncherLayoutTests.Broken(LauncherReason.StartFailed, "The game could not start: " + LauncherLayoutTests.BrokenManifest(@"E:\Games\packs\x")), 960, 540, Escape);
         Shot("asked-1440x800", Context(tests: []), 1440, 800, [.. ToWindow, Escape]);
         Shot("packs-1080x600", Context(tests: [], settings: new GameSettings { GameFolder = Game, AudioPack = Path.GetTempPath(), HdPack = @"C:\Packs\hd" })
             with { PackGuide = "https://example.org/PACKS.md", DescribePack = _ => new PackStatus(0, 3, null) }, 1080, 600, [.. ToAudioPack, Tab, Tab, Escape]);

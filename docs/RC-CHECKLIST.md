@@ -248,7 +248,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **J5 Launcher rows.** Do: choose a pack with the arrows, by browsing (Enter or Browse…), by dropping its folder; click a
   pack row. Compare: the row shows the name, marked (!) when unreadable, with its problem on the line under it and in full in
   the box above the buttons; a click on the row only chooses it; no text runs out of the panel or over a button, at any window
-  size. Proven by: `LauncherPackTests`, `LauncherLayoutTests` (no overlap at the launcher's sizes; click and Enter).
+  size (down to 960 x 540). Proven by: `LauncherPackTests`, `LauncherLayoutTests` (no overlap at the launcher's sizes; click and Enter).
 * [ ] **J6 MIDI music and music per card.** Do: a pack with `.mid` pieces, once with a SoundFont and once without; a pack
   or mod that gives a card its own music. Compare: the MIDI pieces play through the SoundFont (without one, the game's own
   music); a card's own music starts with the card and stops at a battle; the ten cards listed in PACKS.md that silence the

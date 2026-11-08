@@ -174,6 +174,9 @@ public sealed record PointerMoved(int X, int Y) : LauncherInput;
 
 public sealed record PointerPressed(int X, int Y) : LauncherInput;
 
+/// <summary>The button let go: a plate (Browse…, Play …) pressed and let go over itself acts then.</summary>
+public sealed record PointerReleased(int X, int Y) : LauncherInput;
+
 public sealed record KeyPressed(LauncherKey Key, bool Shift = false, bool Control = false) : LauncherInput;
 
 public sealed record TextTyped(string Text) : LauncherInput;

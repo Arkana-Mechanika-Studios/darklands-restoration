@@ -159,7 +159,7 @@ with the ROM files on the window. The HD pack, the audio pack and the SoundFont 
 through the choices, Enter or the row's **Browse…** opens the system's dialog, and a dropped folder or `.sf2` file is
 taken; a click on the row itself only chooses it. Under each folder and pack a line says what was found or what is wrong;
 the box above the buttons shows the chosen row's problem in full and what the row does. The window can be made larger or
-smaller, down to 720 x 427. **Play** and **Save and quit** write
+smaller, down to 960 x 540. **Play** and **Save and quit** write
 the changed keys into the settings file, keeping its comments and everything else; closing the window or Esc saves as
 well. A setting the command line or an environment variable overrides is shown but cannot be changed there (its
 explanation says what sets it).
