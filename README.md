@@ -27,14 +27,15 @@ the game is included here: the program reads your installation.
 
 ## Getting started
 
-1. Get a release (`DarklandsRP.exe` with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md` and an empty `MT32_ROMS`
-   folder) and unpack it into a folder of its own.
+1. Get a release (`DarklandsRP.exe` and `DarklandsRP Launcher.exe` with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md`
+   and empty `MT32_ROMS` and `SOUNDFONT` folders) and unpack it into a folder of its own.
 2. Start `DarklandsRP.exe`. On the first run it opens the launcher, a settings screen before the game: it has found
    your Darklands by itself (GOG, Steam, or a folder next to it), and you can check the game folder, the window, the
    sound card and the Roland ROM folder, and try the sound, then press **Play**. The choices go into
-   `darklands.settings.json`, next to the program. Later starts go straight to the game; hold **Shift** while starting
-   it (or start it with `--setup`) to see the launcher again. If the game can't be found or can't start, the launcher
-   comes up by itself and says why.
+   `darklands.settings.json`, next to the program. Later starts of `DarklandsRP.exe` go straight to the game. To change
+   the settings, start **`DarklandsRP Launcher.exe`** (on Linux `DarklandsRP-Launcher`) instead: it opens the launcher,
+   and its **Play** starts the game. Holding **Shift** while `DarklandsRP.exe` starts (or starting it with `--setup`)
+   does the same. If the game can't be found or can't start, the launcher comes up by itself and says why.
 3. Play. It starts like the original: the banner, the opening, then the start screen with Quickstart,
    a new world or a saved game.
 
@@ -140,8 +141,11 @@ dotnet build
 dotnet run --project src/Darklands.Host.Sdl -- "C:/GOG Games/Darklands"
 ```
 
-A release for Windows (`DarklandsRP.exe`, self-contained, with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md` and an
-empty `MT32_ROMS` folder beside it, in `artifacts/win-x64`; no .NET installation needed to run it):
+A release for Windows (`DarklandsRP.exe`, self-contained, with `DarklandsRP Launcher.exe`, `SDL2.dll`, `libmt32emu.dll`,
+`RELEASE_NOTES.md` and empty `MT32_ROMS` and `SOUNDFONT` folders beside it, in `artifacts/win-x64`; no .NET installation
+needed to run it). `DarklandsRP Launcher.exe` (`src/Darklands.Host.Launcher`) only starts `DarklandsRP.exe --setup`; it is
+built for the .NET Framework that every Windows 10 and 11 has, so it stays a few kilobytes. The Linux release has the
+script `DarklandsRP-Launcher` in its place:
 
 ```
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=win-x64

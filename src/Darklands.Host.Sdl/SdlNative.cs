@@ -380,6 +380,9 @@ internal static class SdlNative
     internal static extern void SDL_SetWindowSize(IntPtr window, int width, int height);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_SetWindowMinimumSize(IntPtr window, int width, int height);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]

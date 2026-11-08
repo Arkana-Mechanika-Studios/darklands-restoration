@@ -532,6 +532,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>The system's mouse pointer (the game draws its own, so it is hidden while the game runs).</summary>
     internal static void ShowPointer(bool on) => SdlNative.SDL_ShowCursor(on ? 1 : 0);
 
+    /// <summary>The smallest size the player can give the window (1 x 1: no limit).</summary>
+    internal void MinimumSize(int width, int height) => SdlNative.SDL_SetWindowMinimumSize(_window, Math.Max(1, width), Math.Max(1, height));
+
     /// <summary>Gives the window a new size (centred) or the whole screen.</summary>
     internal void Resize(int width, int height, bool fullscreen)
     {

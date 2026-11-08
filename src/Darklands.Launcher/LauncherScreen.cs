@@ -5,14 +5,14 @@ namespace Darklands.Launcher;
 /// <summary>
 /// The launcher's one screen, in the look of the original game's menus: the title and the release notes and the project's
 /// note on parchment at the left, the settings on a blue panel at the right, everything framed in rope. Laid out on a
-/// 1080x600 design and scaled to the surface.
+/// 1080x640 design and scaled to the surface.
 /// </summary>
 internal sealed class LauncherScreen
 {
     public const string DiscordLink = "https://discord.gg/HjzWvmHhqZ";
 
     private const int DesignWidth = 1080;
-    private const int DesignHeight = 600;
+    private const int DesignHeight = 640;
 
     // the colours of the original's menus (sampled from its screens) and of the mockup they were chosen in
     private const uint Black = 0x000000;
@@ -45,7 +45,9 @@ internal sealed class LauncherScreen
     private readonly ILauncherSurface _surface;
     private readonly IReadOnlyList<string> _notes;
     private readonly Dictionary<(TrueTypeFont Font, int TenthsOfPixels), TextFace> _faces = [];
-    private List<(Rect Area, Item Item)> _hotspots = [];
+    private List<(Rect Area, Item Item, Part Part)> _hotspots = [];
+    private List<(Rect Area, string What)> _blocks = [];
+    private Rect _panel;
     private Item _focus;
     private bool _editing;
     private string _editText = "";
@@ -92,10 +94,32 @@ internal sealed class LauncherScreen
         Report,
     }
 
+    /// <summary>The parts of a control a click can hit.</summary>
+    public enum Part
+    {
+        /// <summary>The control itself (a row, a field, a button, a link).</summary>
+        Row,
+
+        /// <summary>A row's ‹: the previous value.</summary>
+        Previous,
+
+        /// <summary>A row's ›: the next value.</summary>
+        Next,
+
+        /// <summary>A row's own "Browse…" (or "Change…") button: the system's folder or file dialog.</summary>
+        Browse,
+    }
+
     public Item Focus => _focus;
 
     /// <summary>Where <paramref name="item"/> was drawn last.</summary>
-    public Rect Area(Item item) => _hotspots.First(h => h.Item == item).Area;
+    public Rect Area(Item item, Part part = Part.Row) => _hotspots.First(h => h.Item == item && h.Part == part).Area;
+
+    /// <summary>The settings panel's inside, as drawn last: everything of the settings stays in it.</summary>
+    internal Rect SettingsPanel => _panel;
+
+    /// <summary>What the settings panel was drawn with last (rows, fields, buttons, lines of text), each once: none of them overlaps another.</summary>
+    internal IReadOnlyList<(Rect Area, string What)> Blocks => _blocks;
 
     public bool Editing => _editing;
 
@@ -125,7 +149,15 @@ internal sealed class LauncherScreen
                     StopEditing(apply: true);
                 }
                 _focus = hit.Item;
-                return Activate(hit.Item, step: 1, cycle: false);
+                return hit.Part switch
+                {
+                    Part.Previous => Activate(hit.Item, -1, cycle: true),
+                    Part.Next => Activate(hit.Item, 1, cycle: true),
+                    Part.Browse => Activate(hit.Item, 1, cycle: false),
+                    // a click on a row with a dialog behind it only chooses the row (←/→ then work); its Browse… opens the dialog
+                    _ when SelectedByClick(hit.Item) => Selected(),
+                    _ => Activate(hit.Item, step: 1, cycle: false),
+                };
             case TextTyped typed when _editing:
                 _editText = (_editFresh ? "" : _editText) + typed.Text;
                 _editFresh = false;
@@ -144,6 +176,16 @@ internal sealed class LauncherScreen
             default:
                 return null;
         }
+    }
+
+    /// <summary>The rows a click only chooses: Enter or their Browse… / Change… button opens the system's dialog.</summary>
+    private static bool SelectedByClick(Item item) => item is Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Roms;
+
+    private LauncherChoice? Selected()
+    {
+        _message = null;
+        _showSound = false;
+        return null;
     }
 
     private LauncherChoice? Key(KeyPressed key)
@@ -394,12 +436,17 @@ internal sealed class LauncherScreen
 
     private static Item PackItem(PackKind kind) => kind == PackKind.Pictures ? Item.HdPack : Item.AudioPack;
 
-    /// <summary>A pack row: ←/→ go through None and the packs found; Enter or a click browses for a folder (or goes on, without a dialog).</summary>
+    /// <summary>A pack row: ←/→ (or a click on ‹ ›) go through None and the packs found; Enter or its Browse… asks the system for a folder.</summary>
     private void ChoosePack(PackKind kind, int step, bool cycle)
     {
         var what = kind == PackKind.Pictures ? "a picture (HD) pack: PNG files named after the game's pictures"
             : "a sound pack: OGG or WAV files named after the game's music and effects";
-        if (!cycle && _surface.PickFolder is not null && Pick("Choose the folder of " + what, out var chosen))
+        if (!cycle && _surface.PickFolder is null)
+        {
+            (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleBlue);
+            return;
+        }
+        if (!cycle && Pick("Choose the folder of " + what, out var chosen))
         {
             if (chosen is { } picked)
             {
@@ -430,16 +477,8 @@ internal sealed class LauncherScreen
         PackMessage(kind);
     }
 
-    /// <summary>The chosen pack's state in the message line: what it holds, or what could not be read (its manifest ...).</summary>
-    private void PackMessage(PackKind kind)
-    {
-        if (_model.PackOf(kind) is not { } folder)
-        {
-            return;
-        }
-        var status = _model.Pack(folder);
-        (_message, _messageColour) = status.Problem is { } problem ? (problem, PaleRed) : (PackSummary(kind, status), Green);
-    }
+    /// <summary>A pack chosen: its state shows on the line under its row (and in full in the details box), not as a message.</summary>
+    private void PackMessage(PackKind kind) => _message = null;
 
     private string PackSummary(PackKind kind, PackStatus status) => kind == PackKind.Pictures
         ? $"{status.Pictures} picture{(status.Pictures == 1 ? "" : "s")}."
@@ -493,10 +532,8 @@ internal sealed class LauncherScreen
         SoundFontMessage();
     }
 
-    private void SoundFontMessage() =>
-        (_message, _messageColour) = _model.SoundFontFound is { } found
-            ? ($"SoundFont: {Path.GetFileName(found)}.", Green)
-            : ("No SoundFont found: a pack's .mid music is skipped and the game's own music plays.", PaleRed);
+    /// <summary>A SoundFont chosen: its state shows on the line under its row, not as a message.</summary>
+    private void SoundFontMessage() => _message = null;
 
     /// <summary>The SoundFont row's value: the file's name; "(default)" when it comes from the SOUNDFONT folder; "none found".</summary>
     private string SoundFontShown()
@@ -601,6 +638,12 @@ internal sealed class LauncherScreen
 
     // ---- drawing ----
 
+    /// <summary>The left column (the title, the parchment) and the settings panel at the right, in design pixels.</summary>
+    private const int LeftWidth = 520;
+    private const int SettingsX = 548;
+
+    private static Rect SettingsFrame(View v) => v.Rect(SettingsX, 14, DesignWidth - 14 - SettingsX, DesignHeight - 28);
+
     /// <summary>Draws the screen on <paramref name="canvas"/> and notes where the controls are.</summary>
     public void Render(Canvas canvas)
     {
@@ -613,18 +656,19 @@ internal sealed class LauncherScreen
             DrawBackground(_background, v);
         }
         _background.Pixels.CopyTo(canvas.Pixels, 0);
-        _hotspots = [(_discord, Item.Discord)];
+        _hotspots = [(_discord, Item.Discord, Part.Row)];
+        _blocks = [];
         if (_notesLink is { } notes)
         {
-            _hotspots.Add((notes, Item.Notes));
+            _hotspots.Add((notes, Item.Notes, Part.Row));
         }
         if (_guideLink is { } guide)
         {
-            _hotspots.Add((guide, Item.PackGuide));
+            _hotspots.Add((guide, Item.PackGuide, Part.Row));
         }
         if (_reportLink is { } reportLink)
         {
-            _hotspots.Add((reportLink, Item.Report));
+            _hotspots.Add((reportLink, Item.Report, Part.Row));
         }
         if ((_focus == Item.Discord ? _discord : _focus == Item.Notes ? _notesLink : _focus == Item.PackGuide ? _guideLink : _focus == Item.Report ? _reportLink : null) is { } link)
         {
@@ -638,7 +682,7 @@ internal sealed class LauncherScreen
         canvas.Clear(Black);
 
         // the title, on blue
-        var top = v.Rect(14, 14, 586, 86);
+        var top = v.Rect(14, 14, LeftWidth, 86);
         Rope(canvas, top, v);
         var topInner = top.Inset(v.Len(7));
         Blue(canvas, topInner);
@@ -652,19 +696,19 @@ internal sealed class LauncherScreen
 
         DrawParchment(canvas, v);
 
-        var settings = v.Rect(610, 14, 456, 572);
+        var settings = SettingsFrame(v);
         Rope(canvas, settings, v);
         Blue(canvas, settings.Inset(v.Len(7)));
     }
 
     private void DrawParchment(Canvas canvas, View v)
     {
-        var frame = v.Rect(14, 108, 586, 478);
+        var frame = v.Rect(14, 108, LeftWidth, DesignHeight - 122);
         Rope(canvas, frame, v);
         var inner = frame.Inset(v.Len(7));
         var cell = Math.Max(1, v.Len(2));
         canvas.Paint(inner, (x, y) => ((x / cell + y / cell) & 1) == 0 ? ParchmentLight : ParchmentDark);
-        canvas.Image(Assets.Badge, new Rect(inner.X + v.Len(76), inner.Y + v.Len(20), v.Len(420), v.Len(420)), BadgeOpacity);
+        canvas.Image(Assets.Badge, new Rect(inner.X + (inner.Width - v.Len(420)) / 2, inner.Y + v.Len(30), v.Len(420), v.Len(420)), BadgeOpacity);
 
         var x = inner.X + v.Len(20);
         var width = inner.Width - v.Len(40);
@@ -766,134 +810,237 @@ internal sealed class LauncherScreen
         return Math.Max(box.Bottom, y + face.LineHeight - v.Len(4) + under.LineHeight);
     }
 
+    /// <summary>
+    /// The settings panel: the title, four groups (Game, Display, Sound and music, Start-up) of rows with their values aligned
+    /// at the right, a status line under each folder or pack, then the details box (the last message, the focused row's problem
+    /// in full and what it does) and the two buttons. Every text is cut or wrapped to its place: nothing is drawn over another.
+    /// </summary>
     private void DrawSettings(Canvas canvas, View v)
     {
-        var inner = v.Rect(610, 14, 456, 572).Inset(v.Len(7));
-
-        var x = inner.X + v.Len(18);
-        var right = inner.Right - v.Len(18);
+        var inner = SettingsFrame(v).Inset(v.Len(7));
+        _panel = inner;
+        var x = inner.X + v.Len(16);
+        var right = inner.Right - v.Len(16);
         var width = right - x;
-        var y = inner.Y + v.Len(12);
-        var title = Face(Assets.Title, 30, v);
-        var heading = Face(Assets.Heading, 22, v);
-        var text = Face(Assets.Panel, 16, v);
-        var caption = Face(Assets.Panel, 13, v);
+        var title = Face(Assets.Title, 28, v);
+        var heading = Face(Assets.Heading, 20, v);
+        var text = Face(Assets.Panel, 15, v);
+        var caption = Face(Assets.Panel, 12.5, v);
         var shadow = Math.Max(1, v.Len(1));
+        var gap = v.Len(8);
 
+        var y = inner.Y + v.Len(6);
+        Leaf(new Rect(x, y, title.Measure("Settings"), title.LineHeight), "title");
         title.Draw(canvas, "Settings", x, y, Yellow, v.Len(2), Black);
         y += title.LineHeight;
-        // the sound test's status, while it is the last thing asked for (it goes when the music ends)
-        var (note, noteColour) = _showSound && _context.SoundTest is { Status: { } soundStatus } soundTester ? (soundStatus, soundTester.Playing ? Green : PaleRed)
-            : _message is not null ? (_message, _messageColour) : _context.Reason switch
+
+        int Heading(string name, int top)
         {
-            LauncherReason.StartFailed => (_context.Problem ?? "The game could not start.", PaleRed),
-            LauncherReason.GameNotFound when !_model.CanPlay => ("Darklands was not found: choose its folder to play.", PaleRed),
-            LauncherReason.FirstRun => ("Welcome! Check the settings, then press Play.", PaleBlue),
-            _ => ("Changes are written to settings.json", PaleBlue),
-        };
-        foreach (var l in caption.Wrap(note, width).Take(3))
-        {
-            caption.Draw(canvas, l, x, y, noteColour, shadow, Black);
-            y += caption.LineHeight;
+            top += v.Len(4);
+            heading.Draw(canvas, name, x, top, Yellow, shadow, Black);
+            Leaf(new Rect(x, top, heading.Measure(name), heading.LineHeight), "heading " + name);
+            return top + heading.LineHeight;
         }
 
-        // the game folder
-        y += v.Len(4);
-        heading.Draw(canvas, "Game", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight;
+        int Status(int top, string line, uint colour, int lineRight)
+        {
+            var fitted = Fit(caption, line, lineRight - x, fromEnd: false);
+            caption.Draw(canvas, fitted, x, top, colour, shadow, Black);
+            Leaf(new Rect(x, top, caption.Measure(fitted), caption.LineHeight), "status " + line);
+            return top + caption.LineHeight;
+        }
+
+        // the game folder: its field, Change… and whether the game is there
+        y = Heading("Game", y);
         var change = "Change…";
         var buttonWidth = text.Measure(change) + v.Len(20);
-        var field = new Rect(x, y, width - buttonWidth - v.Len(8), v.Len(28));
+        var field = new Rect(x, y, width - buttonWidth - gap, v.Len(24));
         canvas.Fill(field, FieldBlue);
         canvas.Frame(field, Math.Max(1, v.Len(1)), _focus == Item.GameFolder ? Yellow : FieldEdge);
         var shown = _editing ? _editText + "_" : _model.GameFolder ?? "";
         var (pathFont, pathSize, pathStep) = Assets.Path;
         var path = FaceAt(pathFont, Math.Max(pathStep, Math.Round(pathSize * v.Scale / pathStep) * pathStep));
         path.Draw(canvas, Fit(path, shown, field.Width - v.Len(16), fromEnd: true), field.X + v.Len(8), field.Y + (field.Height - path.LineHeight) / 2, White);
-        _hotspots.Add((field, Item.GameFolder));
-        ParchmentButton(canvas, v, new Rect(field.Right + v.Len(8), y, buttonWidth, field.Height), change, text, Item.Change);
-        y += field.Height + v.Len(4);
+        Hot(field, Item.GameFolder, Part.Row);
+        Leaf(field, "game folder");
+        ParchmentButton(canvas, v, new Rect(field.Right + gap, y, buttonWidth, field.Height), change, text, Item.Change, Part.Row);
+        y = field.Bottom + v.Len(2);
         var (status, statusColour) = _model.GameFolderChecked is not null
             ? ("Found" + (_model.GameFolderSource is { } source ? $" ({source})." : "."), Green)
             : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleBlue) : ("No Darklands there (DARKLAND.EXE).", PaleRed);
-        caption.Draw(canvas, Fit(caption, status, width, fromEnd: false), x, y, statusColour, shadow, Black);
-        y += caption.LineHeight;
+        y = Status(y, status, statusColour, right);
 
         // display
-        y += v.Len(2);
-        heading.Draw(canvas, "Display", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight - v.Len(3);
-        y = Row(canvas, v, text, x, right, y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
-        y = Row(canvas, v, text, x, right, y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
-        y = Row(canvas, v, text, x, right, y, "HD pack", Fit(text, PackShown(PackKind.Pictures), width / 2, fromEnd: false), Item.HdPack);
+        y = Heading("Display", y);
+        y = Row(canvas, v, text, caption, x, right, y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
+        y = Row(canvas, v, text, caption, x, right, y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
+        y = Row(canvas, v, text, caption, x, right, y, "HD pack", PackShown(PackKind.Pictures), Item.HdPack, browse: true);
+        var (hdLine, hdColour) = PackLine(PackKind.Pictures);
+        y = Status(y, hdLine, hdColour, right);
 
         // sound and music
-        y += v.Len(2);
-        heading.Draw(canvas, "Sound & Music", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight - v.Len(3);
-        y = Row(canvas, v, text, x, right, y, "Sound card", _model.SoundCardLabel, Item.Sound);
+        y = Heading("Sound & Music", y);
+        y = Row(canvas, v, text, caption, x, right, y, "Sound card", _model.SoundCardLabel, Item.Sound);
         // the Roland ROM folder, as the game folder: its field, Change… and what it holds
         var romsLabel = "Roland ROMs";
         var labelWidth = text.Measure(romsLabel) + v.Len(10);
-        var romsButtonWidth = text.Measure(change) + v.Len(20);
-        var romsField = new Rect(x + labelWidth, y + v.Len(2), width - labelWidth - romsButtonWidth - v.Len(8), v.Len(26));
-        text.Draw(canvas, romsLabel, x, romsField.Y + (romsField.Height - text.LineHeight) / 2, White, shadow, Black);
+        var romsField = new Rect(x + labelWidth, y + v.Len(2), width - labelWidth - buttonWidth - gap, v.Len(22));
+        var romsLabelY = romsField.Y + (romsField.Height - text.LineHeight) / 2;
+        text.Draw(canvas, romsLabel, x, romsLabelY, White, shadow, Black);
+        Leaf(new Rect(x, romsLabelY, text.Measure(romsLabel), text.LineHeight), "label Roland ROMs");
         var roms = _model.Roms;
         var romsFixed = IsFixed(Item.Roms, out _);
         canvas.Fill(romsField, FieldBlue);
         canvas.Frame(romsField, Math.Max(1, v.Len(1)), _focus == Item.Roms ? Yellow : FieldEdge);
         path.Draw(canvas, Fit(path, roms.Folder, romsField.Width - v.Len(16), fromEnd: true), romsField.X + v.Len(8),
             romsField.Y + (romsField.Height - path.LineHeight) / 2, romsFixed ? PaleBlue : White);
-        _hotspots.Add((romsField, Item.Roms));
-        ParchmentButton(canvas, v, new Rect(romsField.Right + v.Len(8), romsField.Y, romsButtonWidth, romsField.Height), change, text, Item.Roms);
-        y = romsField.Bottom + v.Len(4);
+        Hot(romsField, Item.Roms, Part.Row);
+        Leaf(romsField, "roms field");
+        ParchmentButton(canvas, v, new Rect(romsField.Right + gap, romsField.Y, buttonWidth, romsField.Height), change, text, Item.Roms, Part.Browse);
+        y = romsField.Bottom + v.Len(2);
         var (romsStatus, romsColour) = RomsStatus(roms);
         var statusRight = right;
         if (_context.SoundTest is { } soundTest)
         {
             var test = soundTest.Playing ? "Stop" : "Test sound";
             var testWidth = Math.Max(caption.Measure("Test sound"), caption.Measure("Stop")) + v.Len(14);
-            ParchmentButton(canvas, v, new Rect(right - testWidth, y - v.Len(1), testWidth, caption.LineHeight + v.Len(2)), test, caption, Item.Test);
-            statusRight = right - testWidth - v.Len(8);
+            ParchmentButton(canvas, v, new Rect(right - testWidth, y, testWidth, caption.LineHeight), test, caption, Item.Test, Part.Row);
+            statusRight = right - testWidth - gap;
         }
-        caption.Draw(canvas, Fit(caption, romsStatus, statusRight - x, fromEnd: false), x, y, romsColour, shadow, Black);
-        y += caption.LineHeight;
-        y = Row(canvas, v, text, x, right, y, "Audio pack", Fit(text, PackShown(PackKind.Sounds), width / 2, fromEnd: false), Item.AudioPack);
-        y = Row(canvas, v, text, x, right, y, "SoundFont", Fit(text, SoundFontShown(), width / 2, fromEnd: false), Item.SoundFont);
+        y = Status(y, romsStatus, romsColour, statusRight);
+        y = Row(canvas, v, text, caption, x, right, y, "Audio pack", PackShown(PackKind.Sounds), Item.AudioPack, browse: true);
+        var (audioLine, audioColour) = PackLine(PackKind.Sounds);
+        y = Status(y, audioLine, audioColour, right);
+        y = Row(canvas, v, text, caption, x, right, y, "SoundFont", SoundFontShown(), Item.SoundFont, browse: true);
+        var (fontLine, fontColour) = SoundFontLine();
+        y = Status(y, fontLine, fontColour, right);
 
         // start-up
-        y += v.Len(2);
-        heading.Draw(canvas, "Start-up", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight - v.Len(3);
-        y = Row(canvas, v, text, x, right, y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner);
-        y = Row(canvas, v, text, x, right, y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro);
-        y = Row(canvas, v, text, x, right, y, "Show launcher at every start", _model.Always ? "Yes" : "No", Item.Always);
+        y = Heading("Start-up", y);
+        y = Row(canvas, v, text, caption, x, right, y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner);
+        y = Row(canvas, v, text, caption, x, right, y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro);
+        y = Row(canvas, v, text, caption, x, right, y, "Show launcher at every start", _model.Always ? "Yes" : "No", Item.Always);
 
-        // the buttons, and over them the focused control's explanation
-        var buttons = inner.Bottom - v.Len(14) - v.Len(40);
+        // the buttons at the bottom right
+        var buttonHeight = v.Len(34);
+        var buttons = inner.Bottom - v.Len(10) - buttonHeight;
         var play = "Play";
-        var playFace = Face(Assets.Title, 28, v);
-        var playRect = new Rect(right - playFace.Measure(play) - v.Len(56), buttons, playFace.Measure(play) + v.Len(56), v.Len(40));
+        var playFace = Face(Assets.Title, 26, v);
+        var playRect = new Rect(right - playFace.Measure(play) - v.Len(52), buttons, playFace.Measure(play) + v.Len(52), buttonHeight);
         var cell = Math.Max(1, v.Len(3));
         canvas.Paint(playRect, (px, py) => ((px / cell + py / cell) & 1) == 0 ? CapitalLight : CapitalDark);
         canvas.Frame(playRect, Math.Max(1, v.Len(2)), _focus == Item.Play ? Yellow : RopeLight);
         playFace.Draw(canvas, play, playRect.X + (playRect.Width - playFace.Measure(play)) / 2, playRect.Y + (playRect.Height - playFace.LineHeight) / 2,
             _model.CanPlay ? Yellow : PaleBlue, v.Len(2), Black);
-        _hotspots.Add((playRect, Item.Play));
+        Hot(playRect, Item.Play, Part.Row);
+        Leaf(playRect, "play");
         var save = "Save and quit";
-        var saveWidth = text.Measure(save) + v.Len(28);
-        ParchmentButton(canvas, v, new Rect(playRect.X - saveWidth - v.Len(10), buttons, saveWidth, v.Len(40)), save, text, Item.Save);
+        var saveWidth = text.Measure(save) + v.Len(26);
+        ParchmentButton(canvas, v, new Rect(playRect.X - saveWidth - v.Len(10), buttons, saveWidth, buttonHeight), save, text, Item.Save, Part.Row);
 
-        var help = Help(_focus);
-        var helpLines = caption.Wrap(help, width);
-        // no further than the buttons (the texts are written to fit in two lines)
-        helpLines = [.. helpLines.Take(Math.Max(1, (buttons - v.Len(8) - y - v.Len(4)) / caption.LineHeight))];
-        var hy = Math.Max(y + v.Len(4), buttons - v.Len(8) - helpLines.Count * caption.LineHeight);
-        foreach (var l in helpLines)
+        // between the rows and the buttons: the details box
+        var box = new Rect(x - v.Len(6), y + v.Len(6), width + v.Len(12), buttons - v.Len(6) - (y + v.Len(6)));
+        DrawDetails(canvas, v, caption, box);
+    }
+
+    /// <summary>
+    /// The details box: the last message (or why the launcher is shown), the focused row's problem in full, and what the focused
+    /// control does; wrapped to the box (long paths broken anywhere), the last line cut with "…" when there is more.
+    /// </summary>
+    private void DrawDetails(Canvas canvas, View v, TextFace caption, Rect box)
+    {
+        var pad = v.Len(5);
+        var room = (box.Height - 2 * pad) / caption.LineHeight;
+        if (room <= 0)
         {
-            caption.Draw(canvas, l, x, hy, PaleBlue, shadow, Black);
-            hy += caption.LineHeight;
+            return;
         }
+        for (var py = box.Y; py < box.Bottom; py++)
+        {
+            for (var px = box.X; px < box.Right; px++)
+            {
+                canvas.Blend(px, py, FieldBlue, 110);
+            }
+        }
+        canvas.Frame(box, Math.Max(1, v.Len(1)), FieldEdge);
+        Leaf(box, "details");
+        var lineWidth = box.Width - 2 * pad;
+        var lines = new List<(string Text, uint Colour)>();
+        foreach (var (part, colour) in Details())
+        {
+            lines.AddRange(WrapAll(caption, part, lineWidth).Select(l => (l, colour)));
+        }
+        if (lines.Count > room)
+        {
+            var last = lines[room - 1];
+            lines = [.. lines.Take(room - 1), (Fit(caption, last.Text + " …", lineWidth, fromEnd: false), last.Colour)];
+        }
+        var ly = box.Y + pad;
+        var shadow = Math.Max(1, v.Len(1));
+        foreach (var (line, colour) in lines)
+        {
+            caption.Draw(canvas, line, box.X + pad, ly, colour, shadow, Black);
+            ly += caption.LineHeight;
+        }
+    }
+
+    /// <summary>The details box's parts, most important first.</summary>
+    private IEnumerable<(string Text, uint Colour)> Details()
+    {
+        if (_showSound && _context.SoundTest is { Status: { } soundStatus } soundTester)
+        {
+            yield return (soundStatus, soundTester.Playing ? Green : PaleRed);
+        }
+        else if (_message is not null)
+        {
+            yield return (_message, _messageColour);
+        }
+        else if (_context.Reason switch
+                 {
+                     LauncherReason.StartFailed => _context.Problem ?? "The game could not start.",
+                     LauncherReason.GameNotFound when !_model.CanPlay => "Darklands was not found: choose its folder to play.",
+                     LauncherReason.FirstRun => "Welcome! Check the settings, then press Play.",
+                     _ => null,
+                 } is { } note)
+        {
+            yield return (note, _context.Reason == LauncherReason.FirstRun ? Green : PaleRed);
+        }
+        if (_focus is Item.HdPack or Item.AudioPack && PackProblem(_focus == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
+        {
+            yield return ("Problem: " + problem, PaleRed);
+        }
+        if (Help(_focus) is { Length: > 0 } help)
+        {
+            yield return (help, PaleBlue);
+        }
+    }
+
+    /// <summary>The text wrapped at spaces to <paramref name="width"/>; a word longer than a line (a path) is broken where it must.</summary>
+    internal static List<string> WrapAll(TextFace face, string text, int width)
+    {
+        var lines = new List<string>();
+        foreach (var line in face.Wrap(text, width))
+        {
+            var rest = line;
+            while (face.Measure(rest) > width && rest.Length > 1)
+            {
+                // the longest start that fits, broken after a path's separator when there is one in it
+                var cut = 1;
+                while (cut < rest.Length && face.Measure(rest.AsSpan(0, cut + 1)) <= width)
+                {
+                    cut++;
+                }
+                var separator = rest.AsSpan(0, cut).LastIndexOfAny('\\', '/');
+                if (separator > cut / 2)
+                {
+                    cut = separator + 1;
+                }
+                lines.Add(rest[..cut]);
+                rest = rest[cut..];
+            }
+            lines.Add(rest);
+        }
+        return lines;
     }
 
     /// <summary>A pack row's value: the folder's name, marked when it cannot be read as a pack.</summary>
@@ -901,6 +1048,70 @@ internal sealed class LauncherScreen
         _model.PackOf(kind) is { } folder && (_model.Pack(folder).Problem is not null || !_model.Holds(folder, kind))
             ? LauncherModel.PackLabel(folder) + " (!)"
             : LauncherModel.PackLabel(_model.PackOf(kind));
+
+    /// <summary>What is wrong with the chosen pack (its manifest could not be read ...), without its folder's path; null when nothing.</summary>
+    private string? PackProblem(PackKind kind)
+    {
+        if (_model.PackOf(kind) is not { } folder)
+        {
+            return null;
+        }
+        if (_model.Pack(folder).Problem is { } problem)
+        {
+            return ShortProblem(folder, problem);
+        }
+        return _model.Holds(folder, kind) ? null : kind == PackKind.Pictures ? "no PNG pictures in this folder." : "no OGG, WAV or MIDI sounds in this folder.";
+    }
+
+    /// <summary>A pack's problem as the row shows it: without "Audio pack:" (the row says it) and with the pack's own files named from its folder.</summary>
+    internal static string ShortProblem(string folder, string problem)
+    {
+        foreach (var prefix in new[] { "Audio pack: ", "HD pack: " })
+        {
+            if (problem.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                problem = problem[prefix.Length..];
+            }
+        }
+        var trimmed = Path.TrimEndingDirectorySeparator(folder);
+        foreach (var form in new[] { trimmed, trimmed.Replace('\\', '/'), trimmed.Replace('/', '\\') }.Distinct())
+        {
+            problem = problem.Replace(form + Path.DirectorySeparatorChar, "", StringComparison.OrdinalIgnoreCase)
+                .Replace(form + Path.AltDirectorySeparatorChar, "", StringComparison.OrdinalIgnoreCase)
+                .Replace(form + "\\", "", StringComparison.OrdinalIgnoreCase)
+                .Replace(form, Path.GetFileName(trimmed), StringComparison.OrdinalIgnoreCase);
+        }
+        return problem;
+    }
+
+    /// <summary>The line under a pack row: none, what the pack holds, or what is wrong (in full in the details box).</summary>
+    private (string Text, uint Colour) PackLine(PackKind kind)
+    {
+        if (_model.PackOf(kind) is not { } folder)
+        {
+            return (kind == PackKind.Pictures ? "None: the game's own pictures." : "None: the game's own music and sounds.", PaleBlue);
+        }
+        return PackProblem(kind) is { } problem ? ("(!) " + problem, PaleRed) : (PackSummary(kind, _model.Pack(folder)), Green);
+    }
+
+    /// <summary>The line under the SoundFont row: the file that plays the packs' .mid music, or where to get a free one.</summary>
+    private (string Text, uint Colour) SoundFontLine()
+    {
+        if (_model.SoundFont is { } chosen && !File.Exists(chosen))
+        {
+            return ("(!) Not found: " + chosen, PaleRed);
+        }
+        if (_model.SoundFontFound is not null)
+        {
+            return ("Plays the packs' MIDI (.mid) music.", Green);
+        }
+        return ("None found: any General MIDI .sf2 works (a free one: " + FreeSoundFont + ", MIT); put it in " + SoundFontFolder + ".", PaleBlue);
+    }
+
+    /// <summary>A free General MIDI SoundFont the launcher points to when none is found (not included: it is about 140 MB); any .sf2 the player has works as well.</summary>
+    internal const string FreeSoundFont = "FluidR3_GM.sf2";
+
+    private const string SoundFontFolder = "SOUNDFONT";
 
     /// <summary>What the ROM folder means for the sound card chosen: for a Roland module, whether its ROMs are there.</summary>
     private (string Text, uint Colour) RomsStatus(RomStatus roms) => _model.SoundCard switch
@@ -916,23 +1127,60 @@ internal sealed class LauncherScreen
         },
     };
 
-    /// <summary>A setting's row: its label at the left, its value at the right between ‹ ›; returns the y below.</summary>
-    private int Row(Canvas canvas, View v, TextFace text, int x, int right, int y, string label, string value, Item item)
+    /// <summary>
+    /// A setting's row: its label at the left, its value at the right between ‹ › (each a click target: the previous or next
+    /// value), with a "Browse…" button at the end when <paramref name="browse"/>; the label and the value are cut to fit. Returns the y below.
+    /// </summary>
+    private int Row(Canvas canvas, View v, TextFace text, TextFace small, int x, int right, int y, string label, string value, Item item, bool browse = false)
     {
-        var row = new Rect(x - v.Len(6), y, right - x + v.Len(12), v.Len(21));
+        var row = new Rect(x - v.Len(6), y, right - x + v.Len(12), Math.Max(v.Len(20), text.LineHeight));
         if (_focus == item)
         {
             Highlight(canvas, row);
         }
+        Hot(row, item, Part.Row);
         var shadow = Math.Max(1, v.Len(1));
         var ty = y + (row.Height - text.LineHeight) / 2;
-        text.Draw(canvas, label, x, ty, White, shadow, Black);
+        var valueRight = right;
+        if (browse)
+        {
+            var browseLabel = "Browse…";
+            var browseWidth = small.Measure(browseLabel) + v.Len(14);
+            var buttonHeight = Math.Min(row.Height - v.Len(2), small.LineHeight + v.Len(4));
+            ParchmentButton(canvas, v, new Rect(right - browseWidth, y + (row.Height - buttonHeight) / 2, browseWidth, buttonHeight), browseLabel, small, item, Part.Browse);
+            valueRight = right - browseWidth - v.Len(8);
+        }
+        var gap = v.Len(10);
+        var labelShown = Fit(text, label, (valueRight - x) * 3 / 5, fromEnd: false);
+        var labelWidth = text.Measure(labelShown);
+        text.Draw(canvas, labelShown, x, ty, White, shadow, Black);
+        Leaf(new Rect(x, ty, labelWidth, text.LineHeight), "label " + label);
+
         var fixedBy = IsFixed(item, out _);
-        var shown = fixedBy ? value : $"‹ {value} ›";
-        text.Draw(canvas, shown, right - text.Measure(shown), ty, fixedBy ? PaleBlue : Yellow, shadow, Black);
-        _hotspots.Add((row, item));
+        var (open, close) = fixedBy ? ("", "") : ("‹ ", " ›");
+        var room = valueRight - (x + labelWidth + gap) - text.Measure(open) - text.Measure(close);
+        var valueShown = Fit(text, value, Math.Max(0, room), fromEnd: false);
+        var closeX = valueRight - text.Measure(close);
+        var valueX = closeX - text.Measure(valueShown);
+        var openX = valueX - text.Measure(open);
+        var colour = fixedBy ? PaleBlue : Yellow;
+        text.Draw(canvas, open, openX, ty, colour, shadow, Black);
+        text.Draw(canvas, valueShown, valueX, ty, colour, shadow, Black);
+        text.Draw(canvas, close, closeX, ty, colour, shadow, Black);
+        Leaf(new Rect(openX, ty, valueRight - openX, text.LineHeight), "value " + label);
+        if (!fixedBy)
+        {
+            // the arrows: a click on ‹ or › steps back or on, as ←/→
+            Hot(new Rect(openX - v.Len(4), row.Y, valueX - openX + v.Len(4), row.Height), item, Part.Previous);
+            Hot(new Rect(closeX, row.Y, valueRight + v.Len(4) - closeX, row.Height), item, Part.Next);
+        }
         return row.Bottom;
     }
+
+    private void Hot(Rect area, Item item, Part part) => _hotspots.Add((area, item, part));
+
+    /// <summary>Notes a drawn thing of the settings panel (for the layout's checks: in the panel, over nothing else).</summary>
+    private void Leaf(Rect area, string what) => _blocks.Add((area, what));
 
     private static void Highlight(Canvas canvas, Rect row)
     {
@@ -945,17 +1193,21 @@ internal sealed class LauncherScreen
         }
     }
 
-    private void ParchmentButton(Canvas canvas, View v, Rect area, string label, TextFace text, Item item)
+    /// <summary>A button on parchment; framed in yellow when it (or, for a row's Browse…, its row) has the focus.</summary>
+    private void ParchmentButton(Canvas canvas, View v, Rect area, string label, TextFace text, Item item, Part part)
     {
         var cell = Math.Max(1, v.Len(2));
         canvas.Paint(area, (x, y) => ((x / cell + y / cell) & 1) == 0 ? ParchmentLight : ParchmentDark);
-        canvas.Frame(area, Math.Max(1, v.Len(2)), _focus == item ? Yellow : RopeMid);
-        text.Draw(canvas, label, area.X + (area.Width - text.Measure(label)) / 2, area.Y + (area.Height - text.LineHeight) / 2, Black);
-        _hotspots.Add((area, item));
+        canvas.Frame(area, Math.Max(1, v.Len(part == Part.Browse ? 1 : 2)), _focus == item ? Yellow : RopeMid);
+        var shown = Fit(text, label, area.Width - v.Len(4), fromEnd: false);
+        text.Draw(canvas, shown, area.X + (area.Width - text.Measure(shown)) / 2, area.Y + (area.Height - text.LineHeight) / 2, Black);
+        Hot(area, item, part);
+        Leaf(area, "button " + label);
     }
 
     private string Help(Item item)
     {
+        var browse = _surface.PickFolder is not null ? "Enter or Browse…: another folder" : "or drop a folder on this window";
         var help = item switch
         {
             Item.GameFolder => _editing
@@ -964,34 +1216,27 @@ internal sealed class LauncherScreen
             Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type or paste (Ctrl+V) the folder of your copy of Darklands.",
             Item.Window => "The window's size; the game keeps its shape.",
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
-            Item.HdPack => "Replacement pictures. " + PackHelp(PackKind.Pictures),
-            Item.AudioPack => "Replacement music and sounds (OGG, WAV). " + PackHelp(PackKind.Sounds),
-            Item.SoundFont => "For .mid music. Enter: choose an .sf2 file; ←/→: default.",
+            Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
+            Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
+            Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
+                ? $"No SoundFont: a pack's .mid music is skipped. Any General MIDI SoundFont (.sf2) you have works: put it in the {SoundFontFolder} folder next to the program, drop it here, or Browse…. A free one: {FreeSoundFont} by Frank Wen, MIT licence, about 140 MB (search the web for \"FluidR3_GM sf2\"; on Linux the fluid-soundfont-gm package)."
+                : $"The SoundFont (.sf2) for the packs' .mid music. Enter or Browse…: another file; ←/→: the default (the {SoundFontFolder} folder next to the program).",
             Item.PackGuide => "Opens the guide: how to make a picture or sound pack, and the names of the game's pictures, music and sounds.",
             Item.Report => "Makes a zip with the logs, settings and saves for a bug report, and opens its folder and the report form. Nothing is sent: you attach the zip yourself.",
             Item.Sound => "The sound card the game plays its music and sounds on.",
             Item.Roms => "Your MT-32 / CM-32L ROM files (side by side or in MT32, CM32L subfolders). "
-                + (_surface.PickFolder is not null ? "Change… or drop the folder here." : "Drop the folder on this window."),
+                + (_surface.PickFolder is not null ? "Enter or Change…: another folder; or drop it here." : "Drop the folder on this window."),
             Item.Test => _context.SoundTest is { Playing: true } ? "Stops the music." : "Plays some of the game's music on the chosen card, with these ROMs.",
             Item.Banner => "The text page the 1992 game showed for a few seconds while it loaded.",
             Item.Intro => "The animated opening before the start screen.",
-            Item.Always => "Otherwise the launcher shows only when needed. Hold Shift as the game starts to see it.",
-            Item.Save => "Saves the settings and closes.",
-            Item.Play => "Saves the settings and starts the game.",
+            Item.Always => "Otherwise DarklandsRP goes straight to the game, and DarklandsRP Launcher (or Shift held as it starts) shows this screen.",
+            Item.Save => "Writes the changes to the settings file and closes.",
+            Item.Play => "Writes the changes to the settings file and starts the game.",
             Item.Discord => "Opens the project's Discord in your browser.",
             Item.Notes => "Opens the release notes of this version in your browser.",
             _ => "",
         };
         return IsFixed(item, out var by) ? $"Set by {by}: change it there. " + help : help;
-    }
-
-    /// <summary>The chosen pack's state and how to choose another.</summary>
-    private string PackHelp(PackKind kind)
-    {
-        var state = _model.PackOf(kind) is { } folder
-            ? _model.Pack(folder) is { Problem: { } problem } ? problem + " " : PackSummary(kind, _model.Pack(folder)) + " "
-            : "";
-        return state + "←/→: None or a pack found; " + (_surface.PickFolder is not null ? "Enter: another folder." : "or drop a folder here.");
     }
 
     /// <summary>The text cut to <paramref name="width"/> with an ellipsis (at its start when <paramref name="fromEnd"/>, to keep a path's end).</summary>

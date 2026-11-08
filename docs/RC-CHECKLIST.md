@@ -71,7 +71,7 @@ key in the original); what is different and which side shows what. If you cannot
   Compare: SDL2 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
   UNPROVEN (tried once on a desktop Linux; not yet on a Steam Deck).
 * [ ] **A3 Launcher rows.** Do: window size, fullscreen, sound card, Roland ROM folder with the sound test, Shift at start,
-  the SoundFont row, `--setup`, `--no-launcher`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: `LauncherTests`, `LauncherPackTests`, `SettingsTests` (each choice is kept and read back); how it looks: UNPROVEN.
+  the SoundFont row, `--setup`, `--no-launcher`, `DarklandsRP Launcher.exe`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: `LauncherTests`, `LauncherPackTests`, `SettingsTests` (each choice is kept and read back); how it looks: UNPROVEN.
 * [ ] **A4 Start screen and opening.** Do: let the intro run once, then skip it with a key. Compare: pictures, music, the
   three start buttons (new, quickstart, load). Proven by: `scr1-load-1` (start screen to load screen), `pressburg-map`.
 * [ ] **A5 Saves folder.** Do: install under a read-only folder. Compare: the start-up line names the fallback
@@ -245,8 +245,10 @@ key in the original); what is different and which side shows what. If you cannot
   ends them; timing does not change. Proven by: `PackAudioTests` (the game's calls reach the drivers unchanged; pause and mute), `LauncherPackTests` (the example pack reads clean); how it sounds: UNPROVEN.
 * [ ] **J4 Broken pack.** Do: a missing folder, a bad PNG, an unknown name. Compare: a console line and the game's own
   picture or sound. Proven by: `PackAudioTests`, `HdPackTests`, `LauncherPackTests` (the problem is reported and the rest still loads).
-* [ ] **J5 Launcher rows.** Do: choose a pack with the arrows, by browsing, by dropping its folder. Compare: the row shows
-  the name, marked (!) when unreadable. Proven by: `LauncherPackTests`.
+* [ ] **J5 Launcher rows.** Do: choose a pack with the arrows, by browsing (Enter or Browse…), by dropping its folder; click a
+  pack row. Compare: the row shows the name, marked (!) when unreadable, with its problem on the line under it and in full in
+  the box above the buttons; a click on the row only chooses it; no text runs out of the panel or over a button, at any window
+  size. Proven by: `LauncherPackTests`, `LauncherLayoutTests` (no overlap at the launcher's sizes; click and Enter).
 * [ ] **J6 MIDI music and music per card.** Do: a pack with `.mid` pieces, once with a SoundFont and once without; a pack
   or mod that gives a card its own music. Compare: the MIDI pieces play through the SoundFont (without one, the game's own
   music); a card's own music starts with the card and stops at a battle; the ten cards listed in PACKS.md that silence the
