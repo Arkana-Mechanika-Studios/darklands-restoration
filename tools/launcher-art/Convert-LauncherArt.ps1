@@ -14,8 +14,10 @@
 #>
 param(
     [Parameter(Mandatory = $true)][string]$Source,
-    [string]$Destination = (Join-Path $PSScriptRoot '..\..\src\Darklands.Launcher\Resources\art')
+    [string]$Destination = ''
 )
+# worked out here: Windows PowerShell can leave $PSScriptRoot empty in a parameter's default
+if (-not $Destination) { $Destination = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) '..\..\src\Darklands.Launcher\Resources\art' }
 
 Add-Type -AssemblyName PresentationCore, WindowsBase
 
