@@ -317,20 +317,14 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
     }
 
     /// <summary>
-    /// Play: the window, as the game's, has its frame again (fullscreen: SDL shows none anyway). It is made black first, as the
-    /// game's first picture is: else the launcher's painting showed inside the frame for a moment (seen 2026-11-08).
+    /// Play: the launcher lets go of its window (on Windows its activation filter is taken off); the window stays frameless as it
+    /// is until the game's new window replaces it (SdlHost.Reopen: the game's window never had the launcher's handling).
     /// </summary>
     public void ToGame()
     {
-        _host.Clear();
         if (OperatingSystem.IsWindows())
         {
             FramelessWindow.Detach();
-        }
-        SdlNative.SDL_SetWindowBordered(_host.Window, true);
-        if (OperatingSystem.IsWindows())
-        {
-            FramelessWindow.RefreshFrame(SdlNative.WindowsHandle(_host.Window));
         }
     }
 
