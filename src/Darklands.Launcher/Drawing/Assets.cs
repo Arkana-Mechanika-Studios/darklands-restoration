@@ -35,7 +35,7 @@ internal static class Assets
     public static bool HasStrong => LazyStrong.Value != Text;
 
     /// <summary>
-    /// The display face of "Darklands", "Settings" and "Play": Grenze Black, the free face closest to the original game's logo,
+    /// The display face of "Darklands" and "Settings": Grenze Black, the free face closest to the original game's logo,
     /// with the double-storey "a" of Grenze Gotisch Black (the logo's form; Grenze's own is single-storey); EB Garamond
     /// SemiBold when the files are not embedded.
     /// </summary>

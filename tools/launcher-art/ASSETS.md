@@ -49,8 +49,8 @@ all under the SIL Open Font License (`Resources/OFL.txt`; list each in THIRD_PAR
 |---|---|---|
 | `EBGaramond12-Regular.ttf` (in place) | all text | — |
 | `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the hint bar | the Regular |
-| `EBGaramond-SemiBold.ttf` (in place) | section headings, the cards' headings, the drop caps, "Restoration Project", "Save and quit" | the Regular, thickened by a pixel |
-| `Grenze-Black.ttf` (in place) | "Darklands", "Settings", "Play": the free face closest to the original game's logo (its start screen) | EB Garamond SemiBold |
+| `EBGaramond-SemiBold.ttf` (in place) | section headings, the cards' headings, the drop caps, "Restoration Project", "Save and quit", "Play" | the Regular, thickened by a pixel |
+| `Grenze-Black.ttf` (in place) | "Darklands" and "Settings" ("Play" is in EB Garamond SemiBold, like "Save and quit"): the free face closest to the original game's logo (its start screen) | EB Garamond SemiBold |
 | `GrenzeGotisch-Black.ttf` (in place) | only the display face's "a" (the logo's double-storey form; `Assets.Display` borrows it) | Grenze's own "a" |
 
 The static fonts come from the families' upstream repositories, which Google Fonts publishes

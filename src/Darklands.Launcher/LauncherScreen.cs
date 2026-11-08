@@ -1201,7 +1201,8 @@ internal sealed class LauncherScreen
             // held down: darker, and its word sunk by a pixel
             Shade(canvas, area.Inset(Math.Max(1, v.Len(2))), Black, 60);
         }
-        var face = red ? Face(Assets.Display, 32, v) : Face(Assets.Strong, 19, v);
+        // both in the text face ("Play" a little larger, the main button)
+        var face = red ? Face(Assets.Strong, 23, v) : Face(Assets.Strong, 19, v);
         var colour = red ? (_model.CanPlay ? Cream : 0xC9B9A0) : Ink;
         var textX = area.X + (area.Width - face.Measure(label)) / 2 + (down ? Math.Max(1, v.Len(1)) : 0);
         var textY = area.Y + (area.Height - face.LineHeight) / 2 + (down ? Math.Max(1, v.Len(1)) : 0);
