@@ -232,6 +232,13 @@ nothing. The game reads each notch as the key itself, a press and release a play
 screens say whether a selection is up (`GameUi.SelectionList`), the window turns the wheel into the keys (`IInput.SelectionListActive`).
 The launcher shows it on its Advanced tab, under Start-up: "Mouse wheel in menus"; `--no-mouse-wheel` turns it off for one run.
 
+### Keys on other layouts
+
+The game takes the characters your keyboard layout prints, as DOS did with its keyboard driver: on AZERTY Shift with the `=` key is
+`+`, the `6` key is `-` and Shift with the top row gives the digits; on QWERTZ `+` is its own key. The keypad's `+` and `-` work on
+every layout. In the character generator a right click on an attribute or skill row lowers it, as a left click raises it (the first
+click selects the row); the 1992 game had no right click there.
+
 ## Developer console (SDL host)
 
 **F11** opens and closes it (Esc also closes it). F11 is free: the original reads the keyboard through

@@ -252,6 +252,10 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public bool TryReadKeyTransition(out int scanCode, out bool released) => _keyboard.TryReadTransition(out scanCode, out released);
 
+    /// <summary>The layout's key of a scancode with Shift (AZERTY's '=' key: '+'), 0 without Shift held: the key events give the unshifted key.</summary>
+    private static int ShiftedKey(int scancode, int mod) =>
+        (mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0 ? SdlNative.SDL_GetKeyFromScancode(scancode, SdlNative.KeyModLeftShift, false) : 0;
+
     /// <summary>The PC scan code (set 1) of the keys the game's keyboard interrupt looks at, 0 for the others.</summary>
     private static int PcScanCode(int sdlScancode) => sdlScancode switch
     {
@@ -554,7 +558,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                         _keyboard.CtrlBreak();
                         break;
                     }
-                    _keyboard.KeyDown(SdlKeyMap.ToGameKey(e.Keyboard.Scancode, e.Keyboard.Key, e.Keyboard.Mod),
+                    _keyboard.KeyDown(SdlKeyMap.ToGameKey(e.Keyboard.Scancode, e.Keyboard.Key, e.Keyboard.Mod, ShiftedKey(e.Keyboard.Scancode, e.Keyboard.Mod)),
                         PcScanCode(e.Keyboard.Scancode), (int)e.Keyboard.Scancode, _keyClock.Elapsed.TotalMilliseconds);
                     break;
                 case SdlNative.EventKeyUp:
