@@ -717,13 +717,17 @@ internal sealed class LauncherScreen
         DrawPainting(canvas, v);
         DrawTitle(canvas, v);
         var card = CardFrame(v);
-        CardShadow(canvas, card, v);
+        PanelShadow(canvas, card, v, "card-left");
         Parchment(canvas, card, v, "card-left", 11);
         DrawCard(canvas, v, card);
         var settings = SettingsFrame(v);
-        CardShadow(canvas, settings, v);
+        PanelShadow(canvas, settings, v, "card-settings");
         Parchment(canvas, settings, v, "card-settings", 23);
-        Corners(canvas, settings, v);
+        if (Assets.Art("card-settings") is null)
+        {
+            // the panel's art has its own corners
+            Corners(canvas, settings, v);
+        }
     }
 
     /// <summary>The painting (or a dusk gradient without it), enlarged around its focus to cover the window, darkened at the edges.</summary>
@@ -801,16 +805,16 @@ internal sealed class LauncherScreen
     /// <summary>"Darklands" and "Restoration Project" over the painting, with a fleuron rule under them.</summary>
     private void DrawTitle(Canvas canvas, View v)
     {
-        var big = Face(Assets.Display, 84, v);
-        var sub = Face(Assets.Strong, 36, v);
+        // as in the art direction: "Restoration Project" as wide as "Darklands" under it, both in cream on a soft shadow
+        var big = Face(Assets.Display, 80, v);
+        var sub = Face(Assets.Strong, 40, v);
         var centre = v.OffsetX + v.Len(343);
-        var y = v.OffsetY + v.Len(22);
-        var shadow = Math.Max(1, v.Len(2));
+        var y = v.OffsetY + v.Len(18);
+        var shadow = Math.Max(1, v.Len(2.5));
         big.Draw(canvas, "Darklands", centre - big.Measure("Darklands") / 2, y, Cream, shadow, Black);
-        y += (int)(big.LineHeight * 0.86);
-        var spacing = v.Len(1.5);
-        Spaced(canvas, sub, "Restoration Project", centre - SpacedWidth(sub, "Restoration Project", spacing) / 2, y, Cream, spacing, shadow);
-        y += sub.LineHeight + v.Len(6);
+        y += (int)(big.LineHeight * 0.80);
+        sub.Draw(canvas, "Restoration Project", centre - sub.Measure("Restoration Project") / 2, y, Cream, shadow, Black);
+        y += sub.LineHeight + v.Len(10);
         Fleuron(canvas, v, centre, y, v.Len(190), Cream, onDark: true);
     }
 
@@ -1197,7 +1201,8 @@ internal sealed class LauncherScreen
             // held down: darker, and its word sunk by a pixel
             Shade(canvas, area.Inset(Math.Max(1, v.Len(2))), Black, 60);
         }
-        var face = red ? Face(Assets.Display, 32, v) : Face(Assets.Strong, 19, v);
+        // both in the text face ("Play" a little larger, the main button)
+        var face = red ? Face(Assets.Strong, 23, v) : Face(Assets.Strong, 19, v);
         var colour = red ? (_model.CanPlay ? Cream : 0xC9B9A0) : Ink;
         var textX = area.X + (area.Width - face.Measure(label)) / 2 + (down ? Math.Max(1, v.Len(1)) : 0);
         var textY = area.Y + (area.Height - face.LineHeight) / 2 + (down ? Math.Max(1, v.Len(1)) : 0);
@@ -1336,6 +1341,87 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>A soft shadow under a card, on the painting.</summary>
+    private static readonly Dictionary<string, Image> Silhouettes = [];
+
+    /// <summary>
+    /// A soft shadow under a panel, the shape of its art (ragged edges, curled corners): the art's outline, blurred and moved
+    /// a little down and right; without the art, the drawn card's rectangular shadow.
+    /// </summary>
+    private static void PanelShadow(Canvas canvas, Rect area, View v, string art)
+    {
+        if (Assets.Art(art) is not { } image)
+        {
+            CardShadow(canvas, area, v);
+            return;
+        }
+        Image silhouette;
+        lock (Silhouettes)
+        {
+            if (!Silhouettes.TryGetValue(art, out silhouette!))
+            {
+                var white = new uint[image.Width * image.Height];
+                for (var y = 0; y < image.Height; y++)
+                {
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        white[y * image.Width + x] = image.At(x, y) & 0xFF000000 | 0xFFFFFF;
+                    }
+                }
+                Silhouettes[art] = silhouette = new Image(image.Width, image.Height, white);
+            }
+        }
+        var blur = Math.Max(1, v.Len(9));
+        var margin = 3 * blur;
+        var mask = new Canvas(area.Width + 2 * margin, area.Height + 2 * margin);
+        mask.Clear(0);
+        Sliced(mask, v, silhouette, art, new Rect(margin, margin, area.Width, area.Height));
+        // the coverage (0..255), blurred by two box passes each way
+        var w = mask.Width;
+        var h = mask.Height;
+        var a = new int[w * h];
+        for (var i = 0; i < a.Length; i++)
+        {
+            a[i] = (int)(mask.Pixels[i] & 0xFF);
+        }
+        var t = new int[w * h];
+        for (var pass = 0; pass < 2; pass++)
+        {
+            BoxBlur(a, t, w, h, blur, horizontal: true);
+            BoxBlur(t, a, w, h, blur, horizontal: false);
+        }
+        int dx = v.Len(4), dy = v.Len(7);
+        for (var y = 0; y < h; y++)
+        {
+            for (var x = 0; x < w; x++)
+            {
+                if (a[y * w + x] > 0)
+                {
+                    canvas.Blend(area.X - margin + x + dx, area.Y - margin + y + dy, Black, a[y * w + x] * 150 / 255);
+                }
+            }
+        }
+    }
+
+    /// <summary>One pass of a box blur of <paramref name="radius"/> along rows or columns, from <paramref name="from"/> into <paramref name="to"/>.</summary>
+    private static void BoxBlur(int[] from, int[] to, int w, int h, int radius, bool horizontal)
+    {
+        int lines = horizontal ? h : w, length = horizontal ? w : h, span = 2 * radius + 1;
+        for (var line = 0; line < lines; line++)
+        {
+            int At(int i) => horizontal ? from[line * w + Math.Clamp(i, 0, w - 1)] : from[Math.Clamp(i, 0, h - 1) * w + line];
+            var sum = 0;
+            for (var i = -radius; i <= radius; i++)
+            {
+                sum += At(i);
+            }
+            for (var i = 0; i < length; i++)
+            {
+                to[horizontal ? line * w + i : i * w + line] = sum / span;
+                sum += At(i + radius + 1) - At(i - radius);
+            }
+        }
+    }
+
     private static void CardShadow(Canvas canvas, Rect area, View v)
     {
         var reach = Math.Max(2, v.Len(14));
@@ -1510,7 +1596,7 @@ internal sealed class LauncherScreen
         }
     }
 
-    /// <summary>The height of the settings art's dark header band on the screen (0 without the art): where its parchment starts, down its middle.</summary>
+    /// <summary>The height of the settings art's dark header band on the screen (0 without the art, or art without a band): where its parchment starts, down its middle.</summary>
     private static int SettingsBand(View v)
     {
         if (Assets.Art("card-settings") is not { } art || Assets.Slice("card-settings") is not { } slice)
@@ -1524,7 +1610,8 @@ internal sealed class LauncherScreen
             var light = ((c >> 16) & 255) + ((c >> 8) & 255) + (c & 255);
             if (c >> 24 > 200 && light > 3 * 150)
             {
-                return (int)Math.Round(y * v.Scale / 2);
+                // a frame's rim is no band: only a dark top at least 40 of the art's pixels tall carries "Settings"
+                return y < 40 ? 0 : (int)Math.Round(y * v.Scale / 2);
             }
         }
         return 0;
@@ -1583,18 +1670,6 @@ internal sealed class LauncherScreen
             face.Draw(canvas, text, x + Math.Max(1, v.Len(0.6)), y, colour);
         }
         face.Draw(canvas, text, x, y, colour);
-    }
-
-    private static int SpacedWidth(TextFace face, string text, int spacing) => text.Sum(c => face.Measure([c]) + spacing) - spacing;
-
-    /// <summary>Text with its letters spread by <paramref name="spacing"/> pixels.</summary>
-    private static void Spaced(Canvas canvas, TextFace face, string text, int x, int y, uint colour, int spacing, int shadow)
-    {
-        foreach (var c in text)
-        {
-            face.Draw(canvas, [c], x, y, colour, shadow, Black);
-            x += face.Measure([c]) + spacing;
-        }
     }
 
     /// <summary>Smooth value noise in 0..1 (a fixed pattern for each seed).</summary>

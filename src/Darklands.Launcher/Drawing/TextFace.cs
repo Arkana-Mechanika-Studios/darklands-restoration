@@ -22,6 +22,12 @@ internal sealed unsafe class TrueTypeFont : IDisposable
 
     public StbTrueType.stbtt_fontinfo Info { get; }
 
+    /// <summary>Another font whose glyphs this one uses for <see cref="BorrowedCharacters"/> (a letter form this font lacks), or null.</summary>
+    public TrueTypeFont? Lender { get; init; }
+
+    /// <summary>The characters drawn from <see cref="Lender"/>.</summary>
+    public string BorrowedCharacters { get; init; } = "";
+
     public bool Has(int codepoint) => StbTrueType.stbtt_FindGlyphIndex(Info, codepoint) != 0;
 
     public void Dispose()
@@ -42,6 +48,8 @@ internal sealed unsafe class TextFace
     private readonly TrueTypeFont _font;
     private readonly TextFace? _fallback;
     private readonly float _scale;
+    private readonly float _pixelsPerEm;
+    private TextFace? _lender;
     private readonly Dictionary<int, Glyph> _glyphs = [];
 
     private sealed record Glyph(int Advance, int OffsetX, int OffsetY, int Width, int Height, byte[] Coverage);
@@ -50,6 +58,7 @@ internal sealed unsafe class TextFace
     {
         _font = font;
         _fallback = fallback;
+        _pixelsPerEm = pixelsPerEm;
         _scale = StbTrueType.stbtt_ScaleForMappingEmToPixels(font.Info, pixelsPerEm);
         int ascent, descent, gap;
         StbTrueType.stbtt_GetFontVMetrics(font.Info, &ascent, &descent, &gap);
@@ -142,6 +151,11 @@ internal sealed unsafe class TextFace
 
     private (TextFace Face, Glyph Glyph) Of(char c)
     {
+        if (_font.Lender is { } lender && _font.BorrowedCharacters.Contains(c))
+        {
+            _lender ??= new TextFace(lender, _pixelsPerEm, null);
+            return _lender.Of(c);
+        }
         if (!_font.Has(c) && c != ' ' && _fallback is not null)
         {
             return _fallback.Of(c);

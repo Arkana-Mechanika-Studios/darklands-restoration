@@ -124,7 +124,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 Except as contained in this notice, the names of Gnome, the Gnome Foundation, and Bitstream Inc., shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Font Software without prior written authorization from the Gnome Foundation or Bitstream Inc., respectively. For further information, contact: fonts at gnome dot org.
 ```
 
-## EB Garamond and Grenze Gotisch (launcher)
+## EB Garamond, Grenze and Grenze Gotisch (launcher)
 
 The launcher draws its text with these fonts, unmodified, each licensed under the SIL Open Font License, Version 1.1
 (https://openfontlicense.org): they may be used, embedded and redistributed with any software, and may not be sold by
@@ -135,10 +135,12 @@ themselves.
 * `src/Darklands.Launcher/Resources/EBGaramond-Italic.ttf`, `EBGaramond-SemiBold.ttf`: EB Garamond, the static fonts of
   the family's upstream (https://github.com/octaviopardo/EBGaramond12, `fonts/ttf/`), which Google Fonts publishes.
   Copyright 2017 The EB Garamond Project Authors; 2025 Deborah Khodanovich (RCS citation glyphs).
-* `src/Darklands.Launcher/Resources/GrenzeGotisch-Regular.ttf`: Grenze Gotisch (the variable font
-  `GrenzeGotisch[wght].ttf` of https://github.com/google/fonts, folder `ofl/`, renamed), and
-  `GrenzeGotisch-SemiBold.ttf`, the static font of its upstream (https://github.com/Omnibus-Type/Grenze-Gotisch,
-  `fonts/ttf/`). Copyright 2020 The Grenze Gotisch Project Authors.
+* `src/Darklands.Launcher/Resources/Grenze-Black.ttf`: Grenze, the static font of the family's upstream
+  (https://github.com/Omnibus-Type/Grenze, `fonts/ttf/`), which Google Fonts publishes. Copyright 2019, The Grenze Project
+  Authors.
+* `src/Darklands.Launcher/Resources/GrenzeGotisch-Black.ttf`: Grenze Gotisch, the static font of its upstream
+  (https://github.com/Omnibus-Type/Grenze-Gotisch, `fonts/ttf/`); the launcher takes only its "a" from it. Copyright 2020
+  The Grenze Gotisch Project Authors.
 
 The full licence text, with these copyright lines, is in `src/Darklands.Launcher/Resources/OFL.txt` and is copied next to the
 launcher in the build and publish output.

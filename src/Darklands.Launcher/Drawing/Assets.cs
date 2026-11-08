@@ -8,13 +8,9 @@ internal static class Assets
     /// <summary>The text font (EB Garamond; also the fallback for characters another font lacks).</summary>
     public static TrueTypeFont Text => LazyText.Value;
 
-    /// <summary>Grenze Gotisch Regular: the display face's stand-in when its SemiBold is not embedded.</summary>
-    public static TrueTypeFont Heading => LazyHeading.Value;
-
     public static Image Badge => LazyBadge.Value;
 
     private static readonly Lazy<TrueTypeFont> LazyText = new(() => new TrueTypeFont(Resource("EBGaramond12-Regular.ttf")!));
-    private static readonly Lazy<TrueTypeFont> LazyHeading = new(() => FontOrText("GrenzeGotisch-Regular.ttf"));
 
     private static readonly Lazy<Image> LazyBadge = new(() =>
     {
@@ -38,12 +34,18 @@ internal static class Assets
     /// <summary>Whether <see cref="Strong"/> is the real SemiBold (else the text is thickened when drawn).</summary>
     public static bool HasStrong => LazyStrong.Value != Text;
 
-    /// <summary>The display face of "Darklands" and "Settings" (Grenze Gotisch SemiBold, else its Regular).</summary>
+    /// <summary>
+    /// The display face of "Darklands" and "Settings": Grenze Black, the free face closest to the original game's logo,
+    /// with the double-storey "a" of Grenze Gotisch Black (the logo's form; Grenze's own is single-storey); EB Garamond
+    /// SemiBold when the files are not embedded.
+    /// </summary>
     public static TrueTypeFont Display => LazyDisplay.Value;
 
     private static readonly Lazy<TrueTypeFont> LazyItalic = new(() => FontOrText("EBGaramond-Italic.ttf"));
     private static readonly Lazy<TrueTypeFont> LazyStrong = new(() => FontOrText("EBGaramond-SemiBold.ttf"));
-    private static readonly Lazy<TrueTypeFont> LazyDisplay = new(() => Resource("GrenzeGotisch-SemiBold.ttf") is { } file ? new TrueTypeFont(file) : Heading);
+    private static readonly Lazy<TrueTypeFont> LazyDisplay = new(() => Resource("Grenze-Black.ttf") is { } file
+        ? new TrueTypeFont(file) { Lender = Resource("GrenzeGotisch-Black.ttf") is { } a ? new TrueTypeFont(a) : null, BorrowedCharacters = "a" }
+        : Strong);
 
     private static readonly Dictionary<string, Image?> ArtCache = [];
 

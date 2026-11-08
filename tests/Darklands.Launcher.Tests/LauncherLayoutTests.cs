@@ -217,6 +217,29 @@ public sealed class LauncherLayoutTests
 
     private static string? LauncherSettingsPack(LauncherContext context) => context.Settings.HdPack;
 
+    private static byte[] Embedded(string name)
+    {
+        using var stream = typeof(Assets).Assembly.GetManifestResourceStream("Darklands.Launcher." + name)!;
+        using var copy = new MemoryStream();
+        stream.CopyTo(copy);
+        return copy.ToArray();
+    }
+
+    [Fact]
+    public void TheTitleFaceDrawsTheLogosDoubleStoreyA()
+    {
+        // Grenze Black's own "a" is single-storey; the original logo's is double-storey, taken from Grenze Gotisch Black
+        Assert.NotNull(Assets.Display.Lender);
+        Assert.Equal("a", Assets.Display.BorrowedCharacters);
+        var own = new TextFace(new TrueTypeFont(Embedded("Grenze-Black.ttf")), 60, null);
+        var title = new TextFace(Assets.Display, 60, null);
+        var a = new Canvas(80, 80);
+        var b = new Canvas(80, 80);
+        own.Draw(a, "a", 4, 4, 0xFFFFFF);
+        title.Draw(b, "a", 4, 4, 0xFFFFFF);
+        Assert.NotEqual(a.Pixels, b.Pixels);
+    }
+
     [Fact]
     public void WithoutASoundFontTheRowSaysWhereToGetAFreeOne()
     {
