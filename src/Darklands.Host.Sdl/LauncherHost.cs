@@ -73,6 +73,15 @@ internal static class LauncherHost
         using (var surface = new SdlLauncherSurface(host))
         {
             result = new Launcher.Launcher().Run(context, surface);
+            // Play: the game's window has its frame; otherwise the frameless window is hidden as it is (no title bar as it closes)
+            if (result.Choice == LauncherChoice.Play)
+            {
+                surface.ToGame();
+            }
+            else
+            {
+                surface.Leave();
+            }
         }
         // the game's window may be smaller than the launcher's
         host.MinimumSize(1, 1);

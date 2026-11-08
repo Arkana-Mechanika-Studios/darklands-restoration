@@ -342,13 +342,28 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
             SdlNative.SDL_DestroyTexture(_texture);
         }
         SdlHost.ShowPointer(false);
-        // the game's window has its frame (fullscreen: SDL shows none anyway)
         SdlNative.SDL_SetWindowHitTest(_host.Window, IntPtr.Zero, IntPtr.Zero);
+        _current = null;
+        // the window stays frameless (and filtered, on Windows) until the game takes it (ToGame) or it is hidden and closed (Leave)
+    }
+
+    /// <summary>
+    /// Play: the window, as the game's, has its frame again (fullscreen: SDL shows none anyway). It is made black first, as the
+    /// game's first picture is: else the launcher's painting showed inside the frame for a moment (seen 2026-11-08).
+    /// </summary>
+    public void ToGame()
+    {
+        _host.Clear();
         if (OperatingSystem.IsWindows())
         {
             FramelessWindow.Detach();
         }
         SdlNative.SDL_SetWindowBordered(_host.Window, 1);
-        _current = null;
     }
+
+    /// <summary>
+    /// The launcher left without Play: the window is hidden as it is, without its frame, before the program closes it (giving it its
+    /// frame back first showed the title bar for a moment as the program ended: the user's check of 2026-11-08).
+    /// </summary>
+    public void Leave() => SdlNative.SDL_HideWindow(_host.Window);
 }

@@ -402,6 +402,9 @@ internal static class SdlNative
     internal static extern void SDL_MinimizeWindow(IntPtr window);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_HideWindow(IntPtr window);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern uint SDL_GetWindowFlags(IntPtr window);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
