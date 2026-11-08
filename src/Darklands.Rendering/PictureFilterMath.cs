@@ -33,6 +33,9 @@ public static class PictureFilterMath
     /// <summary>How deep the scanlines are for picture rows <paramref name="rowHeight"/> window pixels tall: none below 1.5, full from 3.</summary>
     public static double ScanlineDepthFor(double rowHeight) => ScanlineDepth * Math.Clamp((rowHeight - 1.5) / 1.5, 0, 1);
 
+    /// <summary>The CRT's gain for scanlines of that depth: the mean of the scanline profile and of the mask raised to <see cref="KeptBrightness"/>.</summary>
+    public static double CrtGain(double depth) => KeptBrightness / ((1 - depth / 2) * (1 - 2 * MaskStrength / 3));
+
     /// <summary>
     /// The CRT mask for a picture of <paramref name="sourceHeight"/> rows shown <paramref name="width"/> x <paramref name="height"/>
     /// window pixels, as the factor each window pixel's red, green and blue are multiplied by (row by row, three values a pixel):
@@ -45,7 +48,7 @@ public static class PictureFilterMath
         var rowHeight = height / (double)Math.Max(1, sourceHeight);
         var depth = ScanlineDepthFor(rowHeight);
         // the means of the scanline profile (1 - depth (1 + cos 2 pi f) / 2 over a row) and of the mask, for the gain
-        var gain = KeptBrightness / ((1 - depth / 2) * (1 - 2 * MaskStrength / 3));
+        var gain = CrtGain(depth);
         var rows = new double[height];
         for (var y = 0; y < height; y++)
         {

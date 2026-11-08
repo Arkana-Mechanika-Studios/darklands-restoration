@@ -42,7 +42,7 @@ public static class PictureFilters
     /// <summary>What a player reads for a filter (the launcher, the window's notice).</summary>
     public static string Label(PictureFilter filter) => filter switch
     {
-        PictureFilter.Smooth => "Smooth pixels",
+        PictureFilter.Smooth => "Smooth",
         PictureFilter.Crt => "CRT",
         _ => "Sharp",
     };

@@ -115,6 +115,9 @@ public sealed class ResolvedSettings
     /// <summary>How the host draws the picture on the window (presentation only; default <see cref="PictureFilter.Sharp"/>).</summary>
     public PictureFilter Filter { get; private init; }
 
+    /// <summary>The CRT filter's picture slightly curved (display.crtCurvature).</summary>
+    public bool CrtCurvature { get; private init; }
+
     /// <summary>adlib, sb, sbpro2, mt32, cm32l or speaker; null: the game's own choice from CONFIG.DRK.</summary>
     public string? SoundChoice { get; private init; }
 
@@ -212,6 +215,7 @@ public sealed class ResolvedSettings
             HdPack = Pick(cli.HdPack, null, file.HdPack),
             CleanDrawing = cli.CleanDrawing || (file.CleanDrawing ?? false),
             Filter = filter,
+            CrtCurvature = file.CrtCurvature ?? false,
             SoundChoice = sound is null or "config" or "none" ? null : sound,
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),

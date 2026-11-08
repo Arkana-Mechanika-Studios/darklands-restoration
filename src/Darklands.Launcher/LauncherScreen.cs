@@ -91,6 +91,7 @@ internal sealed class LauncherScreen
         Change,
         Window,
         Fullscreen,
+        Picture,
         HdPack,
         Sound,
         Roms,
@@ -174,7 +175,7 @@ internal sealed class LauncherScreen
     /// <summary>The rows of the Advanced tab; the other settings rows are on General.</summary>
     private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.Banner or Item.Intro or Item.Always;
 
-    private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
+    private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
 
     /// <summary>Opens a tab and puts the focus on its first row.</summary>
     private void ShowTab(bool advanced)
@@ -189,7 +190,7 @@ internal sealed class LauncherScreen
 
     // Tab and the arrows go through General's rows, then Advanced's (its tab opens), then the buttons and the links
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
                 && (i != Item.PackGuide || _context.PackGuide is not null) && (i != Item.Report || _context.ReportProblem is not null));
 
@@ -325,7 +326,7 @@ internal sealed class LauncherScreen
             case LauncherKey.Left:
             case LauncherKey.Right:
                 var step = key.Key == LauncherKey.Left ? -1 : 1;
-                if (_focus is Item.Window or Item.Fullscreen or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Always or Item.GameFolder)
+                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Always or Item.GameFolder)
                 {
                     return Activate(_focus, step, cycle: true);
                 }
@@ -406,6 +407,9 @@ internal sealed class LauncherScreen
                 break;
             case Item.Fullscreen:
                 _model.Fullscreen = !_model.Fullscreen;
+                break;
+            case Item.Picture:
+                _model.StepFilter(step);
                 break;
             case Item.HdPack or Item.AudioPack:
                 ChoosePack(item == Item.HdPack ? PackKind.Pictures : PackKind.Sounds, step, cycle);
@@ -756,6 +760,7 @@ internal sealed class LauncherScreen
             Item.GameFolder or Item.Change => "gameFolder",
             Item.Window => "display.resolution",
             Item.Fullscreen => "display.fullscreen",
+            Item.Picture => "display.filter",
             Item.HdPack => "display.hdPack",
             Item.AudioPack => "sound.audioPack",
             Item.SoundFont => "sound.soundFont",
@@ -1146,9 +1151,10 @@ internal sealed class LauncherScreen
         }
 
         // a row with its value between ‹ ›, and a plate at its end (its own Browse…, or another item's: Test sound)
-        int Select(int top, string label, string value, Item item, string? plate = null, Item? plateItem = null, bool narrow = false)
+        // at: the row's own columns (two selects side by side on one row)
+        int Select(int top, string label, string value, Item item, string? plate = null, Item? plateItem = null, bool narrow = false, RowLayout? at = null)
         {
-            var l = narrow ? layout with { Select = layout.SelectNarrow, SelectEnd = layout.Right } : layout;
+            var l = at ?? (narrow ? layout with { Select = layout.SelectNarrow, SelectEnd = layout.Right } : layout);
             if (plate is not null)
             {
                 var owner = plateItem ?? item;
@@ -1213,7 +1219,13 @@ internal sealed class LauncherScreen
 
             y = Section("Display", "icon-display", y);
             y = Select(y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
-            y = Select(y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
+            // Fullscreen and the picture filter side by side: one row (the tab has no height to spare for another)
+            var fullscreenEnd = layout.Select + v.Len(92);   // Yes or No
+            Select(y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen,
+                at: layout with { SelectEnd = fullscreenEnd, Right = fullscreenEnd + v.Len(8) });
+            var pictureLabel = fullscreenEnd + v.Len(30);
+            y = Select(y, "Picture", _model.FilterLabel, Item.Picture,
+                at: layout with { Label = pictureLabel, Select = pictureLabel + text.Measure("Picture") + v.Len(14), SelectEnd = layout.Right });
             y = Select(y, "HD pack", PackShown(PackKind.Pictures), Item.HdPack, "Browse…");
             y = Status(y, Item.HdPack, PackLine(PackKind.Pictures));
 
@@ -2104,6 +2116,7 @@ internal sealed class LauncherScreen
             Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type or paste (Ctrl+V) the folder of your copy of Darklands.",
             Item.Window => "The window's size; the game keeps its shape.",
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
+            Item.Picture => "How the 320x200 picture is drawn at large sizes: Sharp (hard pixels), Smooth (even pixels at any size), CRT (scanlines and a light mask). The game plays the same. ←/→ or Enter: the next one; Ctrl+F11 in the game too.",
             Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
             Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
             Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))

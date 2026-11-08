@@ -236,6 +236,7 @@ public static class SettingsFile
                         }
                     }
                     break;
+                case "crtCurvature": settings.CrtCurvature = Boolean(key, property.Value) ?? settings.CrtCurvature; break;
                 default: Unknown(key); break;
             }
         }
@@ -491,7 +492,9 @@ public static class SettingsFile
             // How the 320x200 picture is drawn on a larger window: "sharp" (hard pixels, as always), "smooth" (even, crisp
             // pixels at any size) or "crt" (scanlines and a light mask, as on a VGA monitor). Only the picture changes; the
             // game, its screenshots and its timing are the same. In the game Ctrl+F11 goes to the next one. Command line: --filter <name>.
-            "filter": "sharp"
+            "filter": "sharp",
+            // true: the CRT filter's picture slightly curved, as a tube's (where the graphics card draws the filters with shaders).
+            "crtCurvature": false
           },
 
           "sound": {

@@ -18,6 +18,8 @@
     <!-- the developer console's text (public domain renderer; DejaVu Sans Mono 2.37, see THIRD_PARTY_NOTICES.md) -->
     <PackageReference Include="StbTrueTypeSharp" Version="1.26.12" />
     <EmbeddedResource Include="Resources/DejaVuSansMono.ttf" LogicalName="Darklands.Host.Sdl.DejaVuSansMono.ttf" />
+    <!-- the picture filters' fragment shader for SDL3's GPU renderer (our own HLSL, compiled by tools/shaders/build_shaders.py) -->
+    <EmbeddedResource Include="Shaders/*.dxil;Shaders/*.spv" LogicalName="Darklands.Host.Sdl.Shaders.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == '' or $(RuntimeIdentifier.StartsWith('win'))">

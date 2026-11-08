@@ -5,7 +5,7 @@ using Darklands.Rendering;
 namespace Darklands.Host.Sdl.Tests;
 
 /// <summary>
-/// Screenshots of each picture filter for a person to judge, not a check: with DARKLANDS_PICFILTER_SHOTS set to
+/// Screenshots of each picture filter for a person to judge, not a check (drawn by the GPU renderer's shader where it starts): with DARKLANDS_PICFILTER_SHOTS set to
 /// "&lt;folder of 320x200 PNG frames&gt;;&lt;output folder&gt;" every frame is shown in a 1920x1080 window with each filter, read back
 /// and saved as &lt;frame&gt;-&lt;filter&gt;.png, with &lt;frame&gt;-zoom.png: the same 480x300 piece of the window under each filter, side by side.
 /// Without the variable it does nothing.
@@ -17,7 +17,7 @@ public sealed class PictureFilterShots
     public void SaveTheFiltersOnRealFrames()
     {
         var setting = Environment.GetEnvironmentVariable("DARKLANDS_PICFILTER_SHOTS");
-        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
         if (string.IsNullOrEmpty(setting) || !File.Exists(library))
         {
             return;
@@ -25,7 +25,7 @@ public sealed class PictureFilterShots
         SdlNative.ConfigureLibrary(library);
         var parts = setting.Split(';');
         var output = Directory.CreateDirectory(parts[1]).FullName;
-        using var host = new SdlHost("filter shots", 1920, 1080);
+        using var host = new SdlHost("filter shots", 1920, 1080, gpu: true);
         host.Pump();
         foreach (var file in Directory.GetFiles(parts[0], "*.png").Order())
         {
@@ -47,6 +47,13 @@ public sealed class PictureFilterShots
                     Path.Combine(Directory.CreateDirectory(Path.Combine(output, "reference")).FullName, $"{name}-{PictureFilters.Name(filter)}.png"));
                 pieces.Add((Crop(argb, w, g.X + g.Width / 2 - 240, g.Y + g.Height / 3, 480, 300), 480));
             }
+            // the CRT with its curvature (display.crtCurvature)
+            host.Filter = PictureFilter.Crt;
+            host.Curvature = true;
+            host.Present(screen);
+            var curved = host.ReadBack(out var cw, out var ch).Select(p => (uint)p | 0xFF000000u).ToArray();
+            PngWriter.Write(curved, cw, ch, Path.Combine(output, $"{name}-crt-curved.png"));
+            host.Curvature = false;
             var zoom = new uint[pieces.Count * 488 * 300];
             for (var i = 0; i < pieces.Count; i++)
             {

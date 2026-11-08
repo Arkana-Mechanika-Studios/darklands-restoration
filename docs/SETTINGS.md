@@ -47,6 +47,7 @@ not meant for players.
 | `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
 | `display.cleanDrawing` | false | `--clean-drawing` | false = the screens are drawn as in the 1992 game, including its drawing oddities; true = the cleaner drawing of 0.9.5 (the game plays the same) |
 | `display.filter` | `"sharp"` | `--filter <name>` | how the 320x200 picture is drawn on a larger window: `sharp`, `smooth` or `crt` (below); only the window's picture changes (SDL host) |
+| `display.crtCurvature` | false | | true: the `crt` filter's picture slightly curved, as a tube's (below) |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
@@ -88,14 +89,21 @@ rest of the run (the setting in the file stays; the original never reads F11, so
 |---|---|
 | `sharp` (default) | each window pixel takes the nearest game pixel: hard pixels, as always; at sizes that are not whole multiples of 320x200 some columns and rows are one window pixel wider than others |
 | `smooth` | "sharp bilinear": the picture is enlarged by whole numbers with hard pixels, then smoothly to the window, so every game pixel is the same size and only the edges between pixels blend over one window pixel; at whole multiples it is the same as `sharp` |
-| `crt` | as `smooth`, with scanlines between the picture's 200 lines and a light red/green/blue aperture mask, as on a VGA monitor, and part of the lost brightness given back (no curvature). The scanlines fade out where a line is under three window pixels tall |
+| `crt` | as `smooth`, with scanlines between the picture's 200 lines and a light red/green/blue aperture mask, as on a VGA monitor, and part of the lost brightness given back. The scanlines fade out where a line is under three window pixels tall. With `display.crtCurvature` true the picture is slightly curved, as a tube's (its corners black) |
 
 Only the picture shown in the window changes: the game, its timing, the screenshots (F12), the problem reports and
 the frames the headless host and the oracles record are made before the filter and are the same with every filter. The
 text screen of the program start keeps its sharp look. With an HD pack, the game's own pixels (the frame and the
 overlay drawn over the replacements) go through `smooth`'s steps, the replacement pictures are drawn smoothly as before,
-and the CRT's mask lies over everything, replacements included. On a renderer without render targets every filter
-draws as `sharp`; on SDL's software renderer the CRT is a little darker (it cannot give the brightness back).
+and the CRT's mask lies over everything, replacements included.
+
+How it is drawn: when `smooth` or `crt` is set as the program starts, the window opens on SDL's GPU renderer, and a pixel
+shader of this project (`src/Darklands.Host.Sdl/Shaders/picture.frag.hlsl`, compiled to DXIL for Direct3D 12) draws the
+filter in one pass. Where that renderer cannot start or cannot take the shader (no Direct3D 12; Linux and the Steam Deck
+until a SPIR-V build of the shader ships), or when a filter is chosen in the game with Ctrl+F11 on another renderer, the
+filters are drawn with render targets and blend modes instead: the same picture, without the curvature; on SDL's software
+renderer the CRT is a little darker there (it cannot give the brightness back). The log says which way is used. Both ways
+are tested against a reference drawn on the CPU (`PictureFilterReference`).
 
 ### `sound.audioPack`
 
@@ -157,7 +165,8 @@ When nothing is found, or the folder named does not hold the game, the launcher 
 
 ## Launcher (SDL host)
 
-The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the HD pack,
+The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the picture
+filter (its "Picture" row beside Fullscreen: Sharp, Smooth, CRT; ←/→ or Enter), the HD pack,
 the audio pack (both: None, the packs in a `packs` folder, or a folder browsed for or dropped; [PACKS.md](PACKS.md)),
 the sound card and the Roland ROM folder (MT-32 and/or CM-32L; with a sound test: ten seconds of the game's music through the drivers the game
 will use) and the start-up screen and opening animation. Its settings are on two tabs: **General** (the game folder, the
@@ -232,8 +241,7 @@ Commands (`help` lists them, `help <command>` shows one):
 | `heal [slot\|all]` | endurance and strength back to their maximums |
 | `saint grant\|remove <slot\|all> <number>` | a saint known or forgotten |
 | `item find <text>` / `item grant <slot\|all> <code> [quality] [count]` | finds item codes; puts items in packs |
-| `music on
-| `report [text]` | makes a problem report (a zip) and opens its folder and the issue form; nothing is sent ([REPORTING.md](REPORTING.md)) |\|off` | the game's music option (as Alt-M) |
+| `music on\|off` | the game's music option (as Alt-M) |
 | `report [text]` | makes a problem report (a zip) and opens its folder and the issue form; nothing is sent ([REPORTING.md](REPORTING.md)) |
 | `clear` | empties the console |
 

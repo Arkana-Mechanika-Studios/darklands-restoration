@@ -401,20 +401,95 @@ internal static class SdlNative
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_SetTextureBlendMode(IntPtr texture, uint blendMode);
 
-    // the picture filters (SdlPictureFilter): SDL_BLENDMODE_NONE and MOD, SDL_ComposeCustomBlendMode's factors and operation
-    internal const int BlendModeNone = 0;
-    internal const int BlendModeMod = 4;
+    // the picture filters (SdlPictureFilter, SdlShaderPictureFilter): SDL_BLENDMODE_MOD, SDL_ComposeCustomBlendMode's factors and operation
+    internal const uint BlendModeMod = 0x4;
+    internal const uint BlendModeBlendPremultiplied = 0x10;
     internal const int BlendFactorZero = 1, BlendFactorOne = 2, BlendFactorOneMinusSrcAlpha = 6, BlendFactorDstColor = 7;
     internal const int BlendOperationAdd = 1;
 
-    /// <summary>A blend mode of its own (SDL 2.0.6): dst = src * srcFactor (op) dst * dstFactor, colour and alpha apart.</summary>
+    /// <summary>A blend mode of its own: dst = src * srcFactor (op) dst * dstFactor, colour and alpha apart (SDL_BLENDMODE_INVALID when the renderer has none).</summary>
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern int SDL_ComposeCustomBlendMode(int srcColorFactor, int dstColorFactor, int colorOperation,
+    internal static extern uint SDL_ComposeCustomBlendMode(int srcColorFactor, int dstColorFactor, int colorOperation,
         int srcAlphaFactor, int dstAlphaFactor, int alphaOperation);
 
-    /// <summary>Whether the renderer can draw into a texture (SDL_bool).</summary>
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern int SDL_RenderTargetSupported(IntPtr renderer);
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_GetTextureBlendMode(IntPtr texture, out uint blendMode);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_GetTextureScaleMode(IntPtr texture, out int scaleMode);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr SDL_CreateRendererWithProperties(uint properties);
+
+    // SDL_CreateRendererWithProperties' keys (SDL 3.4: the GPU renderer told which shader formats the program brings)
+    internal const string PropRendererCreateName = "SDL.renderer.create.name";
+    internal const string PropRendererCreateWindow = "SDL.renderer.create.window";
+    internal const string PropRendererCreateShadersDxil = "SDL.renderer.create.gpu.shaders_dxil";
+    internal const string PropRendererCreateShadersSpirv = "SDL.renderer.create.gpu.shaders_spirv";
+
+    // SDL_GPUShaderFormat, SDL_GPUShaderStage
+    internal const uint GpuShaderFormatSpirv = 1u << 1, GpuShaderFormatDxil = 1u << 3;
+    internal const int GpuShaderStageFragment = 1;
+
+    /// <summary>SDL_GPUShaderCreateInfo.</summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct GpuShaderCreateInfo
+    {
+        internal nuint CodeSize;
+        internal IntPtr Code;
+        internal IntPtr Entrypoint;
+        internal uint Format;
+        internal int Stage;
+        internal uint NumSamplers;
+        internal uint NumStorageTextures;
+        internal uint NumStorageBuffers;
+        internal uint NumUniformBuffers;
+        internal uint Props;
+    }
+
+    /// <summary>SDL_GPURenderStateCreateInfo (SDL 3.4).</summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct GpuRenderStateCreateInfo
+    {
+        internal IntPtr FragmentShader;
+        internal int NumSamplerBindings;
+        internal IntPtr SamplerBindings;
+        internal int NumStorageTextures;
+        internal IntPtr StorageTextures;
+        internal int NumStorageBuffers;
+        internal IntPtr StorageBuffers;
+        internal uint Props;
+    }
+
+    /// <summary>The GPU device of SDL's "gpu" renderer (null with any other renderer).</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr SDL_GetGPURendererDevice(IntPtr renderer);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern uint SDL_GetGPUShaderFormats(IntPtr device);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr SDL_CreateGPUShader(IntPtr device, ref GpuShaderCreateInfo createInfo);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_ReleaseGPUShader(IntPtr device, IntPtr shader);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr SDL_CreateGPURenderState(IntPtr renderer, ref GpuRenderStateCreateInfo createInfo);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_SetGPURenderStateFragmentUniforms(IntPtr state, uint slotIndex, float[] data, uint length);
+
+    /// <summary>The render state for the draws that follow (IntPtr.Zero: SDL's own shaders again).</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_SetGPURenderState(IntPtr renderer, IntPtr state);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_DestroyGPURenderState(IntPtr state);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]

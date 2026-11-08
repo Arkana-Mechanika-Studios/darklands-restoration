@@ -119,7 +119,7 @@ public sealed class LauncherTests
         var result = Run(Context(), [.. ToWindow,
             Right,              // window: 720x400 -> 1080x600
             Down, Enter,        // fullscreen on
-            Down, Down,
+            Down, Down, Down,   // past the picture filter and the HD pack
             Right, Right,       // sound: AdLib, then Sound Blaster
             Down, Down, Down, Down, Enter,  // past the audio pack, the ROMs (Advanced opens) and the SoundFont: the start-up screen off
             Escape]);
@@ -206,7 +206,7 @@ public sealed class LauncherTests
         Assert.Equal("E:/MY_ROMS", (string)result.Changes["sound.mt32Roms"]!);
         Assert.Equal(@"E:\MY_ROMS", result.Settings.Mt32Roms);
         // the window size, Fullscreen, HD pack, Sound card, audio pack, then the ROMs (on Advanced)
-        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Down, Enter]) { PickFolder = _ => @"F:\OTHER_ROMS" };
+        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Down, Down, Enter]) { PickFolder = _ => @"F:\OTHER_ROMS" };
         Assert.Equal("F:/OTHER_ROMS", (string)new Launcher().Run(Context(), picked).Changes["sound.mt32Roms"]!);
     }
 
@@ -263,8 +263,8 @@ public sealed class LauncherTests
         public void Dispose() => Directory.Delete(Root, recursive: true);
     }
 
-    // from Play: Discord, the game folder, Change, window, fullscreen, HD pack, sound card, then the audio pack (no sound test)
-    private static readonly LauncherInput[] ToAudioPack = [Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab];
+    // from Play: Discord, the game folder, Change, window, fullscreen, picture, HD pack, sound card, then the audio pack (no sound test)
+    private static readonly LauncherInput[] ToAudioPack = [Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab];
 
     [Fact]
     public void ThePackRowsGoThroughNoneAndThePacksFoundAndTheSettingsKeepThem()
@@ -277,7 +277,7 @@ public sealed class LauncherTests
         Assert.False(sound.Changes.ContainsKey("display.hdPack"));
 
         // the picture pack row offers only the folder with pictures
-        var picture = Run(context, Tab, Tab, Tab, Tab, Tab, Tab, Right);
+        var picture = Run(context, Tab, Tab, Tab, Tab, Tab, Tab, Tab, Right);
         Assert.Equal(packs.Pictures.Replace('\\', '/'), (string)picture.Changes["display.hdPack"]!);
 
         // the settings' pack comes back unchanged; None turns it off
@@ -530,9 +530,12 @@ public sealed class LauncherTests
         // the launcher reworked (2026-11-08): as it opens, with broken packs chosen (the audio pack's row focused), and at its smallest size
         var guide = Context(tests: []) with { PackGuide = "https://example.org/PACKS.md", ReportProblem = () => "Report saved.", ReleaseNotesLink = "https://example.org" };
         Shot("normal-1280x720", guide, 1280, 720, Escape);
-        // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (HD pack: 9 tabs, audio pack: 12)
+        // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (picture: 9 tabs, HD pack: 10, audio pack: 13)
         static LauncherInput[] Tabs(int count) => [.. Enumerable.Repeat<LauncherInput>(Tab, count), Escape];
-        Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(12));
+        Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(13));
+        // the picture filter's row (beside Fullscreen) chosen with the keyboard, its tooltip, CRT shown; and at the smallest size
+        Shot("picture-row-1280x720", guide, 1280, 720, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Escape]);
+        Shot("picture-row-960x540", guide, 960, 540, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Escape]);
         Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
         // the pointer resting on a problem line (its tooltip), and on Save and quit (lit; Play, the keyboard's choice, softly)
         var probe = new LauncherScreen(new LauncherModel(LauncherLayoutTests.Broken(), null), LauncherLayoutTests.Broken(), new ScriptedSurface(1280, 720) { Frameless = true });

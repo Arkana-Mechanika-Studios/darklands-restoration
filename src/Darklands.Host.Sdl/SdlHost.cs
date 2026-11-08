@@ -45,7 +45,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>Opens the window at the size of <see cref="DisplayLayout.WindowSize"/> (720×400 by default).</summary>
     /// <param name="frameless">Opened without a frame or title bar (the launcher's window: giving a framed window's frame away later
     /// leaves Windows painting its old title bar over it now and then).</param>
-    public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false, bool frameless = false)
+    /// <param name="gpu">SDL's GPU renderer first (a shader picture filter is chosen: display.filter), SDL's own choice when it cannot start.</param>
+    public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false, bool frameless = false,
+        bool gpu = false)
     {
         if (!SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents))
         {
@@ -63,7 +65,13 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         // SDL's choice of the graphics card's renderers, else its software one (SDL_RENDER_DRIVER names one); the screen's refresh
         // paces a graphics card's presents, as SDL2's SDL_RENDERER_PRESENTVSYNC did (the software renderer never waited)
-        _renderer = SdlNative.SDL_CreateRenderer(_window, null);
+        // a picture filter of the shaders (docs/SETTINGS.md display.filter): SDL's GPU renderer, told the program brings DXIL
+        // (Direct3D 12) and, when built, SPIR-V (Vulkan) shaders; when it cannot start, SDL's choice and the render targets
+        _renderer = gpu ? GpuRenderer(_window) : IntPtr.Zero;
+        if (_renderer == IntPtr.Zero)
+        {
+            _renderer = SdlNative.SDL_CreateRenderer(_window, null);
+        }
         if (_renderer == IntPtr.Zero)
         {
             _renderer = SdlNative.SDL_CreateRenderer(_window, "software");
@@ -82,7 +90,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_SetTextureScaleMode(_texture, SdlNative.ScaleModeNearest);
         SdlNative.SDL_SetTextureBlendMode(_texture, SdlNative.BlendModeNone);
         SdlNative.SDL_HideCursor();
-        _filter = new SdlPictureFilter(_renderer);
+        _filter = (IPictureFilterRenderer?)SdlShaderPictureFilter.Create(_renderer, System.Console.Error.WriteLine) ?? new SdlPictureFilter(_renderer);
         UpdateViewport();
     }
 
@@ -140,6 +148,39 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     }
 
     private readonly IPictureFilterRenderer _filter;
+
+    /// <summary>The CRT's slight curvature (display.crtCurvature; drawn only with the shaders).</summary>
+    public bool Curvature
+    {
+        get => _filter.Curvature;
+        set => _filter.Curvature = value;
+    }
+
+    /// <summary>What draws the picture filters: "shaders" (SDL's GPU renderer) or "render targets" (tests, the log).</summary>
+    internal string FilterKind => _filter.Kind;
+
+    /// <summary>The renderer's name ("gpu", "direct3d11", "software" ...).</summary>
+    internal string RendererName => System.Runtime.InteropServices.Marshal.PtrToStringUTF8(SdlNative.SDL_GetRendererName(_renderer)) ?? "";
+
+    /// <summary>SDL's GPU renderer for the window with the shader formats the program brings, or IntPtr.Zero (said on the log).</summary>
+    private static IntPtr GpuRenderer(IntPtr window)
+    {
+        var props = SdlNative.SDL_CreateProperties();
+        SdlNative.SDL_SetStringProperty(props, SdlNative.PropRendererCreateName, "gpu");
+        SdlNative.SDL_SetPointerProperty(props, SdlNative.PropRendererCreateWindow, window);
+        SdlNative.SDL_SetBooleanProperty(props, SdlNative.PropRendererCreateShadersDxil, true);
+        if (typeof(SdlHost).Assembly.GetManifestResourceInfo("Darklands.Host.Sdl.Shaders.picture.frag.spv") is not null)
+        {
+            SdlNative.SDL_SetBooleanProperty(props, SdlNative.PropRendererCreateShadersSpirv, true);
+        }
+        var renderer = SdlNative.SDL_CreateRendererWithProperties(props);
+        SdlNative.SDL_DestroyProperties(props);
+        if (renderer == IntPtr.Zero)
+        {
+            System.Console.Error.WriteLine("Picture filters: SDL's GPU renderer could not start (" + SdlNative.GetErrorText() + "); SDL's own choice instead");
+        }
+        return renderer;
+    }
 
     public MouseState Mouse => _mouse;
 
@@ -250,6 +291,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private void DrawHdFrame(HdFrame frame)
     {
         var used = new HashSet<RgbaImage>(ReferenceEqualityComparer.Instance);
+        _filter.Begin(frame.Output, layered: true);
         foreach (var item in frame.Items)
         {
             var destination = ToSdl(item.Destination);
@@ -356,6 +398,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>The game's frame (in <see cref="_texture"/>) at the picture's place, through the picture filter.</summary>
     private void DrawFrame()
     {
+        _filter.Begin(Graphics, layered: false);
         _filter.DrawGame(_texture, Screen.Width, Screen.Height, Graphics, blended: false);
         _filter.Finish(Graphics);
     }

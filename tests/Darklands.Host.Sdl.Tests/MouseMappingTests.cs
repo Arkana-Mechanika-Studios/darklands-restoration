@@ -38,7 +38,12 @@ public sealed class MouseMappingTests
     [InlineData(2560, 1440, false, false, true)]
     [InlineData(1366, 768, false, true, true)]
     [InlineData(0, 0, true, false, true)]
-    public void EveryWindowPositionGivesTheGamePixelShownThere(int width, int height, bool fullscreen, bool hd, bool software = false)
+    // SDL's GPU renderer (opened when a picture filter of the shaders is chosen, docs/SETTINGS.md display.filter)
+    [InlineData(1920, 1080, false, false, false, true)]
+    [InlineData(1013, 571, false, false, false, true)]
+    [InlineData(1366, 768, false, true, false, true)]
+    [InlineData(0, 0, true, false, false, true)]
+    public void EveryWindowPositionGivesTheGamePixelShownThere(int width, int height, bool fullscreen, bool hd, bool software = false, bool gpu = false)
     {
         var library = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
         if (!File.Exists(library))
@@ -52,8 +57,8 @@ public sealed class MouseMappingTests
             SdlNative.SDL_SetHint(SdlNative.HintRenderDriver, "software");
         }
         using var host = fullscreen
-            ? new SdlHost("mouse test", DisplayLayout.BaseWidth, DisplayLayout.BaseHeight, fullscreen: true)
-            : new SdlHost("mouse test", width, height);
+            ? new SdlHost("mouse test", DisplayLayout.BaseWidth, DisplayLayout.BaseHeight, fullscreen: true, gpu: gpu)
+            : new SdlHost("mouse test", width, height, gpu: gpu);
         if (software)
         {
             Assert.Equal(PictureSampling.SdlSoftware, host.Sampling);

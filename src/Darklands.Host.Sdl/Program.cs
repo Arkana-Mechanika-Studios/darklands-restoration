@@ -179,7 +179,9 @@ if (folder is null && launch is null)
 
 var title = "Darklands Restoration Project " + version;
 var window = settings.Window ?? DisplayLayout.WindowSize(null, null);
-using var host = launch is null ? new SdlHost(title, window.Width, window.Height, settings.Fullscreen) : LauncherHost.Open(title);
+// a picture filter drawn by shaders (display.filter) asks for SDL's GPU renderer as the window opens
+var gpu = settings.Filter != PictureFilter.Sharp;
+using var host = launch is null ? new SdlHost(title, window.Width, window.Height, settings.Fullscreen, gpu: gpu) : LauncherHost.Open(title, gpu);
 if (launch is null && !noLauncher && StartKeys.ShiftHeldInWindow())
 {
     // where the keyboard can only be read through the window (not Windows): the window becomes the launcher's
@@ -270,6 +272,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
 {
     host.Renderer = null;
     host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
+    host.Curvature = settings.CrtCurvature;
     if (settings.HdPack is { } hdPack)
     {
         // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same

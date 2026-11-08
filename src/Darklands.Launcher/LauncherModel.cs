@@ -292,34 +292,24 @@ internal sealed class LauncherModel
     /// <summary>The settings to run with: the file's, with the changes.</summary>
     public GameSettings Settings()
     {
-        var s = _context.Settings;
+        // every key of the file (cleanDrawing, mods, crtCurvature, console ...), the launcher's rows over it
+        var s = _context.Settings.Copy();
         var window = Windows[WindowIndex];
         var exact = window.Width % BaseWidth == 0 && window.Height == window.Width / BaseWidth * BaseHeight;
-        return new GameSettings
-        {
-            GameFolder = GameFolderChecked is not null ? GameFolder : s.GameFolder,
-            SavesFolder = s.SavesFolder,
-            Scale = exact ? window.Width / BaseWidth : null,
-            Resolution = exact ? null : $"{window.Width}x{window.Height}",
-            Fullscreen = Fullscreen,
-            Filter = Filter,
-            HdPack = HdPack,
-            SoundCard = SoundCard,
-            Mt32Roms = Mt32Roms,
-            AudioPack = AudioPack,
-            SoundFont = SoundFont,
-            ConfigDrk = s.ConfigDrk,
-            Banner = Banner,
-            Intro = Intro,
-            Launcher = Always,
-            CommandLine = s.CommandLine,
-            TextFont = s.TextFont,
-            ScreenshotsFolder = s.ScreenshotsFolder,
-            SdlLibrary = s.SdlLibrary,
-            ConsoleEnabled = s.ConsoleEnabled,
-            ConsoleFont = s.ConsoleFont,
-            ConsoleFontSize = s.ConsoleFontSize,
-        };
+        s.GameFolder = GameFolderChecked is not null ? GameFolder : s.GameFolder;
+        s.Scale = exact ? window.Width / BaseWidth : null;
+        s.Resolution = exact ? null : $"{window.Width}x{window.Height}";
+        s.Fullscreen = Fullscreen;
+        s.Filter = Filter;
+        s.HdPack = HdPack;
+        s.SoundCard = SoundCard;
+        s.Mt32Roms = Mt32Roms;
+        s.AudioPack = AudioPack;
+        s.SoundFont = SoundFont;
+        s.Banner = Banner;
+        s.Intro = Intro;
+        s.Launcher = Always;
+        return s;
     }
 
     private static (int Width, int Height) CurrentWindow(GameSettings s)

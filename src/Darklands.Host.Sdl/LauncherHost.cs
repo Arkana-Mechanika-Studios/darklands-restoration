@@ -19,10 +19,10 @@ internal static class LauncherHost
     internal static readonly (int Width, int Height)[] Sizes = [(1280, 720), (1080, 608), (960, 540)];
 
     /// <summary>Opens the window at the launcher's size.</summary>
-    public static SdlHost Open(string title)
+    public static SdlHost Open(string title, bool gpu = false)
     {
         var (width, height) = SizeFor(SdlHost.MainScreen());
-        var host = new SdlHost(title, width, height, frameless: true);
+        var host = new SdlHost(title, width, height, frameless: true, gpu: gpu);
         host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
         host.Clear();
         return host;

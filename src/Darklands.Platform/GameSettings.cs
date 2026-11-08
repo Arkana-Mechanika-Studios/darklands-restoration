@@ -30,6 +30,9 @@ public sealed class GameSettings
     /// <summary>How the picture is drawn on the window: one of <see cref="PictureFilters.Names"/> (null: sharp).</summary>
     public string? Filter { get; set; }
 
+    /// <summary>true: the CRT filter's picture slightly curved, as a tube's (null/false: flat).</summary>
+    public bool? CrtCurvature { get; set; }
+
     /// <summary>One of <see cref="SoundCards"/>.</summary>
     public string? SoundCard { get; set; }
 
@@ -72,6 +75,15 @@ public sealed class GameSettings
 
     /// <summary>The console's text height in pixels at the base window size (720x400); it scales with the window.</summary>
     public int? ConsoleFontSize { get; set; }
+
+    /// <summary>A copy with its own lists (a change to the copy leaves this one as it is).</summary>
+    public GameSettings Copy()
+    {
+        var copy = (GameSettings)MemberwiseClone();
+        copy.Mods = Mods?.ToList();
+        copy.CommandLine = CommandLine?.ToList();
+        return copy;
+    }
 }
 
 /// <summary>
