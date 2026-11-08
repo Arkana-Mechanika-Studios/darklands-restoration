@@ -76,16 +76,26 @@ public sealed class LauncherLayoutTests
     {
         foreach (var context in new[] { Broken(), Broken(LauncherReason.StartFailed, "The game could not start: " + BrokenManifest(LongFolder)) })
         {
-            var surface = new ScriptedSurface(width, height) { PickFolder = _ => null, PickFile = _ => null };
+            var surface = new ScriptedSurface(width, height) { PickFolder = _ => null, PickFile = _ => null, Frameless = true };
             var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
             var canvas = new Canvas(width, height);
-            // every control focused in turn (each shows its own details), then a long message (a dropped folder that holds nothing)
+            // every control focused in turn (each shows its own details, the rows of both tabs), then a long message (a dropped folder that holds nothing)
+            var tabsSeen = new HashSet<bool>();
             for (var i = 0; i < 25; i++)
             {
                 screen.Render(canvas);
-                AssertLaidOut(screen, $"{width}x{height}, {screen.Focus}");
+                tabsSeen.Add(screen.AdvancedShown);
+                AssertLaidOut(screen, $"{width}x{height}, {(screen.AdvancedShown ? "Advanced" : "General")}, {screen.Focus}");
+                // the window's buttons: in its top-right corner, clear of the settings panel
+                foreach (var button in new[] { LauncherScreen.Item.Minimise, LauncherScreen.Item.Close })
+                {
+                    var area = screen.Area(button);
+                    Assert.True(area.X >= 0 && area.Y >= 0 && area.Right <= width && area.Bottom <= height, $"{width}x{height}: {button} {area} off the window");
+                    Assert.False(area.Intersects(screen.SettingsPanel), $"{width}x{height}: {button} {area} over the panel {screen.SettingsPanel}");
+                }
                 screen.Handle(new KeyPressed(LauncherKey.Tab));
             }
+            Assert.Equal(2, tabsSeen.Count);
             screen.Handle(new PathDropped(LongFolder + @"\not\a\pack\nor\a\game\folder\at\all"));
             screen.Render(canvas);
             AssertLaidOut(screen, $"{width}x{height}, a long message");
@@ -144,6 +154,11 @@ public sealed class LauncherLayoutTests
     {
         var item = Enum.Parse<LauncherScreen.Item>(row);
         var (screen, asked) = Screen();
+        if (item is LauncherScreen.Item.SoundFont or LauncherScreen.Item.Roms)
+        {
+            Click(screen, screen.Area(LauncherScreen.Item.TabAdvanced));
+            screen.Render(new Canvas(1280, 720));
+        }
         Click(screen, screen.Area(item), dx: 10);
         Assert.Equal(item, screen.Focus);
         Assert.Empty(asked);
@@ -240,12 +255,112 @@ public sealed class LauncherLayoutTests
         Assert.NotEqual(a.Pixels, b.Pixels);
     }
 
+    // ---- the tabs, and the frameless window's own buttons ----
+
+    [Fact]
+    public void TheTabsSwitchByAClickOrCtrlTabAndFollowTheFocus()
+    {
+        var (screen, _) = Screen();
+        var canvas = new Canvas(1280, 720);
+        Assert.False(screen.AdvancedShown);
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Roms));
+
+        // a click on Advanced: its rows, the focus on the first
+        Click(screen, screen.Area(LauncherScreen.Item.TabAdvanced));
+        screen.Render(canvas);
+        Assert.True(screen.AdvancedShown);
+        Assert.Equal(LauncherScreen.Item.Roms, screen.Focus);
+        screen.Area(LauncherScreen.Item.SoundFont);
+        screen.Area(LauncherScreen.Item.Always);
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Window));
+
+        // Ctrl+Tab: General again, then Advanced
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
+        screen.Render(canvas);
+        Assert.False(screen.AdvancedShown);
+        Assert.Equal(LauncherScreen.Item.GameFolder, screen.Focus);
+        screen.Area(LauncherScreen.Item.Window);
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
+        screen.Render(canvas);
+        Assert.True(screen.AdvancedShown);
+
+        // Tab from General's last row (the audio pack) goes on to the ROMs, and Advanced opens
+        Click(screen, screen.Area(LauncherScreen.Item.TabGeneral));
+        screen.Render(canvas);
+        while (screen.Focus != LauncherScreen.Item.AudioPack)
+        {
+            screen.Handle(new KeyPressed(LauncherKey.Tab));
+        }
+        screen.Handle(new KeyPressed(LauncherKey.Tab));
+        screen.Render(canvas);
+        Assert.Equal(LauncherScreen.Item.Roms, screen.Focus);
+        Assert.True(screen.AdvancedShown);
+        // and Shift+Tab back
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Shift: true));
+        screen.Render(canvas);
+        Assert.False(screen.AdvancedShown);
+    }
+
+    [Fact]
+    public void TheWindowsOwnButtonsCloseAndMinimiseAndShowOnlyWhenTheWindowHasNoFrame()
+    {
+        var context = Broken();
+        var framed = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720));
+        framed.Render(new Canvas(1280, 720));
+        Assert.Throws<InvalidOperationException>(() => framed.Area(LauncherScreen.Item.Close));
+
+        var surface = new ScriptedSurface(1280, 720) { Frameless = true };
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Render(new Canvas(1280, 720));
+        var close = screen.Area(LauncherScreen.Item.Close);
+        var minimise = screen.Area(LauncherScreen.Item.Minimise);
+        Assert.True(close.Right <= 1280 && close.Right > 1240 && close.Y < 20, close.ToString());
+        Assert.True(minimise.Right < close.X, minimise.ToString());
+
+        // minimise: the surface is asked; the focus stays where it was
+        var focus = screen.Focus;
+        Assert.Null(screen.Handle(new PointerPressed(minimise.X + 4, minimise.Y + 4)));
+        Assert.Null(screen.Handle(new PointerReleased(minimise.X + 4, minimise.Y + 4)));
+        Assert.Equal(1, surface.Minimised);
+        Assert.Equal(focus, screen.Focus);
+        // close: as Esc
+        screen.Render(new Canvas(1280, 720));
+        Assert.Null(screen.Handle(new PointerPressed(close.X + 4, close.Y + 4)));
+        Assert.Equal(LauncherChoice.Quit, screen.Handle(new PointerReleased(close.X + 4, close.Y + 4)));
+
+        // a window that fills the screen has nothing to minimise to
+        surface.FillsScreen = true;
+        screen.Render(new Canvas(1280, 720));
+        screen.Area(LauncherScreen.Item.Close);
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Minimise));
+    }
+
+    [Fact]
+    public void TheSurfaceIsToldWhereTheControlsAre()
+    {
+        var context = Broken();
+        var surface = new ScriptedSurface(1280, 720, new KeyPressed(LauncherKey.Escape)) { Frameless = true };
+        new Launcher().Run(context, surface);
+        var areas = surface.ControlAreas;
+        // the controls the player clicks are there (Play, the close button, a tab); the painting and the title are not
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720) { Frameless = true });
+        screen.Render(new Canvas(1280, 720));
+        foreach (var item in new[] { LauncherScreen.Item.Play, LauncherScreen.Item.Close, LauncherScreen.Item.TabAdvanced })
+        {
+            var a = screen.Area(item);
+            Assert.Contains((a.X, a.Y, a.Width, a.Height), areas);
+        }
+        Assert.DoesNotContain(areas, a => a.X <= 620 && 620 < a.X + a.Width && a.Y <= 400 && 400 < a.Y + a.Height);
+        Assert.DoesNotContain(areas, a => a.X <= 343 && 343 < a.X + a.Width && a.Y <= 80 && 80 < a.Y + a.Height);
+    }
+
     [Fact]
     public void WithoutASoundFontTheRowSaysWhereToGetAFreeOne()
     {
         var context = Broken() with { Settings = new GameSettings { GameFolder = Game } };
         var surface = new ScriptedSurface(1280, 720);
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
         screen.Render(new Canvas(1280, 720));
         Assert.Contains(screen.Blocks, b => b.What.StartsWith("status None found: any General MIDI .sf2 works (a free one: FluidR3_GM.sf2, MIT)", StringComparison.Ordinal));
     }

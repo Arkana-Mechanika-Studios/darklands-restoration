@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Darklands.Launcher;
 
 namespace Darklands.Host.Sdl;
@@ -16,6 +18,95 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         SdlHost.ShowPointer(true);
         // a folder dropped on the window (SDL reports files and folders alike)
         SdlNative.SDL_EventState(SdlNative.EventDropFile, 1);
+        // no title bar while the launcher shows (its painting fills the window, its own buttons close and minimise it): a drag
+        // outside its controls moves the window, the edges resize it; the game's window gets its frame back (Dispose)
+        _current = this;
+        SdlNative.SDL_SetWindowBordered(_host.Window, 0);
+        unsafe
+        {
+            SdlNative.SDL_SetWindowHitTest(_host.Window, (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, int*, IntPtr, int>)&HitTest, IntPtr.Zero);
+        }
+    }
+
+    // the surface the hit test asks (one launcher window at a time)
+    private static SdlLauncherSurface? _current;
+    private (int X, int Y, int Width, int Height)[] _controls = [];
+
+    /// <summary>How far in from the window's edges (window coordinates) a drag resizes it.</summary>
+    internal const int ResizeEdge = 6;
+
+    public bool Frameless => true;
+
+    /// <summary>Fullscreen, as large as its screen, or in gamescope (the Steam Deck's Game Mode, which shows every window over the whole screen).</summary>
+    public bool FillsScreen
+    {
+        get
+        {
+            if ((SdlNative.SDL_GetWindowFlags(_host.Window) & SdlNative.WindowFullscreen) != 0 || InGamescope())
+            {
+                return true;
+            }
+            var display = SdlNative.SDL_GetWindowDisplayIndex(_host.Window);
+            SdlNative.SDL_GetWindowSize(_host.Window, out var w, out var h);
+            return display >= 0 && SdlNative.SDL_GetDisplayBounds(display, out var screen) == 0 && w >= screen.Width && h >= screen.Height;
+        }
+    }
+
+    /// <summary>gamescope says so in the environment of the programs it runs.</summary>
+    internal static bool InGamescope() =>
+        string.Equals(Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP"), "gamescope", StringComparison.OrdinalIgnoreCase)
+        || Environment.GetEnvironmentVariable("GAMESCOPE_WAYLAND_DISPLAY") is { Length: > 0 };
+
+    public void Minimise() => SdlNative.SDL_MinimizeWindow(_host.Window);
+
+    public void Controls(IReadOnlyList<(int X, int Y, int Width, int Height)> areas) => _controls = [.. areas];
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static unsafe int HitTest(IntPtr window, int* point, IntPtr data)
+    {
+        if (_current is not { } surface)
+        {
+            return SdlNative.HitTestNormal;
+        }
+        SdlNative.SDL_GetWindowSize(window, out var ww, out var wh);
+        var (pw, ph) = surface.Size;
+        return Region(point[0], point[1], ww, wh, pw, ph, surface._controls, surface.FillsScreen);
+    }
+
+    /// <summary>
+    /// What a point of the window (window coordinates) does: near an edge it resizes the window, over a control (surface pixels) it is
+    /// clicked, elsewhere (the painting, the parchment's bare parts) it drags the window. A window that fills the screen is neither
+    /// moved nor resized.
+    /// </summary>
+    internal static int Region(int x, int y, int windowWidth, int windowHeight, int pixelWidth, int pixelHeight,
+        IReadOnlyList<(int X, int Y, int Width, int Height)> controls, bool fillsScreen)
+    {
+        if (fillsScreen)
+        {
+            return SdlNative.HitTestNormal;
+        }
+        bool left = x < ResizeEdge, right = x >= windowWidth - ResizeEdge, top = y < ResizeEdge, bottom = y >= windowHeight - ResizeEdge;
+        switch (top, bottom, left, right)
+        {
+            case (true, _, true, _): return SdlNative.HitTestResizeTopLeft;
+            case (true, _, _, true): return SdlNative.HitTestResizeTopRight;
+            case (_, true, _, true): return SdlNative.HitTestResizeBottomRight;
+            case (_, true, true, _): return SdlNative.HitTestResizeBottomLeft;
+            case (true, _, _, _): return SdlNative.HitTestResizeTop;
+            case (_, true, _, _): return SdlNative.HitTestResizeBottom;
+            case (_, _, true, _): return SdlNative.HitTestResizeLeft;
+            case (_, _, _, true): return SdlNative.HitTestResizeRight;
+        }
+        var px = x * pixelWidth / Math.Max(1, windowWidth);
+        var py = y * pixelHeight / Math.Max(1, windowHeight);
+        foreach (var c in controls)
+        {
+            if (px >= c.X && px < c.X + c.Width && py >= c.Y && py < c.Y + c.Height)
+            {
+                return SdlNative.HitTestNormal;
+            }
+        }
+        return SdlNative.HitTestDraggable;
     }
 
     public (int Width, int Height) Size
@@ -231,5 +322,9 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
             SdlNative.SDL_DestroyTexture(_texture);
         }
         SdlHost.ShowPointer(false);
+        // the game's window has its frame (fullscreen: SDL shows none anyway)
+        SdlNative.SDL_SetWindowHitTest(_host.Window, IntPtr.Zero, IntPtr.Zero);
+        SdlNative.SDL_SetWindowBordered(_host.Window, 1);
+        _current = null;
     }
 }

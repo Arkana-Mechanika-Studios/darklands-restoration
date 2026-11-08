@@ -140,7 +140,13 @@ When nothing is found, or the folder named does not hold the game, the launcher 
 The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the HD pack,
 the audio pack (both: None, the packs in a `packs` folder, or a folder browsed for or dropped; [PACKS.md](PACKS.md)),
 the sound card and the Roland ROM folder (MT-32 and/or CM-32L; with a sound test: ten seconds of the game's music through the drivers the game
-will use) and the start-up screen and opening animation. Beside them: the release notes (`RELEASE_NOTES.md` next to the
+will use) and the start-up screen and opening animation. Its settings are on two tabs: **General** (the game folder, the
+display, the sound card with its sound test, the packs) and **Advanced** (the Roland ROM folder, the SoundFont, the
+start-up); a click on a tab or Ctrl+Tab opens the other, and Tab or the arrows go on from one tab's rows into the other's.
+Its window has no title bar: the painting fills it, a drag on the painting (or on the panels' bare parchment) moves it, its
+edges resize it, and its own buttons at the top-right corner minimise and close it (Alt+F4 and Esc close it too; no
+minimise button when the window fills the screen, as in the Steam Deck's Game Mode). The game's window, after Play, has
+its frame again. Beside them: the release notes (`RELEASE_NOTES.md` next to the
 program, copied there by the build from `releases/<version>/release-notes.md` when that is there), a link to the version's
 page on GitHub (the only place the notes are when the file is missing), and a word on the project. It comes up:
 
@@ -154,7 +160,7 @@ page on GitHub (the only place the notes are when the file is missing), and a wo
 
 `--no-launcher` turns it off. The game folder can be chosen with **Change…** (Windows' folder dialog; on other systems
 Change… lets you type it), typed or pasted (Ctrl+V), dropped on the window, or chosen among the folders found with ←/→.
-The Roland ROM folder is chosen the same way on its row (Enter or its Change… opens the dialog) or by dropping the folder
+The Roland ROM folder is chosen the same way on its row on Advanced (Enter or its Change… opens the dialog) or by dropping the folder
 with the ROM files on the window. The HD pack, the audio pack and the SoundFont rows: ←/→ (or a click on their ‹ ›) go
 through the choices, Enter or the row's **Browse…** opens the system's dialog, and a dropped folder or `.sf2` file is
 taken; a click on the row itself only chooses it. Under each folder and pack a line says what was found or what is wrong;

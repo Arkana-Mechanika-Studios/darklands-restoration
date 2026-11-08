@@ -29,6 +29,18 @@ internal sealed class ScriptedSurface(int width, int height, params LauncherInpu
     public Func<string, string?>? PickFolder { get; set; }
 
     public Func<string, string?>? PickFile { get; set; }
+
+    public bool Frameless { get; set; }
+
+    public bool FillsScreen { get; set; }
+
+    public int Minimised { get; private set; }
+
+    public void Minimise() => Minimised++;
+
+    public IReadOnlyList<(int X, int Y, int Width, int Height)> ControlAreas { get; private set; } = [];
+
+    public void Controls(IReadOnlyList<(int X, int Y, int Width, int Height)> areas) => ControlAreas = areas;
 }
 
 /// <summary>A sound test that notes what it was asked to play, and plays until stopped.</summary>
@@ -109,7 +121,7 @@ public sealed class LauncherTests
             Down, Enter,        // fullscreen on
             Down, Down,
             Right, Right,       // sound: AdLib, then Sound Blaster
-            Down, Down, Down, Down, Enter,  // past the ROMs, the audio pack and the SoundFont: the start-up screen off
+            Down, Down, Down, Down, Enter,  // past the audio pack, the ROMs (Advanced opens) and the SoundFont: the start-up screen off
             Escape]);
         Assert.Equal(LauncherChoice.Quit, result.Choice);
         Assert.Equal("1080x600", (string)result.Changes["display.resolution"]!);
@@ -172,8 +184,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, SoundFont, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, SoundFont, ROMs, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -193,8 +205,8 @@ public sealed class LauncherTests
         var result = Run(Context(), new PathDropped(@"E:\MY_ROMS"));
         Assert.Equal("E:/MY_ROMS", (string)result.Changes["sound.mt32Roms"]!);
         Assert.Equal(@"E:\MY_ROMS", result.Settings.Mt32Roms);
-        // the window size, Fullscreen, HD pack, Sound card, then the ROMs
-        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Enter]) { PickFolder = _ => @"F:\OTHER_ROMS" };
+        // the window size, Fullscreen, HD pack, Sound card, audio pack, then the ROMs (on Advanced)
+        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Down, Enter]) { PickFolder = _ => @"F:\OTHER_ROMS" };
         Assert.Equal("F:/OTHER_ROMS", (string)new Launcher().Run(Context(), picked).Changes["sound.mt32Roms"]!);
     }
 
@@ -251,8 +263,8 @@ public sealed class LauncherTests
         public void Dispose() => Directory.Delete(Root, recursive: true);
     }
 
-    // from Play: Discord, the game folder, Change, window, fullscreen, HD pack, sound card, ROMs, then the audio pack (no sound test)
-    private static readonly LauncherInput[] ToAudioPack = [Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab];
+    // from Play: Discord, the game folder, Change, window, fullscreen, HD pack, sound card, then the audio pack (no sound test)
+    private static readonly LauncherInput[] ToAudioPack = [Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab];
 
     [Fact]
     public void ThePackRowsGoThroughNoneAndThePacksFoundAndTheSettingsKeepThem()
@@ -306,7 +318,7 @@ public sealed class LauncherTests
             File.WriteAllText(font, "x");
             var text = Path.Combine(folder, "notes.txt");
             File.WriteAllText(text, "x");
-            LauncherInput[] toSoundFont = [.. ToAudioPack, Tab];
+            LauncherInput[] toSoundFont = [.. ToAudioPack, Tab, Tab];
             var picked = new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => font };
             var result = new Launcher().Run(Context(), picked);
             Assert.Equal(font, result.Settings.SoundFont);
@@ -511,18 +523,20 @@ public sealed class LauncherTests
         Directory.CreateDirectory(folder);
         void Shot(string name, LauncherContext context, int width, int height, params LauncherInput[] script)
         {
-            var surface = new ScriptedSurface(width, height, script);
+            var surface = new ScriptedSurface(width, height, script) { Frameless = true };
             new Launcher().Run(context, surface);
             PngCodec.Write(new RgbaImage(width, height, surface.Frames[^1]), Path.Combine(folder, name + ".png"));
         }
         // the launcher reworked (2026-11-08): as it opens, with broken packs chosen (the audio pack's row focused), and at its smallest size
         var guide = Context(tests: []) with { PackGuide = "https://example.org/PACKS.md", ReportProblem = () => "Report saved.", ReleaseNotesLink = "https://example.org" };
         Shot("normal-1280x720", guide, 1280, 720, Escape);
-        // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (HD pack: 9 tabs, audio pack: 13)
+        // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (HD pack: 9 tabs, audio pack: 12)
         static LauncherInput[] Tabs(int count) => [.. Enumerable.Repeat<LauncherInput>(Tab, count), Escape];
-        Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(13));
+        Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(12));
+        Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
+        Shot("advanced-broken-960x540", LauncherLayoutTests.Broken(), 960, 540, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
         Shot("broken-packs-hd-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(9));
-        Shot("broken-packs-960x540", LauncherLayoutTests.Broken(), 960, 540, Tabs(13));
+        Shot("broken-packs-960x540", LauncherLayoutTests.Broken(), 960, 540, Tabs(12));
         Shot("no-soundfont-960x540", guide, 960, 540, Tabs(14));
         Shot("start-failed-960x540", LauncherLayoutTests.Broken(LauncherReason.StartFailed, "The game could not start: " + LauncherLayoutTests.BrokenManifest(@"E:\Games\packs\x")), 960, 540, Escape);
         Shot("asked-1440x800", Context(tests: []), 1440, 800, [.. ToWindow, Escape]);

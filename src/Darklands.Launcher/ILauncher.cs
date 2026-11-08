@@ -165,6 +165,25 @@ public interface ILauncherSurface
 
     /// <summary>Asks the system for a SoundFont file (its own dialog); null when not available. Cancelled: null; no dialog: <see cref="NotSupportedException"/>.</summary>
     Func<string, string?>? PickFile => null;
+
+    /// <summary>
+    /// The window has no frame of its own (no title bar): the launcher draws its close and minimise buttons at the top-right corner and
+    /// says where its controls are (<see cref="Controls"/>), so that a drag elsewhere can move the window.
+    /// </summary>
+    bool Frameless => false;
+
+    /// <summary>The window fills the screen (fullscreen, or a compositor such as gamescope that shows it so): no minimise button then.</summary>
+    bool FillsScreen => false;
+
+    /// <summary>Minimises the window (its minimise button).</summary>
+    void Minimise()
+    {
+    }
+
+    /// <summary>Where the controls were drawn, in surface pixels, after each frame (see <see cref="Frameless"/>).</summary>
+    void Controls(IReadOnlyList<(int X, int Y, int Width, int Height)> areas)
+    {
+    }
 }
 
 /// <summary>An input event, in surface pixels.</summary>

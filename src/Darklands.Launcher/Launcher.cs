@@ -18,6 +18,7 @@ public sealed class Launcher : ILauncher
                 canvas = new Canvas(width, height);
             }
             screen.Render(canvas);
+            surface.Controls(screen.ControlAreas);
             surface.Present(canvas.Pixels);
             foreach (var input in surface.Wait())
             {

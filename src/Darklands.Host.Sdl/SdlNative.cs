@@ -382,6 +382,33 @@ internal static class SdlNative
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_SetWindowMinimumSize(IntPtr window, int width, int height);
 
+    /// <summary>Takes the window's frame and title bar away (0) or gives them back (1).</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_SetWindowBordered(IntPtr window, int bordered);
+
+    /// <summary>
+    /// Sets the function that says what a point of the window is (<c>SDL_HitTestResult (*)(SDL_Window*, const SDL_Point*, void*)</c>):
+    /// a normal point, one that drags the window, or an edge that resizes it; IntPtr.Zero: none.
+    /// </summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_SetWindowHitTest(IntPtr window, IntPtr callback, IntPtr data);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void SDL_MinimizeWindow(IntPtr window);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern uint SDL_GetWindowFlags(IntPtr window);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetDisplayBounds(int displayIndex, out SdlRect rect);
+
+    /// <summary>SDL_WINDOW_FULLSCREEN (part of SDL_WINDOW_FULLSCREEN_DESKTOP too).</summary>
+    internal const uint WindowFullscreen = 0x00000001;
+
+    // SDL_HitTestResult
+    internal const int HitTestNormal = 0, HitTestDraggable = 1, HitTestResizeTopLeft = 2, HitTestResizeTop = 3, HitTestResizeTopRight = 4,
+        HitTestResizeRight = 5, HitTestResizeBottomRight = 6, HitTestResizeBottom = 7, HitTestResizeBottomLeft = 8, HitTestResizeLeft = 9;
+
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
 
