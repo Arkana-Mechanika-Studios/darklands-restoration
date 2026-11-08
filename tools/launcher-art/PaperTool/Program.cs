@@ -7,6 +7,8 @@
 //   PaperTool card <mockup.png> <out dir> [x0 y0 x1 y1]
 //   PaperTool settings <card-settings.png> <slice.txt> <out dir>
 //   PaperTool tone <card-settings.png> <card-left-mockup-size.png> <out.png>
+//   cutout: a whole panel the artist painted (on transparency or white), cropped, a printed rule in a box painted out,
+//     scaled to a height (0: as it is):  PaperTool cutout <in.png> <out.png> <height> <border> [rule x0 y0 x1 y1]
 using Darklands.Rendering;
 
 static int L(uint c) => (int)((((c >> 16) & 255) * 30 + ((c >> 8) & 255) * 59 + (c & 255) * 11) / 100);
@@ -27,6 +29,79 @@ if (args[0] == "settings")
     PngCodec.Write(o, Path.Combine(args[3], "card-settings.png"));
     File.WriteAllText(Path.Combine(args[3], "card-settings.slice.txt"), $"{s[0]} {bottom} {s[2]} {bottom}\n");
     Console.WriteLine($"settings {art.Width}x{art.Height} -> {o.Width}x{o.Height}, slice {s[0]} {bottom} {s[2]} {bottom}");
+    return 0;
+}
+
+if (args[0] == "cutout")
+{
+    // a whole panel painted on white: the white (and its grey shadow) reached from the border becomes transparent, the panel
+    // is cropped, an optional dark rule in a box is painted out, and it is scaled to the given height (twice the design's)
+    //   PaperTool cutout <in.png> <out.png> <height> <border> [rule x0 y0 x1 y1]
+    var src = PngCodec.Read(args[1]);
+    int w = src.Width, h = src.Height;
+    var p = (uint[])src.Argb.Clone();
+    if (args.Length >= 9)
+    {
+        int rx0 = int.Parse(args[5]), ry0 = int.Parse(args[6]), rx1 = int.Parse(args[7]), ry1 = int.Parse(args[8]);
+        // the rule: the whole box covered by the paper just below it, feathered over 8 pixels at its four sides
+        var band = ry1 - ry0;
+        var copy = (uint[])p.Clone();
+        for (var y = ry0 - 8; y < ry1 + 8; y++)
+            for (var x = rx0 - 8; x < rx1 + 8; x++)
+            {
+                var inside = Math.Min(Math.Min(x - (rx0 - 8), rx1 + 8 - 1 - x), Math.Min(y - (ry0 - 8), ry1 + 8 - 1 - y));
+                var t = Math.Clamp(inside / 8.0, 0, 1);
+                uint a = copy[y * w + x], b = copy[(y + band + 8) * w + x];
+                double Mix(int s) => (a >> s & 255) * (1 - t) + (b >> s & 255) * t;
+                p[y * w + x] = a & 0xFF000000 | Rgb(Mix(16), Mix(8), Mix(0), 0) & 0xFFFFFF;
+            }
+    }
+    var back = new bool[w * h];
+    var qq = new Queue<int>();
+    bool White(uint c) => c >> 24 < 24 || Sat(c) < 30 && L(c) > 150;
+    void Visit(int i) { if (!back[i] && White(p[i])) { back[i] = true; qq.Enqueue(i); } }
+    for (var x = 0; x < w; x++) { Visit(x); Visit((h - 1) * w + x); }
+    for (var y = 0; y < h; y++) { Visit(y * w); Visit(y * w + w - 1); }
+    while (qq.Count > 0)
+    {
+        var i = qq.Dequeue(); int x = i % w, y = i / w;
+        if (x > 0) Visit(i - 1); if (x < w - 1) Visit(i + 1); if (y > 0) Visit(i - w); if (y < h - 1) Visit(i + w);
+    }
+    int x0 = w, y0 = h, x1 = 0, y1 = 0;
+    for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (!back[y * w + x]) { x0 = Math.Min(x0, x); x1 = Math.Max(x1, x); y0 = Math.Min(y0, y); y1 = Math.Max(y1, y); }
+    int pw = x1 - x0 + 1, ph = y1 - y0 + 1;
+    var cut = new uint[pw * ph];
+    for (var y = 0; y < ph; y++)
+        for (var x = 0; x < pw; x++)
+        {
+            int i = (y0 + y) * w + x0 + x;
+            if (back[i]) continue;
+            // the outermost pixels, touching the white, half see-through (and their white fringe darkened away)
+            var n = 0;
+            if (x0 + x > 0 && back[i - 1]) n++; if (x0 + x < w - 1 && back[i + 1]) n++; if (y0 + y > 0 && back[i - w]) n++; if (y0 + y < h - 1 && back[i + w]) n++;
+            cut[y * pw + x] = p[i] & 0xFFFFFF | (uint)((p[i] >> 24) * (n == 0 ? 255 : Math.Max(60, 255 - 70 * n)) / 255) << 24;
+        }
+    var height = int.Parse(args[3]) is > 0 and var asked ? asked : ph;
+    var width = (int)Math.Round((double)pw * height / ph);
+    var o = new RgbaImage(width, height);
+    for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
+        {
+            // a box filter (the picture is reduced)
+            double fx0 = (double)x * pw / width, fx1 = (double)(x + 1) * pw / width, fy0 = (double)y * ph / height, fy1 = (double)(y + 1) * ph / height;
+            double a = 0, r = 0, g = 0, b = 0, n = 0;
+            for (var sy = (int)fy0; sy < Math.Min(ph, (int)Math.Ceiling(fy1)); sy++)
+                for (var sx = (int)fx0; sx < Math.Min(pw, (int)Math.Ceiling(fx1)); sx++)
+                {
+                    var c = cut[sy * pw + sx]; double al = c >> 24;
+                    a += al; r += (c >> 16 & 255) * al; g += (c >> 8 & 255) * al; b += (c & 255) * al; n++;
+                }
+            o.Argb[y * width + x] = a < 1 ? 0 : Rgb(r / a, g / a, b / a, (int)Math.Round(a / n));
+        }
+    PngCodec.Write(o, args[2]);
+    var border = int.Parse(args[4]);
+    File.WriteAllText(Path.ChangeExtension(args[2], null) + ".slice.txt", $"{border} {border} {border} {border}\n");
+    Console.WriteLine($"{args[1]}: panel {x0},{y0} {pw}x{ph} -> {width}x{height}, slice {border}");
     return 0;
 }
 

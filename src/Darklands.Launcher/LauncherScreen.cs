@@ -723,7 +723,11 @@ internal sealed class LauncherScreen
         var settings = SettingsFrame(v);
         CardShadow(canvas, settings, v);
         Parchment(canvas, settings, v, "card-settings", 23);
-        Corners(canvas, settings, v);
+        if (Assets.Art("card-settings") is null)
+        {
+            // the panel's art has its own corners
+            Corners(canvas, settings, v);
+        }
     }
 
     /// <summary>The painting (or a dusk gradient without it), enlarged around its focus to cover the window, darkened at the edges.</summary>
