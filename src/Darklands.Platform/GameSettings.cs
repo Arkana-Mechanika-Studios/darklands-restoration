@@ -27,6 +27,9 @@ public sealed class GameSettings
     /// <summary>true: the cleaner drawing of 0.9.5 (GameOptions.CleanDrawing); false/null: the 1992 game's drawing, oddities included.</summary>
     public bool? CleanDrawing { get; set; }
 
+    /// <summary>How the picture is drawn on the window: one of <see cref="PictureFilters.Names"/> (null: sharp).</summary>
+    public string? Filter { get; set; }
+
     /// <summary>One of <see cref="SoundCards"/>.</summary>
     public string? SoundCard { get; set; }
 

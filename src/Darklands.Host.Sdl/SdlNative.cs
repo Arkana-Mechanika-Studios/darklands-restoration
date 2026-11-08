@@ -401,6 +401,21 @@ internal static class SdlNative
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_SetTextureBlendMode(IntPtr texture, uint blendMode);
 
+    // the picture filters (SdlPictureFilter): SDL_BLENDMODE_NONE and MOD, SDL_ComposeCustomBlendMode's factors and operation
+    internal const int BlendModeNone = 0;
+    internal const int BlendModeMod = 4;
+    internal const int BlendFactorZero = 1, BlendFactorOne = 2, BlendFactorOneMinusSrcAlpha = 6, BlendFactorDstColor = 7;
+    internal const int BlendOperationAdd = 1;
+
+    /// <summary>A blend mode of its own (SDL 2.0.6): dst = src * srcFactor (op) dst * dstFactor, colour and alpha apart.</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_ComposeCustomBlendMode(int srcColorFactor, int dstColorFactor, int colorOperation,
+        int srcAlphaFactor, int dstAlphaFactor, int alphaOperation);
+
+    /// <summary>Whether the renderer can draw into a texture (SDL_bool).</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_RenderTargetSupported(IntPtr renderer);
+
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_SetTextureColorMod(IntPtr texture, byte red, byte green, byte blue);

@@ -46,6 +46,7 @@ not meant for players.
 | `display.fullscreen` | false | `--fullscreen` | |
 | `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
 | `display.cleanDrawing` | false | `--clean-drawing` | false = the screens are drawn as in the 1992 game, including its drawing oddities; true = the cleaner drawing of 0.9.5 (the game plays the same) |
+| `display.filter` | `"sharp"` | `--filter <name>` | how the 320x200 picture is drawn on a larger window: `sharp`, `smooth` or `crt` (below); only the window's picture changes (SDL host) |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
@@ -76,6 +77,25 @@ recoloured figures do not change a replacement yet. Problems (a
 missing folder, a broken PNG) are reported on the console and the original pictures are kept. The headless host takes
 the same key from `--settings`, or the step `hdpack:<folder>`, and then also saves `<name>.hd.png` for each shot
 (and `<name>.assets.txt`, the asset names on that screen). The guide for pack makers: [PACKS.md](PACKS.md).
+
+### `display.filter`
+
+How the SDL host draws the game's 320x200 picture on the window; the picture keeps its place and shape (the window size,
+fullscreen and the black borders are as without a filter). In the game **Ctrl+F11** goes to the next filter for the
+rest of the run (the setting in the file stays; the original never reads F11, so the game loses no key).
+
+| Name | Picture |
+|---|---|
+| `sharp` (default) | each window pixel takes the nearest game pixel: hard pixels, as always; at sizes that are not whole multiples of 320x200 some columns and rows are one window pixel wider than others |
+| `smooth` | "sharp bilinear": the picture is enlarged by whole numbers with hard pixels, then smoothly to the window, so every game pixel is the same size and only the edges between pixels blend over one window pixel; at whole multiples it is the same as `sharp` |
+| `crt` | as `smooth`, with scanlines between the picture's 200 lines and a light red/green/blue aperture mask, as on a VGA monitor, and part of the lost brightness given back (no curvature). The scanlines fade out where a line is under three window pixels tall |
+
+Only the picture shown in the window changes: the game, its timing, the screenshots (F12), the problem reports and
+the frames the headless host and the oracles record are made before the filter and are the same with every filter. The
+text screen of the program start keeps its sharp look. With an HD pack, the game's own pixels (the frame and the
+overlay drawn over the replacements) go through `smooth`'s steps, the replacement pictures are drawn smoothly as before,
+and the CRT's mask lies over everything, replacements included. On a renderer without render targets every filter
+draws as `sharp`; on SDL's software renderer the CRT is a little darker (it cannot give the brightness back).
 
 ### `sound.audioPack`
 

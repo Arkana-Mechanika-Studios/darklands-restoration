@@ -50,6 +50,7 @@ internal static class ReportHost
         [
             ("Window", window + (s.Fullscreen ? ", fullscreen" : "")),
             ("Clean drawing", s.CleanDrawing ? "on" : "off"),
+            ("Picture filter", PictureFilters.Name(s.Filter)),
             ("Sound card", s.NoAudio ? "no audio" : s.SoundChoice ?? "config"),
             ("MT-32 ROM folder", s.Mt32Roms ?? "default"),
             ("Audio pack", s.AudioPack ?? "none"),

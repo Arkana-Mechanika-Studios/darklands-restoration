@@ -118,6 +118,7 @@ var cli = new CommandLineOptions
     Fullscreen = arguments.Remove("--fullscreen"),
     HdPack = Option("--hd-pack"),
     CleanDrawing = arguments.Remove("--clean-drawing"),
+    Filter = Option("--filter"),
     NoConsole = arguments.Remove("--no-console"),
     Mods = mods,
     GameCommandLine = commandLine,
@@ -268,6 +269,7 @@ ResolvedSettings? Resolve(GameSettings file)
 static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports)
 {
     host.Renderer = null;
+    host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
     if (settings.HdPack is { } hdPack)
     {
         // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same

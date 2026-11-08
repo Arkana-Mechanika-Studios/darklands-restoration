@@ -429,11 +429,11 @@ public class SettingsTemplateTests
             (fromNothing.GameFolder, fromNothing.SavesFolder, fromNothing.Window ?? DisplayLayout.WindowSize(null, null), fromNothing.Fullscreen, fromNothing.SoundChoice, fromNothing.NoAudio,
              fromNothing.Mt32Roms, fromNothing.ConfigDrk, fromNothing.ShowBanner, fromNothing.PlayIntro, string.Join(' ', fromNothing.CommandLine),
              fromNothing.TextFont, fromNothing.ScreenshotsFolder, fromNothing.SdlLibrary, fromNothing.ConsoleEnabled, fromNothing.ConsoleFont,
-             fromNothing.ConsoleFontSize, fromNothing.HdPack),
+             fromNothing.ConsoleFontSize, fromNothing.HdPack, fromNothing.Filter),
             (fromTemplate.GameFolder, fromTemplate.SavesFolder, fromTemplate.Window ?? DisplayLayout.WindowSize(null, null), fromTemplate.Fullscreen, fromTemplate.SoundChoice, fromTemplate.NoAudio,
              fromTemplate.Mt32Roms, fromTemplate.ConfigDrk, fromTemplate.ShowBanner, fromTemplate.PlayIntro, string.Join(' ', fromTemplate.CommandLine),
              fromTemplate.TextFont, fromTemplate.ScreenshotsFolder, fromTemplate.SdlLibrary, fromTemplate.ConsoleEnabled, fromTemplate.ConsoleFont,
-             fromTemplate.ConsoleFontSize, fromTemplate.HdPack));
+             fromTemplate.ConsoleFontSize, fromTemplate.HdPack, fromTemplate.Filter));
         Assert.Equal(fromNothing.AudioPack, fromTemplate.AudioPack);
         Assert.Equal(fromNothing.SoundFont, fromTemplate.SoundFont);
     }
@@ -462,12 +462,12 @@ public class SettingsTemplateTests
     [Fact]
     public void TheTemplateDocumentsEveryKey()
     {
-        foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "hdPack", "cleanDrawing", "card", "mt32Roms", "configDrk", "banner", "intro",
+        foreach (var key in new[] { "gameFolder", "savesFolder", "scale", "resolution", "fullscreen", "hdPack", "cleanDrawing", "filter", "card", "mt32Roms", "configDrk", "banner", "intro",
                      "commandLine", "textFont", "screenshotsFolder", "mods", "library", "display", "sound", "startup", "sdl" })
         {
             Assert.Contains($"\"{key}\":", SettingsFile.Template);
         }
-        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--clean-drawing", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--mod", "--sdl" })
+        foreach (var option in new[] { "--saves", "--scale", "--resolution", "--fullscreen", "--hd-pack", "--clean-drawing", "--filter", "--sound", "--mt32-roms", "--no-banner", "--no-intro", "--text-font", "--screenshots", "--mod", "--sdl" })
         {
             Assert.Contains(option, SettingsFile.Template);
         }

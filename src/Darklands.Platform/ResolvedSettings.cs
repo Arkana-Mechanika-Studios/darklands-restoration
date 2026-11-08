@@ -19,6 +19,9 @@ public sealed class CommandLineOptions
 
     public bool CleanDrawing { get; set; }
 
+    /// <summary>--filter: one of <see cref="PictureFilters.Names"/>.</summary>
+    public string? Filter { get; set; }
+
     public string? Sound { get; set; }
 
     public bool NoAudio { get; set; }
@@ -72,6 +75,7 @@ public sealed class CommandLineOptions
         By("display.fullscreen", Fullscreen, "--fullscreen");
         By("display.hdPack", Given(HdPack), "--hd-pack");
         By("display.cleanDrawing", CleanDrawing, "--clean-drawing");
+        By("display.filter", Given(Filter), "--filter");
         By("sound.card", NoAudio, "--no-audio");
         By("sound.card", Given(Sound), "--sound");
         By("sound.mt32Roms", Given(Mt32Roms), "--mt32-roms");
@@ -107,6 +111,9 @@ public sealed class ResolvedSettings
 
     /// <summary>The cleaner drawing of 0.9.5 (GameOptions.CleanDrawing); false: drawn as the 1992 game.</summary>
     public bool CleanDrawing { get; private init; }
+
+    /// <summary>How the host draws the picture on the window (presentation only; default <see cref="PictureFilter.Sharp"/>).</summary>
+    public PictureFilter Filter { get; private init; }
 
     /// <summary>adlib, sb, sbpro2, mt32, cm32l or speaker; null: the game's own choice from CONFIG.DRK.</summary>
     public string? SoundChoice { get; private init; }
@@ -185,6 +192,17 @@ public sealed class ResolvedSettings
         {
             throw new ArgumentException($"unknown sound card \"{sound}\" ({string.Join(", ", GameSettings.SoundCards)})");
         }
+        // the command line's filter must be a known one; the file's was checked as it was read (an unknown one is left out there)
+        var filter = PictureFilter.Sharp;
+        if (Set(cli.Filter) is { } cliFilter)
+        {
+            filter = PictureFilters.Parse(cliFilter)
+                ?? throw new ArgumentException($"unknown picture filter \"{cliFilter}\" ({string.Join(", ", PictureFilters.Names)})");
+        }
+        else if (PictureFilters.Parse(file.Filter) is { } fileFilter)
+        {
+            filter = fileFilter;
+        }
         return new ResolvedSettings
         {
             GameFolder = Pick(cli.GameFolder, "DARKLANDS_DIR", file.GameFolder),
@@ -193,6 +211,7 @@ public sealed class ResolvedSettings
             Fullscreen = cli.Fullscreen || (file.Fullscreen ?? false),
             HdPack = Pick(cli.HdPack, null, file.HdPack),
             CleanDrawing = cli.CleanDrawing || (file.CleanDrawing ?? false),
+            Filter = filter,
             SoundChoice = sound is null or "config" or "none" ? null : sound,
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),

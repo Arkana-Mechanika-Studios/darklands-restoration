@@ -82,6 +82,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_SetTextureScaleMode(_texture, SdlNative.ScaleModeNearest);
         SdlNative.SDL_SetTextureBlendMode(_texture, SdlNative.BlendModeNone);
         SdlNative.SDL_HideCursor();
+        _filter = new SdlPictureFilter(_renderer);
         UpdateViewport();
     }
 
@@ -126,6 +127,19 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// replacements over it. The host only puts the items on the graphics card.
     /// </summary>
     public HdRenderer? Renderer { get; set; }
+
+    /// <summary>
+    /// How the graphics screen's picture is drawn on the window (docs/SETTINGS.md display.filter); Ctrl+F11 goes to the next one.
+    /// Only the window's picture changes: the frame the game made (screenshots, problem reports, what the oracles compare) does not.
+    /// </summary>
+    // Host feature: like F11 and F12, Ctrl+F11 is a key the original never reads (its BIOS keyboard call does not report F11), so the game loses no key.
+    public PictureFilter Filter
+    {
+        get => _filter.Filter;
+        set => _filter.Filter = value;
+    }
+
+    private readonly IPictureFilterRenderer _filter;
 
     public MouseState Mouse => _mouse;
 
@@ -211,7 +225,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SdlNative.SDL_RenderClear(_renderer);
         UpdateViewport();
-        SdlNative.RenderCopy(_renderer, _texture, _viewport);
+        DrawFrame();
         _showingText = false;
         FinishFrame();
     }
@@ -241,12 +255,21 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
             var destination = ToSdl(item.Destination);
             if (ReferenceEquals(item, frame.Base))
             {
-                SdlNative.RenderCopy(_renderer, _texture, destination);
+                _filter.DrawGame(_texture, Screen.Width, Screen.Height, item.Destination, blended: false);
                 continue;
             }
             used.Add(item.Texture);
+            if (item.Placement is null)
+            {
+                // the overlay (the game's frame again, transparent where a replacement shows): through the filter as the base
+                _filter.DrawGame(HdTexture(item), item.Texture.Width, item.Texture.Height, item.Destination, blended: true);
+                continue;
+            }
             SdlNative.RenderCopy(_renderer, HdTexture(item), destination);
         }
+        // the CRT's mask over everything, replacements included (the monitor shows them through it too)
+
+        _filter.Finish(frame.Output);
         foreach (var image in _hdTextures.Keys.Where(image => !used.Contains(image)).ToList())
         {
             SdlNative.SDL_DestroyTexture(_hdTextures[image].Texture);
@@ -326,8 +349,15 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         else
         {
-            SdlNative.RenderCopy(_renderer, _texture, _viewport);
+            DrawFrame();
         }
+    }
+
+    /// <summary>The game's frame (in <see cref="_texture"/>) at the picture's place, through the picture filter.</summary>
+    private void DrawFrame()
+    {
+        _filter.DrawGame(_texture, Screen.Width, Screen.Height, Graphics, blended: false);
+        _filter.Finish(Graphics);
     }
 
     /// <summary>How the renderer in use stretches the picture (tests).</summary>
@@ -389,6 +419,15 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         var toggledThisPump = false;
         while (SdlNative.SDL_PollEvent(out var e))
         {
+            // Ctrl+F11: the next picture filter (Filter), shown at once even while the game waits
+            if (IsNextFilterKey(e))
+            {
+                if (e.Keyboard.Repeat == 0)
+                {
+                    NextFilter();
+                }
+                continue;
+            }
             if (e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeF11 && Console is not null)
             {
                 if (e.Keyboard.Repeat == 0)
@@ -495,6 +534,19 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         var ticks = (int)_wheel;
         _wheel -= ticks;
         return ticks;
+    }
+
+    /// <summary>A press of Ctrl+F11 (either Ctrl key; not with Alt), the key that goes to the next picture filter.</summary>
+    internal static bool IsNextFilterKey(SdlNative.SdlEvent e) =>
+        e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeF11
+        && (e.Keyboard.Mod & SdlNative.KeyModCtrl) != 0 && (e.Keyboard.Mod & SdlNative.KeyModAlt) == 0;
+
+    /// <summary>The next picture filter, the last picture drawn again with it.</summary>
+    internal void NextFilter()
+    {
+        Filter = PictureFilters.Next(Filter);
+        System.Console.Error.WriteLine($"Picture: {PictureFilters.Label(Filter)}");
+        Redraw();
     }
 
     private void SetConsoleOpen(bool open)
@@ -650,6 +702,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         {
             SdlNative.SDL_DestroyTexture(texture);
         }
+        _filter.Dispose();
         SdlNative.SDL_DestroyTexture(_texture);
         if (_textTexture != IntPtr.Zero)
         {

@@ -23,10 +23,24 @@ internal sealed class LauncherModel
         ("none", "No sound"),
     ];
 
+    /// <summary>The picture filters offered (display.filter), with their labels, in the order ←/→ go through them.</summary>
+    public static readonly IReadOnlyList<(string Value, string Label)> Filters =
+        [.. Enum.GetValues<PictureFilter>().Select(f => (PictureFilters.Name(f), PictureFilters.Label(f)))];
+
+    /// <summary>The label of the picture filter chosen.</summary>
+    public string FilterLabel => Filters.FirstOrDefault(f => f.Value == Filter).Label ?? Filters[0].Label;
+
+    /// <summary>The next (or, with -1, the previous) picture filter.</summary>
+    public void StepFilter(int step)
+    {
+        var i = Math.Max(0, Filters.ToList().FindIndex(f => f.Value == Filter));
+        Filter = Filters[((i + step) % Filters.Count + Filters.Count) % Filters.Count].Value;
+    }
+
     private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool Always) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool Always) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -39,6 +53,7 @@ internal sealed class LauncherModel
         Windows = WindowChoices(display, CurrentWindow(s));
         WindowIndex = Windows.IndexOf(CurrentWindow(s));
         Fullscreen = s.Fullscreen ?? false;
+        Filter = PictureFilters.Name(PictureFilters.Parse(s.Filter) ?? PictureFilter.Sharp);
         HdPack = string.IsNullOrWhiteSpace(s.HdPack) ? null : s.HdPack;
         SoundCard = SoundCards.Any(c => c.Value == s.SoundCard) ? s.SoundCard! : "config";
         Mt32Roms = string.IsNullOrWhiteSpace(s.Mt32Roms) ? null : s.Mt32Roms;
@@ -56,7 +71,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, Always);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, Always);
         _automatic = GameFolder;
     }
 
@@ -76,6 +91,9 @@ internal sealed class LauncherModel
     public int WindowIndex { get; set; }
 
     public bool Fullscreen { get; set; }
+
+    /// <summary>The picture filter's settings-file name (one of <see cref="Filters"/>; display.filter).</summary>
+    public string Filter { get; set; }
 
     public string? HdPack { get; set; }
 
@@ -232,6 +250,10 @@ internal sealed class LauncherModel
         {
             changes["display.fullscreen"] = Fullscreen;
         }
+        if (Filter != _initial.Filter)
+        {
+            changes["display.filter"] = Filter;
+        }
         if (HdPack != _initial.HdPack)
         {
             changes["display.hdPack"] = HdPack?.Replace('\\', '/') ?? "";
@@ -280,6 +302,7 @@ internal sealed class LauncherModel
             Scale = exact ? window.Width / BaseWidth : null,
             Resolution = exact ? null : $"{window.Width}x{window.Height}",
             Fullscreen = Fullscreen,
+            Filter = Filter,
             HdPack = HdPack,
             SoundCard = SoundCard,
             Mt32Roms = Mt32Roms,

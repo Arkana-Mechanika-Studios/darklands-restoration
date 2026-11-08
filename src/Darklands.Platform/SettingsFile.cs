@@ -223,6 +223,19 @@ public static class SettingsFile
                 case "fullscreen": settings.Fullscreen = Boolean(key, property.Value) ?? settings.Fullscreen; break;
                 case "hdPack": settings.HdPack = FilePath(key, property.Value); break;
                 case "cleanDrawing": settings.CleanDrawing = Boolean(key, property.Value) ?? settings.CleanDrawing; break;
+                case "filter":
+                    if (Text(key, property.Value) is { } filter && !string.IsNullOrWhiteSpace(filter))
+                    {
+                        if (PictureFilters.Parse(filter) is { } known)
+                        {
+                            settings.Filter = PictureFilters.Name(known);
+                        }
+                        else
+                        {
+                            problems.Add($"\"{key}\" must be one of {string.Join(", ", PictureFilters.Names)} (not \"{filter}\"); ignored");
+                        }
+                    }
+                    break;
                 default: Unknown(key); break;
             }
         }
@@ -474,7 +487,11 @@ public static class SettingsFile
             "hdPack": "",
             // false: the screens are drawn as in the 1992 game, including its drawing oddities; true: the cleaner drawing of 0.9.5.
             // The game plays the same either way. Command line: --clean-drawing.
-            "cleanDrawing": false
+            "cleanDrawing": false,
+            // How the 320x200 picture is drawn on a larger window: "sharp" (hard pixels, as always), "smooth" (even, crisp
+            // pixels at any size) or "crt" (scanlines and a light mask, as on a VGA monitor). Only the picture changes; the
+            // game, its screenshots and its timing are the same. In the game Ctrl+F11 goes to the next one. Command line: --filter <name>.
+            "filter": "sharp"
           },
 
           "sound": {

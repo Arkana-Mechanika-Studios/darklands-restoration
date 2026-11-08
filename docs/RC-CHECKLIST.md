@@ -48,7 +48,7 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
 * The party's random seed at character creation comes from the clock in both; do not compare dice there.
 * Sound is compared as the requests to the sound driver; how a request sounds can differ. Event music heard in DOSBox may not be recorded.
 * Alt-Q reading the key at a different moment (host timing).
-* F11 (developer console), F12 (screenshot) and Ctrl-F12 (problem report) exist only in the C# build; the original ignores them.
+* F11 (developer console), F12 (screenshot), Ctrl-F11 (picture filter) and Ctrl-F12 (problem report) exist only in the C# build; the original ignores them.
 * Quirks and registered original bugs are reproduced on purpose, e.g. horses do not shorten travel.
 
 ## How to report a difference
