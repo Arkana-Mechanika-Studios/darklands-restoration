@@ -88,6 +88,7 @@ public sealed class CommandLineOptions
         By("sound.audioPack", Given(environment("DARKLANDS_AUDIO_PACK")), "DARKLANDS_AUDIO_PACK");
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
+        By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");
         By("startup.commandLine", GameCommandLine is not null, "--");
         By("mods", Mods.Count > 0, "--mod");
         return fixedKeys;

@@ -8,7 +8,7 @@ its bytes, never against another reimplementation.
 Wherever an oracle runs, the rules agree with the original's in the faithful mode (`OriginalBehaviour.Faithful`,
 which the oracles and the headless host use); the exceptions are registered, each with its reason (undefined
 memory, the host, deliberate fixes, a few things not modelled: see "Divergences and original bugs"). By default the
-player's game differs from the faithful mode only in the 11 listed, switchable data-safety fixes below. The aim is no
+player's game differs from the faithful mode only in the 14 listed, switchable data-safety fixes below. The aim is no
 known divergence, strong evidence, published coverage. The differences found and not yet settled are listed as open
 items there. Where it stands:
 
@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The eleven fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The fourteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -102,6 +102,16 @@ after 1.0.
     ends in DOS with its own text ("Corrupt file-Vars 3" on an empty file, "EOF-Vars", "EOF-Lv" or "EOF-terrf" on a short one; vis10 runs of
     a cut .BSV of three saves, in and out of a battle); with the fix an existing .BSV that is empty, short or corrupt refuses the load the same
     way (a missing .BSV still loads, as in the original); Faithful keeps an empty .BSV taken for a missing one and a short one throwing.
+  * `FixImpossibleSavedGame`: the saved-game load (R037+0x8ED4) takes the header's date, location-now and the location table with no
+    check, so a file edited by hand (or by another tool) with a month above 11, a day above 31, an hour above 23, location-now outside the
+    places or a location table shorter than the game's 414 places loads all the same; the original then reads past its tables where they
+    are indexed (the month names, the days per month, the place records; card fuzz of 2026-11-07: a month of 12 read past the month table),
+    and the rewrite stops with an exception where it indexes them. Fixed (B-f523d4, D-9d110d; tests `ImpossibleSaveTests`,
+    `RcPlayTests.ASavedGameHoldingWhatNoGameHasIsRefusedWithTheFix`): the load is refused before anything changes and the load screen (or
+    the start screen) shows "This saved game holds values no game can have and cannot be loaded."; every real, synthesised and community
+    save is inside the ranges (a negative hour is the game's own: date-plus-hours does not borrow) and loads as before. Faithful keeps the
+    loader as it was (D-cd116a: the original's reads past its tables are not modelled). A record count past the file is a damaged file
+    (`FixDamagedSavedGame`).
   * `FixRosterMissingFigure`: the inn's roster ("reform your party", R038+0x02F8): an arrow key onto a row past the figure list (row 4
     or later with the game's four figure pictures) whose character is in the party builds "pics\" + the row's 4-byte entry of DS:E7E2 +
     "small.pic" (R038+0x045F..0x04C3; the entries past the list are zeros), "pics\small.pic" does not open and the picture loader's opener
@@ -542,8 +552,8 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 233 original bugs registered
-(52 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 357 registered divergences,
+markers in the code, each with its reason and original coordinate: 234 original bugs registered
+(53 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 359 registered divergences,
 873 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
 measured as host timing and registered, D-d22f94). Every core-logic divergence has a

@@ -184,8 +184,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, SoundFont, ROMs, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, every start, Opening animation, start-up screen, SoundFont, ROMs, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -193,10 +193,30 @@ public sealed class LauncherTests
     [Fact]
     public void TheLauncherAtEveryStartIsASetting()
     {
-        // up from Play: Save, then this screen at every start
-        var result = Run(Context(), Up, Up, Enter);
+        // up from Play: Save, the mouse wheel, then this screen at every start
+        var result = Run(Context(), Up, Up, Up, Enter);
         Assert.True((bool)result.Changes["startup.launcher"]!);
         Assert.True(result.Settings.Launcher);
+    }
+
+    [Fact]
+    public void TheMouseWheelInMenusIsASettingOnByDefault()
+    {
+        // up from Play: Save, then the mouse wheel (on: the file has no input.mouseWheel)
+        var kept = Run(Context(), Up, Up, Right, Right);
+        Assert.False(kept.Changes.ContainsKey("input.mouseWheel"));
+        Assert.True(kept.Settings.MouseWheel);
+        var off = Run(Context(), Up, Up, Enter);
+        Assert.False((bool)off.Changes["input.mouseWheel"]!);
+        Assert.False(off.Settings.MouseWheel);
+    }
+
+    [Fact]
+    public void TheMouseWheelFixedByTheCommandLineIsShownButNotChanged()
+    {
+        var fixedKeys = new Dictionary<string, string> { ["input.mouseWheel"] = "--no-mouse-wheel" };
+        var result = Run(Context(fixedKeys: fixedKeys), Up, Up, Enter);
+        Assert.False(result.Changes.ContainsKey("input.mouseWheel"));
     }
 
     [Fact]

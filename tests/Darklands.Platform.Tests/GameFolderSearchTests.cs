@@ -209,12 +209,13 @@ public sealed class CommandLineOverridesTests
     [Fact]
     public void TheCommandLineAndTheEnvironmentFixTheirKeys()
     {
-        var cli = new CommandLineOptions { Fullscreen = true, Resolution = "1440x800", NoIntro = true };
+        var cli = new CommandLineOptions { Fullscreen = true, Resolution = "1440x800", NoIntro = true, NoMouseWheel = true };
         var fixedKeys = cli.Overrides(name => name == "DARKLANDS_DIR" ? "D:/Darklands" : null);
         Assert.Equal("--fullscreen", fixedKeys["display.fullscreen"]);
         Assert.Equal("--resolution", fixedKeys["display.scale"]);
         Assert.Equal("--resolution", fixedKeys["display.resolution"]);
         Assert.Equal("--no-intro", fixedKeys["startup.intro"]);
+        Assert.Equal("--no-mouse-wheel", fixedKeys["input.mouseWheel"]);
         Assert.Equal("DARKLANDS_DIR", fixedKeys["gameFolder"]);
         Assert.False(fixedKeys.ContainsKey("startup.banner"));
         Assert.False(fixedKeys.ContainsKey("sound.card"));

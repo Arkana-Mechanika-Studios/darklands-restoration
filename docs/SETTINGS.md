@@ -230,6 +230,7 @@ alchemy list, the character creation menus and the menu bar's pull-downs in its 
 card's text, a message box, the character sheet with no list open, where ↑ / ↓ move the frame between the boxes) the wheel does
 nothing. The game reads each notch as the key itself, a press and release a player could have made; nothing else changes. The
 screens say whether a selection is up (`GameUi.SelectionList`), the window turns the wheel into the keys (`IInput.SelectionListActive`).
+The launcher shows it on its Advanced tab, under Start-up: "Mouse wheel in menus"; `--no-mouse-wheel` turns it off for one run.
 
 ## Developer console (SDL host)
 

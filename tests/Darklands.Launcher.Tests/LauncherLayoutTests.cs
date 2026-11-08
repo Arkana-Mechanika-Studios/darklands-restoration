@@ -397,6 +397,7 @@ public sealed class LauncherLayoutTests
         Assert.Equal(LauncherScreen.Item.Roms, screen.Focus);
         screen.Area(LauncherScreen.Item.SoundFont);
         screen.Area(LauncherScreen.Item.Always);
+        screen.Area(LauncherScreen.Item.MouseWheel);
         Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Window));
 
         // Ctrl+Tab: General again, then Advanced

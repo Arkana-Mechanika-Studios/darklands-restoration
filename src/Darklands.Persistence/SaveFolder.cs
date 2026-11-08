@@ -105,6 +105,10 @@ public sealed class SaveFolder(string path)
         Find(fileName) is { } file && (SaveFile.RunsPastTheEnd(File.ReadAllBytes(file))
             || Find(BattleFileOf(fileName)) is { } battle && !BattleSaveFile.IsReadable(File.ReadAllBytes(battle)));
 
+    /// <summary>What the saved game holds that no game has (<see cref="SaveFile.ImpossibleValue"/>), or null; null for a missing file.</summary>
+    public string? ImpossibleValue(string fileName, int places) =>
+        Find(fileName) is { } file ? SaveFile.ImpossibleValue(File.ReadAllBytes(file), places) : null;
+
     /// <summary>Reads a saved game and its battle file.</summary>
     public LoadedGame Load(string fileName, IGameData data, GameState? running = null)
     {
