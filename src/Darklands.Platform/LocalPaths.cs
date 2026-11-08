@@ -7,7 +7,7 @@ namespace Darklands.Platform;
 /// of the repository the program runs from (git-ignored; the same file tools/local_paths.py reads).
 ///   game       DARKLANDS_DIR         the original game's folder (tests; the SDL host when nothing else names one)
 ///   exe        DARKLANDS_EXE         its DARKLAND.EXE, when not in the game folder (tests)
-///   sdl        DARKLANDS_SDL2_PATH   the SDL2 library (SDL host)
+///   sdl        DARKLANDS_SDL3_PATH   the SDL3 library (SDL host)
 ///   mt32roms   DARKLANDS_MT32_ROMS   the MT-32 / CM-32L ROM folder
 ///   textfont   DARKLANDS_TEXT_FONT   the 8x16 font of the text screen
 /// A relative path in local/paths.json is relative to the project root: DARKLANDS_ROOT, else the folder

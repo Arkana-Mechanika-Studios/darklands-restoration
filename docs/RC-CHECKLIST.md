@@ -68,7 +68,7 @@ key in the original); what is different and which side shows what. If you cannot
   Compare: the launcher comes up, finds the game (GOG, Steam or a typed folder), Play starts the game and writes
   `darklands.settings.json`. Proven by: UNPROVEN.
 * [ ] **A2 First run, Linux and Steam Deck.** Do: untar the Linux build, start it (desktop mode; once as a non-Steam game).
-  Compare: SDL2 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
+  Compare: SDL3 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
   UNPROVEN (tried once on a desktop Linux; not yet on a Steam Deck).
 * [ ] **A3 Launcher rows.** Do: window size, fullscreen, sound card, Roland ROM folder with the sound test, Shift at start,
   the SoundFont row, `--setup`, `--no-launcher`, `DarklandsRP Launcher.exe`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: `LauncherTests`, `LauncherPackTests`, `SettingsTests` (each choice is kept and read back); how it looks: UNPROVEN.

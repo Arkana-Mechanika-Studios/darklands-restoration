@@ -1,13 +1,12 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Darklands.Host.Sdl;
 
 /// <summary>
-/// A folder dialog on Linux, for the launcher's Change…: SDL3's own (the desktop portal, else zenity) when the SDL2 library is
-/// sdl2-compat on top of SDL3 (current Arch, Fedora ...), else the first of zenity, kdialog, yad or qarma installed. Each runs
-/// while the window's events are pumped; none is a new dependency of the program.
+/// A folder or file dialog on Linux, for the launcher's Change… and its SoundFont row: SDL3's own (<see cref="SdlDialogs"/>: the
+/// XDG desktop portal, else zenity), else the first of kdialog, zenity, qarma or yad installed, for a system where SDL3's cannot
+/// show one (no portal and no zenity: a bare window manager, some Steam Deck Game Mode setups). Each runs while the window's
+/// events are pumped; none is a new dependency of the program.
 /// </summary>
 internal static class LinuxDialogs
 {
@@ -16,19 +15,23 @@ internal static class LinuxDialogs
     /// and over meanwhile and returns false when the program is to close. Throws <see cref="NotSupportedException"/> when no dialog
     /// could be shown.
     /// </summary>
-    public static string? PickFolder(string title, Func<bool> whileOpen) => Pick(title, whileOpen, folders: true);
+    public static string? PickFolder(IntPtr window, string title, Func<bool> whileOpen) => Pick(window, title, whileOpen, folders: true);
 
-    /// <summary>A file (the first of zenity, kdialog, yad or qarma installed), as <see cref="PickFolder"/>.</summary>
-    public static string? PickFile(string title, Func<bool> whileOpen) => Pick(title, whileOpen, folders: false);
+    /// <summary>A file, as <see cref="PickFolder"/>.</summary>
+    public static string? PickFile(IntPtr window, string title, Func<bool> whileOpen) => Pick(window, title, whileOpen, folders: false);
 
-    private static string? Pick(string title, Func<bool> whileOpen, bool folders)
+    private static string? Pick(IntPtr window, string title, Func<bool> whileOpen, bool folders)
     {
         var problems = new List<string>();
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string? folder = null;
-        if (folders && Sdl3Dialog.TryPick(home, whileOpen, problems, out folder))
+        try
         {
-            return folder;
+            return SdlDialogs.Pick(window, title, home.Length > 0 ? home.TrimEnd('/') + "/" : "/", folders, whileOpen);
+        }
+        catch (NotSupportedException e)
+        {
+            problems.Add("SDL3's dialog: " + e.Message);
         }
         foreach (var (tool, arguments) in Tools(title, home, folders))
         {
@@ -140,100 +143,6 @@ internal static class LinuxDialogs
                 return false;
             }
             return true;
-        }
-    }
-}
-
-/// <summary>
-/// SDL3's folder dialog (SDL_ShowOpenFolderDialog: the XDG desktop portal, else zenity), reached in the SDL3 library that
-/// sdl2-compat runs on: the same library and instance, so SDL_PumpEvents through SDL2 serves its D-Bus replies.
-/// </summary>
-internal static unsafe class Sdl3Dialog
-{
-    private static readonly object Lock = new();
-    private static int _generation;
-    private static (int Generation, bool Done, string? Folder, string? Error) _result;
-    private static IntPtr _getError;
-
-    public static bool TryPick(string home, Func<bool> whileOpen, List<string> problems, out string? folder)
-    {
-        folder = null;
-        if (!SdlNative.LinkedVersion().Sdl2Compat)
-        {
-            return false;
-        }
-        if (!NativeLibrary.TryLoad("libSDL3.so.0", out var sdl3)
-            || !NativeLibrary.TryGetExport(sdl3, "SDL_ShowOpenFolderDialog", out var show)
-            || !NativeLibrary.TryGetExport(sdl3, "SDL_GetError", out var getError))
-        {
-            problems.Add("SDL3's dialog: not found");
-            return false;
-        }
-        int generation;
-        lock (Lock)
-        {
-            _getError = getError;
-            generation = ++_generation;
-            _result = (generation, false, null, null);
-        }
-        var start = Marshal.StringToCoTaskMemUTF8(home.Length > 0 ? home : "/");
-        try
-        {
-            // void SDL_ShowOpenFolderDialog(SDL_DialogFileCallback callback, void *userdata, SDL_Window *window, const char *default_location, bool allow_many)
-            ((delegate* unmanaged[Cdecl]<delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, void>, IntPtr, IntPtr, IntPtr, byte, void>)show)(
-                &Chosen, generation, IntPtr.Zero, start, 0);
-            while (true)
-            {
-                lock (Lock)
-                {
-                    if (_result.Done)
-                    {
-                        break;
-                    }
-                }
-                if (!whileOpen())
-                {
-                    return true; // the program closes: its answer is not waited for
-                }
-                Thread.Sleep(10);
-            }
-        }
-        finally
-        {
-            // SDL copies the default location before it returns
-            Marshal.FreeCoTaskMem(start);
-        }
-        lock (Lock)
-        {
-            if (_result.Error is { } error)
-            {
-                problems.Add("SDL3's dialog: " + error);
-                return false;
-            }
-            folder = _result.Folder;
-            return true;
-        }
-    }
-
-    // SDL_DialogFileCallback(void *userdata, const char * const *filelist, int filter): NULL list: an error; an empty one: cancelled
-    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static void Chosen(IntPtr userdata, IntPtr filelist, int filter)
-    {
-        lock (Lock)
-        {
-            if ((int)userdata != _result.Generation)
-            {
-                return;
-            }
-            if (filelist == IntPtr.Zero)
-            {
-                // SDL's error is kept per thread: read on the thread that reports it
-                var error = Marshal.PtrToStringUTF8(((delegate* unmanaged[Cdecl]<IntPtr>)_getError)()) ?? "";
-                _result = (_result.Generation, true, null, error.Length > 0 ? error : "failed");
-                return;
-            }
-            var first = Marshal.ReadIntPtr(filelist);
-            _result = (_result.Generation, true, first == IntPtr.Zero ? null : Marshal.PtrToStringUTF8(first), null);
         }
     }
 }

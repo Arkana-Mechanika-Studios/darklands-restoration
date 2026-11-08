@@ -2,7 +2,7 @@ namespace Darklands.Host.Sdl.Tests;
 
 /// <summary>
 /// The version line of the start screen, drawn in a hidden SDL window and read back: small, grey, in the bottom-right corner,
-/// nothing elsewhere; nothing when there is no line. Uses the SDL2 library the host ships; skipped without one.
+/// nothing elsewhere; nothing when there is no line. Uses the SDL3 library the host ships; skipped without one.
 /// </summary>
 [Collection("SDL")] // SDL is not thread-safe: its tests run one at a time
 public sealed class CornerTextTests
@@ -13,19 +13,19 @@ public sealed class CornerTextTests
     [Fact]
     public void TheVersionIsDrawnSmallInTheBottomRightCorner()
     {
-        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
         if (!File.Exists(library))
         {
             return;
         }
         SdlNative.ConfigureLibrary(library);
-        Assert.Equal(0, SdlNative.SDL_Init(SdlNative.InitVideo));
-        var window = SdlNative.SDL_CreateWindow("corner test", 0, 0, Width, Height, SdlNative.WindowHidden);
-        var renderer = SdlNative.SDL_CreateRenderer(window, -1, SdlNative.RendererSoftware);
-        var target = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, (int)SdlNative.TextureAccessTarget, Width, Height);
+        Assert.True(SdlNative.SDL_Init(SdlNative.InitVideo));
+        var window = SdlNative.SDL_CreateWindow("corner test", Width, Height, SdlNative.WindowHidden);
+        var renderer = SdlNative.SDL_CreateRenderer(window, "software");
+        var target = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, SdlNative.TextureAccessTarget, Width, Height);
         try
         {
-            Assert.Equal(0, SdlNative.SDL_SetRenderTarget(renderer, target));
+            Assert.True(SdlNative.SDL_SetRenderTarget(renderer, target));
             string? line = null;
             using var corner = new CornerText(() => line);
 
@@ -67,9 +67,9 @@ public sealed class CornerTextTests
         SdlNative.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SdlNative.SDL_RenderClear(renderer);
         corner.Draw(renderer, Width, Height);
-        SdlNative.SDL_RenderFlush(renderer);
+        SdlNative.SDL_FlushRenderer(renderer);
         var pixels = new int[Width * Height];
-        Assert.Equal(0, SdlNative.SDL_RenderReadPixels(renderer, IntPtr.Zero, SdlNative.PixelFormatArgb8888, pixels, Width * 4));
+        Assert.True(SdlNative.ReadPixels(renderer, pixels, Width, Height));
         return pixels;
     }
 }

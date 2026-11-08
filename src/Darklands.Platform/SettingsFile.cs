@@ -528,9 +528,9 @@ public static class SettingsFile
           // one the original game loads. []: none, the game's own cards. Command line: --mod <folder or name> (once per mod).
           "mods": [],
 
-          // Settings of the SDL2 host only.
+          // Settings of the SDL host only.
           "sdl": {
-            // The SDL2 library (SDL2.dll) to load. "": the one next to the program, else the system's.
+            // The SDL3 library (SDL3.dll, libSDL3.so.0) to load. "": the one next to the program, else the system's.
             // Command line: --sdl <file>.
             "library": ""
           },

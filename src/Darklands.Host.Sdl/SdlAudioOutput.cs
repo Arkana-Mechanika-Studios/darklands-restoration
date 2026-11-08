@@ -4,23 +4,26 @@ using Darklands.Audio;
 namespace Darklands.Host.Sdl;
 
 /// <summary>
-/// An SDL2 audio device playing 16-bit stereo frames from a source. Three ways (DARKLANDS_AUDIO_MODE): callback (the default):
-/// SDL pulls 44100 Hz signed 16-bit frames on its audio thread and converts them for the device; queue: a thread of ours renders
-/// them a little ahead and queues them (SDL_QueueAudio); native: SDL pulls in the device's own rate and sample format (16/32-bit
+/// An SDL3 audio stream bound to the default output device, playing 16-bit stereo frames from a source. Three ways
+/// (DARKLANDS_AUDIO_MODE): callback (the default): SDL asks on its audio thread for more and is given 44100 Hz signed 16-bit frames
+/// in buffers of 1024 frames, which it converts for the device; queue: a thread of ours renders such buffers a little ahead and
+/// puts them in the stream (SDL2's SDL_QueueAudio); native: as the callback, in the device's own rate and sample format (16/32-bit
 /// integer or float), converted here instead of by SDL. The other two are for an SDL whose usual path stays silent.
 /// </summary>
 internal sealed class SdlAudioOutput : IPcmOutput
 {
-    private const ushort AudioS16Sys = 0x8010; // AUDIO_S16LSB
-    private const ushort AudioS32Sys = 0x8020; // AUDIO_S32LSB
-    private const ushort AudioF32Sys = 0x8120; // AUDIO_F32LSB
-    private const int AllowFrequencyChange = 0x1;
-    private const int AllowFormatChange = 0x2;
-    private const int AllowSamplesChange = 0x8;
-    private readonly uint _device;
-    private readonly SdlNative.AudioCallback? _callback; // kept alive while SDL holds the pointer
+    private const uint AudioS16Sys = 0x8010; // SDL_AUDIO_S16LE
+    private const uint AudioS32Sys = 0x8020; // SDL_AUDIO_S32LE
+    private const uint AudioF32Sys = 0x8120; // SDL_AUDIO_F32LE
+
+    /// <summary>Frames per buffer asked for (SDL2's spec.samples): what the callback renders at a time and the queue's unit.</summary>
+    private const int AskedFrames = 1024;
+
+    private readonly IntPtr _stream;
+    private readonly SdlNative.AudioStreamCallback? _callback; // kept alive while SDL holds the pointer
     private readonly bool _queue;
-    private readonly ushort _format;
+    private readonly uint _format;
+    private readonly IntPtr _staging;     // one buffer in the format written, handed to SDL from here
     private IPcmSource? _source;
     private short[] _buffer = Array.Empty<short>();
     private float[] _floats = Array.Empty<float>();
@@ -28,8 +31,8 @@ internal sealed class SdlAudioOutput : IPcmOutput
     private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
     private readonly object _positionLock = new();
     private long _pulled;          // frames handed to the device so far
-    private long _pulledBefore;    // ... before the last callback
-    private long _lastCallback;    // stopwatch ticks of the last callback
+    private long _pulledBefore;    // ... before the last buffer
+    private long _lastCallback;    // stopwatch ticks of the last buffer
     private long _played;
     private int _peak;             // the loudest sample handed over since TakePeak
     private Thread? _feeder;
@@ -38,10 +41,10 @@ internal sealed class SdlAudioOutput : IPcmOutput
         ? new FileStream(path, FileMode.Create, FileAccess.Write)
         : null; // DARKLANDS_AUDIO_RECORD=<file>: what the device is given, raw 16-bit stereo at SampleRate
 
-    private SdlAudioOutput(uint device, int sampleRate, int bufferFrames, SdlNative.AudioCallback? callback, string driver,
-        SdlAudioMode mode, ushort format, string spec)
+    private SdlAudioOutput(IntPtr stream, int sampleRate, int bufferFrames, SdlNative.AudioStreamCallback? callback, string driver,
+        SdlAudioMode mode, uint format, string spec)
     {
-        _device = device;
+        _stream = stream;
         SampleRate = sampleRate;
         BufferFrames = bufferFrames;
         _callback = callback;
@@ -50,6 +53,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
         _queue = mode == SdlAudioMode.Queue;
         _format = format;
         Spec = spec;
+        _staging = Marshal.AllocHGlobal(BufferBytes);
     }
 
     /// <summary>The mode DARKLANDS_AUDIO_MODE asks for: callback (the default), queue or native.</summary>
@@ -66,7 +70,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
     /// <summary>SDL's audio driver in use ("pipewire", "pulseaudio", "wasapi" ...).</summary>
     public string Driver { get; }
 
-    /// <summary>What was asked of SDL and what it gave (rate, channels, format, buffer).</summary>
+    /// <summary>What is written to SDL and what its device is (rate, channels, format, buffer).</summary>
     public string Spec { get; }
 
     /// <summary>The device, as printed.</summary>
@@ -87,13 +91,15 @@ internal sealed class SdlAudioOutput : IPcmOutput
     /// <summary>The loudest sample (0..32768) handed to the device since the last call; 0: only silence was played.</summary>
     public int TakePeak() => Interlocked.Exchange(ref _peak, 0);
 
-    /// <summary>SDL's state of the device: "stopped", "playing" or "paused".</summary>
-    public string Status => SdlNative.SDL_GetAudioDeviceStatus(_device) switch { 1 => "playing", 2 => "paused", _ => "stopped" };
+    /// <summary>SDL's state of the device: "playing", or "paused" (not started yet).</summary>
+    public string Status => SdlNative.SDL_AudioStreamDevicePaused(_stream) ? "paused" : "playing";
 
     public int SampleRate { get; }
 
-    /// <summary>Frames per callback (the device's buffer).</summary>
+    /// <summary>Frames per buffer handed to SDL.</summary>
     public int BufferFrames { get; }
+
+    private int BufferBytes => BufferFrames * 2 * SampleBytes;
 
     /// <summary>
     /// When SDL asks for a buffer, the one before it is starting to play: what is heard is what was
@@ -105,7 +111,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
         {
             if (_queue)
             {
-                var waiting = SdlNative.SDL_GetQueuedAudioSize(_device) / (2 * SampleBytes);
+                var waiting = Math.Max(0, SdlNative.SDL_GetAudioStreamQueued(_stream)) / (2 * SampleBytes);
                 lock (_positionLock)
                 {
                     _played = Math.Max(_played, _pulled - waiting);
@@ -138,46 +144,53 @@ internal sealed class SdlAudioOutput : IPcmOutput
         error = null;
         var chosen = mode ?? ModeAsked;
         var native = chosen == SdlAudioMode.Native;
-        if (SdlNative.SDL_InitSubSystem(SdlNative.InitAudio) != 0)
+        if (!SdlNative.SDL_InitSubSystem(SdlNative.InitAudio))
         {
             error = SdlNative.GetErrorText();
             return null;
         }
-        SdlAudioOutput? output = null;
-        SdlNative.AudioCallback? callback = chosen == SdlAudioMode.Queue ? null : (_, stream, length) => output?.Fill(stream, length);
-        var desired = new SdlNative.SdlAudioSpec
+        // the device's buffer as SDL2's was asked for: 1024 frames
+        SdlNative.SDL_SetHint(SdlNative.HintAudioDeviceSampleFrames, AskedFrames.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        var desired = new SdlNative.SdlAudioSpec { Format = AudioS16Sys, Channels = 2, Freq = 44100 };
+        var known = SdlNative.SDL_GetAudioDeviceFormat(SdlNative.AudioDeviceDefaultPlayback, out var device, out var deviceFrames);
+        if (native && known)
         {
-            Freq = 44100,
-            Format = AudioS16Sys,
-            Channels = 2,
-            Samples = 1024,
-            Callback = callback is null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(callback),
-        };
-        // callback and queue: no changes allowed, SDL converts our frames for the device; native: the device's own rate and format
-        var device = SdlNative.SDL_OpenAudioDevice(IntPtr.Zero, 0, ref desired, out var obtained,
-            native ? AllowFrequencyChange | AllowFormatChange | AllowSamplesChange : 0);
-        if (device == 0)
+            // the device's own rate and format (SDL then converts nothing); stereo still (as SDL2 was asked)
+            desired = desired with
+            {
+                Freq = device.Freq > 0 ? device.Freq : 44100,
+                Format = FormatName(device.Format) == "?" ? AudioS16Sys : device.Format,
+            };
+        }
+        SdlAudioOutput? output = null;
+        SdlNative.AudioStreamCallback? callback = chosen == SdlAudioMode.Queue ? null : (_, stream, additional, _) => output?.Pull(stream, additional);
+        var stream = SdlNative.SDL_OpenAudioDeviceStream(SdlNative.AudioDeviceDefaultPlayback, ref desired,
+            callback is null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
+        if (stream == IntPtr.Zero)
         {
             error = SdlNative.GetErrorText();
             SdlNative.SDL_QuitSubSystem(SdlNative.InitAudio);
             return null;
         }
-        var format = native ? obtained.Format : AudioS16Sys;
-        var spec = $"{chosen.ToString().ToLowerInvariant()} mode; asked 44100 Hz, 2 channels, format 0x{AudioS16Sys:X4} (signed 16-bit), {desired.Samples} frames; "
-            + $"SDL gave {obtained.Freq} Hz, {obtained.Channels} channels, format 0x{obtained.Format:X4} ({FormatName(obtained.Format)}), "
-            + $"{obtained.Samples} frames, {obtained.Size} bytes per buffer";
-        if (obtained.Channels != 2 || (native ? FormatName(format) == "?" : obtained.Format != AudioS16Sys || obtained.Freq != desired.Freq))
+        if (SdlNative.SDL_GetAudioDeviceFormat(SdlNative.SDL_GetAudioStreamDevice(stream), out var opened, out var openedFrames))
         {
-            // the device would read the frames wrongly (noise or silence): said, so that the log has the reason
-            Console.Error.WriteLine("Sound: the audio device's format differs from the one written: " + spec + ".");
+            (device, deviceFrames) = (opened, openedFrames);
         }
-        var rate = native && obtained.Freq > 0 ? obtained.Freq : desired.Freq;
-        var frames = obtained.Samples > 0 ? obtained.Samples : desired.Samples;
-        output = new SdlAudioOutput(device, rate, frames, callback, SdlNative.Text(SdlNative.SDL_GetCurrentAudioDriver()) ?? "?", chosen, format, spec);
+        var frames = native && deviceFrames > 0 ? deviceFrames : AskedFrames;
+        var spec = $"{chosen.ToString().ToLowerInvariant()} mode; written {desired.Freq} Hz, {desired.Channels} channels, format 0x{desired.Format:X4} "
+            + $"({FormatName(desired.Format)}), {frames} frames a buffer; the device: {device.Freq} Hz, {device.Channels} channels, "
+            + $"format 0x{device.Format:X4} ({FormatName(device.Format)}), {deviceFrames} frames a buffer (SDL converts)";
+        if (native && !known)
+        {
+            // native mode without the device's format: written as the callback's would be, and said, so that the log has the reason
+            Console.Error.WriteLine("Sound: the audio device's own format is not known: " + spec + ".");
+        }
+        output = new SdlAudioOutput(stream, desired.Freq, frames, callback, SdlNative.Text(SdlNative.SDL_GetCurrentAudioDriver()) ?? "?",
+            chosen, desired.Format, spec);
         return output;
     }
 
-    private static string FormatName(ushort format) => format switch
+    private static string FormatName(uint format) => format switch
     {
         AudioS16Sys => "signed 16-bit",
         AudioS32Sys => "signed 32-bit",
@@ -196,40 +209,47 @@ internal sealed class SdlAudioOutput : IPcmOutput
             _feeder = new Thread(Feed) { IsBackground = true, Name = "SDL audio queue" };
             _feeder.Start();
         }
-        SdlNative.SDL_PauseAudioDevice(_device, 0);
+        SdlNative.SDL_ResumeAudioStreamDevice(_stream);
     }
 
     /// <summary>Queue mode: keeps about three buffers queued in SDL.</summary>
     private void Feed()
     {
         var chunk = new short[BufferFrames * 2];
-        var bytes = chunk.Length * SampleBytes;
-        var staging = Marshal.AllocHGlobal(bytes);
-        try
+        var bytes = BufferBytes;
+        while (!_closing)
         {
-            while (!_closing)
+            if (SdlNative.SDL_GetAudioStreamQueued(_stream) >= 3 * bytes)
             {
-                if (SdlNative.SDL_GetQueuedAudioSize(_device) >= 3 * (uint)bytes)
-                {
-                    Thread.Sleep(2);
-                    continue;
-                }
-                Render(chunk);
-                Write(chunk, staging);
-                if (SdlNative.SDL_QueueAudio(_device, staging, (uint)bytes) != 0)
-                {
-                    Console.Error.WriteLine("Sound: SDL_QueueAudio failed: " + SdlNative.GetErrorText());
-                    return;
-                }
+                Thread.Sleep(2);
+                continue;
             }
-        }
-        finally
-        {
-            Marshal.FreeHGlobal(staging);
+            Render(chunk);
+            Write(chunk, _staging);
+            if (!SdlNative.SDL_PutAudioStreamData(_stream, _staging, bytes))
+            {
+                Console.Error.WriteLine("Sound: SDL_PutAudioStreamData failed: " + SdlNative.GetErrorText());
+                return;
+            }
         }
     }
 
-    private void Fill(IntPtr stream, int length)
+    /// <summary>
+    /// Callback and native modes: SDL wants <paramref name="additional"/> more bytes; it is given whole buffers of
+    /// <see cref="BufferFrames"/>, as SDL2's callback filled them (what goes beyond waits in the stream for the next ask).
+    /// </summary>
+    private void Pull(IntPtr stream, int additional)
+    {
+        var bytes = BufferBytes;
+        while (additional > 0 && !_closing)
+        {
+            Fill(_staging, bytes);
+            SdlNative.SDL_PutAudioStreamData(stream, _staging, bytes);
+            additional -= bytes;
+        }
+    }
+
+    private void Fill(IntPtr target, int length)
     {
         var samples = length / SampleBytes;
         if (_buffer.Length != samples)
@@ -237,7 +257,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
             _buffer = new short[samples];
         }
         Render(_buffer);
-        Write(_buffer, stream);
+        Write(_buffer, target);
     }
 
     /// <summary>Copies 16-bit samples to the device's memory in the format written.</summary>
@@ -306,8 +326,10 @@ internal sealed class SdlAudioOutput : IPcmOutput
     {
         _closing = true;
         _feeder?.Join(500);
-        SdlNative.SDL_CloseAudioDevice(_device);
+        // the stream's device closes with it (its callback has returned for good then)
+        SdlNative.SDL_DestroyAudioStream(_stream);
         SdlNative.SDL_QuitSubSystem(SdlNative.InitAudio);
+        Marshal.FreeHGlobal(_staging);
         _record?.Dispose();
     }
 }
@@ -318,7 +340,7 @@ internal enum SdlAudioMode
     /// <summary>SDL pulls 44100 Hz 16-bit stereo through its callback and converts it (the default).</summary>
     Callback,
 
-    /// <summary>We push 44100 Hz 16-bit stereo with SDL_QueueAudio.</summary>
+    /// <summary>We push 44100 Hz 16-bit stereo into the stream (SDL2's SDL_QueueAudio; SDL_PutAudioStreamData).</summary>
     Queue,
 
     /// <summary>SDL pulls through its callback in the device's own rate and format, converted here.</summary>

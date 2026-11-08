@@ -58,7 +58,7 @@ not meant for players.
 | `textFont` | built-in | `--text-font`; `DARKLANDS_TEXT_FONT` | 4096-byte VGA BIOS 8x16 font dump, or its base64 |
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
-| `sdl.library` | the `SDL2.dll` next to the program (shipped on Windows), else the system's | `--sdl` | the SDL2 library to load (SDL host only) |
+| `sdl.library` | the `SDL3.dll` next to the program (shipped on Windows), else the system's (`libSDL3.so.0`) | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
 | `console.font` | the bundled DejaVu Sans Mono | | a TrueType (.ttf) file for the console, e.g. `"C:/Windows/Fonts/consola.ttf"` |
 | `console.fontSize` | 14 | | the console's text height in pixels at the 720x400 window (6..64); it grows with the window |

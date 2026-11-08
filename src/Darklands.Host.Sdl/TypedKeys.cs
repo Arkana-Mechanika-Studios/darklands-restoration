@@ -3,7 +3,7 @@ using Darklands.Launcher;
 namespace Darklands.Host.Sdl;
 
 /// <summary>
-/// The launcher's typing when SDL sends no text events. SDL's text input can stay silent (sdl2-compat on SDL3 under some Wayland
+/// The launcher's typing when SDL sends no text events. SDL's text input can stay silent (seen with sdl2-compat on SDL3 under some Wayland
 /// compositors and input-method setups): until the first text event arrives while typing is on, each printable key pressed is
 /// turned into its character (from the key's symbol in the keyboard layout, Shift and Caps Lock; the shifted punctuation of a
 /// US layout). When the first real text event then arrives, the characters already made for the same keys are not typed twice,
@@ -22,7 +22,7 @@ internal sealed class TypedKeys
 
     /// <summary>What one SDL event gives the launcher: its own input (or none), and a character typed when SDL sends no text.</summary>
     public IEnumerable<LauncherInput> Take(SdlNative.SdlEvent e, LauncherInput? input) =>
-        Take(e.Type, e.Type == SdlNative.EventKeyDown ? e.Keyboard.Keysym.Sym : 0, e.Type == SdlNative.EventKeyDown ? e.Keyboard.Keysym.Mod : 0,
+        Take(e.Type, e.Type == SdlNative.EventKeyDown ? e.Keyboard.Key : 0, e.Type == SdlNative.EventKeyDown ? e.Keyboard.Mod : 0,
             input, Environment.TickCount64);
 
     internal IEnumerable<LauncherInput> Take(uint type, int symbol, int modifiers, LauncherInput? input, long now)

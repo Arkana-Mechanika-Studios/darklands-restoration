@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == '' or $(RuntimeIdentifier.StartsWith('win'))">
-    <!-- SDL 2.32.10, the official Windows x64 release (zlib licence, see THIRD_PARTY_NOTICES.md), next to the program -->
-    <None Include="Native/win-x64/SDL2.dll" Link="SDL2.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- SDL 3.4.20, the official Windows x64 release (zlib licence, see THIRD_PARTY_NOTICES.md), next to the program -->
+    <None Include="Native/win-x64/SDL3.dll" Link="SDL3.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>

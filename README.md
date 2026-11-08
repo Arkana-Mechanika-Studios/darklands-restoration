@@ -27,7 +27,7 @@ the game is included here: the program reads your installation.
 
 ## Getting started
 
-1. Get a release (`DarklandsRP.exe` and `DarklandsRP Launcher.exe` with `SDL2.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md`
+1. Get a release (`DarklandsRP.exe` and `DarklandsRP Launcher.exe` with `SDL3.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md`
    and empty `MT32_ROMS` and `SOUNDFONT` folders) and unpack it into a folder of its own.
 2. Start `DarklandsRP.exe`. On the first run it opens the launcher, a settings screen before the game: it has found
    your Darklands by itself (GOG, Steam, or a folder next to it), and you can check the game folder, the window, the
@@ -134,7 +134,7 @@ questions, bug reports and discussion on the Discord: https://discord.gg/HjzWvmH
 
 ### Building
 
-Requirements: the .NET 10 SDK. On Windows the SDL host ships SDL 2; elsewhere install SDL 2 or name the
+Requirements: the .NET 10 SDK. On Windows the SDL host ships SDL 3; elsewhere install SDL 3 (3.2 or later) or name the
 library in the settings file.
 
 ```
@@ -142,7 +142,7 @@ dotnet build
 dotnet run --project src/Darklands.Host.Sdl -- "C:/GOG Games/Darklands"
 ```
 
-A release for Windows (`DarklandsRP.exe`, self-contained, with `DarklandsRP Launcher.exe`, `SDL2.dll`, `libmt32emu.dll`,
+A release for Windows (`DarklandsRP.exe`, self-contained, with `DarklandsRP Launcher.exe`, `SDL3.dll`, `libmt32emu.dll`,
 `RELEASE_NOTES.md` and empty `MT32_ROMS` and `SOUNDFONT` folders beside it, in `artifacts/win-x64`; no .NET installation
 needed to run it). `DarklandsRP Launcher.exe` (`src/Darklands.Host.Launcher`) only starts `DarklandsRP.exe --setup`; it is
 built for the .NET Framework that every Windows 10 and 11 has, so it stays a few kilobytes. The Linux release has the
@@ -158,7 +158,7 @@ A release for Linux x64 (also the Steam Deck: desktop mode and Steam as a non-St
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=linux-x64
 ```
 
-SDL2 is not shipped on Linux: the program uses the system's `libSDL2-2.0.so.0` (Debian/Ubuntu `libsdl2-2.0-0`, already on SteamOS), or a copy placed beside the program. Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
+SDL3 is not shipped on Linux: the program uses the system's `libSDL3.so.0` (SDL 3.2 or later: Debian 13 / Ubuntu 25.04 and later `libsdl3-0`, Fedora `SDL3`, Arch and SteamOS `sdl3`; the Steam Linux Runtime has it), or a copy placed beside the program (older systems such as Ubuntu 24.04 have no SDL3). Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
 
 The launcher shows the release notes: write `releases/<version>/release-notes.md` (beside the repository) before
 publishing, and the build puts it next to the program as `RELEASE_NOTES.md`; without it the launcher only links to the
@@ -209,7 +209,7 @@ Tests that need the original game read its folder from `DARKLANDS_DIR` (or the e
 
 ### Third-party components
 
-SDL 2, mt32emu, StbTrueTypeSharp, DejaVu Sans Mono and a VGA text font: see `THIRD_PARTY_NOTICES.md`.
+SDL 3, mt32emu, StbTrueTypeSharp, DejaVu Sans Mono and a VGA text font: see `THIRD_PARTY_NOTICES.md`.
 *Darklands* is a 1992 MicroProse game; this project contains none of its files.
 
 ## Dedication

@@ -30,7 +30,7 @@ is kept machine-local (`local/reference-map.csv`, `tools/source-map/resolve.py`)
 ## Layers (dependencies point down)
 
 ```
-Hosts                    Darklands.Host.Sdl (SDL2 window, audio device, developer console, launcher)
+Hosts                    Darklands.Host.Sdl (SDL3 window, audio device, developer console, launcher)
                          Darklands.Host.Headless (scripted play, screenshots, traces)
         │
 Darklands.Presentation   screens and the game loop's presentation (platform-agnostic: draws into a

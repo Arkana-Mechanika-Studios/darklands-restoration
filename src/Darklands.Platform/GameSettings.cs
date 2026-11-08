@@ -58,7 +58,7 @@ public sealed class GameSettings
 
     public string? ScreenshotsFolder { get; set; }
 
-    /// <summary>The SDL host's section: the SDL2 library to load.</summary>
+    /// <summary>The SDL host's section: the SDL3 library to load.</summary>
     public string? SdlLibrary { get; set; }
 
     /// <summary>The developer console (a host feature, outside the game): on unless false.</summary>

@@ -8,8 +8,8 @@ using Darklands.Launcher;
 using Darklands.Presentation;
 using Darklands.Rendering;
 
-// Darklands, on SDL2.
-//   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
+// Darklands, on SDL3.
+//   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL3.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console] [--log-window]
 //                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--soundfont file] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
@@ -156,10 +156,10 @@ if (Resolve(fileSettings) is not { } settings)
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
 NoteRun();
-// SDL2: the settings file or --sdl, else the SDL2.dll next to the program, else DARKLANDS_SDL2_PATH or the developer's
+// SDL3: the settings file or --sdl, else the SDL3.dll next to the program, else DARKLANDS_SDL3_PATH or the developer's
 // local/paths.json "sdl", else the system's
-var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
-SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH")));
+var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
+SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL3_PATH")));
 if (soundCheck)
 {
     return SoundCheck.Run(folder, settings, Console.Out);

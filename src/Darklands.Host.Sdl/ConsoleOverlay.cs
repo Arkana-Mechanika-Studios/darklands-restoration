@@ -34,10 +34,10 @@ internal sealed class ConsoleOverlay(GameConsole console, string? fontFile, int 
         SdlNative.SDL_SetRenderDrawBlendMode(renderer, SdlNative.BlendModeBlend);
         SdlNative.SDL_SetRenderDrawColor(renderer, 12, 12, 22, 225);
         var panel = new SdlNative.SdlRect { X = 0, Y = 0, Width = width, Height = panelHeight };
-        SdlNative.SDL_RenderFillRect(renderer, ref panel);
+        SdlNative.FillRect(renderer, panel);
         SdlNative.SDL_SetRenderDrawColor(renderer, 90, 110, 160, 255);
         var edge = new SdlNative.SdlRect { X = 0, Y = panelHeight, Width = width, Height = Math.Max(1, pixels / 8) };
-        SdlNative.SDL_RenderFillRect(renderer, ref edge);
+        SdlNative.FillRect(renderer, edge);
 
         // the input line at the bottom of the panel, the cursor blinking
         var inputY = panelHeight - margin - font.LineHeight;
@@ -54,7 +54,7 @@ internal sealed class ConsoleOverlay(GameConsole console, string? fontFile, int 
                 Width = Math.Max(1, pixels / 10),
                 Height = font.LineHeight,
             };
-            SdlNative.SDL_RenderFillRect(renderer, ref cursor);
+            SdlNative.FillRect(renderer, cursor);
         }
 
         // the scrollback above it, newest at the bottom, long lines wrapped
