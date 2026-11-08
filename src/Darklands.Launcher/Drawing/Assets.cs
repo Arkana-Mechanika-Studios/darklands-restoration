@@ -34,12 +34,18 @@ internal static class Assets
     /// <summary>Whether <see cref="Strong"/> is the real SemiBold (else the text is thickened when drawn).</summary>
     public static bool HasStrong => LazyStrong.Value != Text;
 
-    /// <summary>The display face of "Darklands", "Settings" and "Play" (Texturina Bold; EB Garamond SemiBold when the file is not embedded).</summary>
+    /// <summary>
+    /// The display face of "Darklands", "Settings" and "Play": Grenze Black, the free face closest to the original game's logo,
+    /// with the double-storey "a" of Grenze Gotisch Black (the logo's form; Grenze's own is single-storey); EB Garamond
+    /// SemiBold when the files are not embedded.
+    /// </summary>
     public static TrueTypeFont Display => LazyDisplay.Value;
 
     private static readonly Lazy<TrueTypeFont> LazyItalic = new(() => FontOrText("EBGaramond-Italic.ttf"));
     private static readonly Lazy<TrueTypeFont> LazyStrong = new(() => FontOrText("EBGaramond-SemiBold.ttf"));
-    private static readonly Lazy<TrueTypeFont> LazyDisplay = new(() => Resource("Texturina-Bold.ttf") is { } file ? new TrueTypeFont(file) : Strong);
+    private static readonly Lazy<TrueTypeFont> LazyDisplay = new(() => Resource("Grenze-Black.ttf") is { } file
+        ? new TrueTypeFont(file) { Lender = Resource("GrenzeGotisch-Black.ttf") is { } a ? new TrueTypeFont(a) : null, BorrowedCharacters = "a" }
+        : Strong);
 
     private static readonly Dictionary<string, Image?> ArtCache = [];
 

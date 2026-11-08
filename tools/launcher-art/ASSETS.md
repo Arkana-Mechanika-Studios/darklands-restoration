@@ -50,8 +50,9 @@ all under the SIL Open Font License (`Resources/OFL.txt`; list each in THIRD_PAR
 | `EBGaramond12-Regular.ttf` (in place) | all text | — |
 | `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the hint bar | the Regular |
 | `EBGaramond-SemiBold.ttf` (in place) | section headings, the cards' headings, the drop caps, "Restoration Project", "Save and quit" | the Regular, thickened by a pixel |
-| `Texturina-Bold.ttf` (in place) | "Darklands", "Settings", "Play" (the closest free face to the mock-up's lettering) | EB Garamond SemiBold |
+| `Grenze-Black.ttf` (in place) | "Darklands", "Settings", "Play": the free face closest to the original game's logo (its start screen) | EB Garamond SemiBold |
+| `GrenzeGotisch-Black.ttf` (in place) | only the display face's "a" (the logo's double-storey form; `Assets.Display` borrows it) | Grenze's own "a" |
 
 The static fonts come from the families' upstream repositories, which Google Fonts publishes
-(github.com/octaviopardo/EBGaramond12 and github.com/Omnibus-Type/Texturina, `fonts/ttf/`; Google Fonts' own
+(github.com/octaviopardo/EBGaramond12 and github.com/Omnibus-Type/Grenze and github.com/Omnibus-Type/Grenze-Gotisch, `fonts/ttf/`; Google Fonts' own
 repository holds only their variable fonts, whose weights the launcher's rasteriser cannot choose).
