@@ -100,7 +100,8 @@
     "run": "*",
     "contains": "",
     "ignoreTexts": true,
-    "why": "SourceOfTheHorrors_MineH01 DIVERGENCE: without the horror's quest (a negative detail) the original draws no option block (the menu keeps what was shown); the C# uses the block the last card left. Texts compared without their words."
+    "noMineQuest": true,
+    "why": "SourceOfTheHorrors_MineH01 DIVERGENCE: without the horror's quest (a negative detail) the original draws no option block (the menu keeps what was shown); the C# uses the block the last card left. Texts compared without their words, only for a start without the mine quest (with it the horror's block is drawn on both sides)."
   },
   {
     "card": "037",
