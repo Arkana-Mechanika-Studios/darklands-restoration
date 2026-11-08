@@ -43,6 +43,9 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
 
     public string Kind => "shaders";
 
+    /// <summary>The GPU device's backend ("direct3d12", "vulkan" ...): which shader it draws with (DXIL or SPIR-V).</summary>
+    public string Driver => Marshal.PtrToStringUTF8(SdlNative.SDL_GetGPUDeviceDriver(_device)) ?? "";
+
     /// <summary>The shader filters on this renderer, or null (not SDL's GPU renderer, no shader format it takes, a failure).</summary>
     public static SdlShaderPictureFilter? Create(IntPtr renderer, Action<string>? log = null)
     {

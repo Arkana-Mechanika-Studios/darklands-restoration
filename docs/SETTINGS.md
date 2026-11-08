@@ -98,12 +98,14 @@ overlay drawn over the replacements) go through `smooth`'s steps, the replacemen
 and the CRT's mask lies over everything, replacements included.
 
 How it is drawn: when `smooth` or `crt` is set as the program starts, the window opens on SDL's GPU renderer, and a pixel
-shader of this project (`src/Darklands.Host.Sdl/Shaders/picture.frag.hlsl`, compiled to DXIL for Direct3D 12) draws the
-filter in one pass. Where that renderer cannot start or cannot take the shader (no Direct3D 12; Linux and the Steam Deck
-until a SPIR-V build of the shader ships), or when a filter is chosen in the game with Ctrl+F11 on another renderer, the
-filters are drawn with render targets and blend modes instead: the same picture, without the curvature; on SDL's software
-renderer the CRT is a little darker there (it cannot give the brightness back). The log says which way is used. Both ways
-are tested against a reference drawn on the CPU (`PictureFilterReference`).
+shader of this project (`src/Darklands.Host.Sdl/Shaders/picture.frag.hlsl`, compiled by `tools/shaders/build_shaders.py`
+to DXIL for Direct3D 12 on Windows and to SPIR-V for Vulkan on Linux and the Steam Deck) draws the filter in one pass. As the
+window opens, one colour is drawn through the shader and read back; where that renderer cannot start or the shader does not
+draw (no Direct3D 12 or Vulkan, a driver that refuses it), or when a filter is chosen in the game with Ctrl+F11 on another
+renderer, the filters are drawn with render targets and blend modes instead: the same picture, without the curvature; on
+SDL's software renderer the CRT is a little darker there (it cannot give the brightness back). The log says which way is
+used ("Picture filters: shaders on SDL's gpu renderer (vulkan)"). Both ways are tested against a reference drawn on the
+CPU (`PictureFilterReference`), the shader on Direct3D 12 and on Vulkan.
 
 ### `sound.audioPack`
 

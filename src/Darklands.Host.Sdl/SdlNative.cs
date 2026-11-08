@@ -470,6 +470,13 @@ internal static class SdlNative
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern uint SDL_GetGPUShaderFormats(IntPtr device);
 
+    /// <summary>The GPU device's backend: "direct3d12", "vulkan", "metal".</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr SDL_GetGPUDeviceDriver(IntPtr device);
+
+    /// <summary>SDL_HINT_GPU_DRIVER: the GPU backend SDL's GPU devices use (a test forces "vulkan").</summary>
+    internal const string HintGpuDriver = "SDL_GPU_DRIVER";
+
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr SDL_CreateGPUShader(IntPtr device, ref GpuShaderCreateInfo createInfo);
 

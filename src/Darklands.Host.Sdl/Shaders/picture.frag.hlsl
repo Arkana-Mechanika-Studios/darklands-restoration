@@ -1,12 +1,15 @@
 // Darklands Restoration: the picture filters (docs/SETTINGS.md display.filter) as one fragment shader for SDL3's GPU renderer
 // (SDL_CreateGPURenderState). Written for this project (GPL-3.0-or-later, as the rest of it); no third-party code. The arithmetic
 // is that of src/Darklands.Rendering/PictureFilterReference.cs and PictureFilterMath.cs, which the tests hold this to.
-// Compiled to picture.frag.dxil by tools/shaders/build_shaders.py (dxc from the Windows SDK, shader model 6.0).
+// Compiled by tools/shaders/build_shaders.py (dxc, shader model 6.0) to picture.frag.dxil (Direct3D 12) and picture.frag.spv
+// (SPIR-V for Vulkan: Linux, the Steam Deck).
 //
 // SDL's GPU renderer binds the drawn texture at t0/s0 in space2 and a fragment uniform buffer at b0 in space3; its vertex stage
 // gives the draw colour and the texture coordinate as TEXCOORD0 and TEXCOORD1: SDL builds its own shaders through SPIR-V, which
 // names every varying TEXCOORDn, and Direct3D 12 links the stages by these names (COLOR0 here: no pipeline).
 
+// Vulkan: SDL binds the texture and its sampler as one combined image sampler at set 2, the uniforms at set 3
+[[vk::binding(0, 3)]]
 cbuffer Context : register(b0, space3)
 {
     float4 sizes;   // the game's picture: width, height (pixels); the picture's rectangle in the window: width, height
@@ -16,7 +19,9 @@ cbuffer Context : register(b0, space3)
     float4 crt;     // scanline depth, mask strength, gain, curvature
 };
 
+[[vk::combinedImageSampler]] [[vk::binding(0, 2)]]
 Texture2D u_texture : register(t0, space2);
+[[vk::combinedImageSampler]] [[vk::binding(0, 2)]]
 SamplerState u_sampler : register(s0, space2);
 
 struct PSInput

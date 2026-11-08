@@ -91,6 +91,10 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_SetTextureBlendMode(_texture, SdlNative.BlendModeNone);
         SdlNative.SDL_HideCursor();
         _filter = (IPictureFilterRenderer?)SdlShaderPictureFilter.Create(_renderer, System.Console.Error.WriteLine) ?? new SdlPictureFilter(_renderer);
+        if (gpu)
+        {
+            System.Console.Error.WriteLine($"Picture filters: {_filter.Kind} on SDL's {RendererName} renderer" + (GpuDriver is { } driver ? $" ({driver})" : ""));
+        }
         UpdateViewport();
     }
 
@@ -158,6 +162,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     /// <summary>What draws the picture filters: "shaders" (SDL's GPU renderer) or "render targets" (tests, the log).</summary>
     internal string FilterKind => _filter.Kind;
+
+    /// <summary>The GPU renderer's backend when the shaders draw ("direct3d12", "vulkan"), else null (tests, the log).</summary>
+    internal string? GpuDriver => (_filter as SdlShaderPictureFilter)?.Driver;
 
     /// <summary>The renderer's name ("gpu", "direct3d11", "software" ...).</summary>
     internal string RendererName => System.Runtime.InteropServices.Marshal.PtrToStringUTF8(SdlNative.SDL_GetRendererName(_renderer)) ?? "";

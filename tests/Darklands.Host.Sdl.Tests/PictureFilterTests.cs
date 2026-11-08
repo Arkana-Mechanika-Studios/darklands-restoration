@@ -70,12 +70,62 @@ public sealed class PictureFilterTests
         {
             Assert.Equal("render targets", host.FilterKind);
         }
+        return Ready(host, hd);
+    }
+
+    private static SdlHost Ready(SdlHost host, bool hd)
+    {
         if (hd)
         {
             host.Renderer = new HdRenderer(HdPack.Empty);
         }
         host.Pump();
         return host;
+    }
+
+    /// <summary>
+    /// The GPU renderer on Vulkan (SDL_GPU_DRIVER=vulkan): what Linux and the Steam Deck use, here on Windows. Null where no Vulkan
+    /// driver is present (the GPU renderer does not start on it). Where it starts, the program's SPIR-V shader must draw.
+    /// </summary>
+    private static SdlHost? OpenVulkan(int width, int height, bool hd)
+    {
+        SdlNative.SDL_SetHint(SdlNative.HintGpuDriver, "vulkan");
+        var host = new SdlHost("filter test (Vulkan)", width, height, gpu: true);
+        if (host.RendererName != "gpu")
+        {
+            host.Dispose();
+            return null;
+        }
+        Assert.Equal("vulkan", host.GpuDriver);
+        Assert.Equal("shaders", host.FilterKind);
+        return Ready(host, hd);
+    }
+
+    /// <summary>The filters on Vulkan (the SPIR-V shader) draw as the reference, the HD frame and the curvature included.</summary>
+    [Theory]
+    [InlineData(1920, 1080, PictureFilter.Smooth, false, false)]
+    [InlineData(1920, 1080, PictureFilter.Crt, false, false)]
+    [InlineData(1013, 571, PictureFilter.Crt, false, false)]
+    [InlineData(1920, 1080, PictureFilter.Crt, true, false)]
+    [InlineData(1920, 1080, PictureFilter.Crt, false, true)]
+    [InlineData(1920, 1080, PictureFilter.Sharp, false, false)]
+    public void OnVulkanTheShaderDrawsAsTheReference(int width, int height, PictureFilter filter, bool hd, bool curved)
+    {
+        if (!HaveSdl())
+        {
+            return;
+        }
+        using var host = OpenVulkan(width, height, hd);
+        if (host is null)
+        {
+            return;   // no Vulkan driver here
+        }
+        host.Curvature = curved;
+        AssertLikeTheReference(host, filter, curvature: curved ? SdlShaderPictureFilter.CurvatureAmount : 0, tolerance: hd ? 2.5 : 2.0);
+        // no black picture: the middle of the picture shows the picture's colours
+        var shown = host.ReadBack(out var rw, out var rh);
+        var g = DisplayLayout.Graphics(rw, rh);
+        Assert.NotEqual(0, shown[(g.Y + g.Height / 4) * rw + g.X + g.Width / 2] & 0xFFFFFF);
     }
 
     [Fact]
