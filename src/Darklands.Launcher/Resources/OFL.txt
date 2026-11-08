@@ -8,8 +8,8 @@ EB Garamond (EBGaramond-Italic.ttf, EBGaramond-SemiBold.ttf)
 Copyright 2017 The EB Garamond Project Authors (https://github.com/octaviopardo/EBGaramond12)
 Copyright 2025 Deborah Khodanovich (RCS citation glyphs)
 
-Grenze Gotisch (GrenzeGotisch-Regular.ttf, GrenzeGotisch-SemiBold.ttf)
-Copyright 2020 The Grenze Gotisch Project Authors (https://github.com/Omnibus-Type/Grenze-Gotisch)
+Texturina (Texturina-Bold.ttf)
+Copyright 2020 The Texturina Project Authors (https://github.com/Omnibus-Type/Texturina)
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007

@@ -801,16 +801,16 @@ internal sealed class LauncherScreen
     /// <summary>"Darklands" and "Restoration Project" over the painting, with a fleuron rule under them.</summary>
     private void DrawTitle(Canvas canvas, View v)
     {
-        var big = Face(Assets.Display, 84, v);
-        var sub = Face(Assets.Strong, 36, v);
+        // as in the art direction: "Restoration Project" as wide as "Darklands" under it, both in cream on a soft shadow
+        var big = Face(Assets.Display, 80, v);
+        var sub = Face(Assets.Strong, 40, v);
         var centre = v.OffsetX + v.Len(343);
-        var y = v.OffsetY + v.Len(22);
-        var shadow = Math.Max(1, v.Len(2));
+        var y = v.OffsetY + v.Len(18);
+        var shadow = Math.Max(1, v.Len(2.5));
         big.Draw(canvas, "Darklands", centre - big.Measure("Darklands") / 2, y, Cream, shadow, Black);
-        y += (int)(big.LineHeight * 0.86);
-        var spacing = v.Len(1.5);
-        Spaced(canvas, sub, "Restoration Project", centre - SpacedWidth(sub, "Restoration Project", spacing) / 2, y, Cream, spacing, shadow);
-        y += sub.LineHeight + v.Len(6);
+        y += (int)(big.LineHeight * 0.80);
+        sub.Draw(canvas, "Restoration Project", centre - sub.Measure("Restoration Project") / 2, y, Cream, shadow, Black);
+        y += sub.LineHeight + v.Len(10);
         Fleuron(canvas, v, centre, y, v.Len(190), Cream, onDark: true);
     }
 
@@ -1510,7 +1510,7 @@ internal sealed class LauncherScreen
         }
     }
 
-    /// <summary>The height of the settings art's dark header band on the screen (0 without the art): where its parchment starts, down its middle.</summary>
+    /// <summary>The height of the settings art's dark header band on the screen (0 without the art, or art without a band): where its parchment starts, down its middle.</summary>
     private static int SettingsBand(View v)
     {
         if (Assets.Art("card-settings") is not { } art || Assets.Slice("card-settings") is not { } slice)
@@ -1524,7 +1524,8 @@ internal sealed class LauncherScreen
             var light = ((c >> 16) & 255) + ((c >> 8) & 255) + (c & 255);
             if (c >> 24 > 200 && light > 3 * 150)
             {
-                return (int)Math.Round(y * v.Scale / 2);
+                // a frame's rim is no band: only a dark top at least 40 of the art's pixels tall carries "Settings"
+                return y < 40 ? 0 : (int)Math.Round(y * v.Scale / 2);
             }
         }
         return 0;
@@ -1583,18 +1584,6 @@ internal sealed class LauncherScreen
             face.Draw(canvas, text, x + Math.Max(1, v.Len(0.6)), y, colour);
         }
         face.Draw(canvas, text, x, y, colour);
-    }
-
-    private static int SpacedWidth(TextFace face, string text, int spacing) => text.Sum(c => face.Measure([c]) + spacing) - spacing;
-
-    /// <summary>Text with its letters spread by <paramref name="spacing"/> pixels.</summary>
-    private static void Spaced(Canvas canvas, TextFace face, string text, int x, int y, uint colour, int spacing, int shadow)
-    {
-        foreach (var c in text)
-        {
-            face.Draw(canvas, [c], x, y, colour, shadow, Black);
-            x += face.Measure([c]) + spacing;
-        }
     }
 
     /// <summary>Smooth value noise in 0..1 (a fixed pattern for each seed).</summary>

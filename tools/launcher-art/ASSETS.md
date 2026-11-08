@@ -26,8 +26,8 @@ stand-in in code. Art is made at **twice the design's size**.
 | name | on the design | how it is drawn |
 |---|---|---|
 | `background` | the whole window | 16:9, no transparency; at least 1920 x 1080, ideally 2560 x 1440. Enlarged until it covers the window, keeping its **focus** (the castle: 30.5% across, 34% down the 2026-11-08 painting) at (660, 318), in the gap between the panels; darkened at the edges and behind the title in code. A new painting with its focus elsewhere: change `FocusX`/`FocusY` in LauncherScreen.cs. |
-| `card-left` + slice | 414 x 508 | the left card, in nine slices; its corners at half their pixels (a 242-pixel corner is 121 design pixels). |
-| `card-settings` + slice | 494 x 692 | the settings panel, in nine slices; its dark header band (found down the top-left corner's middle) carries "Settings" in cream. |
+| `card-left` + slice | 414 x 508 | the left card, in nine slices; its corners at half their pixels (a 120-pixel corner is 60 design pixels). The 2026-11-08 one is the mock-up's own paper, its text painted out by `PaperTool card` (the art sheet's crumpled card was set aside for it). |
+| `card-settings` + slice | 494 x 692 | the settings panel, in nine slices. As in the mock-up, "Settings" is written in ink on the paper: the art sheet's dark header band was replaced by its bottom row flipped (`PaperTool settings`) and its paper brought to the card's colour (`PaperTool tone`). Art WITH a dark band at least 40 pixels tall (found down the top-left corner's middle) still gets "Settings" in cream on it. |
 | `corner` | 60 x 60 | the TOP-LEFT bronze corner; mirrored to the panel's four corners, reaching 9 design pixels past them. |
 | `fleuron` | 20-26 high | the fleur-de-lis at the middle of the rules. |
 | `rule-left`, `rule-right` | 5-7 high | the rule's two halves; the knob end (three times the rule's height) keeps its shape, the taper stretches. |
@@ -50,8 +50,8 @@ all under the SIL Open Font License (`Resources/OFL.txt`; list each in THIRD_PAR
 | `EBGaramond12-Regular.ttf` (in place) | all text | — |
 | `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the hint bar | the Regular |
 | `EBGaramond-SemiBold.ttf` (in place) | section headings, the cards' headings, the drop caps, "Restoration Project", "Save and quit" | the Regular, thickened by a pixel |
-| `GrenzeGotisch-SemiBold.ttf` (in place) | "Darklands", "Settings", "Play" | `GrenzeGotisch-Regular.ttf` (in place) |
+| `Texturina-Bold.ttf` (in place) | "Darklands", "Settings", "Play" (the closest free face to the mock-up's lettering) | EB Garamond SemiBold |
 
 The static fonts come from the families' upstream repositories, which Google Fonts publishes
-(github.com/octaviopardo/EBGaramond12 and github.com/Omnibus-Type/Grenze-Gotisch, `fonts/ttf/`; Google Fonts' own
+(github.com/octaviopardo/EBGaramond12 and github.com/Omnibus-Type/Texturina, `fonts/ttf/`; Google Fonts' own
 repository holds only their variable fonts, whose weights the launcher's rasteriser cannot choose).
