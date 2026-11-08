@@ -293,6 +293,7 @@ internal sealed class LauncherModel
             TextFont = s.TextFont,
             ScreenshotsFolder = s.ScreenshotsFolder,
             SdlLibrary = s.SdlLibrary,
+            MouseWheel = s.MouseWheel,
             ConsoleEnabled = s.ConsoleEnabled,
             ConsoleFont = s.ConsoleFont,
             ConsoleFontSize = s.ConsoleFontSize,

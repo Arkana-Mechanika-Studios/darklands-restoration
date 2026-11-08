@@ -76,6 +76,8 @@ public sealed class CharacterGeneratorScreen
     {
         // orig: R037+0x4664 sets state 0 and resets (R037+0x675A) before drawing
         _creation.Reset();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the step's lines
+        using var wheel = _ui.UseSelectionList(static () => true);
         var chargen = _ui.Assets.Picture("chargen");
         _back.DrawPicture(chargen);
         Screen.UsePalette(chargen);
@@ -520,7 +522,12 @@ public sealed class CharacterGeneratorScreen
     //   first steps, not always that of the occupation list; the emulator's speed is the tester's model, not a PC's)
     private void WaitThenRedraw()
     {
-        var closing = _ui.WaitForActionWithoutBar();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none: any key closes the box
+        PlayerAction closing;
+        using (_ui.UseSelectionList(null))
+        {
+            closing = _ui.WaitForActionWithoutBar();
+        }
         DrawAll();
         if (closing.IsLeftClick && _ui.Mouse.Left)
         {

@@ -88,6 +88,8 @@ public sealed class PartyRosterScreen
     public void Run(GameState state, int callerWord)
     {
         _state = state;
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the roster's lines
+        using var wheel = _ui.UseSelectionList(static () => true);
         var savedRedraw = _ui.Redraw;
         SetSaveAndLoad(2);
         try

@@ -42,6 +42,7 @@ internal static class SdlNative
     internal const uint EventMouseButtonDown = 0x401;
     internal const uint EventMouseButtonUp = 0x402;
     internal const uint EventMouseWheel = 0x403;
+    internal const uint MouseWheelFlipped = 1;
     internal const uint EventDropFile = 0x1000;
     internal const uint EventUser = 0x8000;
     internal const int WindowCentered = 0x2FFF0000;

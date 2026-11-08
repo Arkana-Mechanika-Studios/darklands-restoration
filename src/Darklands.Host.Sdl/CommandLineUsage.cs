@@ -27,6 +27,7 @@ internal static class CommandLineUsage
           --text-font <file>         the text screen's 8x16 font
           --sdl <file>               the SDL3 library to use
           --no-console               no developer console (F11)
+          --no-mouse-wheel           the mouse wheel does not give up / down in the menus and lists
           --log-window               a window with the program's messages (Windows; they always go to the log)
           --sound-test               check the sound without the game, then stop
           --version | --help         the version | this text

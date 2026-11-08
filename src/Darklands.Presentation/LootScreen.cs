@@ -63,6 +63,8 @@ public sealed class LootScreen
         DrawScreen();
         // orig: R040+0x01C8 `while (mouse-button-state & 1);` before the loop
         _page.WaitForRelease();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the pile's and the member's lists
+        using var wheel = _page.Ui.UseSelectionList(static () => true);
         var lit = -1;
         try
         {

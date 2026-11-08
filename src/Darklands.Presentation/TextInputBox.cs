@@ -34,6 +34,8 @@ public sealed class TextInputBox(GameUi ui)
 
     public string Ask(string prompt, int maxLength, string text = "")
     {
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none in the text box
+        using var wheel = ui.UseSelectionList(null);
         var pointer = ui.PointerVisible;
         ui.PointerVisible = false;
         string answer;

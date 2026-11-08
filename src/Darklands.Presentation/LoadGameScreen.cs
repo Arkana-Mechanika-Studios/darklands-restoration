@@ -56,6 +56,8 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         SetUp();
         Draw();
         ScreenDrawing.WaitForRelease(ui);
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the list of saved games
+        using var wheel = ui.UseSelectionList(static () => true);
         var lit = -1;
         while (true)
         {

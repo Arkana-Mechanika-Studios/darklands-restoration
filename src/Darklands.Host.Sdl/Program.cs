@@ -119,6 +119,7 @@ var cli = new CommandLineOptions
     HdPack = Option("--hd-pack"),
     CleanDrawing = arguments.Remove("--clean-drawing"),
     NoConsole = arguments.Remove("--no-console"),
+    NoMouseWheel = arguments.Remove("--no-mouse-wheel"),
     Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -268,6 +269,8 @@ ResolvedSettings? Resolve(GameSettings file)
 static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports)
 {
     host.Renderer = null;
+    // input.mouseWheel (docs/SETTINGS.md): the wheel gives up / down where they move a selection; the game plays the same
+    host.MouseWheelArrows = settings.MouseWheel;
     if (settings.HdPack is { } hdPack)
     {
         // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same

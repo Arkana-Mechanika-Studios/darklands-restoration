@@ -19,6 +19,9 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// <summary>Normal text (and the active menu line).</summary>
     public const byte Ink = 8;
 
+    /// <summary>The game's UI the page draws on.</summary>
+    public GameUi Ui => ui;
+
     /// <summary>A menu line that does not apply to the list in use.</summary>
     public const byte Faded = 7;
 

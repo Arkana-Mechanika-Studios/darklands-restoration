@@ -153,6 +153,41 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public bool ShiftHeld => _shift;
 
+    /// <summary>The game's UI says a selection list is up (IInput.SelectionListActive), set before each pump.</summary>
+    public bool SelectionListActive { get; set; }
+
+    /// <summary>
+    /// input.mouseWheel: while a selection list is up (<see cref="SelectionListActive"/>) each notch of the wheel is a tap of ↑ (away
+    /// from the player) or ↓, through the keyboard as the key itself (its make and break codes, the BIOS word); elsewhere the wheel does nothing.
+    /// </summary>
+    // orig: root 047C:0744 (the BIOS key read, INT 16h AH = 0) and root 044A:020E (the game's keyboard interrupt): a notch's key is read as the keyboard's
+    // DIVERGENCE: a host enhancement (the user's decision, input.mouseWheel, on by default; DOSBox-X maps the wheel to the cursor keys
+    //   everywhere): the wheel gives ↑ / ↓ only where they move a selection (GameUi.SelectionList); the game reads the keys a player could have
+    //   pressed (the make and break codes, the BIOS word) and nothing else changes; Host.Headless and the oracle tools have no wheel;
+    //   tests: MouseWheelListTests, SdlWheelTests
+    public bool MouseWheelArrows { get; set; } = true;
+
+    /// <summary>The taps a wheel event gives: positive ↑, negative ↓ (an event the system reports flipped counts the other way), at most 5.</summary>
+    internal static int WheelTaps(int y, uint direction) => Math.Clamp(direction == SdlNative.MouseWheelFlipped ? -y : y, -5, 5);
+
+    /// <summary>The wheel's taps (positive ↑) as the keys themselves, while a selection list is up and input.mouseWheel is on; else nothing.</summary>
+    private void Wheel(int taps)
+    {
+        if (!MouseWheelArrows || !SelectionListActive || taps == 0)
+        {
+            return;
+        }
+        var (key, scanCode, id) = WheelKey(taps > 0);
+        for (var i = 0; i < Math.Abs(taps); i++)
+        {
+            _keyboard.KeyDown(key, scanCode, id, _keyClock.Elapsed.TotalMilliseconds);
+            _keyboard.KeyUp(scanCode, id);
+        }
+    }
+
+    /// <summary>The key, its PC scan code and its SDL scancode (the key's id in the keyboard) for a tap of the wheel.</summary>
+    internal static (int Key, int ScanCode, int Id) WheelKey(bool up) => up ? (Keys.Up, 0x48, 82) : (Keys.Down, 0x50, 81);
+
     public bool TryReadKeyTransition(out int scanCode, out bool released) => _keyboard.TryReadTransition(out scanCode, out released);
 
     /// <summary>The PC scan code (set 1) of the keys the game's keyboard interrupt looks at, 0 for the others.</summary>
@@ -436,6 +471,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 case SdlNative.EventKeyUp:
                     _shift = (e.Keyboard.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
                     _keyboard.KeyUp(PcScanCode(e.Keyboard.Scancode), (int)e.Keyboard.Scancode);
+                    break;
+                case SdlNative.EventMouseWheel:
+                    Wheel(WheelTaps(WheelTicks(e.Wheel.Y), e.Wheel.Direction));
                     break;
                 case SdlNative.EventMouseMotion:
                     _mouse = _mouse with { X = ToScreenX(Whole(e.Motion.X)), Y = ToScreenY(Whole(e.Motion.Y)) };

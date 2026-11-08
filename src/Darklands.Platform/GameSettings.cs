@@ -61,6 +61,9 @@ public sealed class GameSettings
     /// <summary>The SDL host's section: the SDL3 library to load.</summary>
     public string? SdlLibrary { get; set; }
 
+    /// <summary>The mouse wheel gives ↑ / ↓ in the menus and lists (a host comfort, SDL host): on unless false.</summary>
+    public bool? MouseWheel { get; set; }
+
     /// <summary>The developer console (a host feature, outside the game): on unless false.</summary>
     public bool? ConsoleEnabled { get; set; }
 
