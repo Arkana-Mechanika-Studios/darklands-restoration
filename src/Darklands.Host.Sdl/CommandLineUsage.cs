@@ -21,7 +21,7 @@ internal static class CommandLineUsage
           --scale <N> | --resolution <WxH>    the window's size
           --fullscreen               full screen
           --clean-drawing            the cleaner drawing of 0.9.5
-          --filter <name>            how the picture is drawn: sharp (default), smooth or crt
+          --filter <name>            how the picture is drawn: sharp (default), even, soft, softcrt, hq, crt, crtplus
           --no-banner | --no-intro   skip the start-up screen | the opening animation
           --saves <folder>           where the saved games go
           --screenshots <folder>     where the screenshots go

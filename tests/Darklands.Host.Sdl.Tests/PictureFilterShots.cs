@@ -7,7 +7,8 @@ namespace Darklands.Host.Sdl.Tests;
 /// <summary>
 /// Screenshots of each picture filter for a person to judge, not a check (drawn by the GPU renderer's shader where it starts): with DARKLANDS_PICFILTER_SHOTS set to
 /// "&lt;folder of 320x200 PNG frames&gt;;&lt;output folder&gt;" every frame is shown in a 1920x1080 window with each filter, read back
-/// and saved as &lt;frame&gt;-&lt;filter&gt;.png, with &lt;frame&gt;-zoom.png: the same 480x300 piece of the window under each filter, side by side.
+/// and saved as &lt;frame&gt;-&lt;filter&gt;.png, with &lt;frame&gt;-sheet.png: the same 480x300 piece of the window, 1:1, under each filter side by side (in the order of the setting),
+/// and &lt;frame&gt;-&lt;crt kind&gt;-curved.png.
 /// Without the variable it does nothing.
 /// </summary>
 [Collection("SDL")]
@@ -47,12 +48,15 @@ public sealed class PictureFilterShots
                     Path.Combine(Directory.CreateDirectory(Path.Combine(output, "reference")).FullName, $"{name}-{PictureFilters.Name(filter)}.png"));
                 pieces.Add((Crop(argb, w, g.X + g.Width / 2 - 240, g.Y + g.Height / 3, 480, 300), 480));
             }
-            // the CRT with its curvature (display.crtCurvature)
-            host.Filter = PictureFilter.Crt;
+            // the CRT kinds with their curvature (display.crtCurvature)
             host.Curvature = true;
-            host.Present(screen);
-            var curved = host.ReadBack(out var cw, out var ch).Select(p => (uint)p | 0xFF000000u).ToArray();
-            PngWriter.Write(curved, cw, ch, Path.Combine(output, $"{name}-crt-curved.png"));
+            foreach (var crt in Enum.GetValues<PictureFilter>().Where(PictureFilters.IsCrt))
+            {
+                host.Filter = crt;
+                host.Present(screen);
+                var curved = host.ReadBack(out var cw, out var ch).Select(p => (uint)p | 0xFF000000u).ToArray();
+                PngWriter.Write(curved, cw, ch, Path.Combine(output, $"{name}-{PictureFilters.Name(crt)}-curved.png"));
+            }
             host.Curvature = false;
             var zoom = new uint[pieces.Count * 488 * 300];
             for (var i = 0; i < pieces.Count; i++)
@@ -62,7 +66,7 @@ public sealed class PictureFilterShots
                     Array.Copy(pieces[i].Pixels, y * 480, zoom, y * pieces.Count * 488 + i * 488, 480);
                 }
             }
-            PngWriter.Write(zoom, pieces.Count * 488, 300, Path.Combine(output, $"{name}-zoom.png"));
+            PngWriter.Write(zoom, pieces.Count * 488, 300, Path.Combine(output, $"{name}-sheet.png"));
         }
     }
 

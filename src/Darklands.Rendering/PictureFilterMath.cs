@@ -16,6 +16,25 @@ public static class PictureFilterMath
     /// <summary>The mean brightness the CRT mask keeps of the picture: what the scanlines and the mask take is mostly given back.</summary>
     public const double KeptBrightness = 0.88;
 
+    // Soft: the beam's spread (a Gaussian's standard deviation, in game pixels), across and down. Across, enough for a
+    // 1-pixel checkerboard to fall to about a fifth of its contrast at a texel's centre ((1 - 2e) / (1 + 2e), e = exp(-1 / (2 sigma^2)));
+    // down, less (a VGA monitor drew each of the 200 lines twice, sharp from line to line).
+    public const double SoftSpreadX = 0.68, SoftSpreadY = 0.32;
+
+    // CRT+: the beam's height (standard deviation, in game rows) for black and for white, between them by brightness; its
+    // mask's strength and the beam's spread across (game pixels); the glow's spread and amount; the mean brightness kept before the glow.
+    public const double PlusBeamDark = 0.20, PlusBeamBright = 0.36, PlusMaskStrength = 0.30, PlusSpreadX = 0.40;
+    public const double PlusGlowSpread = 1.0, PlusGlowAmount = 0.12, PlusKeptBrightness = 0.86;
+
+    // HQ: two colours are the same when their channels (0..1) differ by less than this in all.
+    public const double HqSameColour = 1.5 / 255;
+
+    /// <summary>CRT+'s gain on the beams: the mean of a beam row's light over a row (its Gaussian's area) back to 1, and the mask's mean to <see cref="PlusKeptBrightness"/>.</summary>
+    public static double PlusBeamGain => 1 / (0.5 * (PlusBeamDark + PlusBeamBright) * Math.Sqrt(2 * Math.PI));
+
+    /// <summary>CRT+'s gain for its mask: the mask's mean raised to <see cref="PlusKeptBrightness"/>.</summary>
+    public static double PlusMaskGain => PlusKeptBrightness / (1 - 2 * PlusMaskStrength / 3);
+
     /// <summary>
     /// The whole factors by which the picture (<paramref name="sourceWidth"/> x <paramref name="sourceHeight"/>) is enlarged with
     /// hard pixels before it is scaled smoothly onto the destination: the smallest that reach the destination's size, so the

@@ -70,7 +70,30 @@ public sealed record LauncherContext(
     string? PackGuide = null,
     string? GivenGameFolder = null,
     Func<string?, string?>? FindSoundFont = null,
-    Func<string>? ReportProblem = null);
+    Func<string>? ReportProblem = null,
+    IFilterPreviews? Previews = null);
+
+/// <summary>A picture filter's preview, ready to draw: <see cref="Width"/> x <see cref="Height"/> ARGB pixels.</summary>
+/// <param name="FromGame">Made from the player's own game files (else from a pattern drawn in code).</param>
+public sealed record FilterPreview(int Width, int Height, uint[] Argb, bool FromGame);
+
+/// <summary>
+/// The picture filters' previews (the launcher's Picture row): a piece of a game picture drawn through each filter as the game
+/// window would show it, made away from the launcher's frames and kept. The launcher never waits on it: <see cref="Prepare"/>
+/// only starts the work, <see cref="Get"/> only looks.
+/// </summary>
+public interface IFilterPreviews
+{
+    /// <summary>
+    /// Have every filter's preview made at <paramref name="width"/> x <paramref name="height"/> from the game in
+    /// <paramref name="gameFolder"/> (null or no game there: a pattern drawn in code), the CRT kinds curved when
+    /// <paramref name="curvature"/> is set. Returns at once; asking again for what is made or being made does nothing.
+    /// </summary>
+    void Prepare(string? gameFolder, int width, int height, bool curvature);
+
+    /// <summary>The preview of that filter for the last <see cref="Prepare"/>, or null while it is being made.</summary>
+    FilterPreview? Get(PictureFilter filter);
+}
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
 public sealed record PackStatus(int Pictures, int Sounds, string? Problem)

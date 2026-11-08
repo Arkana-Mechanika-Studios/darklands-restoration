@@ -117,7 +117,11 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
         return filter;
     }
 
-    /// <summary>One colour drawn through the shader (smooth, 1 x 1 to 4 x 4) into a texture and read back: whether the shader draws.</summary>
+    /// <summary>
+    /// One colour drawn through the shader with each filter (1 x 1 to 4 x 4) into a texture and read back: whether the shader draws.
+    /// The filters that keep a flat colour (Even, Soft, HQ) must give it back exactly; the CRT kinds must give light (their scanlines
+    /// and mask change it).
+    /// </summary>
     private bool SelfTest()
     {
         const uint colour = 0xFF4080C0;
@@ -131,17 +135,25 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
             }
             SdlNative.SDL_UpdateTexture(source, IntPtr.Zero, new[] { colour }, 4);
             SdlNative.SDL_SetTextureBlendMode(source, SdlNative.BlendModeNone);
-            SdlNative.SDL_SetRenderTarget(_renderer, target);
-            SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-            SdlNative.SDL_RenderClear(_renderer);
-            Set(_game, Uniforms(1, 1, 4, 4, 4, 4, 0, 0, 4, 4, mode: 0, crt: false));
-            SdlNative.SDL_SetGPURenderState(_renderer, _game.State);
-            SdlNative.RenderCopy(_renderer, source, new SdlNative.SdlRect { X = 0, Y = 0, Width = 4, Height = 4 });
-            SdlNative.SDL_SetGPURenderState(_renderer, IntPtr.Zero);
-            var pixels = new int[16];
-            var read = SdlNative.ReadPixels(_renderer, pixels, 4, 4);
-            SdlNative.SDL_SetRenderTarget(_renderer, IntPtr.Zero);
-            return read && pixels.All(p => (uint)p == colour);
+            foreach (var kind in Enum.GetValues<PictureFilter>().Where(f => f != PictureFilter.Sharp))
+            {
+                SdlNative.SDL_SetRenderTarget(_renderer, target);
+                SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+                SdlNative.SDL_RenderClear(_renderer);
+                Set(_game, Uniforms(1, 1, 4, 4, 4, 4, 0, 0, 4, 4, mode: 0, kind));
+                SdlNative.SDL_SetGPURenderState(_renderer, _game.State);
+                SdlNative.RenderCopy(_renderer, source, new SdlNative.SdlRect { X = 0, Y = 0, Width = 4, Height = 4 });
+                SdlNative.SDL_SetGPURenderState(_renderer, IntPtr.Zero);
+                var pixels = new int[16];
+                var read = SdlNative.ReadPixels(_renderer, pixels, 4, 4);
+                SdlNative.SDL_SetRenderTarget(_renderer, IntPtr.Zero);
+                var drawn = PictureFilters.IsCrt(kind) ? pixels.All(p => (p & 0xFFFFFF) != 0) : pixels.All(p => (uint)p == colour);
+                if (!read || !drawn)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         finally
         {
@@ -167,7 +179,7 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
 
     public void Begin(DisplayRectangle picture, bool layered)
     {
-        _composing = Filter == PictureFilter.Crt && layered && picture.Width > 0 && picture.Height > 0 && Canvas() != IntPtr.Zero;
+        _composing = PictureFilters.IsCrt(Filter) && layered && picture.Width > 0 && picture.Height > 0 && Canvas() != IntPtr.Zero;
         if (_composing)
         {
             // the frame into the canvas, at the window's own coordinates; Finish puts it on the window through the mask
@@ -186,9 +198,11 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
             return;
         }
         var (kx, ky) = PictureFilterMath.Prescale(place.Width, place.Height, width, height);
-        var crt = Filter == PictureFilter.Crt && !_composing;
+        // with an HD pack the CRT kinds draw the game's pictures into the canvas without their mask (Finish lays it over all):
+        // Soft CRT with Soft, CRT and CRT+ with Even (CRT+ reads the game's pixels back from the canvas at their middles)
+        var kind = !_composing ? Filter : Filter == PictureFilter.SoftCrt ? PictureFilter.Soft : PictureFilter.Even;
         var slot = blended ? _overlay : _game;
-        Set(slot, Uniforms(width, height, place.Width, place.Height, place.Width, place.Height, 0, 0, kx, ky, mode: 0, crt));
+        Set(slot, Uniforms(width, height, place.Width, place.Height, place.Width, place.Height, 0, 0, kx, ky, mode: 0, kind));
         SdlNative.SDL_SetGPURenderState(_renderer, slot.State);
         SdlNative.RenderCopy(_renderer, texture, destination);
         SdlNative.SDL_SetGPURenderState(_renderer, IntPtr.Zero);
@@ -204,15 +218,15 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
         SdlNative.SDL_SetRenderTarget(_renderer, IntPtr.Zero);
         var area = new SdlNative.SdlRect { X = picture.X, Y = picture.Y, Width = picture.Width, Height = picture.Height };
         Set(_mask, Uniforms(Screen.Width, Screen.Height, picture.Width, picture.Height, _canvasSize.Width, _canvasSize.Height,
-            picture.X, picture.Y, 1, 1, mode: 1, crt: true));
+            picture.X, picture.Y, 1, 1, mode: 1, Filter));
         SdlNative.SDL_SetGPURenderState(_renderer, _mask.State);
         SdlNative.RenderCopyPart(_renderer, _canvas, area, area);
         SdlNative.SDL_SetGPURenderState(_renderer, IntPtr.Zero);
     }
 
-    /// <summary>The shader's uniform buffer (Shaders/picture.frag.hlsl, cbuffer Context): sizes, place, shape, crt.</summary>
+    /// <summary>The shader's uniform buffer (Shaders/picture.frag.hlsl, cbuffer Context): sizes, place, shape, crt, soft, plus, plus2.</summary>
     private float[] Uniforms(int sourceWidth, int sourceHeight, int width, int height, int mapWidth, int mapHeight, int x, int y,
-        int kx, int ky, int mode, bool crt)
+        int kx, int ky, int mode, PictureFilter kind)
     {
         var depth = PictureFilterMath.ScanlineDepthFor(height / (double)sourceHeight);
         var gain = PictureFilterMath.CrtGain(depth);
@@ -220,10 +234,26 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
         [
             sourceWidth, sourceHeight, width, height,
             mapWidth, mapHeight, x, y,
-            kx, ky, mode, crt ? 1 : 0,
-            (float)depth, (float)PictureFilterMath.MaskStrength, (float)gain, crt && Curvature ? CurvatureAmount : 0,
+            kx, ky, mode, ShaderKind(kind),
+            (float)depth, (float)PictureFilterMath.MaskStrength, (float)gain, PictureFilters.IsCrt(kind) && Curvature ? CurvatureAmount : 0,
+            (float)PictureFilterMath.SoftSpreadX, (float)PictureFilterMath.SoftSpreadY, (float)PictureFilterMath.HqSameColour, (float)PictureFilterMath.PlusSpreadX,
+            (float)PictureFilterMath.PlusBeamDark, (float)PictureFilterMath.PlusBeamBright, (float)PictureFilterMath.PlusMaskStrength,
+            (float)PictureFilterMath.PlusMaskGain,
+            (float)PictureFilterMath.PlusBeamGain, (float)PictureFilterMath.PlusGlowSpread, (float)PictureFilterMath.PlusGlowAmount,
+            (float)(depth / PictureFilterMath.ScanlineDepth),
         ];
     }
+
+    /// <summary>The shader's number for a filter (shape.w): 0 Even, 1 Soft, 2 Soft CRT, 3 HQ, 4 CRT, 5 CRT+.</summary>
+    private static float ShaderKind(PictureFilter filter) => filter switch
+    {
+        PictureFilter.Soft => 1,
+        PictureFilter.SoftCrt => 2,
+        PictureFilter.Hq => 3,
+        PictureFilter.Crt => 4,
+        PictureFilter.CrtPlus => 5,
+        _ => 0,
+    };
 
     /// <summary>A render state's uniforms, set again only when they change (after what is queued with the old ones is drawn).</summary>
     private void Set(Slot slot, float[] uniforms)

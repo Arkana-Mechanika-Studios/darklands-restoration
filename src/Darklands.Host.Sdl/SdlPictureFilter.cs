@@ -21,6 +21,9 @@ internal sealed class SdlPictureFilter(IntPtr renderer) : IPictureFilterRenderer
 
     public PictureFilter Filter { get; set; } = PictureFilter.Sharp;
 
+    /// <summary>What is drawn for <see cref="Filter"/>: the shader-only filters as Even or CRT (PictureFilters.WithoutShader).</summary>
+    private PictureFilter Drawn => PictureFilters.WithoutShader(Filter);
+
     /// <summary>Not drawn here (render targets and blend modes cannot bend the picture).</summary>
     public bool Curvature { get; set; }
 
@@ -33,7 +36,7 @@ internal sealed class SdlPictureFilter(IntPtr renderer) : IPictureFilterRenderer
     public void DrawGame(IntPtr texture, int width, int height, DisplayRectangle place, bool blended)
     {
         var destination = ToSdl(place);
-        if (Filter == PictureFilter.Sharp)
+        if (Drawn == PictureFilter.Sharp)
         {
             SdlNative.RenderCopy(renderer, texture, destination);
             return;
@@ -69,7 +72,7 @@ internal sealed class SdlPictureFilter(IntPtr renderer) : IPictureFilterRenderer
     public void Finish(DisplayRectangle place)
     {
         var picture = ToSdl(place);
-        if (Filter == PictureFilter.Crt && picture.Width > 0 && picture.Height > 0)
+        if (Drawn == PictureFilter.Crt && picture.Width > 0 && picture.Height > 0)
         {
             Mask(picture.Width, picture.Height);
             if (_darken != IntPtr.Zero)

@@ -24,7 +24,7 @@ public sealed class PictureFilterTests
         return true;
     }
 
-    /// <summary>A picture of two colours in 2x2 checks (as the game's dithering), a solid band and a ramp of greys.</summary>
+    /// <summary>A picture of two colours in 2x2 checks (as the game's dithering), a solid band, a ramp of greys and diagonal stripes.</summary>
     private static Screen Picture()
     {
         var screen = new Screen();
@@ -39,7 +39,9 @@ public sealed class PictureFilterTests
         {
             for (var x = 0; x < Screen.Width; x++)
             {
-                screen.Pixels[y * Screen.Width + x] = (byte)(y < 100 ? ((x / 2 + y / 2) % 2 == 0 ? 1 : 2) : y < 170 ? 3 : 16 + x * 64 / Screen.Width);
+                // 2 x 2 checks; a grey band; a ramp of greys beside 45-degree stripes (staircase edges, for HQ)
+                screen.Pixels[y * Screen.Width + x] = (byte)(y < 100 ? ((x / 2 + y / 2) % 2 == 0 ? 1 : 2) : y < 170 ? 3
+                    : x < 160 ? 16 + x * 64 / Screen.Width : (x + y) % 40 < 20 ? 1 : 2);
             }
         }
         return screen;
@@ -103,11 +105,18 @@ public sealed class PictureFilterTests
 
     /// <summary>The filters on Vulkan (the SPIR-V shader) draw as the reference, the HD frame and the curvature included.</summary>
     [Theory]
-    [InlineData(1920, 1080, PictureFilter.Smooth, false, false)]
+    [InlineData(1920, 1080, PictureFilter.Even, false, false)]
+    [InlineData(1920, 1080, PictureFilter.Soft, false, false)]
+    [InlineData(1920, 1080, PictureFilter.SoftCrt, false, false)]
+    [InlineData(1920, 1080, PictureFilter.Hq, false, false)]
     [InlineData(1920, 1080, PictureFilter.Crt, false, false)]
+    [InlineData(1920, 1080, PictureFilter.CrtPlus, false, false)]
     [InlineData(1013, 571, PictureFilter.Crt, false, false)]
+    [InlineData(1013, 571, PictureFilter.CrtPlus, false, false)]
     [InlineData(1920, 1080, PictureFilter.Crt, true, false)]
+    [InlineData(1920, 1080, PictureFilter.SoftCrt, true, false)]
     [InlineData(1920, 1080, PictureFilter.Crt, false, true)]
+    [InlineData(1920, 1080, PictureFilter.CrtPlus, false, true)]
     [InlineData(1920, 1080, PictureFilter.Sharp, false, false)]
     public void OnVulkanTheShaderDrawsAsTheReference(int width, int height, PictureFilter filter, bool hd, bool curved)
     {
@@ -170,7 +179,7 @@ public sealed class PictureFilterTests
     [InlineData(2160, 1200, false, false)]  // 1920x1200: 6x
     [InlineData(1440, 800, false, true)]
     [InlineData(1440, 800, true, true)]
-    public void SmoothIsSharpAtWholeMultiples(int width, int height, bool hd, bool gpu)
+    public void EvenIsSharpAtWholeMultiples(int width, int height, bool hd, bool gpu)
     {
         if (!HaveSdl())
         {
@@ -179,8 +188,8 @@ public sealed class PictureFilterTests
         using var host = Open(width, height, hd, gpu);
         var screen = Picture();
         var sharp = Shown(host, screen, PictureFilter.Sharp, out _, out _);
-        var smooth = Shown(host, screen, PictureFilter.Smooth, out _, out _);
-        Assert.Equal(sharp, smooth);
+        var even = Shown(host, screen, PictureFilter.Even, out _, out _);
+        Assert.Equal(sharp, even);
     }
 
     /// <summary>
@@ -189,16 +198,32 @@ public sealed class PictureFilterTests
     /// </summary>
     [Theory]
     [InlineData(1920, 1080, PictureFilter.Sharp, false)]
-    [InlineData(1920, 1080, PictureFilter.Smooth, false)]
+    [InlineData(1920, 1080, PictureFilter.Even, false)]
     [InlineData(1920, 1080, PictureFilter.Crt, false)]
-    [InlineData(1013, 571, PictureFilter.Smooth, false)]
+    [InlineData(1013, 571, PictureFilter.Even, false)]
     [InlineData(1013, 571, PictureFilter.Crt, false)]
     [InlineData(1920, 1080, PictureFilter.Sharp, true)]
-    [InlineData(1920, 1080, PictureFilter.Smooth, true)]
+    [InlineData(1920, 1080, PictureFilter.Even, true)]
     [InlineData(1920, 1080, PictureFilter.Crt, true)]
-    [InlineData(1013, 571, PictureFilter.Smooth, true)]
+    [InlineData(1013, 571, PictureFilter.Even, true)]
     [InlineData(1013, 571, PictureFilter.Crt, true)]
     [InlineData(2560, 1440, PictureFilter.Crt, true)]
+    [InlineData(1920, 1080, PictureFilter.Soft, true)]
+    [InlineData(1920, 1080, PictureFilter.SoftCrt, true)]
+    [InlineData(1920, 1080, PictureFilter.Hq, true)]
+    [InlineData(1920, 1080, PictureFilter.CrtPlus, true)]
+    [InlineData(1013, 571, PictureFilter.Soft, true)]
+    [InlineData(1013, 571, PictureFilter.SoftCrt, true)]
+    [InlineData(1013, 571, PictureFilter.Hq, true)]
+    [InlineData(1013, 571, PictureFilter.CrtPlus, true)]
+    [InlineData(2560, 1440, PictureFilter.Hq, true)]
+    [InlineData(2560, 1440, PictureFilter.CrtPlus, true)]
+    [InlineData(1440, 800, PictureFilter.CrtPlus, true)]
+    // without the shader (render targets): Soft and HQ as Even, Soft CRT and CRT+ as CRT
+    [InlineData(1920, 1080, PictureFilter.Soft, false)]
+    [InlineData(1920, 1080, PictureFilter.SoftCrt, false)]
+    [InlineData(1920, 1080, PictureFilter.Hq, false)]
+    [InlineData(1920, 1080, PictureFilter.CrtPlus, false)]
     public void TheRendererDrawsAsTheReference(int width, int height, PictureFilter filter, bool gpu)
     {
         if (!HaveSdl())
@@ -206,26 +231,38 @@ public sealed class PictureFilterTests
             return;
         }
         using var host = Open(width, height, hd: false, gpu);
-        AssertLikeTheReference(host, filter, curvature: 0);
+        AssertLikeTheReference(host, filter, curvature: 0, expected: gpu ? filter : PictureFilters.WithoutShader(filter));
     }
 
-    /// <summary>The CRT with an HD pack: the frame drawn into a canvas and the mask over all of it gives the same picture.</summary>
+    /// <summary>
+    /// The filters with an HD pack (the game's frame then drawn as the overlay too): the same picture. The CRT kinds draw the frame
+    /// into a canvas and lay their scanlines and mask over all of it (CRT+ reads the game's pixels back from the canvas at their
+    /// middles and draws its beams from them).
+    /// </summary>
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TheCrtOverAnHdFrameIsTheSame(bool gpu)
+    [InlineData(PictureFilter.Crt, false, 2.5, 0.01)]
+    [InlineData(PictureFilter.Crt, true, 2.5, 0.01)]
+    [InlineData(PictureFilter.Even, true, 2.0, 0.01)]
+    [InlineData(PictureFilter.Soft, true, 2.0, 0.01)]
+    [InlineData(PictureFilter.Hq, true, 2.0, 0.01)]
+    [InlineData(PictureFilter.SoftCrt, true, 2.5, 0.01)]
+    [InlineData(PictureFilter.CrtPlus, true, 2.5, 0.01)]
+    public void TheFiltersOverAnHdFrameAreTheSame(PictureFilter filter, bool gpu, double tolerance, double farShare)
     {
         if (!HaveSdl())
         {
             return;
         }
         using var host = Open(1920, 1080, hd: true, gpu);
-        AssertLikeTheReference(host, PictureFilter.Crt, curvature: 0, tolerance: 2.5);
+        AssertLikeTheReference(host, filter, curvature: 0, tolerance, farShare: farShare);
     }
 
-    /// <summary>The CRT's curvature (display.crtCurvature) is drawn by the shader as the reference bends the picture.</summary>
-    [Fact]
-    public void TheCurvatureIsTheReferences()
+    /// <summary>The CRT kinds' curvature (display.crtCurvature) is drawn by the shader as the reference bends the picture.</summary>
+    [Theory]
+    [InlineData(PictureFilter.Crt)]
+    [InlineData(PictureFilter.SoftCrt)]
+    [InlineData(PictureFilter.CrtPlus)]
+    public void TheCurvatureIsTheReferences(PictureFilter filter)
     {
         if (!HaveSdl() || !OperatingSystem.IsWindows())
         {
@@ -233,7 +270,7 @@ public sealed class PictureFilterTests
         }
         using var host = Open(1920, 1080, hd: false, gpu: true);
         host.Curvature = true;
-        AssertLikeTheReference(host, PictureFilter.Crt, curvature: SdlShaderPictureFilter.CurvatureAmount);
+        AssertLikeTheReference(host, filter, curvature: SdlShaderPictureFilter.CurvatureAmount);
         // the corners are black, the middle is not
         var shown = host.ReadBack(out var rw, out var rh);
         var g = DisplayLayout.Graphics(rw, rh);
@@ -241,13 +278,20 @@ public sealed class PictureFilterTests
         Assert.NotEqual(0, shown[(g.Y + g.Height / 2) * rw + g.X + g.Width / 2] & 0xFFFFFF);
     }
 
-    private static void AssertLikeTheReference(SdlHost host, PictureFilter filter, double curvature, double tolerance = 2.0)
+    /// <summary>
+    /// The filter drawn by the host and read back against the CPU reference of <paramref name="expected"/> (the filter itself unless
+    /// the renderer draws another in its place): a mean difference under <paramref name="tolerance"/> levels, and fewer than
+    /// <paramref name="farShare"/> of the pixels more than 12 levels off (the graphics card's rounding where a centre falls exactly
+    /// between two picture pixels).
+    /// </summary>
+    private static void AssertLikeTheReference(SdlHost host, PictureFilter filter, double curvature, double tolerance = 2.0,
+        PictureFilter? expected = null, double farShare = 0.01)
     {
         var screen = Picture();
         var shown = Shown(host, screen, filter, out var rw, out var rh);
         var g = DisplayLayout.Graphics(rw, rh);
         var argb = screen.Pixels.ToArray().Select(i => screen.Palette[i]).ToArray();
-        var reference = PictureFilterReference.Render(argb, Screen.Width, Screen.Height, filter, g.Width, g.Height, curvature);
+        var reference = PictureFilterReference.Render(argb, Screen.Width, Screen.Height, expected ?? filter, g.Width, g.Height, curvature);
         long total = 0;
         var far = 0;
         for (var y = 0; y < g.Height; y++)
@@ -272,7 +316,7 @@ public sealed class PictureFilterTests
         var pixels = g.Width * g.Height;
         var mean = total / (3.0 * pixels);
         Assert.True(mean < tolerance, $"{host.FilterKind}: mean difference {mean:F2}");
-        Assert.True(far < pixels / 100, $"{host.FilterKind}: {far} of {pixels} pixels differ by more than 12");
+        Assert.True(far < pixels * farShare, $"{host.FilterKind}: {far} of {pixels} pixels differ by more than 12");
     }
 
     [Theory]
@@ -347,7 +391,7 @@ public sealed class PictureFilterTests
         var e = Key(SdlNative.ScancodeF11, 0x40);
         Assert.True(SdlNative.SDL_PushEvent(ref e));
         host.Pump();
-        Assert.Equal(PictureFilter.Smooth, host.Filter);
+        Assert.Equal(PictureFilter.Even, host.Filter);
         Assert.False(host.TryReadKey(out _));   // the game does not get the key
     }
 

@@ -212,7 +212,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     public PictureFilter Filter
     {
         get => _filter.Filter;
-        set => _filter.Filter = value;
+        set
+        {
+            _filter.Filter = value;
+            if (PictureFilters.NeedsShader(value) && _filter.Kind != "shaders")
+            {
+                // render targets and blend modes cannot draw it (SDL's GPU renderer did not start, or its shader did not draw)
+                System.Console.Error.WriteLine($"Picture filters: {PictureFilters.Label(value)} needs the GPU renderer's shader; "
+                    + $"drawn as {PictureFilters.Label(PictureFilters.WithoutShader(value))}");
+            }
+        }
     }
 
     private IPictureFilterRenderer _filter = null!;
