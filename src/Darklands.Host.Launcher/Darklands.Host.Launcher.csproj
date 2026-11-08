@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- "DarklandsRP Launcher.exe": a small Windows program beside DarklandsRP.exe in the release that opens the launcher (the
+       settings screen); its Play starts the game. It only starts DarklandsRP.exe with the setup switch, so it is built for the
+       .NET Framework every Windows 10 and 11 has (a few kilobytes, instead of a second copy of the .NET runtime). Linux gets the
+       shell script linux/DarklandsRP-Launcher instead. Both are put beside the program by its publish (Darklands.Host.Sdl.csproj). -->
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>DarklandsRP Launcher</AssemblyName>
+    <RootNamespace>Darklands.Host.Launcher</RootNamespace>
+    <ApplicationIcon>..\Darklands.Host.Sdl\Resources\DarklandsRP.ico</ApplicationIcon>
+    <Product>Darklands Restoration Project</Product>
+    <AssemblyTitle>Darklands Restoration Project launcher</AssemblyTitle>
+    <Company>Arkana Mechanika Studios</Company>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <DebugType>none</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+</Project>

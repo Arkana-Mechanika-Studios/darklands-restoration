@@ -12,14 +12,18 @@ namespace Darklands.Host.Sdl;
 /// </summary>
 internal static class LauncherHost
 {
-    /// <summary>The launcher's window sizes, largest first: the first that fits the screen is taken.</summary>
-    private static readonly (int Width, int Height)[] Sizes = [(1080, 600), (900, 500), (720, 400)];
+    /// <summary>
+    /// The launcher's window sizes (its design's shape, 1280 x 720, the painting's), largest first: the first that fits the screen is taken. The
+    /// last is the smallest the window can be made while the launcher shows: its texts are laid out to fit down to it.
+    /// </summary>
+    internal static readonly (int Width, int Height)[] Sizes = [(1280, 720), (1080, 608), (960, 540)];
 
     /// <summary>Opens the window at the launcher's size.</summary>
     public static SdlHost Open(string title)
     {
         var (width, height) = SizeFor(SdlHost.MainScreen());
         var host = new SdlHost(title, width, height);
+        host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
         host.Clear();
         return host;
     }
@@ -28,6 +32,7 @@ internal static class LauncherHost
     public static void Fit(SdlHost host)
     {
         var (width, height) = SizeFor(host.UsableScreen());
+        host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
         host.Resize(width, height, fullscreen: false);
     }
 
@@ -69,6 +74,8 @@ internal static class LauncherHost
         {
             result = new Launcher.Launcher().Run(context, surface);
         }
+        // the game's window may be smaller than the launcher's
+        host.MinimumSize(1, 1);
         Save(settingsPath, result);
         saved = result.Changes.Count > 0;
         return result.Choice == LauncherChoice.Play ? result.Settings : null;

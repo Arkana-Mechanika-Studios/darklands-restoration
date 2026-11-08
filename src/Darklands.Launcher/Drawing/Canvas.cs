@@ -116,6 +116,13 @@ internal readonly record struct Rect(int X, int Y, int Width, int Height)
 
     public bool Contains(int x, int y) => x >= X && x < Right && y >= Y && y < Bottom;
 
+    /// <summary>Whether the two share a pixel.</summary>
+    public bool Intersects(Rect other) => Width > 0 && Height > 0 && other.Width > 0 && other.Height > 0
+        && X < other.Right && other.X < Right && Y < other.Bottom && other.Y < Bottom;
+
+    /// <summary>Whether <paramref name="other"/> lies wholly inside.</summary>
+    public bool Holds(Rect other) => other.X >= X && other.Y >= Y && other.Right <= Right && other.Bottom <= Bottom;
+
     public Rect Inset(int by) => new(X + by, Y + by, Math.Max(0, Width - 2 * by), Math.Max(0, Height - 2 * by));
 }
 

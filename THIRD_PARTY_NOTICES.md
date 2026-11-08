@@ -124,32 +124,30 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 Except as contained in this notice, the names of Gnome, the Gnome Foundation, and Bitstream Inc., shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Font Software without prior written authorization from the Gnome Foundation or Bitstream Inc., respectively. For further information, contact: fonts at gnome dot org.
 ```
 
-## EB Garamond (launcher)
+## EB Garamond and Grenze Gotisch (launcher)
 
-`src/Darklands.Launcher/Resources/EBGaramond12-Regular.ttf` is EB Garamond 12 by Georg Duffner, unmodified
-(https://github.com/georgd/EB-Garamond). The launcher draws its text with it. Copyright 2010-2013 Georg A. Duffner,
-2013 Siva Kalyan; licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org): the font may be
-used, embedded and redistributed with any software, and may not be sold by itself.
-
-## Pirata One, Grenze Gotisch, MedievalSharp and VT323 (launcher)
-
-The launcher's titles, headings, settings and folder fields are drawn with these fonts, unmodified, from the Google Fonts repository
-(https://github.com/google/fonts, folder `ofl/`), each licensed under the SIL Open Font License, Version 1.1
+The launcher draws its text with these fonts, unmodified, each licensed under the SIL Open Font License, Version 1.1
 (https://openfontlicense.org): they may be used, embedded and redistributed with any software, and may not be sold by
 themselves.
 
-* `src/Darklands.Launcher/Resources/PirataOne-Regular.ttf`: Pirata One. Copyright (c) 2012, Rodrigo Fuenzalida,
-  Nicolas Massi (www.taip.com.ar / abc.taip.com.ar), with Reserved Font Name 'Pirata'.
+* `src/Darklands.Launcher/Resources/EBGaramond12-Regular.ttf`: EB Garamond 12 by Georg Duffner
+  (https://github.com/georgd/EB-Garamond). Copyright 2010-2013 Georg A. Duffner, 2013 Siva Kalyan.
+* `src/Darklands.Launcher/Resources/EBGaramond-Italic.ttf`, `EBGaramond-SemiBold.ttf`: EB Garamond, the static fonts of
+  the family's upstream (https://github.com/octaviopardo/EBGaramond12, `fonts/ttf/`), which Google Fonts publishes.
+  Copyright 2017 The EB Garamond Project Authors; 2025 Deborah Khodanovich (RCS citation glyphs).
 * `src/Darklands.Launcher/Resources/GrenzeGotisch-Regular.ttf`: Grenze Gotisch (the variable font
-  `GrenzeGotisch[wght].ttf`, renamed). Copyright 2020 The Grenze Gotisch Project Authors
-  (https://github.com/Omnibus-Type/Grenze-Gotisch).
-* `src/Darklands.Launcher/Resources/MedievalSharp-Regular.ttf`: MedievalSharp (`MedievalSharp.ttf`, renamed).
-  Copyright (c) 2011, wmk69 (wmk69@o2.pl), with Reserved Font Name MedievalSharp.
-* `src/Darklands.Launcher/Resources/VT323-Regular.ttf`: VT323, for the folder fields. Copyright 2011, The VT323 Project
-  Authors (peter.hull@oikoi.com).
+  `GrenzeGotisch[wght].ttf` of https://github.com/google/fonts, folder `ofl/`, renamed), and
+  `GrenzeGotisch-SemiBold.ttf`, the static font of its upstream (https://github.com/Omnibus-Type/Grenze-Gotisch,
+  `fonts/ttf/`). Copyright 2020 The Grenze Gotisch Project Authors.
 
 The full licence text, with these copyright lines, is in `src/Darklands.Launcher/Resources/OFL.txt` and is copied next to the
 launcher in the build and publish output.
+
+## The launcher's art
+
+The launcher's pictures (`src/Darklands.Launcher/Resources/art/`: the background painting, the parchment panels, the
+plates, the ornaments and the icons) are the project's own artwork, made by the project (Arkana Mechanika Studios) with AI
+image generation. They are distributed with the project under the project's own licence (`LICENSE`).
 
 ## StbTrueTypeSharp
 

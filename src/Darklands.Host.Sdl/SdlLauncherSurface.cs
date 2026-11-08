@@ -183,6 +183,9 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
             case SdlNative.EventMouseButtonDown when e.Button.Button == SdlNative.MouseButtonLeft:
                 var (x, y) = ToPixels(e.Button.X, e.Button.Y);
                 return new PointerPressed(x, y);
+            case SdlNative.EventMouseButtonUp when e.Button.Button == SdlNative.MouseButtonLeft:
+                var (ux, uy) = ToPixels(e.Button.X, e.Button.Y);
+                return new PointerReleased(ux, uy);
             case SdlNative.EventMouseMotion:
                 var (mx, my) = ToPixels(e.Motion.X, e.Motion.Y);
                 return new PointerMoved(mx, my);

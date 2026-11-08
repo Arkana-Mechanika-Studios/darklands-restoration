@@ -5,47 +5,53 @@ namespace Darklands.Launcher;
 /// <summary>
 /// The launcher's one screen, in the look of the original game's menus: the title and the release notes and the project's
 /// note on parchment at the left, the settings on a blue panel at the right, everything framed in rope. Laid out on a
-/// 1080x600 design and scaled to the surface.
+/// 1080x640 design and scaled to the surface.
 /// </summary>
 internal sealed class LauncherScreen
 {
     public const string DiscordLink = "https://discord.gg/HjzWvmHhqZ";
 
-    private const int DesignWidth = 1080;
-    private const int DesignHeight = 600;
+    private const int DesignWidth = 1280;
+    private const int DesignHeight = 720;
 
-    // the colours of the original's menus (sampled from its screens) and of the mockup they were chosen in
+    // the look (art direction of 2026-11-08: a painted landscape, parchment cards, ink, red and gold)
     private const uint Black = 0x000000;
-    private const uint Yellow = 0xFFFF55;
-    private const uint White = 0xFFFFFF;
-    private const uint PaleBlue = 0xAAB4FF;
-    private const uint Green = 0x55FF55;
-    private const uint PaleRed = 0xFF9A9A;
-    private const uint PanelBlue = 0x0008E8;
-    private const uint FieldBlue = 0x000080;
-    private const uint FieldEdge = 0x5555FF;
-    private const uint Ink = 0x1A1010;
-    private const uint FadedInk = 0x5A4038;
-    private const uint LinkRed = 0x8C1010;
-    private const uint ParchmentLight = 0xEFDCD2;
-    private const uint ParchmentDark = 0xEAD3C8;
-    private const uint ParchmentRule = 0xC9A99A;
-    private const uint RopeLight = 0xD4935E;
-    private const uint RopeMid = 0x925D34;
-    private const uint RopeDark = 0x553C1C;
-    private const uint RopeEdge = 0x28200C;
-    private const uint CapitalLight = 0x8C1010;
-    private const uint CapitalDark = 0x5A0808;
-    private const uint CapitalLetter = 0xF4C4C4;
-    private const double GlowStrength = 0.22;
-    private const double BadgeOpacity = 0.12;
+    private const uint Ink = 0x2B1D12;
+    private const uint InkSoft = 0x5C4631;
+    private const uint InkRed = 0x8E1B12;
+    private const uint InkGreen = 0x356A26;
+    private const uint LinkRed = 0x8C1A10;
+    private const uint Cream = 0xF1E6CF;
+    private const uint Gold = 0xD2A94E;
+    private const uint ParchmentLight = 0xE2D2B0;
+    private const uint ParchmentDark = 0xC4AA80;
+    private const uint ParchmentBurn = 0x6E5132;
+    private const uint FieldFill = 0xEFE4CB;
+    private const uint DropCapRed = 0x7E1A12;
+    private const uint DropCapDark = 0x4A0E08;
+    private const uint HintFill = 0x231B14;
+
+    // the colours of messages and status lines as given (for the dark hint bar); on parchment they become ink (OnParchment)
+    private const uint PaleRed = 0xFF9E8C;
+    private const uint PaleBlue = 0xE8DCC4;
+    private const uint Green = 0xA6DB8E;
 
     private readonly LauncherModel _model;
     private readonly LauncherContext _context;
     private readonly ILauncherSurface _surface;
     private readonly IReadOnlyList<string> _notes;
     private readonly Dictionary<(TrueTypeFont Font, int TenthsOfPixels), TextFace> _faces = [];
-    private List<(Rect Area, Item Item)> _hotspots = [];
+    private List<(Rect Area, Item Item, Part Part)> _hotspots = [];
+    private List<(Rect Area, string What)> _blocks = [];
+    private Rect _panel;
+
+    /// <summary>What the pointer is over (the hint bar tells about it), or None.</summary>
+    private Item _hover;
+    private Part _hoverPart;
+
+    /// <summary>The plate the mouse button is held down on (drawn pressed; it acts when let go over it), or None.</summary>
+    private Item _pressed;
+    private Part _pressedPart;
     private Item _focus;
     private bool _editing;
     private string _editText = "";
@@ -92,10 +98,32 @@ internal sealed class LauncherScreen
         Report,
     }
 
+    /// <summary>The parts of a control a click can hit.</summary>
+    public enum Part
+    {
+        /// <summary>The control itself (a row, a field, a button, a link).</summary>
+        Row,
+
+        /// <summary>A row's ‹: the previous value.</summary>
+        Previous,
+
+        /// <summary>A row's ›: the next value.</summary>
+        Next,
+
+        /// <summary>A row's own "Browse…" (or "Change…") button: the system's folder or file dialog.</summary>
+        Browse,
+    }
+
     public Item Focus => _focus;
 
     /// <summary>Where <paramref name="item"/> was drawn last.</summary>
-    public Rect Area(Item item) => _hotspots.First(h => h.Item == item).Area;
+    public Rect Area(Item item, Part part = Part.Row) => _hotspots.First(h => h.Item == item && h.Part == part).Area;
+
+    /// <summary>The settings panel's inside, as drawn last: everything of the settings stays in it.</summary>
+    internal Rect SettingsPanel => _panel;
+
+    /// <summary>What the settings panel was drawn with last (rows, fields, buttons, lines of text), each once: none of them overlaps another.</summary>
+    internal IReadOnlyList<(Rect Area, string What)> Blocks => _blocks;
 
     public bool Editing => _editing;
 
@@ -111,6 +139,17 @@ internal sealed class LauncherScreen
         {
             case CloseRequested:
                 return LauncherChoice.Quit;
+            case PointerReleased released:
+                var (pressed, pressedPart) = (_pressed, _pressedPart);
+                _pressed = Item.None;
+                var under = _hotspots.LastOrDefault(h => h.Area.Contains(released.X, released.Y));
+                return pressed != Item.None && under.Item == pressed && under.Part == pressedPart
+                    ? Activate(pressed, 1, cycle: false)
+                    : null;
+            case PointerMoved moved:
+                var over = _hotspots.LastOrDefault(h => h.Area.Contains(moved.X, moved.Y));
+                (_hover, _hoverPart) = (over.Item, over.Part);
+                return null;
             case PathDropped dropped:
                 Dropped(dropped.Path);
                 return null;
@@ -125,7 +164,21 @@ internal sealed class LauncherScreen
                     StopEditing(apply: true);
                 }
                 _focus = hit.Item;
-                return Activate(hit.Item, step: 1, cycle: false);
+                if (IsPlate(hit.Item, hit.Part))
+                {
+                    // a plate acts when the button is let go over it (and looks pressed until then)
+                    (_pressed, _pressedPart) = (hit.Item, hit.Part);
+                    return null;
+                }
+                return hit.Part switch
+                {
+                    Part.Previous => Activate(hit.Item, -1, cycle: true),
+                    Part.Next => Activate(hit.Item, 1, cycle: true),
+                    Part.Browse => Activate(hit.Item, 1, cycle: false),
+                    // a click on a row with a dialog behind it only chooses the row (←/→ then work); its Browse… opens the dialog
+                    _ when SelectedByClick(hit.Item) => Selected(),
+                    _ => Activate(hit.Item, step: 1, cycle: false),
+                };
             case TextTyped typed when _editing:
                 _editText = (_editFresh ? "" : _editText) + typed.Text;
                 _editFresh = false;
@@ -144,6 +197,19 @@ internal sealed class LauncherScreen
             default:
                 return null;
         }
+    }
+
+    /// <summary>The plates: Browse… / Change… on their rows, Change… of the game folder, Test sound, Save and quit, Play.</summary>
+    private static bool IsPlate(Item item, Part part) => part == Part.Browse || item is Item.Change or Item.Test or Item.Save or Item.Play;
+
+    /// <summary>The rows a click only chooses: Enter or their Browse… / Change… button opens the system's dialog.</summary>
+    private static bool SelectedByClick(Item item) => item is Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Roms;
+
+    private LauncherChoice? Selected()
+    {
+        _message = null;
+        _showSound = false;
+        return null;
     }
 
     private LauncherChoice? Key(KeyPressed key)
@@ -394,12 +460,17 @@ internal sealed class LauncherScreen
 
     private static Item PackItem(PackKind kind) => kind == PackKind.Pictures ? Item.HdPack : Item.AudioPack;
 
-    /// <summary>A pack row: ←/→ go through None and the packs found; Enter or a click browses for a folder (or goes on, without a dialog).</summary>
+    /// <summary>A pack row: ←/→ (or a click on ‹ ›) go through None and the packs found; Enter or its Browse… asks the system for a folder.</summary>
     private void ChoosePack(PackKind kind, int step, bool cycle)
     {
         var what = kind == PackKind.Pictures ? "a picture (HD) pack: PNG files named after the game's pictures"
             : "a sound pack: OGG or WAV files named after the game's music and effects";
-        if (!cycle && _surface.PickFolder is not null && Pick("Choose the folder of " + what, out var chosen))
+        if (!cycle && _surface.PickFolder is null)
+        {
+            (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleBlue);
+            return;
+        }
+        if (!cycle && Pick("Choose the folder of " + what, out var chosen))
         {
             if (chosen is { } picked)
             {
@@ -430,16 +501,8 @@ internal sealed class LauncherScreen
         PackMessage(kind);
     }
 
-    /// <summary>The chosen pack's state in the message line: what it holds, or what could not be read (its manifest ...).</summary>
-    private void PackMessage(PackKind kind)
-    {
-        if (_model.PackOf(kind) is not { } folder)
-        {
-            return;
-        }
-        var status = _model.Pack(folder);
-        (_message, _messageColour) = status.Problem is { } problem ? (problem, PaleRed) : (PackSummary(kind, status), Green);
-    }
+    /// <summary>A pack chosen: its state shows on the line under its row (and in full in the details box), not as a message.</summary>
+    private void PackMessage(PackKind kind) => _message = null;
 
     private string PackSummary(PackKind kind, PackStatus status) => kind == PackKind.Pictures
         ? $"{status.Pictures} picture{(status.Pictures == 1 ? "" : "s")}."
@@ -493,10 +556,8 @@ internal sealed class LauncherScreen
         SoundFontMessage();
     }
 
-    private void SoundFontMessage() =>
-        (_message, _messageColour) = _model.SoundFontFound is { } found
-            ? ($"SoundFont: {Path.GetFileName(found)}.", Green)
-            : ("No SoundFont found: a pack's .mid music is skipped and the game's own music plays.", PaleRed);
+    /// <summary>A SoundFont chosen: its state shows on the line under its row, not as a message.</summary>
+    private void SoundFontMessage() => _message = null;
 
     /// <summary>The SoundFont row's value: the file's name; "(default)" when it comes from the SOUNDFONT folder; "none found".</summary>
     private string SoundFontShown()
@@ -601,108 +662,208 @@ internal sealed class LauncherScreen
 
     // ---- drawing ----
 
+    /// <summary>The left card and the settings panel, in design pixels (1280 x 720, the painting's shape).</summary>
+    private static Rect CardFrame(View v) => v.Rect(136, 196, 414, 508);
+
+    private static Rect SettingsFrame(View v) => v.Rect(768, 14, 494, 692);
+
+    /// <summary>
+    /// Where the painting's focus (the castle on its hill: 30.5% across, 34% down the picture) sits in the design: in the gap
+    /// between the card and the settings, as in the art direction's mock-up; the painting is enlarged around it to cover the window.
+    /// </summary>
+    private const double FocusX = 0.305;
+    private const double FocusY = 0.34;
+    private const double FocusAtX = 620;
+    private const double FocusAtY = 318;
+    private const double PaintingScale = 1.12;
+
     /// <summary>Draws the screen on <paramref name="canvas"/> and notes where the controls are.</summary>
     public void Render(Canvas canvas)
     {
         var s = Math.Min((double)canvas.Width / DesignWidth, (double)canvas.Height / DesignHeight);
         var v = new View(s, (int)((canvas.Width - DesignWidth * s) / 2), (int)((canvas.Height - DesignHeight * s) / 2));
-        // what never changes (the frames, the panels, the badges, the parchment's text) is drawn once for each size
+        // what never changes (the painting, the title, the parchments, the card's text) is drawn once for each size
         if (_background is null || _background.Width != canvas.Width || _background.Height != canvas.Height)
         {
             _background = new Canvas(canvas.Width, canvas.Height);
             DrawBackground(_background, v);
         }
         _background.Pixels.CopyTo(canvas.Pixels, 0);
-        _hotspots = [(_discord, Item.Discord)];
+        _hotspots = [(_discord, Item.Discord, Part.Row)];
+        _blocks = [];
         if (_notesLink is { } notes)
         {
-            _hotspots.Add((notes, Item.Notes));
+            _hotspots.Add((notes, Item.Notes, Part.Row));
         }
         if (_guideLink is { } guide)
         {
-            _hotspots.Add((guide, Item.PackGuide));
+            _hotspots.Add((guide, Item.PackGuide, Part.Row));
         }
         if (_reportLink is { } reportLink)
         {
-            _hotspots.Add((reportLink, Item.Report));
+            _hotspots.Add((reportLink, Item.Report, Part.Row));
         }
         if ((_focus == Item.Discord ? _discord : _focus == Item.Notes ? _notesLink : _focus == Item.PackGuide ? _guideLink : _focus == Item.Report ? _reportLink : null) is { } link)
         {
-            canvas.Fill(new Rect(link.X, link.Bottom - Math.Max(1, v.Len(1)), link.Width, Math.Max(1, v.Len(1))), Ink);
+            // the focused link: a band behind it
+            Shade(canvas, new Rect(link.X - v.Len(3), link.Y - v.Len(1), link.Width + v.Len(6), link.Height + v.Len(2)), Ink, 34);
         }
         DrawSettings(canvas, v);
     }
 
     private void DrawBackground(Canvas canvas, View v)
     {
-        canvas.Clear(Black);
-
-        // the title, on blue
-        var top = v.Rect(14, 14, 586, 86);
-        Rope(canvas, top, v);
-        var topInner = top.Inset(v.Len(7));
-        Blue(canvas, topInner);
-        var badge = v.Len(52);
-        canvas.Image(Assets.Badge, new Rect(topInner.X + v.Len(16), topInner.Y + (topInner.Height - badge) / 2, badge, badge));
-        var title = Face(Assets.Title, 30, v);
-        var small = Face(Assets.Panel, 16, v);
-        var titleY = topInner.Y + (topInner.Height - title.LineHeight - small.LineHeight) / 2;
-        title.Draw(canvas, "Darklands Restoration Project", topInner.X + v.Len(82), titleY, Yellow, v.Len(2), Black);
-        small.Draw(canvas, "Version " + _context.Version, topInner.X + v.Len(82), titleY + title.LineHeight, White, Math.Max(1, v.Len(1)), Black);
-
-        DrawParchment(canvas, v);
-
-        var settings = v.Rect(610, 14, 456, 572);
-        Rope(canvas, settings, v);
-        Blue(canvas, settings.Inset(v.Len(7)));
+        canvas.Clear(0x1C1712);
+        DrawPainting(canvas, v);
+        DrawTitle(canvas, v);
+        var card = CardFrame(v);
+        CardShadow(canvas, card, v);
+        Parchment(canvas, card, v, "card-left", 11);
+        DrawCard(canvas, v, card);
+        var settings = SettingsFrame(v);
+        CardShadow(canvas, settings, v);
+        Parchment(canvas, settings, v, "card-settings", 23);
+        Corners(canvas, settings, v);
     }
 
-    private void DrawParchment(Canvas canvas, View v)
+    /// <summary>The painting (or a dusk gradient without it), enlarged around its focus to cover the window, darkened at the edges.</summary>
+    private static void DrawPainting(Canvas canvas, View v)
     {
-        var frame = v.Rect(14, 108, 586, 478);
-        Rope(canvas, frame, v);
-        var inner = frame.Inset(v.Len(7));
-        var cell = Math.Max(1, v.Len(2));
-        canvas.Paint(inner, (x, y) => ((x / cell + y / cell) & 1) == 0 ? ParchmentLight : ParchmentDark);
-        canvas.Image(Assets.Badge, new Rect(inner.X + v.Len(76), inner.Y + v.Len(20), v.Len(420), v.Len(420)), BadgeOpacity);
+        var painting = Assets.Art("background");
+        if (painting is null)
+        {
+            canvas.Paint(new Rect(0, 0, canvas.Width, canvas.Height), (x, y) =>
+                Colours.Mix(0x6E6258, 0x1E1A15, (int)(255 * Math.Clamp((double)y / canvas.Height * 1.3, 0, 1))));
+        }
+        else
+        {
+            // the focus's place on the canvas, and the scale that keeps it there and still covers every edge
+            var cx = v.OffsetX + FocusAtX * v.Scale;
+            var cy = v.OffsetY + FocusAtY * v.Scale;
+            double fx = FocusX * painting.Width, fy = FocusY * painting.Height;
+            var scale = Math.Max(PaintingScale * DesignWidth / painting.Width * v.Scale,
+                Math.Max(Math.Max(cx / fx, (canvas.Width - cx) / (painting.Width - fx)), Math.Max(cy / fy, (canvas.Height - cy) / (painting.Height - fy))));
+            var left = fx - cx / scale;
+            var top = fy - cy / scale;
+            var part = ImageOps.Resized(painting, left, top, canvas.Width / scale, canvas.Height / scale, canvas.Width, canvas.Height);
+            canvas.Image(part, new Rect(0, 0, canvas.Width, canvas.Height));
+            if (scale > 1.05)
+            {
+                // enlarged: sharpened a little, so the brushwork still reads (a larger painting is the real cure)
+                Sharpen(canvas, Math.Min(0.8, (scale - 1) * 1.6));
+            }
+        }
+        // a little darker overall, more at the edges and behind the title, for the text on it
+        double w = canvas.Width, h = canvas.Height;
+        var titleX = v.OffsetX + 350 * v.Scale;
+        var titleY = v.OffsetY + 110 * v.Scale;
+        var titleR = 330 * v.Scale;
+        for (var y = 0; y < canvas.Height; y++)
+        {
+            for (var x = 0; x < canvas.Width; x++)
+            {
+                double dx = (x - w / 2) / (w / 2), dy = (y - h / 2) / (h / 2);
+                var edge = Math.Clamp((dx * dx + dy * dy - 0.35) / 1.4, 0, 1);
+                double tx = (x - titleX) / titleR, ty = (y - titleY) / (titleR * 0.45);
+                var title = Math.Clamp(1 - (tx * tx + ty * ty), 0, 1);
+                canvas.Blend(x, y, Black, (int)(55 * edge + 40 * title));
+            }
+        }
+    }
 
-        var x = inner.X + v.Len(20);
-        var width = inner.Width - v.Len(40);
-        var y = inner.Y + v.Len(16);
-        var text = Face(Assets.Text, 17, v);
-        var caption = Face(Assets.Text, 13, v);
-        var line = (int)Math.Round(text.LineHeight * 1.12);
+    /// <summary>An unsharp mask over the whole canvas: each channel pushed away from its 3 x 3 average by <paramref name="amount"/>.</summary>
+    private static void Sharpen(Canvas canvas, double amount)
+    {
+        var source = (uint[])canvas.Pixels.Clone();
+        int w = canvas.Width, h = canvas.Height;
+        for (var y = 1; y < h - 1; y++)
+        {
+            for (var x = 1; x < w - 1; x++)
+            {
+                int r = 0, g = 0, b = 0;
+                for (var dy = -1; dy <= 1; dy++)
+                {
+                    for (var dx = -1; dx <= 1; dx++)
+                    {
+                        var q = source[(y + dy) * w + x + dx];
+                        r += (int)(q >> 16 & 255);
+                        g += (int)(q >> 8 & 255);
+                        b += (int)(q & 255);
+                    }
+                }
+                var c = source[y * w + x];
+                int Push(int value, int sum) => Math.Clamp((int)Math.Round(value + amount * (value - sum / 9.0)), 0, 255);
+                canvas.Pixels[y * w + x] = 0xFF000000u | (uint)Push((int)(c >> 16 & 255), r) << 16 | (uint)Push((int)(c >> 8 & 255), g) << 8 | (uint)Push((int)(c & 255), b);
+            }
+        }
+    }
 
-        y = Capitalised(canvas, v, x, y, "What’s new in " + _context.Version, _notes.Count > 0 ? "From the release notes" : "The release notes are not included with this copy");
+    /// <summary>"Darklands" and "Restoration Project" over the painting, with a fleuron rule under them.</summary>
+    private void DrawTitle(Canvas canvas, View v)
+    {
+        var big = Face(Assets.Display, 84, v);
+        var sub = Face(Assets.Strong, 36, v);
+        var centre = v.OffsetX + v.Len(343);
+        var y = v.OffsetY + v.Len(22);
+        var shadow = Math.Max(1, v.Len(2));
+        big.Draw(canvas, "Darklands", centre - big.Measure("Darklands") / 2, y, Cream, shadow, Black);
+        y += (int)(big.LineHeight * 0.86);
+        var spacing = v.Len(1.5);
+        Spaced(canvas, sub, "Restoration Project", centre - SpacedWidth(sub, "Restoration Project", spacing) / 2, y, Cream, spacing, shadow);
+        y += sub.LineHeight + v.Len(6);
+        Fleuron(canvas, v, centre, y, v.Len(190), Cream, onDark: true);
+    }
+
+    /// <summary>The left card: what is new, about the project with its links, and the copyright note at the bottom.</summary>
+    private void DrawCard(Canvas canvas, View v, Rect card)
+    {
+        var x = card.X + v.Len(28);
+        var right = card.Right - v.Len(26);
+        var width = right - x;
+        var y = card.Y + v.Len(26);
+        var text = Face(Assets.Text, 15, v);
+        var small = Face(Assets.Text, 11.5, v);
+        var line = (int)Math.Round(text.LineHeight * 1.05);
+        var bottomNote = small.Wrap("Darklands © 1992 MicroProse Software, Inc. Darklands and MicroProse are the property of their "
+            + "respective owners. This is an unofficial fan project, not affiliated with or endorsed by them.", width);
+        var noteTop = card.Bottom - v.Len(22) - bottomNote.Count * small.LineHeight;
+
+        y = Capitalised(canvas, v, x, y, "What’s new in " + _context.Version, _notes.Count > 0 ? "From the release notes." : "The release notes are not included with this copy.");
         y += v.Len(8);
         if (_notes.Count == 0)
         {
-            text.Draw(canvas, "The release notes of this version are on the project's page.", x, y, Ink);
-            y += line + v.Len(3);
-        }
-        foreach (var item in _notes.Take(4))
-        {
-            var lines = text.Wrap(item, width - v.Len(20)).Take(2).ToList();
-            text.Draw(canvas, "•", x + v.Len(6), y, Ink);
-            foreach (var l in lines)
+            foreach (var l in text.Wrap("The release notes of this version are on the project's page.", width))
             {
-                text.Draw(canvas, l, x + v.Len(20), y, Ink);
+                text.Draw(canvas, l, x, y, Ink);
                 y += line;
             }
-            y += v.Len(3);
         }
-
+        // the notes' first items, as many as leave room for the rest of the card
+        var reserved = v.Len(250);
+        foreach (var item in _notes.Take(4))
+        {
+            var lines = text.Wrap(item, width - v.Len(16)).Take(2).ToList();
+            if (y + lines.Count * line > noteTop - reserved)
+            {
+                break;
+            }
+            text.Draw(canvas, "•", x + v.Len(2), y, InkSoft);
+            foreach (var l in lines)
+            {
+                text.Draw(canvas, l, x + v.Len(16), y, Ink);
+                y += line;
+            }
+            y += v.Len(2);
+        }
         if (_context.ReleaseNotesLink is not null)
         {
-            var label = _notes.Count == 0 ? "Read the release notes" : "All the release notes";
-            text.Draw(canvas, label, x, y, LinkRed);
-            var under = y + text.Ascent + Math.Max(1, v.Len(2));
-            canvas.Fill(new Rect(x, under, text.Measure(label), Math.Max(1, v.Len(1))), LinkRed);
-            _notesLink = new Rect(x, y, text.Measure(label), under + Math.Max(1, v.Len(1)) - y);
+            _notesLink = LinkLine(canvas, v, text, x, y, width, "", "", _notes.Count == 0 ? "Read the release notes" : "All the release notes");
             y += line;
         }
-        y += v.Len(14);
-        y = Capitalised(canvas, v, x, y, "About this project", "A free, open-source fan restoration");
+        y += v.Len(4);
+        Fleuron(canvas, v, (x + right) / 2, y + v.Len(8), width / 2 - v.Len(10), InkSoft, onDark: false);
+        y += v.Len(20);
+        y = Capitalised(canvas, v, x, y, "About this project", "A free, open-source fan restoration.");
         y += v.Len(8);
         foreach (var l in text.Wrap("MicroProse’s 1992 Darklands, rebuilt from the original program to run on today’s computers. "
                      + "You need your own copy of the game: nothing from it is included, the program reads your installation.", width))
@@ -710,190 +871,779 @@ internal sealed class LauncherScreen
             text.Draw(canvas, l, x, y, Ink);
             y += line;
         }
-        y += v.Len(8);
-        var after = text.Draw(canvas, "Questions, bugs, ideas: ", x, y, Ink);
-        var link = "join us on Discord";
-        text.Draw(canvas, link, after, y, LinkRed);
-        var underline = y + text.Ascent + Math.Max(1, v.Len(2));
-        canvas.Fill(new Rect(after, underline, text.Measure(link), Math.Max(1, v.Len(1))), LinkRed);
-        _discord = new Rect(after, y, text.Measure(link), underline + Math.Max(1, v.Len(1)) - y);
+        y += v.Len(6);
+        _discord = LinkLine(canvas, v, text, x, y, width, "Questions, bugs, ideas: ", "Questions: ", "join us on Discord");
         if (_context.PackGuide is not null)
         {
             y += line;
-            var guideAfter = text.Draw(canvas, "Your own pictures, music and sounds: ", x, y, Ink);
-            var guide = "how to make a pack";
-            text.Draw(canvas, guide, guideAfter, y, LinkRed);
-            var guideUnder = y + text.Ascent + Math.Max(1, v.Len(2));
-            canvas.Fill(new Rect(guideAfter, guideUnder, text.Measure(guide), Math.Max(1, v.Len(1))), LinkRed);
-            _guideLink = new Rect(guideAfter, y, text.Measure(guide), guideUnder + Math.Max(1, v.Len(1)) - y);
+            _guideLink = LinkLine(canvas, v, text, x, y, width, "Your own pictures, music and sounds: ", "Your own art: ", "how to make a pack");
         }
         if (_context.ReportProblem is not null)
         {
             y += line;
-            var reportAfter = text.Draw(canvas, "Something broken? ", x, y, Ink);
-            var reportLabel = "make a problem report";
-            text.Draw(canvas, reportLabel, reportAfter, y, LinkRed);
-            var reportUnder = y + text.Ascent + Math.Max(1, v.Len(2));
-            canvas.Fill(new Rect(reportAfter, reportUnder, text.Measure(reportLabel), Math.Max(1, v.Len(1))), LinkRed);
-            _reportLink = new Rect(reportAfter, y, text.Measure(reportLabel), reportUnder + Math.Max(1, v.Len(1)) - y);
+            _reportLink = LinkLine(canvas, v, text, x, y, width, "Something broken? ", "", "make a problem report");
         }
 
-        var disclaimer = caption.Wrap("Darklands © 1992 MicroProse Software, Inc. Darklands and MicroProse are the property of their "
-            + "respective owners. This is an unofficial fan project, not affiliated with or endorsed by them.", width);
-        var dy = inner.Bottom - v.Len(16) - disclaimer.Count * caption.LineHeight;
-        canvas.Fill(new Rect(x, dy - v.Len(6), width, Math.Max(1, v.Len(1))), ParchmentRule);
-        foreach (var l in disclaimer)
+        Fleuron(canvas, v, (x + right) / 2, noteTop - v.Len(12), width / 2 - v.Len(10), InkSoft, onDark: false);
+        foreach (var l in bottomNote)
         {
-            caption.Draw(canvas, l, x, dy, FadedInk);
-            dy += caption.LineHeight;
+            small.Draw(canvas, l, x, noteTop, InkSoft);
+            noteTop += small.LineHeight;
         }
     }
 
-    /// <summary>A heading with its first letter in a red illuminated square, and a caption under it; returns the y below.</summary>
+    /// <summary>A line with a link: the link icon, a lead-in (the shorter one when the line would not fit) and the underlined link; returns the link's area.</summary>
+    private Rect LinkLine(Canvas canvas, View v, TextFace text, int x, int y, int width, string lead, string shortLead, string link)
+    {
+        var icon = Assets.Art("icon-link") is null ? v.Len(11) : v.Len(16);
+        if (icon + v.Len(9) + text.Measure(lead) + text.Measure(link) > width)
+        {
+            lead = shortLead;
+        }
+        var iy = y + (text.LineHeight - icon) / 2;
+        Icon(canvas, v, "icon-link", new Rect(x, iy, icon, icon), LinkRed);
+        var after = text.Draw(canvas, lead, x + icon + v.Len(9), y, Ink);
+        text.Draw(canvas, link, after, y, LinkRed);
+        var under = y + text.Ascent + Math.Max(1, v.Len(2));
+        canvas.Fill(new Rect(after, under, text.Measure(link), Math.Max(1, v.Len(1))), LinkRed);
+        return new Rect(after, y, text.Measure(link), under + Math.Max(1, v.Len(1)) - y);
+    }
+
+    /// <summary>A heading with its first letter in a red illuminated square, and an italic caption under it; returns the y below.</summary>
     private int Capitalised(Canvas canvas, View v, int x, int y, string heading, string caption)
     {
-        var box = new Rect(x, y, v.Len(38), v.Len(38));
-        var cell = Math.Max(1, v.Len(3));
-        canvas.Paint(box, (px, py) => ((px / cell + py / cell) & 1) == 0 ? CapitalLight : CapitalDark);
-        canvas.Frame(box, Math.Max(1, v.Len(2)), Black);
-        var capital = Face(Assets.Title, 34, v);
+        var box = new Rect(x, y, v.Len(46), v.Len(46));
+        if (Assets.Art("dropcap") is { } frame)
+        {
+            ImageOps.Draw(canvas, frame, box);
+        }
+        else
+        {
+            canvas.Fill(box, DropCapRed);
+            canvas.Frame(box, Math.Max(1, v.Len(2)), DropCapDark);
+            canvas.Frame(box.Inset(Math.Max(2, v.Len(4))), Math.Max(1, v.Len(1)), Gold);
+        }
+        var capital = Face(Assets.Strong, 38, v);
         var letter = heading.AsSpan(0, 1);
-        capital.Draw(canvas, letter, box.X + (box.Width - capital.Measure(letter)) / 2, box.Y + (box.Height - capital.LineHeight) / 2, CapitalLetter);
-        var face = Face(Assets.Heading, 27, v);
-        var under = Face(Assets.Text, 13, v);
-        face.Draw(canvas, heading.AsSpan(1), box.Right + v.Len(10), y - v.Len(2), Ink);
-        under.Draw(canvas, caption, box.Right + v.Len(10), y + face.LineHeight - v.Len(4), FadedInk);
-        return Math.Max(box.Bottom, y + face.LineHeight - v.Len(4) + under.LineHeight);
+        StrongText(canvas, v, capital, letter, box.X + (box.Width - capital.Measure(letter)) / 2, box.Y + (box.Height - capital.LineHeight) / 2 + v.Len(1), Cream);
+        var face = Face(Assets.Strong, 25, v);
+        var under = Face(Assets.Italic, 14, v);
+        StrongText(canvas, v, face, heading.AsSpan(1), box.Right + v.Len(10), y - v.Len(1), Ink);
+        under.Draw(canvas, caption, box.Right + v.Len(10), y + face.LineHeight - v.Len(3), InkSoft);
+        return Math.Max(box.Bottom, y + face.LineHeight - v.Len(3) + under.LineHeight);
     }
 
+    /// <summary>
+    /// The settings panel: the title, four groups with their icons (Game installation, Display, Sound &amp; Music, Start-up), rows
+    /// with their values centred between ‹ › in one column and their Browse… / Change… plates in another, a status or problem
+    /// line under each folder and pack, then the hint bar and the two buttons. Every text is cut or wrapped to its place.
+    /// </summary>
     private void DrawSettings(Canvas canvas, View v)
     {
-        var inner = v.Rect(610, 14, 456, 572).Inset(v.Len(7));
+        var frame = SettingsFrame(v);
+        _panel = frame.Inset(v.Len(12));
+        var x0 = frame.X + v.Len(30);
+        var x1 = frame.Right - v.Len(30);
+        var layout = new RowLayout(
+            x0 + v.Len(30),
+            x1 - v.Len(78),
+            x0 + v.Len(136),
+            x1 - v.Len(88),
+            x1 - v.Len(88) - v.Len(96),
+            x1);
+        var title = Face(Assets.Display, 46, v);
+        var heading = Face(Assets.Strong, 20.5, v);
+        var text = Face(Assets.Text, 16, v);
+        var line = Face(Assets.Italic, 13, v);
+        var small = Face(Assets.Text, 13, v);
 
-        var x = inner.X + v.Len(18);
-        var right = inner.Right - v.Len(18);
-        var width = right - x;
-        var y = inner.Y + v.Len(12);
-        var title = Face(Assets.Title, 30, v);
-        var heading = Face(Assets.Heading, 22, v);
-        var text = Face(Assets.Panel, 16, v);
-        var caption = Face(Assets.Panel, 13, v);
-        var shadow = Math.Max(1, v.Len(1));
+        var y = frame.Y + v.Len(16);
+        // with the panel's art, "Settings" stands on its dark header band
+        var band = SettingsBand(v);
+        if (band > 0)
+        {
+            y = frame.Y + (band - title.LineHeight) / 2 + v.Len(2);
+        }
+        title.Draw(canvas, "Settings", x0, y, band > 0 ? Cream : Ink, band > 0 ? Math.Max(1, v.Len(1.5)) : 0, Black);
+        // the letters' own height: the display face's line box has much room above and below them
+        Leaf(new Rect(x0, y + title.LineHeight / 5, title.Measure("Settings"), title.LineHeight * 3 / 5), "title");
+        var ruleLeft = x0 + title.Measure("Settings") + v.Len(16);
+        Fleuron(canvas, v, (ruleLeft + x1) / 2, y + title.LineHeight / 2, (x1 - ruleLeft) / 2, band > 0 ? Gold : InkSoft, onDark: band > 0);
+        y = Math.Max(y + title.LineHeight - v.Len(2), frame.Y + band + v.Len(2));
 
-        title.Draw(canvas, "Settings", x, y, Yellow, v.Len(2), Black);
-        y += title.LineHeight;
-        // the sound test's status, while it is the last thing asked for (it goes when the music ends)
-        var (note, noteColour) = _showSound && _context.SoundTest is { Status: { } soundStatus } soundTester ? (soundStatus, soundTester.Playing ? Green : PaleRed)
-            : _message is not null ? (_message, _messageColour) : _context.Reason switch
+        int Section(string name, string icon, int top)
         {
-            LauncherReason.StartFailed => (_context.Problem ?? "The game could not start.", PaleRed),
-            LauncherReason.GameNotFound when !_model.CanPlay => ("Darklands was not found: choose its folder to play.", PaleRed),
-            LauncherReason.FirstRun => ("Welcome! Check the settings, then press Play.", PaleBlue),
-            _ => ("Changes are written to settings.json", PaleBlue),
-        };
-        foreach (var l in caption.Wrap(note, width).Take(3))
-        {
-            caption.Draw(canvas, l, x, y, noteColour, shadow, Black);
-            y += caption.LineHeight;
+            top += v.Len(6);
+            var size = v.Len(22);
+            var iconArea = new Rect(x0, top + (heading.LineHeight - size) / 2, size, size);
+            Icon(canvas, v, icon, iconArea, InkSoft);
+            StrongText(canvas, v, heading, name, x0 + v.Len(30), top, Ink);
+            Leaf(new Rect(x0, top, v.Len(30) + heading.Measure(name) + (Assets.HasStrong ? 0 : v.Len(1)), heading.LineHeight - v.Len(3)), "heading " + name);
+            return top + heading.LineHeight - v.Len(3);
         }
 
-        // the game folder
-        y += v.Len(4);
-        heading.Draw(canvas, "Game", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight;
-        var change = "Change…";
-        var buttonWidth = text.Measure(change) + v.Len(20);
-        var field = new Rect(x, y, width - buttonWidth - v.Len(8), v.Len(28));
-        canvas.Fill(field, FieldBlue);
-        canvas.Frame(field, Math.Max(1, v.Len(1)), _focus == Item.GameFolder ? Yellow : FieldEdge);
-        var shown = _editing ? _editText + "_" : _model.GameFolder ?? "";
-        var (pathFont, pathSize, pathStep) = Assets.Path;
-        var path = FaceAt(pathFont, Math.Max(pathStep, Math.Round(pathSize * v.Scale / pathStep) * pathStep));
-        path.Draw(canvas, Fit(path, shown, field.Width - v.Len(16), fromEnd: true), field.X + v.Len(8), field.Y + (field.Height - path.LineHeight) / 2, White);
-        _hotspots.Add((field, Item.GameFolder));
-        ParchmentButton(canvas, v, new Rect(field.Right + v.Len(8), y, buttonWidth, field.Height), change, text, Item.Change);
-        y += field.Height + v.Len(4);
+        int Status(int top, string text, uint colour, int right, bool problem)
+        {
+            var size = v.Len(12);
+            var iconArea = new Rect(layout.Label, top + (line.LineHeight - size) / 2, size, size);
+            var ink = OnParchment(colour);
+            if (problem)
+            {
+                Icon(canvas, v, "icon-problem", iconArea, InkRed);
+            }
+            else if (colour == Green)
+            {
+                Icon(canvas, v, "icon-found", iconArea, InkGreen);
+            }
+            var tx = layout.Label + size + v.Len(6);
+            var fitted = Fit(line, text, right - tx, fromEnd: false);
+            line.Draw(canvas, fitted, tx, top, ink);
+            Leaf(new Rect(layout.Label, top, tx + line.Measure(fitted) - layout.Label, line.LineHeight), "status " + text);
+            return top + line.LineHeight;
+        }
+
+        // the game installation: its field, Change… and whether the game is there
+        y = Section("Game installation", "icon-game", y);
+        var fieldHeight = v.Len(26);
+        var field = new Rect(layout.Label, y + v.Len(2), layout.Plate - v.Len(10) - layout.Label, fieldHeight);
+        Field(canvas, v, field, _editing ? _editText + "_" : _model.GameFolder ?? "", _focus == Item.GameFolder, IsFixed(Item.GameFolder, out _), text);
+        Hot(field, Item.GameFolder, Part.Row);
+        Leaf(field, "game folder");
+        Plate(canvas, v, new Rect(layout.Plate, field.Y + (field.Height - SmallPlateHeight(v)) / 2, layout.Right - layout.Plate, SmallPlateHeight(v)), "Change…", small, Item.Change, Part.Row);
+        y = field.Bottom + v.Len(2);
         var (status, statusColour) = _model.GameFolderChecked is not null
             ? ("Found" + (_model.GameFolderSource is { } source ? $" ({source})." : "."), Green)
             : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleBlue) : ("No Darklands there (DARKLAND.EXE).", PaleRed);
-        caption.Draw(canvas, Fit(caption, status, width, fromEnd: false), x, y, statusColour, shadow, Black);
-        y += caption.LineHeight;
+        y = Status(y, status, statusColour, layout.Right, statusColour == PaleRed);
 
         // display
-        y += v.Len(2);
-        heading.Draw(canvas, "Display", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight - v.Len(3);
-        y = Row(canvas, v, text, x, right, y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
-        y = Row(canvas, v, text, x, right, y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
-        y = Row(canvas, v, text, x, right, y, "HD pack", Fit(text, PackShown(PackKind.Pictures), width / 2, fromEnd: false), Item.HdPack);
+        y = Section("Display", "icon-display", y);
+        y = Row(canvas, v, text, small, layout, y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
+        y = Row(canvas, v, text, small, layout, y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
+        y = Row(canvas, v, text, small, layout, y, "HD pack", PackShown(PackKind.Pictures), Item.HdPack, browse: true);
+        var (hdLine, hdColour) = PackLine(PackKind.Pictures);
+        y = Status(y, hdLine, hdColour, layout.Right, hdColour == PaleRed);
 
-        // sound and music
-        y += v.Len(2);
-        heading.Draw(canvas, "Sound & Music", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight - v.Len(3);
-        y = Row(canvas, v, text, x, right, y, "Sound card", _model.SoundCardLabel, Item.Sound);
-        // the Roland ROM folder, as the game folder: its field, Change… and what it holds
-        var romsLabel = "Roland ROMs";
-        var labelWidth = text.Measure(romsLabel) + v.Len(10);
-        var romsButtonWidth = text.Measure(change) + v.Len(20);
-        var romsField = new Rect(x + labelWidth, y + v.Len(2), width - labelWidth - romsButtonWidth - v.Len(8), v.Len(26));
-        text.Draw(canvas, romsLabel, x, romsField.Y + (romsField.Height - text.LineHeight) / 2, White, shadow, Black);
-        var roms = _model.Roms;
-        var romsFixed = IsFixed(Item.Roms, out _);
-        canvas.Fill(romsField, FieldBlue);
-        canvas.Frame(romsField, Math.Max(1, v.Len(1)), _focus == Item.Roms ? Yellow : FieldEdge);
-        path.Draw(canvas, Fit(path, roms.Folder, romsField.Width - v.Len(16), fromEnd: true), romsField.X + v.Len(8),
-            romsField.Y + (romsField.Height - path.LineHeight) / 2, romsFixed ? PaleBlue : White);
-        _hotspots.Add((romsField, Item.Roms));
-        ParchmentButton(canvas, v, new Rect(romsField.Right + v.Len(8), romsField.Y, romsButtonWidth, romsField.Height), change, text, Item.Roms);
-        y = romsField.Bottom + v.Len(4);
-        var (romsStatus, romsColour) = RomsStatus(roms);
-        var statusRight = right;
+        // sound and music: the card, then the Roland ROM folder as a row of its own
+        y = Section("Sound & Music", "icon-sound", y);
+        y = Row(canvas, v, text, small, layout, y, "Sound card", _model.SoundCardLabel, Item.Sound);
+        var romsRow = new Rect(layout.Label - v.Len(8), y, layout.Right - layout.Label + v.Len(12), Math.Max(v.Len(28), text.LineHeight));
+        if (_focus == Item.Roms)
+        {
+            Shade(canvas, romsRow, Ink, 26);
+        }
+        var romsLabelY = romsRow.Y + (romsRow.Height - text.LineHeight) / 2;
+        var romsLabel = Fit(text, "Roland ROMs", layout.Select - layout.Label - v.Len(8), fromEnd: false);
+        text.Draw(canvas, romsLabel, layout.Label, romsLabelY, Ink);
+        Leaf(new Rect(layout.Label, romsLabelY, text.Measure(romsLabel), text.LineHeight), "label Roland ROMs");
+        var romsField = new Rect(layout.Select, romsRow.Y + v.Len(2), layout.SelectEnd - layout.Select, romsRow.Height - v.Len(4));
+        Field(canvas, v, romsField, _model.Roms.Folder, _focus == Item.Roms, IsFixed(Item.Roms, out _), small);
+        Hot(romsField, Item.Roms, Part.Row);
+        Leaf(romsField, "roms field");
+        Plate(canvas, v, new Rect(layout.Plate, romsRow.Y + (romsRow.Height - SmallPlateHeight(v)) / 2, layout.Right - layout.Plate, SmallPlateHeight(v)), "Change…", small, Item.Roms, Part.Browse);
+        y = romsRow.Bottom;
+        var (romsStatus, romsColour) = RomsStatus(_model.Roms);
+        var statusRight = layout.Right;
         if (_context.SoundTest is { } soundTest)
         {
-            var test = soundTest.Playing ? "Stop" : "Test sound";
-            var testWidth = Math.Max(caption.Measure("Test sound"), caption.Measure("Stop")) + v.Len(14);
-            ParchmentButton(canvas, v, new Rect(right - testWidth, y - v.Len(1), testWidth, caption.LineHeight + v.Len(2)), test, caption, Item.Test);
-            statusRight = right - testWidth - v.Len(8);
+            var testHeight = Math.Min(line.LineHeight, SmallPlateHeight(v));
+            Plate(canvas, v, new Rect(layout.Plate, y + (line.LineHeight - testHeight) / 2, layout.Right - layout.Plate, testHeight), soundTest.Playing ? "Stop" : "Test sound", Face(Assets.Text, 12, v), Item.Test, Part.Row);
+            statusRight = layout.Plate - v.Len(8);
         }
-        caption.Draw(canvas, Fit(caption, romsStatus, statusRight - x, fromEnd: false), x, y, romsColour, shadow, Black);
-        y += caption.LineHeight;
-        y = Row(canvas, v, text, x, right, y, "Audio pack", Fit(text, PackShown(PackKind.Sounds), width / 2, fromEnd: false), Item.AudioPack);
-        y = Row(canvas, v, text, x, right, y, "SoundFont", Fit(text, SoundFontShown(), width / 2, fromEnd: false), Item.SoundFont);
+        y = Status(y, romsStatus, romsColour, statusRight, romsColour == PaleRed);
+        y = Row(canvas, v, text, small, layout, y, "Audio pack", PackShown(PackKind.Sounds), Item.AudioPack, browse: true);
+        var (audioLine, audioColour) = PackLine(PackKind.Sounds);
+        y = Status(y, audioLine, audioColour, layout.Right, audioColour == PaleRed);
+        y = Row(canvas, v, text, small, layout, y, "SoundFont", SoundFontShown(), Item.SoundFont, browse: true);
+        var (fontLine, fontColour) = SoundFontLine();
+        y = Status(y, fontLine, fontColour, layout.Right, fontColour == PaleRed);
 
-        // start-up
-        y += v.Len(2);
-        heading.Draw(canvas, "Start-up", x, y, Yellow, shadow, Black);
-        y += heading.LineHeight - v.Len(3);
-        y = Row(canvas, v, text, x, right, y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner);
-        y = Row(canvas, v, text, x, right, y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro);
-        y = Row(canvas, v, text, x, right, y, "Show launcher at every start", _model.Always ? "Yes" : "No", Item.Always);
+        // start-up: Yes / No, in a narrower column at the right
+        y = Section("Start-up", "icon-startup", y);
+        var narrow = layout with { Select = layout.SelectNarrow };
+        y = Row(canvas, v, text, small, narrow, y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner);
+        y = Row(canvas, v, text, small, narrow, y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro);
+        y = Row(canvas, v, text, small, narrow, y, "Show launcher at every start", _model.Always ? "Yes" : "No", Item.Always);
 
-        // the buttons, and over them the focused control's explanation
-        var buttons = inner.Bottom - v.Len(14) - v.Len(40);
-        var play = "Play";
-        var playFace = Face(Assets.Title, 28, v);
-        var playRect = new Rect(right - playFace.Measure(play) - v.Len(56), buttons, playFace.Measure(play) + v.Len(56), v.Len(40));
-        var cell = Math.Max(1, v.Len(3));
-        canvas.Paint(playRect, (px, py) => ((px / cell + py / cell) & 1) == 0 ? CapitalLight : CapitalDark);
-        canvas.Frame(playRect, Math.Max(1, v.Len(2)), _focus == Item.Play ? Yellow : RopeLight);
-        playFace.Draw(canvas, play, playRect.X + (playRect.Width - playFace.Measure(play)) / 2, playRect.Y + (playRect.Height - playFace.LineHeight) / 2,
-            _model.CanPlay ? Yellow : PaleBlue, v.Len(2), Black);
-        _hotspots.Add((playRect, Item.Play));
-        var save = "Save and quit";
-        var saveWidth = text.Measure(save) + v.Len(28);
-        ParchmentButton(canvas, v, new Rect(playRect.X - saveWidth - v.Len(10), buttons, saveWidth, v.Len(40)), save, text, Item.Save);
+        // the buttons at the bottom right: Save and quit on stone, Play on red
+        var buttonHeight = v.Len(44);
+        var buttons = frame.Bottom - v.Len(22) - buttonHeight;
+        var playWidth = v.Len(168);
+        var playRect = new Rect(x1 - playWidth, buttons, playWidth, buttonHeight);
+        BigPlate(canvas, v, playRect, "Play", red: true, Item.Play);
+        var saveRect = new Rect(playRect.X - v.Len(18) - v.Len(168), buttons, v.Len(168), buttonHeight);
+        BigPlate(canvas, v, saveRect, "Save and quit", red: false, Item.Save);
 
-        var help = Help(_focus);
-        var helpLines = caption.Wrap(help, width);
-        // no further than the buttons (the texts are written to fit in two lines)
-        helpLines = [.. helpLines.Take(Math.Max(1, (buttons - v.Len(8) - y - v.Len(4)) / caption.LineHeight))];
-        var hy = Math.Max(y + v.Len(4), buttons - v.Len(8) - helpLines.Count * caption.LineHeight);
-        foreach (var l in helpLines)
+        // between the rows and the buttons: the hint bar
+        var bar = new Rect(x0, y + v.Len(10), x1 - x0, buttons - v.Len(10) - (y + v.Len(10)));
+        DrawHints(canvas, v, Face(Assets.Italic, 14, v), bar);
+    }
+
+    /// <summary>The columns of the settings' rows: the labels, the plates, the value selectors (wide, or narrow for Yes / No).</summary>
+    private readonly record struct RowLayout(int Label, int Plate, int Select, int SelectEnd, int SelectNarrow, int Right);
+
+    private static int SmallPlateHeight(View v) => v.Len(22);
+
+    /// <summary>
+    /// A setting's row: its label at the left, its value centred between ‹ › in the selector column (each arrow a click target:
+    /// the previous or next value), and a "Browse…" plate at the end when <paramref name="browse"/>. Returns the y below.
+    /// </summary>
+    private int Row(Canvas canvas, View v, TextFace text, TextFace small, RowLayout layout, int y, string label, string value, Item item, bool browse = false)
+    {
+        var row = new Rect(layout.Label - v.Len(8), y, layout.Right - layout.Label + v.Len(12), Math.Max(v.Len(24), text.LineHeight));
+        if (_focus == item)
         {
-            caption.Draw(canvas, l, x, hy, PaleBlue, shadow, Black);
-            hy += caption.LineHeight;
+            Shade(canvas, row, Ink, 26);
         }
+        Hot(row, item, Part.Row);
+        var ty = y + (row.Height - text.LineHeight) / 2;
+        if (browse)
+        {
+            Plate(canvas, v, new Rect(layout.Plate, y + (row.Height - SmallPlateHeight(v)) / 2, layout.Right - layout.Plate, SmallPlateHeight(v)), "Browse…", small, item, Part.Browse);
+        }
+        var labelShown = Fit(text, label, layout.Select - layout.Label - v.Len(10), fromEnd: false);
+        text.Draw(canvas, labelShown, layout.Label, ty, Ink);
+        Leaf(new Rect(layout.Label, ty, text.Measure(labelShown), text.LineHeight), "label " + label);
+
+        var fixedBy = IsFixed(item, out _);
+        var left = layout.Select;
+        var right = layout.SelectEnd;
+        var arrowLeft = fixedBy ? "" : "‹";
+        var arrowRight = fixedBy ? "" : "›";
+        var gap = v.Len(8);
+        var room = right - left - text.Measure(arrowLeft) - text.Measure(arrowRight) - 2 * gap;
+        var valueShown = Fit(text, value, Math.Max(0, room), fromEnd: false);
+        var inner = left + text.Measure(arrowLeft) + gap;
+        var valueX = inner + (room - text.Measure(valueShown)) / 2;
+        text.Draw(canvas, arrowLeft, left, ty, InkSoft);
+        text.Draw(canvas, valueShown, valueX, ty, fixedBy ? InkSoft : Ink);
+        text.Draw(canvas, arrowRight, right - text.Measure(arrowRight), ty, InkSoft);
+        Leaf(new Rect(left, ty, right - left, text.LineHeight), "value " + label);
+        if (!fixedBy)
+        {
+            // the arrows: a click on ‹ or › steps back or on, as ←/→
+            Hot(new Rect(left - v.Len(6), row.Y, inner - left + v.Len(6), row.Height), item, Part.Previous);
+            Hot(new Rect(right - text.Measure(arrowRight) - gap, row.Y, text.Measure(arrowRight) + gap + v.Len(6), row.Height), item, Part.Next);
+        }
+        return row.Bottom;
+    }
+
+    /// <summary>A folder's field: a lighter inset on the parchment, the path cut at its start to keep its end.</summary>
+    private void Field(Canvas canvas, View v, Rect field, string shown, bool focused, bool fixedBy, TextFace text)
+    {
+        canvas.Fill(field, FieldFill);
+        canvas.Frame(field, Math.Max(1, v.Len(1)), focused ? Gold : InkSoft);
+        if (focused)
+        {
+            canvas.Frame(field.Inset(Math.Max(1, v.Len(1))), Math.Max(1, v.Len(1)), Gold);
+        }
+        var fitted = Fit(text, shown, field.Width - v.Len(16), fromEnd: true);
+        text.Draw(canvas, fitted, field.X + v.Len(8), field.Y + (field.Height - text.LineHeight) / 2, fixedBy ? InkSoft : Ink);
+    }
+
+    /// <summary>A small dark plate (Browse…, Change…, Test sound): plate-small's art, or drawn; framed in gold when its row has the focus.</summary>
+    private void Plate(Canvas canvas, View v, Rect area, string label, TextFace text, Item item, Part part)
+    {
+        var lit = _focus == item || _hover == item && _hoverPart == part;
+        var down = _pressed == item && _pressedPart == part;
+        var plateName = down && Assets.Art("plate-small-pressed") is not null ? "plate-small-pressed"
+            : lit && Assets.Art("plate-small-hover") is not null ? "plate-small-hover" : "plate-small";
+        if (Assets.Art(plateName) is { } art)
+        {
+            Sliced(canvas, v, art, plateName, area);
+        }
+        else
+        {
+            canvas.Paint(area, (_, y) => Colours.Mix(0x4A4036, 0x2C251E, area.Height <= 1 ? 0 : 255 * y / (area.Height - 1)));
+            canvas.Fill(new Rect(area.X, area.Y, area.Width, Math.Max(1, v.Len(1))), 0x7A6B58);
+            canvas.Frame(area, Math.Max(1, v.Len(1)), 0x16110C);
+        }
+        if (_focus == item && Assets.Art("plate-small-hover") is null || _hover == item && _hoverPart == part && Assets.Art("plate-small") is null)
+        {
+            canvas.Frame(area, Math.Max(1, v.Len(1.5)), Gold);
+        }
+        if (down && Assets.Art("plate-small-pressed") is null)
+        {
+            Shade(canvas, area, Black, 70);
+        }
+        var shown = Fit(text, label, area.Width - v.Len(6), fromEnd: false);
+        var sink = down ? Math.Max(1, v.Len(1)) : 0;
+        text.Draw(canvas, shown, area.X + (area.Width - text.Measure(shown)) / 2 + sink, area.Y + (area.Height - text.LineHeight) / 2 + sink, Cream);
+        Hot(area, item, part);
+        Leaf(area, "button " + label);
+    }
+
+    /// <summary>Save and quit (a stone plate) and Play (a red plate with gold), from their art or drawn.</summary>
+    private void BigPlate(Canvas canvas, View v, Rect area, string label, bool red, Item item)
+    {
+        if (Assets.Art(red ? "plate-red" : "plate-stone") is { } art)
+        {
+            Sliced(canvas, v, art, red ? "plate-red" : "plate-stone", area);
+        }
+        else
+        {
+            var (top, bottom, edge) = red ? (0xA2281AU, 0x5E0E08U, 0x2E0603U) : (0xDAD3C5U, 0x9E9687U, 0x3E372EU);
+            canvas.Paint(area, (_, y) => Colours.Mix(top, bottom, area.Height <= 1 ? 0 : 255 * y / (area.Height - 1)));
+            canvas.Frame(area, Math.Max(1, v.Len(2)), edge);
+            canvas.Frame(area.Inset(Math.Max(2, v.Len(4))), Math.Max(1, v.Len(1)), red ? Gold : 0xF4EFE4);
+        }
+        if (_focus == item || _hover == item)
+        {
+            canvas.Frame(new Rect(area.X - v.Len(3), area.Y - v.Len(3), area.Width + v.Len(6), area.Height + v.Len(6)), Math.Max(1, v.Len(2)), Gold);
+        }
+        var down = _pressed == item;
+        if (down)
+        {
+            // held down: darker, and its word sunk by a pixel
+            Shade(canvas, area.Inset(Math.Max(1, v.Len(2))), Black, 60);
+        }
+        var face = red ? Face(Assets.Display, 32, v) : Face(Assets.Strong, 19, v);
+        var colour = red ? (_model.CanPlay ? Cream : 0xC9B9A0) : Ink;
+        var textX = area.X + (area.Width - face.Measure(label)) / 2 + (down ? Math.Max(1, v.Len(1)) : 0);
+        var textY = area.Y + (area.Height - face.LineHeight) / 2 + (down ? Math.Max(1, v.Len(1)) : 0);
+        if (red)
+        {
+            face.Draw(canvas, label, textX, textY, colour, Math.Max(1, v.Len(1.5)), Black);
+            var d = v.Len(5);
+            Diamond(canvas, textX - v.Len(22), area.Y + area.Height / 2, d, Gold);
+            Diamond(canvas, textX + face.Measure(label) + v.Len(22), area.Y + area.Height / 2, d, Gold);
+        }
+        else
+        {
+            StrongText(canvas, v, face, label, textX, textY, colour);
+        }
+        Hot(area, item, Part.Row);
+        Leaf(area, "button " + label);
+    }
+
+    /// <summary>
+    /// The hint bar: the last message (or why the launcher is shown), the pointed-at or chosen row's problem in full, and what it
+    /// does; wrapped to the bar (long paths broken anywhere), the last line cut with "…" when there is more.
+    /// </summary>
+    private void DrawHints(Canvas canvas, View v, TextFace face, Rect bar)
+    {
+        var pad = v.Len(5);
+        var room = (bar.Height - 2 * pad) / face.LineHeight;
+        if (room <= 0)
+        {
+            return;
+        }
+        if (Assets.Art("hint-bar") is { } art)
+        {
+            Sliced(canvas, v, art, "hint-bar", bar);
+        }
+        else
+        {
+            Shade(canvas, bar, HintFill, 215);
+            canvas.Frame(bar, Math.Max(1, v.Len(1)), 0x8A7454);
+        }
+        Leaf(bar, "hints");
+        var icon = v.Len(16);
+        Icon(canvas, v, "icon-problem", new Rect(bar.X + pad, bar.Y + pad + (face.LineHeight - icon) / 2, icon, icon), Cream);
+        var textX = bar.X + pad + icon + v.Len(10);
+        var lineWidth = bar.Right - pad - textX;
+        var lines = new List<(string Text, uint Colour)>();
+        foreach (var (part, colour) in Details())
+        {
+            lines.AddRange(WrapAll(face, part, lineWidth).Select(l => (l, colour)));
+        }
+        if (lines.Count > room)
+        {
+            var last = lines[room - 1];
+            lines = [.. lines.Take(room - 1), (Fit(face, last.Text + " …", lineWidth, fromEnd: false), last.Colour)];
+        }
+        // one line: centred in the bar's height
+        var ly = lines.Count == 1 ? bar.Y + (bar.Height - face.LineHeight) / 2 : bar.Y + pad;
+        foreach (var (text, colour) in lines)
+        {
+            face.Draw(canvas, text, textX, ly, colour);
+            ly += face.LineHeight;
+        }
+    }
+
+    /// <summary>The hint bar's parts, most important first: what the pointer is over, else the focused control.</summary>
+    private IEnumerable<(string Text, uint Colour)> Details()
+    {
+        if (_showSound && _context.SoundTest is { Status: { } soundStatus } soundTester)
+        {
+            yield return (soundStatus, soundTester.Playing ? Green : PaleRed);
+        }
+        else if (_message is not null)
+        {
+            yield return (_message, _messageColour);
+        }
+        else if (_context.Reason switch
+                 {
+                     LauncherReason.StartFailed => _context.Problem ?? "The game could not start.",
+                     LauncherReason.GameNotFound when !_model.CanPlay => "Darklands was not found: choose its folder to play.",
+                     LauncherReason.FirstRun => "Welcome! Check the settings, then press Play.",
+                     _ => null,
+                 } is { } note)
+        {
+            yield return (note, _context.Reason == LauncherReason.FirstRun ? Green : PaleRed);
+        }
+        var subject = _hover != Item.None ? _hover : _focus;
+        if (subject is Item.HdPack or Item.AudioPack && PackProblem(subject == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
+        {
+            yield return ("Problem: " + problem, PaleRed);
+        }
+        if (Help(subject) is { Length: > 0 } help)
+        {
+            yield return (help, PaleBlue);
+        }
+    }
+
+    /// <summary>A message or status colour (chosen for the dark hint bar) as ink on parchment.</summary>
+    private static uint OnParchment(uint colour) => colour switch
+    {
+        PaleRed => InkRed,
+        Green => InkGreen,
+        _ => InkSoft,
+    };
+
+    // ---- the stand-ins for the art, and small ornaments ----
+
+    /// <summary>A parchment card: its art scaled to <paramref name="area"/>, or parchment drawn with ragged, burnt edges.</summary>
+    private static void Parchment(Canvas canvas, Rect area, View v, string art, int seed)
+    {
+        if (Assets.Art(art) is { } image)
+        {
+            Sliced(canvas, v, image, art, area);
+            return;
+        }
+        var scale = Math.Max(0.01, v.Scale);
+        for (var y = Math.Max(0, area.Y); y < Math.Min(canvas.Height, area.Bottom); y++)
+        {
+            for (var x = Math.Max(0, area.X); x < Math.Min(canvas.Width, area.Right); x++)
+            {
+                double dx = (x - area.X) / scale, dy = (y - area.Y) / scale;
+                double w = area.Width / scale, h = area.Height / scale;
+                var edge = Math.Min(Math.Min(dx, w - dx), Math.Min(dy, h - dy));
+                // the ragged edge: up to 5 design pixels eaten, varying along the border
+                var along = dx < 8 || w - dx < 8 ? dy : dx;
+                var ragged = 1.5 + 3.5 * Noise(along / 9, (dx < 8 ? 1 : w - dx < 8 ? 2 : dy < 8 ? 3 : 4) * 17, seed);
+                if (edge < ragged)
+                {
+                    continue;
+                }
+                var grain = 0.55 * Noise(dx / 45, dy / 45, seed) + 0.3 * Noise(dx / 11, dy / 11, seed + 1) + 0.15 * Noise(dx / 3, dy / 3, seed + 2);
+                var colour = Colours.Mix(ParchmentLight, ParchmentDark, (int)(255 * Math.Clamp(grain * 1.1 - 0.15, 0, 1)));
+                var burn = Math.Clamp(1 - (edge - ragged) / 26, 0, 1);
+                colour = Colours.Mix(colour, ParchmentBurn, (int)(170 * burn * burn));
+                canvas.Blend(x, y, colour, 255);
+            }
+        }
+    }
+
+    /// <summary>A soft shadow under a card, on the painting.</summary>
+    private static void CardShadow(Canvas canvas, Rect area, View v)
+    {
+        var reach = Math.Max(2, v.Len(14));
+        var offset = v.Len(6);
+        for (var y = area.Y - reach + offset; y < area.Bottom + reach + offset; y++)
+        {
+            for (var x = area.X - reach + offset; x < area.Right + reach + offset; x++)
+            {
+                var dx = Math.Max(Math.Max(area.X + offset - x, x - (area.Right + offset - 1)), 0);
+                var dy = Math.Max(Math.Max(area.Y + offset - y, y - (area.Bottom + offset - 1)), 0);
+                var d = Math.Sqrt(dx * dx + dy * dy) / reach;
+                if (d < 1)
+                {
+                    canvas.Blend(x, y, Black, (int)(150 * (1 - d) * (1 - d)));
+                }
+            }
+        }
+    }
+
+    /// <summary>The settings panel's corner pieces: the corner art mirrored to each corner, or drawn iron brackets.</summary>
+    private static void Corners(Canvas canvas, Rect area, View v)
+    {
+        var size = Assets.Art("corner") is null ? v.Len(34) : v.Len(60);
+        var inset = Assets.Art("corner") is null ? v.Len(2) : -v.Len(9);
+        if (Assets.Art("corner") is { } corner)
+        {
+            foreach (var (h, vert) in new[] { (false, false), (true, false), (false, true), (true, true) })
+            {
+                var x = h ? area.Right - inset - size : area.X + inset;
+                var y = vert ? area.Bottom - inset - size : area.Y + inset;
+                ImageOps.Draw(canvas, ImageOps.Mirrored(corner, h, vert), new Rect(x, y, size, size));
+            }
+            return;
+        }
+        var bar = Math.Max(2, v.Len(5));
+        var length = v.Len(30);
+        foreach (var (h, vert) in new[] { (false, false), (true, false), (false, true), (true, true) })
+        {
+            var cx = h ? area.Right - inset - bar : area.X + inset;
+            var cy = vert ? area.Bottom - inset - bar : area.Y + inset;
+            var horizontal = new Rect(h ? cx + bar - length : cx, cy, length, bar);
+            var upright = new Rect(cx, vert ? cy + bar - length : cy, bar, length);
+            foreach (var piece in new[] { horizontal, upright })
+            {
+                canvas.Fill(piece, 0x2A231C);
+                canvas.Frame(piece, Math.Max(1, v.Len(1)), 0x0F0C09);
+            }
+            var stud = Math.Max(2, v.Len(4));
+            canvas.Fill(new Rect(cx + (bar - stud) / 2, cy + (bar - stud) / 2, stud, stud), Gold);
+        }
+    }
+
+    /// <summary>One of the small icons (art "icon-…", else a drawn sign in <paramref name="ink"/>).</summary>
+    private static void Icon(Canvas canvas, View v, string name, Rect area, uint ink)
+    {
+        if (Assets.Art(name) is { } art)
+        {
+            ImageOps.Draw(canvas, art, area);
+            return;
+        }
+        var cx = area.X + area.Width / 2;
+        var cy = area.Y + area.Height / 2;
+        var r = area.Width / 2;
+        var stroke = Math.Max(1, area.Width / 9);
+        switch (name)
+        {
+            case "icon-sound":
+                // a quaver: a head, a stem and a flag
+                Disc(canvas, cx - r / 3, cy + r / 2, Math.Max(2, r * 2 / 5), ink);
+                canvas.Fill(new Rect(cx - r / 3 + Math.Max(2, r * 2 / 5) - stroke, cy - r, stroke, r * 3 / 2), ink);
+                canvas.Fill(new Rect(cx - r / 3 + Math.Max(2, r * 2 / 5) - stroke, cy - r, r * 2 / 3, stroke * 2), ink);
+                break;
+            case "icon-link":
+                // a box with an arrow leaving it
+                canvas.Frame(new Rect(area.X, area.Y + area.Height / 3, area.Width * 2 / 3, area.Height * 2 / 3), stroke, ink);
+                for (var i = 0; i < area.Width * 2 / 3; i++)
+                {
+                    canvas.Fill(new Rect(area.X + area.Width / 3 + i, area.Bottom - area.Height / 3 - i - stroke, stroke + 1, stroke), ink);
+                }
+                canvas.Fill(new Rect(area.Right - area.Width / 2, area.Y, area.Width / 2, stroke), ink);
+                canvas.Fill(new Rect(area.Right - stroke, area.Y, stroke, area.Height / 2), ink);
+                break;
+            case "icon-problem":
+                // ⓘ: a ring with an i
+                Ring(canvas, cx, cy, r, stroke, ink);
+                canvas.Fill(new Rect(cx - stroke / 2, cy - r / 2 + stroke, Math.Max(1, stroke), Math.Max(1, stroke)), ink);
+                canvas.Fill(new Rect(cx - stroke / 2, cy - r / 2 + 3 * stroke, Math.Max(1, stroke), Math.Max(1, r - 2 * stroke)), ink);
+                break;
+            case "icon-found":
+                // ✓
+                for (var i = 0; i <= r / 2; i++)
+                {
+                    canvas.Fill(new Rect(cx - r + i, cy + i - stroke, stroke + 1, stroke + 1), ink);
+                }
+                for (var i = 0; i <= r * 3 / 2; i++)
+                {
+                    canvas.Fill(new Rect(cx - r / 2 + i, cy + r / 2 - i - stroke, stroke + 1, stroke + 1), ink);
+                }
+                break;
+            default:
+                // a cross with pointed arms (the game, the display, the start-up)
+                Diamond(canvas, cx, cy - r / 2, r / 2, ink);
+                Diamond(canvas, cx, cy + r / 2, r / 2, ink);
+                Diamond(canvas, cx - r / 2, cy, r / 2, ink);
+                Diamond(canvas, cx + r / 2, cy, r / 2, ink);
+                Disc(canvas, cx, cy, Math.Max(1, r / 4), ink);
+                break;
+        }
+    }
+
+    /// <summary>A rule with a fleuron at its middle (art "fleuron", else a drawn diamond between two dots).</summary>
+    private static void Fleuron(Canvas canvas, View v, int cx, int cy, int halfWidth, uint ink, bool onDark)
+    {
+        var thick = Math.Max(1, v.Len(1));
+        var gap = v.Len(26);
+        if (Assets.Art("fleuron") is { } flower && Assets.Art("rule-left") is { } ruleLeft && Assets.Art("rule-right") is { } ruleRight)
+        {
+            var fh = v.Len(onDark ? 26 : 20);
+            var fw = (int)Math.Round((double)fh * flower.Width / flower.Height);
+            ImageOps.Draw(canvas, flower, new Rect(cx - fw / 2, cy - fh / 2, fw, fh));
+            var rh = Math.Max(2, v.Len(onDark ? 7 : 5));
+            var space = fw / 2 + v.Len(4);
+            if (halfWidth > space + rh)
+            {
+                // the knob end keeps its shape (three times the rule's height), the tapering line stretches
+                var knob = ruleLeft.Height * 3;
+                ImageOps.ThreeSlice(canvas, ruleLeft, new Rect(cx - halfWidth, cy - rh / 2, halfWidth - space, rh), 0, Math.Min(knob, ruleLeft.Width / 2));
+                ImageOps.ThreeSlice(canvas, ruleRight, new Rect(cx + space, cy - rh / 2, halfWidth - space, rh), Math.Min(knob, ruleRight.Width / 2), 0);
+            }
+            return;
+        }
+        if (halfWidth > gap)
+        {
+            canvas.Fill(new Rect(cx - halfWidth, cy, halfWidth - gap, thick), ink);
+            canvas.Fill(new Rect(cx + gap, cy, halfWidth - gap, thick), ink);
+            Diamond(canvas, cx - halfWidth, cy, v.Len(2.5), ink);
+            Diamond(canvas, cx + halfWidth, cy, v.Len(2.5), ink);
+        }
+        if (Assets.Art("fleuron") is { } art)
+        {
+            var w = v.Len(44);
+            var h = (int)Math.Round((double)w * art.Height / art.Width);
+            ImageOps.Draw(canvas, art, new Rect(cx - w / 2, cy - h / 2, w, h));
+            return;
+        }
+        Diamond(canvas, cx, cy, v.Len(6), ink);
+        Disc(canvas, cx - v.Len(14), cy, Math.Max(1, v.Len(2)), ink);
+        Disc(canvas, cx + v.Len(14), cy, Math.Max(1, v.Len(2)), ink);
+        if (onDark)
+        {
+            Diamond(canvas, cx, cy, v.Len(2.5), 0x3A2E22);
+        }
+    }
+
+    /// <summary>
+    /// A piece of art in its box: in nine slices (its borders at half size: the art is made at twice the design's size), in three
+    /// (a plate: its ends kept at the box's height), or stretched whole when it is not sliced.
+    /// </summary>
+    private static void Sliced(Canvas canvas, View v, Image art, string name, Rect area)
+    {
+        switch (Assets.Slice(name))
+        {
+            case { Top: 0, Bottom: 0 } plate:
+                ImageOps.ThreeSlice(canvas, art, area, plate.Left, plate.Right);
+                break;
+            case { } nine:
+                ImageOps.NineSlice(canvas, art, area, nine, v.Scale / 2);
+                break;
+            default:
+                ImageOps.Draw(canvas, art, area);
+                break;
+        }
+    }
+
+    /// <summary>The height of the settings art's dark header band on the screen (0 without the art): where its parchment starts, down its middle.</summary>
+    private static int SettingsBand(View v)
+    {
+        if (Assets.Art("card-settings") is not { } art || Assets.Slice("card-settings") is not { } slice)
+        {
+            return 0;
+        }
+        var x = slice.Left / 2;
+        for (var y = 12; y < slice.Top; y++)
+        {
+            var c = art.At(x, y);
+            var light = ((c >> 16) & 255) + ((c >> 8) & 255) + (c & 255);
+            if (c >> 24 > 200 && light > 3 * 150)
+            {
+                return (int)Math.Round(y * v.Scale / 2);
+            }
+        }
+        return 0;
+    }
+
+    private static void Diamond(Canvas canvas, int cx, int cy, int r, uint colour)
+    {
+        for (var dy = -r; dy <= r; dy++)
+        {
+            var w = r - Math.Abs(dy);
+            canvas.Fill(new Rect(cx - w, cy + dy, 2 * w + 1, 1), colour);
+        }
+    }
+
+    private static void Disc(Canvas canvas, int cx, int cy, int r, uint colour)
+    {
+        for (var dy = -r; dy <= r; dy++)
+        {
+            var w = (int)Math.Round(Math.Sqrt(r * r - dy * dy));
+            canvas.Fill(new Rect(cx - w, cy + dy, 2 * w + 1, 1), colour);
+        }
+    }
+
+    private static void Ring(Canvas canvas, int cx, int cy, int r, int stroke, uint colour)
+    {
+        for (var y = cy - r; y <= cy + r; y++)
+        {
+            for (var x = cx - r; x <= cx + r; x++)
+            {
+                var d = Math.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+                if (d <= r && d > r - stroke - 0.5)
+                {
+                    canvas.Blend(x, y, colour, 255);
+                }
+            }
+        }
+    }
+
+    /// <summary><paramref name="colour"/> laid over <paramref name="area"/> at <paramref name="alpha"/>.</summary>
+    private static void Shade(Canvas canvas, Rect area, uint colour, int alpha)
+    {
+        for (var y = area.Y; y < area.Bottom; y++)
+        {
+            for (var x = area.X; x < area.Right; x++)
+            {
+                canvas.Blend(x, y, colour, alpha);
+            }
+        }
+    }
+
+    /// <summary>Text in the strong face; thickened by a pixel when the SemiBold file is not embedded.</summary>
+    private static void StrongText(Canvas canvas, View v, TextFace face, ReadOnlySpan<char> text, int x, int y, uint colour)
+    {
+        if (!Assets.HasStrong)
+        {
+            face.Draw(canvas, text, x + Math.Max(1, v.Len(0.6)), y, colour);
+        }
+        face.Draw(canvas, text, x, y, colour);
+    }
+
+    private static int SpacedWidth(TextFace face, string text, int spacing) => text.Sum(c => face.Measure([c]) + spacing) - spacing;
+
+    /// <summary>Text with its letters spread by <paramref name="spacing"/> pixels.</summary>
+    private static void Spaced(Canvas canvas, TextFace face, string text, int x, int y, uint colour, int spacing, int shadow)
+    {
+        foreach (var c in text)
+        {
+            face.Draw(canvas, [c], x, y, colour, shadow, Black);
+            x += face.Measure([c]) + spacing;
+        }
+    }
+
+    /// <summary>Smooth value noise in 0..1 (a fixed pattern for each seed).</summary>
+    private static double Noise(double x, double y, int seed)
+    {
+        int x0 = (int)Math.Floor(x), y0 = (int)Math.Floor(y);
+        double tx = x - x0, ty = y - y0;
+        tx = tx * tx * (3 - 2 * tx);
+        ty = ty * ty * (3 - 2 * ty);
+        double a = Hash(x0, y0, seed), b = Hash(x0 + 1, y0, seed), c = Hash(x0, y0 + 1, seed), d = Hash(x0 + 1, y0 + 1, seed);
+        return a + (b - a) * tx + (c - a) * ty + (a - b - c + d) * tx * ty;
+    }
+
+    private static double Hash(int x, int y, int seed)
+    {
+        unchecked
+        {
+            var h = (uint)(x * 374761393 + y * 668265263 + seed * 2147483647);
+            h = (h ^ (h >> 13)) * 1274126177;
+            return ((h ^ (h >> 16)) & 0xFFFFFF) / (double)0xFFFFFF;
+        }
+    }
+
+    /// <summary>The text wrapped at spaces to <paramref name="width"/>; a word longer than a line (a path) is broken where it must.</summary>
+    internal static List<string> WrapAll(TextFace face, string text, int width)
+    {
+        var lines = new List<string>();
+        foreach (var line in face.Wrap(text, width))
+        {
+            var rest = line;
+            while (face.Measure(rest) > width && rest.Length > 1)
+            {
+                // the longest start that fits, broken after a path's separator when there is one in it
+                var cut = 1;
+                while (cut < rest.Length && face.Measure(rest.AsSpan(0, cut + 1)) <= width)
+                {
+                    cut++;
+                }
+                var separator = rest.AsSpan(0, cut).LastIndexOfAny('\\', '/');
+                if (separator > cut / 2)
+                {
+                    cut = separator + 1;
+                }
+                lines.Add(rest[..cut]);
+                rest = rest[cut..];
+            }
+            lines.Add(rest);
+        }
+        return lines;
     }
 
     /// <summary>A pack row's value: the folder's name, marked when it cannot be read as a pack.</summary>
@@ -901,6 +1651,70 @@ internal sealed class LauncherScreen
         _model.PackOf(kind) is { } folder && (_model.Pack(folder).Problem is not null || !_model.Holds(folder, kind))
             ? LauncherModel.PackLabel(folder) + " (!)"
             : LauncherModel.PackLabel(_model.PackOf(kind));
+
+    /// <summary>What is wrong with the chosen pack (its manifest could not be read ...), without its folder's path; null when nothing.</summary>
+    private string? PackProblem(PackKind kind)
+    {
+        if (_model.PackOf(kind) is not { } folder)
+        {
+            return null;
+        }
+        if (_model.Pack(folder).Problem is { } problem)
+        {
+            return ShortProblem(folder, problem);
+        }
+        return _model.Holds(folder, kind) ? null : kind == PackKind.Pictures ? "no PNG pictures in this folder." : "no OGG, WAV or MIDI sounds in this folder.";
+    }
+
+    /// <summary>A pack's problem as the row shows it: without "Audio pack:" (the row says it) and with the pack's own files named from its folder.</summary>
+    internal static string ShortProblem(string folder, string problem)
+    {
+        foreach (var prefix in new[] { "Audio pack: ", "HD pack: " })
+        {
+            if (problem.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                problem = problem[prefix.Length..];
+            }
+        }
+        var trimmed = Path.TrimEndingDirectorySeparator(folder);
+        foreach (var form in new[] { trimmed, trimmed.Replace('\\', '/'), trimmed.Replace('/', '\\') }.Distinct())
+        {
+            problem = problem.Replace(form + Path.DirectorySeparatorChar, "", StringComparison.OrdinalIgnoreCase)
+                .Replace(form + Path.AltDirectorySeparatorChar, "", StringComparison.OrdinalIgnoreCase)
+                .Replace(form + "\\", "", StringComparison.OrdinalIgnoreCase)
+                .Replace(form, Path.GetFileName(trimmed), StringComparison.OrdinalIgnoreCase);
+        }
+        return problem;
+    }
+
+    /// <summary>The line under a pack row: none, what the pack holds, or what is wrong (in full in the hint bar).</summary>
+    private (string Text, uint Colour) PackLine(PackKind kind)
+    {
+        if (_model.PackOf(kind) is not { } folder)
+        {
+            return (kind == PackKind.Pictures ? "None: the game's own pictures." : "None: the game's own music and sounds.", PaleBlue);
+        }
+        return PackProblem(kind) is { } problem ? (problem, PaleRed) : (PackSummary(kind, _model.Pack(folder)), Green);
+    }
+
+    /// <summary>The line under the SoundFont row: the file that plays the packs' .mid music, or where to get a free one.</summary>
+    private (string Text, uint Colour) SoundFontLine()
+    {
+        if (_model.SoundFont is { } chosen && !File.Exists(chosen))
+        {
+            return ("Not found: " + chosen, PaleRed);
+        }
+        if (_model.SoundFontFound is not null)
+        {
+            return ("Plays the packs' MIDI (.mid) music.", Green);
+        }
+        return ("None found: any General MIDI .sf2 works (a free one: " + FreeSoundFont + ", MIT); put it in " + SoundFontFolder + ".", PaleBlue);
+    }
+
+    /// <summary>A free General MIDI SoundFont the launcher points to when none is found (not included: it is about 140 MB); any .sf2 the player has works as well.</summary>
+    internal const string FreeSoundFont = "FluidR3_GM.sf2";
+
+    private const string SoundFontFolder = "SOUNDFONT";
 
     /// <summary>What the ROM folder means for the sound card chosen: for a Roland module, whether its ROMs are there.</summary>
     private (string Text, uint Colour) RomsStatus(RomStatus roms) => _model.SoundCard switch
@@ -916,46 +1730,14 @@ internal sealed class LauncherScreen
         },
     };
 
-    /// <summary>A setting's row: its label at the left, its value at the right between ‹ ›; returns the y below.</summary>
-    private int Row(Canvas canvas, View v, TextFace text, int x, int right, int y, string label, string value, Item item)
-    {
-        var row = new Rect(x - v.Len(6), y, right - x + v.Len(12), v.Len(21));
-        if (_focus == item)
-        {
-            Highlight(canvas, row);
-        }
-        var shadow = Math.Max(1, v.Len(1));
-        var ty = y + (row.Height - text.LineHeight) / 2;
-        text.Draw(canvas, label, x, ty, White, shadow, Black);
-        var fixedBy = IsFixed(item, out _);
-        var shown = fixedBy ? value : $"‹ {value} ›";
-        text.Draw(canvas, shown, right - text.Measure(shown), ty, fixedBy ? PaleBlue : Yellow, shadow, Black);
-        _hotspots.Add((row, item));
-        return row.Bottom;
-    }
+    private void Hot(Rect area, Item item, Part part) => _hotspots.Add((area, item, part));
 
-    private static void Highlight(Canvas canvas, Rect row)
-    {
-        for (var py = row.Y; py < row.Bottom; py++)
-        {
-            for (var px = row.X; px < row.Right; px++)
-            {
-                canvas.Blend(px, py, White, 40);
-            }
-        }
-    }
-
-    private void ParchmentButton(Canvas canvas, View v, Rect area, string label, TextFace text, Item item)
-    {
-        var cell = Math.Max(1, v.Len(2));
-        canvas.Paint(area, (x, y) => ((x / cell + y / cell) & 1) == 0 ? ParchmentLight : ParchmentDark);
-        canvas.Frame(area, Math.Max(1, v.Len(2)), _focus == item ? Yellow : RopeMid);
-        text.Draw(canvas, label, area.X + (area.Width - text.Measure(label)) / 2, area.Y + (area.Height - text.LineHeight) / 2, Black);
-        _hotspots.Add((area, item));
-    }
+    /// <summary>Notes a drawn thing of the settings panel (for the layout's checks: in the panel, over nothing else).</summary>
+    private void Leaf(Rect area, string what) => _blocks.Add((area, what));
 
     private string Help(Item item)
     {
+        var browse = _surface.PickFolder is not null ? "Enter or Browse…: another folder" : "or drop a folder on this window";
         var help = item switch
         {
             Item.GameFolder => _editing
@@ -964,34 +1746,27 @@ internal sealed class LauncherScreen
             Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type or paste (Ctrl+V) the folder of your copy of Darklands.",
             Item.Window => "The window's size; the game keeps its shape.",
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
-            Item.HdPack => "Replacement pictures. " + PackHelp(PackKind.Pictures),
-            Item.AudioPack => "Replacement music and sounds (OGG, WAV). " + PackHelp(PackKind.Sounds),
-            Item.SoundFont => "For .mid music. Enter: choose an .sf2 file; ←/→: default.",
+            Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
+            Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
+            Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
+                ? $"No SoundFont: a pack's .mid music is skipped. Any General MIDI SoundFont (.sf2) you have works: put it in the {SoundFontFolder} folder next to the program, drop it here, or Browse…. A free one: {FreeSoundFont} by Frank Wen, MIT licence, about 140 MB (search the web for \"FluidR3_GM sf2\"; on Linux the fluid-soundfont-gm package)."
+                : $"The SoundFont (.sf2) for the packs' .mid music. Enter or Browse…: another file; ←/→: the default (the {SoundFontFolder} folder next to the program).",
             Item.PackGuide => "Opens the guide: how to make a picture or sound pack, and the names of the game's pictures, music and sounds.",
             Item.Report => "Makes a zip with the logs, settings and saves for a bug report, and opens its folder and the report form. Nothing is sent: you attach the zip yourself.",
             Item.Sound => "The sound card the game plays its music and sounds on.",
             Item.Roms => "Your MT-32 / CM-32L ROM files (side by side or in MT32, CM32L subfolders). "
-                + (_surface.PickFolder is not null ? "Change… or drop the folder here." : "Drop the folder on this window."),
+                + (_surface.PickFolder is not null ? "Enter or Change…: another folder; or drop it here." : "Drop the folder on this window."),
             Item.Test => _context.SoundTest is { Playing: true } ? "Stops the music." : "Plays some of the game's music on the chosen card, with these ROMs.",
             Item.Banner => "The text page the 1992 game showed for a few seconds while it loaded.",
             Item.Intro => "The animated opening before the start screen.",
-            Item.Always => "Otherwise the launcher shows only when needed. Hold Shift as the game starts to see it.",
-            Item.Save => "Saves the settings and closes.",
-            Item.Play => "Saves the settings and starts the game.",
+            Item.Always => "Otherwise DarklandsRP goes straight to the game, and DarklandsRP Launcher (or Shift held as it starts) shows this screen.",
+            Item.Save => "Writes the changes to the settings file and closes.",
+            Item.Play => "Writes the changes to the settings file and starts the game.",
             Item.Discord => "Opens the project's Discord in your browser.",
             Item.Notes => "Opens the release notes of this version in your browser.",
             _ => "",
         };
         return IsFixed(item, out var by) ? $"Set by {by}: change it there. " + help : help;
-    }
-
-    /// <summary>The chosen pack's state and how to choose another.</summary>
-    private string PackHelp(PackKind kind)
-    {
-        var state = _model.PackOf(kind) is { } folder
-            ? _model.Pack(folder) is { Problem: { } problem } ? problem + " " : PackSummary(kind, _model.Pack(folder)) + " "
-            : "";
-        return state + "←/→: None or a pack found; " + (_surface.PickFolder is not null ? "Enter: another folder." : "or drop a folder here.");
     }
 
     /// <summary>The text cut to <paramref name="width"/> with an ellipsis (at its start when <paramref name="fromEnd"/>, to keep a path's end).</summary>
@@ -1024,50 +1799,6 @@ internal sealed class LauncherScreen
             face = _faces[key] = new TextFace(font, (float)pixels, fallback);
         }
         return face;
-    }
-
-    /// <summary>The rope border of the original's panels: a twisted cord of three browns, with a dark edge.</summary>
-    private static void Rope(Canvas canvas, Rect area, View v)
-    {
-        var period = 8 * v.Scale;
-        var border = v.Len(7);
-        foreach (var band in new[]
-        {
-            new Rect(area.X, area.Y, area.Width, border),
-            new Rect(area.X, area.Bottom - border, area.Width, border),
-            new Rect(area.X, area.Y + border, border, area.Height - 2 * border),
-            new Rect(area.Right - border, area.Y + border, border, area.Height - 2 * border),
-        })
-        {
-            canvas.Paint(band, (x, y) =>
-            {
-                var t = (band.X - area.X + x + band.Y - area.Y + y) / Math.Sqrt(2) % period / period * 8;
-                return t < 3 ? RopeLight : t < 6 ? RopeMid : RopeDark;
-            });
-        }
-        canvas.Frame(area, Math.Max(1, v.Len(1)), RopeEdge);
-        canvas.Frame(area.Inset(border - Math.Max(1, v.Len(1))), Math.Max(1, v.Len(1)), RopeEdge);
-    }
-
-    /// <summary>The original's bright VGA blue, lighter at the middle and darker towards the edges.</summary>
-    private static void Blue(Canvas canvas, Rect area)
-    {
-        var light = Colours.Shade(PanelBlue, GlowStrength);
-        var dark = Colours.Shade(PanelBlue, -GlowStrength);
-        double cx = area.Width * 0.5, cy = area.Height * 0.4;
-        var rx = Math.Max(cx, area.Width - cx) * Math.Sqrt(2);
-        var ry = Math.Max(cy, area.Height - cy) * Math.Sqrt(2);
-        // the 256 shades between the two, and each pixel's place between them
-        var shades = new uint[256];
-        for (var i = 0; i < 256; i++)
-        {
-            shades[i] = Colours.Mix(light, dark, i);
-        }
-        canvas.Paint(area, (x, y) =>
-        {
-            double dx = (x - cx) / rx, dy = (y - cy) / ry;
-            return shades[(int)(Math.Min(1, Math.Sqrt(dx * dx + dy * dy)) * 255 + 0.5)];
-        });
     }
 
     /// <summary>The design's coordinates scaled and centred on the surface.</summary>

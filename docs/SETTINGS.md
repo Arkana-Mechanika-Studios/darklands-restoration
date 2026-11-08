@@ -147,13 +147,19 @@ page on GitHub (the only place the notes are when the file is missing), and a wo
 * on the first run (no settings file was found);
 * when the game cannot be found;
 * when the game could not start (a damaged HD pack, a missing file …), with the reason;
+* when started through `DarklandsRP Launcher.exe` (Linux: `DarklandsRP-Launcher`), the small program beside `DarklandsRP.exe`
+  that starts it with `--setup`; its Play starts the game;
 * with `--setup`, or while **Shift** is held as the program starts;
 * at every start when `startup.launcher` is true (the launcher's "Show launcher at every start").
 
 `--no-launcher` turns it off. The game folder can be chosen with **Change…** (Windows' folder dialog; on other systems
 Change… lets you type it), typed or pasted (Ctrl+V), dropped on the window, or chosen among the folders found with ←/→.
-The Roland ROM folder is chosen the same way on its row (Enter or a click opens the dialog) or by dropping the folder with
-the ROM files on the window; an HD pack is chosen by dropping its folder on the window. **Play** and **Save and quit** write
+The Roland ROM folder is chosen the same way on its row (Enter or its Change… opens the dialog) or by dropping the folder
+with the ROM files on the window. The HD pack, the audio pack and the SoundFont rows: ←/→ (or a click on their ‹ ›) go
+through the choices, Enter or the row's **Browse…** opens the system's dialog, and a dropped folder or `.sf2` file is
+taken; a click on the row itself only chooses it. Under each folder and pack a line says what was found or what is wrong;
+the box above the buttons shows the chosen row's problem in full and what the row does. The window can be made larger or
+smaller, down to 960 x 540. **Play** and **Save and quit** write
 the changed keys into the settings file, keeping its comments and everything else; closing the window or Esc saves as
 well. A setting the command line or an environment variable overrides is shown but cannot be changed there (its
 explanation says what sets it).

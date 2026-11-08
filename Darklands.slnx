@@ -7,6 +7,7 @@
     <Project Path="src/Darklands.Core/Darklands.Core.csproj" />
     <Project Path="src/Darklands.DevConsole/Darklands.DevConsole.csproj" />
     <Project Path="src/Darklands.Host.Headless/Darklands.Host.Headless.csproj" />
+    <Project Path="src/Darklands.Host.Launcher/Darklands.Host.Launcher.csproj" />
     <Project Path="src/Darklands.Host.Sdl/Darklands.Host.Sdl.csproj" />
     <Project Path="src/Darklands.Launcher/Darklands.Launcher.csproj" />
     <Project Path="src/Darklands.Persistence/Darklands.Persistence.csproj" />

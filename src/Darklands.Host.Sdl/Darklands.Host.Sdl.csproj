@@ -108,4 +108,23 @@
     <MakeDir Directories="$(PublishDir)MT32_ROMS" />
   </Target>
 
+  <!-- and a SOUNDFONT folder, where the launcher looks for a General MIDI SoundFont (.sf2) for the packs' .mid music; none is
+       included (the launcher's SoundFont row says where to get a free one) -->
+  <Target Name="CreateSoundFontFolder" AfterTargets="Publish">
+    <MakeDir Directories="$(PublishDir)SOUNDFONT" />
+    <WriteLinesToFile File="$(PublishDir)SOUNDFONT\README.txt" Overwrite="true" Lines="Put a General MIDI SoundFont (.sf2 file) here: the packs' MIDI (.mid) music plays through it. Any General MIDI SoundFont you have works.;No SoundFont comes with the program. A free one: FluidR3_GM.sf2 by Frank Wen (MIT licence, about 140 MB):;search the web for &quot;FluidR3_GM sf2&quot;, or on Linux install the fluid-soundfont-gm package (it puts the file in /usr/share/sounds/sf2).;The first .sf2 here (by name) is used; the launcher's SoundFont row can choose another file. More: docs/PACKS.md." />
+  </Target>
+
+  <!-- the launcher as a program of its own beside DarklandsRP (Darklands.Host.Launcher): "DarklandsRP Launcher.exe" on Windows, the
+       script DarklandsRP-Launcher on Linux. It starts DarklandsRP with its setup switch: the settings screen, whose Play starts the game. -->
+  <Target Name="PublishLauncherProgram" AfterTargets="Publish">
+    <PropertyGroup>
+      <LauncherProject>$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\Darklands.Host.Launcher.csproj</LauncherProject>
+      <LauncherForWindows Condition="'$(RuntimeIdentifier)' == '' or $(RuntimeIdentifier.StartsWith('win'))">true</LauncherForWindows>
+    </PropertyGroup>
+    <Exec Condition="'$(LauncherForWindows)' == 'true'" Command="dotnet build &quot;$(LauncherProject)&quot; -c Release -nologo -v q -o &quot;$(PublishDir).&quot;" />
+    <Copy Condition="'$(LauncherForWindows)' != 'true'" SourceFiles="$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\DarklandsRP-Launcher" DestinationFolder="$(PublishDir)" />
+    <Exec Condition="'$(LauncherForWindows)' != 'true' and !$([MSBuild]::IsOSPlatform('Windows'))" Command="chmod +x &quot;$(PublishDir)DarklandsRP-Launcher&quot;" />
+  </Target>
+
 </Project>

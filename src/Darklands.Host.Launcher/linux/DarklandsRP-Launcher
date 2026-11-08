@@ -1,0 +1,5 @@
+#!/bin/sh
+# DarklandsRP Launcher: opens the launcher (the settings screen) of DarklandsRP, beside this script; its Play starts the game.
+# DarklandsRP started directly goes straight to the game.
+here=$(dirname "$0")
+exec "$here/DarklandsRP" --setup "$@"
