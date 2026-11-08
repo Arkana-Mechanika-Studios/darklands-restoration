@@ -339,13 +339,18 @@ public sealed partial class TacticalBattle
         var power = en.SpellPowers[type];
         en.SpellCharges[type]--;
         en.SpellsLeft--;
+        // orig: the cast's line tests (1D69:000C, R018+0x0706's frame) are one run of clip tests: each reads the point the previous one left
+        //   (BattleMap.ClipResidue), the area counts between them (R014+0x469E) not reaching it (round battlelead: a read-only hook at
+        //   R014+0xF284 in a direct call of R018+0x0706: the fourth member's line read (722, 473), left inside a furniture box by the third, and
+        //   was blocked; the caster had no target and went to its hand weapon); a new caster's run begins with other leftovers
+        var residue = new BattleMap.ClipResidue();
         if (type == 6)
         {
             for (var k = 0; k < Combatant.PartySlots; k++)
             {
                 var t = list[k].Who;
                 var tm = Battle[t];
-                if (tm.IsAble && seen[t] && Map.LineBlocked(en.Position, tm.Position) == 0)
+                if (tm.IsAble && seen[t] && Map.LineBlocked(en.Position, tm.Position, residue: residue) == 0)
                 {
                     if (list[k].Dist < 0x20)
                     {
@@ -369,7 +374,7 @@ public sealed partial class TacticalBattle
         for (var j = 0; j < Combatant.PartySlots; j++)
         {
             var m = Battle[j];
-            if (m.IsAble && seen[j] && Map.LineBlocked(lineStart, m.Position) == 0)
+            if (m.IsAble && seen[j] && Map.LineBlocked(lineStart, m.Position, residue: residue) == 0)
             {
                 var dist = candidates[j].Dist;
                 for (var k = 0; k < Combatant.PartySlots; k++)

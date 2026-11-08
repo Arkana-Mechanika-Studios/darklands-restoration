@@ -85,6 +85,12 @@ internal static class ImageOverlay
         new("aim end at", 0xDAA3, 2, 13, c => c.AimEndAt, (c, v) => c.AimEndAt = (ushort)v),
         new("damage number until", 0xDA6F, 2, 13, c => c.DamageNumberUntil, (c, v) => c.DamageNumberUntil = (ushort)v),
         new("recover at", 0xDA55, 2, 13, c => c.RecoverAt, (c, v) => c.RecoverAt = (ushort)v),
+        // the casters' spells (enemy-placement R025+0x036E..0x03AA: DS:D1D7[i] the charges left, DS:D37C / DS:D411 [10 i + k] the charges and
+        // power of type k; enemy-move-phase R018+0x0CB0..0x0CF3 takes them): a job from a fight's state carries what the casters have left
+        // (round battlelead: without them the rewrite's caster still had the placement's charges where the original's had none)
+        new("spells left", 0xD1D7, 1, 13, c => c.SpellsLeft, (c, v) => c.SpellsLeft = (byte)v),
+        .. Enumerable.Range(0, 10).Select(k => new Table($"spell charges {k}", 0xD37C + k, 1, 13, c => c.SpellCharges[k], (c, v) => c.SpellCharges[k] = (byte)v, 10)),
+        .. Enumerable.Range(0, 10).Select(k => new Table($"spell power {k}", 0xD411 + k, 1, 13, c => c.SpellPowers[k], (c, v) => c.SpellPowers[k] = (byte)v, 10)),
     ];
 
     private static readonly Table[] MemberTables =

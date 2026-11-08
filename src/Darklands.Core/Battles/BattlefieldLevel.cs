@@ -234,6 +234,13 @@ public sealed class BattlefieldLevel
     private static int CellAt(int x, int y) => (x * Size + y) * 4;
 
     /// <summary>The four bytes at a flat cell offset outside the cells (a 16-bit offset in the segment); zeros beyond the image.</summary>
+    // DIVERGENCE: undefined memory: past the image the original reads the rest of segment 20A5 (R136's data): 20A5:FE00..FFFF are zeros, but from
+    //   20A5:FDFF down (a column of -4 and less) lie tables of far pointers to the program's buffers ("014f 2458", "014f 5e58" ... 0x3A
+    //   paragraphs apart at 20A5:F000..F38D, more at E000..EFFF, filled at run time; 95 battle-call states of round battlefuzz: F000..FDFF the
+    //   same in all of them, E000..EFFF 21 versions), whose values the DOS memory layout decides; read as cells their low nibbles are walls.
+    //   A missed shot extended past the west edge (shot-launch's miss, R018+0x02BE) then stops where the rewrite flies on (a direct call,
+    //   round battlelead: the original's goal (-668, 611) is that of its lines to columns -16 and -19 being free and to -22 and -29 blocked, in
+    //   the E000..EFFF tables; the rewrite's (-2592, 957), every line free).
     private BattlefieldCell OutsideCell(int x, int y)
     {
         var at = (ushort)CellAt(x, y);

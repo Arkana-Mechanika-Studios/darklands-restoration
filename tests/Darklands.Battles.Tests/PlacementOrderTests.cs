@@ -1,4 +1,8 @@
 using Darklands.Cards;
+using Darklands.Content.Formats.Exe;
+using Darklands.Core.Battles;
+using Darklands.Core.Battles.Tactics;
+using Darklands.Core.Randomness;
 using Darklands.Content;
 using Darklands.Platform;
 using Darklands.Presentation;
@@ -36,5 +40,31 @@ public sealed class PlacementOrderTests
         }
         // the start's group is hidden once the level is shown: the first spot is void now, as in the original's level at the first pass
         Assert.True(screen.Tactics.Level[places[0] >> 5, places[1] >> 4].IsVoid);
+    }
+
+    /// <summary>
+    /// The party's random spots (R014+0x4350..0x43AB) are one run of clip tests: each line test reads the point the previous one left
+    /// (DL 0036), the collision tests between them not reaching it. The original's own tests of a direct call of R014+0x4188 (round battlelead,
+    /// a battle-call job at (699, 168) facing 7; a read-only hook at R014+0xF284): the lines from the start to its random spots against the
+    /// one wall box there (east of cell (21, 10)), the run beginning with the leftover (1, 85), and what each returned. One shared run gives
+    /// every one of them; a fresh run per test frees lines the original found blocked.
+    /// </summary>
+    [Fact]
+    public void ThePartysRandomSpotsAreOneRunOfClipTests()
+    {
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1)) { FloorShown = 0 };
+        var level = new BattlefieldLevel(new byte[BattlefieldLevel.ImageSize]);
+        level[21, 10] = new BattlefieldCell(0x0A);
+        var map = new BattleMap(battle, level, [], 0);
+        (int X, int Y, int Blocked)[] tests =
+        [
+            (731, 185, 1), (718, 181, 1), (738, 182, 1), (733, 187, 1), (741, 190, 1), (720, 185, 1), (707, 181, 1), (703, 187, 1), (700, 191, 0),
+            (708, 184, 1), (742, 189, 1), (720, 188, 1), (703, 183, 1), (706, 182, 1), (727, 191, 1), (745, 188, 1), (742, 184, 1), (736, 181, 1),
+            (712, 191, 1), (745, 184, 1),
+        ];
+        var from = new MapPoint(699, 168);
+        var run = new BattleMap.ClipResidue { Point = (1, 85) };
+        Assert.Equal(tests.Select(t => t.Blocked), tests.Select(t => map.LineBlocked(from, new MapPoint(t.X, t.Y), residue: run)));
+        Assert.Contains(tests, t => t.Blocked != map.LineBlocked(from, new MapPoint(t.X, t.Y), residue: new BattleMap.ClipResidue()));
     }
 }
