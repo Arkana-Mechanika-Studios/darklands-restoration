@@ -43,7 +43,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private readonly Dictionary<RgbaImage, (IntPtr Texture, int Version)> _hdTextures = [];
 
     /// <summary>Opens the window at the size of <see cref="DisplayLayout.WindowSize"/> (720×400 by default).</summary>
-    public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false)
+    /// <param name="frameless">Opened without a frame or title bar (the launcher's window: giving a framed window's frame away later
+    /// leaves Windows painting its old title bar over it now and then).</param>
+    public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false, bool frameless = false)
     {
         if (SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents) != 0)
         {
@@ -51,7 +53,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         _window = SdlNative.SDL_CreateWindow(title, 0x2FFF0000, 0x2FFF0000, width, height,
             SdlNative.WindowShown | SdlNative.WindowResizable | SdlNative.WindowAllowHighDpi
-            | (fullscreen ? SdlNative.WindowFullscreenDesktop : 0));
+            | (fullscreen ? SdlNative.WindowFullscreenDesktop : 0) | (frameless ? SdlNative.WindowBorderless : 0));
         if (_window == IntPtr.Zero)
         {
             throw new SdlHostException("SDL_CreateWindow failed: " + SdlNative.GetErrorText());

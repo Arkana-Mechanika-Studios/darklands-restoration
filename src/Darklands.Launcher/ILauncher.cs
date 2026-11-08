@@ -151,6 +151,9 @@ public interface ILauncherSurface
     /// <summary>Waits for input and returns what came (at least one item).</summary>
     IReadOnlyList<LauncherInput> Wait();
 
+    /// <summary>Waits for input as <see cref="Wait()"/>, at most <paramref name="timeout"/>: then [<see cref="TimePassed"/>] (the pointer rested: a tooltip shows).</summary>
+    IReadOnlyList<LauncherInput> Wait(TimeSpan timeout) => Wait();
+
     /// <summary>Starts or stops typed-text input (an on-screen keyboard or input method may show).</summary>
     void TextInput(bool on);
 
@@ -207,6 +210,9 @@ public sealed record SurfaceResized : LauncherInput;
 
 /// <summary>The window's close button.</summary>
 public sealed record CloseRequested : LauncherInput;
+
+/// <summary>Nothing came for the time <see cref="ILauncherSurface.Wait(TimeSpan)"/> was given.</summary>
+public sealed record TimePassed : LauncherInput;
 
 public enum LauncherKey
 {

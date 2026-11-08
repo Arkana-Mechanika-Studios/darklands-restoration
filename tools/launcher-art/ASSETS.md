@@ -35,10 +35,9 @@ stand-in in code. Art is made at **twice the design's size**.
 | `plate-stone` + slice | 160 x 40 | "Save and quit" (the parchment plate), three slices, no text. |
 | `plate-red` + slice | 212 x 56 | "Play", the larger: three slices, no text (the word and its gold diamonds are drawn). |
 | `plate-small` + slice, `plate-small-hover` + slice, `plate-small-pressed` + slice | 88 x 24 (the window's buttons: 30 x 26) | "Browse…", "Change…", "Test sound", and the window's own minimise and close (their marks drawn on it); the hover one when pointed at or focused, the pressed one while the mouse button is held on it (a plate acts when let go over it). |
-| `hint-bar` (+ slice) | 426 x 30-50 | the dark bar above the buttons; drawn in code until given. |
 | `icon-game`, `icon-display`, `icon-sound`, `icon-startup` | 22 x 22 | the four sections' icons. |
 | `icon-link` | 16 x 16 | before each link on the left card. |
-| `icon-problem`, `icon-found` | 12 x 12 | ⓘ before a problem line and in the hint bar, ✓ before "Found"; drawn in code until given. |
+| `icon-problem`, `icon-found` | 12 x 12 | ⓘ before a problem line and in the notice, ✓ before "Found"; drawn in code until given. |
 
 ## Fonts
 
@@ -48,7 +47,7 @@ all under the SIL Open Font License (`Resources/OFL.txt`; list each in THIRD_PAR
 | file | used for | without it |
 |---|---|---|
 | `EBGaramond12-Regular.ttf` (in place) | all text | — |
-| `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the hint bar | the Regular |
+| `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the notice and the tooltips | the Regular |
 | `EBGaramond-SemiBold.ttf` (in place) | section headings, the cards' headings, the drop caps, "Restoration Project", "Save and quit", "Play" | the Regular, thickened by a pixel |
 | `Grenze-Black.ttf` (in place) | "Darklands" and "Settings" ("Play" is in EB Garamond SemiBold, like "Save and quit"): the free face closest to the original game's logo (its start screen) | EB Garamond SemiBold |
 | `GrenzeGotisch-Black.ttf` (in place) | only the display face's "a" (the logo's double-storey form; `Assets.Display` borrows it) | Grenze's own "a" |

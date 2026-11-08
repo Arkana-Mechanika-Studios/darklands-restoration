@@ -22,7 +22,7 @@ internal static class LauncherHost
     public static SdlHost Open(string title)
     {
         var (width, height) = SizeFor(SdlHost.MainScreen());
-        var host = new SdlHost(title, width, height);
+        var host = new SdlHost(title, width, height, frameless: true);
         host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
         host.Clear();
         return host;

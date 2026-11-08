@@ -32,6 +32,15 @@ public sealed class LauncherHitTestTests
     }
 
     [Fact]
+    public void TheFramelessWindowIsActivatedWithoutPaintingAFrame()
+    {
+        // WM_NCACTIVATE goes on to SDL told not to paint the frame (lParam -1); WM_NCPAINT stops; the rest passes as it is
+        Assert.Equal((true, (IntPtr)(-1)), FramelessWindow.Filter(0x0086, 1));
+        Assert.Equal((false, IntPtr.Zero), FramelessWindow.Filter(0x0085, 1));
+        Assert.Equal((true, (IntPtr)1234), FramelessWindow.Filter(0x0201, 1234));
+    }
+
+    [Fact]
     public void AWindowThatFillsTheScreenIsNeitherMovedNorResized()
     {
         Assert.Equal(SdlNative.HitTestNormal, At(1, 1, fills: true));

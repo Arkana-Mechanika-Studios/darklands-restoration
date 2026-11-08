@@ -59,6 +59,15 @@ internal sealed class LauncherScreen
     private string? _message;
     private uint _messageColour = PaleRed;
     private bool _showSound;
+
+    // the tooltip shown (None: none), and the control the pointer came to (its tooltip after a rest)
+    private Item _tip, _tipPending;
+    private Part _tipPart, _tipPendingPart;
+    private bool _tipByKeyboard;
+
+    // the status lines cut to fit, by their row (their whole text is in the row's tooltip)
+    private readonly HashSet<Item> _statusCut = [];
+    private readonly Dictionary<Item, (string Text, uint Colour)> _statusShown = [];
     private bool _advanced;
     private Rect? _notesLink;
     private Canvas? _background;
@@ -103,6 +112,9 @@ internal sealed class LauncherScreen
         /// <summary>The frameless window's own buttons (<see cref="ILauncherSurface.Frameless"/>).</summary>
         Minimise,
         Close,
+
+        /// <summary>The notice over the buttons (a message: why the game could not start, what an action did).</summary>
+        Notice,
     }
 
     /// <summary>The parts of a control a click can hit.</summary>
@@ -119,9 +131,31 @@ internal sealed class LauncherScreen
 
         /// <summary>A row's own "Browse…" (or "Change…") button: the system's folder or file dialog.</summary>
         Browse,
+
+        /// <summary>The status line under a row (a click chooses the row; the pointer resting on it shows its whole text).</summary>
+        Status,
     }
 
     public Item Focus => _focus;
+
+    /// <summary>How long the pointer rests on a control before its tooltip shows.</summary>
+    public static readonly TimeSpan TooltipDelay = TimeSpan.FromMilliseconds(450);
+
+    /// <summary>The pointer came to a control with a tooltip: wait for it to rest (<see cref="TimePassed"/>).</summary>
+    public bool TooltipPending => _tipPending != Item.None;
+
+    /// <summary>The control whose tooltip is shown, or None.</summary>
+    public Item Tooltip => _tip;
+
+    /// <summary>Where the tooltip was drawn last (empty: none).</summary>
+    internal Rect TooltipArea { get; private set; }
+
+    private void HideTooltip()
+    {
+        _tip = Item.None;
+        _tipPending = Item.None;
+        _tipByKeyboard = false;
+    }
 
     /// <summary>Where <paramref name="item"/> was drawn last.</summary>
     public Rect Area(Item item, Part part = Part.Row) => _hotspots.First(h => h.Item == item && h.Part == part).Area;
@@ -166,7 +200,13 @@ internal sealed class LauncherScreen
         {
             case CloseRequested:
                 return LauncherChoice.Quit;
+            case TimePassed:
+                // the pointer rested on a control: its tooltip
+                (_tip, _tipPart) = (_tipPending, _tipPendingPart);
+                _tipPending = Item.None;
+                return null;
             case PointerReleased released:
+                HideTooltip();
                 var (pressed, pressedPart) = (_pressed, _pressedPart);
                 _pressed = Item.None;
                 var under = _hotspots.LastOrDefault(h => h.Area.Contains(released.X, released.Y));
@@ -175,14 +215,21 @@ internal sealed class LauncherScreen
                     : null;
             case PointerMoved moved:
                 var over = _hotspots.LastOrDefault(h => h.Area.Contains(moved.X, moved.Y));
+                if ((over.Item, over.Part) != (_hover, _hoverPart) || _tipByKeyboard)
+                {
+                    // another control (or none): its tooltip after a rest
+                    HideTooltip();
+                    (_tipPending, _tipPendingPart) = (over.Item, over.Part);
+                }
                 (_hover, _hoverPart) = (over.Item, over.Part);
                 return null;
             case PathDropped dropped:
                 Dropped(dropped.Path);
                 return null;
             case PointerPressed press:
+                HideTooltip();
                 var hit = _hotspots.LastOrDefault(h => h.Area.Contains(press.X, press.Y));
-                if (hit.Item == Item.None)
+                if (hit.Item is Item.None or Item.Notice)
                 {
                     return null;
                 }
@@ -208,6 +255,8 @@ internal sealed class LauncherScreen
                     Part.Previous => Activate(hit.Item, -1, cycle: true),
                     Part.Next => Activate(hit.Item, 1, cycle: true),
                     Part.Browse => Activate(hit.Item, 1, cycle: false),
+                    // a click on a status line chooses its row
+                    Part.Status => Selected(),
                     // a click on a row with a dialog behind it only chooses the row (←/→ then work); its Browse… opens the dialog
                     _ when SelectedByClick(hit.Item) => Selected(),
                     _ => Activate(hit.Item, step: 1, cycle: false),
@@ -226,7 +275,15 @@ internal sealed class LauncherScreen
                 EditKey(key);
                 return null;
             case KeyPressed key:
-                return Key(key);
+                var before = _focus;
+                var choice = Key(key);
+                if (_focus != before)
+                {
+                    // the keyboard chose another control: its tooltip at once (the pointer moving hides it)
+                    HideTooltip();
+                    (_tip, _tipPart, _tipByKeyboard) = (_focus, Part.Row, true);
+                }
+                return choice;
             default:
                 return null;
         }
@@ -755,10 +812,13 @@ internal sealed class LauncherScreen
         {
             _hotspots.Add((reportLink, Item.Report, Part.Row));
         }
-        if ((_focus == Item.Discord ? _discord : _focus == Item.Notes ? _notesLink : _focus == Item.PackGuide ? _guideLink : _focus == Item.Report ? _reportLink : null) is { } link)
+        foreach (var (link, item) in new[] { ((Rect?)_discord, Item.Discord), (_notesLink, Item.Notes), (_guideLink, Item.PackGuide), (_reportLink, Item.Report) })
         {
-            // the focused link: a band behind it
-            Shade(canvas, new Rect(link.X - v.Len(3), link.Y - v.Len(1), link.Width + v.Len(6), link.Height + v.Len(2)), Ink, 34);
+            if (link is { } area)
+            {
+                // the link under the pointer, or chosen with the keyboard: lit as a row
+                RowLight(canvas, new Rect(area.X - v.Len(3), area.Y - v.Len(1), area.Width + v.Len(6), area.Height + v.Len(2)), item);
+            }
         }
         // a row of the other tab took the focus (Tab, the arrows, a dropped folder): its tab opens
         if (OnAdvanced(_focus))
@@ -774,6 +834,8 @@ internal sealed class LauncherScreen
         {
             DrawWindowButtons(canvas, v);
         }
+        // over everything: the tooltip
+        DrawTooltip(canvas, v);
     }
 
     private void DrawBackground(Canvas canvas, View v)
@@ -1013,6 +1075,8 @@ internal sealed class LauncherScreen
     {
         var frame = SettingsFrame(v);
         _panel = frame.Inset(v.Len(12));
+        _statusCut.Clear();
+        _statusShown.Clear();
         var x0 = frame.X + v.Len(34);
         var x1 = frame.Right - v.Len(34);
         var plateWidth = v.Len(PlateWidth);
@@ -1052,7 +1116,8 @@ internal sealed class LauncherScreen
             return top + height;
         }
 
-        int Status(int top, (string Text, uint Colour) status)
+        // a status line: under its row, cut to fit (its whole text in the row's tooltip; the pointer on it shows that too)
+        int Status(int top, Item item, (string Text, uint Colour) status)
         {
             var height = v.Len(StatusHeight);
             var size = v.Len(12);
@@ -1069,7 +1134,14 @@ internal sealed class LauncherScreen
             var fitted = Fit(line, status.Text, layout.Right - tx, fromEnd: false);
             var ty = top + (height - line.LineHeight) / 2;
             line.Draw(canvas, fitted, tx, ty, OnParchment(status.Colour));
-            Leaf(new Rect(layout.Label, Math.Max(top, ty), tx + line.Measure(fitted) - layout.Label, Math.Min(height, line.LineHeight)), "status " + status.Text);
+            var area = new Rect(layout.Label, Math.Max(top, ty), tx + line.Measure(fitted) - layout.Label, Math.Min(height, line.LineHeight));
+            Leaf(area, "status " + status.Text);
+            Hot(area, item, Part.Status);
+            _statusShown[item] = status;
+            if (fitted != status.Text)
+            {
+                _statusCut.Add(item);
+            }
             return top + height;
         }
 
@@ -1083,10 +1155,7 @@ internal sealed class LauncherScreen
                 Plate(canvas, v, new Rect(layout.Plate, top + (rowHeight - plateHeight) / 2, plateWidth, plateHeight), plate, small, owner, owner == item ? Part.Browse : Part.Row);
             }
             var row = new Rect(l.Label - v.Len(8), top, (plate is null ? l.Right : l.SelectEnd + v.Len(6)) - l.Label + v.Len(8), rowHeight);
-            if (_focus == item)
-            {
-                Shade(canvas, row, Ink, 26);
-            }
+            RowLight(canvas, row, item);
             Hot(row, item, Part.Row);
             var ty = top + (rowHeight - text.LineHeight) / 2;
             var labelShown = Fit(text, label, l.Select - l.Label - v.Len(10), fromEnd: false);
@@ -1117,12 +1186,9 @@ internal sealed class LauncherScreen
         int Folder(int top, string? label, string shown, Item item, Item plateItem, Part platePart)
         {
             var fieldLeft = label is null ? layout.Label : layout.Select;
+            RowLight(canvas, new Rect(layout.Label - v.Len(8), top, layout.SelectEnd - layout.Label + v.Len(14), rowHeight), item);
             if (label is not null)
             {
-                if (_focus == item)
-                {
-                    Shade(canvas, new Rect(layout.Label - v.Len(8), top, layout.SelectEnd - layout.Label + v.Len(14), rowHeight), Ink, 26);
-                }
                 var labelY = top + (rowHeight - text.LineHeight) / 2;
                 var labelShown = Fit(text, label, layout.Select - layout.Label - v.Len(10), fromEnd: false);
                 text.Draw(canvas, labelShown, layout.Label, labelY, Ink);
@@ -1141,7 +1207,7 @@ internal sealed class LauncherScreen
         {
             y = Section("Game installation", "icon-game", y);
             y = Folder(y, null, _editing ? _editText + "_" : _model.GameFolder ?? "", Item.GameFolder, Item.Change, Part.Row);
-            y = Status(y, _model.GameFolderChecked is not null
+            y = Status(y, Item.GameFolder, _model.GameFolderChecked is not null
                 ? ("Found" + (_model.GameFolderSource is { } source ? $" ({source})." : "."), Green)
                 : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleBlue) : ("No Darklands there (DARKLAND.EXE).", PaleRed));
 
@@ -1149,24 +1215,24 @@ internal sealed class LauncherScreen
             y = Select(y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
             y = Select(y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
             y = Select(y, "HD pack", PackShown(PackKind.Pictures), Item.HdPack, "Browse…");
-            y = Status(y, PackLine(PackKind.Pictures));
+            y = Status(y, Item.HdPack, PackLine(PackKind.Pictures));
 
             // sound and music: the card with its sound test, whether its ROMs are there (they are chosen on Advanced), the audio pack
             y = Section("Sound & Music", "icon-sound", y);
             var test = _context.SoundTest is { } soundTest ? (soundTest.Playing ? "Stop" : "Test sound") : null;
             y = Select(y, "Sound card", _model.SoundCardLabel, Item.Sound, test, Item.Test);
-            y = Status(y, RomsStatus(_model.Roms));
+            y = Status(y, Item.Sound, RomsStatus(_model.Roms));
             y = Select(y, "Audio pack", PackShown(PackKind.Sounds), Item.AudioPack, "Browse…");
-            y = Status(y, PackLine(PackKind.Sounds));
+            y = Status(y, Item.AudioPack, PackLine(PackKind.Sounds));
         }
         else
         {
             y = Section("Roland MT-32 / CM-32L", "icon-sound", y);
             y = Folder(y, "ROM folder", _model.Roms.Folder, Item.Roms, Item.Roms, Part.Browse);
-            y = Status(y, RomsStatus(_model.Roms));
+            y = Status(y, Item.Roms, RomsStatus(_model.Roms));
             y = Section("General MIDI (for audio packs)", "icon-sound", y);
             y = Select(y, "SoundFont", SoundFontShown(), Item.SoundFont, "Browse…");
-            y = Status(y, SoundFontLine());
+            y = Status(y, Item.SoundFont, SoundFontLine());
             y = Section("Start-up", "icon-startup", y);
             y = Select(y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner, narrow: true);
             y = Select(y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro, narrow: true);
@@ -1178,14 +1244,14 @@ internal sealed class LauncherScreen
         BigPlate(canvas, v, play, "Play", red: true, Item.Play);
         BigPlate(canvas, v, new Rect(x0, play.Y + v.Len(8), v.Len(160), v.Len(40)), "Save and quit", red: false, Item.Save);
 
-        // over the buttons, a gap above and below: the hint bar (two lines)
-        var barBottom = play.Y - v.Len(16);
-        var barTop = Math.Max(y + v.Len(12), barBottom - v.Len(50));
-        DrawHints(canvas, v, Face(Assets.Italic, 14, v), new Rect(x0, barTop, x1 - x0, barBottom - barTop));
+        // over the buttons, only while there is one: the notice (two lines at most; its whole text in its tooltip)
+        var noticeBottom = play.Y - v.Len(14);
+        var noticeTop = Math.Max(y + v.Len(10), noticeBottom - v.Len(50));
+        DrawNotice(canvas, v, Face(Assets.Italic, 14, v), new Rect(x0, noticeTop, x1 - x0, Math.Max(0, noticeBottom - noticeTop)));
     }
 
     /// <summary>The settings grid, in design pixels.</summary>
-    private const double RowHeight = 31, StatusHeight = 18, SectionGap = 14, HeadingHeight = 28, PlateWidth = 88, PlateHeight = 24;
+    private const double RowHeight = 32, StatusHeight = 18, SectionGap = 15, HeadingHeight = 28, PlateWidth = 88, PlateHeight = 24;
 
     /// <summary>The panel's two pages, General and Advanced: their names, the open one in ink and underlined in red, over a rule.</summary>
     private int Tabs(Canvas canvas, View v, TextFace face, int x0, int x1, int y)
@@ -1196,9 +1262,9 @@ internal sealed class LauncherScreen
         {
             var width = face.Measure(name);
             var ty = y + (height - face.LineHeight) / 2;
-            if (_hover == item && !open)
+            if (!open)
             {
-                Shade(canvas, new Rect(x - v.Len(6), y + v.Len(2), width + v.Len(12), height - v.Len(6)), Ink, 20);
+                RowLight(canvas, new Rect(x - v.Len(6), y + v.Len(2), width + v.Len(12), height - v.Len(6)), item);
             }
             StrongText(canvas, v, face, name, x, ty, open ? Ink : InkSoft);
             if (open)
@@ -1242,7 +1308,7 @@ internal sealed class LauncherScreen
             else
             {
                 canvas.Fill(area, lit ? 0x4A4036U : 0x2C251EU);
-                canvas.Frame(area, Math.Max(1, v.Len(1)), lit ? Gold : 0x16110C);
+                canvas.Frame(area, Math.Max(1, v.Len(1)), lit ? 0x7A6B58U : 0x16110CU);
             }
             var sink = down ? Math.Max(1, v.Len(1)) : 0;
             var cx = area.X + area.Width / 2 + sink;
@@ -1266,23 +1332,20 @@ internal sealed class LauncherScreen
         }
     }
 
-    /// <summary>A folder's field: a lighter inset on the parchment, the path cut at its start to keep its end.</summary>
+    /// <summary>A folder's field: a lighter inset on the parchment, the path cut at its start to keep its end; while it is typed in, framed in red.</summary>
     private void Field(Canvas canvas, View v, Rect field, string shown, bool focused, bool fixedBy, TextFace text)
     {
         canvas.Fill(field, FieldFill);
-        canvas.Frame(field, Math.Max(1, v.Len(1)), focused ? Gold : InkSoft);
-        if (focused)
-        {
-            canvas.Frame(field.Inset(Math.Max(1, v.Len(1))), Math.Max(1, v.Len(1)), Gold);
-        }
+        var typing = focused && _editing;
+        canvas.Frame(field, Math.Max(1, v.Len(typing ? 2 : 1)), typing ? DropCapRed : InkSoft);
         var fitted = Fit(text, shown, field.Width - v.Len(16), fromEnd: true);
         text.Draw(canvas, fitted, field.X + v.Len(8), field.Y + (field.Height - text.LineHeight) / 2, fixedBy ? InkSoft : Ink);
     }
 
-    /// <summary>A small dark plate (Browse…, Change…, Test sound): plate-small's art, or drawn; framed in gold when its row has the focus.</summary>
+    /// <summary>A small dark plate (Browse…, Change…, Test sound): plate-small's art, or drawn; lit (its hover art) under the pointer, or when it is the keyboard's choice itself.</summary>
     private void Plate(Canvas canvas, View v, Rect area, string label, TextFace text, Item item, Part part)
     {
-        var lit = _focus == item || _hover == item && _hoverPart == part;
+        var lit = _hover == item && _hoverPart == part || _focus == item && part == Part.Row;
         var down = _pressed == item && _pressedPart == part;
         var plateName = down && Assets.Art("plate-small-pressed") is not null ? "plate-small-pressed"
             : lit && Assets.Art("plate-small-hover") is not null ? "plate-small-hover" : "plate-small";
@@ -1296,9 +1359,9 @@ internal sealed class LauncherScreen
             canvas.Fill(new Rect(area.X, area.Y, area.Width, Math.Max(1, v.Len(1))), 0x7A6B58);
             canvas.Frame(area, Math.Max(1, v.Len(1)), 0x16110C);
         }
-        if (_focus == item && Assets.Art("plate-small-hover") is null || _hover == item && _hoverPart == part && Assets.Art("plate-small") is null)
+        if (lit && Assets.Art("plate-small-hover") is null)
         {
-            canvas.Frame(area, Math.Max(1, v.Len(1.5)), Gold);
+            Shade(canvas, area, LampLight, 40);
         }
         if (down && Assets.Art("plate-small-pressed") is null)
         {
@@ -1325,9 +1388,10 @@ internal sealed class LauncherScreen
             canvas.Frame(area, Math.Max(1, v.Len(2)), edge);
             canvas.Frame(area.Inset(Math.Max(2, v.Len(4))), Math.Max(1, v.Len(1)), red ? Gold : 0xF4EFE4);
         }
-        if (_focus == item || _hover == item)
+        // lit: a warm glow, full under the pointer, soft for the keyboard's choice (no frame)
+        if (_hover == item || _focus == item)
         {
-            canvas.Frame(new Rect(area.X - v.Len(3), area.Y - v.Len(3), area.Width + v.Len(6), area.Height + v.Len(6)), Math.Max(1, v.Len(2)), Gold);
+            Glow(canvas, v, area, _hover == item ? 1 : 0.5);
         }
         var down = _pressed == item;
         if (down)
@@ -1356,43 +1420,38 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>
-    /// The hint bar: the last message (or why the launcher is shown), the pointed-at or chosen row's problem in full, and what it
-    /// does; wrapped to the bar (long paths broken anywhere), the last line cut with "…" when there is more.
+    /// The notice over the buttons, only while there is something to tell: the last message (what an action did, why it could
+    /// not), else why the launcher is shown (the game could not start, it was not found, the first run). A dark plate with its
+    /// text wrapped to two lines at most (long paths broken anywhere), the last cut with "…" when there is more: the pointer
+    /// resting on it shows the whole text.
     /// </summary>
-    private void DrawHints(Canvas canvas, View v, TextFace face, Rect bar)
+    private void DrawNotice(Canvas canvas, View v, TextFace face, Rect room)
     {
-        var pad = v.Len(5);
-        var room = (bar.Height - 2 * pad) / face.LineHeight;
-        if (room <= 0)
+        var parts = NoticeParts().ToList();
+        var pad = v.Len(6);
+        if (parts.Count == 0 || room.Height < face.LineHeight + 2 * pad)
         {
             return;
         }
-        if (Assets.Art("hint-bar") is { } art)
-        {
-            Sliced(canvas, v, art, "hint-bar", bar);
-        }
-        else
-        {
-            Shade(canvas, bar, HintFill, 215);
-            canvas.Frame(bar, Math.Max(1, v.Len(1)), 0x8A7454);
-        }
-        Leaf(bar, "hints");
         var icon = v.Len(16);
+        var textX = room.X + pad + icon + v.Len(10);
+        var lineWidth = room.Right - pad - textX;
+        var lines = parts.SelectMany(p => WrapAll(face, p.Text, lineWidth).Select(l => (Text: l, p.Colour))).ToList();
+        var fits = Math.Max(1, Math.Min(2, (room.Height - 2 * pad) / face.LineHeight));
+        if (lines.Count > fits)
+        {
+            var last = lines[fits - 1];
+            lines = [.. lines.Take(fits - 1), (Fit(face, last.Text + " …", lineWidth, fromEnd: false), last.Colour)];
+        }
+        // as tall as its lines, at the bottom of its room (next to the buttons)
+        var height = lines.Count * face.LineHeight + 2 * pad;
+        var bar = new Rect(room.X, room.Bottom - height, room.Width, height);
+        Shade(canvas, bar, HintFill, 215);
+        canvas.Frame(bar, Math.Max(1, v.Len(1)), 0x8A7454);
+        Leaf(bar, "notice");
+        Hot(bar, Item.Notice, Part.Row);
         Icon(canvas, v, "icon-problem", new Rect(bar.X + pad, bar.Y + pad + (face.LineHeight - icon) / 2, icon, icon), Cream);
-        var textX = bar.X + pad + icon + v.Len(10);
-        var lineWidth = bar.Right - pad - textX;
-        var lines = new List<(string Text, uint Colour)>();
-        foreach (var (part, colour) in Details())
-        {
-            lines.AddRange(WrapAll(face, part, lineWidth).Select(l => (l, colour)));
-        }
-        if (lines.Count > room)
-        {
-            var last = lines[room - 1];
-            lines = [.. lines.Take(room - 1), (Fit(face, last.Text + " …", lineWidth, fromEnd: false), last.Colour)];
-        }
-        // one line: centred in the bar's height
-        var ly = lines.Count == 1 ? bar.Y + (bar.Height - face.LineHeight) / 2 : bar.Y + pad;
+        var ly = bar.Y + pad;
         foreach (var (text, colour) in lines)
         {
             face.Draw(canvas, text, textX, ly, colour);
@@ -1400,8 +1459,8 @@ internal sealed class LauncherScreen
         }
     }
 
-    /// <summary>The hint bar's parts, most important first: what the pointer is over, else the focused control.</summary>
-    private IEnumerable<(string Text, uint Colour)> Details()
+    /// <summary>The notice's text: the sound test's state, else the last message, else why the launcher is shown; nothing else.</summary>
+    private IEnumerable<(string Text, uint Colour)> NoticeParts()
     {
         if (_showSound && _context.SoundTest is { Status: { } soundStatus } soundTester)
         {
@@ -1421,15 +1480,126 @@ internal sealed class LauncherScreen
         {
             yield return (note, _context.Reason == LauncherReason.FirstRun ? Green : PaleRed);
         }
-        var subject = _hover != Item.None ? _hover : _focus;
-        if (subject is Item.HdPack or Item.AudioPack && PackProblem(subject == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
+    }
+
+    /// <summary>
+    /// A control's tooltip: its problem in full (a pack's, or its status line's when that is a problem or was cut to fit), then
+    /// what it does; the notice's: its whole text.
+    /// </summary>
+    internal IEnumerable<(string Text, uint Colour)> TooltipParts(Item item)
+    {
+        if (item == Item.Notice)
+        {
+            foreach (var part in NoticeParts())
+            {
+                yield return part;
+            }
+            yield break;
+        }
+        var row = item == Item.Change ? Item.GameFolder : item;
+        if (row is Item.HdPack or Item.AudioPack && PackProblem(row == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
         {
             yield return ("Problem: " + problem, PaleRed);
         }
-        if (Help(subject) is { Length: > 0 } help)
+        else if (_statusShown.TryGetValue(row, out var status) && (status.Colour == PaleRed || _statusCut.Contains(row)))
+        {
+            yield return (status.Text, status.Colour == PaleBlue ? Cream : status.Colour);
+        }
+        if (Help(item) is { Length: > 0 } help)
         {
             yield return (help, PaleBlue);
         }
+    }
+
+    /// <summary>
+    /// The tooltip of <see cref="_tip"/>: a dark plate under its control (over it when there is no room below), as wide as the
+    /// settings panel's inside at most, with the parts wrapped; kept in the window.
+    /// </summary>
+    private void DrawTooltip(Canvas canvas, View v)
+    {
+        TooltipArea = default;
+        if (_tip == Item.None || TooltipParts(_tip).ToList() is not { Count: > 0 } parts)
+        {
+            return;
+        }
+        var spot = _hotspots.FirstOrDefault(h => h.Item == _tip && h.Part == _tipPart);
+        if (spot.Item == Item.None)
+        {
+            spot = _hotspots.FirstOrDefault(h => h.Item == _tip);
+        }
+        if (spot.Item == Item.None)
+        {
+            return;
+        }
+        var anchor = spot.Area;
+        var face = Face(Assets.Italic, 14, v);
+        var pad = v.Len(7);
+        var width = Math.Min(canvas.Width - 2 * v.Len(4), _panel.Width - v.Len(20));
+        var lines = parts.SelectMany(p => WrapAll(face, p.Text, width - 2 * pad).Select(l => (Text: l, p.Colour))).Take(8).ToList();
+        var height = lines.Count * face.LineHeight + 2 * pad;
+        var gap = v.Len(4);
+        var y = anchor.Bottom + gap + height <= canvas.Height - v.Len(4) ? anchor.Bottom + gap : Math.Max(v.Len(4), anchor.Y - gap - height);
+        // in the settings panel when its control is (else in the window)
+        var (left, right) = _panel.Contains(anchor.X, anchor.Y) ? (_panel.X, _panel.Right) : (v.Len(4), canvas.Width - v.Len(4));
+        var x = Math.Clamp(anchor.X, left, Math.Max(left, right - width));
+        var box = new Rect(x, y, width, height);
+        Shade(canvas, new Rect(box.X + v.Len(3), box.Y + v.Len(4), box.Width, box.Height), Black, 70);
+        Shade(canvas, box, HintFill, 238);
+        canvas.Frame(box, Math.Max(1, v.Len(1)), 0x8A7454);
+        var ly = box.Y + pad;
+        foreach (var (text, colour) in lines)
+        {
+            face.Draw(canvas, text, box.X + pad, ly, colour);
+            ly += face.LineHeight;
+        }
+        TooltipArea = box;
+    }
+
+    /// <summary>A row lit: brightly under the pointer, softly when the keyboard chose it (no frame).</summary>
+    private void RowLight(Canvas canvas, Rect row, Item item)
+    {
+        var alpha = _hover == item ? 110 : _focus == item ? 60 : 0;
+        if (alpha > 0)
+        {
+            Shade(canvas, row, LampLight, alpha);
+        }
+    }
+
+    /// <summary>A warm light on parchment and plates (hover and the keyboard's choice).</summary>
+    private const uint LampLight = 0xFFF4DA;
+
+    /// <summary>The glow around a lit plate: candlelight.</summary>
+    private const uint GlowLight = 0xFFD98A;
+
+    /// <summary>
+    /// A plate lit: a warm glow around it fading out over a few pixels, and its face a little brighter: fully under the pointer,
+    /// at about half for the keyboard's choice.
+    /// </summary>
+    private static void Glow(Canvas canvas, View v, Rect area, double strength)
+    {
+        var reach = Math.Max(4, v.Len(13));
+        for (var y = area.Y - reach; y < area.Bottom + reach; y++)
+        {
+            for (var x = area.X - reach; x < area.Right + reach; x++)
+            {
+                if (x < 0 || y < 0 || x >= canvas.Width || y >= canvas.Height)
+                {
+                    continue;
+                }
+                var dx = Math.Max(Math.Max(area.X - x, x - (area.Right - 1)), 0);
+                var dy = Math.Max(Math.Max(area.Y - y, y - (area.Bottom - 1)), 0);
+                if (dx == 0 && dy == 0)
+                {
+                    continue;
+                }
+                var d = Math.Sqrt(dx * dx + dy * dy) / reach;
+                if (d < 1)
+                {
+                    canvas.Blend(x, y, GlowLight, (int)(235 * strength * (1 - d) * (1 - d)));
+                }
+            }
+        }
+        Shade(canvas, area.Inset(Math.Max(2, v.Len(4))), LampLight, (int)(75 * strength));
     }
 
     /// <summary>A message or status colour (chosen for the dark hint bar) as ink on parchment.</summary>

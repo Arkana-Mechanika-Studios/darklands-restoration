@@ -24,12 +24,76 @@ internal static class WindowsDialogs
         var thread = new Thread(() => chosen = PickFolderHere(title, owner, folders));
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
+        var centred = false;
         while (!thread.Join(15))
         {
             whileOpen();
+            // Windows puts the dialog at the launcher's top edge, its title bar where the frameless window's would be: it is
+            // moved to the middle of the launcher's window instead, once it shows
+            centred = centred || owner == IntPtr.Zero || Centre(owner);
         }
         return chosen;
     }
+
+    /// <summary>Moves the dialog <paramref name="owner"/> owns to the middle of it; false while there is none yet.</summary>
+    private static unsafe bool Centre(IntPtr owner)
+    {
+        _owner = owner;
+        _found = IntPtr.Zero;
+        EnumWindows(&OwnedDialog, IntPtr.Zero);
+        if (_found == IntPtr.Zero || !GetWindowRect(owner, out var o) || !GetWindowRect(_found, out var d))
+        {
+            return false;
+        }
+        int w = d.Right - d.Left, h = d.Bottom - d.Top;
+        SetWindowPos(_found, IntPtr.Zero, o.Left + (o.Right - o.Left - w) / 2, Math.Max(o.Top, o.Top + (o.Bottom - o.Top - h) / 2), 0, 0,
+            NoSize | NoZOrder | NoActivate);
+        return true;
+    }
+
+    private static IntPtr _owner, _found;
+
+    [UnmanagedCallersOnly]
+    private static unsafe int OwnedDialog(IntPtr window, IntPtr data)
+    {
+        var name = stackalloc char[16];
+        var length = GetClassNameW(window, name, 16);
+        if (GetWindow(window, OwnerWindow) == _owner && IsWindowVisible(window) && new string(name, 0, length) == "#32770")
+        {
+            _found = window;
+            return 0;
+        }
+        return 1;
+    }
+
+    private const uint OwnerWindow = 4, NoSize = 0x1, NoZOrder = 0x4, NoActivate = 0x10;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WindowRect
+    {
+        public int Left, Top, Right, Bottom;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern unsafe int EnumWindows(delegate* unmanaged<IntPtr, IntPtr, int> callback, IntPtr data);
+
+    [DllImport("user32.dll")]
+    private static extern unsafe int GetClassNameW(IntPtr window, char* name, int size);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetWindow(IntPtr window, uint relation);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsWindowVisible(IntPtr window);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowRect(IntPtr window, out WindowRect rect);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowPos(IntPtr window, IntPtr after, int x, int y, int width, int height, uint flags);
 
     private static string? PickFolderHere(string title, IntPtr owner, bool folders)
     {

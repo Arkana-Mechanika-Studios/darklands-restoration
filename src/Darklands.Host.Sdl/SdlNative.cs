@@ -11,6 +11,7 @@ internal static class SdlNative
     internal const uint WindowShown = 0x00000004;
     internal const uint WindowHidden = 0x00000008;
     internal const uint WindowResizable = 0x00000020;
+    internal const uint WindowBorderless = 0x00000010;
     internal const uint WindowAllowHighDpi = 0x00002000;
     internal const uint WindowFullscreenDesktop = 0x00001001;
     internal const uint RendererSoftware = 0x00000001;
@@ -369,6 +370,10 @@ internal static class SdlNative
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int SDL_WaitEvent(out SdlEvent @event);
+
+    /// <summary>As SDL_WaitEvent, at most <paramref name="milliseconds"/>: 0 when nothing came (or an error).</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_WaitEventTimeout(out SdlEvent @event, int milliseconds);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_PumpEvents();

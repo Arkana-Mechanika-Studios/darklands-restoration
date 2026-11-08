@@ -19,9 +19,14 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         // a folder dropped on the window (SDL reports files and folders alike)
         SdlNative.SDL_EventState(SdlNative.EventDropFile, 1);
         // no title bar while the launcher shows (its painting fills the window, its own buttons close and minimise it): a drag
-        // outside its controls moves the window, the edges resize it; the game's window gets its frame back (Dispose)
+        // outside its controls moves the window, the edges resize it; the game's window gets its frame back (Dispose). The window is
+        // opened without a frame (LauncherHost.Open); after the game's it loses its frame here.
         _current = this;
         SdlNative.SDL_SetWindowBordered(_host.Window, 0);
+        if (OperatingSystem.IsWindows())
+        {
+            FramelessWindow.Attach(SdlNative.WindowsHandle(_host.Window));
+        }
         unsafe
         {
             SdlNative.SDL_SetWindowHitTest(_host.Window, (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, int*, IntPtr, int>)&HitTest, IntPtr.Zero);
@@ -225,13 +230,28 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         return true;
     }
 
+    public IReadOnlyList<LauncherInput> Wait(TimeSpan timeout)
+    {
+        if (SdlNative.SDL_WaitEventTimeout(out var e, (int)Math.Max(1, timeout.TotalMilliseconds)) == 0)
+        {
+            return [new TimePassed()];
+        }
+        return Take(e);
+    }
+
     public IReadOnlyList<LauncherInput> Wait()
     {
-        var inputs = new List<LauncherInput>();
         if (SdlNative.SDL_WaitEvent(out var e) == 0)
         {
             return [new CloseRequested()];
         }
+        return Take(e);
+    }
+
+    /// <summary>The event that came and the others waiting, as the launcher's input.</summary>
+    private IReadOnlyList<LauncherInput> Take(SdlNative.SdlEvent e)
+    {
+        var inputs = new List<LauncherInput>();
         do
         {
             foreach (var input in _typing.Take(e, ToInput(e)))
@@ -324,6 +344,10 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
         SdlHost.ShowPointer(false);
         // the game's window has its frame (fullscreen: SDL shows none anyway)
         SdlNative.SDL_SetWindowHitTest(_host.Window, IntPtr.Zero, IntPtr.Zero);
+        if (OperatingSystem.IsWindows())
+        {
+            FramelessWindow.Detach();
+        }
         SdlNative.SDL_SetWindowBordered(_host.Window, 1);
         _current = null;
     }

@@ -54,7 +54,6 @@ public sealed class LauncherLayoutTests
     {
         var panel = screen.SettingsPanel;
         var blocks = screen.Blocks;
-        Assert.Contains(blocks, b => b.What == "hints");
         foreach (var (area, what) in blocks)
         {
             Assert.True(area.Width > 0 && area.Height > 0, $"{state}: {what} is empty ({area})");
@@ -86,6 +85,14 @@ public sealed class LauncherLayoutTests
                 screen.Render(canvas);
                 tabsSeen.Add(screen.AdvancedShown);
                 AssertLaidOut(screen, $"{width}x{height}, {(screen.AdvancedShown ? "Advanced" : "General")}, {screen.Focus}");
+                // why the game could not start: in the notice over the buttons; the keyboard's choice has its tooltip, in the window
+                Assert.Equal(context.Reason == LauncherReason.StartFailed, screen.Blocks.Any(b => b.What == "notice"));
+                if (i > 0)
+                {
+                    Assert.Equal(screen.Focus, screen.Tooltip);
+                    var tip = screen.TooltipArea;
+                    Assert.True(tip.Width > 0 && tip.X >= 0 && tip.Y >= 0 && tip.Right <= width && tip.Bottom <= height, $"{width}x{height}: the tooltip of {screen.Focus} {tip}");
+                }
                 // the window's buttons: in its top-right corner, clear of the settings panel
                 foreach (var button in new[] { LauncherScreen.Item.Minimise, LauncherScreen.Item.Close })
                 {
@@ -253,6 +260,124 @@ public sealed class LauncherLayoutTests
         own.Draw(a, "a", 4, 4, 0xFFFFFF);
         title.Draw(b, "a", 4, 4, 0xFFFFFF);
         Assert.NotEqual(a.Pixels, b.Pixels);
+    }
+
+    // ---- no hint bar: a row's whole problem and its help in a tooltip; messages in a notice only while there is one ----
+
+    [Fact]
+    public void ARowsWholeProblemIsInItsTooltipWhenThePointerRestsOnItsStatusLine()
+    {
+        // a pack folder that is there, with a broken manifest (its problem: a long path and a long message)
+        var folder = Directory.CreateTempSubdirectory("dkbrokenpack").FullName;
+        var context = Broken() with { Settings = new GameSettings { GameFolder = Game, HdPack = folder } };
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720));
+        var canvas = new Canvas(1280, 720);
+        screen.Render(canvas);
+        // no box over the buttons: nothing to tell
+        Assert.DoesNotContain(screen.Blocks, b => b.What is "notice" or "hints");
+
+        var status = screen.Area(LauncherScreen.Item.HdPack, LauncherScreen.Part.Status);
+        screen.Handle(new PointerMoved(status.X + 4, status.Y + 2));
+        Assert.True(screen.TooltipPending);
+        Assert.Equal(LauncherScreen.Item.None, screen.Tooltip);
+        // the pointer rests: the tooltip, with the problem in full, then what the row does
+        screen.Handle(new TimePassed());
+        Assert.Equal(LauncherScreen.Item.HdPack, screen.Tooltip);
+        var parts = screen.TooltipParts(LauncherScreen.Item.HdPack).ToList();
+        // the whole message (the folder's path, shown on the row, left out)
+        Assert.Equal("Problem: " + LauncherScreen.ShortProblem(folder, BrokenManifest(folder)), parts[0].Text);
+        Assert.EndsWith("manifest ignored", parts[0].Text);
+        Assert.StartsWith("Replacement pictures", parts[1].Text);
+        screen.Render(canvas);
+        Assert.True(screen.TooltipArea.Width > 0);
+        Assert.True(screen.TooltipArea.Y >= status.Bottom, "the tooltip is under the line");
+
+        // the pointer leaves for the painting: no tooltip
+        screen.Handle(new PointerMoved(600, 400));
+        screen.Render(canvas);
+        Assert.Equal(LauncherScreen.Item.None, screen.Tooltip);
+        Assert.Equal(0, screen.TooltipArea.Width);
+        // a click on the status line chooses its row
+        Click(screen, status);
+        Assert.Equal(LauncherScreen.Item.HdPack, screen.Focus);
+        Directory.Delete(folder);
+    }
+
+    [Fact]
+    public void TheKeyboardsChoiceShowsItsTooltipAtOnceAndThePointerHidesIt()
+    {
+        var (screen, _) = Screen();
+        screen.Handle(new KeyPressed(LauncherKey.Up));
+        Assert.Equal(LauncherScreen.Item.Save, screen.Focus);
+        Assert.Equal(LauncherScreen.Item.Save, screen.Tooltip);
+        Assert.False(screen.TooltipPending);
+        screen.Render(new Canvas(1280, 720));
+        screen.Handle(new PointerMoved(600, 400));
+        Assert.Equal(LauncherScreen.Item.None, screen.Tooltip);
+    }
+
+    [Fact]
+    public void AMessageShowsInTheNoticeAndItsWholeTextInItsTooltip()
+    {
+        var problem = "The game could not start: " + BrokenManifest(LongFolder);
+        var context = Broken(LauncherReason.StartFailed, problem);
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720));
+        screen.Render(new Canvas(1280, 720));
+        var notice = screen.Blocks.Single(b => b.What == "notice").Area;
+        Assert.True(notice.Bottom <= screen.Area(LauncherScreen.Item.Play).Y, "the notice is over the buttons");
+        Assert.Equal(problem, screen.TooltipParts(LauncherScreen.Item.Notice).Single().Text);
+
+        // without a reason, nothing; the report's message comes and shows
+        var (quiet, _) = Screen();
+        Assert.DoesNotContain(quiet.Blocks, b => b.What == "notice");
+        while (quiet.Focus != LauncherScreen.Item.Report)
+        {
+            quiet.Handle(new KeyPressed(LauncherKey.Tab));
+        }
+        quiet.Handle(new KeyPressed(LauncherKey.Enter));
+        quiet.Render(new Canvas(1280, 720));
+        Assert.Contains(quiet.Blocks, b => b.What == "notice");
+    }
+
+    [Fact]
+    public void PlatesLightUpUnderThePointerAndSofterForTheKeyboardWithoutAFrame()
+    {
+        // the Play plate's brightness: as drawn, chosen with the keyboard (its focus at the start), under the pointer
+        static long Light(LauncherScreen screen, Rect area)
+        {
+            var canvas = new Canvas(1280, 720);
+            screen.Render(canvas);
+            long sum = 0;
+            for (var y = area.Y - 6; y < area.Bottom + 6; y++)
+            {
+                for (var x = area.X - 6; x < area.Right + 6; x++)
+                {
+                    var c = canvas.Pixels[y * 1280 + x];
+                    sum += (c >> 16 & 255) + (c >> 8 & 255) + (c & 255);
+                }
+            }
+            return sum;
+        }
+
+        var (screen, _) = Screen();
+        var play = screen.Area(LauncherScreen.Item.Play);
+        Assert.Equal(LauncherScreen.Item.Play, screen.Focus);
+        var chosen = Light(screen, play);
+        screen.Handle(new KeyPressed(LauncherKey.Up));
+        var plain = Light(screen, play);
+        screen.Handle(new PointerMoved(play.X + 10, play.Y + 10));
+        var pointed = Light(screen, play);
+        Assert.True(plain < chosen && chosen < pointed, $"{plain} < {chosen} < {pointed}");
+
+        // no gold frame around it any more (the old one: 3 pixels out, 2 wide)
+        var canvas = new Canvas(1280, 720);
+        screen.Render(canvas);
+        var gold = 0;
+        for (var x = play.X - 3; x < play.Right + 3; x++)
+        {
+            gold += canvas.Pixels[(play.Y - 3) * 1280 + x] == 0xFFD2A94E ? 1 : 0;
+        }
+        Assert.Equal(0, gold);
     }
 
     // ---- the tabs, and the frameless window's own buttons ----

@@ -534,6 +534,14 @@ public sealed class LauncherTests
         static LauncherInput[] Tabs(int count) => [.. Enumerable.Repeat<LauncherInput>(Tab, count), Escape];
         Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(12));
         Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
+        // the pointer resting on a problem line (its tooltip), and on Save and quit (lit; Play, the keyboard's choice, softly)
+        var probe = new LauncherScreen(new LauncherModel(LauncherLayoutTests.Broken(), null), LauncherLayoutTests.Broken(), new ScriptedSurface(1280, 720) { Frameless = true });
+        probe.Render(new Drawing.Canvas(1280, 720));
+        var line = probe.Area(LauncherScreen.Item.AudioPack, LauncherScreen.Part.Status);
+        var save = probe.Area(LauncherScreen.Item.Save);
+        Shot("tooltip-problem-1280x720", LauncherLayoutTests.Broken(), 1280, 720, new PointerMoved(line.X + 8, line.Y + 3), new TimePassed(), Escape);
+        Shot("hover-save-1280x720", guide, 1280, 720, new PointerMoved(save.X + 20, save.Y + 10), Escape);
+        Shot("keyboard-tooltip-1280x720", guide, 1280, 720, [.. ToWindow, Escape]);
         Shot("advanced-broken-960x540", LauncherLayoutTests.Broken(), 960, 540, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
         Shot("broken-packs-hd-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(9));
         Shot("broken-packs-960x540", LauncherLayoutTests.Broken(), 960, 540, Tabs(12));
