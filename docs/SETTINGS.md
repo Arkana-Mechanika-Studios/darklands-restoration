@@ -46,8 +46,8 @@ not meant for players.
 | `display.fullscreen` | false | `--fullscreen` | |
 | `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
 | `display.cleanDrawing` | false | `--clean-drawing` | false = the screens are drawn as in the 1992 game, including its drawing oddities; true = the cleaner drawing of 0.9.5 (the game plays the same) |
-| `display.filter` | `"sharp"` | `--filter <name>` | how the 320x200 picture is drawn on a larger window: `sharp`, `smooth` or `crt` (below); only the window's picture changes (SDL host) |
-| `display.crtCurvature` | false | | true: the `crt` filter's picture slightly curved, as a tube's (below) |
+| `display.filter` | `"sharp"` | `--filter <name>` | how the 320x200 picture is drawn on a larger window: `sharp`, `even`, `soft`, `softcrt`, `hq`, `crt` or `crtplus` (below); only the window's picture changes (SDL host) |
+| `display.crtCurvature` | false | | true: the CRT filters' picture (`crt`, `softcrt`, `crtplus`) slightly curved, as a tube's (below) |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
@@ -86,27 +86,36 @@ How the SDL host draws the game's 320x200 picture on the window; the picture kee
 fullscreen and the black borders are as without a filter). In the game **Ctrl+F11** goes to the next filter for the
 rest of the run (the setting in the file stays; the original never reads F11, so the game loses no key).
 
-| Name | Picture |
-|---|---|
-| `sharp` (default) | each window pixel takes the nearest game pixel: hard pixels, as always; at sizes that are not whole multiples of 320x200 some columns and rows are one window pixel wider than others |
-| `smooth` | "sharp bilinear": the picture is enlarged by whole numbers with hard pixels, then smoothly to the window, so every game pixel is the same size and only the edges between pixels blend over one window pixel; at whole multiples it is the same as `sharp` |
-| `crt` | as `smooth`, with scanlines between the picture's 200 lines and a light red/green/blue aperture mask, as on a VGA monitor, and part of the lost brightness given back. The scanlines fade out where a line is under three window pixels tall. With `display.crtCurvature` true the picture is slightly curved, as a tube's (its corners black) |
+| Name | Launcher | Picture |
+|---|---|---|
+| `sharp` (default) | Sharp | each window pixel takes the nearest game pixel: hard pixels, as always; at sizes that are not whole multiples of 320x200 some columns and rows are one window pixel wider than others |
+| `even` | Even | "sharp bilinear": the picture is enlarged by whole numbers with hard pixels, then smoothly to the window, so every game pixel is the same size and only the edges between pixels blend over one window pixel; at whole multiples it is the same as `sharp`. `smooth`, its earlier name, is still read |
+| `soft` | Soft | as a 1992 VGA monitor drew it: each pixel a soft beam, wider across than down (Gaussian spreads 0.68 and 0.32 of a game pixel), so the game's checkerboard dithering blends into the colours it stands for while text stays readable |
+| `softcrt` | Soft CRT | `soft` with the scanlines and mask of `crt`: the softer CRT look |
+| `hq` | HQ | pixel-art smoothing: where a staircase edge passes the corner of a pixel (the two pixels beside the corner and the one across it share another colour, and the staircase goes on), the corner is cut along the line through the middles of its sides, so diagonals and outlines are rounded; checkerboard dithering, straight edges, rectangle corners and lone pixels stay as they are (a rule in the spirit of the xBR level-1 filters, written for this project) |
+| `crt` | CRT | as `even`, with scanlines between the picture's 200 lines and a light red/green/blue aperture mask, as on a VGA monitor, and part of the lost brightness given back. The scanlines fade out where a line is under three window pixels tall |
+| `crtplus` | CRT+ | a richer CRT: each line a beam that grows taller with its brightness, a stronger aperture mask, and a slight glow (the picture blurred wide and added over it) |
+
+With `display.crtCurvature` true the CRT kinds' picture is slightly curved, as a tube's (its corners black).
 
 Only the picture shown in the window changes: the game, its timing, the screenshots (F12), the problem reports and
 the frames the headless host and the oracles record are made before the filter and are the same with every filter. The
-text screen of the program start keeps its sharp look. With an HD pack, the game's own pixels (the frame and the
-overlay drawn over the replacements) go through `smooth`'s steps, the replacement pictures are drawn smoothly as before,
-and the CRT's mask lies over everything, replacements included.
+text screen of the program start keeps its sharp look. With an HD pack, the game's own pixels (the frame and the overlay
+drawn over the replacements) go through the filter, the replacement pictures are drawn smoothly as before, and the CRT
+kinds' scanlines and mask lie over everything, replacements included (the frame is drawn into a window-size texture first;
+`crtplus` then draws its beams from that texture at the game's 320x200 grid, so a replacement's finer detail goes into the
+beams as the game's pixels do).
 
-How it is drawn: when `smooth` or `crt` is set as the program starts, the window opens on SDL's GPU renderer, and a pixel
-shader of this project (`src/Darklands.Host.Sdl/Shaders/picture.frag.hlsl`, compiled by `tools/shaders/build_shaders.py`
-to DXIL for Direct3D 12 on Windows and to SPIR-V for Vulkan on Linux and the Steam Deck) draws the filter in one pass. As the
-window opens, one colour is drawn through the shader and read back; where that renderer cannot start or the shader does not
-draw (no Direct3D 12 or Vulkan, a driver that refuses it), or when a filter is chosen in the game with Ctrl+F11 on another
-renderer, the filters are drawn with render targets and blend modes instead: the same picture, without the curvature; on
-SDL's software renderer the CRT is a little darker there (it cannot give the brightness back). The log says which way is
-used ("Picture filters: shaders on SDL's gpu renderer (vulkan)"). Both ways are tested against a reference drawn on the
-CPU (`PictureFilterReference`), the shader on Direct3D 12 and on Vulkan.
+How it is drawn: when a filter other than `sharp` is set as the program starts, the window opens on SDL's GPU renderer, and
+a pixel shader of this project (`src/Darklands.Host.Sdl/Shaders/picture.frag.hlsl`, compiled by
+`tools/shaders/build_shaders.py` to DXIL for Direct3D 12 on Windows and to SPIR-V for Vulkan on Linux and the Steam Deck)
+draws the filter in one pass. As the window opens, one colour is drawn through the shader with every filter and read back.
+Where that renderer cannot start or the shader does not draw (no Direct3D 12 or Vulkan, a driver that refuses it), or when a
+filter is chosen in the game with Ctrl+F11 on another renderer, the filters are drawn with render targets and blend modes
+instead: `even` and `crt` as the shader draws them (without the curvature; on SDL's software renderer the CRT is a little
+darker), `soft` and `hq` as `even`, `softcrt` and `crtplus` as `crt`, and the log says so. The log also says which way is
+used ("Picture filters: shaders on SDL's gpu renderer (vulkan)"). Every filter has a reference drawn on the CPU
+(`PictureFilterReference`), and the shader is tested against it on Direct3D 12 and on Vulkan.
 
 ### `sound.audioPack`
 
@@ -169,7 +178,12 @@ When nothing is found, or the folder named does not hold the game, the launcher 
 ## Launcher (SDL host)
 
 The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the picture
-filter (its "Picture" row beside Fullscreen: Sharp, Smooth, CRT; ←/→ or Enter), the HD pack,
+filter (its "Picture" row beside Fullscreen: Sharp, Even, Soft, Soft CRT, HQ, CRT, CRT+; ←/→ or Enter; while the row is
+chosen or under the pointer, a preview over the left card shows a piece of one of your game's card pictures, the dragon over
+the burning village, through that filter, about as the game window will show it, CRT curvature included when the settings
+file sets it; the previews are drawn on the processor in the background from the launcher's first moment and kept, so
+stepping through the filters never waits; nothing of the game is stored for them; without a game folder they show a
+pattern drawn by the program), the HD pack,
 the audio pack (both: None, the packs in a `packs` folder, or a folder browsed for or dropped; [PACKS.md](PACKS.md)),
 the sound card and the Roland ROM folder (MT-32 and/or CM-32L; with a sound test: ten seconds of the game's music through the drivers the game
 will use) and the start-up screen and opening animation. Its settings are on two tabs: **General** (the game folder, the

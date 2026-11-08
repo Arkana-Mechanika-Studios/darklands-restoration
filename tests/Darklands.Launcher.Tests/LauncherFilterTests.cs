@@ -35,16 +35,22 @@ public sealed class LauncherFilterTests
         var model = Model(new GameSettings { GameFolder = Game });
         Assert.False(model.Changes().ContainsKey("display.filter"));
         model.StepFilter(1);
-        Assert.Equal("smooth", model.Filter);
-        Assert.Equal("Smooth", model.FilterLabel);
-        Assert.Equal("smooth", (string)model.Changes()["display.filter"]!);
-        Assert.Equal("smooth", model.Settings().Filter);
-        model.StepFilter(1);
-        model.StepFilter(1);
+        Assert.Equal("even", model.Filter);
+        Assert.Equal("Even", model.FilterLabel);
+        Assert.Equal("even", (string)model.Changes()["display.filter"]!);
+        Assert.Equal("even", model.Settings().Filter);
+        for (var i = 0; i < 6; i++)
+        {
+            model.StepFilter(1);
+        }
         Assert.Equal("sharp", model.Filter);
         Assert.False(model.Changes().ContainsKey("display.filter"));
         model.StepFilter(-1);
-        Assert.Equal("crt", model.Filter);
+        Assert.Equal("crtplus", model.Filter);
+        Assert.Equal("CRT+", model.FilterLabel);
+        // a file of before 1.0's last round says "smooth": shown as Even, and not written back unless changed
+        var old = Model(new GameSettings { GameFolder = Game, Filter = "smooth" });
+        Assert.Equal("even", old.Filter);
         Assert.Equal(LauncherModel.Filters.Select(f => f.Value), PictureFilters.Names);
     }
 
@@ -74,7 +80,7 @@ public sealed class LauncherFilterTests
         Assert.Equal("C:/Fonts/x.ttf", played.ConsoleFont);
         Assert.Equal("D:/shots", played.ScreenshotsFolder);
         Assert.True(played.Fullscreen);
-        Assert.Equal("crt", played.Filter);
+        Assert.Equal("soft", played.Filter);   // "smooth" (Even) stepped on once
         // a copy: the file's own settings are left as they were
         played.Mods!.Add("three");
         Assert.Equal(2, file.Mods.Count);
@@ -118,13 +124,13 @@ public sealed class LauncherFilterTests
         screen.Handle(new KeyPressed(LauncherKey.Right));
         Assert.Equal(LauncherScreen.Item.Picture, screen.Focus);
 
-        // from Play: Discord, the game folder, Change, window, fullscreen, then the picture; Right twice: CRT
+        // from Play: Discord, the game folder, Change, window, fullscreen, then the picture; Right twice: Soft
         var keyed = new Launcher().Run(Context(), new ScriptedSurface(width, height,
             [new KeyPressed(LauncherKey.Tab), new KeyPressed(LauncherKey.Tab), new KeyPressed(LauncherKey.Tab), new KeyPressed(LauncherKey.Tab),
              new KeyPressed(LauncherKey.Tab), new KeyPressed(LauncherKey.Tab), new KeyPressed(LauncherKey.Right), new KeyPressed(LauncherKey.Right),
              new KeyPressed(LauncherKey.Escape)]));
-        Assert.Equal("crt", (string)keyed.Changes["display.filter"]!);
-        Assert.Equal("crt", keyed.Settings.Filter);
+        Assert.Equal("soft", (string)keyed.Changes["display.filter"]!);
+        Assert.Equal("soft", keyed.Settings.Filter);
 
         // set by --filter: shown, not changed
         var fixedRun = new Launcher().Run(Context(new Dictionary<string, string> { ["display.filter"] = "--filter" }), new ScriptedSurface(width, height,

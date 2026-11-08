@@ -503,11 +503,13 @@ public static class SettingsFile
             // false: the screens are drawn as in the 1992 game, including its drawing oddities; true: the cleaner drawing of 0.9.5.
             // The game plays the same either way. Command line: --clean-drawing.
             "cleanDrawing": false,
-            // How the 320x200 picture is drawn on a larger window: "sharp" (hard pixels, as always), "smooth" (even, crisp
-            // pixels at any size) or "crt" (scanlines and a light mask, as on a VGA monitor). Only the picture changes; the
-            // game, its screenshots and its timing are the same. In the game Ctrl+F11 goes to the next one. Command line: --filter <name>.
+            // How the 320x200 picture is drawn on a larger window: "sharp" (hard pixels, as always), "even" (even, crisp pixels at
+            // any size), "soft" (as a 1992 VGA monitor drew it, the dithering blended), "softcrt" (soft with scanlines), "hq"
+            // (diagonals and outlines rounded), "crt" (scanlines and a light mask) or "crtplus" (a richer CRT with glow). Only the
+            // picture changes; the game, its screenshots and its timing are the same. In the game Ctrl+F11 goes to the next one.
+            // Command line: --filter <name>.
             "filter": "sharp",
-            // true: the CRT filter's picture slightly curved, as a tube's (where the graphics card draws the filters with shaders).
+            // true: the CRT filters' picture slightly curved, as a tube's (where the graphics card draws the filters with shaders).
             "crtCurvature": false
           },
 

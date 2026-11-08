@@ -17,10 +17,10 @@ public sealed class PictureFilterSettingsTests
 
     [Theory]
     [InlineData("sharp", PictureFilter.Sharp)]
-    [InlineData("smooth", PictureFilter.Smooth)]
+    [InlineData("smooth", PictureFilter.Even)]
     [InlineData("crt", PictureFilter.Crt)]
     [InlineData("CRT", PictureFilter.Crt)]
-    [InlineData(" Smooth ", PictureFilter.Smooth)]
+    [InlineData(" Smooth ", PictureFilter.Even)]
     public void TheFileNamesTheFilterInAnyCase(string name, PictureFilter filter)
     {
         var load = SettingsFile.Parse($$"""{ "display": { "filter": "{{name}}" } }""");
@@ -47,7 +47,7 @@ public sealed class PictureFilterSettingsTests
     {
         var file = new GameSettings { Filter = "crt" };
         Assert.Equal(PictureFilter.Crt, Resolve(file).Filter);
-        Assert.Equal(PictureFilter.Smooth, Resolve(file, "smooth").Filter);
+        Assert.Equal(PictureFilter.Even, Resolve(file, "smooth").Filter);
         var error = Assert.Throws<ArgumentException>(() => Resolve(file, "blur"));
         Assert.Contains("blur", error.Message, StringComparison.Ordinal);
         Assert.Equal("--filter", new CommandLineOptions { Filter = "crt" }.Overrides(_ => null)["display.filter"]);
@@ -57,13 +57,28 @@ public sealed class PictureFilterSettingsTests
     [Fact]
     public void TheFiltersCycleAndEveryOneHasANameAndALabel()
     {
-        Assert.Equal(PictureFilter.Smooth, PictureFilters.Next(PictureFilter.Sharp));
-        Assert.Equal(PictureFilter.Crt, PictureFilters.Next(PictureFilter.Smooth));
-        Assert.Equal(PictureFilter.Sharp, PictureFilters.Next(PictureFilter.Crt));
+        // the order of the launcher and Ctrl+F11: sharp, even, soft, softcrt, hq, crt, crtplus, then sharp again
+        var seen = new List<PictureFilter> { PictureFilter.Sharp };
+        for (var i = 0; i < 7; i++)
+        {
+            seen.Add(PictureFilters.Next(seen[^1]));
+        }
+        Assert.Equal([PictureFilter.Sharp, PictureFilter.Even, PictureFilter.Soft, PictureFilter.SoftCrt, PictureFilter.Hq, PictureFilter.Crt,
+            PictureFilter.CrtPlus, PictureFilter.Sharp], seen);
+        Assert.Equal(["sharp", "even", "soft", "softcrt", "hq", "crt", "crtplus"], PictureFilters.Names);
+        // the shader-only filters and what is drawn without the shader; the CRT kinds (curvature)
+        Assert.Equal([PictureFilter.Soft, PictureFilter.SoftCrt, PictureFilter.Hq, PictureFilter.CrtPlus],
+            Enum.GetValues<PictureFilter>().Where(PictureFilters.NeedsShader));
+        Assert.Equal(PictureFilter.Even, PictureFilters.WithoutShader(PictureFilter.Soft));
+        Assert.Equal(PictureFilter.Even, PictureFilters.WithoutShader(PictureFilter.Hq));
+        Assert.Equal(PictureFilter.Crt, PictureFilters.WithoutShader(PictureFilter.SoftCrt));
+        Assert.Equal(PictureFilter.Crt, PictureFilters.WithoutShader(PictureFilter.CrtPlus));
+        Assert.Equal([PictureFilter.SoftCrt, PictureFilter.Crt, PictureFilter.CrtPlus], Enum.GetValues<PictureFilter>().Where(PictureFilters.IsCrt));
         foreach (var filter in Enum.GetValues<PictureFilter>())
         {
             Assert.Equal(filter, PictureFilters.Parse(PictureFilters.Name(filter)));
             Assert.False(string.IsNullOrWhiteSpace(PictureFilters.Label(filter)));
+            Assert.StartsWith(PictureFilters.Label(filter) + ":", PictureFilters.Description(filter), StringComparison.Ordinal);
             Assert.Contains($"\"{PictureFilters.Name(filter)}\"", SettingsFile.Template, StringComparison.Ordinal);
         }
         Assert.Equal(Enum.GetValues<PictureFilter>().Length, PictureFilters.Names.Count);

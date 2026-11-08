@@ -52,7 +52,7 @@ character sheets, F6 for the party, Ctrl-F1–F5 to choose the leader, Alt-S sav
 Alt-O the marching order, Alt-D difficulty, Alt-M music, Alt-F sound effects, Alt-Q quit. Two keys are
 this program's own: **F12** saves a screenshot, and **F11** opens a developer console over the game
 (`help` lists its commands: time, money, attributes, saints, items...). **Ctrl-F12** makes a problem report (below), and
-**Ctrl-F11** changes how the picture is drawn on a large window: sharp pixels, smooth even pixels, or a CRT look
+**Ctrl-F11** changes how the picture is drawn on a large window: sharp or even pixels, a soft VGA-monitor look, smoothed pixel art, or CRT looks
 (`display.filter`, [SETTINGS.md](docs/SETTINGS.md)).
 
 ## Reporting a problem

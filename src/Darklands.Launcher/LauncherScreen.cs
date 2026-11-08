@@ -1,4 +1,5 @@
 using Darklands.Launcher.Drawing;
+using Darklands.Platform;
 
 namespace Darklands.Launcher;
 
@@ -854,8 +855,72 @@ internal sealed class LauncherScreen
         {
             DrawWindowButtons(canvas, v);
         }
+        DrawPreview(canvas, v);
         // over everything: the tooltip
         DrawTooltip(canvas, v);
+    }
+
+    /// <summary>The picture filter's preview inset, in window pixels (empty while it is not shown).</summary>
+    internal Rect PreviewArea { get; private set; }
+
+    /// <summary>The preview's picture in the inset (design pixels): a 120 x 75 piece of a game picture at 3 times, as a window shows it.</summary>
+    private static Rect PreviewImage(View v) => v.Rect(163, 246, 360, 225);
+
+    /// <summary>
+    /// The picture filter's preview (Item.Picture chosen or under the pointer, General tab): a framed inset over the left card,
+    /// the chosen filter's preview (made away from the frames by the host's IFilterPreviews, asked for from the first frame on,
+    /// so it is ready before the row is ever chosen), and what it shows. A preview not made yet: a soft placeholder; no frame
+    /// waits for one.
+    /// </summary>
+    private void DrawPreview(Canvas canvas, View v)
+    {
+        PreviewArea = default;
+        var image = PreviewImage(v);
+        var previews = _context.Previews;
+        previews?.Prepare(_model.GameFolderChecked, image.Width, image.Height, _context.Settings.CrtCurvature ?? false);
+        if (_advanced || (_focus != Item.Picture && _hover != Item.Picture))
+        {
+            return;
+        }
+        var filter = PictureFilters.Parse(_model.Filter) ?? PictureFilter.Sharp;
+        var caption = Face(Assets.Italic, 14, v);
+        var pad = v.Len(10);
+        var frame = new Rect(image.X - pad, image.Y - pad - caption.LineHeight - v.Len(4), image.Width + 2 * pad,
+            image.Height + 2 * pad + 2 * caption.LineHeight + v.Len(8));
+        Shade(canvas, new Rect(frame.X + v.Len(4), frame.Y + v.Len(5), frame.Width, frame.Height), Black, 80);
+        canvas.Fill(frame, HintFill);   // solid: nothing of the card shows through
+        canvas.Frame(frame, Math.Max(1, v.Len(1)), 0x8A7454);
+        caption.Draw(canvas, Fit(caption, $"Picture: {PictureFilters.Label(filter)}", image.Width, fromEnd: false), image.X, frame.Y + pad / 2, Cream);
+        var preview = previews?.Get(filter);
+        if (preview is { } shown)
+        {
+            if (shown.Width == image.Width && shown.Height == image.Height && image.X >= 0 && image.Y >= 0
+                && image.Right <= canvas.Width && image.Bottom <= canvas.Height)
+            {
+                // made at the inset's size: copied row by row
+                for (var y = 0; y < image.Height; y++)
+                {
+                    Array.Copy(shown.Argb, y * shown.Width, canvas.Pixels, (image.Y + y) * canvas.Width + image.X, image.Width);
+                }
+            }
+            else
+            {
+                // a size just changed: the last one stretched until the new one is made
+                canvas.Paint(image, (x, y) => shown.Argb[Math.Min(shown.Height - 1, y * shown.Height / image.Height) * shown.Width
+                    + Math.Min(shown.Width - 1, x * shown.Width / image.Width)]);
+            }
+        }
+        else
+        {
+            canvas.Fill(image, 0x3A2E22);
+            var wait = previews is null ? "No preview here." : "Preparing the preview…";
+            caption.Draw(canvas, wait, image.X + (image.Width - caption.Measure(wait)) / 2, image.Y + (image.Height - caption.LineHeight) / 2, PaleBlue);
+        }
+        canvas.Frame(image, Math.Max(1, v.Len(1)), 0x8A7454);
+        var note = preview is { FromGame: false } ? "A test pattern (no game folder); the game window shows the game itself."
+            : "A picture of your game, about as the game window will show it.";
+        caption.Draw(canvas, Fit(caption, note, image.Width, fromEnd: false), image.X, image.Bottom + v.Len(6), PaleBlue);
+        PreviewArea = frame;
     }
 
     private void DrawBackground(Canvas canvas, View v)
@@ -2132,7 +2197,9 @@ internal sealed class LauncherScreen
             Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type or paste (Ctrl+V) the folder of your copy of Darklands.",
             Item.Window => "The window's size; the game keeps its shape.",
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
-            Item.Picture => "How the 320x200 picture is drawn at large sizes: Sharp (hard pixels), Smooth (even pixels at any size), CRT (scanlines and a light mask). The game plays the same. ←/→ or Enter: the next one; Ctrl+F11 in the game too.",
+            Item.Picture => "How the 320x200 picture is drawn on a large window; the game plays the same. ←/→ or Enter: the next one (Ctrl+F11 in the game).\n"
+                + PictureFilters.Description(PictureFilters.Parse(_model.Filter) ?? PictureFilter.Sharp)
+                + "\nThe preview at the left approximates the game window.",
             Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
             Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
             Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
