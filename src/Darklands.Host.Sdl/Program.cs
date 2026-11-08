@@ -376,6 +376,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     host.Corner = corner;
     game.Options.Apply(settings);
     game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
+    // a pressed button stays long enough to be seen (the original's press lasts as long as its command's work on the machine)
+    game.Ui.PressedButtonMilliseconds = GameUi.PressedButtonFloor;
     var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
     if (saves.FellBack)
     {

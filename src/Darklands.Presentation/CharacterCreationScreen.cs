@@ -410,7 +410,7 @@ public sealed class CharacterCreationScreen
         var y = command.Y - 4;
         Screen.Draw(_ui.Assets.Picture("buttnCR2").Image, 0x43, y);
         _ui.Text.DrawCoded(Screen, 0x4A, command.Y, _data.Texts[command.Text], LabelColor);
-        _ui.Present();
+        _ui.PresentPressedButton();
         return y;
     }
 

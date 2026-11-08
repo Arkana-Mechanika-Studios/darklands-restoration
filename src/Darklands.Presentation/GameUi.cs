@@ -889,6 +889,32 @@ public sealed class GameUi
         }
     }
 
+    /// <summary>The least time a pressed button's picture is shown in the player's window, in ms (the SDL host sets <see cref="PressedButtonFloor"/>).</summary>
+    /// <remarks>0 (the default; Host.Headless, the oracles, the tests): no wait, as the original.</remarks>
+    public int PressedButtonMilliseconds { get; set; }
+
+    /// <summary>The player's window's minimum for a pressed button: about six frames, long enough to be seen.</summary>
+    public const int PressedButtonFloor = 100;
+
+    /// <summary>Shows a pressed button just drawn (the creation and inn roster commands, the load screen's buttons), then holds it for
+    /// <see cref="PressedButtonMilliseconds"/> before the command runs.</summary>
+    // orig: the screens draw the pressed button (gfx-picture-draw root 047C:05A5), run the command and copy the button's area back
+    //   (root 047C:0553) with no wait between: in the emulated original at 3000 instructions per ms an inn roster command shows its
+    //   button 0.13 ms, a creation command that reads charactr.tmp 36 ms (plus the disk's time); a press that leaves the screen keeps it
+    //   until the next screen is drawn (0.5 to 0.9 s there, the pictures decoded)
+    // DIVERGENCE: host comfort (machine speed): the pressed picture is held in the player's window at least PressedButtonMilliseconds
+    //   (0.1 s) before the command runs, so the press is seen on a fast machine; the command, the drawing and its order are unchanged, and
+    //   nothing is read meanwhile (a key or click waits, as in the BIOS buffer and the mouse driver's counts). Headless and the oracles
+    //   keep 0: no frame or clock of theirs changes.
+    public void PresentPressedButton()
+    {
+        Present();
+        if (PressedButtonMilliseconds > 0)
+        {
+            Wait(PressedButtonMilliseconds, skippable: false);
+        }
+    }
+
     /// <summary>Waits a while, showing the screen; a key or click ends the wait early when allowed.</summary>
     // orig: wait-ticks(n) (R030+0x3096): spins until clock() has advanced by n, no input checks at all; notice-display waits root 0410:0302(ticks) (a timer-driver wait, see MessageBox)
     // C: a clock() tick is one millisecond (root 06A1:2682 multiplies the elapsed seconds by 1000, MSC 6 CLK_TCK = 1000); the 0410 timer ticks have another unit,

@@ -326,7 +326,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             ui.Canvas.Draw(button.Image, 0x42, 0x2C);
         }
         ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x30, Label(0), LabelColor);
-        ui.Present();
+        ui.PresentPressedButton();
         var loaded = load(_names[_cursor]);
         if (loaded is null)
         {
@@ -350,7 +350,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             ui.Canvas.Draw(button.Image, 0x41, 0x3B);
         }
         ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Label(1), LabelColor);
-        ui.Present();
+        ui.PresentPressedButton();
         if (new MessageBox(ui).Ask("Delete this Game?"))
         {
             if (_names[_cursor] is { } name && folder.Delete(name, Playing))
