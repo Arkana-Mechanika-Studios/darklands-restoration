@@ -17,8 +17,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | travel | 4 | 0 | 4 |
 | battles | 31 | 13 | 18 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 11 | 6 | 5 |
-| total | 233 | 52 | 181 |
+| screens/presentation | 12 | 7 | 5 |
+| total | 234 | 53 | 181 |
 
 ## Core logic (222)
 
@@ -699,16 +699,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:425` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:429` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:436` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:440` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (11)
+## Presentation and host (12)
 
-### screens/presentation (11)
+### screens/presentation (12)
 
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
@@ -716,16 +716,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:72` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
-- **B-e60d2a** `bug`, flag `FixDamagedSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:388` `DarklandsGame.LoadSavedGame`  
+- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:388` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:441` `DarklandsGame.LoadInGame`  
+- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:400` `DarklandsGame.LoadSavedGame`  
+  original: `R037+0x8ED4` (1C7D:0D24, matched)  
+  why: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:453` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:611` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:623` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:812` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:824` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  

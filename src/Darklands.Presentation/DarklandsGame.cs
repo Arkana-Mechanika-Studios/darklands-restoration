@@ -397,6 +397,15 @@ public sealed class DarklandsGame
             new MessageBox(_ui).Notice(DamagedSavedGame);
             return null;
         }
+        // BUG: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
+        // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) a saved game holding what no game has (SaveFile.ImpossibleValue) is refused before anything changes: null, and a notice (own text: the original has none).
+        if (Behaviour.FixImpossibleSavedGame && Saves.ImpossibleValue(name, World.LocationRecords.Locations.Count) is { } impossible)
+        {
+            Log?.Invoke($"{name}: the saved game holds {impossible}, which no game has (edited by hand?); not loaded");
+            beforeNotice?.Invoke();
+            new MessageBox(_ui).Notice(ImpossibleSavedGame);
+            return null;
+        }
         var loaded = Saves.Load(name, World, running);
         var box = new MessageBox(_ui);
         box.Show(HotKeys.DifficultyText(loaded.State.Difficulty));
@@ -432,6 +441,9 @@ public sealed class DarklandsGame
 
     /// <summary>The notice for a saved game that is cut short (own text, one box a line).</summary>
     public static readonly IReadOnlyList<string> DamagedSavedGame = ["This saved game is damaged and cannot be loaded.", "Press a key."];
+
+    /// <summary>The notice of a saved game holding what no game has (OriginalBehaviour.FixImpossibleSavedGame).</summary>
+    public static readonly IReadOnlyList<string> ImpossibleSavedGame = ["This saved game holds values no game can have", "and cannot be loaded.", "Press a key."];
 
     /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?", then the load screen; the game goes on with what it gives.</summary>
     // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: card-text-window->f10 = 3; the question;

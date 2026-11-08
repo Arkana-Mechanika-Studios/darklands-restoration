@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 2, justify: 40, keep: 10.
+- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 2, justify: 40, keep: 11.
 - Part B (undefined-memory in core logic): 156 entries; determinism: deterministic: 1, n/a: 83, no: 59, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -450,11 +450,18 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: a ninth cloud slot (the bytes after the array, DS:A33B) reads as an empty cloud at (0, 0).  
   recommendation: **keep** (checked against the original) - cloud-on-line-test reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from request-work-buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
 
-### persistence (5)
+### persistence (6)
+
+#### not-modelled (1)
+
+- **D-cd116a** `not-modelled` - `src/Darklands.Persistence/OriginalSaves.cs:119` `OriginalSaves.Read`  
+  original: `R037+0x8ED4` (1C7D:0D24, matched)  
+  divergence: not modelled: on a hand-edited month outside 0..11, location-now outside the places or a short location table the original reads past its tables where they are indexed (undefined memory); the rewrite reads the values as they are and throws IndexOutOfRange in the code that indexes them. The player's game refuses such a file first (OriginalBehaviour.FixImpossibleSavedGame).  
+  recommendation: **keep** (checked against the original) - Only a hand-edited (or another tool's) saved game holds a month outside 0..11, location-now outside the places or a location table shorter than the game's: no play writes one (every real, synthesised and community save is inside the ranges: ImpossibleSaveTests, DamagedSaveTests). The original then reads past its month table, days-per-month table or place records (heap and data-segment bytes, card fuzz rounds 1 and 2 of 2026-11-07); that memory is not modelled, so the rewrite reads the values as they are and throws where it indexes. Data safety, switchable: the player's game refuses such a file first (OriginalBehaviour.FixImpossibleSavedGame, D-9d110d); the testers keep the loader as it was.
 
 #### deliberate-fix (1)
 
-- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:426` `OriginalSaves.static`  
+- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:430` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.  
   recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixSaveWriterSkipsEmptySlots, on in the player's game): the original writes a short file for a party slot of status 0 (the Wild Hunt) that it can crash loading; fixed, every roster record is written and the count is true. The faithful short file is reproduced (D-be90b2).
@@ -473,7 +480,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:454` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:458` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -1108,15 +1115,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.  
   deterministic: **no** (checked against the original); action: **keep** - Checked against the original: losing to the Wild Hunt (card 0x41, card oracle with the battle lost, 24 runs) makes 483.07 write a save one record short; loading that file in the lockstep oracle ends in run-time error R6001 (null pointer assignment, exit 255) inside R037+0x8ED4, while DKSAVE40's own short re-save loads garbled. Which happens depends on heap and file bytes; a crash to DOS is not reproduced on purpose (user decision 2026-10-22): the rewrite loads the garbled game. A later 'fixed' mode would stop the Wild Hunt writing such files.
-- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:229` `OriginalSaves.Read`  
+- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:233` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=request-work-buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:319` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:323` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but game-store-entry's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.
-- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:164` `SaveFile.Take`  
+- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:201` `SaveFile.Take`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched), `R037+0x4184` (1462:4184, draft)  
   divergence: the original's buffers keep what they held before (a heap block's leftovers), not zeros.  
   deterministic: **no**; action: **keep** - R037+0x8ED4 reads with _dos_read and goes on with a short read; the buffers keep a heap block's previous contents. Only a file read out of step that also ends early reaches it (none of the 72 community saves nor 483.07's own short re-save of DKSAVE40 does: the lockstep oracle loads both sides without it). Reproducing it would need the heap's residue; zeros keep the load from failing.

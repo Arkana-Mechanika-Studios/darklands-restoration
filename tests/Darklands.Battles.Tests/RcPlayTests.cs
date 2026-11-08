@@ -772,6 +772,78 @@ public sealed class RcPlayTests
         Assert.DoesNotContain(log, l => l.Contains("damaged"));
     }
 
+    /// <summary>DKSAVE0 (and its battle file) with one header word poked, as a hand edit does.</summary>
+    private static string PokedSave(GameFiles files, int offset, int value)
+    {
+        var saves = TempFolder("g6");
+        var sav = File.ReadAllBytes(OwnSave(files, "DKSAVE0.SAV")!);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt16LittleEndian(sav.AsSpan(offset), (short)value);
+        File.WriteAllBytes(Path.Combine(saves, "DKSAVE0.SAV"), sav);
+        if (OwnSave(files, "DKSAVE0.BSV") is { } bsv)
+        {
+            File.Copy(bsv, Path.Combine(saves, "DKSAVE0.BSV"));
+        }
+        return saves;
+    }
+
+    /// <summary>
+    /// A hand-edited saved game holding what no game has (a month of 12, an hour of 24, location-now past the places; cardfuzz: the rewrite then
+    /// throws where the original reads past its tables): with the data-safety fix it is refused on the load screen and at the start, says so,
+    /// and nothing is played or written.
+    /// </summary>
+    [Theory]
+    [InlineData(0x6A, 12, false)]
+    [InlineData(0x6E, 24, false)]
+    [InlineData(0x7C, 414, false)]
+    [InlineData(0x6A, 12, true)]
+    [InlineData(0x7C, -5, true)]
+    public void ASavedGameHoldingWhatNoGameHasIsRefusedWithTheFix(int offset, int value, bool fromTheStart)
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null)
+        {
+            return;
+        }
+        var saves = PokedSave(files, offset, value);
+        var before = FolderDigest(saves);
+        var host = fromTheStart ? new RcHost(["w:20", "k:enter", "w:20"]) : new RcHost(["k:t", "w:5", "k:l", "w:300", "k:enter", "w:60", "k:esc", "w:30", "k:esc", "w:30"]);
+        var game = NewGame(files, host, saves, load: fromTheStart ? "DKSAVE0.SAV" : null, behaviour: OriginalBehaviour.DataSafe);
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        Assert.Null(Record.Exception(game.Run));
+        Assert.Contains(log, l => l.Contains("which no game has"));
+        Assert.False(played, "no game should have been started from the edited file");
+        Assert.Equal(before, FolderDigest(saves));
+    }
+
+    /// <summary>Faithful (the testers and oracles) keeps the loader's reading: such a file is loaded with no message (an hour of 24 plays on).</summary>
+    [Fact]
+    public void FaithfulASavedGameHoldingWhatNoGameHasIsLoadedAsBefore()
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is null)
+        {
+            return;
+        }
+        var host = new RcHost(["w:50", "k:space", "w:50"]);
+        var game = NewGame(files, host, PokedSave(files, 0x6E, 24), load: "DKSAVE0.SAV");
+        var log = new List<string>();
+        game.Log = log.Add;
+        var played = false;
+        host.EveryFrame = _ => played |= game.Playing is not null;
+        game.Run();
+        Assert.True(played);
+        Assert.DoesNotContain(log, l => l.Contains("which no game has"));
+    }
+
+    /// <summary>The notice is a sentence the game's own boxes show, one line a box.</summary>
+    [Fact]
+    public void TheNoticeOfASavedGameHoldingWhatNoGameHasReadsAsASentence()
+    {
+        Assert.Equal("This saved game holds values no game can have and cannot be loaded.", string.Join(" ", DarklandsGame.ImpossibleSavedGame.SkipLast(1)));
+        Assert.All(DarklandsGame.ImpossibleSavedGame, l => Assert.InRange(l.Length, 1, 60));
+    }
+
     /// <summary>With the fix a whole file still loads and plays: real saves of the folder, one without its battle file, and one cut only in its cache.</summary>
     [Theory]
     [InlineData("DKSAVE0.SAV", false)]
@@ -797,5 +869,6 @@ public sealed class RcPlayTests
         game.Run();
         Assert.True(played, "the whole saved game should have loaded");
         Assert.DoesNotContain(log, l => l.Contains("damaged"));
+        Assert.DoesNotContain(log, l => l.Contains("which no game has"));
     }
 }

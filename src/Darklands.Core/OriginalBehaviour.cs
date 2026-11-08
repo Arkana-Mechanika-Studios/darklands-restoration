@@ -59,7 +59,7 @@ public sealed class OriginalBehaviour
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
-        FixRosterFigurePreview = true, FixRosterStaleRow = true,
+        FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true,
     };
 
     /// <summary>
@@ -108,6 +108,17 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: saved-game load R037+0x8ED4 (1C7D:0D24): each _dos_read of the header, party block, records and location block ignores a short count (checked in the emulated original: header cut at 0 or 96 bytes ends in DOS, cut at 512 or 9374 plays on)
     public bool FixDamagedSavedGame { get; set; }
+
+    /// <summary>
+    /// A saved game whose header holds what no game has (edited by hand or by another tool: a month above 11, a day above 31, an hour above
+    /// 23, location-now outside the places, a location table shorter than the game's places) is loaded all the same: the original reads past
+    /// its tables where they are indexed (the month names, the days per month, the place records), and the rewrite stops with an exception
+    /// in the code that indexes (a card, the party information, a trade). Fixed: the load is refused before anything changes and a notice
+    /// says so, as for a damaged file (<see cref="FixDamagedSavedGame"/>); every saved game play writes loads as before.
+    /// </summary>
+    // orig: saved-game load R037+0x8ED4 (1C7D:0D24): the date, location-now and the location table are read with no check (card fuzz: a month
+    //   of 12 read past the month table in the original, an IndexOutOfRange in the rewrite); data safety, a crash
+    public bool FixImpossibleSavedGame { get; set; }
 
     /// <summary>
     /// The inn's roster ("reform your party"): an arrow key onto a row past the figure list (row 4 or later with the game's four figure

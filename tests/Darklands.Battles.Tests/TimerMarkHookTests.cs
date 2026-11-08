@@ -9,9 +9,15 @@ namespace Darklands.Battles.Tests;
 /// endurance regain reads the clock anew for each member (R014+0x45CF), trigger-check reads it at its end for the next check
 /// (R014+0x459E). The hooks are null in play; a callback given there moves only what is read after it.
 /// </summary>
-// the hooks are static: a call from another test's battle (another thread) is ignored
+// the hooks are static, and every battle screen clears them at each pass (BattleScreen's loop): another test's battle on another thread
+//   could clear this test's hook between its set and its call; so these tests run alone, after the parallel ones (Collection below)
+//   and a call from another thread is still ignored
+[Collection(TimerMarkHookTests.Alone)]
 public sealed class TimerMarkHookTests
 {
+    /// <summary>The collection that runs by itself: no other test of the assembly runs alongside it.</summary>
+    public const string Alone = "TimerMarkHooks";
+
     private static readonly int[] Delays = [300, 900, 1800, 2700];
 
     [Fact]
@@ -94,4 +100,10 @@ public sealed class TimerMarkHookTests
         }
         Assert.Equal((ushort)(clock + 1 + 120), tactics.ActivationsAt);
     }
+}
+
+/// <summary>The timer-mark hook tests' collection, run with no other test of the assembly at the same time.</summary>
+[CollectionDefinition(TimerMarkHookTests.Alone, DisableParallelization = true)]
+public sealed class TimerMarkHookCollection
+{
 }
