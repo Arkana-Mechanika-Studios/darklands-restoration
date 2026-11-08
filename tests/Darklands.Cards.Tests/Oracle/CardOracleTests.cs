@@ -519,6 +519,13 @@ public sealed class CardOracleTests
 
     private static string Short(string s) => s.Length > 160 ? s[..160] + "…" : s;
 
+    /// <summary>
+    /// Called on the running thread just before the card runs, after the start state is built (CardFuzz: the coverage of the card's
+    /// run starts here, not in the loader). Unset outside the fuzzer.
+    /// </summary>
+    [ThreadStatic]
+    public static Action? RunStarting;
+
     /// <summary>Runs the C# card on a start state as the oracle did.</summary>
     public static (List<string> Trace, string End, string Random, (string Place, JsonObject Sections)? Sav) Run(
         Card card, string key, int option, bool probe, uint clock, HandCall? hand = null, string? direct = null)
@@ -649,6 +656,7 @@ public sealed class CardOracleTests
         var ok = false;
         // the run key's forced draws (parts R<k>_<v>), counted from the card's start as card_oracle.py counts the original's rand() calls
         ForcedDraws.Begin(state.Random, CardOracleStates.DrawsOf(key));
+        RunStarting?.Invoke();
         try
         {
             if (direct is not null)

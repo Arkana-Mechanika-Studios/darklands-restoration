@@ -34,7 +34,7 @@ public static class ForcedDraws
     /// <summary>Starts forcing the draws of a run (none: nothing to do).</summary>
     public static void Begin(IRandomSource random, Dictionary<int, int> draws)
     {
-        if (draws.Count == 0 || random is not MscRandom msc)
+        if ((draws.Count == 0 && !Counting) || random is not MscRandom msc)
         {
             _current = null;
             return;
@@ -43,7 +43,19 @@ public static class ForcedDraws
         MscRandom.BeforeDraw ??= Before;
     }
 
-    public static void End() => _current = null;
+    public static void End()
+    {
+        LastCount = _current?.Count ?? 0;
+        _current = null;
+    }
+
+    /// <summary>Opt-in (CardFuzz): every run counts its draws, forced or not; <see cref="LastCount"/> is then the last run's count.</summary>
+    [ThreadStatic]
+    public static bool Counting;
+
+    /// <summary>The draws of the thread's last run (counted when it forced draws or <see cref="Counting"/> was set; 0 otherwise).</summary>
+    [ThreadStatic]
+    public static int LastCount;
 
     private static void Before()
     {
