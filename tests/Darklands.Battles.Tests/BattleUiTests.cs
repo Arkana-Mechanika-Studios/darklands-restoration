@@ -907,6 +907,41 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// After the won battle's loot screen the panel's frames and rows are drawn again over the screen (R014+0x0D25..0x0D38): the frame line
+    /// under a dead member's row stays, the hatching keeps to the row's 0x26 lines until the next full paint (vis10 session leftovers-msg,
+    /// the original's (10,39) .. (50,39)).
+    /// </summary>
+    [Fact]
+    public void AfterTheLootTheFrameLineStaysUnderADeadMembersHatchingUntilAFullPaint()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.State.Party.Members[2].Status = Darklands.Core.Characters.CharacterStatus.Dead;
+        run.Play("wait:10");
+        var y = 2 * PartyPanel.RowHeight + 1;
+        bool Unchanged(byte[] frame, Action<Darklands.Presentation.Graphics.Canvas> draw)
+        {
+            var shown = new Screen();
+            frame.CopyTo(shown.Pixels, 0);
+            draw(new Darklands.Presentation.Graphics.Canvas(shown));
+            return shown.Pixels.AsSpan().SequenceEqual(frame);
+        }
+        Assert.True(Unchanged(run.LastFrame!, c => PartyPanel.DrawHatching(c, y, 0x27)), "before: the hatching does not reach the frame line");
+        ((Darklands.Core.Battles.Tactics.ITacticalView)run.Screen).PanelFramesRedrawn();
+        var after = run.Ui.Canvas.Screen.Pixels.ToArray();
+        Assert.True(Unchanged(after, c => PartyPanel.DrawHatching(c, y, 0x26)), "the row is not hatched");
+        Assert.False(Unchanged(after, c => PartyPanel.DrawHatching(c, y, 0x27)), "the hatching covers the frame line");
+        run.Play("wait:10");
+        Assert.False(Unchanged(run.LastFrame!, c => PartyPanel.DrawHatching(c, y, 0x27)), "a later frame hatched the frame line");
+        run.Screen.Recentre(run.Screen.Tactics!.Battle.ActiveMember);
+        run.Play("wait:10");
+        Assert.True(Unchanged(run.LastFrame!, c => PartyPanel.DrawHatching(c, y, 0x27)), "the full paint did not hatch the frame line");
+    }
+
+    /// <summary>
     /// The battle panel's order letter is drawn in the colour of the member's name (root 0000:18FA runs after the bars, which leave the name's
     /// colour set in the window): the leader's yellow, white for the others, grey for a member who is gone; an away member has none (vis10 session
     /// tleads-battle-difficulty).
