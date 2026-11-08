@@ -102,6 +102,33 @@ public sealed class RolandDriverTests
     }
 
     [Fact]
+    public void TheSampleFileIsReadWhenThePieceIsRequestedNotWhenItIsRendered()
+    {
+        if (Files() is not { } files)
+        {
+            return;
+        }
+        short[] Opening(bool fileGoneAfterRequest)
+        {
+            var folder = Files()!;
+            var (audio, _) = Start(folder);
+            audio.PlayMusic(0x2F);
+            if (fileGoneAfterRequest)
+            {
+                // what the folder holds once the request is made no longer matters: the rendering (the sound device's thread)
+                // reads no file
+                folder.Replace("OPENDARK.DGT", new byte[folder.Read("OPENDARK.DGT").Length]);
+            }
+            var sound = new short[2 * 22050 * 22];
+            audio.Render(sound);
+            return sound;
+        }
+        var heard = Opening(false);
+        Assert.Contains(heard, s => s != 0);
+        Assert.Equal(heard, Opening(true));
+    }
+
+    [Fact]
     public void TheMpuTakesUartModeAndSendsItsBytes()
     {
         var mpu = new Mpu401();

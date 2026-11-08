@@ -24,7 +24,8 @@ public sealed class SynthAudio : IAudio, IPcmSource, IGameTimer
     //   before 39h..3Bh.
     // DIVERGENCE: the game loads the file when the opening or ending starts and frees it afterwards
     //   (without telling the driver); here the driver is restarted with the file when a piece needs a
-    //   file other than the one it has, and the file stays in the emulated memory.
+    //   file other than the one it has, and the file stays in the emulated memory. The file is read when
+    //   the piece is requested (on the game's thread), not when the request is carried out.
     private static string? SampleFileFor(int piece) => piece switch
     {
         >= 0x2F and <= 0x35 => "OPENDARK.DGT",
@@ -43,6 +44,7 @@ public sealed class SynthAudio : IAudio, IPcmSource, IGameTimer
 
     private readonly List<(long Tick, bool Battle, int Number)> _requests = new();
     private readonly object _requestLock = new();
+    private readonly Dictionary<string, byte[]?> _sampleFiles = new(StringComparer.OrdinalIgnoreCase); // under _requestLock
     private readonly object _lock = new();
     private readonly GameFiles _files;
     private readonly SoundSetup _setup;
@@ -172,6 +174,7 @@ public sealed class SynthAudio : IAudio, IPcmSource, IGameTimer
     // DIVERGENCE: requests still waiting for their tick are carried out first, earlier by at most the output's latency.
     public int PlayMusicNow(int tune)
     {
+        LoadSampleFileFor(false, tune); // before the lock: no file is read while the rendering waits
         lock (_lock)
         {
             if (Fault is not null)
@@ -195,6 +198,7 @@ public sealed class SynthAudio : IAudio, IPcmSource, IGameTimer
 
     private void Request(long tick, bool battle, int number)
     {
+        LoadSampleFileFor(battle, number);
         lock (_requestLock)
         {
             // in tick order; requests for the same tick keep the order they were made in
@@ -339,14 +343,49 @@ public sealed class SynthAudio : IAudio, IPcmSource, IGameTimer
         {
             SwapDriver(battle);
         }
-        // C: DS:A876 == 'a' || DS:A876 == 'p' - every driver of those letters gets the file; the AdLib driver has no DSP to play it.
-        var name = battle || !_setup.Card.PlaysSamples ? null : SampleFileFor(number);
-        if (name is not null && name != _sampleFile && _files.Exists(name))
+        var name = SampleFileNeeded(battle, number);
+        if (name is not null && name != _sampleFile && SampleFile(name) is { } samples)
         {
             _sampleFile = name;
-            _driver.Start(_setup.Card, _files.Read(name));
+            _driver.Start(_setup.Card, samples);
         }
         return _driver.Play(number);
+    }
+
+    /// <summary>The sampled-sound file the driver needs for <paramref name="number"/>, if any.</summary>
+    // C: DS:A876 == 'a' || DS:A876 == 'p' - every driver of those letters gets the file; the AdLib driver has no DSP to play it.
+    private string? SampleFileNeeded(bool battle, int number) => battle || !_setup.Card.PlaysSamples ? null : SampleFileFor(number);
+
+    /// <summary>
+    /// Reads the sampled-sound file a request will need, on the thread making the request: the rendering thread (the
+    /// sound device's) never reads files, which can take seconds on a busy or sleeping disk and would stop the sound and the
+    /// timer that the presentation follows.
+    /// </summary>
+    private void LoadSampleFileFor(bool battle, int number)
+    {
+        if (SampleFileNeeded(battle, number) is { } name)
+        {
+            SampleFile(name);
+        }
+    }
+
+    /// <summary>The bytes of a sampled-sound file (null: the folder has none), read once and kept.</summary>
+    private byte[]? SampleFile(string name)
+    {
+        lock (_requestLock)
+        {
+            if (_sampleFiles.TryGetValue(name, out var known))
+            {
+                return known;
+            }
+        }
+        // read outside the lock, which the rendering thread takes for every buffer
+        var bytes = _files.Exists(name) ? _files.Read(name) : null;
+        lock (_requestLock)
+        {
+            _sampleFiles.TryAdd(name, bytes);
+            return _sampleFiles[name];
+        }
     }
 
     /// <summary>Unloads one driver and loads the other, as the game does on entering and leaving a battle.</summary>
