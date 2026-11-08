@@ -105,6 +105,38 @@ if (args[0] == "cutout")
     return 0;
 }
 
+if (args[0] == "plate")
+{
+    // a plate in three slices whose pieces were painted with lines at their joins: the columns around each join
+    // (<reach> pixels each way) are repainted from the middle piece, feathered into the end caps over 3 pixels
+    //   PaperTool plate <plate.png> <slice.txt> <reach> <out.png>
+    var art = PngCodec.Read(args[1]);
+    var s = File.ReadAllText(args[2]).Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+    var reach = int.Parse(args[3]);
+    int w = art.Width, h = art.Height, left = s[0], right = w - s[2];
+    var o = new RgbaImage(w, h, (uint[])art.Argb.Clone());
+    var middle = (left + right) / 2;
+    foreach (var join in new[] { left, right })
+    {
+        for (var x = join - reach - 3; x < join + reach + 3; x++)
+        {
+            var inside = Math.Min(x - (join - reach - 3), join + reach + 3 - 1 - x);
+            var t = Math.Clamp(inside / 3.0, 0, 1);
+            var from = middle + (x - join);
+            for (var y = 0; y < h; y++)
+            {
+                uint a = art.Argb[y * w + x], b = art.Argb[y * w + from];
+                double Mix(int sh) => (a >> sh & 255) * (1 - t) + (b >> sh & 255) * t;
+                var alpha = (int)Math.Round((a >> 24) * (1 - t) + (b >> 24) * t);
+                o.Argb[y * w + x] = Rgb(Mix(16), Mix(8), Mix(0), alpha);
+            }
+        }
+    }
+    PngCodec.Write(o, args[4]);
+    Console.WriteLine($"{args[1]}: joins at {left} and {right} repainted from around {middle}");
+    return 0;
+}
+
 if (args[0] == "tone")
 {
     // the settings panel's paper brought to the card's: each channel's mean and spread over the paper, the frame kept

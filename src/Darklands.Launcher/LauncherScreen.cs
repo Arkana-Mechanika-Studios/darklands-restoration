@@ -717,11 +717,11 @@ internal sealed class LauncherScreen
         DrawPainting(canvas, v);
         DrawTitle(canvas, v);
         var card = CardFrame(v);
-        CardShadow(canvas, card, v);
+        PanelShadow(canvas, card, v, "card-left");
         Parchment(canvas, card, v, "card-left", 11);
         DrawCard(canvas, v, card);
         var settings = SettingsFrame(v);
-        CardShadow(canvas, settings, v);
+        PanelShadow(canvas, settings, v, "card-settings");
         Parchment(canvas, settings, v, "card-settings", 23);
         if (Assets.Art("card-settings") is null)
         {
@@ -1340,6 +1340,87 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>A soft shadow under a card, on the painting.</summary>
+    private static readonly Dictionary<string, Image> Silhouettes = [];
+
+    /// <summary>
+    /// A soft shadow under a panel, the shape of its art (ragged edges, curled corners): the art's outline, blurred and moved
+    /// a little down and right; without the art, the drawn card's rectangular shadow.
+    /// </summary>
+    private static void PanelShadow(Canvas canvas, Rect area, View v, string art)
+    {
+        if (Assets.Art(art) is not { } image)
+        {
+            CardShadow(canvas, area, v);
+            return;
+        }
+        Image silhouette;
+        lock (Silhouettes)
+        {
+            if (!Silhouettes.TryGetValue(art, out silhouette!))
+            {
+                var white = new uint[image.Width * image.Height];
+                for (var y = 0; y < image.Height; y++)
+                {
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        white[y * image.Width + x] = image.At(x, y) & 0xFF000000 | 0xFFFFFF;
+                    }
+                }
+                Silhouettes[art] = silhouette = new Image(image.Width, image.Height, white);
+            }
+        }
+        var blur = Math.Max(1, v.Len(9));
+        var margin = 3 * blur;
+        var mask = new Canvas(area.Width + 2 * margin, area.Height + 2 * margin);
+        mask.Clear(0);
+        Sliced(mask, v, silhouette, art, new Rect(margin, margin, area.Width, area.Height));
+        // the coverage (0..255), blurred by two box passes each way
+        var w = mask.Width;
+        var h = mask.Height;
+        var a = new int[w * h];
+        for (var i = 0; i < a.Length; i++)
+        {
+            a[i] = (int)(mask.Pixels[i] & 0xFF);
+        }
+        var t = new int[w * h];
+        for (var pass = 0; pass < 2; pass++)
+        {
+            BoxBlur(a, t, w, h, blur, horizontal: true);
+            BoxBlur(t, a, w, h, blur, horizontal: false);
+        }
+        int dx = v.Len(4), dy = v.Len(7);
+        for (var y = 0; y < h; y++)
+        {
+            for (var x = 0; x < w; x++)
+            {
+                if (a[y * w + x] > 0)
+                {
+                    canvas.Blend(area.X - margin + x + dx, area.Y - margin + y + dy, Black, a[y * w + x] * 150 / 255);
+                }
+            }
+        }
+    }
+
+    /// <summary>One pass of a box blur of <paramref name="radius"/> along rows or columns, from <paramref name="from"/> into <paramref name="to"/>.</summary>
+    private static void BoxBlur(int[] from, int[] to, int w, int h, int radius, bool horizontal)
+    {
+        int lines = horizontal ? h : w, length = horizontal ? w : h, span = 2 * radius + 1;
+        for (var line = 0; line < lines; line++)
+        {
+            int At(int i) => horizontal ? from[line * w + Math.Clamp(i, 0, w - 1)] : from[Math.Clamp(i, 0, h - 1) * w + line];
+            var sum = 0;
+            for (var i = -radius; i <= radius; i++)
+            {
+                sum += At(i);
+            }
+            for (var i = 0; i < length; i++)
+            {
+                to[horizontal ? line * w + i : i * w + line] = sum / span;
+                sum += At(i + radius + 1) - At(i - radius);
+            }
+        }
+    }
+
     private static void CardShadow(Canvas canvas, Rect area, View v)
     {
         var reach = Math.Max(2, v.Len(14));
