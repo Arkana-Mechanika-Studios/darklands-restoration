@@ -122,7 +122,7 @@ public sealed class MineOracleTests
         Assert.True(changed > 0, "no scenario's fill took a fed word");
     }
 
-    private static uint BuildState(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
+    internal static uint BuildState(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
     {
         var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
         using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
@@ -145,11 +145,11 @@ public sealed class MineOracleTests
         return random.State;
     }
 
-    private static string Compact(JsonElement e) =>string.Join("/", e.EnumerateArray().Select(v => v.GetInt32()));
+    internal static string Compact(JsonElement e) =>string.Join("/", e.EnumerateArray().Select(v => v.GetInt32()));
 
-    private static bool Debug(JsonElement s) => s.TryGetProperty("debugSwitch", out var debug) && debug.GetInt32() != 0;
+    internal static bool Debug(JsonElement s) => s.TryGetProperty("debugSwitch", out var debug) && debug.GetInt32() != 0;
 
-    private static string? RunScenario(JsonElement s, int bf, string label, EnemyCatalogue catalogue,
+    internal static string? RunScenario(JsonElement s, int bf, string label, EnemyCatalogue catalogue,
         IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
     {
         var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());

@@ -522,7 +522,10 @@ internal static class TacticsOverlay
         ds[WaveKills] = (byte)t.WaveKills;
         if (image.Wave is { } waveRecord && t.WaveGroup is { } waveGroup)
         {
-            waveGroup.ToRecord().CopyTo(waveRecord, 0);
+            // orig: R025+0x06A4..0x06D3 (enemy-placement mode 0, a group with reinforcements): DS:D6EB = 1 and 10 words from the group's +0x14
+            // to the segment DS:7E0A names +0xBF6, i.e. the wave record's +0x14.. only; its +0x00..+0x13 keep what was there. The C# keeps the
+            // whole group (it reads only +0x14..+0x1C of it: the reinforcement kind, place, batch, pool, facing), so only those bytes are written back.
+            waveGroup.ToRecord().AsSpan(0x14, 0x1E - 0x14).CopyTo(waveRecord.AsSpan(0x14));
         }
         PutWord(ds, SlotIdentities, t.EnemySlotIdentity[0]);
         PutWord(ds, SlotIdentity2, t.EnemySlotIdentity[1]);
