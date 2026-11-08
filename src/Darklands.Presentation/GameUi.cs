@@ -829,7 +829,8 @@ public sealed class GameUi
     /// </summary>
     // orig: `if (root 047C:073D()) key = root 047C:0744();` and the `DS:6EF0 & 1` tests of loops that do not call root 0000:0000
     //   (R037+0x4664's loop, R037+0x7F06 / R037+0x802A's waits)
-    public PlayerAction? PollWithoutBar()
+    /// <param name="rightPresses">Report right presses too (the generator's right click, a host comfort); by default only the left.</param>
+    public PlayerAction? PollWithoutBar(bool rightPresses = false)
     {
         Present();
         if (ReadHostKey(out var key))
@@ -842,7 +843,7 @@ public sealed class GameUi
             return new PlayerAction(key, Mouse.X, Mouse.Y, MouseButtons.None);
         }
         var buttons = Mouse.Buttons;
-        var pressed = buttons & ~_previousButtons & MouseButtons.Left;
+        var pressed = buttons & ~_previousButtons & (rightPresses ? MouseButtons.Left | MouseButtons.Right : MouseButtons.Left);
         _previousButtons = buttons;
         return pressed != MouseButtons.None ? new PlayerAction(Keys.None, Mouse.X, Mouse.Y, pressed) : null;
     }

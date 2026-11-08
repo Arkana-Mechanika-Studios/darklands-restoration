@@ -695,6 +695,10 @@ internal static class SdlNative
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern ushort SDL_GetModState();
 
+    /// <summary>The layout's key for a scancode with the given modifiers (key_event false: the modifiers apply whatever SDL_KEYCODE_OPTIONS says).</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int SDL_GetKeyFromScancode(int scancode, ushort modstate, [MarshalAs(UnmanagedType.U1)] bool keyEvent);
+
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_WarpMouseInWindow(IntPtr window, float x, float y);
 

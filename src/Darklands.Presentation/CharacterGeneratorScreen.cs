@@ -88,14 +88,14 @@ public sealed class CharacterGeneratorScreen
             Hover();
             // orig: R037+0x4664's loop reads the left button (DS:6EF0 & 1) and the keys (root 047C:073D / 0744) itself: it does not call
             //   root 0000:0000, so neither the menu bar (the right button) nor the hot keys run in the generator
-            var action = _pending ?? _ui.PollWithoutBar();
+            var action = _pending ?? _ui.PollWithoutBar(rightPresses: true);
             _pending = null;
             if (action is not { } a)
             {
                 _ui.Idle();
                 continue;
             }
-            var key = a.IsLeftClick ? Click(a.X, a.Y) : a.Key;
+            var key = a.IsLeftClick ? Click(a.X, a.Y) : a.IsRightClick ? RightClick(a.X, a.Y) : a.Key;
             if (key == Keys.Escape)
             {
                 // orig: R037+0x4664: Esc goes back a step or leaves
@@ -158,10 +158,36 @@ public sealed class CharacterGeneratorScreen
         return Keys.None;
     }
 
-    /// <summary>Clicking an attribute or skill row selects it; clicking the selected row is '+'.</summary>
-    private int SelectRow(int row, int x, int width)
+    /// <summary>
+    /// A right click on an attribute or skill row: '-', the mirror of the left click's '+' (the first click selects the row, a click on the
+    /// selected row lowers it). Elsewhere nothing.
+    /// </summary>
+    // DIVERGENCE: host comfort (not the original's: R037+0x4664 reads only the left button, DS:6EF0 & 1): the right button gives the key '-'
+    //   (0x0C2D) a player could have pressed, only on the rows the left click raises; the original's right button does nothing here.
+    private int RightClick(int x, int y)
     {
-        var plus = _creation.Cursor == row ? 0x0D2B : Keys.None;
+        var stage = _creation.Stage;
+        if (stage == CreationStage.ChildhoodAttributes && x > 0xC4 && x < 0xEC && y > 0x12 && y < 0x4D)
+        {
+            var row = (y - 0x12) / 8;
+            return row < 6 ? SelectRow(row, 0xC5, 0x26, Minus) : Keys.None;
+        }
+        if (stage == CreationStage.OccupationSkills && x > 0xF5 && x < 0x13B && y > 0x12 && y < 0xB9)
+        {
+            var row = (y - 0x12) / 8;
+            return row is 14 or 7 ? Keys.None : SelectRow(row, 0xF6, 0x44, Minus);
+        }
+        return Keys.None;
+    }
+
+    private const int Plus = 0x0D2B;
+
+    private const int Minus = 0x0C2D;
+
+    /// <summary>Clicking an attribute or skill row selects it; clicking the selected row is <paramref name="act"/> ('+' for the left button).</summary>
+    private int SelectRow(int row, int x, int width, int act = Plus)
+    {
+        var plus = _creation.Cursor == row ? act : Keys.None;
         Screen.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Selected, Shadow);
         _creation.SelectRow(row);
         Screen.Recolor(x, row * 8 + 0x14, width, 8, Shadow, Selected);

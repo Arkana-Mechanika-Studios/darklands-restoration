@@ -79,6 +79,8 @@ public static class Keys
             '0' => 0x0B30,
             ' ' => Space,
             '-' => 0x0C2D,
+            '=' => 0x0D3D,
+            '+' => 0x0D2B,
             '\'' => 0x2827,
             '.' => 0x342E,
             ',' => 0x332C,
