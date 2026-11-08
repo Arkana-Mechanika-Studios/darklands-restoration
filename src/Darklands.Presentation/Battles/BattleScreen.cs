@@ -670,6 +670,7 @@ public sealed class BattleScreen : ITacticalView
         Array.Clear(_orderLetters);
         _orderCellRows = 0;
         _pageCellHoldsRows = false;
+        _framesOverHatching = false;
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -740,6 +741,7 @@ public sealed class BattleScreen : ITacticalView
         Array.Clear(_orderLetters);
         _orderCellRows = 0;
         _pageCellHoldsRows = false;
+        _framesOverHatching = false;
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
             ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
@@ -1291,6 +1293,7 @@ public sealed class BattleScreen : ITacticalView
         ApplyViewOrigin();
         _viewRedrawn = true;
         _screenLeftover = null;
+        _framesOverHatching = false;
         _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
@@ -1304,6 +1307,7 @@ public sealed class BattleScreen : ITacticalView
         _view.CentreRow = c.Position.Row;
         _viewRedrawn = true;
         _screenLeftover = null;
+        _framesOverHatching = false;
         _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
@@ -1393,6 +1397,29 @@ public sealed class BattleScreen : ITacticalView
         //   message, R021+0x0298)
         _driverShape = Hand;
         ErasePointer();
+        DrawPointer(_ui.Canvas, _driverShape);
+    }
+
+    /// <summary>The screen's frame lines were drawn by party-panel-frame-set after the last full paint (the view's page flip).</summary>
+    private bool _framesOverHatching;
+
+    // orig: R014+0x0D25..0x0D38 after the won battle's loot screen: party-panel-frame-set(0x100) draws the frames on both pages, the
+    //   bottom line of row i at y = 0x28 x i + 0x27 (root 0000:1601 / 0x16EA); party-panel-row-set(0x100) draws the rows on the page
+    //   DS:0168 (a dead member's hatching clipped to 0x27 lines, root 0000:1852..0x1888) and copies only 0x26 lines of each to the screen
+    //   (root 0000:18AC..0x18C3), so the screen keeps the frame line under the hatching until the next floor-view-paint copies the page
+    //   (vis10 session leftovers-msg, write watch on (10,39): the flip writes 07, then the frame-set 82; hooks: frame-set and row-set
+    //   from R014+0x0D2D / 0x0D38 after the loot)
+    // C: the battle draws the whole panel each frame: a dead member's hatching keeps off the frame line until the next full paint
+    //   (MapChanged, Recentre, ViewScrolled); tests: BattleUiTests
+    public void PanelFramesRedrawn()
+    {
+        _framesOverHatching = true;
+        if (_battle is null)
+        {
+            return;
+        }
+        ErasePointer();
+        DrawPanel(_ui.Canvas);
         DrawPointer(_ui.Canvas, _driverShape);
     }
 
@@ -2439,6 +2466,7 @@ public sealed class BattleScreen : ITacticalView
         _battle.FollowsActive = false;
         _viewRedrawn = true;
         _screenLeftover = null;
+        _framesOverHatching = false;
         _battle!.Effects.ForgetCloudBoxes();
         FloorViewPanel();
     }
@@ -2838,6 +2866,13 @@ public sealed class BattleScreen : ITacticalView
     //   over it, the same 0xDA the C# draws; from pass 8 on every fight-draw clears the dirty tile and re-blits it from its list
     //   (R014+0x74A2, the floor tile from the call before R014+0x753E, the decoration from the one before R014+0x75E7) in the other
     //   order, so the decoration's 0xBA stays on top. A consequence of the dirty-tile redraw, not of the game's state or its tables.
+    // C: the same after the won battle's loot screen (round lootvis 2026-11-08): vis10 leftovers-msg, 13 px of the blood and debris at
+    //   x 180..211, y 105..114 (original 88 / C0 / D8 / E2 / E3 / E5 / E6, C# A1 / 92 / E3 / E4 / E5). Write watches on (180,105),
+    //   (187,105), (198,111), (204,111): floor-view-paint's copy of the page to the screen (driver 4A44:068F, after loot-pile-opened's
+    //   R014+0xE3AB) writes A1 / 92 / E3 / E4, the C#'s values; then fight-draw (R014+0xE3B3) copies its boxes from the back page DS:0142
+    //   to the screen DS:016A (R014+0x6FE2 -> R014+0x76AE, R014+0x7985 -> R014+0x9DDE; hooked: the box (0x78, 0x69) 0x30 x 0x10 of the
+    //   view, screen x 180..227, y 105..120, holding all 13 px), and that box writes 88 / C0 / E2 / E5: the dirty tiles re-blitted from
+    //   lists A and B.
     // C: R014+0x827A's roll-n(2) for each animated piece of the last full redraw (R017+0x0000's lists DS:E13D / DS:E178 / DS:E196) are
     // drawn by EffectField.Drawn at each fight-draw, the first one at the battle's start (R014+0x0307).
     // C: while paused the picture changes only at the paused ticks: fight-tick still runs every 8 timer callbacks (DS:07D1) and its
@@ -3619,7 +3654,8 @@ public sealed class BattleScreen : ITacticalView
             {
                 // orig: the panel rows root 0000:1716: a dead member's row gets the grey hatching in a battle too (vis10 session D-09fbc1:
                 //   the original's row of the fallen member)
-                PartyPanel.DrawHatching(canvas, y1, 0x27);
+                // C: after the won battle's loot screen the frames drawn on the screen keep the row's last line (PanelFramesRedrawn)
+                PartyPanel.DrawHatching(canvas, y1, _framesOverHatching ? 0x26 : 0x27);
             }
             if (_orderLetters[i] is { } chosen)
             {

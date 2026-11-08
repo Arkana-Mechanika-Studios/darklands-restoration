@@ -33,6 +33,14 @@ public interface ITacticalView : IBattleViewport
     void RowChanged(int member);
 
     /// <summary>
+    /// The panel's frames and rows drawn again over the screen after the won battle's loot screen (party-panel-frame-set(0x100) and
+    /// party-panel-row-set(0x100) at R014+0x0D25..0x0D38): no full paint follows before the battle ends.
+    /// </summary>
+    void PanelFramesRedrawn()
+    {
+    }
+
+    /// <summary>
     /// An order was chosen in order mode: the selected member's order letter is drawn alone in its panel row (R016+0x15BE), from the
     /// order, the place action and the flee bit as they are now; it stays until the row is drawn again.
     /// </summary>
@@ -1049,7 +1057,13 @@ public sealed partial class TacticalBattle : IBattleEndActions
 
     public void LootAfterFight() => GatherLoot();
 
-    public void OpenLoot(int member) => OpenLootPile(member);
+    // orig: R014+0x0D1D loot-pile-opened (19CD:2D08), then R014+0x0D25..0x0D38: party-panel-frame-set(0x100) and
+    //   party-panel-row-set(0x100); the place action Take Loot's loot-pile-opened (R014+0x2311) is followed by neither
+    public void OpenLoot(int member)
+    {
+        OpenLootPile(member);
+        _view.PanelFramesRedrawn();
+    }
 
     // orig: R014+0x0AB5..0x0ABE: floor-view-paint(si) (09C0:1C2F) then fight-draw R014+0x6818 (14F7:0008), whose R014+0x99F6 turns the attackers
     public void RedrawAround(int member)
