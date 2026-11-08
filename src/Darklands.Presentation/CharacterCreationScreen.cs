@@ -176,6 +176,8 @@ public sealed class CharacterCreationScreen
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
         var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, partySeed, _seed) { MadeUpName = MadeUpName };
         DrawAll();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the menu's lines
+        using var wheel = _ui.UseSelectionList(static () => true);
         while (true)
         {
             var action = _ui.WaitForAction();

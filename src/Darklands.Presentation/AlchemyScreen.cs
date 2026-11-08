@@ -55,6 +55,8 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         _back = ScreenDrawing.DrawBackground(ui, panel, state.Party, "alcscrn1");
         DrawBatchPage();
         ScreenDrawing.WaitForRelease(ui);
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the list of batches
+        using var wheel = ui.UseSelectionList(static () => true);
         while (true)
         {
             // C: the menu bar and the hot keys are GameUi.Poll's
@@ -129,6 +131,8 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     /// <summary>The formula page of the character sheet's list: names, mystic number, description and ingredients. Esc or a click leaves.</summary>
     public void ShowFormula(GameState state, int member, int formula)
     {
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none on the formula page (it opens over the sheet's list)
+        using var wheel = ui.UseSelectionList(null);
         var f = formulas[formula];
         var stock = Brewing.IngredientsOnTheFormulaPage(state);
         void Draw()

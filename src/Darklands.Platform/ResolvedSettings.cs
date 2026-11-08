@@ -47,6 +47,9 @@ public sealed class CommandLineOptions
 
     public bool NoConsole { get; set; }
 
+    /// <summary>--no-mouse-wheel: the wheel does nothing in the menus and lists.</summary>
+    public bool NoMouseWheel { get; set; }
+
     /// <summary>The mods of --mod (each given once per --mod); empty: the settings file's.</summary>
     public List<string> Mods { get; set; } = [];
 
@@ -155,6 +158,9 @@ public sealed class ResolvedSettings
 
     public string? SdlLibrary { get; private init; }
 
+    /// <summary>The mouse wheel gives ↑ / ↓ where they move a selection (a host comfort).</summary>
+    public bool MouseWheel { get; private init; }
+
     /// <summary>The developer console is available (a host feature).</summary>
     public bool ConsoleEnabled { get; private init; }
 
@@ -231,6 +237,7 @@ public sealed class ResolvedSettings
             TextFont = Pick(cli.TextFont, "DARKLANDS_TEXT_FONT", file.TextFont),
             ScreenshotsFolder = Pick(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),
             SdlLibrary = Pick(cli.SdlLibrary, null, file.SdlLibrary),
+            MouseWheel = !cli.NoMouseWheel && (file.MouseWheel ?? true),
             ConsoleEnabled = !cli.NoConsole && (file.ConsoleEnabled ?? true),
             ConsoleFont = file.ConsoleFont,
             ConsoleFontSize = file.ConsoleFontSize ?? 14,

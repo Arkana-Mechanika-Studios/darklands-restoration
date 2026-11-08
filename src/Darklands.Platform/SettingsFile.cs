@@ -159,6 +159,7 @@ public static class SettingsFile
                     case "display": Section(name, value, settings, Display); break;
                     case "sound": Section(name, value, settings, Sound); break;
                     case "startup": Section(name, value, settings, Startup); break;
+                    case "input": Section(name, value, settings, Input); break;
                     case "sdl": Section(name, value, settings, Sdl); break;
                     case "console": Section(name, value, settings, Console); break;
                     default: Unknown(name); break;
@@ -307,6 +308,19 @@ public static class SettingsFile
                 case "launcher": settings.Launcher = Boolean(key, property.Value) ?? settings.Launcher; break;
                 case "commandLine": settings.CommandLine = Words(key, property.Value) ?? settings.CommandLine; break;
                 default: Unknown(key); break;
+            }
+        }
+
+        private void Input(string section, JsonProperty property, GameSettings settings)
+        {
+            var key = $"{section}.{property.Name}";
+            if (property.Name == "mouseWheel")
+            {
+                settings.MouseWheel = Boolean(key, property.Value) ?? settings.MouseWheel;
+            }
+            else
+            {
+                Unknown(key);
             }
         }
 
@@ -547,6 +561,14 @@ public static class SettingsFile
           // original: a game with a mod plays differently and its saves get a companion file (DKSAVEn.MODS.JSON); the .SAV stays
           // one the original game loads. []: none, the game's own cards. Command line: --mod <folder or name> (once per mod).
           "mods": [],
+
+          // The mouse and keyboard (SDL host). Not part of the original: the game plays the same.
+          "input": {
+            // The mouse wheel gives the cursor keys up / down where they move a selection (the card menus, the character sheet's
+            // lists and pack, the shop, barter and load lists ...), as DOSBox-X; elsewhere (the map, a battle) it does nothing.
+            // Command line: --no-mouse-wheel.
+            "mouseWheel": true
+          },
 
           // Settings of the SDL host only.
           "sdl": {

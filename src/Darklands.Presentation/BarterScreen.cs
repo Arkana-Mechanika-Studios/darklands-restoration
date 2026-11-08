@@ -65,6 +65,8 @@ public sealed class BarterScreen
         DrawScreen();
         // orig: R032+0x00F7 `while (mouse-button-state & 1);` before the loop (checked against the asm)
         _page.WaitForRelease();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the shop's and the member's lists
+        using var wheel = _page.Ui.UseSelectionList(static () => true);
         var lit = -1;
         try
         {

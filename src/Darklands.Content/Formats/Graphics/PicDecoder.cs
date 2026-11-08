@@ -148,8 +148,8 @@ public sealed class PicDecoder
         var height = ReadU16(data, 2);
         var mode = data[4];
         var compressed = data.Slice(5);
-        var lzwDecoded = LzwDecompress(compressed, mode);
-        var pixels = RleDecode(lzwDecoded);
+        var (lzwDecoded, lzwCount) = LzwDecompress(compressed, mode);
+        var pixels = RleDecode(lzwDecoded, lzwCount);
         var expectedPixels = checked(width * height);
         if (pixels.Count < expectedPixels)
         {
@@ -157,7 +157,7 @@ public sealed class PicDecoder
         }
 
         return (
-            new IndexedImage(width, height, pixels.Take(expectedPixels), assetName),
+            new IndexedImage(width, height, pixels.Count == expectedPixels ? pixels : pixels.GetRange(0, expectedPixels), assetName),
             new PicImageChunk(
                 payloadOffset,
                 payloadLength,
@@ -165,7 +165,7 @@ public sealed class PicDecoder
                 height,
                 mode,
                 compressed.Length,
-                lzwDecoded.Count,
+                lzwCount,
                 pixels.Count));
     }
 
@@ -235,59 +235,94 @@ public sealed class PicDecoder
         return parsedIndexes;
     }
 
-    private static List<byte> LzwDecompress(ReadOnlySpan<byte> data, int mode)
+    private static (byte[] Bytes, int Count) LzwDecompress(ReadOnlySpan<byte> data, int mode)
     {
-        // PIC image data is LZW-expanded before the final RLE pass.
+        // PIC image data is LZW-expanded before the final RLE pass. A dictionary of up to 2^mode strings, codes 0..255 the bytes,
+        // 256 an empty string, new strings from 0x101; when it is full the next code starts a new dictionary as a plain byte.
+        // Each string is kept as (prefix code, last byte, length, first byte) and written out backwards: the bytes are those of the
+        // list-of-strings form this replaced (PicDecoderReferenceTests compares the two on every picture).
         var indexes = LzwBytesToIndexes(data, mode);
-        var output = new List<byte>();
-        var i = 0;
+        var size = Math.Max(1 << mode, 0x0101);
+        var maxEntries = 1 << mode;
+        var prefix = new int[size];
+        var last = new byte[size];
+        var length = new int[size];
+        var first = new byte[size];
+        for (var b = 0; b < 256; b++)
+        {
+            last[b] = (byte)b;
+            first[b] = (byte)b;
+            length[b] = 1;
+        }
+        var output = new byte[Math.Max(256, data.Length * 4)];
+        var count = 0;
 
+        void Write(int code)
+        {
+            var n = length[code];
+            if (count + n > output.Length)
+            {
+                Array.Resize(ref output, Math.Max(output.Length * 2, count + n));
+            }
+            for (var p = count + n - 1; p >= count; p--)
+            {
+                output[p] = last[code];
+                code = prefix[code];
+            }
+            count += n;
+        }
+
+        var i = 0;
         while (i < indexes.Count)
         {
-            var dictionary = new LzwDictionary(mode);
-            var w = new List<byte> { (byte)indexes[i] };
-            output.Add((byte)indexes[i]);
+            var position = 0x0101;
+            int w = (byte)indexes[i];
+            Write(w);
 
-            while (!dictionary.IsFull && i < indexes.Count - 1)
+            while (position < maxEntries && i < indexes.Count - 1)
             {
                 i++;
                 var k = indexes[i];
-                List<byte>? entry;
-                var dictionaryEntry = dictionary.GetEntry(k);
-                if (dictionaryEntry is not null)
+                if (k < position)
                 {
-                    entry = dictionaryEntry;
+                    if (length[k] == 0)
+                    {
+                        // code 256, the empty string: the list form failed reading its first byte
+                        throw new ArgumentOutOfRangeException(nameof(data), "PIC LZW code 256 (the empty string) used as a string.");
+                    }
+                    Write(k);
+                    (prefix[position], last[position], length[position], first[position]) = (w, first[k], length[w] + 1, first[w]);
                 }
-                else if (k == dictionary.CurrentPosition)
+                else if (k == position)
                 {
-                    entry = AppendByte(w, w[0]);
+                    // the string not yet in the dictionary: the previous one and its own first byte
+                    (prefix[position], last[position], length[position], first[position]) = (w, first[w], length[w] + 1, first[w]);
+                    Write(k);
                 }
                 else
                 {
-                    return output;
+                    return (output, count);
                 }
-
-                output.AddRange(entry);
-                dictionary.AddEntry(AppendByte(w, entry[0]));
-                w = entry;
+                position++;
+                w = k;
             }
 
             i++;
         }
 
-        return output;
+        return (output, count);
     }
 
-    private static List<byte> RleDecode(IReadOnlyList<byte> codedData)
+    private static List<byte> RleDecode(byte[] codedData, int codedCount)
     {
-        if (codedData.Count == 0)
+        if (codedCount == 0)
         {
             return new List<byte>();
         }
 
-        var plainData = new List<byte> { codedData[0] };
+        var plainData = new List<byte>(codedCount * 2) { codedData[0] };
         var i = 1;
-        while (i < codedData.Count)
+        while (i < codedCount)
         {
             // 0x90 is the repeat marker; 0x90 00 escapes a literal marker.
             if (codedData[i] != 0x90)
@@ -296,7 +331,7 @@ public sealed class PicDecoder
             }
             else
             {
-                if (i + 1 >= codedData.Count)
+                if (i + 1 >= codedCount)
                 {
                     throw new PicDecodeException("PIC RLE stream ended after repeat marker.");
                 }
@@ -324,53 +359,9 @@ public sealed class PicDecoder
         return plainData;
     }
 
-    private static List<byte> AppendByte(IReadOnlyList<byte> source, byte value)
-    {
-        var result = new List<byte>(source.Count + 1);
-        result.AddRange(source);
-        result.Add(value);
-        return result;
-    }
-
     private static ushort ReadU16(ReadOnlySpan<byte> data, int offset)
     {
         return (ushort)(data[offset] | (data[offset + 1] << 8));
-    }
-
-    private sealed class LzwDictionary
-    {
-        private readonly int _maxEntries;
-        private readonly List<List<byte>> _table = new List<List<byte>>();
-
-        public LzwDictionary(int maxBits)
-        {
-            _maxEntries = 1 << maxBits;
-            for (var i = 0; i < 256; i++)
-            {
-                _table.Add(new List<byte> { (byte)i });
-            }
-
-            _table.Add(new List<byte>());
-            CurrentPosition = 0x0101;
-        }
-
-        public int CurrentPosition { get; private set; }
-
-        public bool IsFull => CurrentPosition >= _maxEntries;
-
-        public List<byte>? GetEntry(int position)
-        {
-            return position < CurrentPosition ? new List<byte>(_table[position]) : null;
-        }
-
-        public void AddEntry(List<byte> entry)
-        {
-            if (CurrentPosition < _maxEntries)
-            {
-                _table.Add(entry);
-                CurrentPosition++;
-            }
-        }
     }
 }
 

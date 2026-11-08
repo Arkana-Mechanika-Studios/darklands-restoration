@@ -1041,6 +1041,12 @@ def main():
     if tick_mouse.uses(steps):
         entries += ("tick_mouse",)
         orig_side.Session = tick_mouse.session_class(orig_side.Session)
+    # a script with ldown steps (the left button held, moved and let go: a drag, drag_mouse.py): its Session wraps the one above, hashed
+    # with the original side (opt-in: every other recording keeps its key)
+    import drag_mouse
+    if drag_mouse.uses(steps):
+        entries += ("drag_mouse",)
+        orig_side.Session = drag_mouse.session_class(orig_side.Session)
     # a script with kbreak steps (Ctrl-Break as the BIOS delivers it, ctrl_break.py): its Session wraps the one above, hashed with the
     # original side (opt-in: every other recording keeps its key)
     import ctrl_break

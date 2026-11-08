@@ -85,6 +85,18 @@ public interface IInput
     /// </summary>
     // Host enhancement (not the original's: under DOS the mouse cannot leave the screen; DOSBox keeps drawing the pointer where it was)
     bool PointerInWindow => true;
+
+    /// <summary>
+    /// Told by the game's UI before each <see cref="Pump"/>: true while the screen up has a selection that ↑ / ↓ move (a menu, a list),
+    /// false elsewhere (the map, a battle). A host with a mouse wheel may then give each notch as a press of ↑ (away from the player) or
+    /// ↓, a key like the keyboard's; hosts without one ignore it.
+    /// </summary>
+    // Host comfort (not the original's; DOSBox-X maps the wheel to the cursor keys everywhere): the SDL host's input.mouseWheel
+    bool SelectionListActive
+    {
+        get => false;
+        set { }
+    }
 }
 
 [Flags]

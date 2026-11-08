@@ -239,6 +239,20 @@ public class SettingsPrecedenceTests
 {
     private static string? NoEnvironment(string name) => null;
 
+    /// <summary>input.mouseWheel: on without a settings file, off by the file's false or by --no-mouse-wheel.</summary>
+    [Fact]
+    public void TheMouseWheelIsOnUnlessTheFileOrTheCommandLineTurnsItOff()
+    {
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).MouseWheel);
+        var off = SettingsFile.Parse("""{ "input": { "mouseWheel": false } }""");
+        Assert.Empty(off.Problems);
+        Assert.False(off.Settings.MouseWheel);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, off.Settings).MouseWheel);
+        var on = SettingsFile.Parse("""{ "input": { "mouseWheel": true } }""").Settings;
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { NoMouseWheel = true }, NoEnvironment, on).MouseWheel);
+        Assert.Contains("input.wheel", string.Join(' ', SettingsFile.Parse("""{ "input": { "wheel": 1 } }""").Problems));
+    }
+
     [Fact]
     public void DefaultsWithNothingSet()
     {
@@ -429,11 +443,11 @@ public class SettingsTemplateTests
             (fromNothing.GameFolder, fromNothing.SavesFolder, fromNothing.Window ?? DisplayLayout.WindowSize(null, null), fromNothing.Fullscreen, fromNothing.SoundChoice, fromNothing.NoAudio,
              fromNothing.Mt32Roms, fromNothing.ConfigDrk, fromNothing.ShowBanner, fromNothing.PlayIntro, string.Join(' ', fromNothing.CommandLine),
              fromNothing.TextFont, fromNothing.ScreenshotsFolder, fromNothing.SdlLibrary, fromNothing.ConsoleEnabled, fromNothing.ConsoleFont,
-             fromNothing.ConsoleFontSize, fromNothing.HdPack, fromNothing.Filter),
+             fromNothing.ConsoleFontSize, fromNothing.HdPack, fromNothing.Filter, fromNothing.MouseWheel),
             (fromTemplate.GameFolder, fromTemplate.SavesFolder, fromTemplate.Window ?? DisplayLayout.WindowSize(null, null), fromTemplate.Fullscreen, fromTemplate.SoundChoice, fromTemplate.NoAudio,
              fromTemplate.Mt32Roms, fromTemplate.ConfigDrk, fromTemplate.ShowBanner, fromTemplate.PlayIntro, string.Join(' ', fromTemplate.CommandLine),
              fromTemplate.TextFont, fromTemplate.ScreenshotsFolder, fromTemplate.SdlLibrary, fromTemplate.ConsoleEnabled, fromTemplate.ConsoleFont,
-             fromTemplate.ConsoleFontSize, fromTemplate.HdPack, fromTemplate.Filter));
+             fromTemplate.ConsoleFontSize, fromTemplate.HdPack, fromTemplate.Filter, fromTemplate.MouseWheel));
         Assert.Equal(fromNothing.AudioPack, fromTemplate.AudioPack);
         Assert.Equal(fromNothing.SoundFont, fromTemplate.SoundFont);
     }

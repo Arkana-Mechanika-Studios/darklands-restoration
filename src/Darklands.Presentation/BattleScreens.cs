@@ -58,6 +58,8 @@ public sealed class BattleScreens
             var v = given.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
             request = request with { Mode = v[0], Battlefield = v[1], Seed = v[2], Groups = [(v[3], v[4], v[5]), (v[6], v[7], v[8]), (v[9], v[10], v[11])] };
         }
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none in a battle
+        using var wheel = _ui.UseSelectionList(null);
         var screen = new BattleScreen(_ui, Assets, _state(), this);
         Current = screen;
         Memory.BattlesFought++;

@@ -57,6 +57,8 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "orders-sheet": "DKSAVE0.SAV", "orders-sheetclick": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-cloud": "Dksave21.sav", "orders-potion2": NORMALISED,
             "orders-potion3": NORMALISED, "orders-prague-missile": NORMALISED,
             "sheet-dksave0": "DKSAVE0.SAV",
+            # items dragged on the character sheet (ldown .. lup, drag_mouse.py): moved, readied, given, the stack given
+            "sheet-drag": "Dksave10.sav",
             # the loot screen after the gate fight of DKSAVE0 (local/overnight/loot): keys, mouse, capital keys and Esc
             "loot-keys": "DKSAVE0.SAV", "loot-mouse": "DKSAVE0.SAV", "loot-esc": "DKSAVE0.SAV",
             # keys held through the keyboard interrupt (kdown / kup, DS:0880..0882) and Ctrl (local/batch/kbd): the map of DKSAVE17, the gate fight of DKSAVE0

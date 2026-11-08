@@ -513,6 +513,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: a press on a portrait whose slot is empty (or beyond party-headcount) is not a sheet, so it continues the card like any other press; Alt-Q answered "n" also ends the wait (see HotKeys).
     private void WaitToContinue()
     {
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none: any key goes on
+        using var wheel = ui.UseSelectionList(null);
         ui.Redraw = Redraw;
         try
         {

@@ -165,6 +165,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         // C: the screen below keeps no GameUi.Redraw while the sheet is up: the party information sets party-icons-stale for the sheet's own test
         var below = ui.Redraw;
         ui.Redraw = null;
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): an open list or the pack (with no list open ↑ / ↓ move the frame between the boxes)
+        using var wheel = ui.UseSelectionList(() => _open && Current.IsList);
         try
         {
             Loop();

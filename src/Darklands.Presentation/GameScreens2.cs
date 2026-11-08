@@ -133,6 +133,8 @@ public sealed class GameScreens2 : IGameScreens
     /// <summary>A full screen: the hot keys leave F1..F5 and Ctrl-F to it (HotKeys.ScreensUp).</summary>
     private void Up(Action screen)
     {
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): a full screen sets its own, over a card menu too
+        using var wheel = _ui.UseSelectionList(null);
         if (HotKeys is { } keys)
         {
             keys.ScreensUp++;

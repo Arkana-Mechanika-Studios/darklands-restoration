@@ -131,6 +131,8 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     {
         _chosen = 0;
         _teacherBox = null;
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the member chosen
+        using var wheel = ui.UseSelectionList(static () => true);
         // orig: R036+0x00BD: the release count cleared before the screen is drawn
         ui.TakeLeftReleases();
         Redraw();
