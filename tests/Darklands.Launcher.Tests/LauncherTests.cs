@@ -26,9 +26,9 @@ internal sealed class ScriptedSurface(int width, int height, params LauncherInpu
 
     public string? Clipboard() => ClipboardText;
 
-    public Func<string, string?>? PickFolder { get; set; }
+    public Func<string, string, string?>? PickFolder { get; set; }
 
-    public Func<string, string?>? PickFile { get; set; }
+    public Func<string, string, string?>? PickFile { get; set; }
 
     public bool Frameless { get; set; }
 
@@ -226,8 +226,40 @@ public sealed class LauncherTests
         Assert.Equal("E:/MY_ROMS", (string)result.Changes["sound.mt32Roms"]!);
         Assert.Equal(@"E:\MY_ROMS", result.Settings.Mt32Roms);
         // the window size, Fullscreen, HD pack, Sound card, audio pack, then the ROMs (on Advanced)
-        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Down, Down, Enter]) { PickFolder = _ => @"F:\OTHER_ROMS" };
+        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Down, Down, Enter]) { PickFolder = (_, _) => @"F:\OTHER_ROMS" };
         Assert.Equal("F:/OTHER_ROMS", (string)new Launcher().Run(Context(), picked).Changes["sound.mt32Roms"]!);
+    }
+
+    /// <summary>
+    /// The player's request (2026-11-08): a dialog opens at what its row names when that exists (a folder, or a file shown in its
+    /// folder), else in the program's own folder.
+    /// </summary>
+    [Fact]
+    public void DialogsOpenAtTheRowsFolderElseInTheProgramsFolder()
+    {
+        var program = AppContext.BaseDirectory;
+        var folder = Directory.CreateTempSubdirectory("dialog-start").FullName;
+        try
+        {
+            var file = Path.Combine(folder, "mine.sf2");
+            File.WriteAllText(file, "x");
+            Assert.Equal(program, LauncherScreen.DialogStart(null, program));
+            Assert.Equal(program, LauncherScreen.DialogStart("", program));
+            Assert.Equal(program, LauncherScreen.DialogStart(Path.Combine(folder, "gone"), program));
+            Assert.Equal(folder, LauncherScreen.DialogStart(folder, program));
+            Assert.Equal(file, LauncherScreen.DialogStart("\"" + file + "\"", program));
+
+            // the ROM row: none named, then a folder that exists
+            var starts = new List<string>();
+            LauncherInput[] toRoms = [.. ToWindow, Down, Down, Down, Down, Down, Down, Enter];
+            new Launcher().Run(Context(), new ScriptedSurface(1440, 800, toRoms) { PickFolder = (_, start) => { starts.Add(start); return null; } });
+            new Launcher().Run(Context(new GameSettings { Mt32Roms = folder }), new ScriptedSurface(1440, 800, toRoms) { PickFolder = (_, start) => { starts.Add(start); return null; } });
+            Assert.Equal([program, folder], starts);
+        }
+        finally
+        {
+            Directory.Delete(folder, true);
+        }
     }
 
     [Fact]
@@ -314,9 +346,9 @@ public sealed class LauncherTests
     public void APackIsPickedOrDroppedByWhatItHolds()
     {
         using var packs = new Packs();
-        var picked = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = _ => packs.Sounds };
+        var picked = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = (_, _) => packs.Sounds };
         Assert.Equal(packs.Sounds, new Launcher().Run(Context(), picked).Settings.AudioPack);
-        var wrong = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = _ => packs.Pictures };
+        var wrong = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = (_, _) => packs.Pictures };
         Assert.Empty(new Launcher().Run(Context(), wrong).Changes);
 
         var dropped = Run(Context(), new PathDropped(packs.Pictures), new PathDropped(packs.Sounds));
@@ -339,13 +371,13 @@ public sealed class LauncherTests
             var text = Path.Combine(folder, "notes.txt");
             File.WriteAllText(text, "x");
             LauncherInput[] toSoundFont = [.. ToAudioPack, Tab, Tab];
-            var picked = new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => font };
+            var picked = new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = (_, _) => font };
             var result = new Launcher().Run(Context(), picked);
             Assert.Equal(font, result.Settings.SoundFont);
             Assert.Equal(font.Replace('\\', '/'), (string)result.Changes["sound.soundFont"]!);
 
             // a file that is not a SoundFont is refused; a dropped .sf2 is taken
-            Assert.Empty(new Launcher().Run(Context(), new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => text }).Changes);
+            Assert.Empty(new Launcher().Run(Context(), new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = (_, _) => text }).Changes);
             Assert.Equal(font, Run(Context(), new PathDropped(font)).Settings.SoundFont);
 
             // left: the default again; the settings' file comes back unchanged
@@ -457,7 +489,7 @@ public sealed class LauncherTests
     public void WithoutAFolderDialogChangeGoesToTyping()
     {
         // no dialog at all (null), or one that could not be shown (it throws): Change… starts typing in the field
-        foreach (var pick in new Func<string, string?>?[] { null, _ => throw new NotSupportedException("No folder dialog on this system.") })
+        foreach (var pick in new Func<string, string, string?>?[] { null, (_, _) => throw new NotSupportedException("No folder dialog on this system.") })
         {
             var context = Context(new GameSettings(), LauncherReason.GameNotFound) with { FoundGameFolders = () => [] };
             var surface = new ScriptedSurface(1080, 600) { PickFolder = pick };
@@ -476,9 +508,9 @@ public sealed class LauncherTests
         }
 
         // a dialog: its folder is taken, a cancel changes nothing
-        var picked = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = _ => Given };
+        var picked = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = (_, _) => Given };
         Assert.Equal(Given, (string)new Launcher().Run(Context(), picked).Changes["gameFolder"]!);
-        var cancelled = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = _ => null };
+        var cancelled = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = (_, _) => null };
         Assert.Empty(new Launcher().Run(Context(), cancelled).Changes);
     }
 
@@ -486,7 +518,7 @@ public sealed class LauncherTests
     public void AFixedFolderSaysWhereItIsSet()
     {
         var context = Context(fixedKeys: ByCommandLine) with { GivenGameFolder = Given };
-        var surface = new ScriptedSurface(1080, 600) { PickFolder = _ => throw new InvalidOperationException("not to be called") };
+        var surface = new ScriptedSurface(1080, 600) { PickFolder = (_, _) => throw new InvalidOperationException("not to be called") };
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
         screen.Render(new Drawing.Canvas(1080, 600));
         var field = screen.Area(LauncherScreen.Item.GameFolder);

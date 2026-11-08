@@ -43,6 +43,37 @@ internal static class FramelessWindow
         _sdlProcedure = IntPtr.Zero;
     }
 
+    /// <summary>
+    /// After the window's frame is back (the game's window): DWM is told to draw the frame from the window's style (the default:
+    /// the themed Windows 10/11 frame) and the frame is recomputed and repainted, so nothing of the frameless launcher's handling
+    /// lingers in it. A user saw an old, unthemed title bar after Play (2026-11-08; not reproduced here): this makes sure.
+    /// </summary>
+    [SupportedOSPlatform("windows")]
+    public static void RefreshFrame(IntPtr window)
+    {
+        if (window == IntPtr.Zero)
+        {
+            return;
+        }
+        var useWindowStyle = 0; // DWMNCRP_USEWINDOWSTYLE
+        DwmSetWindowAttribute(window, NonClientRenderingPolicy, ref useWindowStyle, sizeof(int));
+        SetWindowPos(window, IntPtr.Zero, 0, 0, 0, 0, NoSize | NoMove | NoZOrder | NoActivate | FrameChanged);
+        RedrawWindow(window, IntPtr.Zero, IntPtr.Zero, RedrawFrame | RedrawInvalidate | RedrawUpdateNow);
+    }
+
+    private const int NonClientRenderingPolicy = 2; // DWMWA_NCRENDERING_POLICY
+    private const uint NoSize = 0x1, NoMove = 0x2, NoZOrder = 0x4, NoActivate = 0x10, FrameChanged = 0x20;
+    private const uint RedrawInvalidate = 0x1, RedrawUpdateNow = 0x100, RedrawFrame = 0x400;
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);
+
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(IntPtr window, IntPtr after, int x, int y, int width, int height, uint flags);
+
+    [DllImport("user32.dll")]
+    private static extern bool RedrawWindow(IntPtr window, IntPtr rectangle, IntPtr region, uint flags);
+
     /// <summary>What the filter passes on to SDL: activation without the frame's painting; nothing for the frame's painting.</summary>
     internal static (bool Pass, IntPtr LParam) Filter(uint message, IntPtr lParam) => message switch
     {

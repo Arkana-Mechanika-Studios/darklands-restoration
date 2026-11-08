@@ -75,7 +75,7 @@ public sealed class LauncherLayoutTests
     {
         foreach (var context in new[] { Broken(), Broken(LauncherReason.StartFailed, "The game could not start: " + BrokenManifest(LongFolder)) })
         {
-            var surface = new ScriptedSurface(width, height) { PickFolder = _ => null, PickFile = _ => null, Frameless = true };
+            var surface = new ScriptedSurface(width, height) { PickFolder = (_, _) => null, PickFile = (_, _) => null, Frameless = true };
             var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
             var canvas = new Canvas(width, height);
             // every control focused in turn (each shows its own details, the rows of both tabs), then a long message (a dropped folder that holds nothing)
@@ -137,8 +137,8 @@ public sealed class LauncherLayoutTests
         var context = Broken();
         var surface = new ScriptedSurface(1280, 720)
         {
-            PickFolder = title => { asked.Add("folder: " + title); return null; },
-            PickFile = title => { asked.Add("file: " + title); return null; },
+            PickFolder = (title, _) => { asked.Add("folder: " + title); return null; },
+            PickFile = (title, _) => { asked.Add("file: " + title); return null; },
         };
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
         screen.Render(new Canvas(1280, 720));
@@ -213,7 +213,7 @@ public sealed class LauncherLayoutTests
         }
         var context = Broken() with { FindPacks = _ => packs, DescribePack = _ => new PackStatus(1, 1, null) };
         var asked = 0;
-        var surface = new ScriptedSurface(1280, 720) { PickFolder = _ => { asked++; return null; } };
+        var surface = new ScriptedSurface(1280, 720) { PickFolder = (_, _) => { asked++; return null; } };
         var model = new LauncherModel(context, null);
         var screen = new LauncherScreen(model, context, surface);
         var canvas = new Canvas(1280, 720);

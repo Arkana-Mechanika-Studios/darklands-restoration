@@ -133,26 +133,26 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
     }
 
     /// <summary>SDL3's folder dialog (<see cref="SdlDialogs"/>; on Linux with dialog programs behind it, <see cref="LinuxDialogs"/>).</summary>
-    public Func<string, string?>? PickFolder => title => Pick(title, folders: true);
+    public Func<string, string, string?>? PickFolder => (title, start) => Pick(title, start, folders: true);
 
     /// <summary>SDL3's file dialog, as <see cref="PickFolder"/>. For the launcher's SoundFont row.</summary>
-    public Func<string, string?>? PickFile => title => Pick(title, folders: false);
+    public Func<string, string, string?>? PickFile => (title, start) => Pick(title, start, folders: false);
 
-    private string? Pick(string title, bool folders)
+    private string? Pick(string title, string start, bool folders)
     {
         string? chosen;
         if (OperatingSystem.IsLinux())
         {
-            chosen = folders ? LinuxDialogs.PickFolder(_host.Window, title, PumpWhileOpen) : LinuxDialogs.PickFile(_host.Window, title, PumpWhileOpen);
+            chosen = folders ? LinuxDialogs.PickFolder(_host.Window, title, start, PumpWhileOpen) : LinuxDialogs.PickFile(_host.Window, title, start, PumpWhileOpen);
         }
         else if (OperatingSystem.IsWindows())
         {
             // the window's messages are handled while the dialog is open (it is put in the middle of the launcher's window)
-            chosen = SdlDialogs.Pick(_host.Window, title, null, folders, WindowsDialogs.WhileOpen(SdlNative.WindowsHandle(_host.Window)));
+            chosen = SdlDialogs.Pick(_host.Window, title, start, folders, WindowsDialogs.WhileOpen(SdlNative.WindowsHandle(_host.Window)));
         }
         else
         {
-            chosen = SdlDialogs.Pick(_host.Window, title, null, folders, PumpWhileOpen);
+            chosen = SdlDialogs.Pick(_host.Window, title, start, folders, PumpWhileOpen);
         }
         // what was clicked or typed meanwhile is dropped
         SdlNative.SDL_FlushEvents(SdlNative.EventKeyDown, SdlNative.EventMouseWheel);
@@ -328,6 +328,10 @@ internal sealed class SdlLauncherSurface : ILauncherSurface, IDisposable
             FramelessWindow.Detach();
         }
         SdlNative.SDL_SetWindowBordered(_host.Window, true);
+        if (OperatingSystem.IsWindows())
+        {
+            FramelessWindow.RefreshFrame(SdlNative.WindowsHandle(_host.Window));
+        }
     }
 
     /// <summary>
