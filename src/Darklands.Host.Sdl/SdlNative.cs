@@ -254,15 +254,18 @@ internal static class SdlNative
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr SDL_CreateWindowWithProperties(uint properties);
 
-    /// <summary>A window at the middle of the main screen (SDL_CreateWindow cannot place it), or IntPtr.Zero (SDL_GetError says why).</summary>
-    internal static IntPtr CreateCentredWindow(string title, int width, int height, ulong flags)
+    /// <summary>
+    /// A window at the middle of the main screen, or of <paramref name="display"/> (SDL_WINDOWPOS_CENTERED_DISPLAY; SDL_CreateWindow
+    /// cannot place it), or IntPtr.Zero (SDL_GetError says why).
+    /// </summary>
+    internal static IntPtr CreateCentredWindow(string title, int width, int height, ulong flags, uint display = 0)
     {
         var properties = SDL_CreateProperties();
         try
         {
             SDL_SetStringProperty(properties, "SDL.window.create.title", title);
-            SDL_SetNumberProperty(properties, "SDL.window.create.x", WindowCentered);
-            SDL_SetNumberProperty(properties, "SDL.window.create.y", WindowCentered);
+            SDL_SetNumberProperty(properties, "SDL.window.create.x", WindowCentered | (int)display);
+            SDL_SetNumberProperty(properties, "SDL.window.create.y", WindowCentered | (int)display);
             SDL_SetNumberProperty(properties, "SDL.window.create.width", width);
             SDL_SetNumberProperty(properties, "SDL.window.create.height", height);
             SDL_SetNumberProperty(properties, "SDL.window.create.flags", (long)flags);
@@ -316,6 +319,14 @@ internal static class SdlNative
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_HideWindow(IntPtr window);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_ShowWindow(IntPtr window);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_RaiseWindow(IntPtr window);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern ulong SDL_GetWindowFlags(IntPtr window);

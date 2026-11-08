@@ -31,7 +31,10 @@ internal static class FramelessWindow
         _sdlProcedure = SetWindowLongPtrW(window, WindowProcedure, (IntPtr)(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr, IntPtr, IntPtr>)&Procedure);
     }
 
-    /// <summary>Gives the window SDL's procedure alone again (before its frame comes back).</summary>
+    /// <summary>The window the filter is on (zero: none; tests).</summary>
+    internal static IntPtr Attached => _window;
+
+    /// <summary>Gives the window SDL's procedure alone again (Play: before the window is replaced by the game's).</summary>
     [SupportedOSPlatform("windows")]
     public static void Detach()
     {

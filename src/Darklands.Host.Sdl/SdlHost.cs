@@ -10,9 +10,9 @@ namespace Darklands.Host.Sdl;
 /// </summary>
 internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 {
-    private readonly IntPtr _window;
-    private readonly IntPtr _renderer;
-    private readonly IntPtr _texture;
+    private IntPtr _window;
+    private IntPtr _renderer;
+    private IntPtr _texture;
     private readonly int[] _argb = new int[Screen.Width * Screen.Height];
     private readonly int[] _textArgb = new int[TextModeRaster.Width * TextModeRaster.Height];
     private IntPtr _textTexture;
@@ -27,7 +27,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private SdlNative.SdlRect _viewport;
     private SdlNative.SdlRect _textViewport;
     // how the renderer stretches the picture, which the mouse follows (SDL's software renderer: no graphics card, or SDL_RENDER_DRIVER=software)
-    private readonly PictureSampling _sampling;
+    private PictureSampling _sampling;
     // orig: the mouse driver's reset (INT 33h function 0, the game's mouse start) puts the pointer at the middle of the screen: (160, 100) in
     //   the game's coordinates (the tester's mouse start, orig_side._mouse_init; Host.Headless starts there too). Until the host's pointer
     //   moves over the window the game's pointer stays there, not at (0, 0) (the top-left corner, partly off the screen with the map's
@@ -55,10 +55,20 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         // the key events' symbols as SDL2 gave them: the layout's own (no French digits or Latin letters put in by SDL3)
         SdlNative.SDL_SetHint(SdlNative.HintKeycodeOptions, "none");
-        var scale = fullscreen ? 1 : WindowScale(SdlNative.SDL_GetPrimaryDisplay());
-        _window = SdlNative.CreateCentredWindow(title, Scaled(width, scale), Scaled(height, scale),
+        _title = title;
+        Open(width, height, fullscreen, frameless, gpu, hidden: false);
+    }
+
+    private readonly string _title;
+
+    /// <summary>The window, its renderer and what is drawn with them (the constructor's; <see cref="Reopen"/>'s new window).</summary>
+    private void Open(int width, int height, bool fullscreen, bool frameless, bool gpu, bool hidden, uint display = 0)
+    {
+        _gpu = gpu;
+        var scale = fullscreen ? 1 : WindowScale(display != 0 ? display : SdlNative.SDL_GetPrimaryDisplay());
+        _window = SdlNative.CreateCentredWindow(_title, Scaled(width, scale), Scaled(height, scale),
             SdlNative.WindowResizable | SdlNative.WindowHighPixelDensity
-            | (fullscreen ? SdlNative.WindowFullscreen : 0) | (frameless ? SdlNative.WindowBorderless : 0));
+            | (fullscreen ? SdlNative.WindowFullscreen : 0) | (frameless ? SdlNative.WindowBorderless : 0) | (hidden ? SdlNative.WindowHidden : 0), display);
         if (_window == IntPtr.Zero)
         {
             throw new SdlHostException("SDL_CreateWindow failed: " + SdlNative.GetErrorText());
@@ -96,6 +106,60 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
             System.Console.Error.WriteLine($"Picture filters: {_filter.Kind} on SDL's {RendererName} renderer" + (GpuDriver is { } driver ? $" ({driver})" : ""));
         }
         UpdateViewport();
+    }
+
+    private bool _gpu;
+
+    /// <summary>
+    /// A new window in place of this one (Play: the game's, framed, after the launcher's frameless one; the launcher's again after
+    /// the game's): made hidden with its own renderer, made black, then shown as the old one is hidden and destroyed. The old window
+    /// takes away whatever was done to it (the launcher's borderless handling, its activation filter on Windows, its hit test), so
+    /// the game's window is made exactly as without the launcher: a player saw an old, unthemed title bar on the game's window
+    /// now and then after the launcher's window was given its frame back (2026-11-08). <paramref name="gpu"/>: as the constructor's.
+    /// </summary>
+    internal void Reopen(int width, int height, bool fullscreen, bool frameless, bool gpu)
+    {
+        var old = _window;
+        var display = SdlNative.SDL_GetDisplayForWindow(old);
+        var (filter, curvature) = (_filter.Filter, _filter.Curvature);
+        // the old window black at once, as the game's first picture is, while the new one is made (its renderer takes a moment)
+        Clear();
+        // what was drawn with the old renderer goes with it (the console's and the corner's fonts are loaded again on the new one)
+        Console?.ReleaseFont();
+        Corner?.ReleaseFont();
+        ReleaseRendering();
+        SdlNative.SDL_DestroyRenderer(_renderer);
+        Open(width, height, fullscreen, frameless, gpu, hidden: true, display);
+        (_filter.Filter, _filter.Curvature) = (filter, curvature);
+        Clear();
+        SdlNative.SDL_HideWindow(old);
+        SdlNative.SDL_ShowWindow(_window);
+        SdlNative.SDL_RaiseWindow(_window);
+        SdlNative.SDL_DestroyWindow(old);
+        SdlNative.SDL_SyncWindow(_window);
+        UpdateViewport();
+        Clear();
+    }
+
+    /// <summary>Whether the picture filter wants SDL's GPU renderer for this window (as asked when it was made).</summary>
+    internal bool Gpu => _gpu;
+
+    /// <summary>The textures and the filter made with the current renderer, destroyed (before the renderer is).</summary>
+    private void ReleaseRendering()
+    {
+        foreach (var (texture, _) in _hdTextures.Values)
+        {
+            SdlNative.SDL_DestroyTexture(texture);
+        }
+        _hdTextures.Clear();
+        _hdFrame = null;
+        _filter.Dispose();
+        SdlNative.SDL_DestroyTexture(_texture);
+        if (_textTexture != IntPtr.Zero)
+        {
+            SdlNative.SDL_DestroyTexture(_textTexture);
+            _textTexture = IntPtr.Zero;
+        }
     }
 
     public IVideo Video => this;
@@ -151,7 +215,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         set => _filter.Filter = value;
     }
 
-    private readonly IPictureFilterRenderer _filter;
+    private IPictureFilterRenderer _filter = null!;
 
     /// <summary>The CRT's slight curvature (display.crtCurvature; drawn only with the shaders).</summary>
     public bool Curvature
@@ -786,16 +850,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public void Dispose()
     {
-        foreach (var (texture, _) in _hdTextures.Values)
-        {
-            SdlNative.SDL_DestroyTexture(texture);
-        }
-        _filter.Dispose();
-        SdlNative.SDL_DestroyTexture(_texture);
-        if (_textTexture != IntPtr.Zero)
-        {
-            SdlNative.SDL_DestroyTexture(_textTexture);
-        }
+        ReleaseRendering();
         SdlNative.SDL_DestroyRenderer(_renderer);
         SdlNative.SDL_DestroyWindow(_window);
         SdlNative.SDL_Quit();

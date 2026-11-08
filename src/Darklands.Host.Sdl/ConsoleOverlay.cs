@@ -93,5 +93,12 @@ internal sealed class ConsoleOverlay(GameConsole console, string? fontFile, int 
         return rows;
     }
 
+    /// <summary>The font's texture destroyed (before its renderer is: a new window); loaded again on the next draw.</summary>
+    public void ReleaseFont()
+    {
+        _font?.Dispose();
+        _font = null;
+    }
+
     public void Dispose() => _font?.Dispose();
 }

@@ -221,7 +221,8 @@ while (true)
             continue;
         }
         window = settings.Window ?? DisplayLayout.WindowSize(null, null);
-        host.Resize(window.Width, window.Height, settings.Fullscreen);
+        // a new window for the game, made as without the launcher (its own frame from the start): the launcher's goes
+        host.Reopen(window.Width, window.Height, settings.Fullscreen, frameless: false, gpu: settings.Filter != PictureFilter.Sharp);
         NoteRun();
     }
     var start = new StartProgress();

@@ -383,7 +383,7 @@ internal sealed class LauncherScreen
                 StartEditing(_model.GameFolder ?? "");
                 break;
             case Item.Change:
-                if (Pick("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)", out var picked))
+                if (Pick("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)", _model.GameFolder, out var picked))
                 {
                     if (picked is not null)
                     {
@@ -440,7 +440,7 @@ internal sealed class LauncherScreen
                 _model.CycleSoundCard(step);
                 break;
             case Item.Roms:
-                if (Pick("Choose the folder with your MT-32 or CM-32L ROM files", out var romFolder))
+                if (Pick("Choose the folder with your MT-32 or CM-32L ROM files", _model.Mt32Roms, out var romFolder))
                 {
                     if (romFolder is not null)
                     {
@@ -495,10 +495,20 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>
+    /// Where a dialog opens (the player's request, 2026-11-08): at the folder or file the row names when it exists, else in the
+    /// program's own folder (<paramref name="programFolder"/>), where the packs, MT32_ROMS and SOUNDFONT folders are.
+    /// </summary>
+    internal static string DialogStart(string? current, string programFolder)
+    {
+        var named = CleanPath(current);
+        return named.Length > 0 && (Directory.Exists(named) || File.Exists(named)) ? Path.GetFullPath(named) : programFolder;
+    }
+
+    /// <summary>
     /// The system's folder dialog: false when there is none (or it could not be shown: <see cref="_message"/> says why); else true,
     /// with the folder chosen or null when cancelled.
     /// </summary>
-    private bool Pick(string title, out string? folder)
+    private bool Pick(string title, string? current, out string? folder)
     {
         folder = null;
         if (_surface.PickFolder is not { } pick)
@@ -507,7 +517,7 @@ internal sealed class LauncherScreen
         }
         try
         {
-            folder = pick(title) is { } picked ? CleanPath(picked) : null;
+            folder = pick(title, DialogStart(current, AppContext.BaseDirectory)) is { } picked ? CleanPath(picked) : null;
             return true;
         }
         catch (NotSupportedException e)
@@ -586,7 +596,7 @@ internal sealed class LauncherScreen
             (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleBlue);
             return;
         }
-        if (!cycle && Pick("Choose the folder of " + what, out var chosen))
+        if (!cycle && Pick("Choose the folder of " + what, _model.PackOf(kind), out var chosen))
         {
             if (chosen is { } picked)
             {
@@ -644,7 +654,7 @@ internal sealed class LauncherScreen
         }
         try
         {
-            if (pick("Choose a General MIDI SoundFont (.sf2 file)") is { } chosen)
+            if (pick("Choose a General MIDI SoundFont (.sf2 file)", DialogStart(_model.SoundFont, AppContext.BaseDirectory)) is { } chosen)
             {
                 SetSoundFont(CleanPath(chosen));
             }

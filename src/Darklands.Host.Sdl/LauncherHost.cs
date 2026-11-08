@@ -28,12 +28,13 @@ internal static class LauncherHost
         return host;
     }
 
-    /// <summary>Gives the window the launcher's size again (after the game's).</summary>
+    /// <summary>A launcher's window again (after the game's, or one opened for the game): frameless, at the launcher's size.</summary>
     public static void Fit(SdlHost host)
     {
         var (width, height) = SizeFor(host.UsableScreen());
+        // a new frameless window (a framed one given its frame away leaves Windows painting its old title bar now and then)
+        host.Reopen(width, height, fullscreen: false, frameless: true, gpu: host.Gpu);
         host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
-        host.Resize(width, height, fullscreen: false);
     }
 
     /// <summary>The largest of <see cref="Sizes"/> that fits the screen with room to spare.</summary>

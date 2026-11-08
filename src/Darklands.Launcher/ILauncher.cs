@@ -161,13 +161,14 @@ public interface ILauncherSurface
     string? Clipboard();
 
     /// <summary>
-    /// Asks the system for a folder (its own dialog); null when not available. The function returns null when the player
+    /// Asks the system for a folder (its own dialog), given its title and where it opens (a folder, or a file to show in its folder);
+    /// null when not available. The function returns null when the player
     /// cancelled, and throws <see cref="NotSupportedException"/> (its message says why) when no dialog could be shown.
     /// </summary>
-    Func<string, string?>? PickFolder { get; }
+    Func<string, string, string?>? PickFolder { get; }
 
-    /// <summary>Asks the system for a SoundFont file (its own dialog); null when not available. Cancelled: null; no dialog: <see cref="NotSupportedException"/>.</summary>
-    Func<string, string?>? PickFile => null;
+    /// <summary>Asks the system for a SoundFont file (its own dialog; title, where it opens, as <see cref="PickFolder"/>); null when not available. Cancelled: null; no dialog: <see cref="NotSupportedException"/>.</summary>
+    Func<string, string, string?>? PickFile => null;
 
     /// <summary>
     /// The window has no frame of its own (no title bar): the launcher draws its close and minimise buttons at the top-right corner and

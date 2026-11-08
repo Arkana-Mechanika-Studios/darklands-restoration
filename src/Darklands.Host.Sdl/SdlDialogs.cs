@@ -35,7 +35,7 @@ internal static unsafe class SdlDialogs
             SdlNative.SDL_SetStringProperty(properties, "SDL.filedialog.title", title);
             if (start is { Length: > 0 })
             {
-                SdlNative.SDL_SetStringProperty(properties, "SDL.filedialog.location", start);
+                SdlNative.SDL_SetStringProperty(properties, "SDL.filedialog.location", Location(start));
             }
             SdlNative.SDL_SetBooleanProperty(properties, "SDL.filedialog.many", false);
             // SDL copies what it needs before it returns
@@ -70,6 +70,13 @@ internal static unsafe class SdlDialogs
             return _result.Path;
         }
     }
+
+    /// <summary>
+    /// <paramref name="start"/> as SDL's dialogs read a start location: SDL splits it at its last separator into a folder and a file
+    /// name to preselect, so an existing folder gets a separator at its end (it opens inside it); a file opens its folder with it chosen.
+    /// </summary>
+    internal static string Location(string start) =>
+        Directory.Exists(start) ? start.TrimEnd('/', '\\') +Path.DirectorySeparatorChar : start;
 
     // SDL_DialogFileCallback(void *userdata, const char * const *filelist, int filter): a NULL list: an error; an empty one: cancelled
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]

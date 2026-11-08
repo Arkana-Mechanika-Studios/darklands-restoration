@@ -15,25 +15,25 @@ internal static class LinuxDialogs
     /// and over meanwhile and returns false when the program is to close. Throws <see cref="NotSupportedException"/> when no dialog
     /// could be shown.
     /// </summary>
-    public static string? PickFolder(IntPtr window, string title, Func<bool> whileOpen) => Pick(window, title, whileOpen, folders: true);
+    public static string? PickFolder(IntPtr window, string title, string start, Func<bool> whileOpen) => Pick(window, title, start, whileOpen, folders: true);
 
     /// <summary>A file, as <see cref="PickFolder"/>.</summary>
-    public static string? PickFile(IntPtr window, string title, Func<bool> whileOpen) => Pick(window, title, whileOpen, folders: false);
+    public static string? PickFile(IntPtr window, string title, string start, Func<bool> whileOpen) => Pick(window, title, start, whileOpen, folders: false);
 
-    private static string? Pick(IntPtr window, string title, Func<bool> whileOpen, bool folders)
+    private static string? Pick(IntPtr window, string title, string start, Func<bool> whileOpen, bool folders)
     {
         var problems = new List<string>();
-        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var where = SdlDialogs.Location(start.Length > 0 ? start : "/");
         string? folder = null;
         try
         {
-            return SdlDialogs.Pick(window, title, home.Length > 0 ? home.TrimEnd('/') + "/" : "/", folders, whileOpen);
+            return SdlDialogs.Pick(window, title, where, folders, whileOpen);
         }
         catch (NotSupportedException e)
         {
             problems.Add("SDL3's dialog: " + e.Message);
         }
-        foreach (var (tool, arguments) in Tools(title, home, folders))
+        foreach (var (tool, arguments) in Tools(title, where, folders))
         {
             if (FindOnPath(tool) is not { } path)
             {
@@ -51,9 +51,9 @@ internal static class LinuxDialogs
     }
 
     /// <summary>The dialog programs tried, in order (kdialog first on KDE), with their arguments.</summary>
-    private static IEnumerable<(string Tool, string[] Arguments)> Tools(string title, string home, bool folders)
+    private static IEnumerable<(string Tool, string[] Arguments)> Tools(string title, string start, bool folders)
     {
-        var start = home.Length > 0 ? home.TrimEnd('/') + "/" : "/";
+        // start: a folder (ending with /) or a file
         var zenity = folders ? new[] { "--file-selection", "--directory", "--title=" + title, "--filename=" + start }
             : ["--file-selection", "--title=" + title, "--filename=" + start];
         var kdialog = ("kdialog", folders ? new[] { "--getexistingdirectory", start, "--title", title } : ["--getopenfilename", start, "--title", title]);
