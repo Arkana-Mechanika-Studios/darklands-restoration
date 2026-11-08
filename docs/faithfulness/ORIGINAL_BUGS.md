@@ -675,10 +675,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:952` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
-- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:358` `TacticalBattle.Cast`  
+- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:364` `TacticalBattle.Cast`  
   original: `R018+0x0706` (1F43:0256, draft)  
   why: the loop sets only the line's end (DS:E0A9/E0A7, R018+0x09D5/0x09DC) and relies on its start (DS:E0A5/E0A3, set to the caster at R018+0x0851); the area test it calls for the enemies (R014+0x469E, 0E76:469E) writes the start itself, from its first instruction on (0E76:46E5/46EC: the centre = the member), so after a member's count the next member's line starts at the previous member, not at the caster. Kept (found by f2witch2f: a member behind a wall counted as seen, the target chosen differed).
-- **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:228` `TacticalBattle.Approach`  
+- **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:232` `TacticalBattle.Approach`  
   original: `R014+0x2CCA` (0E76:2CCA, draft)  
   why: the step queued above from the old route (DS:CA30) is kept through the re-path: fighter-step takes it first, from the new route's index 0, so a walker that re-plans makes one step of its old route and then goes on from the new route's second byte (when that step succeeds); and a walker blocked by somebody re-plans only when RepathAt comes (30..120 ticks after its last good step). Seen in the original (battle oracle fights city24, street, wild40, castle7c with route-hand-over R014+0x5D64 and fighter-step hooked: 8 of 27 re-paths took the old byte at index 0, 5 of them a byte other than the new route's first), the fights agree tick for tick with this code. Kept (not data-damaging).
 - **B-dce381** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:228` `TacticalBattle.ChooseOrder`  

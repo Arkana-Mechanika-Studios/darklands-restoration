@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 2, justify: 40, keep: 10.
-- Part B (undefined-memory in core logic): 156 entries; determinism: deterministic: 1, n/a: 83, no: 59, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 157 entries; determinism: deterministic: 1, n/a: 83, no: 60, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -951,7 +951,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  
   deterministic: **partly** (checked against the original); action: **keep** - The original G is R136+0xFCCC[50][19] (index imul 13h + col, asm 159A2), refilled by R030+0x20D2 from the run-length rows (0xD2 bytes per map row) as the view scrolls, with the place-icon list overlaid. Inside the window the content equals this whole-map answer; a column outside it wraps into the neighbouring row and a row outside it shows whatever an earlier refill left, i.e. history dependent. Keep the whole-map semantics unless a read at the map border outside the window is shown to matter (not verified).
 
-### battles (37)
+### battles (38)
 
 - **D-89585b** `undefined-memory` - `src/Darklands.Core/Battles/Attacks.cs:189` `Attacks.MissileChance`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -1013,15 +1013,19 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R008+0x2ADC` (1432:2ADC, draft)  
   divergence: the original writes into the next group slot even when it is the last (into the next level's groups); the C# list grows.  
   deterministic: **n/a** (checked against the original); action: **document** - Wilderness 2ADC has a single call site (the loop i<5 over DS:DF8F[], so at most 5 groups) writing battlefield-group-table[group-total++] of level 0 (a scalar group-total), so the 11th slot is never reached; the C# wilderness run gave at most 4 groups.
-- **D-d6a5dc** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:271` `BattleMap.LineBlocked`  
+- **D-196232** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:47` `BattleMap.ClipResidue`  
+  original: `R014+0xF284` (1D69:0354, draft), `R018+0x04B6` (1F43:0006, draft), `R018+0x0706` (1F43:0256, draft) +1 more  
+  divergence: host timing: the two words lie below the stack pointer between two tests, so a timer interrupt that comes between them (root 047C:00A9, the 18.2 Hz callback, and the interrupt frame) writes its own words there, and the next test then reads those: a write watch on SS:FC44..FC47 during one enemy-line-of-sight run (round battlelead, the fight [0, 0x47, 5172, 12/2/3, 2/2/2]) saw 047C:00A9+0x141/0x142 leave (17,16), (14,9), (14,0) and (852,9612) between tests, where the run's previous point would have been; with (14,0) enemy 7's test of member 0 found the line free (it saw members 0 and 2), with the previous point it is blocked. When an interrupt falls depends on the machine's speed against its timer; the rewrite keeps the uninterrupted run's previous point.  
+  deterministic: **no** (checked against the original); action: **keep** - The clip test R014+0xF284 reads [bp-4]/[bp-2] uninitialised when neither its bottom nor its top case applies (DL 0036); within a run of tests the words keep the previous test's point unless a timer interrupt (root 047C:00A9, the frame pushed below SP) lands between two tests and leaves its own words there (write watch SS:FC44..FC47, round battlelead). When it lands depends on the machine's speed against the 18.2 Hz timer: not reproducible; the rewrite keeps the uninterrupted run's value.
+- **D-d6a5dc** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:277` `BattleMap.LineBlocked`  
   original: `R014+0xEF3C` (1D69:000C, draft)  
   divergence: with a two-argument call the original's mode is stack garbage; callers here pass 0.  
   deterministic: **n/a** (checked against the original); action: **document** - In 1D69:000C the mode argument [bp+0Ah] is read only after 'cmp [bp+6],-1; jne' (a==-1 returns 0 first); every two-argument call (R014 0E76 sight-line-blocked(-1,-1), R014 14F7 twice) and the one-argument call in R018 pass a=-1, so the stack-garbage mode is never read.
-- **D-646096** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:272` `BattleMap.LineBlocked`  
+- **D-646096** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:278` `BattleMap.LineBlocked`  
   original: `R014+0xEF3C` (1D69:000C, draft)  
   divergence: a throw (mode 0x100) with a = −2 reads the record before combatant 0 in the original; 0 here.  
   deterministic: **n/a** (checked against the original); action: **document** - mode 0x100 with a=-2 would read combatants[-2].f6f (DS:9BC4); the only a=-2 caller (R023 sight-line-blocked(-2,-2,0)) passes mode 0, and all mode-0x100 callers in R014 19CD pass a>=0 (chosen-member/i), so combatants[-2] is never indexed.
-- **D-fb3254** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:319` `BattleMap.SegmentHitsBox`  
+- **D-fb3254** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:325` `BattleMap.SegmentHitsBox`  
   original: `R014+0xF284` (1D69:0354, draft), `R014+0xF3E2` (1D69:04B2, draft)  
   divergence: here it keeps the point of the previous clip test of the same run (ClipResidue), a run starting at (0, 0) as on a clean stack, where the original reads another function's leftovers (undefined memory; they agree when they lie outside the box, as in every run probed).  
   deterministic: **no** (checked against the original); action: **keep** - 0354 leaves p (stack [bp-4]/[bp-2], frame 'enter 4') unassigned when c0 has neither bit 4 nor 8 (c0 in {1,2}) and uses it in the second outcode test: if that point is inside the box the result is 'hit'. The slot is at a stack place that depends on the caller's depth (probed in the gate battle: SS:FC44 under R018+0x06AB, SS:FC6A under R018+0x0BE7, SS:FCC6 under R014+0x2A4A); within a run of tests from one frame with nothing else called between it holds the previous test's p (the C# models these runs, BattleMap.ClipResidue), at a run's start another function's leftovers, which is not reproducible (outside the box in every run probed): the C# takes zeros; keep.
@@ -1049,11 +1053,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x6818` (14F7:0008, draft)  
   divergence: the original never resets DS:8574 / DS:859E / DS:855A / DS:8540 at a battle's start (they are written only by R014+0x8CB4, 0x8D47..0x8E69, and read by it and by R014+0x6FFC; the start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only; no range fill or file load of them was found, not searched exhaustively): a cloud slot that 0x8CB4 skips (the shown level differs, or it has no puff) keeps the growth its slot had last, possibly from an earlier battle, and its edge boxes (queued whatever the level) use it. Here every field starts at 0. Visual only, rare.  
   deterministic: **no** (checked against the original); action: **keep** - The cloud box growth words DS:8574 / DS:859E / DS:855A / DS:8540 are written only by R014+0x8CB4 (0x8D47..0x8E69) and read by it and by R014+0x6FFC; the battle start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only, so a cloud slot that 0x8CB4 skips keeps the growth of an earlier battle in the original. Not reset here. Visual only (the edge boxes of a skipped cloud), rare; no range fill or file load of the words was searched for exhaustively. local/batch/b28 audit
-- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1454` `EffectField.LayOutCloud`  
+- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1459` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.
-- **D-c3845f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:416` `TacticalBattle.Cast`  
+- **D-c3845f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:422` `TacticalBattle.Cast`  
   original: `R018+0x0706` (1F43:0256, draft)  
   divergence: the original's n would be whatever the stack held (spec D §9.5).  
   deterministic: **no** (checked against the original); action: **keep** - m-count-local is the local at [bp-6Eh] of enemy-move-phase (enter 7Ah); it is assigned only in the loop that finds a candidate with a different count and is read at roll-n(m-count-local). When all five sorted candidates have equal counts (all visible and equally threatened) it holds whatever the stack contained at that depth, overwritten arbitrarily by the many calls the main loop makes between ticks; not reproducible, keep the C# stand-in.
@@ -1085,11 +1089,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x4188` (0E76:4188, draft)  
   divergence: directions above 7 leave the offsets uninitialised in the original; the north formation is used.  
   deterministic: **n/a** (checked against the original); action: **document** - effect-begin (0E76:4188) leaves dx/dy unset only for dir outside 0..7. Its callers pass the level's party facing (x1f50) or trigger-record dirs: all 143 IMAPS maps have x1f50 in {0,2,4,6} and every non-placeholder 3350/3382 trigger record has dir 0..7, and the generators write 0,2,4,6 (heading-from-to, gate side), so dir>7 does not occur.
-- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:172` `TacticalBattle.PlaceAround`  
+- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:177` `TacticalBattle.PlaceAround`  
   original: `R024+0x08F2` (1EF8:08F2, draft)  
   divergence: odd directions read stack garbage in the original; the next even direction's offsets are used.  
   deterministic: **n/a** (checked against the original); action: **document** - place-nearby (R024 1EF8:08F2) takes dir from the exit/activation record (+0xC); in the 143 shipped maps exit dirs are 0,2,4,6 only, and across the generated levels (all battlefield types, 100 seeds each) the only odd value is dir 1 in 7 all-zero placeholder exits of the special mine variants 0x82/0x84-0x86 (area 0,0,0,0, never entered), so the garbage dx/dy path cannot be triggered in play.
-- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:320` `TacticalBattle.PlaceEnemies`  
+- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:325` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemy-placement-entry mode 1 is called as enemy-placement-overlay-entry(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).

@@ -39,6 +39,10 @@ internal static class ImageOverlay
         new("leave after victory", 0x9084, 1, b => b.LeaveAfterVictory ? 1 : 0, (b, v) => b.LeaveAfterVictory = v != 0),
         new("difficulty", 0x906A, 1, b => b.Difficulty, (b, v) => b.Difficulty = (byte)v),
         new("dragon fight", 0xC21A, 1, b => b.DragonFight, (b, v) => b.DragonFight = (byte)v),
+        // the dragon's blows and its breath interval (melee_frame R014+0x199C breathes when DS:C26E % DS:C21F == 0): a job from a dragon fight's
+        // state carries the fight's own counts (round battlelead: without them the rewrite counted from the battle start's 1 and 3)
+        new("dragon blows", 0xC26E, 1, b => b.DragonBlowCount, (b, v) => b.DragonBlowCount = (byte)v),
+        new("dragon breath interval", 0xC21F, 1, b => b.DragonBreathInterval, (b, v) => b.DragonBreathInterval = (sbyte)v),
     ];
 
     private static readonly Table[] Tables =

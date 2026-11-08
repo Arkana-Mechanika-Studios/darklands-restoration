@@ -280,6 +280,12 @@ public sealed partial class TacticalBattle
                     en.PathIndex = 0;
                     en.Moving = true;
                     en.QueueOrder(CombatAction.StandardAttack);
+                    // DIVERGENCE: host timing: enemy-move-phase reads the timer's clock DS:07D4 for the re-path time after the walker's path
+                    //   search (R018+0x0706+0x49D), so a timer callback that comes during the turn's searches makes it one later (battle_oracle
+                    //   fight [0, 0x26, 24910, 62/2/4]: the original's first turn set 672 / 677 / 753 / 736 with the clock 636, the C#'s
+                    //   671 / 676 / 752 / 735 with the set-up's 635, and walker 5 re-pathed at 671 here only; read-only hooks at approach
+                    //   R014+0x2CCA and a write watch on DS:D97C, round battlelead). Where the callback falls is the original's CPU time
+                    //   against the timer; here the clock moves between passes only.
                     en.RepathAt = (ushort)(Scaled(90) + Clock + 30);
                     en.Flags &= ~TacticalFlags.NoTarget;
                     done = true;
