@@ -488,7 +488,78 @@ public sealed class LauncherLayoutTests
         var surface = new ScriptedSurface(1280, 720);
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
         screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
-        screen.Render(new Canvas(1280, 720));
-        Assert.Contains(screen.Blocks, b => b.What.StartsWith("status None found: any General MIDI .sf2 works (a free one: FluidR3_GM.sf2, MIT)", StringComparison.Ordinal));
+        // whole on its line (not cut: a cut status line would head the row's tooltip) at every window size, the smallest included; the
+        // free one is named in the tooltip
+        foreach (var (width, height) in new[] { (1280, 720), (960, 540) })
+        {
+            screen.Render(new Canvas(width, height));
+            Assert.Contains(screen.Blocks, b => b.What == "status None found: put any General MIDI .sf2 in SOUNDFONT.");
+            var tip = screen.TooltipParts(LauncherScreen.Item.SoundFont).Select(p => p.Text).ToList();
+            Assert.DoesNotContain(tip, t => t.StartsWith("None found", StringComparison.Ordinal));
+            Assert.Contains(tip, t => t.Contains("FluidR3_GM.sf2", StringComparison.Ordinal));
+        }
+    }
+
+    /// <summary>The What's new card gives each of its items a line of detail at the usual sizes, and stays clear of the card's foot.</summary>
+    [Theory]
+    [InlineData(1280, 720)]
+    [InlineData(1366, 768)]
+    [InlineData(1920, 1080)]
+    public void WhatsNewShowsALineOfDetailUnderEachItem(int width, int height)
+    {
+        var notes = """
+            ## New
+
+            - **A new launcher.** A painted window without a title bar (drag it by the painting).
+            - **Picture filters.** How the 320×200 picture is drawn on a large window: Sharp, Even.
+            - **The mouse wheel in menus.** In card menus and lists the wheel moves the highlight; not on the map.
+            - **Character creation.** A right click lowers the chosen attribute or skill; + and − on every layout.
+            """;
+        var context = Broken() with { Settings = new GameSettings { GameFolder = Game }, ReleaseNotes = notes, Version = "1.0.0-rc2" };
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(width, height));
+        screen.Render(new Canvas(width, height));
+        var details = screen.NoteDetailsShown;
+        Assert.Equal(4, details.Count);
+        Assert.Equal("A painted window without a title bar", details[0].Text);
+        Assert.Equal("In card menus and lists the wheel moves the highlight", details[2].Text);
+        // one under the other, each in the card's width, and the card's links below them (they still fit above its foot)
+        Assert.All(details.Zip(details.Skip(1)), p => Assert.True(p.First.Area.Bottom <= p.Second.Area.Y));
+        var discord = screen.Area(LauncherScreen.Item.Discord);
+        Assert.All(details, d => Assert.True(d.Area.Bottom < discord.Y && d.Area.Right < screen.SettingsPanel.X));
+        Assert.True(discord.Bottom < height);
+    }
+
+    /// <summary>
+    /// A tooltip covers no other control, heading, label or status line: under its control, else over it, else in the free band over
+    /// Play (the Advanced tab's ROM folder: under it are the status line and the General MIDI heading).
+    /// </summary>
+    [Theory]
+    [InlineData(1280, 720)]
+    [InlineData(960, 540)]
+    public void ATooltipLeavesTheOtherControlsAndTextsVisible(int width, int height)
+    {
+        var context = Broken() with { Settings = new GameSettings { GameFolder = Game } };
+        var surface = new ScriptedSurface(width, height);
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
+        var canvas = new Canvas(width, height);
+        screen.Render(canvas);
+        var seen = 0;
+        foreach (var item in new[] { LauncherScreen.Item.Roms, LauncherScreen.Item.SoundFont, LauncherScreen.Item.Banner, LauncherScreen.Item.Intro })
+        {
+            var row = screen.Area(item);
+            screen.Handle(new PointerMoved(row.X + 4, row.Y + row.Height / 2));
+            screen.Handle(new TimePassed());
+            screen.Render(canvas);
+            if (screen.TooltipArea.Width == 0)
+            {
+                continue;
+            }
+            seen++;
+            var tip = screen.TooltipArea;
+            var covered = screen.Blocks.Where(b => !b.Area.Intersects(row) && b.Area.Intersects(tip)).Select(b => b.What).ToList();
+            Assert.True(covered.Count == 0, $"{width}x{height} {item}: the tooltip {tip} covers {string.Join(", ", covered)}");
+        }
+        Assert.True(seen > 0, "no tooltip shown");
     }
 }

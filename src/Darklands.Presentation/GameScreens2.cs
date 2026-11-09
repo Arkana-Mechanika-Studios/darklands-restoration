@@ -76,7 +76,34 @@ public sealed class GameScreens2 : IGameScreens
 
     public void CharacterSheet(int member) => Keeping(() => _sheet.Show(_state, _state.Party.Resolve(member)));
 
-    public void PartyInfo() => Keeping(() => _partyInfo.Show(_state));
+    public void PartyInfo() => Keeping(() => WithoutBattleCycles(() => _partyInfo.Show(_state)));
+
+    /// <summary>The party information over a battle: its palette cycles held while it is open (OriginalBehaviour.FixPartyInfoBattleCycles).</summary>
+    // orig: R034+0x0EE6 (party-info-screen) through the overlay vector 09C0:185B (F6, the battle bar's Party Info), draft
+    // BUG: OriginalBehaviour.FixPartyInfoBattleCycles - opened in a battle, the screen's background (R034+0x11BC) loads
+    //   pics\ptystats.pic with its palette while the battle's cycles run (DS:07D8 = 1, slots 1, 2 and 4 over colours 16..30): nothing
+    //   stops them (root 047C:040B) or clears DS:07D8, so the timer's frame work writes the battle's water and fire colours over the
+    //   screen's at every step until it closes (the load screen stops them first, R037+0x8400..0x8426). Reproduced (the cycles run on);
+    //   PartyInfoCyclesTests. Fixed (an evident display fix, every player game): the cycles held while the screen is open.
+    private void WithoutBattleCycles(Action screen)
+    {
+        if (!_state.Behaviour.FixPartyInfoBattleCycles || !_ui.Cycles.Running)
+        {
+            screen();
+            return;
+        }
+        _ui.RunCycles(false);
+        _ui.PaletteSet();
+        try
+        {
+            screen();
+        }
+        finally
+        {
+            // the battle's palette comes back with its screen (Keeping); its ranges turn again from their next steps
+            _ui.RunCycles(true);
+        }
+    }
 
     /// <summary>The game's hot keys (the roster greys their Save and Load items).</summary>
     public HotKeys? HotKeys { get; set; }

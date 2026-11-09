@@ -52,14 +52,14 @@ public sealed class OriginalBehaviour
     /// stores in CACHE.TMP) or end the program in play (the game since the last save lost, as a load crash loses it) are fixed, every
     /// other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here, and besides them only the evident display fixes the user chose for every player
-    /// game (<see cref="FixRosterFigurePreview"/>).
+    /// game (<see cref="FixRosterFigurePreview"/>, <see cref="FixPartyInfoBattleCycles"/>).
     /// </summary>
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
-        FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true,
+        FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
     };
 
     /// <summary>
@@ -162,6 +162,18 @@ public sealed class OriginalBehaviour
     //   (0x46, 0xA5, 0x23 x 0x23) is copied back (R038+0x0396 / 0x061E); the name DS:E7E2 + 4 x DS:E7DA (the row); the colours of the slot
     //   whose id equals DS:E7DA; R038+0x0000's list click moves only the highlight; measured: vis10 roster-figure (11 shots at 0 px)
     public bool FixRosterFigurePreview { get; set; }
+
+    /// <summary>
+    /// The party information (F6, or the battle bar's Party Info) opened in a battle shows its picture's colours with the battle's
+    /// palette cycles still turning over colours 16..30: the battle's water and fire colours flash over the screen until it closes.
+    /// Fixed (an evident display fix, as the load screen's own stop of the cycles): the cycles are held while the screen is open and
+    /// run again when the battle is back.
+    /// </summary>
+    // orig: the F6 hot key (root 0000, key 0x4000 with DS:987F == 1) and the battle bar's item call the overlay vector 09C0:185B, which
+    //   is the party information screen itself (R034+0x0EE6): its background, R034+0x11BC, loads pics\ptystats.pic with its palette
+    //   (palette-load, root 0410:0364) and nothing stops the cycles (root 047C:040B) or clears DS:07D8, so the timer's frame work
+    //   (root 047C:000A -> 047C:042A) writes the battle's ranges at their next steps. The load screen stops them (R037+0x8400..0x8426)
+    public bool FixPartyInfoBattleCycles { get; set; }
 
     /// <summary>
     /// A saved game whose two party slots name one character record: the load reads the record into the first slot only, the second

@@ -5,9 +5,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you. Nothing was sent from your computer: a report package (a zip) is a file you attach here yourself.
-        In the program: type `report` in the developer console (F11), press Ctrl+F12 while playing, or use "Report a problem" on the launcher.
-        After a crash the program offers the same. How it works and what the zip holds: [docs/REPORTING.md](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/blob/master/docs/REPORTING.md).
+        Thank you for reporting!
+
+        ### First: press **Ctrl+F12** in the game
+        It makes a zip with the logs, your settings and your last saved game, and opens its folder: **drag that zip into the last box below**.
+        With it we can usually replay exactly what you saw; without it, many reports cannot be acted on.
+        (Also on the launcher: "make a problem report"; after a crash the program offers it by itself.)
+
+        Nothing is sent from your computer: the zip is a file you attach here yourself. What it holds: [docs/REPORTING.md](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/blob/master/docs/REPORTING.md).
   - type: dropdown
     id: kind
     attributes:
@@ -56,9 +61,9 @@ body:
   - type: textarea
     id: attachments
     attributes:
-      label: Report package and screenshots
+      label: Report zip (Ctrl+F12) and screenshots
       description: |
-        Drag the report zip (`reports/darklands-report-....zip`, opened for you by the program) into this box.
+        Drag the report zip (`reports/darklands-report-....zip`, made by Ctrl+F12 and opened for you by the program) into this box.
         For a difference, add a screenshot of each side at the same moment (F12 in this program, DOSBox's capture key in the original).
         GitHub takes attachments only from a signed-in account.
     validations:

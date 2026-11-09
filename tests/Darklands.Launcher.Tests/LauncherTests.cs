@@ -293,6 +293,34 @@ public sealed class LauncherTests
         Assert.Equal(["Crash when the world map opens", "The Quickstart party is no longer drawn black.", "A linked fix"], items);
     }
 
+    /// <summary>The What's new card's line under each item: what follows the bold lead, up to its first "(", ";", ":" or sentence end.</summary>
+    [Fact]
+    public void ReleaseNotesGiveEachBoldItemALineOfDetail()
+    {
+        var items = ReleaseNotes.Detailed("""
+            ## New
+
+            - **A new launcher.** A painted window without a title bar (drag it by the painting), the settings on two tabs.
+            - **Picture filters.** How the 320×200 picture is drawn on a large window: **Sharp**, **Even**.
+            - **No console window.** The game opens only its own window; `--log-window` shows the messages.
+            - **Buttons stay pressed long enough to see** (at least a tenth of a second), as they did.
+            - A plain item. With two sentences.
+
+            ## Files
+
+            - **Not shown.** Past the end.
+            """);
+        Assert.Equal(
+            [
+                ("A new launcher", "A painted window without a title bar"),
+                ("Picture filters", "How the 320×200 picture is drawn on a large window"),
+                ("No console window", "The game opens only its own window"),
+                ("Buttons stay pressed long enough to see", ""),
+                ("A plain item.", ""),
+            ],
+            items);
+    }
+
     /// <summary>Two pack folders in a packs folder: one of sounds, one of pictures.</summary>
     private sealed class Packs : IDisposable
     {
@@ -589,6 +617,18 @@ public sealed class LauncherTests
         Shot("picture-row-1280x720", guide, 1280, 720, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
         Shot("picture-row-960x540", guide, 960, 540, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
         Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
+        // the Advanced tab with the keyboard on the ROM folder and on the SoundFont: their tooltips clear of the other rows and headings
+        Shot("advanced-roms-tooltip-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true));
+        Shot("advanced-soundfont-tooltip-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Tab);
+        Shot("advanced-soundfont-tooltip-960x540", guide, 960, 540, new KeyPressed(LauncherKey.Tab, Control: true), Tab);
+        // the What's new card with the release notes of a real release (DARKLANDS_ROOT's releases folder), at the largest and smallest size
+        if (Environment.GetEnvironmentVariable("DARKLANDS_ROOT") is { Length: > 0 } root
+            && Path.Combine(root, "releases", "1.0.0-rc2", "release-notes.md") is var real2 && File.Exists(real2))
+        {
+            var notes = guide with { ReleaseNotes = File.ReadAllText(real2), Version = "1.0.0-rc2" };
+            Shot("whats-new-1280x720", notes, 1280, 720, Escape);
+            Shot("whats-new-960x540", notes, 960, 540, Escape);
+        }
         // the pointer resting on a problem line (its tooltip), and on Save and quit (lit; Play, the keyboard's choice, softly)
         var probe = new LauncherScreen(new LauncherModel(LauncherLayoutTests.Broken(), null), LauncherLayoutTests.Broken(), new ScriptedSurface(1280, 720) { Frameless = true });
         probe.Render(new Drawing.Canvas(1280, 720));

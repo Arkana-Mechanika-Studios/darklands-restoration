@@ -41,6 +41,12 @@ internal sealed class LauncherScreen
     private readonly LauncherContext _context;
     private readonly ILauncherSurface _surface;
     private readonly IReadOnlyList<string> _notes;
+
+    /// <summary>The notes' items with their line of detail (ReleaseNotes.Detailed), in the order of <see cref="_notes"/>.</summary>
+    private readonly IReadOnlyList<(string Title, string Detail)> _noteDetails;
+
+    /// <summary>The What's new card's detail lines as last drawn: their areas and texts (none when the card had no room for them).</summary>
+    internal List<(Rect Area, string Text)> NoteDetailsShown { get; } = [];
     private readonly Dictionary<(TrueTypeFont Font, int TenthsOfPixels), TextFace> _faces = [];
     private List<(Rect Area, Item Item, Part Part)> _hotspots = [];
     private List<(Rect Area, string What)> _blocks = [];
@@ -82,6 +88,7 @@ internal sealed class LauncherScreen
         _context = context;
         _surface = surface;
         _notes = ReleaseNotes.Items(context.ReleaseNotes);
+        _noteDetails = ReleaseNotes.Detailed(context.ReleaseNotes);
         _focus = model.CanPlay ? Item.Play : Item.GameFolder;
     }
 
@@ -1054,12 +1061,25 @@ internal sealed class LauncherScreen
                 y += line;
             }
         }
-        // the notes' first items, as many as leave room for the rest of the card
-        var reserved = v.Len(250);
-        foreach (var item in _notes.Take(4))
+        // the notes' first items, as many as leave room for the rest of the card; each with its line of detail when all of them fit so
+        var about = "MicroProse’s 1992 Darklands, rebuilt from the original program for today’s computers. "
+            + "It plays from your own copy of the game: none of it is included.";
+        var links = 1 + (_context.PackGuide is null ? 0 : 1) + (_context.ReportProblem is null ? 0 : 1);
+        var headingHeight = Math.Max(v.Len(46), Face(Assets.Strong, 25, v).LineHeight - v.Len(3) + Face(Assets.Italic, 14, v).LineHeight);
+        var rest = (_context.ReleaseNotesLink is null ? 0 : line) + v.Len(4) + v.Len(20) + headingHeight + v.Len(8)
+            // the last link's line, then room for the foot's fleuron (drawn at noteTop - 12) to stand clear of it
+            + text.Wrap(about, width).Count * line + v.Len(6) + links * line + v.Len(28);
+        var limit = noteTop - rest;
+        var detail = Face(Assets.Italic, 12.5, v);
+        var shownNotes = _notes.Take(4).Select((n, i) => (Title: n, Detail: i < _noteDetails.Count ? _noteDetails[i].Detail : "")).ToList();
+        int Height((string Title, string Detail) n, bool withDetail) =>
+            Math.Min(2, text.Wrap(n.Title, width - v.Len(16)).Count) * line + (withDetail && n.Detail.Length > 0 ? detail.LineHeight : 0) + v.Len(2);
+        var withDetails = y + shownNotes.Sum(n => Height(n, true)) <= limit;
+        NoteDetailsShown.Clear();
+        foreach (var item in shownNotes)
         {
-            var lines = text.Wrap(item, width - v.Len(16)).Take(2).ToList();
-            if (y + lines.Count * line > noteTop - reserved)
+            var lines = text.Wrap(item.Title, width - v.Len(16)).Take(2).ToList();
+            if (y + Height(item, withDetails) > limit && !withDetails)
             {
                 break;
             }
@@ -1068,6 +1088,13 @@ internal sealed class LauncherScreen
             {
                 text.Draw(canvas, l, x + v.Len(16), y, Ink);
                 y += line;
+            }
+            if (withDetails && item.Detail.Length > 0)
+            {
+                var shown = ClauseThatFits(detail, item.Detail, width - v.Len(16));
+                detail.Draw(canvas, shown, x + v.Len(16), y - v.Len(2), InkSoft);
+                NoteDetailsShown.Add((new Rect(x + v.Len(16), y - v.Len(2), detail.Measure(shown), detail.LineHeight), shown));
+                y += detail.LineHeight;
             }
             y += v.Len(2);
         }
@@ -1081,8 +1108,7 @@ internal sealed class LauncherScreen
         y += v.Len(20);
         y = Capitalised(canvas, v, x, y, "About this project", "A free, open-source fan restoration.");
         y += v.Len(8);
-        foreach (var l in text.Wrap("MicroProse’s 1992 Darklands, rebuilt from the original program to run on today’s computers. "
-                     + "You need your own copy of the game: nothing from it is included, the program reads your installation.", width))
+        foreach (var l in text.Wrap(about, width))
         {
             text.Draw(canvas, l, x, y, Ink);
             y += line;
@@ -1590,6 +1616,11 @@ internal sealed class LauncherScreen
             yield break;
         }
         var row = item == Item.Change ? Item.GameFolder : item;
+        // a folder's field keeps only the end of a long path: the whole path heads its tooltip
+        if (!_editing && (row == Item.GameFolder ? _model.GameFolder : row == Item.Roms ? _model.Roms.Folder : null) is { Length: > 0 } path)
+        {
+            yield return (path, Cream);
+        }
         if (row is Item.HdPack or Item.AudioPack && PackProblem(row == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
         {
             yield return ("Problem: " + problem, PaleRed);
@@ -1631,11 +1662,11 @@ internal sealed class LauncherScreen
         var lines = parts.SelectMany(p => WrapAll(face, p.Text, width - 2 * pad).Select(l => (Text: l, p.Colour))).Take(8).ToList();
         var height = lines.Count * face.LineHeight + 2 * pad;
         var gap = v.Len(4);
-        var y = anchor.Bottom + gap + height <= canvas.Height - v.Len(4) ? anchor.Bottom + gap : Math.Max(v.Len(4), anchor.Y - gap - height);
         // in the settings panel when its control is (else in the window)
-        var (left, right) = _panel.Contains(anchor.X, anchor.Y) ? (_panel.X, _panel.Right) : (v.Len(4), canvas.Width - v.Len(4));
+        var inPanel = _panel.Contains(anchor.X, anchor.Y);
+        var (left, right) = inPanel ? (_panel.X, _panel.Right) : (v.Len(4), canvas.Width - v.Len(4));
         var x = Math.Clamp(anchor.X, left, Math.Max(left, right - width));
-        var box = new Rect(x, y, width, height);
+        var box = new Rect(x, PlaceTooltip(canvas, v, anchor, inPanel, x, width, height, gap), width, height);
         Shade(canvas, new Rect(box.X + v.Len(3), box.Y + v.Len(4), box.Width, box.Height), Black, 70);
         Shade(canvas, box, HintFill, 238);
         canvas.Frame(box, Math.Max(1, v.Len(1)), 0x8A7454);
@@ -1646,6 +1677,36 @@ internal sealed class LauncherScreen
             ly += face.LineHeight;
         }
         TooltipArea = box;
+    }
+
+    /// <summary>
+    /// The tooltip's top: under its control, else over it, else (a control of the settings panel) in the free band over Play, the
+    /// first of them that covers no other control, heading, label or status line; when none is free, the one in the window that
+    /// covers the fewest (under the control first).
+    /// </summary>
+    private int PlaceTooltip(Canvas canvas, View v, Rect anchor, bool inPanel, int x, int width, int height, int gap)
+    {
+        var margin = v.Len(4);
+        // what the plate must leave visible: every other control and every drawn text but the control's own
+        var others = _hotspots.Select(h => h.Area).Concat(_blocks.Select(b => b.Area)).Where(a => !a.Intersects(anchor)).ToList();
+        bool InWindow(int top) => top >= margin && top + height <= canvas.Height - margin;
+        int Covered(int top)
+        {
+            var r = new Rect(x, top, width, height);
+            return others.Count(o => o.Intersects(r));
+        }
+        var candidates = new List<int> { anchor.Bottom + gap, anchor.Y - gap - height };
+        if (inPanel && _hotspots.FirstOrDefault(h => h.Item == Item.Play).Area is { Height: > 0 } play)
+        {
+            candidates.Add(play.Y - gap - height);
+        }
+        var fitting = candidates.Where(InWindow).ToList();
+        if (fitting.Count == 0)
+        {
+            return Math.Clamp(anchor.Bottom + gap, margin, Math.Max(margin, canvas.Height - margin - height));
+        }
+        // the first free one, else the least covering (MinBy keeps the earlier of equals)
+        return fitting.FirstOrDefault(t => Covered(t) == 0, fitting.MinBy(Covered));
     }
 
     /// <summary>A row lit: brightly under the pointer, softly when the keyboard chose it (no frame).</summary>
@@ -2148,6 +2209,27 @@ internal sealed class LauncherScreen
         return PackProblem(kind) is { } problem ? (problem, PaleRed) : (PackSummary(kind, _model.Pack(folder)), Green);
     }
 
+    /// <summary>
+    /// A note's detail on one line: whole when it fits, else up to its last ", " that fits (when that keeps at least half the line),
+    /// else cut with "…".
+    /// </summary>
+    private static string ClauseThatFits(TextFace face, string text, int width)
+    {
+        if (face.Measure(text) <= width)
+        {
+            return text;
+        }
+        for (var comma = text.LastIndexOf(", ", StringComparison.Ordinal); comma > 0; comma = text.LastIndexOf(", ", comma - 1, StringComparison.Ordinal))
+        {
+            var clause = text[..comma];
+            if (face.Measure(clause) <= width)
+            {
+                return face.Measure(clause) * 2 >= width ? clause : Fit(face, text, width, fromEnd: false);
+            }
+        }
+        return Fit(face, text, width, fromEnd: false);
+    }
+
     /// <summary>The line under the SoundFont row: the file that plays the packs' .mid music, or where to get a free one.</summary>
     private (string Text, uint Colour) SoundFontLine()
     {
@@ -2159,7 +2241,8 @@ internal sealed class LauncherScreen
         {
             return ("Plays the packs' MIDI (.mid) music.", Green);
         }
-        return ("None found: any General MIDI .sf2 works (a free one: " + FreeSoundFont + ", MIT); put it in " + SoundFontFolder + ".", PaleBlue);
+        // short enough to fit its line at every window size; the row's tooltip says more (any .sf2, where to get the free one, its licence)
+        return ("None found: put any General MIDI .sf2 in " + SoundFontFolder + ".", PaleBlue);
     }
 
     /// <summary>A free General MIDI SoundFont the launcher points to when none is found (not included: it is about 140 MB); any .sf2 the player has works as well.</summary>
@@ -2203,7 +2286,7 @@ internal sealed class LauncherScreen
             Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
             Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
             Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
-                ? $"No SoundFont: a pack's .mid music is skipped. Any General MIDI SoundFont (.sf2) you have works: put it in the {SoundFontFolder} folder next to the program, drop it here, or Browse…. A free one: {FreeSoundFont} by Frank Wen, MIT licence, about 140 MB (search the web for \"FluidR3_GM sf2\"; on Linux the fluid-soundfont-gm package)."
+                ? $"Without one a pack's .mid music is skipped. Any General MIDI .sf2 works: put it in {SoundFontFolder} next to the program, drop it here, or Browse…. Free: {FreeSoundFont} by Frank Wen (MIT, 140 MB; on Linux fluid-soundfont-gm)."
                 : $"The SoundFont (.sf2) for the packs' .mid music. Enter or Browse…: another file; ←/→: the default (the {SoundFontFolder} folder next to the program).",
             Item.PackGuide => "Opens the guide: how to make a picture or sound pack, and the names of the game's pictures, music and sounds.",
             Item.Report => "Makes a zip with the logs, settings and saves for a bug report, and opens its folder and the report form. Nothing is sent: you attach the zip yourself.",

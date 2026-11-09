@@ -166,6 +166,11 @@ if (soundCheck)
 {
     return SoundCheck.Run(folder, settings, Console.Out);
 }
+// no SDL 3 (a Linux system without it, a zip unpacked without SDL3.dll): said in plain words before any window is tried
+if (!SdlNative.CanLoad())
+{
+    return MissingSdl.Tell();
+}
 LauncherReason? launch = noLauncher ? null
     : setup || settings.AlwaysLaunch || StartKeys.ShiftHeldBeforeWindow() ? LauncherReason.Asked
     : folder is null ? LauncherReason.GameNotFound

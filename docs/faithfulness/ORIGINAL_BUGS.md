@@ -17,8 +17,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | travel | 4 | 0 | 4 |
 | battles | 31 | 13 | 18 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 12 | 7 | 5 |
-| total | 234 | 53 | 181 |
+| screens/presentation | 13 | 8 | 5 |
+| total | 235 | 54 | 181 |
 
 ## Core logic (222)
 
@@ -706,9 +706,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (12)
+## Presentation and host (13)
 
-### screens/presentation (12)
+### screens/presentation (13)
 
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
@@ -731,6 +731,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:824` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
+- **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  
+  original: `R034+0x0EE6` (1550:0006, matched)  
+  why: OriginalBehaviour.FixPartyInfoBattleCycles - opened in a battle, the screen's background (R034+0x11BC) loads pics\ptystats.pic with its palette while the battle's cycles run (DS:07D8 = 1, slots 1, 2 and 4 over colours 16..30): nothing stops them (root 047C:040B) or clears DS:07D8, so the timer's frame work writes the battle's water and fire colours over the screen's at every step until it closes (the load screen stops them first, R037+0x8400..0x8426). Reproduced (the cycles run on); PartyInfoCyclesTests. Fixed (an evident display fix, every player game): the cycles held while the screen is open.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.

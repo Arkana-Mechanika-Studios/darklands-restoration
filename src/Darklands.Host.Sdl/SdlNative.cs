@@ -132,6 +132,9 @@ internal static class SdlNative
         }
     }
 
+    /// <summary>Whether an SDL3 library can be found and loaded (the places <see cref="ConfigureLibrary"/> set up), before any call needs it.</summary>
+    internal static bool CanLoad() => ResolveLibrary(LibraryName, typeof(SdlNative).Assembly, null) != IntPtr.Zero;
+
     internal static string GetErrorText()
     {
         var pointer = SDL_GetError();
