@@ -176,6 +176,8 @@ public sealed class CharacterCreationScreen
         _roster = new CreationRoster(readyMade, _data.SlotPalettes, slotImages, _sheetState.Item);
         var creation = new CharacterCreation(_data.Tables, _world.ItemDefinitions, random, partySeed, _seed) { MadeUpName = MadeUpName };
         DrawAll();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the menu's lines
+        using var wheel = _ui.UseSelectionList(static () => true);
         while (true)
         {
             var action = _ui.WaitForAction();
@@ -408,7 +410,7 @@ public sealed class CharacterCreationScreen
         var y = command.Y - 4;
         Screen.Draw(_ui.Assets.Picture("buttnCR2").Image, 0x43, y);
         _ui.Text.DrawCoded(Screen, 0x4A, command.Y, _data.Texts[command.Text], LabelColor);
-        _ui.Present();
+        _ui.PresentPressedButton();
         return y;
     }
 

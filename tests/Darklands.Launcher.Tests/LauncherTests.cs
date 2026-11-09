@@ -26,9 +26,21 @@ internal sealed class ScriptedSurface(int width, int height, params LauncherInpu
 
     public string? Clipboard() => ClipboardText;
 
-    public Func<string, string?>? PickFolder { get; set; }
+    public Func<string, string, string?>? PickFolder { get; set; }
 
-    public Func<string, string?>? PickFile { get; set; }
+    public Func<string, string, string?>? PickFile { get; set; }
+
+    public bool Frameless { get; set; }
+
+    public bool FillsScreen { get; set; }
+
+    public int Minimised { get; private set; }
+
+    public void Minimise() => Minimised++;
+
+    public IReadOnlyList<(int X, int Y, int Width, int Height)> ControlAreas { get; private set; } = [];
+
+    public void Controls(IReadOnlyList<(int X, int Y, int Width, int Height)> areas) => ControlAreas = areas;
 }
 
 /// <summary>A sound test that notes what it was asked to play, and plays until stopped.</summary>
@@ -107,9 +119,9 @@ public sealed class LauncherTests
         var result = Run(Context(), [.. ToWindow,
             Right,              // window: 720x400 -> 1080x600
             Down, Enter,        // fullscreen on
-            Down, Down,
+            Down, Down, Down,   // past the picture filter and the HD pack
             Right, Right,       // sound: AdLib, then Sound Blaster
-            Down, Down, Down, Down, Enter,  // past the ROMs, the audio pack and the SoundFont: the start-up screen off
+            Down, Down, Down, Down, Enter,  // past the audio pack, the ROMs (Advanced opens) and the SoundFont: the start-up screen off
             Escape]);
         Assert.Equal(LauncherChoice.Quit, result.Choice);
         Assert.Equal("1080x600", (string)result.Changes["display.resolution"]!);
@@ -172,8 +184,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, every start, Opening animation, start-up screen, SoundFont, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, every start, Opening animation, start-up screen, SoundFont, ROMs, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -181,10 +193,30 @@ public sealed class LauncherTests
     [Fact]
     public void TheLauncherAtEveryStartIsASetting()
     {
-        // up from Play: Save, then this screen at every start
-        var result = Run(Context(), Up, Up, Enter);
+        // up from Play: Save, the mouse wheel, then this screen at every start
+        var result = Run(Context(), Up, Up, Up, Enter);
         Assert.True((bool)result.Changes["startup.launcher"]!);
         Assert.True(result.Settings.Launcher);
+    }
+
+    [Fact]
+    public void TheMouseWheelInMenusIsASettingOnByDefault()
+    {
+        // up from Play: Save, then the mouse wheel (on: the file has no input.mouseWheel)
+        var kept = Run(Context(), Up, Up, Right, Right);
+        Assert.False(kept.Changes.ContainsKey("input.mouseWheel"));
+        Assert.True(kept.Settings.MouseWheel);
+        var off = Run(Context(), Up, Up, Enter);
+        Assert.False((bool)off.Changes["input.mouseWheel"]!);
+        Assert.False(off.Settings.MouseWheel);
+    }
+
+    [Fact]
+    public void TheMouseWheelFixedByTheCommandLineIsShownButNotChanged()
+    {
+        var fixedKeys = new Dictionary<string, string> { ["input.mouseWheel"] = "--no-mouse-wheel" };
+        var result = Run(Context(fixedKeys: fixedKeys), Up, Up, Enter);
+        Assert.False(result.Changes.ContainsKey("input.mouseWheel"));
     }
 
     [Fact]
@@ -193,9 +225,41 @@ public sealed class LauncherTests
         var result = Run(Context(), new PathDropped(@"E:\MY_ROMS"));
         Assert.Equal("E:/MY_ROMS", (string)result.Changes["sound.mt32Roms"]!);
         Assert.Equal(@"E:\MY_ROMS", result.Settings.Mt32Roms);
-        // the window size, Fullscreen, HD pack, Sound card, then the ROMs
-        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Enter]) { PickFolder = _ => @"F:\OTHER_ROMS" };
+        // the window size, Fullscreen, HD pack, Sound card, audio pack, then the ROMs (on Advanced)
+        var picked = new ScriptedSurface(1440, 800, [.. ToWindow, Down, Down, Down, Down, Down, Down, Enter]) { PickFolder = (_, _) => @"F:\OTHER_ROMS" };
         Assert.Equal("F:/OTHER_ROMS", (string)new Launcher().Run(Context(), picked).Changes["sound.mt32Roms"]!);
+    }
+
+    /// <summary>
+    /// The player's request (2026-11-08): a dialog opens at what its row names when that exists (a folder, or a file shown in its
+    /// folder), else in the program's own folder.
+    /// </summary>
+    [Fact]
+    public void DialogsOpenAtTheRowsFolderElseInTheProgramsFolder()
+    {
+        var program = AppContext.BaseDirectory;
+        var folder = Directory.CreateTempSubdirectory("dialog-start").FullName;
+        try
+        {
+            var file = Path.Combine(folder, "mine.sf2");
+            File.WriteAllText(file, "x");
+            Assert.Equal(program, LauncherScreen.DialogStart(null, program));
+            Assert.Equal(program, LauncherScreen.DialogStart("", program));
+            Assert.Equal(program, LauncherScreen.DialogStart(Path.Combine(folder, "gone"), program));
+            Assert.Equal(folder, LauncherScreen.DialogStart(folder, program));
+            Assert.Equal(file, LauncherScreen.DialogStart("\"" + file + "\"", program));
+
+            // the ROM row: none named, then a folder that exists
+            var starts = new List<string>();
+            LauncherInput[] toRoms = [.. ToWindow, Down, Down, Down, Down, Down, Down, Enter];
+            new Launcher().Run(Context(), new ScriptedSurface(1440, 800, toRoms) { PickFolder = (_, start) => { starts.Add(start); return null; } });
+            new Launcher().Run(Context(new GameSettings { Mt32Roms = folder }), new ScriptedSurface(1440, 800, toRoms) { PickFolder = (_, start) => { starts.Add(start); return null; } });
+            Assert.Equal([program, folder], starts);
+        }
+        finally
+        {
+            Directory.Delete(folder, true);
+        }
     }
 
     [Fact]
@@ -251,7 +315,7 @@ public sealed class LauncherTests
         public void Dispose() => Directory.Delete(Root, recursive: true);
     }
 
-    // from Play: Discord, the game folder, Change, window, fullscreen, HD pack, sound card, ROMs, then the audio pack (no sound test)
+    // from Play: Discord, the game folder, Change, window, fullscreen, picture, HD pack, sound card, then the audio pack (no sound test)
     private static readonly LauncherInput[] ToAudioPack = [Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab, Tab];
 
     [Fact]
@@ -265,7 +329,7 @@ public sealed class LauncherTests
         Assert.False(sound.Changes.ContainsKey("display.hdPack"));
 
         // the picture pack row offers only the folder with pictures
-        var picture = Run(context, Tab, Tab, Tab, Tab, Tab, Tab, Right);
+        var picture = Run(context, Tab, Tab, Tab, Tab, Tab, Tab, Tab, Right);
         Assert.Equal(packs.Pictures.Replace('\\', '/'), (string)picture.Changes["display.hdPack"]!);
 
         // the settings' pack comes back unchanged; None turns it off
@@ -282,9 +346,9 @@ public sealed class LauncherTests
     public void APackIsPickedOrDroppedByWhatItHolds()
     {
         using var packs = new Packs();
-        var picked = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = _ => packs.Sounds };
+        var picked = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = (_, _) => packs.Sounds };
         Assert.Equal(packs.Sounds, new Launcher().Run(Context(), picked).Settings.AudioPack);
-        var wrong = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = _ => packs.Pictures };
+        var wrong = new ScriptedSurface(1440, 800, [.. ToAudioPack, Enter]) { PickFolder = (_, _) => packs.Pictures };
         Assert.Empty(new Launcher().Run(Context(), wrong).Changes);
 
         var dropped = Run(Context(), new PathDropped(packs.Pictures), new PathDropped(packs.Sounds));
@@ -306,14 +370,14 @@ public sealed class LauncherTests
             File.WriteAllText(font, "x");
             var text = Path.Combine(folder, "notes.txt");
             File.WriteAllText(text, "x");
-            LauncherInput[] toSoundFont = [.. ToAudioPack, Tab];
-            var picked = new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => font };
+            LauncherInput[] toSoundFont = [.. ToAudioPack, Tab, Tab];
+            var picked = new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = (_, _) => font };
             var result = new Launcher().Run(Context(), picked);
             Assert.Equal(font, result.Settings.SoundFont);
             Assert.Equal(font.Replace('\\', '/'), (string)result.Changes["sound.soundFont"]!);
 
             // a file that is not a SoundFont is refused; a dropped .sf2 is taken
-            Assert.Empty(new Launcher().Run(Context(), new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = _ => text }).Changes);
+            Assert.Empty(new Launcher().Run(Context(), new ScriptedSurface(1440, 800, [.. toSoundFont, Enter]) { PickFile = (_, _) => text }).Changes);
             Assert.Equal(font, Run(Context(), new PathDropped(font)).Settings.SoundFont);
 
             // left: the default again; the settings' file comes back unchanged
@@ -425,7 +489,7 @@ public sealed class LauncherTests
     public void WithoutAFolderDialogChangeGoesToTyping()
     {
         // no dialog at all (null), or one that could not be shown (it throws): Change… starts typing in the field
-        foreach (var pick in new Func<string, string?>?[] { null, _ => throw new NotSupportedException("No folder dialog on this system.") })
+        foreach (var pick in new Func<string, string, string?>?[] { null, (_, _) => throw new NotSupportedException("No folder dialog on this system.") })
         {
             var context = Context(new GameSettings(), LauncherReason.GameNotFound) with { FoundGameFolders = () => [] };
             var surface = new ScriptedSurface(1080, 600) { PickFolder = pick };
@@ -444,9 +508,9 @@ public sealed class LauncherTests
         }
 
         // a dialog: its folder is taken, a cancel changes nothing
-        var picked = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = _ => Given };
+        var picked = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = (_, _) => Given };
         Assert.Equal(Given, (string)new Launcher().Run(Context(), picked).Changes["gameFolder"]!);
-        var cancelled = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = _ => null };
+        var cancelled = new ScriptedSurface(1440, 800, Tab, Tab, Tab, Enter) { PickFolder = (_, _) => null };
         Assert.Empty(new Launcher().Run(Context(), cancelled).Changes);
     }
 
@@ -454,7 +518,7 @@ public sealed class LauncherTests
     public void AFixedFolderSaysWhereItIsSet()
     {
         var context = Context(fixedKeys: ByCommandLine) with { GivenGameFolder = Given };
-        var surface = new ScriptedSurface(1080, 600) { PickFolder = _ => throw new InvalidOperationException("not to be called") };
+        var surface = new ScriptedSurface(1080, 600) { PickFolder = (_, _) => throw new InvalidOperationException("not to be called") };
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
         screen.Render(new Drawing.Canvas(1080, 600));
         var field = screen.Area(LauncherScreen.Item.GameFolder);
@@ -511,18 +575,31 @@ public sealed class LauncherTests
         Directory.CreateDirectory(folder);
         void Shot(string name, LauncherContext context, int width, int height, params LauncherInput[] script)
         {
-            var surface = new ScriptedSurface(width, height, script);
+            var surface = new ScriptedSurface(width, height, script) { Frameless = true };
             new Launcher().Run(context, surface);
             PngCodec.Write(new RgbaImage(width, height, surface.Frames[^1]), Path.Combine(folder, name + ".png"));
         }
         // the launcher reworked (2026-11-08): as it opens, with broken packs chosen (the audio pack's row focused), and at its smallest size
         var guide = Context(tests: []) with { PackGuide = "https://example.org/PACKS.md", ReportProblem = () => "Report saved.", ReleaseNotesLink = "https://example.org" };
         Shot("normal-1280x720", guide, 1280, 720, Escape);
-        // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (HD pack: 9 tabs, audio pack: 13)
+        // from Play with the three links: Discord, the guide, the report, the notes, then the game folder ... (picture: 9 tabs, HD pack: 10, audio pack: 13)
         static LauncherInput[] Tabs(int count) => [.. Enumerable.Repeat<LauncherInput>(Tab, count), Escape];
         Shot("broken-packs-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(13));
+        // the picture filter's row (beside Fullscreen) chosen with the keyboard, its tooltip, Soft CRT (the longest label) shown; and at the smallest size
+        Shot("picture-row-1280x720", guide, 1280, 720, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
+        Shot("picture-row-960x540", guide, 960, 540, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
+        Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
+        // the pointer resting on a problem line (its tooltip), and on Save and quit (lit; Play, the keyboard's choice, softly)
+        var probe = new LauncherScreen(new LauncherModel(LauncherLayoutTests.Broken(), null), LauncherLayoutTests.Broken(), new ScriptedSurface(1280, 720) { Frameless = true });
+        probe.Render(new Drawing.Canvas(1280, 720));
+        var line = probe.Area(LauncherScreen.Item.AudioPack, LauncherScreen.Part.Status);
+        var save = probe.Area(LauncherScreen.Item.Save);
+        Shot("tooltip-problem-1280x720", LauncherLayoutTests.Broken(), 1280, 720, new PointerMoved(line.X + 8, line.Y + 3), new TimePassed(), Escape);
+        Shot("hover-save-1280x720", guide, 1280, 720, new PointerMoved(save.X + 20, save.Y + 10), Escape);
+        Shot("keyboard-tooltip-1280x720", guide, 1280, 720, [.. ToWindow, Escape]);
+        Shot("advanced-broken-960x540", LauncherLayoutTests.Broken(), 960, 540, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
         Shot("broken-packs-hd-1280x720", LauncherLayoutTests.Broken(), 1280, 720, Tabs(9));
-        Shot("broken-packs-960x540", LauncherLayoutTests.Broken(), 960, 540, Tabs(13));
+        Shot("broken-packs-960x540", LauncherLayoutTests.Broken(), 960, 540, Tabs(12));
         Shot("no-soundfont-960x540", guide, 960, 540, Tabs(14));
         Shot("start-failed-960x540", LauncherLayoutTests.Broken(LauncherReason.StartFailed, "The game could not start: " + LauncherLayoutTests.BrokenManifest(@"E:\Games\packs\x")), 960, 540, Escape);
         Shot("asked-1440x800", Context(tests: []), 1440, 800, [.. ToWindow, Escape]);

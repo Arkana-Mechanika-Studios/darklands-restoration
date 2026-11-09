@@ -33,6 +33,14 @@ public interface ITacticalView : IBattleViewport
     void RowChanged(int member);
 
     /// <summary>
+    /// The panel's frames and rows drawn again over the screen after the won battle's loot screen (party-panel-frame-set(0x100) and
+    /// party-panel-row-set(0x100) at R014+0x0D25..0x0D38): no full paint follows before the battle ends.
+    /// </summary>
+    void PanelFramesRedrawn()
+    {
+    }
+
+    /// <summary>
     /// An order was chosen in order mode: the selected member's order letter is drawn alone in its panel row (R016+0x15BE), from the
     /// order, the place action and the flee bit as they are now; it stays until the row is drawn again.
     /// </summary>
@@ -438,14 +446,6 @@ public sealed partial class TacticalBattle : IBattleEndActions
             Battle[i].Floor = Battle.FloorShown;
         }
         Battle.PartyFloor = Battle.FloorShown;
-        SwitchLevel(Battle.FloorShown);
-        if (arrivedThroughDoor && Level.PartyRoom >= 0)
-        {
-            // C: arrived through a door: its wall group is remembered as open (opened-door-list) and its cells uncovered.
-            RevealGroup(Level.PartyRoom);
-            LevelChanged = true;
-            _redraw = true;
-        }
         // fight-flags 0x10 (R024 0000, mode 0) and 0x20 (R014+0x0058, modes 2 and 3) place the party at the level's start before the
         // timers are cleared; mode 1 (fight-flags 2) places nobody: each member stands where the last battle left it.
         // orig: R002+0x0098..0x00EE (R002+0x0000's modes) and R014+0x0058..0x0104, checked against the asm; tests: RevisitTests
@@ -470,9 +470,36 @@ public sealed partial class TacticalBattle : IBattleEndActions
             Battle[i].ExitZone = Table(BattleVariables.MemberExitZone);
             Battle[i].StairsBack = Table(BattleVariables.MemberStairsBack);
         }
+        // orig: R014+0x0017..0x0058, checked against the asm: mode 0's fight-flags 0x10 calls R024+0x0000 (09C0:1C6B), which prepares the
+        //   levels and places the party at the start (R014+0x4188) BEFORE level-change R024+0x059A (09C0:1B3F) shows the level; modes 2 and 3
+        //   (fight-flags 0x20) place it at R014+0x00FE, after level-change. Level-change hides the wall groups of the unopened doors (byte 3's
+        //   bit 0x80, the void bit the collision test reads) and loads the level's varying furniture, so in mode 0 the formation spots are
+        //   tested on the level without them (a read-only hook at R014+0x4188's collision calls: every slot free on cells level-change makes
+        //   void a moment later; local/battlefuzz-2026-11-08.md L2); tests: PlacementOrderTests
+        var placedBeforeShow = keptPlaces is null && newBattlefield && !arrivedThroughDoor;
+        if (placedBeforeShow && Battle.FloorShown >= 0 && Battle.FloorShown < _levels.Count)
+        {
+            Map.Level = _levels[Battle.FloorShown];
+            PlaceParty(Level.PartyStart.X, Level.PartyStart.Y, Level.PartyFacing);
+        }
+        else
+        {
+            placedBeforeShow = false;
+        }
+        SwitchLevel(Battle.FloorShown);
+        if (arrivedThroughDoor && Level.PartyRoom >= 0)
+        {
+            // C: arrived through a door: its wall group is remembered as open (opened-door-list) and its cells uncovered.
+            RevealGroup(Level.PartyRoom);
+            LevelChanged = true;
+            _redraw = true;
+        }
         if (keptPlaces is null)
         {
-            PlaceParty(Level.PartyStart.X, Level.PartyStart.Y, Level.PartyFacing);
+            if (!placedBeforeShow)
+            {
+                PlaceParty(Level.PartyStart.X, Level.PartyStart.Y, Level.PartyFacing);
+            }
         }
         else
         {
@@ -1049,7 +1076,13 @@ public sealed partial class TacticalBattle : IBattleEndActions
 
     public void LootAfterFight() => GatherLoot();
 
-    public void OpenLoot(int member) => OpenLootPile(member);
+    // orig: R014+0x0D1D loot-pile-opened (19CD:2D08), then R014+0x0D25..0x0D38: party-panel-frame-set(0x100) and
+    //   party-panel-row-set(0x100); the place action Take Loot's loot-pile-opened (R014+0x2311) is followed by neither
+    public void OpenLoot(int member)
+    {
+        OpenLootPile(member);
+        _view.PanelFramesRedrawn();
+    }
 
     // orig: R014+0x0AB5..0x0ABE: floor-view-paint(si) (09C0:1C2F) then fight-draw R014+0x6818 (14F7:0008), whose R014+0x99F6 turns the attackers
     public void RedrawAround(int member)

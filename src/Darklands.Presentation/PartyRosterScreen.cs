@@ -88,6 +88,8 @@ public sealed class PartyRosterScreen
     public void Run(GameState state, int callerWord)
     {
         _state = state;
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the roster's lines
+        using var wheel = _ui.UseSelectionList(static () => true);
         var savedRedraw = _ui.Redraw;
         SetSaveAndLoad(2);
         try
@@ -484,7 +486,7 @@ public sealed class PartyRosterScreen
     {
         Screen.Draw(_ui.Assets.Picture("buttnCR2").Image, 0x43, y);
         _ui.Text.DrawCoded(Screen, 0x4A, labelY, _data.Texts[text], BackLabelColor);
-        _ui.Present();
+        _ui.PresentPressedButton();
     }
 
     private void CopyBack(int x, int y, int width, int height) => Screen.Restore(_back.Save(x, y, width, height));

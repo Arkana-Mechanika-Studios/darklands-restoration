@@ -19,21 +19,22 @@ internal static class LauncherHost
     internal static readonly (int Width, int Height)[] Sizes = [(1280, 720), (1080, 608), (960, 540)];
 
     /// <summary>Opens the window at the launcher's size.</summary>
-    public static SdlHost Open(string title)
+    public static SdlHost Open(string title, bool gpu = false)
     {
         var (width, height) = SizeFor(SdlHost.MainScreen());
-        var host = new SdlHost(title, width, height);
+        var host = new SdlHost(title, width, height, frameless: true, gpu: gpu);
         host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
         host.Clear();
         return host;
     }
 
-    /// <summary>Gives the window the launcher's size again (after the game's).</summary>
+    /// <summary>A launcher's window again (after the game's, or one opened for the game): frameless, at the launcher's size.</summary>
     public static void Fit(SdlHost host)
     {
         var (width, height) = SizeFor(host.UsableScreen());
+        // a new frameless window (a framed one given its frame away leaves Windows painting its old title bar now and then)
+        host.Reopen(width, height, fullscreen: false, frameless: true, gpu: host.Gpu);
         host.MinimumSize(Sizes[^1].Width, Sizes[^1].Height);
-        host.Resize(width, height, fullscreen: false);
     }
 
     /// <summary>The largest of <see cref="Sizes"/> that fits the screen with room to spare.</summary>
@@ -68,11 +69,21 @@ internal static class LauncherHost
             PackGuide,
             given,
             chosen => Darklands.Audio.Packs.SoundFontLocator.Find(null, null, chosen, AppContext.BaseDirectory, _ => { }),
-            () => ReportProblem(reports, settings, cli, settingsPath));
+            () => ReportProblem(reports, settings, cli, settingsPath),
+            new FilterPreviews());
         LauncherResult result;
         using (var surface = new SdlLauncherSurface(host))
         {
             result = new Launcher.Launcher().Run(context, surface);
+            // Play: the game's window has its frame; otherwise the frameless window is hidden as it is (no title bar as it closes)
+            if (result.Choice == LauncherChoice.Play)
+            {
+                surface.ToGame();
+            }
+            else
+            {
+                surface.Leave();
+            }
         }
         // the game's window may be smaller than the launcher's
         host.MinimumSize(1, 1);

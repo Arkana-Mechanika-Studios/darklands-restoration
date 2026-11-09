@@ -6,7 +6,7 @@ namespace Darklands.Host.Sdl.Tests;
 /// <summary>
 /// The mouse at every window size: a real SDL window shows a picture whose pixels name their own game coordinates, the
 /// picture is read back from the renderer, and a mouse event at each window position must give the game pixel shown
-/// there. The pointer the game moves (MovePointer) must come back as the same game pixel. Uses the SDL2 library the host
+/// there. The pointer the game moves (MovePointer) must come back as the same game pixel. Uses the SDL3 library the host
 /// ships; skipped without one. The windows are shown briefly (and fullscreen once).
 /// </summary>
 [Collection("SDL")]
@@ -38,9 +38,14 @@ public sealed class MouseMappingTests
     [InlineData(2560, 1440, false, false, true)]
     [InlineData(1366, 768, false, true, true)]
     [InlineData(0, 0, true, false, true)]
-    public void EveryWindowPositionGivesTheGamePixelShownThere(int width, int height, bool fullscreen, bool hd, bool software = false)
+    // SDL's GPU renderer (opened when a picture filter of the shaders is chosen, docs/SETTINGS.md display.filter)
+    [InlineData(1920, 1080, false, false, false, true)]
+    [InlineData(1013, 571, false, false, false, true)]
+    [InlineData(1366, 768, false, true, false, true)]
+    [InlineData(0, 0, true, false, false, true)]
+    public void EveryWindowPositionGivesTheGamePixelShownThere(int width, int height, bool fullscreen, bool hd, bool software = false, bool gpu = false)
     {
-        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
         if (!File.Exists(library))
         {
             return;
@@ -49,11 +54,11 @@ public sealed class MouseMappingTests
         if (software)
         {
             // read when the renderer is made; SDL_Quit (the host's Dispose) clears it again
-            SdlNative.SDL_SetHint("SDL_RENDER_DRIVER", "software");
+            SdlNative.SDL_SetHint(SdlNative.HintRenderDriver, "software");
         }
         using var host = fullscreen
-            ? new SdlHost("mouse test", DisplayLayout.BaseWidth, DisplayLayout.BaseHeight, fullscreen: true)
-            : new SdlHost("mouse test", width, height);
+            ? new SdlHost("mouse test", DisplayLayout.BaseWidth, DisplayLayout.BaseHeight, fullscreen: true, gpu: gpu)
+            : new SdlHost("mouse test", width, height, gpu: gpu);
         if (software)
         {
             Assert.Equal(PictureSampling.SdlSoftware, host.Sampling);
@@ -69,8 +74,8 @@ public sealed class MouseMappingTests
         // The real pointer moving over the shown window (or the window appearing under it) queues motion events of its own,
         // and one landing after a pushed event would replace it: only the pushed events may reach the host. Its window "mouse entered"
         // events too: the host takes the real pointer's place then (SdlHost.PointerInWindow).
-        SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
-        SdlNative.SDL_EventState(SdlNative.EventWindow, 0);
+        SdlNative.SDL_SetEventEnabled(SdlNative.EventMouseMotion, false);
+        NoWindowEvents();
         host.Pump();
 
         // The picture, three times: the low byte of x, the high bit of x, then y; the green channel marks the picture.
@@ -171,7 +176,7 @@ public sealed class MouseMappingTests
     [Fact]
     public void TheGamesPointerStartsAtTheMiddleOfTheScreen()
     {
-        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
         if (!File.Exists(library))
         {
             return;
@@ -180,8 +185,8 @@ public sealed class MouseMappingTests
         using var host = new SdlHost("mouse start test");
         Assert.Equal(new MouseState(160, 100, MouseButtons.None), host.Mouse);
         // no motion or window events: the real pointer over the window would queue its own (entering: the host takes its place)
-        SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
-        SdlNative.SDL_EventState(SdlNative.EventWindow, 0);
+        SdlNative.SDL_SetEventEnabled(SdlNative.EventMouseMotion, false);
+        NoWindowEvents();
         host.Pump();
         Assert.Equal(new MouseState(160, 100, MouseButtons.None), host.Mouse);
     }
@@ -195,7 +200,7 @@ public sealed class MouseMappingTests
     [Fact]
     public void TheGamesPointerIsHiddenWhileTheMouseIsOutsideTheWindow()
     {
-        var library = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
+        var library = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
         if (!File.Exists(library))
         {
             return;
@@ -208,8 +213,8 @@ public sealed class MouseMappingTests
         }
         Assert.True(host.PointerInWindow);
         // only the pushed events: the real pointer would queue motion and enter / leave events of its own
-        SdlNative.SDL_EventState(SdlNative.EventMouseMotion, 0);
-        SdlNative.SDL_EventState(SdlNative.EventWindow, 0);
+        SdlNative.SDL_SetEventEnabled(SdlNative.EventMouseMotion, false);
+        NoWindowEvents();
         host.Pump();
         var (ww, wh) = host.WindowSize;
         Push(SdlNative.EventMouseMotion, ww / 2, wh / 2);
@@ -217,7 +222,7 @@ public sealed class MouseMappingTests
         var over = host.Mouse;
         Assert.True(host.PointerInWindow);
 
-        PushWindow(SdlNative.WindowEventLeave);
+        PushWindow(SdlNative.EventWindowMouseLeave);
         host.Pump();
         Assert.False(host.PointerInWindow);
         Assert.Equal(over, host.Mouse);
@@ -226,10 +231,10 @@ public sealed class MouseMappingTests
         host.Pump();
         Assert.False(host.PointerInWindow);
 
-        PushWindow(SdlNative.WindowEventEnter);
+        PushWindow(SdlNative.EventWindowMouseEnter);
         host.Pump();
         Assert.True(host.PointerInWindow);
-        PushWindow(SdlNative.WindowEventLeave);
+        PushWindow(SdlNative.EventWindowMouseLeave);
         host.Pump();
         Assert.False(host.PointerInWindow);
         // back over the window by a motion alone: shown at that point
@@ -239,11 +244,19 @@ public sealed class MouseMappingTests
         Assert.NotEqual(over, host.Mouse);
     }
 
-    private static void PushWindow(byte windowEvent)
+    private static void PushWindow(uint windowEvent)
     {
-        var e = new SdlNative.SdlEvent { Type = SdlNative.EventWindow };
-        e.WindowEvent = windowEvent;
-        Assert.Equal(1, SdlNative.SDL_PushEvent(ref e));
+        var e = new SdlNative.SdlEvent { Type = windowEvent };
+        Assert.True(SdlNative.SDL_PushEvent(ref e));
+    }
+
+    /// <summary>No window events of SDL's own (SDL2's one window event is a range of event types in SDL3).</summary>
+    private static void NoWindowEvents()
+    {
+        for (var type = SdlNative.EventWindowFirst; type <= SdlNative.EventWindowLast; type++)
+        {
+            SdlNative.SDL_SetEventEnabled(type, false);
+        }
     }
 
     private static void Push(uint type, int x, int y)
@@ -252,6 +265,6 @@ public sealed class MouseMappingTests
         e.Motion.Type = type;
         e.Motion.X = x;
         e.Motion.Y = y;
-        Assert.Equal(1, SdlNative.SDL_PushEvent(ref e));
+        Assert.True(SdlNative.SDL_PushEvent(ref e));
     }
 }

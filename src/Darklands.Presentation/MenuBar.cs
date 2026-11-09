@@ -204,6 +204,8 @@ public sealed class MenuBar
             return;
         }
         _running = true;
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the pull-downs in the keyboard mode
+        using var wheel = _ui.UseSelectionList(() => _keyboard);
         // orig: root 0000:001E: the card window's font is 1 in the loop (the keyboard mode's Alt-Q box), put back before an item (Choose)
         var font = _ui.CardWindowFont;
         _ui.CardWindowFont = 1;
@@ -248,6 +250,8 @@ public sealed class MenuBar
 
     private void Choose()
     {
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the item chosen has its own
+        using var wheel = _ui.UseSelectionList(null);
         _drawn = false;
         var (menu, item, sub, parent) = (_lit, _itemRow, _subRow, _subParent);
         CloseDropdown();

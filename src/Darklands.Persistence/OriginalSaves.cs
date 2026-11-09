@@ -115,6 +115,10 @@ public static class OriginalSaves
         // run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the
         // lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.
         var file = SaveFile.Parse(sav, fixedLocationTable: true);
+        // C: the date, location-now and the location table are taken as they are (SaveFile.ImpossibleValue: what no game holds).
+        // DIVERGENCE: not modelled: on a hand-edited month outside 0..11, location-now outside the places or a short location table the
+        //   original reads past its tables where they are indexed (undefined memory); the rewrite reads the values as they are and throws
+        //   IndexOutOfRange in the code that indexes them. The player's game refuses such a file first (OriginalBehaviour.FixImpossibleSavedGame).
         var h = file.Header;
         var state = new GameState(random ?? running?.Random ?? new MscRandom()) { Data = data };
         if (running is not null)

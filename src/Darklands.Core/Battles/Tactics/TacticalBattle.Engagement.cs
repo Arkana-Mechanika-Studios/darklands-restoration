@@ -217,6 +217,10 @@ public sealed partial class TacticalBattle
         {
             c.QueuedStep = b;
         }
+        // DIVERGENCE: host timing: approach compares the re-path time with the timer's clock DS:07D4 as it is when this walker's turn
+        //   comes, after the walkers before it searched their paths, and those searches take timer callbacks in the original (battle_oracle
+        //   fight [0, 0x03, 2323, 37/2/5, 29/2/3]: its approaches in one pass ran at the clocks 1057, 1061, 1066, 1070, 1074 and made five
+        //   re-paths, the C#'s with the pass's clock six; R014+0x2CCA+0xB1, round battlelead). Here the clock moves between passes only.
         if (c.RepathAt > Clock)
         {
             return;

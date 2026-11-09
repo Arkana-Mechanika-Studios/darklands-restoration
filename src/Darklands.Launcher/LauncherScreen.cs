@@ -1,4 +1,5 @@
 using Darklands.Launcher.Drawing;
+using Darklands.Platform;
 
 namespace Darklands.Launcher;
 
@@ -59,6 +60,16 @@ internal sealed class LauncherScreen
     private string? _message;
     private uint _messageColour = PaleRed;
     private bool _showSound;
+
+    // the tooltip shown (None: none), and the control the pointer came to (its tooltip after a rest)
+    private Item _tip, _tipPending;
+    private Part _tipPart, _tipPendingPart;
+    private bool _tipByKeyboard;
+
+    // the status lines cut to fit, by their row (their whole text is in the row's tooltip)
+    private readonly HashSet<Item> _statusCut = [];
+    private readonly Dictionary<Item, (string Text, uint Colour)> _statusShown = [];
+    private bool _advanced;
     private Rect? _notesLink;
     private Canvas? _background;
     private Rect _discord;
@@ -81,6 +92,7 @@ internal sealed class LauncherScreen
         Change,
         Window,
         Fullscreen,
+        Picture,
         HdPack,
         Sound,
         Roms,
@@ -88,6 +100,7 @@ internal sealed class LauncherScreen
         Banner,
         Intro,
         Always,
+        MouseWheel,
         Save,
         Play,
         Discord,
@@ -96,6 +109,15 @@ internal sealed class LauncherScreen
         PackGuide,
         SoundFont,
         Report,
+        TabGeneral,
+        TabAdvanced,
+
+        /// <summary>The frameless window's own buttons (<see cref="ILauncherSurface.Frameless"/>).</summary>
+        Minimise,
+        Close,
+
+        /// <summary>The notice over the buttons (a message: why the game could not start, what an action did).</summary>
+        Notice,
     }
 
     /// <summary>The parts of a control a click can hit.</summary>
@@ -112,9 +134,31 @@ internal sealed class LauncherScreen
 
         /// <summary>A row's own "Browse…" (or "Change…") button: the system's folder or file dialog.</summary>
         Browse,
+
+        /// <summary>The status line under a row (a click chooses the row; the pointer resting on it shows its whole text).</summary>
+        Status,
     }
 
     public Item Focus => _focus;
+
+    /// <summary>How long the pointer rests on a control before its tooltip shows.</summary>
+    public static readonly TimeSpan TooltipDelay = TimeSpan.FromMilliseconds(450);
+
+    /// <summary>The pointer came to a control with a tooltip: wait for it to rest (<see cref="TimePassed"/>).</summary>
+    public bool TooltipPending => _tipPending != Item.None;
+
+    /// <summary>The control whose tooltip is shown, or None.</summary>
+    public Item Tooltip => _tip;
+
+    /// <summary>Where the tooltip was drawn last (empty: none).</summary>
+    internal Rect TooltipArea { get; private set; }
+
+    private void HideTooltip()
+    {
+        _tip = Item.None;
+        _tipPending = Item.None;
+        _tipByKeyboard = false;
+    }
 
     /// <summary>Where <paramref name="item"/> was drawn last.</summary>
     public Rect Area(Item item, Part part = Part.Row) => _hotspots.First(h => h.Item == item && h.Part == part).Area;
@@ -127,8 +171,28 @@ internal sealed class LauncherScreen
 
     public bool Editing => _editing;
 
+    /// <summary>The Advanced tab is open (else General).</summary>
+    public bool AdvancedShown => _advanced;
+
+    /// <summary>The rows of the Advanced tab; the other settings rows are on General.</summary>
+    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.Banner or Item.Intro or Item.Always or Item.MouseWheel;
+
+    private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
+
+    /// <summary>Opens a tab and puts the focus on its first row.</summary>
+    private void ShowTab(bool advanced)
+    {
+        if (_editing)
+        {
+            StopEditing(apply: true);
+        }
+        _advanced = advanced;
+        _focus = advanced ? Item.Roms : Item.GameFolder;
+    }
+
+    // Tab and the arrows go through General's rows, then Advanced's (its tab opens), then the buttons and the links
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.HdPack, Item.Sound, Item.Roms, Item.Test, Item.AudioPack, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.Banner, Item.Intro, Item.Always, Item.MouseWheel, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
                 && (i != Item.PackGuide || _context.PackGuide is not null) && (i != Item.Report || _context.ReportProblem is not null));
 
@@ -139,7 +203,13 @@ internal sealed class LauncherScreen
         {
             case CloseRequested:
                 return LauncherChoice.Quit;
+            case TimePassed:
+                // the pointer rested on a control: its tooltip
+                (_tip, _tipPart) = (_tipPending, _tipPendingPart);
+                _tipPending = Item.None;
+                return null;
             case PointerReleased released:
+                HideTooltip();
                 var (pressed, pressedPart) = (_pressed, _pressedPart);
                 _pressed = Item.None;
                 var under = _hotspots.LastOrDefault(h => h.Area.Contains(released.X, released.Y));
@@ -148,15 +218,28 @@ internal sealed class LauncherScreen
                     : null;
             case PointerMoved moved:
                 var over = _hotspots.LastOrDefault(h => h.Area.Contains(moved.X, moved.Y));
+                if ((over.Item, over.Part) != (_hover, _hoverPart) || _tipByKeyboard)
+                {
+                    // another control (or none): its tooltip after a rest
+                    HideTooltip();
+                    (_tipPending, _tipPendingPart) = (over.Item, over.Part);
+                }
                 (_hover, _hoverPart) = (over.Item, over.Part);
                 return null;
             case PathDropped dropped:
                 Dropped(dropped.Path);
                 return null;
             case PointerPressed press:
+                HideTooltip();
                 var hit = _hotspots.LastOrDefault(h => h.Area.Contains(press.X, press.Y));
-                if (hit.Item == Item.None)
+                if (hit.Item is Item.None or Item.Notice)
                 {
+                    return null;
+                }
+                if (hit.Item is Item.Minimise or Item.Close)
+                {
+                    // the window's own buttons take no focus
+                    (_pressed, _pressedPart) = (hit.Item, hit.Part);
                     return null;
                 }
                 if (_editing && hit.Item != Item.GameFolder)
@@ -175,6 +258,8 @@ internal sealed class LauncherScreen
                     Part.Previous => Activate(hit.Item, -1, cycle: true),
                     Part.Next => Activate(hit.Item, 1, cycle: true),
                     Part.Browse => Activate(hit.Item, 1, cycle: false),
+                    // a click on a status line chooses its row
+                    Part.Status => Selected(),
                     // a click on a row with a dialog behind it only chooses the row (←/→ then work); its Browse… opens the dialog
                     _ when SelectedByClick(hit.Item) => Selected(),
                     _ => Activate(hit.Item, step: 1, cycle: false),
@@ -193,14 +278,25 @@ internal sealed class LauncherScreen
                 EditKey(key);
                 return null;
             case KeyPressed key:
-                return Key(key);
+                var before = _focus;
+                var choice = Key(key);
+                if (_focus != before)
+                {
+                    // the keyboard chose another control: its tooltip at once (the pointer moving hides it)
+                    HideTooltip();
+                    (_tip, _tipPart, _tipByKeyboard) = (_focus, Part.Row, true);
+                }
+                return choice;
             default:
                 return null;
         }
     }
 
     /// <summary>The plates: Browse… / Change… on their rows, Change… of the game folder, Test sound, Save and quit, Play.</summary>
-    private static bool IsPlate(Item item, Part part) => part == Part.Browse || item is Item.Change or Item.Test or Item.Save or Item.Play;
+    private static bool IsPlate(Item item, Part part) => part == Part.Browse || item is Item.Change or Item.Test or Item.Save or Item.Play or Item.Minimise or Item.Close;
+
+    /// <summary>Where the controls were drawn last (the links, rows, plates, tabs and the window's buttons): a frameless window is dragged elsewhere.</summary>
+    internal IReadOnlyList<(int X, int Y, int Width, int Height)> ControlAreas => [.. _hotspots.Select(h => (h.Area.X, h.Area.Y, h.Area.Width, h.Area.Height))];
 
     /// <summary>The rows a click only chooses: Enter or their Browse… / Change… button opens the system's dialog.</summary>
     private static bool SelectedByClick(Item item) => item is Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Roms;
@@ -222,13 +318,17 @@ internal sealed class LauncherScreen
             case LauncherKey.Down:
                 MoveFocus(1);
                 return null;
+            case LauncherKey.Tab when key.Control:
+                // Ctrl+Tab: the other tab
+                ShowTab(!_advanced);
+                return null;
             case LauncherKey.Tab:
                 MoveFocus(key.Shift ? -1 : 1);
                 return null;
             case LauncherKey.Left:
             case LauncherKey.Right:
                 var step = key.Key == LauncherKey.Left ? -1 : 1;
-                if (_focus is Item.Window or Item.Fullscreen or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Always or Item.GameFolder)
+                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Always or Item.MouseWheel or Item.GameFolder)
                 {
                     return Activate(_focus, step, cycle: true);
                 }
@@ -258,6 +358,17 @@ internal sealed class LauncherScreen
         _message = null;
         _messageColour = PaleRed;
         _showSound = false;
+        switch (item)
+        {
+            case Item.TabGeneral or Item.TabAdvanced:
+                ShowTab(item == Item.TabAdvanced);
+                return null;
+            case Item.Close:
+                return LauncherChoice.Quit;
+            case Item.Minimise:
+                _surface.Minimise();
+                return null;
+        }
         if (IsFixed(item, out var fixedBy))
         {
             _message = $"Set by {fixedBy}: change it there.";
@@ -273,7 +384,7 @@ internal sealed class LauncherScreen
                 StartEditing(_model.GameFolder ?? "");
                 break;
             case Item.Change:
-                if (Pick("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)", out var picked))
+                if (Pick("Choose your Darklands folder (the one with DARKLAND.EXE, or the GOG or Steam install folder)", _model.GameFolder, out var picked))
                 {
                     if (picked is not null)
                     {
@@ -298,6 +409,9 @@ internal sealed class LauncherScreen
                 break;
             case Item.Fullscreen:
                 _model.Fullscreen = !_model.Fullscreen;
+                break;
+            case Item.Picture:
+                _model.StepFilter(step);
                 break;
             case Item.HdPack or Item.AudioPack:
                 ChoosePack(item == Item.HdPack ? PackKind.Pictures : PackKind.Sounds, step, cycle);
@@ -327,7 +441,7 @@ internal sealed class LauncherScreen
                 _model.CycleSoundCard(step);
                 break;
             case Item.Roms:
-                if (Pick("Choose the folder with your MT-32 or CM-32L ROM files", out var romFolder))
+                if (Pick("Choose the folder with your MT-32 or CM-32L ROM files", _model.Mt32Roms, out var romFolder))
                 {
                     if (romFolder is not null)
                     {
@@ -358,6 +472,9 @@ internal sealed class LauncherScreen
             case Item.Always:
                 _model.Always = !_model.Always;
                 break;
+            case Item.MouseWheel:
+                _model.MouseWheel = !_model.MouseWheel;
+                break;
             case Item.Save:
                 return LauncherChoice.Quit;
             case Item.Play:
@@ -379,10 +496,20 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>
+    /// Where a dialog opens (the player's request, 2026-11-08): at the folder or file the row names when it exists, else in the
+    /// program's own folder (<paramref name="programFolder"/>), where the packs, MT32_ROMS and SOUNDFONT folders are.
+    /// </summary>
+    internal static string DialogStart(string? current, string programFolder)
+    {
+        var named = CleanPath(current);
+        return named.Length > 0 && (Directory.Exists(named) || File.Exists(named)) ? Path.GetFullPath(named) : programFolder;
+    }
+
+    /// <summary>
     /// The system's folder dialog: false when there is none (or it could not be shown: <see cref="_message"/> says why); else true,
     /// with the folder chosen or null when cancelled.
     /// </summary>
-    private bool Pick(string title, out string? folder)
+    private bool Pick(string title, string? current, out string? folder)
     {
         folder = null;
         if (_surface.PickFolder is not { } pick)
@@ -391,7 +518,7 @@ internal sealed class LauncherScreen
         }
         try
         {
-            folder = pick(title) is { } picked ? CleanPath(picked) : null;
+            folder = pick(title, DialogStart(current, AppContext.BaseDirectory)) is { } picked ? CleanPath(picked) : null;
             return true;
         }
         catch (NotSupportedException e)
@@ -470,7 +597,7 @@ internal sealed class LauncherScreen
             (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleBlue);
             return;
         }
-        if (!cycle && Pick("Choose the folder of " + what, out var chosen))
+        if (!cycle && Pick("Choose the folder of " + what, _model.PackOf(kind), out var chosen))
         {
             if (chosen is { } picked)
             {
@@ -528,7 +655,7 @@ internal sealed class LauncherScreen
         }
         try
         {
-            if (pick("Choose a General MIDI SoundFont (.sf2 file)") is { } chosen)
+            if (pick("Choose a General MIDI SoundFont (.sf2 file)", DialogStart(_model.SoundFont, AppContext.BaseDirectory)) is { } chosen)
             {
                 SetSoundFont(CleanPath(chosen));
             }
@@ -648,6 +775,7 @@ internal sealed class LauncherScreen
             Item.GameFolder or Item.Change => "gameFolder",
             Item.Window => "display.resolution",
             Item.Fullscreen => "display.fullscreen",
+            Item.Picture => "display.filter",
             Item.HdPack => "display.hdPack",
             Item.AudioPack => "sound.audioPack",
             Item.SoundFont => "sound.soundFont",
@@ -655,6 +783,7 @@ internal sealed class LauncherScreen
             Item.Roms => "sound.mt32Roms",
             Item.Banner => "startup.banner",
             Item.Intro => "startup.intro",
+            Item.MouseWheel => "input.mouseWheel",
             _ => null,
         };
         return key is not null && _model.IsFixed(key, out by);
@@ -665,7 +794,8 @@ internal sealed class LauncherScreen
     /// <summary>The left card and the settings panel, in design pixels (1280 x 720, the painting's shape).</summary>
     private static Rect CardFrame(View v) => v.Rect(136, 196, 414, 508);
 
-    private static Rect SettingsFrame(View v) => v.Rect(768, 14, 494, 692);
+    /// <summary>The settings panel, below the frameless window's buttons at the top-right corner.</summary>
+    private static Rect SettingsFrame(View v) => v.Rect(768, 46, 494, 660);
 
     /// <summary>
     /// Where the painting's focus (the castle on its hill: 30.5% across, 34% down the picture) sits in the design: in the gap
@@ -703,12 +833,94 @@ internal sealed class LauncherScreen
         {
             _hotspots.Add((reportLink, Item.Report, Part.Row));
         }
-        if ((_focus == Item.Discord ? _discord : _focus == Item.Notes ? _notesLink : _focus == Item.PackGuide ? _guideLink : _focus == Item.Report ? _reportLink : null) is { } link)
+        foreach (var (link, item) in new[] { ((Rect?)_discord, Item.Discord), (_notesLink, Item.Notes), (_guideLink, Item.PackGuide), (_reportLink, Item.Report) })
         {
-            // the focused link: a band behind it
-            Shade(canvas, new Rect(link.X - v.Len(3), link.Y - v.Len(1), link.Width + v.Len(6), link.Height + v.Len(2)), Ink, 34);
+            if (link is { } area)
+            {
+                // the link under the pointer, or chosen with the keyboard: lit as a row
+                RowLight(canvas, new Rect(area.X - v.Len(3), area.Y - v.Len(1), area.Width + v.Len(6), area.Height + v.Len(2)), item);
+            }
+        }
+        // a row of the other tab took the focus (Tab, the arrows, a dropped folder): its tab opens
+        if (OnAdvanced(_focus))
+        {
+            _advanced = true;
+        }
+        else if (OnGeneral(_focus))
+        {
+            _advanced = false;
         }
         DrawSettings(canvas, v);
+        if (_surface.Frameless)
+        {
+            DrawWindowButtons(canvas, v);
+        }
+        DrawPreview(canvas, v);
+        // over everything: the tooltip
+        DrawTooltip(canvas, v);
+    }
+
+    /// <summary>The picture filter's preview inset, in window pixels (empty while it is not shown).</summary>
+    internal Rect PreviewArea { get; private set; }
+
+    /// <summary>The preview's picture in the inset (design pixels): a 120 x 75 piece of a game picture at 3 times, as a window shows it.</summary>
+    private static Rect PreviewImage(View v) => v.Rect(163, 246, 360, 225);
+
+    /// <summary>
+    /// The picture filter's preview (Item.Picture chosen or under the pointer, General tab): a framed inset over the left card,
+    /// the chosen filter's preview (made away from the frames by the host's IFilterPreviews, asked for from the first frame on,
+    /// so it is ready before the row is ever chosen), and what it shows. A preview not made yet: a soft placeholder; no frame
+    /// waits for one.
+    /// </summary>
+    private void DrawPreview(Canvas canvas, View v)
+    {
+        PreviewArea = default;
+        var image = PreviewImage(v);
+        var previews = _context.Previews;
+        previews?.Prepare(_model.GameFolderChecked, image.Width, image.Height, _context.Settings.CrtCurvature ?? false);
+        if (_advanced || (_focus != Item.Picture && _hover != Item.Picture))
+        {
+            return;
+        }
+        var filter = PictureFilters.Parse(_model.Filter) ?? PictureFilter.Sharp;
+        var caption = Face(Assets.Italic, 14, v);
+        var pad = v.Len(10);
+        var frame = new Rect(image.X - pad, image.Y - pad - caption.LineHeight - v.Len(4), image.Width + 2 * pad,
+            image.Height + 2 * pad + 2 * caption.LineHeight + v.Len(8));
+        Shade(canvas, new Rect(frame.X + v.Len(4), frame.Y + v.Len(5), frame.Width, frame.Height), Black, 80);
+        canvas.Fill(frame, HintFill);   // solid: nothing of the card shows through
+        canvas.Frame(frame, Math.Max(1, v.Len(1)), 0x8A7454);
+        caption.Draw(canvas, Fit(caption, $"Picture: {PictureFilters.Label(filter)}", image.Width, fromEnd: false), image.X, frame.Y + pad / 2, Cream);
+        var preview = previews?.Get(filter);
+        if (preview is { } shown)
+        {
+            if (shown.Width == image.Width && shown.Height == image.Height && image.X >= 0 && image.Y >= 0
+                && image.Right <= canvas.Width && image.Bottom <= canvas.Height)
+            {
+                // made at the inset's size: copied row by row
+                for (var y = 0; y < image.Height; y++)
+                {
+                    Array.Copy(shown.Argb, y * shown.Width, canvas.Pixels, (image.Y + y) * canvas.Width + image.X, image.Width);
+                }
+            }
+            else
+            {
+                // a size just changed: the last one stretched until the new one is made
+                canvas.Paint(image, (x, y) => shown.Argb[Math.Min(shown.Height - 1, y * shown.Height / image.Height) * shown.Width
+                    + Math.Min(shown.Width - 1, x * shown.Width / image.Width)]);
+            }
+        }
+        else
+        {
+            canvas.Fill(image, 0x3A2E22);
+            var wait = previews is null ? "No preview here." : "Preparing the preview…";
+            caption.Draw(canvas, wait, image.X + (image.Width - caption.Measure(wait)) / 2, image.Y + (image.Height - caption.LineHeight) / 2, PaleBlue);
+        }
+        canvas.Frame(image, Math.Max(1, v.Len(1)), 0x8A7454);
+        var note = preview is { FromGame: false } ? "A test pattern (no game folder); the game window shows the game itself."
+            : "A picture of your game, about as the game window will show it.";
+        caption.Draw(canvas, Fit(caption, note, image.Width, fromEnd: false), image.X, image.Bottom + v.Len(6), PaleBlue);
+        PreviewArea = frame;
     }
 
     private void DrawBackground(Canvas canvas, View v)
@@ -938,217 +1150,295 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>
-    /// The settings panel: the title, four groups with their icons (Game installation, Display, Sound &amp; Music, Start-up), rows
-    /// with their values centred between ‹ › in one column and their Browse… / Change… plates in another, a status or problem
-    /// line under each folder and pack, then the hint bar and the two buttons. Every text is cut or wrapped to its place.
+    /// The settings panel: the title, the General and Advanced tabs, and the open tab's sections with their icons (General: Game
+    /// installation, Display, Sound &amp; Music; Advanced: the Roland ROMs, the SoundFont, Start-up). It is drawn on one grid: rows of
+    /// one height, a status line of its own height under a folder or pack, the same gap before each section, the labels, the values
+    /// between ‹ › and the small plates (Browse…, Change…, Test sound) in three columns. Under the rows come the hint bar, then
+    /// Save and quit at the left and Play, the larger, at the right. Every text is cut or wrapped to its place.
     /// </summary>
     private void DrawSettings(Canvas canvas, View v)
     {
         var frame = SettingsFrame(v);
         _panel = frame.Inset(v.Len(12));
-        var x0 = frame.X + v.Len(30);
-        var x1 = frame.Right - v.Len(30);
+        _statusCut.Clear();
+        _statusShown.Clear();
+        var x0 = frame.X + v.Len(34);
+        var x1 = frame.Right - v.Len(34);
+        var plateWidth = v.Len(PlateWidth);
         var layout = new RowLayout(
             x0 + v.Len(30),
-            x1 - v.Len(78),
-            x0 + v.Len(136),
-            x1 - v.Len(88),
-            x1 - v.Len(88) - v.Len(96),
+            x1 - plateWidth,
+            x0 + v.Len(132),
+            x1 - plateWidth - v.Len(16),
+            x1 - plateWidth - v.Len(16) - v.Len(84),
             x1);
-        var title = Face(Assets.Display, 46, v);
+        var title = Face(Assets.Display, 44, v);
         var heading = Face(Assets.Strong, 20.5, v);
         var text = Face(Assets.Text, 16, v);
         var line = Face(Assets.Italic, 13, v);
         var small = Face(Assets.Text, 13, v);
+        var rowHeight = v.Len(RowHeight);
+        var plateHeight = v.Len(PlateHeight);
 
         var y = frame.Y + v.Len(16);
-        // with the panel's art, "Settings" stands on its dark header band
-        var band = SettingsBand(v);
-        if (band > 0)
-        {
-            y = frame.Y + (band - title.LineHeight) / 2 + v.Len(2);
-        }
-        title.Draw(canvas, "Settings", x0, y, band > 0 ? Cream : Ink, band > 0 ? Math.Max(1, v.Len(1.5)) : 0, Black);
+        title.Draw(canvas, "Settings", x0, y, Ink);
         // the letters' own height: the display face's line box has much room above and below them
         Leaf(new Rect(x0, y + title.LineHeight / 5, title.Measure("Settings"), title.LineHeight * 3 / 5), "title");
         var ruleLeft = x0 + title.Measure("Settings") + v.Len(16);
-        Fleuron(canvas, v, (ruleLeft + x1) / 2, y + title.LineHeight / 2, (x1 - ruleLeft) / 2, band > 0 ? Gold : InkSoft, onDark: band > 0);
-        y = Math.Max(y + title.LineHeight - v.Len(2), frame.Y + band + v.Len(2));
+        Fleuron(canvas, v, (ruleLeft + x1) / 2, y + title.LineHeight / 2, (x1 - ruleLeft) / 2, InkSoft, onDark: false);
+        y += title.LineHeight - v.Len(4);
+        y = Tabs(canvas, v, heading, x0, x1, y);
 
         int Section(string name, string icon, int top)
         {
-            top += v.Len(6);
+            top += v.Len(SectionGap);
+            var height = v.Len(HeadingHeight);
             var size = v.Len(22);
-            var iconArea = new Rect(x0, top + (heading.LineHeight - size) / 2, size, size);
-            Icon(canvas, v, icon, iconArea, InkSoft);
-            StrongText(canvas, v, heading, name, x0 + v.Len(30), top, Ink);
-            Leaf(new Rect(x0, top, v.Len(30) + heading.Measure(name) + (Assets.HasStrong ? 0 : v.Len(1)), heading.LineHeight - v.Len(3)), "heading " + name);
-            return top + heading.LineHeight - v.Len(3);
+            Icon(canvas, v, icon, new Rect(x0, top + (height - size) / 2, size, size), InkSoft);
+            var ty = top + (height - heading.LineHeight) / 2;
+            StrongText(canvas, v, heading, name, x0 + v.Len(30), ty, Ink);
+            Leaf(new Rect(x0, ty, v.Len(30) + heading.Measure(name) + (Assets.HasStrong ? 0 : v.Len(1)), heading.LineHeight - v.Len(3)), "heading " + name);
+            return top + height;
         }
 
-        int Status(int top, string text, uint colour, int right, bool problem)
+        // a status line: under its row, cut to fit (its whole text in the row's tooltip; the pointer on it shows that too)
+        int Status(int top, Item item, (string Text, uint Colour) status)
         {
+            var height = v.Len(StatusHeight);
             var size = v.Len(12);
-            var iconArea = new Rect(layout.Label, top + (line.LineHeight - size) / 2, size, size);
-            var ink = OnParchment(colour);
-            if (problem)
+            var iconArea = new Rect(layout.Label, top + (height - size) / 2, size, size);
+            if (status.Colour == PaleRed)
             {
                 Icon(canvas, v, "icon-problem", iconArea, InkRed);
             }
-            else if (colour == Green)
+            else if (status.Colour == Green)
             {
                 Icon(canvas, v, "icon-found", iconArea, InkGreen);
             }
             var tx = layout.Label + size + v.Len(6);
-            var fitted = Fit(line, text, right - tx, fromEnd: false);
-            line.Draw(canvas, fitted, tx, top, ink);
-            Leaf(new Rect(layout.Label, top, tx + line.Measure(fitted) - layout.Label, line.LineHeight), "status " + text);
-            return top + line.LineHeight;
+            var fitted = Fit(line, status.Text, layout.Right - tx, fromEnd: false);
+            var ty = top + (height - line.LineHeight) / 2;
+            line.Draw(canvas, fitted, tx, ty, OnParchment(status.Colour));
+            var area = new Rect(layout.Label, Math.Max(top, ty), tx + line.Measure(fitted) - layout.Label, Math.Min(height, line.LineHeight));
+            Leaf(area, "status " + status.Text);
+            Hot(area, item, Part.Status);
+            _statusShown[item] = status;
+            if (fitted != status.Text)
+            {
+                _statusCut.Add(item);
+            }
+            return top + height;
         }
 
-        // the game installation: its field, Change… and whether the game is there
-        y = Section("Game installation", "icon-game", y);
-        var fieldHeight = v.Len(26);
-        var field = new Rect(layout.Label, y + v.Len(2), layout.Plate - v.Len(10) - layout.Label, fieldHeight);
-        Field(canvas, v, field, _editing ? _editText + "_" : _model.GameFolder ?? "", _focus == Item.GameFolder, IsFixed(Item.GameFolder, out _), text);
-        Hot(field, Item.GameFolder, Part.Row);
-        Leaf(field, "game folder");
-        Plate(canvas, v, new Rect(layout.Plate, field.Y + (field.Height - SmallPlateHeight(v)) / 2, layout.Right - layout.Plate, SmallPlateHeight(v)), "Change…", small, Item.Change, Part.Row);
-        y = field.Bottom + v.Len(2);
-        var (status, statusColour) = _model.GameFolderChecked is not null
-            ? ("Found" + (_model.GameFolderSource is { } source ? $" ({source})." : "."), Green)
-            : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleBlue) : ("No Darklands there (DARKLAND.EXE).", PaleRed);
-        y = Status(y, status, statusColour, layout.Right, statusColour == PaleRed);
-
-        // display
-        y = Section("Display", "icon-display", y);
-        y = Row(canvas, v, text, small, layout, y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
-        y = Row(canvas, v, text, small, layout, y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen);
-        y = Row(canvas, v, text, small, layout, y, "HD pack", PackShown(PackKind.Pictures), Item.HdPack, browse: true);
-        var (hdLine, hdColour) = PackLine(PackKind.Pictures);
-        y = Status(y, hdLine, hdColour, layout.Right, hdColour == PaleRed);
-
-        // sound and music: the card, then the Roland ROM folder as a row of its own
-        y = Section("Sound & Music", "icon-sound", y);
-        y = Row(canvas, v, text, small, layout, y, "Sound card", _model.SoundCardLabel, Item.Sound);
-        var romsRow = new Rect(layout.Label - v.Len(8), y, layout.Right - layout.Label + v.Len(12), Math.Max(v.Len(28), text.LineHeight));
-        if (_focus == Item.Roms)
+        // a row with its value between ‹ ›, and a plate at its end (its own Browse…, or another item's: Test sound)
+        // at: the row's own columns (two selects side by side on one row)
+        int Select(int top, string label, string value, Item item, string? plate = null, Item? plateItem = null, bool narrow = false, RowLayout? at = null)
         {
-            Shade(canvas, romsRow, Ink, 26);
+            var l = at ?? (narrow ? layout with { Select = layout.SelectNarrow, SelectEnd = layout.Right } : layout);
+            if (plate is not null)
+            {
+                var owner = plateItem ?? item;
+                Plate(canvas, v, new Rect(layout.Plate, top + (rowHeight - plateHeight) / 2, plateWidth, plateHeight), plate, small, owner, owner == item ? Part.Browse : Part.Row);
+            }
+            var row = new Rect(l.Label - v.Len(8), top, (plate is null ? l.Right : l.SelectEnd + v.Len(6)) - l.Label + v.Len(8), rowHeight);
+            RowLight(canvas, row, item);
+            Hot(row, item, Part.Row);
+            var ty = top + (rowHeight - text.LineHeight) / 2;
+            var labelShown = Fit(text, label, l.Select - l.Label - v.Len(10), fromEnd: false);
+            text.Draw(canvas, labelShown, l.Label, ty, Ink);
+            Leaf(new Rect(l.Label, ty, text.Measure(labelShown), text.LineHeight), "label " + label);
+
+            var fixedBy = IsFixed(item, out _);
+            var arrowLeft = fixedBy ? "" : "‹";
+            var arrowRight = fixedBy ? "" : "›";
+            var gap = v.Len(8);
+            var room = l.SelectEnd - l.Select - text.Measure(arrowLeft) - text.Measure(arrowRight) - 2 * gap;
+            var shown = Fit(text, value, Math.Max(0, room), fromEnd: false);
+            var inner = l.Select + text.Measure(arrowLeft) + gap;
+            text.Draw(canvas, arrowLeft, l.Select, ty, InkSoft);
+            text.Draw(canvas, shown, inner + (room - text.Measure(shown)) / 2, ty, fixedBy ? InkSoft : Ink);
+            text.Draw(canvas, arrowRight, l.SelectEnd - text.Measure(arrowRight), ty, InkSoft);
+            Leaf(new Rect(l.Select, ty, l.SelectEnd - l.Select, text.LineHeight), "value " + label);
+            if (!fixedBy)
+            {
+                // the arrows: a click on ‹ or › steps back or on, as ←/→
+                Hot(new Rect(l.Select - v.Len(6), row.Y, inner - l.Select + v.Len(6), row.Height), item, Part.Previous);
+                Hot(new Rect(l.SelectEnd - text.Measure(arrowRight) - gap, row.Y, text.Measure(arrowRight) + gap + v.Len(6), row.Height), item, Part.Next);
+            }
+            return top + rowHeight;
         }
-        var romsLabelY = romsRow.Y + (romsRow.Height - text.LineHeight) / 2;
-        var romsLabel = Fit(text, "Roland ROMs", layout.Select - layout.Label - v.Len(8), fromEnd: false);
-        text.Draw(canvas, romsLabel, layout.Label, romsLabelY, Ink);
-        Leaf(new Rect(layout.Label, romsLabelY, text.Measure(romsLabel), text.LineHeight), "label Roland ROMs");
-        var romsField = new Rect(layout.Select, romsRow.Y + v.Len(2), layout.SelectEnd - layout.Select, romsRow.Height - v.Len(4));
-        Field(canvas, v, romsField, _model.Roms.Folder, _focus == Item.Roms, IsFixed(Item.Roms, out _), small);
-        Hot(romsField, Item.Roms, Part.Row);
-        Leaf(romsField, "roms field");
-        Plate(canvas, v, new Rect(layout.Plate, romsRow.Y + (romsRow.Height - SmallPlateHeight(v)) / 2, layout.Right - layout.Plate, SmallPlateHeight(v)), "Change…", small, Item.Roms, Part.Browse);
-        y = romsRow.Bottom;
-        var (romsStatus, romsColour) = RomsStatus(_model.Roms);
-        var statusRight = layout.Right;
-        if (_context.SoundTest is { } soundTest)
+
+        // a folder: its field (under the heading, or after a label) and its Change… plate
+        int Folder(int top, string? label, string shown, Item item, Item plateItem, Part platePart)
         {
-            var testHeight = Math.Min(line.LineHeight, SmallPlateHeight(v));
-            Plate(canvas, v, new Rect(layout.Plate, y + (line.LineHeight - testHeight) / 2, layout.Right - layout.Plate, testHeight), soundTest.Playing ? "Stop" : "Test sound", Face(Assets.Text, 12, v), Item.Test, Part.Row);
-            statusRight = layout.Plate - v.Len(8);
+            var fieldLeft = label is null ? layout.Label : layout.Select;
+            RowLight(canvas, new Rect(layout.Label - v.Len(8), top, layout.SelectEnd - layout.Label + v.Len(14), rowHeight), item);
+            if (label is not null)
+            {
+                var labelY = top + (rowHeight - text.LineHeight) / 2;
+                var labelShown = Fit(text, label, layout.Select - layout.Label - v.Len(10), fromEnd: false);
+                text.Draw(canvas, labelShown, layout.Label, labelY, Ink);
+                Leaf(new Rect(layout.Label, labelY, text.Measure(labelShown), text.LineHeight), "label " + label);
+            }
+            var fieldHeight = Math.Min(rowHeight - v.Len(4), v.Len(27));
+            var field = new Rect(fieldLeft, top + (rowHeight - fieldHeight) / 2, layout.SelectEnd - fieldLeft, fieldHeight);
+            Field(canvas, v, field, shown, _focus == item, IsFixed(item, out _), label is null ? text : small);
+            Hot(field, item, Part.Row);
+            Leaf(field, "field " + (label ?? "game folder"));
+            Plate(canvas, v, new Rect(layout.Plate, top + (rowHeight - plateHeight) / 2, plateWidth, plateHeight), "Change…", small, plateItem, platePart);
+            return top + rowHeight;
         }
-        y = Status(y, romsStatus, romsColour, statusRight, romsColour == PaleRed);
-        y = Row(canvas, v, text, small, layout, y, "Audio pack", PackShown(PackKind.Sounds), Item.AudioPack, browse: true);
-        var (audioLine, audioColour) = PackLine(PackKind.Sounds);
-        y = Status(y, audioLine, audioColour, layout.Right, audioColour == PaleRed);
-        y = Row(canvas, v, text, small, layout, y, "SoundFont", SoundFontShown(), Item.SoundFont, browse: true);
-        var (fontLine, fontColour) = SoundFontLine();
-        y = Status(y, fontLine, fontColour, layout.Right, fontColour == PaleRed);
 
-        // start-up: Yes / No, in a narrower column at the right
-        y = Section("Start-up", "icon-startup", y);
-        var narrow = layout with { Select = layout.SelectNarrow };
-        y = Row(canvas, v, text, small, narrow, y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner);
-        y = Row(canvas, v, text, small, narrow, y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro);
-        y = Row(canvas, v, text, small, narrow, y, "Show launcher at every start", _model.Always ? "Yes" : "No", Item.Always);
+        if (!_advanced)
+        {
+            y = Section("Game installation", "icon-game", y);
+            y = Folder(y, null, _editing ? _editText + "_" : _model.GameFolder ?? "", Item.GameFolder, Item.Change, Part.Row);
+            y = Status(y, Item.GameFolder, _model.GameFolderChecked is not null
+                ? ("Found" + (_model.GameFolderSource is { } source ? $" ({source})." : "."), Green)
+                : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleBlue) : ("No Darklands there (DARKLAND.EXE).", PaleRed));
 
-        // the buttons at the bottom right: Save and quit on stone, Play on red
-        var buttonHeight = v.Len(44);
-        var buttons = frame.Bottom - v.Len(22) - buttonHeight;
-        var playWidth = v.Len(168);
-        var playRect = new Rect(x1 - playWidth, buttons, playWidth, buttonHeight);
-        BigPlate(canvas, v, playRect, "Play", red: true, Item.Play);
-        var saveRect = new Rect(playRect.X - v.Len(18) - v.Len(168), buttons, v.Len(168), buttonHeight);
-        BigPlate(canvas, v, saveRect, "Save and quit", red: false, Item.Save);
+            y = Section("Display", "icon-display", y);
+            y = Select(y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
+            // Fullscreen and the picture filter side by side: one row (the tab has no height to spare for another)
+            var fullscreenEnd = layout.Select + v.Len(92);   // Yes or No
+            Select(y, "Fullscreen", _model.Fullscreen ? "Yes" : "No", Item.Fullscreen,
+                at: layout with { SelectEnd = fullscreenEnd, Right = fullscreenEnd + v.Len(8) });
+            var pictureLabel = fullscreenEnd + v.Len(30);
+            y = Select(y, "Picture", _model.FilterLabel, Item.Picture,
+                at: layout with { Label = pictureLabel, Select = pictureLabel + text.Measure("Picture") + v.Len(14), SelectEnd = layout.Right });
+            y = Select(y, "HD pack", PackShown(PackKind.Pictures), Item.HdPack, "Browse…");
+            y = Status(y, Item.HdPack, PackLine(PackKind.Pictures));
 
-        // between the rows and the buttons: the hint bar
-        var bar = new Rect(x0, y + v.Len(10), x1 - x0, buttons - v.Len(10) - (y + v.Len(10)));
-        DrawHints(canvas, v, Face(Assets.Italic, 14, v), bar);
+            // sound and music: the card with its sound test, whether its ROMs are there (they are chosen on Advanced), the audio pack
+            y = Section("Sound & Music", "icon-sound", y);
+            var test = _context.SoundTest is { } soundTest ? (soundTest.Playing ? "Stop" : "Test sound") : null;
+            y = Select(y, "Sound card", _model.SoundCardLabel, Item.Sound, test, Item.Test);
+            y = Status(y, Item.Sound, RomsStatus(_model.Roms));
+            y = Select(y, "Audio pack", PackShown(PackKind.Sounds), Item.AudioPack, "Browse…");
+            y = Status(y, Item.AudioPack, PackLine(PackKind.Sounds));
+        }
+        else
+        {
+            y = Section("Roland MT-32 / CM-32L", "icon-sound", y);
+            y = Folder(y, "ROM folder", _model.Roms.Folder, Item.Roms, Item.Roms, Part.Browse);
+            y = Status(y, Item.Roms, RomsStatus(_model.Roms));
+            y = Section("General MIDI (for audio packs)", "icon-sound", y);
+            y = Select(y, "SoundFont", SoundFontShown(), Item.SoundFont, "Browse…");
+            y = Status(y, Item.SoundFont, SoundFontLine());
+            y = Section("Start-up", "icon-startup", y);
+            y = Select(y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner, narrow: true);
+            y = Select(y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro, narrow: true);
+            y = Select(y, "Show launcher at every start", _model.Always ? "Yes" : "No", Item.Always, narrow: true);
+            y = Select(y, "Mouse wheel in menus", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel, narrow: true);
+        }
+
+        // the panel's foot: Play at the right, the larger; Save and quit at the left, apart from it
+        var play = new Rect(x1 - v.Len(212), frame.Bottom - v.Len(26) - v.Len(56), v.Len(212), v.Len(56));
+        BigPlate(canvas, v, play, "Play", red: true, Item.Play);
+        BigPlate(canvas, v, new Rect(x0, play.Y + v.Len(8), v.Len(160), v.Len(40)), "Save and quit", red: false, Item.Save);
+
+        // over the buttons, only while there is one: the notice (two lines at most; its whole text in its tooltip)
+        var noticeBottom = play.Y - v.Len(14);
+        var noticeTop = Math.Max(y + v.Len(10), noticeBottom - v.Len(50));
+        DrawNotice(canvas, v, Face(Assets.Italic, 14, v), new Rect(x0, noticeTop, x1 - x0, Math.Max(0, noticeBottom - noticeTop)));
+    }
+
+    /// <summary>The settings grid, in design pixels.</summary>
+    private const double RowHeight = 32, StatusHeight = 18, SectionGap = 15, HeadingHeight = 28, PlateWidth = 88, PlateHeight = 24;
+
+    /// <summary>The panel's two pages, General and Advanced: their names, the open one in ink and underlined in red, over a rule.</summary>
+    private int Tabs(Canvas canvas, View v, TextFace face, int x0, int x1, int y)
+    {
+        var height = v.Len(34);
+        var x = x0;
+        foreach (var (name, item, open) in new[] { ("General", Item.TabGeneral, !_advanced), ("Advanced", Item.TabAdvanced, _advanced) })
+        {
+            var width = face.Measure(name);
+            var ty = y + (height - face.LineHeight) / 2;
+            if (!open)
+            {
+                RowLight(canvas, new Rect(x - v.Len(6), y + v.Len(2), width + v.Len(12), height - v.Len(6)), item);
+            }
+            StrongText(canvas, v, face, name, x, ty, open ? Ink : InkSoft);
+            if (open)
+            {
+                canvas.Fill(new Rect(x - v.Len(2), y + height - v.Len(4), width + v.Len(4), Math.Max(2, v.Len(3))), DropCapRed);
+            }
+            Hot(new Rect(x - v.Len(8), y, width + v.Len(16), height), item, Part.Row);
+            Leaf(new Rect(x - v.Len(2), y + v.Len(2), width + v.Len(4), height - v.Len(2)), "tab " + name);
+            x += width + v.Len(30);
+        }
+        Shade(canvas, new Rect(x0, y + height - v.Len(1), x1 - x0, Math.Max(1, v.Len(1))), InkSoft, 120);
+        return y + height;
     }
 
     /// <summary>The columns of the settings' rows: the labels, the plates, the value selectors (wide, or narrow for Yes / No).</summary>
     private readonly record struct RowLayout(int Label, int Plate, int Select, int SelectEnd, int SelectNarrow, int Right);
 
-    private static int SmallPlateHeight(View v) => v.Len(22);
-
     /// <summary>
-    /// A setting's row: its label at the left, its value centred between ‹ › in the selector column (each arrow a click target:
-    /// the previous or next value), and a "Browse…" plate at the end when <paramref name="browse"/>. Returns the y below.
+    /// A frameless window's own buttons at its top-right corner: minimise (left out when the window fills the screen, where it would do
+    /// nothing: fullscreen, or gamescope's Game Mode) and close. Small dark plates, lit under the pointer, sunk while held.
     /// </summary>
-    private int Row(Canvas canvas, View v, TextFace text, TextFace small, RowLayout layout, int y, string label, string value, Item item, bool browse = false)
+    private void DrawWindowButtons(Canvas canvas, View v)
     {
-        var row = new Rect(layout.Label - v.Len(8), y, layout.Right - layout.Label + v.Len(12), Math.Max(v.Len(24), text.LineHeight));
-        if (_focus == item)
+        var width = Math.Max(20, v.Len(30));
+        var height = Math.Max(17, v.Len(26));
+        var margin = Math.Max(5, v.Len(8));
+        var close = new Rect(canvas.Width - margin - width, margin, width, height);
+        var buttons = _surface.FillsScreen
+            ? new[] { (close, Item.Close) }
+            : [(new Rect(close.X - Math.Max(4, v.Len(6)) - width, margin, width, height), Item.Minimise), (close, Item.Close)];
+        foreach (var (area, item) in buttons)
         {
-            Shade(canvas, row, Ink, 26);
+            var lit = _hover == item;
+            var down = _pressed == item;
+            var name = down && Assets.Art("plate-small-pressed") is not null ? "plate-small-pressed"
+                : lit && Assets.Art("plate-small-hover") is not null ? "plate-small-hover" : "plate-small";
+            if (Assets.Art(name) is { } art)
+            {
+                Sliced(canvas, v, art, name, area);
+            }
+            else
+            {
+                canvas.Fill(area, lit ? 0x4A4036U : 0x2C251EU);
+                canvas.Frame(area, Math.Max(1, v.Len(1)), lit ? 0x7A6B58U : 0x16110CU);
+            }
+            var sink = down ? Math.Max(1, v.Len(1)) : 0;
+            var cx = area.X + area.Width / 2 + sink;
+            var cy = area.Y + area.Height / 2 + sink;
+            var stroke = Math.Max(1, v.Len(2));
+            var half = Math.Max(3, v.Len(6));
+            var ink = item == Item.Close && lit ? PaleRed : Cream;
+            if (item == Item.Minimise)
+            {
+                canvas.Fill(new Rect(cx - half, cy + half / 2, 2 * half, stroke), ink);
+            }
+            else
+            {
+                for (var i = -half; i <= half; i++)
+                {
+                    canvas.Fill(new Rect(cx + i - stroke / 2, cy + i - stroke / 2, stroke, stroke), ink);
+                    canvas.Fill(new Rect(cx + i - stroke / 2, cy - i - stroke / 2, stroke, stroke), ink);
+                }
+            }
+            Hot(area, item, Part.Row);
         }
-        Hot(row, item, Part.Row);
-        var ty = y + (row.Height - text.LineHeight) / 2;
-        if (browse)
-        {
-            Plate(canvas, v, new Rect(layout.Plate, y + (row.Height - SmallPlateHeight(v)) / 2, layout.Right - layout.Plate, SmallPlateHeight(v)), "Browse…", small, item, Part.Browse);
-        }
-        var labelShown = Fit(text, label, layout.Select - layout.Label - v.Len(10), fromEnd: false);
-        text.Draw(canvas, labelShown, layout.Label, ty, Ink);
-        Leaf(new Rect(layout.Label, ty, text.Measure(labelShown), text.LineHeight), "label " + label);
-
-        var fixedBy = IsFixed(item, out _);
-        var left = layout.Select;
-        var right = layout.SelectEnd;
-        var arrowLeft = fixedBy ? "" : "‹";
-        var arrowRight = fixedBy ? "" : "›";
-        var gap = v.Len(8);
-        var room = right - left - text.Measure(arrowLeft) - text.Measure(arrowRight) - 2 * gap;
-        var valueShown = Fit(text, value, Math.Max(0, room), fromEnd: false);
-        var inner = left + text.Measure(arrowLeft) + gap;
-        var valueX = inner + (room - text.Measure(valueShown)) / 2;
-        text.Draw(canvas, arrowLeft, left, ty, InkSoft);
-        text.Draw(canvas, valueShown, valueX, ty, fixedBy ? InkSoft : Ink);
-        text.Draw(canvas, arrowRight, right - text.Measure(arrowRight), ty, InkSoft);
-        Leaf(new Rect(left, ty, right - left, text.LineHeight), "value " + label);
-        if (!fixedBy)
-        {
-            // the arrows: a click on ‹ or › steps back or on, as ←/→
-            Hot(new Rect(left - v.Len(6), row.Y, inner - left + v.Len(6), row.Height), item, Part.Previous);
-            Hot(new Rect(right - text.Measure(arrowRight) - gap, row.Y, text.Measure(arrowRight) + gap + v.Len(6), row.Height), item, Part.Next);
-        }
-        return row.Bottom;
     }
 
-    /// <summary>A folder's field: a lighter inset on the parchment, the path cut at its start to keep its end.</summary>
+    /// <summary>A folder's field: a lighter inset on the parchment, the path cut at its start to keep its end; while it is typed in, framed in red.</summary>
     private void Field(Canvas canvas, View v, Rect field, string shown, bool focused, bool fixedBy, TextFace text)
     {
         canvas.Fill(field, FieldFill);
-        canvas.Frame(field, Math.Max(1, v.Len(1)), focused ? Gold : InkSoft);
-        if (focused)
-        {
-            canvas.Frame(field.Inset(Math.Max(1, v.Len(1))), Math.Max(1, v.Len(1)), Gold);
-        }
+        var typing = focused && _editing;
+        canvas.Frame(field, Math.Max(1, v.Len(typing ? 2 : 1)), typing ? DropCapRed : InkSoft);
         var fitted = Fit(text, shown, field.Width - v.Len(16), fromEnd: true);
         text.Draw(canvas, fitted, field.X + v.Len(8), field.Y + (field.Height - text.LineHeight) / 2, fixedBy ? InkSoft : Ink);
     }
 
-    /// <summary>A small dark plate (Browse…, Change…, Test sound): plate-small's art, or drawn; framed in gold when its row has the focus.</summary>
+    /// <summary>A small dark plate (Browse…, Change…, Test sound): plate-small's art, or drawn; lit (its hover art) under the pointer, or when it is the keyboard's choice itself.</summary>
     private void Plate(Canvas canvas, View v, Rect area, string label, TextFace text, Item item, Part part)
     {
-        var lit = _focus == item || _hover == item && _hoverPart == part;
+        var lit = _hover == item && _hoverPart == part || _focus == item && part == Part.Row;
         var down = _pressed == item && _pressedPart == part;
         var plateName = down && Assets.Art("plate-small-pressed") is not null ? "plate-small-pressed"
             : lit && Assets.Art("plate-small-hover") is not null ? "plate-small-hover" : "plate-small";
@@ -1162,9 +1452,9 @@ internal sealed class LauncherScreen
             canvas.Fill(new Rect(area.X, area.Y, area.Width, Math.Max(1, v.Len(1))), 0x7A6B58);
             canvas.Frame(area, Math.Max(1, v.Len(1)), 0x16110C);
         }
-        if (_focus == item && Assets.Art("plate-small-hover") is null || _hover == item && _hoverPart == part && Assets.Art("plate-small") is null)
+        if (lit && Assets.Art("plate-small-hover") is null)
         {
-            canvas.Frame(area, Math.Max(1, v.Len(1.5)), Gold);
+            Shade(canvas, area, LampLight, 40);
         }
         if (down && Assets.Art("plate-small-pressed") is null)
         {
@@ -1191,9 +1481,10 @@ internal sealed class LauncherScreen
             canvas.Frame(area, Math.Max(1, v.Len(2)), edge);
             canvas.Frame(area.Inset(Math.Max(2, v.Len(4))), Math.Max(1, v.Len(1)), red ? Gold : 0xF4EFE4);
         }
-        if (_focus == item || _hover == item)
+        // lit: a warm glow, full under the pointer, soft for the keyboard's choice (no frame)
+        if (_hover == item || _focus == item)
         {
-            canvas.Frame(new Rect(area.X - v.Len(3), area.Y - v.Len(3), area.Width + v.Len(6), area.Height + v.Len(6)), Math.Max(1, v.Len(2)), Gold);
+            Glow(canvas, v, area, _hover == item ? 1 : 0.5);
         }
         var down = _pressed == item;
         if (down)
@@ -1222,43 +1513,38 @@ internal sealed class LauncherScreen
     }
 
     /// <summary>
-    /// The hint bar: the last message (or why the launcher is shown), the pointed-at or chosen row's problem in full, and what it
-    /// does; wrapped to the bar (long paths broken anywhere), the last line cut with "…" when there is more.
+    /// The notice over the buttons, only while there is something to tell: the last message (what an action did, why it could
+    /// not), else why the launcher is shown (the game could not start, it was not found, the first run). A dark plate with its
+    /// text wrapped to two lines at most (long paths broken anywhere), the last cut with "…" when there is more: the pointer
+    /// resting on it shows the whole text.
     /// </summary>
-    private void DrawHints(Canvas canvas, View v, TextFace face, Rect bar)
+    private void DrawNotice(Canvas canvas, View v, TextFace face, Rect room)
     {
-        var pad = v.Len(5);
-        var room = (bar.Height - 2 * pad) / face.LineHeight;
-        if (room <= 0)
+        var parts = NoticeParts().ToList();
+        var pad = v.Len(6);
+        if (parts.Count == 0 || room.Height < face.LineHeight + 2 * pad)
         {
             return;
         }
-        if (Assets.Art("hint-bar") is { } art)
-        {
-            Sliced(canvas, v, art, "hint-bar", bar);
-        }
-        else
-        {
-            Shade(canvas, bar, HintFill, 215);
-            canvas.Frame(bar, Math.Max(1, v.Len(1)), 0x8A7454);
-        }
-        Leaf(bar, "hints");
         var icon = v.Len(16);
+        var textX = room.X + pad + icon + v.Len(10);
+        var lineWidth = room.Right - pad - textX;
+        var lines = parts.SelectMany(p => WrapAll(face, p.Text, lineWidth).Select(l => (Text: l, p.Colour))).ToList();
+        var fits = Math.Max(1, Math.Min(2, (room.Height - 2 * pad) / face.LineHeight));
+        if (lines.Count > fits)
+        {
+            var last = lines[fits - 1];
+            lines = [.. lines.Take(fits - 1), (Fit(face, last.Text + " …", lineWidth, fromEnd: false), last.Colour)];
+        }
+        // as tall as its lines, at the bottom of its room (next to the buttons)
+        var height = lines.Count * face.LineHeight + 2 * pad;
+        var bar = new Rect(room.X, room.Bottom - height, room.Width, height);
+        Shade(canvas, bar, HintFill, 215);
+        canvas.Frame(bar, Math.Max(1, v.Len(1)), 0x8A7454);
+        Leaf(bar, "notice");
+        Hot(bar, Item.Notice, Part.Row);
         Icon(canvas, v, "icon-problem", new Rect(bar.X + pad, bar.Y + pad + (face.LineHeight - icon) / 2, icon, icon), Cream);
-        var textX = bar.X + pad + icon + v.Len(10);
-        var lineWidth = bar.Right - pad - textX;
-        var lines = new List<(string Text, uint Colour)>();
-        foreach (var (part, colour) in Details())
-        {
-            lines.AddRange(WrapAll(face, part, lineWidth).Select(l => (l, colour)));
-        }
-        if (lines.Count > room)
-        {
-            var last = lines[room - 1];
-            lines = [.. lines.Take(room - 1), (Fit(face, last.Text + " …", lineWidth, fromEnd: false), last.Colour)];
-        }
-        // one line: centred in the bar's height
-        var ly = lines.Count == 1 ? bar.Y + (bar.Height - face.LineHeight) / 2 : bar.Y + pad;
+        var ly = bar.Y + pad;
         foreach (var (text, colour) in lines)
         {
             face.Draw(canvas, text, textX, ly, colour);
@@ -1266,8 +1552,8 @@ internal sealed class LauncherScreen
         }
     }
 
-    /// <summary>The hint bar's parts, most important first: what the pointer is over, else the focused control.</summary>
-    private IEnumerable<(string Text, uint Colour)> Details()
+    /// <summary>The notice's text: the sound test's state, else the last message, else why the launcher is shown; nothing else.</summary>
+    private IEnumerable<(string Text, uint Colour)> NoticeParts()
     {
         if (_showSound && _context.SoundTest is { Status: { } soundStatus } soundTester)
         {
@@ -1287,15 +1573,126 @@ internal sealed class LauncherScreen
         {
             yield return (note, _context.Reason == LauncherReason.FirstRun ? Green : PaleRed);
         }
-        var subject = _hover != Item.None ? _hover : _focus;
-        if (subject is Item.HdPack or Item.AudioPack && PackProblem(subject == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
+    }
+
+    /// <summary>
+    /// A control's tooltip: its problem in full (a pack's, or its status line's when that is a problem or was cut to fit), then
+    /// what it does; the notice's: its whole text.
+    /// </summary>
+    internal IEnumerable<(string Text, uint Colour)> TooltipParts(Item item)
+    {
+        if (item == Item.Notice)
+        {
+            foreach (var part in NoticeParts())
+            {
+                yield return part;
+            }
+            yield break;
+        }
+        var row = item == Item.Change ? Item.GameFolder : item;
+        if (row is Item.HdPack or Item.AudioPack && PackProblem(row == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
         {
             yield return ("Problem: " + problem, PaleRed);
         }
-        if (Help(subject) is { Length: > 0 } help)
+        else if (_statusShown.TryGetValue(row, out var status) && (status.Colour == PaleRed || _statusCut.Contains(row)))
+        {
+            yield return (status.Text, status.Colour == PaleBlue ? Cream : status.Colour);
+        }
+        if (Help(item) is { Length: > 0 } help)
         {
             yield return (help, PaleBlue);
         }
+    }
+
+    /// <summary>
+    /// The tooltip of <see cref="_tip"/>: a dark plate under its control (over it when there is no room below), as wide as the
+    /// settings panel's inside at most, with the parts wrapped; kept in the window.
+    /// </summary>
+    private void DrawTooltip(Canvas canvas, View v)
+    {
+        TooltipArea = default;
+        if (_tip == Item.None || TooltipParts(_tip).ToList() is not { Count: > 0 } parts)
+        {
+            return;
+        }
+        var spot = _hotspots.FirstOrDefault(h => h.Item == _tip && h.Part == _tipPart);
+        if (spot.Item == Item.None)
+        {
+            spot = _hotspots.FirstOrDefault(h => h.Item == _tip);
+        }
+        if (spot.Item == Item.None)
+        {
+            return;
+        }
+        var anchor = spot.Area;
+        var face = Face(Assets.Italic, 14, v);
+        var pad = v.Len(7);
+        var width = Math.Min(canvas.Width - 2 * v.Len(4), _panel.Width - v.Len(20));
+        var lines = parts.SelectMany(p => WrapAll(face, p.Text, width - 2 * pad).Select(l => (Text: l, p.Colour))).Take(8).ToList();
+        var height = lines.Count * face.LineHeight + 2 * pad;
+        var gap = v.Len(4);
+        var y = anchor.Bottom + gap + height <= canvas.Height - v.Len(4) ? anchor.Bottom + gap : Math.Max(v.Len(4), anchor.Y - gap - height);
+        // in the settings panel when its control is (else in the window)
+        var (left, right) = _panel.Contains(anchor.X, anchor.Y) ? (_panel.X, _panel.Right) : (v.Len(4), canvas.Width - v.Len(4));
+        var x = Math.Clamp(anchor.X, left, Math.Max(left, right - width));
+        var box = new Rect(x, y, width, height);
+        Shade(canvas, new Rect(box.X + v.Len(3), box.Y + v.Len(4), box.Width, box.Height), Black, 70);
+        Shade(canvas, box, HintFill, 238);
+        canvas.Frame(box, Math.Max(1, v.Len(1)), 0x8A7454);
+        var ly = box.Y + pad;
+        foreach (var (text, colour) in lines)
+        {
+            face.Draw(canvas, text, box.X + pad, ly, colour);
+            ly += face.LineHeight;
+        }
+        TooltipArea = box;
+    }
+
+    /// <summary>A row lit: brightly under the pointer, softly when the keyboard chose it (no frame).</summary>
+    private void RowLight(Canvas canvas, Rect row, Item item)
+    {
+        var alpha = _hover == item ? 110 : _focus == item ? 60 : 0;
+        if (alpha > 0)
+        {
+            Shade(canvas, row, LampLight, alpha);
+        }
+    }
+
+    /// <summary>A warm light on parchment and plates (hover and the keyboard's choice).</summary>
+    private const uint LampLight = 0xFFF4DA;
+
+    /// <summary>The glow around a lit plate: candlelight.</summary>
+    private const uint GlowLight = 0xFFD98A;
+
+    /// <summary>
+    /// A plate lit: a warm glow around it fading out over a few pixels, and its face a little brighter: fully under the pointer,
+    /// at about half for the keyboard's choice.
+    /// </summary>
+    private static void Glow(Canvas canvas, View v, Rect area, double strength)
+    {
+        var reach = Math.Max(4, v.Len(13));
+        for (var y = area.Y - reach; y < area.Bottom + reach; y++)
+        {
+            for (var x = area.X - reach; x < area.Right + reach; x++)
+            {
+                if (x < 0 || y < 0 || x >= canvas.Width || y >= canvas.Height)
+                {
+                    continue;
+                }
+                var dx = Math.Max(Math.Max(area.X - x, x - (area.Right - 1)), 0);
+                var dy = Math.Max(Math.Max(area.Y - y, y - (area.Bottom - 1)), 0);
+                if (dx == 0 && dy == 0)
+                {
+                    continue;
+                }
+                var d = Math.Sqrt(dx * dx + dy * dy) / reach;
+                if (d < 1)
+                {
+                    canvas.Blend(x, y, GlowLight, (int)(235 * strength * (1 - d) * (1 - d)));
+                }
+            }
+        }
+        Shade(canvas, area.Inset(Math.Max(2, v.Len(4))), LampLight, (int)(75 * strength));
     }
 
     /// <summary>A message or status colour (chosen for the dark hint bar) as ink on parchment.</summary>
@@ -1596,27 +1993,6 @@ internal sealed class LauncherScreen
         }
     }
 
-    /// <summary>The height of the settings art's dark header band on the screen (0 without the art, or art without a band): where its parchment starts, down its middle.</summary>
-    private static int SettingsBand(View v)
-    {
-        if (Assets.Art("card-settings") is not { } art || Assets.Slice("card-settings") is not { } slice)
-        {
-            return 0;
-        }
-        var x = slice.Left / 2;
-        for (var y = 12; y < slice.Top; y++)
-        {
-            var c = art.At(x, y);
-            var light = ((c >> 16) & 255) + ((c >> 8) & 255) + (c & 255);
-            if (c >> 24 > 200 && light > 3 * 150)
-            {
-                // a frame's rim is no band: only a dark top at least 40 of the art's pixels tall carries "Settings"
-                return y < 40 ? 0 : (int)Math.Round(y * v.Scale / 2);
-            }
-        }
-        return 0;
-    }
-
     private static void Diamond(Canvas canvas, int cx, int cy, int r, uint colour)
     {
         for (var dy = -r; dy <= r; dy++)
@@ -1821,6 +2197,9 @@ internal sealed class LauncherScreen
             Item.Change => _surface.PickFolder is not null ? "Choose the folder of your copy of Darklands." : "Type or paste (Ctrl+V) the folder of your copy of Darklands.",
             Item.Window => "The window's size; the game keeps its shape.",
             Item.Fullscreen => "Fill the whole screen; the game keeps its shape.",
+            Item.Picture => "How the 320x200 picture is drawn on a large window; the game plays the same. ←/→ or Enter: the next one (Ctrl+F11 in the game).\n"
+                + PictureFilters.Description(PictureFilters.Parse(_model.Filter) ?? PictureFilter.Sharp)
+                + "\nThe preview at the left approximates the game window.",
             Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
             Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
             Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
@@ -1834,11 +2213,16 @@ internal sealed class LauncherScreen
             Item.Test => _context.SoundTest is { Playing: true } ? "Stops the music." : "Plays some of the game's music on the chosen card, with these ROMs.",
             Item.Banner => "The text page the 1992 game showed for a few seconds while it loaded.",
             Item.Intro => "The animated opening before the start screen.",
+            Item.MouseWheel => "In the game's menus and lists the wheel moves the selection, as the arrow keys do; never on the map or in a battle.",
             Item.Always => "Otherwise DarklandsRP goes straight to the game, and DarklandsRP Launcher (or Shift held as it starts) shows this screen.",
             Item.Save => "Writes the changes to the settings file and closes.",
             Item.Play => "Writes the changes to the settings file and starts the game.",
             Item.Discord => "Opens the project's Discord in your browser.",
             Item.Notes => "Opens the release notes of this version in your browser.",
+            Item.TabGeneral => "The game folder, the display, the sound card and the packs. Ctrl+Tab: the other tab.",
+            Item.TabAdvanced => "The Roland ROMs, the SoundFont for the packs' MIDI music, the start-up and the mouse wheel. Ctrl+Tab: the other tab.",
+            Item.Minimise => "Minimises the window.",
+            Item.Close => "Closes the launcher (as Esc): the changes are written to the settings file.",
             _ => "",
         };
         return IsFixed(item, out var by) ? $"Set by {by}: change it there. " + help : help;

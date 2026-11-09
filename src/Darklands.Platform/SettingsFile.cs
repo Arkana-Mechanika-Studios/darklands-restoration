@@ -159,6 +159,7 @@ public static class SettingsFile
                     case "display": Section(name, value, settings, Display); break;
                     case "sound": Section(name, value, settings, Sound); break;
                     case "startup": Section(name, value, settings, Startup); break;
+                    case "input": Section(name, value, settings, Input); break;
                     case "sdl": Section(name, value, settings, Sdl); break;
                     case "console": Section(name, value, settings, Console); break;
                     default: Unknown(name); break;
@@ -223,6 +224,20 @@ public static class SettingsFile
                 case "fullscreen": settings.Fullscreen = Boolean(key, property.Value) ?? settings.Fullscreen; break;
                 case "hdPack": settings.HdPack = FilePath(key, property.Value); break;
                 case "cleanDrawing": settings.CleanDrawing = Boolean(key, property.Value) ?? settings.CleanDrawing; break;
+                case "filter":
+                    if (Text(key, property.Value) is { } filter && !string.IsNullOrWhiteSpace(filter))
+                    {
+                        if (PictureFilters.Parse(filter) is { } known)
+                        {
+                            settings.Filter = PictureFilters.Name(known);
+                        }
+                        else
+                        {
+                            problems.Add($"\"{key}\" must be one of {string.Join(", ", PictureFilters.Names)} (not \"{filter}\"); ignored");
+                        }
+                    }
+                    break;
+                case "crtCurvature": settings.CrtCurvature = Boolean(key, property.Value) ?? settings.CrtCurvature; break;
                 default: Unknown(key); break;
             }
         }
@@ -293,6 +308,19 @@ public static class SettingsFile
                 case "launcher": settings.Launcher = Boolean(key, property.Value) ?? settings.Launcher; break;
                 case "commandLine": settings.CommandLine = Words(key, property.Value) ?? settings.CommandLine; break;
                 default: Unknown(key); break;
+            }
+        }
+
+        private void Input(string section, JsonProperty property, GameSettings settings)
+        {
+            var key = $"{section}.{property.Name}";
+            if (property.Name == "mouseWheel")
+            {
+                settings.MouseWheel = Boolean(key, property.Value) ?? settings.MouseWheel;
+            }
+            else
+            {
+                Unknown(key);
             }
         }
 
@@ -474,7 +502,15 @@ public static class SettingsFile
             "hdPack": "",
             // false: the screens are drawn as in the 1992 game, including its drawing oddities; true: the cleaner drawing of 0.9.5.
             // The game plays the same either way. Command line: --clean-drawing.
-            "cleanDrawing": false
+            "cleanDrawing": false,
+            // How the 320x200 picture is drawn on a larger window: "sharp" (hard pixels, as always), "even" (even, crisp pixels at
+            // any size), "soft" (as a 1992 VGA monitor drew it, the dithering blended), "softcrt" (soft with scanlines), "hq"
+            // (diagonals and outlines rounded), "crt" (scanlines and a light mask) or "crtplus" (a richer CRT with glow). Only the
+            // picture changes; the game, its screenshots and its timing are the same. In the game Ctrl+F11 goes to the next one.
+            // Command line: --filter <name>.
+            "filter": "sharp",
+            // true: the CRT filters' picture slightly curved, as a tube's (where the graphics card draws the filters with shaders).
+            "crtCurvature": false
           },
 
           "sound": {
@@ -528,9 +564,17 @@ public static class SettingsFile
           // one the original game loads. []: none, the game's own cards. Command line: --mod <folder or name> (once per mod).
           "mods": [],
 
-          // Settings of the SDL2 host only.
+          // The mouse and keyboard (SDL host). Not part of the original: the game plays the same.
+          "input": {
+            // The mouse wheel gives the cursor keys up / down where they move a selection (the card menus, the character sheet's
+            // lists and pack, the shop, barter and load lists ...), as DOSBox-X; elsewhere (the map, a battle) it does nothing.
+            // Command line: --no-mouse-wheel.
+            "mouseWheel": true
+          },
+
+          // Settings of the SDL host only.
           "sdl": {
-            // The SDL2 library (SDL2.dll) to load. "": the one next to the program, else the system's.
+            // The SDL3 library (SDL3.dll, libSDL3.so.0) to load. "": the one next to the program, else the system's.
             // Command line: --sdl <file>.
             "library": ""
           },

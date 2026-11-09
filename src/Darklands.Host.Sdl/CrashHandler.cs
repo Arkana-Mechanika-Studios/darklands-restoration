@@ -158,7 +158,7 @@ internal sealed class CrashHandler(ReportService reports, Func<CrashNotice, Cras
                 ButtonCount = labels.Length,
                 Buttons = buttons,
             };
-            return SdlNative.SDL_ShowMessageBox(ref data, out var id) == 0 && id is >= 0 and < 3 ? (CrashChoice)id : CrashChoice.Close;
+            return SdlNative.SDL_ShowMessageBox(ref data, out var id) && id is >= 0 and < 3 ? (CrashChoice)id : CrashChoice.Close;
         }
         finally
         {

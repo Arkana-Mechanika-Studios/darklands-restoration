@@ -3,7 +3,7 @@ using Darklands.DevConsole;
 namespace Darklands.Host.Sdl.Tests;
 
 /// <summary>
-/// The developer console drawn in a hidden SDL window (software renderer) and read back. Uses the SDL2 library the host ships (else DARKLANDS_SDL2_PATH or the "sdl" key of local/paths.json; skipped without one).
+/// The developer console drawn in a hidden SDL window (software renderer) and read back. Uses the SDL3 library the host ships (else DARKLANDS_SDL3_PATH or the "sdl" key of local/paths.json; skipped without one).
 /// DARKLANDS_CONSOLE_SNAPSHOT=&lt;file.bmp&gt; also saves the picture. An SDL that cannot read a target texture back gives no verdict.
 /// </summary>
 [Collection("SDL")] // SDL is not thread-safe: its tests run one at a time
@@ -15,17 +15,17 @@ public sealed class ConsoleOverlayTests
     [Fact]
     public void TheConsoleIsDrawnOverTheWindowsTopPart()
     {
-        // the SDL2 library the host ships (copied next to the tests), else DARKLANDS_SDL2_PATH or the "sdl" key of local/paths.json
-        var bundled = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
-        var library = File.Exists(bundled) ? bundled : Darklands.Platform.LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH");
+        // the SDL3 library the host ships (copied next to the tests), else DARKLANDS_SDL3_PATH or the "sdl" key of local/paths.json
+        var bundled = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
+        var library = File.Exists(bundled) ? bundled : Darklands.Platform.LocalPaths.Get("sdl", "DARKLANDS_SDL3_PATH");
         if (library is null || !File.Exists(library))
         {
             return;
         }
         SdlNative.ConfigureLibrary(library);
-        Assert.Equal(0, SdlNative.SDL_Init(SdlNative.InitVideo));
-        var window = SdlNative.SDL_CreateWindow("console test", 0, 0, Width, Height, SdlNative.WindowHidden);
-        var renderer = SdlNative.SDL_CreateRenderer(window, -1, SdlNative.RendererSoftware);
+        Assert.True(SdlNative.SDL_Init(SdlNative.InitVideo));
+        var window = SdlNative.SDL_CreateWindow("console test", Width, Height, SdlNative.WindowHidden);
+        var renderer = SdlNative.SDL_CreateRenderer(window, "software");
         try
         {
             var console = new GameConsole();
@@ -35,20 +35,20 @@ public sealed class ConsoleOverlayTests
             console.Type("money add 10");
             using var overlay = new ConsoleOverlay(console, null, 14, _ => { });
 
-            var target = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, (int)SdlNative.TextureAccessTarget, Width, Height);
-            Assert.Equal(0, SdlNative.SDL_SetRenderTarget(renderer, target));
+            var target = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, SdlNative.TextureAccessTarget, Width, Height);
+            Assert.True(SdlNative.SDL_SetRenderTarget(renderer, target));
 
             // a bright picture behind it, as the game's would be, and a green spot copied from a texture as the game's picture is
             SdlNative.SDL_SetRenderDrawColor(renderer, 200, 160, 60, 255);
             SdlNative.SDL_RenderClear(renderer);
-            var green = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, (int)SdlNative.TextureAccessStatic, 1, 1);
+            var green = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, SdlNative.TextureAccessStatic, 1, 1);
             SdlNative.SDL_UpdateTexture(green, IntPtr.Zero, [unchecked((int)0xFF00FF00)], 4);
             var spot = new SdlNative.SdlRect { X = 100, Y = 700, Width = 20, Height = 20 };
-            SdlNative.SDL_RenderCopyTo(renderer, green, IntPtr.Zero, ref spot);
+            SdlNative.RenderCopy(renderer, green, spot);
             overlay.Draw(renderer, Width, Height);
-            SdlNative.SDL_RenderFlush(renderer);
+            SdlNative.SDL_FlushRenderer(renderer);
             var pixels = new int[Width * Height];
-            Assert.Equal(0, SdlNative.SDL_RenderReadPixels(renderer, IntPtr.Zero, SdlNative.PixelFormatArgb8888, pixels, Width * 4));
+            Assert.True(SdlNative.ReadPixels(renderer, pixels, Width, Height));
             SdlNative.SDL_DestroyTexture(green);
             SdlNative.SDL_DestroyTexture(target);
             if (pixels[710 * Width + 110] != unchecked((int)0xFF00FF00))

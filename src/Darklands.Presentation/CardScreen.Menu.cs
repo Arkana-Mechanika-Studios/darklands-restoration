@@ -214,6 +214,8 @@ public sealed partial class CardScreen
             warped = null;
         }
 
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the menu's lines, and its item or saint box
+        using var wheel = ui.UseSelectionList(static () => true);
         ui.Redraw = Refresh;
         var outerTargets = ui.CommandTargets;
         // a ChooseLine command's line: the box's while one is up, else the main list's (the point OptionPoint gives)

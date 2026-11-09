@@ -30,5 +30,12 @@ internal sealed class CornerText(Func<string?> text) : IDisposable
         font.Draw(renderer, line, width - margin - font.Measure(line), height - margin - font.LineHeight, Colour);
     }
 
+    /// <summary>The font's texture destroyed (before its renderer is: a new window); loaded again on the next draw.</summary>
+    public void ReleaseFont()
+    {
+        _font?.Dispose();
+        _font = null;
+    }
+
     public void Dispose() => _font?.Dispose();
 }

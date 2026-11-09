@@ -74,6 +74,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     // orig: saint-prayer-party R034+0x0000 / saint-prayer R034+0x0102
     public PrayerOutcome Pray(GameState state, int member, int saint, PrayerMode mode, ISaintEffects effects)
     {
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none on the saint's page (it opens over the sheet's list)
+        using var wheel = ui.UseSelectionList(null);
         // orig: saint-prayer-party always, saint-prayer `if (DS:907A != 1)`: DS:9C3D = music-start(5); music-start(13)
         var music = mode == PrayerMode.ForParty || InBattle?.Invoke() != true;
         if (music)

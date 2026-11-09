@@ -54,7 +54,6 @@ public sealed class LauncherLayoutTests
     {
         var panel = screen.SettingsPanel;
         var blocks = screen.Blocks;
-        Assert.Contains(blocks, b => b.What == "hints");
         foreach (var (area, what) in blocks)
         {
             Assert.True(area.Width > 0 && area.Height > 0, $"{state}: {what} is empty ({area})");
@@ -76,16 +75,34 @@ public sealed class LauncherLayoutTests
     {
         foreach (var context in new[] { Broken(), Broken(LauncherReason.StartFailed, "The game could not start: " + BrokenManifest(LongFolder)) })
         {
-            var surface = new ScriptedSurface(width, height) { PickFolder = _ => null, PickFile = _ => null };
+            var surface = new ScriptedSurface(width, height) { PickFolder = (_, _) => null, PickFile = (_, _) => null, Frameless = true };
             var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
             var canvas = new Canvas(width, height);
-            // every control focused in turn (each shows its own details), then a long message (a dropped folder that holds nothing)
+            // every control focused in turn (each shows its own details, the rows of both tabs), then a long message (a dropped folder that holds nothing)
+            var tabsSeen = new HashSet<bool>();
             for (var i = 0; i < 25; i++)
             {
                 screen.Render(canvas);
-                AssertLaidOut(screen, $"{width}x{height}, {screen.Focus}");
+                tabsSeen.Add(screen.AdvancedShown);
+                AssertLaidOut(screen, $"{width}x{height}, {(screen.AdvancedShown ? "Advanced" : "General")}, {screen.Focus}");
+                // why the game could not start: in the notice over the buttons; the keyboard's choice has its tooltip, in the window
+                Assert.Equal(context.Reason == LauncherReason.StartFailed, screen.Blocks.Any(b => b.What == "notice"));
+                if (i > 0)
+                {
+                    Assert.Equal(screen.Focus, screen.Tooltip);
+                    var tip = screen.TooltipArea;
+                    Assert.True(tip.Width > 0 && tip.X >= 0 && tip.Y >= 0 && tip.Right <= width && tip.Bottom <= height, $"{width}x{height}: the tooltip of {screen.Focus} {tip}");
+                }
+                // the window's buttons: in its top-right corner, clear of the settings panel
+                foreach (var button in new[] { LauncherScreen.Item.Minimise, LauncherScreen.Item.Close })
+                {
+                    var area = screen.Area(button);
+                    Assert.True(area.X >= 0 && area.Y >= 0 && area.Right <= width && area.Bottom <= height, $"{width}x{height}: {button} {area} off the window");
+                    Assert.False(area.Intersects(screen.SettingsPanel), $"{width}x{height}: {button} {area} over the panel {screen.SettingsPanel}");
+                }
                 screen.Handle(new KeyPressed(LauncherKey.Tab));
             }
+            Assert.Equal(2, tabsSeen.Count);
             screen.Handle(new PathDropped(LongFolder + @"\not\a\pack\nor\a\game\folder\at\all"));
             screen.Render(canvas);
             AssertLaidOut(screen, $"{width}x{height}, a long message");
@@ -120,8 +137,8 @@ public sealed class LauncherLayoutTests
         var context = Broken();
         var surface = new ScriptedSurface(1280, 720)
         {
-            PickFolder = title => { asked.Add("folder: " + title); return null; },
-            PickFile = title => { asked.Add("file: " + title); return null; },
+            PickFolder = (title, _) => { asked.Add("folder: " + title); return null; },
+            PickFile = (title, _) => { asked.Add("file: " + title); return null; },
         };
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
         screen.Render(new Canvas(1280, 720));
@@ -144,6 +161,11 @@ public sealed class LauncherLayoutTests
     {
         var item = Enum.Parse<LauncherScreen.Item>(row);
         var (screen, asked) = Screen();
+        if (item is LauncherScreen.Item.SoundFont or LauncherScreen.Item.Roms)
+        {
+            Click(screen, screen.Area(LauncherScreen.Item.TabAdvanced));
+            screen.Render(new Canvas(1280, 720));
+        }
         Click(screen, screen.Area(item), dx: 10);
         Assert.Equal(item, screen.Focus);
         Assert.Empty(asked);
@@ -191,7 +213,7 @@ public sealed class LauncherLayoutTests
         }
         var context = Broken() with { FindPacks = _ => packs, DescribePack = _ => new PackStatus(1, 1, null) };
         var asked = 0;
-        var surface = new ScriptedSurface(1280, 720) { PickFolder = _ => { asked++; return null; } };
+        var surface = new ScriptedSurface(1280, 720) { PickFolder = (_, _) => { asked++; return null; } };
         var model = new LauncherModel(context, null);
         var screen = new LauncherScreen(model, context, surface);
         var canvas = new Canvas(1280, 720);
@@ -240,12 +262,231 @@ public sealed class LauncherLayoutTests
         Assert.NotEqual(a.Pixels, b.Pixels);
     }
 
+    // ---- no hint bar: a row's whole problem and its help in a tooltip; messages in a notice only while there is one ----
+
+    [Fact]
+    public void ARowsWholeProblemIsInItsTooltipWhenThePointerRestsOnItsStatusLine()
+    {
+        // a pack folder that is there, with a broken manifest (its problem: a long path and a long message)
+        var folder = Directory.CreateTempSubdirectory("dkbrokenpack").FullName;
+        var context = Broken() with { Settings = new GameSettings { GameFolder = Game, HdPack = folder } };
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720));
+        var canvas = new Canvas(1280, 720);
+        screen.Render(canvas);
+        // no box over the buttons: nothing to tell
+        Assert.DoesNotContain(screen.Blocks, b => b.What is "notice" or "hints");
+
+        var status = screen.Area(LauncherScreen.Item.HdPack, LauncherScreen.Part.Status);
+        screen.Handle(new PointerMoved(status.X + 4, status.Y + 2));
+        Assert.True(screen.TooltipPending);
+        Assert.Equal(LauncherScreen.Item.None, screen.Tooltip);
+        // the pointer rests: the tooltip, with the problem in full, then what the row does
+        screen.Handle(new TimePassed());
+        Assert.Equal(LauncherScreen.Item.HdPack, screen.Tooltip);
+        var parts = screen.TooltipParts(LauncherScreen.Item.HdPack).ToList();
+        // the whole message (the folder's path, shown on the row, left out)
+        Assert.Equal("Problem: " + LauncherScreen.ShortProblem(folder, BrokenManifest(folder)), parts[0].Text);
+        Assert.EndsWith("manifest ignored", parts[0].Text);
+        Assert.StartsWith("Replacement pictures", parts[1].Text);
+        screen.Render(canvas);
+        Assert.True(screen.TooltipArea.Width > 0);
+        Assert.True(screen.TooltipArea.Y >= status.Bottom, "the tooltip is under the line");
+
+        // the pointer leaves for the painting: no tooltip
+        screen.Handle(new PointerMoved(600, 400));
+        screen.Render(canvas);
+        Assert.Equal(LauncherScreen.Item.None, screen.Tooltip);
+        Assert.Equal(0, screen.TooltipArea.Width);
+        // a click on the status line chooses its row
+        Click(screen, status);
+        Assert.Equal(LauncherScreen.Item.HdPack, screen.Focus);
+        Directory.Delete(folder);
+    }
+
+    [Fact]
+    public void TheKeyboardsChoiceShowsItsTooltipAtOnceAndThePointerHidesIt()
+    {
+        var (screen, _) = Screen();
+        screen.Handle(new KeyPressed(LauncherKey.Up));
+        Assert.Equal(LauncherScreen.Item.Save, screen.Focus);
+        Assert.Equal(LauncherScreen.Item.Save, screen.Tooltip);
+        Assert.False(screen.TooltipPending);
+        screen.Render(new Canvas(1280, 720));
+        screen.Handle(new PointerMoved(600, 400));
+        Assert.Equal(LauncherScreen.Item.None, screen.Tooltip);
+    }
+
+    [Fact]
+    public void AMessageShowsInTheNoticeAndItsWholeTextInItsTooltip()
+    {
+        var problem = "The game could not start: " + BrokenManifest(LongFolder);
+        var context = Broken(LauncherReason.StartFailed, problem);
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720));
+        screen.Render(new Canvas(1280, 720));
+        var notice = screen.Blocks.Single(b => b.What == "notice").Area;
+        Assert.True(notice.Bottom <= screen.Area(LauncherScreen.Item.Play).Y, "the notice is over the buttons");
+        Assert.Equal(problem, screen.TooltipParts(LauncherScreen.Item.Notice).Single().Text);
+
+        // without a reason, nothing; the report's message comes and shows
+        var (quiet, _) = Screen();
+        Assert.DoesNotContain(quiet.Blocks, b => b.What == "notice");
+        while (quiet.Focus != LauncherScreen.Item.Report)
+        {
+            quiet.Handle(new KeyPressed(LauncherKey.Tab));
+        }
+        quiet.Handle(new KeyPressed(LauncherKey.Enter));
+        quiet.Render(new Canvas(1280, 720));
+        Assert.Contains(quiet.Blocks, b => b.What == "notice");
+    }
+
+    [Fact]
+    public void PlatesLightUpUnderThePointerAndSofterForTheKeyboardWithoutAFrame()
+    {
+        // the Play plate's brightness: as drawn, chosen with the keyboard (its focus at the start), under the pointer
+        static long Light(LauncherScreen screen, Rect area)
+        {
+            var canvas = new Canvas(1280, 720);
+            screen.Render(canvas);
+            long sum = 0;
+            for (var y = area.Y - 6; y < area.Bottom + 6; y++)
+            {
+                for (var x = area.X - 6; x < area.Right + 6; x++)
+                {
+                    var c = canvas.Pixels[y * 1280 + x];
+                    sum += (c >> 16 & 255) + (c >> 8 & 255) + (c & 255);
+                }
+            }
+            return sum;
+        }
+
+        var (screen, _) = Screen();
+        var play = screen.Area(LauncherScreen.Item.Play);
+        Assert.Equal(LauncherScreen.Item.Play, screen.Focus);
+        var chosen = Light(screen, play);
+        screen.Handle(new KeyPressed(LauncherKey.Up));
+        var plain = Light(screen, play);
+        screen.Handle(new PointerMoved(play.X + 10, play.Y + 10));
+        var pointed = Light(screen, play);
+        Assert.True(plain < chosen && chosen < pointed, $"{plain} < {chosen} < {pointed}");
+
+        // no gold frame around it any more (the old one: 3 pixels out, 2 wide)
+        var canvas = new Canvas(1280, 720);
+        screen.Render(canvas);
+        var gold = 0;
+        for (var x = play.X - 3; x < play.Right + 3; x++)
+        {
+            gold += canvas.Pixels[(play.Y - 3) * 1280 + x] == 0xFFD2A94E ? 1 : 0;
+        }
+        Assert.Equal(0, gold);
+    }
+
+    // ---- the tabs, and the frameless window's own buttons ----
+
+    [Fact]
+    public void TheTabsSwitchByAClickOrCtrlTabAndFollowTheFocus()
+    {
+        var (screen, _) = Screen();
+        var canvas = new Canvas(1280, 720);
+        Assert.False(screen.AdvancedShown);
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Roms));
+
+        // a click on Advanced: its rows, the focus on the first
+        Click(screen, screen.Area(LauncherScreen.Item.TabAdvanced));
+        screen.Render(canvas);
+        Assert.True(screen.AdvancedShown);
+        Assert.Equal(LauncherScreen.Item.Roms, screen.Focus);
+        screen.Area(LauncherScreen.Item.SoundFont);
+        screen.Area(LauncherScreen.Item.Always);
+        screen.Area(LauncherScreen.Item.MouseWheel);
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Window));
+
+        // Ctrl+Tab: General again, then Advanced
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
+        screen.Render(canvas);
+        Assert.False(screen.AdvancedShown);
+        Assert.Equal(LauncherScreen.Item.GameFolder, screen.Focus);
+        screen.Area(LauncherScreen.Item.Window);
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
+        screen.Render(canvas);
+        Assert.True(screen.AdvancedShown);
+
+        // Tab from General's last row (the audio pack) goes on to the ROMs, and Advanced opens
+        Click(screen, screen.Area(LauncherScreen.Item.TabGeneral));
+        screen.Render(canvas);
+        while (screen.Focus != LauncherScreen.Item.AudioPack)
+        {
+            screen.Handle(new KeyPressed(LauncherKey.Tab));
+        }
+        screen.Handle(new KeyPressed(LauncherKey.Tab));
+        screen.Render(canvas);
+        Assert.Equal(LauncherScreen.Item.Roms, screen.Focus);
+        Assert.True(screen.AdvancedShown);
+        // and Shift+Tab back
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Shift: true));
+        screen.Render(canvas);
+        Assert.False(screen.AdvancedShown);
+    }
+
+    [Fact]
+    public void TheWindowsOwnButtonsCloseAndMinimiseAndShowOnlyWhenTheWindowHasNoFrame()
+    {
+        var context = Broken();
+        var framed = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720));
+        framed.Render(new Canvas(1280, 720));
+        Assert.Throws<InvalidOperationException>(() => framed.Area(LauncherScreen.Item.Close));
+
+        var surface = new ScriptedSurface(1280, 720) { Frameless = true };
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Render(new Canvas(1280, 720));
+        var close = screen.Area(LauncherScreen.Item.Close);
+        var minimise = screen.Area(LauncherScreen.Item.Minimise);
+        Assert.True(close.Right <= 1280 && close.Right > 1240 && close.Y < 20, close.ToString());
+        Assert.True(minimise.Right < close.X, minimise.ToString());
+
+        // minimise: the surface is asked; the focus stays where it was
+        var focus = screen.Focus;
+        Assert.Null(screen.Handle(new PointerPressed(minimise.X + 4, minimise.Y + 4)));
+        Assert.Null(screen.Handle(new PointerReleased(minimise.X + 4, minimise.Y + 4)));
+        Assert.Equal(1, surface.Minimised);
+        Assert.Equal(focus, screen.Focus);
+        // close: as Esc
+        screen.Render(new Canvas(1280, 720));
+        Assert.Null(screen.Handle(new PointerPressed(close.X + 4, close.Y + 4)));
+        Assert.Equal(LauncherChoice.Quit, screen.Handle(new PointerReleased(close.X + 4, close.Y + 4)));
+
+        // a window that fills the screen has nothing to minimise to
+        surface.FillsScreen = true;
+        screen.Render(new Canvas(1280, 720));
+        screen.Area(LauncherScreen.Item.Close);
+        Assert.Throws<InvalidOperationException>(() => screen.Area(LauncherScreen.Item.Minimise));
+    }
+
+    [Fact]
+    public void TheSurfaceIsToldWhereTheControlsAre()
+    {
+        var context = Broken();
+        var surface = new ScriptedSurface(1280, 720, new KeyPressed(LauncherKey.Escape)) { Frameless = true };
+        new Launcher().Run(context, surface);
+        var areas = surface.ControlAreas;
+        // the controls the player clicks are there (Play, the close button, a tab); the painting and the title are not
+        var screen = new LauncherScreen(new LauncherModel(context, null), context, new ScriptedSurface(1280, 720) { Frameless = true });
+        screen.Render(new Canvas(1280, 720));
+        foreach (var item in new[] { LauncherScreen.Item.Play, LauncherScreen.Item.Close, LauncherScreen.Item.TabAdvanced })
+        {
+            var a = screen.Area(item);
+            Assert.Contains((a.X, a.Y, a.Width, a.Height), areas);
+        }
+        Assert.DoesNotContain(areas, a => a.X <= 620 && 620 < a.X + a.Width && a.Y <= 400 && 400 < a.Y + a.Height);
+        Assert.DoesNotContain(areas, a => a.X <= 343 && 343 < a.X + a.Width && a.Y <= 80 && 80 < a.Y + a.Height);
+    }
+
     [Fact]
     public void WithoutASoundFontTheRowSaysWhereToGetAFreeOne()
     {
         var context = Broken() with { Settings = new GameSettings { GameFolder = Game } };
         var surface = new ScriptedSurface(1280, 720);
         var screen = new LauncherScreen(new LauncherModel(context, null), context, surface);
+        screen.Handle(new KeyPressed(LauncherKey.Tab, Control: true));
         screen.Render(new Canvas(1280, 720));
         Assert.Contains(screen.Blocks, b => b.What.StartsWith("status None found: any General MIDI .sf2 works (a free one: FluidR3_GM.sf2, MIT)", StringComparison.Ordinal));
     }

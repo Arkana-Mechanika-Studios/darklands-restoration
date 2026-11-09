@@ -46,6 +46,8 @@ not meant for players.
 | `display.fullscreen` | false | `--fullscreen` | |
 | `display.hdPack` | none | `--hd-pack <folder>` | a folder of replacement pictures (an HD pack, below); not part of the original, the game plays the same |
 | `display.cleanDrawing` | false | `--clean-drawing` | false = the screens are drawn as in the 1992 game, including its drawing oddities; true = the cleaner drawing of 0.9.5 (the game plays the same) |
+| `display.filter` | `"sharp"` | `--filter <name>` | how the 320x200 picture is drawn on a larger window: `sharp`, `even`, `soft`, `softcrt`, `hq`, `crt` or `crtplus` (below); only the window's picture changes (SDL host) |
+| `display.crtCurvature` | false | | true: the CRT filters' picture (`crt`, `softcrt`, `crtplus`) slightly curved, as a tube's (below) |
 | `sound.card` | `"config"` | `--sound`, `--no-audio` (= `none`) | `config` (the card of CONFIG.DRK, as the original), `adlib`, `sb`, `sbpro2`, `mt32`, `cm32l`, `speaker` (not emulated: silent), `none` |
 | `sound.mt32Roms` | `MT32_ROMS` next to the program | `--mt32-roms`; `DARKLANDS_MT32_ROMS` | MT-32 / CM-32L ROMs; without them the OPL3 FM drivers play instead, with a warning |
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
@@ -58,7 +60,8 @@ not meant for players.
 | `textFont` | built-in | `--text-font`; `DARKLANDS_TEXT_FONT` | 4096-byte VGA BIOS 8x16 font dump, or its base64 |
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
-| `sdl.library` | the `SDL2.dll` next to the program (shipped on Windows), else the system's | `--sdl` | the SDL2 library to load (SDL host only) |
+| `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
+| `sdl.library` | the `SDL3.dll` next to the program (shipped on Windows), else the system's (`libSDL3.so.0`) | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
 | `console.font` | the bundled DejaVu Sans Mono | | a TrueType (.ttf) file for the console, e.g. `"C:/Windows/Fonts/consola.ttf"` |
 | `console.fontSize` | 14 | | the console's text height in pixels at the 720x400 window (6..64); it grows with the window |
@@ -76,6 +79,43 @@ recoloured figures do not change a replacement yet. Problems (a
 missing folder, a broken PNG) are reported on the console and the original pictures are kept. The headless host takes
 the same key from `--settings`, or the step `hdpack:<folder>`, and then also saves `<name>.hd.png` for each shot
 (and `<name>.assets.txt`, the asset names on that screen). The guide for pack makers: [PACKS.md](PACKS.md).
+
+### `display.filter`
+
+How the SDL host draws the game's 320x200 picture on the window; the picture keeps its place and shape (the window size,
+fullscreen and the black borders are as without a filter). In the game **Ctrl+F11** goes to the next filter for the
+rest of the run (the setting in the file stays; the original never reads F11, so the game loses no key).
+
+| Name | Launcher | Picture |
+|---|---|---|
+| `sharp` (default) | Sharp | each window pixel takes the nearest game pixel: hard pixels, as always; at sizes that are not whole multiples of 320x200 some columns and rows are one window pixel wider than others |
+| `even` | Even | "sharp bilinear": the picture is enlarged by whole numbers with hard pixels, then smoothly to the window, so every game pixel is the same size and only the edges between pixels blend over one window pixel; at whole multiples it is the same as `sharp`. `smooth`, its earlier name, is still read |
+| `soft` | Soft | as a 1992 VGA monitor drew it: each pixel a soft beam, wider across than down (Gaussian spreads 0.68 and 0.32 of a game pixel), so the game's checkerboard dithering blends into the colours it stands for while text stays readable |
+| `softcrt` | Soft CRT | `soft` with the scanlines and mask of `crt`: the softer CRT look |
+| `hq` | HQ | pixel-art smoothing: where a staircase edge passes the corner of a pixel (the two pixels beside the corner and the one across it share another colour, and the staircase goes on), the corner is cut along the line through the middles of its sides, so diagonals and outlines are rounded; checkerboard dithering, straight edges, rectangle corners and lone pixels stay as they are (a rule in the spirit of the xBR level-1 filters, written for this project) |
+| `crt` | CRT | as `even`, with scanlines between the picture's 200 lines and a light red/green/blue aperture mask, as on a VGA monitor, and part of the lost brightness given back. The scanlines fade out where a line is under three window pixels tall |
+| `crtplus` | CRT+ | a richer CRT: each line a beam that grows taller with its brightness, a stronger aperture mask, and a slight glow (the picture blurred wide and added over it) |
+
+With `display.crtCurvature` true the CRT kinds' picture is slightly curved, as a tube's (its corners black).
+
+Only the picture shown in the window changes: the game, its timing, the screenshots (F12), the problem reports and
+the frames the headless host and the oracles record are made before the filter and are the same with every filter. The
+text screen of the program start keeps its sharp look. With an HD pack, the game's own pixels (the frame and the overlay
+drawn over the replacements) go through the filter, the replacement pictures are drawn smoothly as before, and the CRT
+kinds' scanlines and mask lie over everything, replacements included (the frame is drawn into a window-size texture first;
+`crtplus` then draws its beams from that texture at the game's 320x200 grid, so a replacement's finer detail goes into the
+beams as the game's pixels do).
+
+How it is drawn: when a filter other than `sharp` is set as the program starts, the window opens on SDL's GPU renderer, and
+a pixel shader of this project (`src/Darklands.Host.Sdl/Shaders/picture.frag.hlsl`, compiled by
+`tools/shaders/build_shaders.py` to DXIL for Direct3D 12 on Windows and to SPIR-V for Vulkan on Linux and the Steam Deck)
+draws the filter in one pass. As the window opens, one colour is drawn through the shader with every filter and read back.
+Where that renderer cannot start or the shader does not draw (no Direct3D 12 or Vulkan, a driver that refuses it), or when a
+filter is chosen in the game with Ctrl+F11 on another renderer, the filters are drawn with render targets and blend modes
+instead: `even` and `crt` as the shader draws them (without the curvature; on SDL's software renderer the CRT is a little
+darker), `soft` and `hq` as `even`, `softcrt` and `crtplus` as `crt`, and the log says so. The log also says which way is
+used ("Picture filters: shaders on SDL's gpu renderer (vulkan)"). Every filter has a reference drawn on the CPU
+(`PictureFilterReference`), and the shader is tested against it on Direct3D 12 and on Vulkan.
 
 ### `sound.audioPack`
 
@@ -137,10 +177,22 @@ When nothing is found, or the folder named does not hold the game, the launcher 
 
 ## Launcher (SDL host)
 
-The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the HD pack,
+The launcher is the settings screen shown before the game: the game folder, the window size, fullscreen, the picture
+filter (its "Picture" row beside Fullscreen: Sharp, Even, Soft, Soft CRT, HQ, CRT, CRT+; ←/→ or Enter; while the row is
+chosen or under the pointer, a preview over the left card shows a piece of one of your game's card pictures, the dragon over
+the burning village, through that filter, about as the game window will show it, CRT curvature included when the settings
+file sets it; the previews are drawn on the processor in the background from the launcher's first moment and kept, so
+stepping through the filters never waits; nothing of the game is stored for them; without a game folder they show a
+pattern drawn by the program), the HD pack,
 the audio pack (both: None, the packs in a `packs` folder, or a folder browsed for or dropped; [PACKS.md](PACKS.md)),
 the sound card and the Roland ROM folder (MT-32 and/or CM-32L; with a sound test: ten seconds of the game's music through the drivers the game
-will use) and the start-up screen and opening animation. Beside them: the release notes (`RELEASE_NOTES.md` next to the
+will use) and the start-up screen and opening animation. Its settings are on two tabs: **General** (the game folder, the
+display, the sound card with its sound test, the packs) and **Advanced** (the Roland ROM folder, the SoundFont, the
+start-up); a click on a tab or Ctrl+Tab opens the other, and Tab or the arrows go on from one tab's rows into the other's.
+Its window has no title bar: the painting fills it, a drag on the painting (or on the panels' bare parchment) moves it, its
+edges resize it, and its own buttons at the top-right corner minimise and close it (Alt+F4 and Esc close it too; no
+minimise button when the window fills the screen, as in the Steam Deck's Game Mode). The game's window, after Play, has
+its frame again. Beside them: the release notes (`RELEASE_NOTES.md` next to the
 program, copied there by the build from `releases/<version>/release-notes.md` when that is there), a link to the version's
 page on GitHub (the only place the notes are when the file is missing), and a word on the project. It comes up:
 
@@ -154,11 +206,13 @@ page on GitHub (the only place the notes are when the file is missing), and a wo
 
 `--no-launcher` turns it off. The game folder can be chosen with **Change…** (Windows' folder dialog; on other systems
 Change… lets you type it), typed or pasted (Ctrl+V), dropped on the window, or chosen among the folders found with ←/→.
-The Roland ROM folder is chosen the same way on its row (Enter or its Change… opens the dialog) or by dropping the folder
+The Roland ROM folder is chosen the same way on its row on Advanced (Enter or its Change… opens the dialog) or by dropping the folder
 with the ROM files on the window. The HD pack, the audio pack and the SoundFont rows: ←/→ (or a click on their ‹ ›) go
 through the choices, Enter or the row's **Browse…** opens the system's dialog, and a dropped folder or `.sf2` file is
 taken; a click on the row itself only chooses it. Under each folder and pack a line says what was found or what is wrong;
-the box above the buttons shows the chosen row's problem in full and what the row does. The window can be made larger or
+the pointer resting on a row, its line or a button (or the keyboard choosing it) shows a tooltip with the problem in full and
+what it does. A notice over the buttons shows only while there is something to tell: why the game could not start, what
+an action did. Rows and buttons light up under the pointer, and softly when chosen with the keyboard. The window can be made larger or
 smaller, down to 960 x 540. **Play** and **Save and quit** write
 the changed keys into the settings file, keeping its comments and everything else; closing the window or Esc saves as
 well. A setting the command line or an environment variable overrides is shown but cannot be changed there (its
@@ -180,6 +234,24 @@ again (a host addition, not the original's: under DOS the mouse never leaves the
 keeps reading the mouse where it last was over the window, so nothing in the game and none of its random numbers depend on
 it. With a button held the window still receives the mouse's moves outside it; the pointer stays hidden there too. The
 headless host and the oracle tools always draw the pointer.
+
+### The mouse wheel
+
+With `input.mouseWheel` on (the default) the wheel moves the selection as ↑ / ↓ do, as DOSBox-X maps it: a notch away from you is
+one press of ↑, towards you one of ↓. It does so only where these keys move a selection: the card menus and their item and saint
+boxes, the character sheet's open lists and pack, the shop, barter and loot lists, the load list, the camp, the inn's roster, the
+alchemy list, the character creation menus and the menu bar's pull-downs in its keyboard mode. Everywhere else (the map, a battle, a
+card's text, a message box, the character sheet with no list open, where ↑ / ↓ move the frame between the boxes) the wheel does
+nothing. The game reads each notch as the key itself, a press and release a player could have made; nothing else changes. The
+screens say whether a selection is up (`GameUi.SelectionList`), the window turns the wheel into the keys (`IInput.SelectionListActive`).
+The launcher shows it on its Advanced tab, under Start-up: "Mouse wheel in menus"; `--no-mouse-wheel` turns it off for one run.
+
+### Keys on other layouts
+
+The game takes the characters your keyboard layout prints, as DOS did with its keyboard driver: on AZERTY Shift with the `=` key is
+`+`, the `6` key is `-` and Shift with the top row gives the digits; on QWERTZ `+` is its own key. The keypad's `+` and `-` work on
+every layout. In the character generator a right click on an attribute or skill row lowers it, as a left click raises it (the first
+click selects the row); the 1992 game had no right click there.
 
 ## Developer console (SDL host)
 
@@ -204,8 +276,7 @@ Commands (`help` lists them, `help <command>` shows one):
 | `heal [slot\|all]` | endurance and strength back to their maximums |
 | `saint grant\|remove <slot\|all> <number>` | a saint known or forgotten |
 | `item find <text>` / `item grant <slot\|all> <code> [quality] [count]` | finds item codes; puts items in packs |
-| `music on
-| `report [text]` | makes a problem report (a zip) and opens its folder and the issue form; nothing is sent ([REPORTING.md](REPORTING.md)) |\|off` | the game's music option (as Alt-M) |
+| `music on\|off` | the game's music option (as Alt-M) |
 | `report [text]` | makes a problem report (a zip) and opens its folder and the issue form; nothing is sent ([REPORTING.md](REPORTING.md)) |
 | `clear` | empties the console |
 

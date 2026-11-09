@@ -7,16 +7,18 @@ DOSBox-X (https://dosbox-x.com, GNU General Public License v2 or later), a recre
 BIOS font. It is used to show the original game's start-up banner in text mode, as the original
 does on a VGA card. It is stored base64-encoded (4,096 bytes of 8×16 glyphs).
 
-## SDL 2
+## SDL 3
 
-`src/Darklands.Host.Sdl/Native/win-x64/SDL2.dll` is SDL 2.32.10, unmodified, from the official Windows
-x64 release (`SDL2-2.32.10-win32-x64.zip`, https://github.com/libsdl-org/SDL/releases, SHA-256 of the
-archive 6cf9706eefd0a4a06dc764007934d428afaf029fabdd408a9e646048c91e18fb). The SDL host's build and publish
-output carry it next to the program. Source code: https://www.libsdl.org/. Its licence:
+`src/Darklands.Host.Sdl/Native/win-x64/SDL3.dll` is SDL 3.4.20, unmodified, from the official Windows
+x64 release (`SDL3-3.4.20-win32-x64.zip`, https://github.com/libsdl-org/SDL/releases, SHA-256 of the
+archive 368bed8b24e44ad9ea372990814f2343fcfb9e468abb7f8f4a3bc146c7304752, of the DLL
+66844f10251cc1c10619ed5d8e4e3224f564900ee6d69ba87d63de782addae40). The SDL host's build and publish
+output carry it next to the program. On Linux the program uses the system's (or the Steam runtime's)
+`libSDL3.so.0`, which is not shipped. Source code: https://www.libsdl.org/. Its licence:
 
 ```text
 Simple DirectMedia Layer
-Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+Copyright (C) 1997-2026 Sam Lantinga <slouken@libsdl.org>
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages

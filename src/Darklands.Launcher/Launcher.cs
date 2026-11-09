@@ -18,8 +18,10 @@ public sealed class Launcher : ILauncher
                 canvas = new Canvas(width, height);
             }
             screen.Render(canvas);
+            surface.Controls(screen.ControlAreas);
             surface.Present(canvas.Pixels);
-            foreach (var input in surface.Wait())
+            // the pointer came to a control: a short wait, then its tooltip
+            foreach (var input in screen.TooltipPending ? surface.Wait(LauncherScreen.TooltipDelay) : surface.Wait())
             {
                 if (screen.Handle(input) is { } choice)
                 {

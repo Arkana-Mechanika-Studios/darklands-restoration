@@ -27,18 +27,17 @@ stand-in in code. Art is made at **twice the design's size**.
 |---|---|---|
 | `background` | the whole window | 16:9, no transparency; at least 1920 x 1080, ideally 2560 x 1440. Enlarged until it covers the window, keeping its **focus** (the castle: 30.5% across, 34% down the 2026-11-08 painting) at (660, 318), in the gap between the panels; darkened at the edges and behind the title in code. A new painting with its focus elsewhere: change `FocusX`/`FocusY` in LauncherScreen.cs. |
 | `card-left` + slice | 414 x 508 | the left card, in nine slices; its corners at half their pixels (a 120-pixel corner is 60 design pixels). The one in place is the artist's whole-card picture of 2026-11-08 (on transparency), cut out and reduced by `PaperTool cutout`. |
-| `card-settings` + slice | 494 x 692 | the settings panel, in nine slices. As in the mock-up, "Settings" is written in ink on the paper. The one in place is the artist's whole-panel picture of 2026-11-08, with its own gold frame and star corners (so `corner` is not drawn over it), cut out by `PaperTool cutout`, its printed rule painted out (the launcher draws the rule beside "Settings"). Art WITH a dark band at least 40 pixels tall (found down the top-left corner's middle) still gets "Settings" in cream on it. |
+| `card-settings` + slice | 494 x 660 | the settings panel, in nine slices (below the window's own minimise and close buttons). As in the mock-up, "Settings" is written in ink on the paper, the General / Advanced tabs under it. The one in place is the artist's whole-panel picture of 2026-11-08, with its own gold frame and star corners (so `corner` is not drawn over it), cut out by `PaperTool cutout`, its printed rule painted out (the launcher draws the rule beside "Settings"). |
 | `corner` | 60 x 60 | (not in place: the settings art has its corners) the TOP-LEFT bronze corner, drawn only without `card-settings`; mirrored to the panel's four corners, reaching 9 design pixels past them. |
 | `fleuron` | 20-26 high | the fleur-de-lis at the middle of the rules. |
 | `rule-left`, `rule-right` | 5-7 high | the rule's two halves; the knob end (three times the rule's height) keeps its shape, the taper stretches. |
 | `dropcap` | 46 x 46 | the illuminated capitals' frame, WITHOUT the letter (drawn on it in cream). |
-| `plate-stone` + slice | 168 x 44 | "Save and quit" (the parchment plate), three slices, no text. |
-| `plate-red` + slice | 168 x 44 | "Play", three slices, no text (the word and its gold diamonds are drawn). |
-| `plate-small` + slice, `plate-small-hover` + slice, `plate-small-pressed` + slice | about 78 x 22 | "Browse…", "Change…", "Test sound"; the hover one when pointed at or focused, the pressed one while the mouse button is held on it (a plate acts when let go over it). |
-| `hint-bar` (+ slice) | 422 x 40-120 | the dark bar above the buttons; drawn in code until given. |
+| `plate-stone` + slice | 160 x 40 | "Save and quit" (the parchment plate), three slices, no text. |
+| `plate-red` + slice | 212 x 56 | "Play", the larger: three slices, no text (the word and its gold diamonds are drawn). |
+| `plate-small` + slice, `plate-small-hover` + slice, `plate-small-pressed` + slice | 88 x 24 (the window's buttons: 30 x 26) | "Browse…", "Change…", "Test sound", and the window's own minimise and close (their marks drawn on it); the hover one when pointed at or focused, the pressed one while the mouse button is held on it (a plate acts when let go over it). |
 | `icon-game`, `icon-display`, `icon-sound`, `icon-startup` | 22 x 22 | the four sections' icons. |
 | `icon-link` | 16 x 16 | before each link on the left card. |
-| `icon-problem`, `icon-found` | 12 x 12 | ⓘ before a problem line and in the hint bar, ✓ before "Found"; drawn in code until given. |
+| `icon-problem`, `icon-found` | 12 x 12 | ⓘ before a problem line and in the notice, ✓ before "Found"; drawn in code until given. |
 
 ## Fonts
 
@@ -48,7 +47,7 @@ all under the SIL Open Font License (`Resources/OFL.txt`; list each in THIRD_PAR
 | file | used for | without it |
 |---|---|---|
 | `EBGaramond12-Regular.ttf` (in place) | all text | — |
-| `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the hint bar | the Regular |
+| `EBGaramond-Italic.ttf` (in place) | captions, status and problem lines, the notice and the tooltips | the Regular |
 | `EBGaramond-SemiBold.ttf` (in place) | section headings, the cards' headings, the drop caps, "Restoration Project", "Save and quit", "Play" | the Regular, thickened by a pixel |
 | `Grenze-Black.ttf` (in place) | "Darklands" and "Settings" ("Play" is in EB Garamond SemiBold, like "Save and quit"): the free face closest to the original game's logo (its start screen) | EB Garamond SemiBold |
 | `GrenzeGotisch-Black.ttf` (in place) | only the display face's "a" (the logo's double-storey form; `Assets.Display` borrows it) | Grenze's own "a" |

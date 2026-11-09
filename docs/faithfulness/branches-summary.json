@@ -1,10 +1,10 @@
 {
  "ALL": {
-  "blocks": 58302,
-  "blocks_hit": 53287,
-  "functions": 8525,
+  "blocks": 58310,
+  "blocks_hit": 53315,
+  "functions": 8533,
   "outcomes": 43772,
-  "outcomes_hit": 37041,
+  "outcomes_hit": 37057,
   "runs": null
  },
  "acc-n0-01-c00": {
@@ -9958,6 +9958,30 @@
   "outcomes": 3936,
   "outcomes_hit": 1594,
   "runs": 1
+ },
+ "new-ee6a-1": {
+  "blocks": 3812,
+  "blocks_hit": 1855,
+  "functions": 227,
+  "outcomes": 2658,
+  "outcomes_hit": 1033,
+  "runs": 962
+ },
+ "new-ee6a-2": {
+  "blocks": 3367,
+  "blocks_hit": 1577,
+  "functions": 181,
+  "outcomes": 2272,
+  "outcomes_hit": 846,
+  "runs": 82
+ },
+ "new-ee6a-3": {
+  "blocks": 2860,
+  "blocks_hit": 1344,
+  "functions": 133,
+  "outcomes": 1850,
+  "outcomes_hit": 691,
+  "runs": 24
  },
  "new-evtable_r1_sessions-ev300-night": {
   "blocks": 5334,

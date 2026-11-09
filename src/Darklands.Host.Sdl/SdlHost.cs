@@ -4,15 +4,15 @@ using Darklands.Rendering;
 namespace Darklands.Host.Sdl;
 
 /// <summary>
-/// An SDL2 window that shows the PC's picture as <see cref="DisplayLayout"/> places it (base size
+/// An SDL3 window that shows the PC's picture as <see cref="DisplayLayout"/> places it (base size
 /// 720×400: the text screen at its own resolution, the 320×200 graphics screen doubled to 640×400
 /// and centred) and turns SDL keyboard and mouse events into game input.
 /// </summary>
 internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 {
-    private readonly IntPtr _window;
-    private readonly IntPtr _renderer;
-    private readonly IntPtr _texture;
+    private IntPtr _window;
+    private IntPtr _renderer;
+    private IntPtr _texture;
     private readonly int[] _argb = new int[Screen.Width * Screen.Height];
     private readonly int[] _textArgb = new int[TextModeRaster.Width * TextModeRaster.Height];
     private IntPtr _textTexture;
@@ -27,7 +27,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private SdlNative.SdlRect _viewport;
     private SdlNative.SdlRect _textViewport;
     // how the renderer stretches the picture, which the mouse follows (SDL's software renderer: no graphics card, or SDL_RENDER_DRIVER=software)
-    private readonly PictureSampling _sampling;
+    private PictureSampling _sampling;
     // orig: the mouse driver's reset (INT 33h function 0, the game's mouse start) puts the pointer at the middle of the screen: (160, 100) in
     //   the game's coordinates (the tester's mouse start, orig_side._mouse_init; Host.Headless starts there too). Until the host's pointer
     //   moves over the window the game's pointer stays there, not at (0, 0) (the top-left corner, partly off the screen with the map's
@@ -43,30 +43,123 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private readonly Dictionary<RgbaImage, (IntPtr Texture, int Version)> _hdTextures = [];
 
     /// <summary>Opens the window at the size of <see cref="DisplayLayout.WindowSize"/> (720×400 by default).</summary>
-    public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false)
+    /// <param name="frameless">Opened without a frame or title bar (the launcher's window: giving a framed window's frame away later
+    /// leaves Windows painting its old title bar over it now and then).</param>
+    /// <param name="gpu">SDL's GPU renderer first (a shader picture filter is chosen: display.filter), SDL's own choice when it cannot start.</param>
+    public SdlHost(string title, int width = DisplayLayout.BaseWidth, int height = DisplayLayout.BaseHeight, bool fullscreen = false, bool frameless = false,
+        bool gpu = false)
     {
-        if (SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents) != 0)
+        if (!SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents))
         {
             throw new SdlHostException("SDL_Init failed: " + SdlNative.GetErrorText());
         }
-        _window = SdlNative.SDL_CreateWindow(title, 0x2FFF0000, 0x2FFF0000, width, height,
-            SdlNative.WindowShown | SdlNative.WindowResizable | SdlNative.WindowAllowHighDpi
-            | (fullscreen ? SdlNative.WindowFullscreenDesktop : 0));
+        // the key events' symbols as SDL2 gave them: the layout's own (no French digits or Latin letters put in by SDL3)
+        SdlNative.SDL_SetHint(SdlNative.HintKeycodeOptions, "none");
+        _title = title;
+        Open(width, height, fullscreen, frameless, gpu, hidden: false);
+    }
+
+    private readonly string _title;
+
+    /// <summary>The window, its renderer and what is drawn with them (the constructor's; <see cref="Reopen"/>'s new window).</summary>
+    private void Open(int width, int height, bool fullscreen, bool frameless, bool gpu, bool hidden, uint display = 0)
+    {
+        _gpu = gpu;
+        var scale = fullscreen ? 1 : WindowScale(display != 0 ? display : SdlNative.SDL_GetPrimaryDisplay());
+        _window = SdlNative.CreateCentredWindow(_title, Scaled(width, scale), Scaled(height, scale),
+            SdlNative.WindowResizable | SdlNative.WindowHighPixelDensity
+            | (fullscreen ? SdlNative.WindowFullscreen : 0) | (frameless ? SdlNative.WindowBorderless : 0) | (hidden ? SdlNative.WindowHidden : 0), display);
         if (_window == IntPtr.Zero)
         {
             throw new SdlHostException("SDL_CreateWindow failed: " + SdlNative.GetErrorText());
         }
-        _renderer = SdlNative.SDL_CreateRenderer(_window, -1, SdlNative.RendererAccelerated | SdlNative.RendererPresentVsync);
+        // SDL's choice of the graphics card's renderers, else its software one (SDL_RENDER_DRIVER names one); the screen's refresh
+        // paces a graphics card's presents, as SDL2's SDL_RENDERER_PRESENTVSYNC did (the software renderer never waited)
+        // a picture filter of the shaders (docs/SETTINGS.md display.filter): SDL's GPU renderer, told the program brings DXIL
+        // (Direct3D 12) and, when built, SPIR-V (Vulkan) shaders; when it cannot start, SDL's choice and the render targets
+        _renderer = gpu ? GpuRenderer(_window) : IntPtr.Zero;
         if (_renderer == IntPtr.Zero)
         {
-            _renderer = SdlNative.SDL_CreateRenderer(_window, -1, SdlNative.RendererSoftware);
+            _renderer = SdlNative.SDL_CreateRenderer(_window, null);
+        }
+        if (_renderer == IntPtr.Zero)
+        {
+            _renderer = SdlNative.SDL_CreateRenderer(_window, "software");
+        }
+        if (_renderer == IntPtr.Zero)
+        {
+            throw new SdlHostException("SDL_CreateRenderer failed: " + SdlNative.GetErrorText());
         }
         _sampling = IsSoftware(_renderer) ? PictureSampling.SdlSoftware : PictureSampling.Centre;
+        if (_sampling != PictureSampling.SdlSoftware)
+        {
+            SdlNative.SDL_SetRenderVSync(_renderer, 1);
+        }
         _texture = SdlNative.SDL_CreateTexture(_renderer, SdlNative.PixelFormatArgb8888,
-            (int)SdlNative.TextureAccessStreaming, Screen.Width, Screen.Height);
+            SdlNative.TextureAccessStreaming, Screen.Width, Screen.Height);
         SdlNative.SDL_SetTextureScaleMode(_texture, SdlNative.ScaleModeNearest);
-        SdlNative.SDL_ShowCursor(0);
+        SdlNative.SDL_SetTextureBlendMode(_texture, SdlNative.BlendModeNone);
+        SdlNative.SDL_HideCursor();
+        _filter = (IPictureFilterRenderer?)SdlShaderPictureFilter.Create(_renderer, System.Console.Error.WriteLine) ?? new SdlPictureFilter(_renderer);
+        if (gpu)
+        {
+            System.Console.Error.WriteLine($"Picture filters: {_filter.Kind} on SDL's {RendererName} renderer" + (GpuDriver is { } driver ? $" ({driver})" : ""));
+        }
         UpdateViewport();
+    }
+
+    private bool _gpu;
+
+    /// <summary>
+    /// A new window in place of this one (Play: the game's, framed, after the launcher's frameless one; the launcher's again after
+    /// the game's): made hidden with its own renderer, made black, then shown as the old one is hidden and destroyed. The old window
+    /// takes away whatever was done to it (the launcher's borderless handling, its activation filter on Windows, its hit test), so
+    /// the game's window is made exactly as without the launcher: a player saw an old, unthemed title bar on the game's window
+    /// now and then after the launcher's window was given its frame back (2026-11-08). <paramref name="gpu"/>: as the constructor's.
+    /// </summary>
+    internal void Reopen(int width, int height, bool fullscreen, bool frameless, bool gpu)
+    {
+        var old = _window;
+        var display = SdlNative.SDL_GetDisplayForWindow(old);
+        var (filter, curvature) = (_filter.Filter, _filter.Curvature);
+        // the old window black at once, as the game's first picture is, while the new one is made (its renderer takes a moment)
+        Clear();
+        // what was drawn with the old renderer goes with it (the console's and the corner's fonts are loaded again on the new one)
+        Console?.ReleaseFont();
+        Corner?.ReleaseFont();
+        ReleaseRendering();
+        SdlNative.SDL_DestroyRenderer(_renderer);
+        Open(width, height, fullscreen, frameless, gpu, hidden: true, display);
+        (_filter.Filter, _filter.Curvature) = (filter, curvature);
+        Clear();
+        SdlNative.SDL_HideWindow(old);
+        SdlNative.SDL_ShowWindow(_window);
+        SdlNative.SDL_RaiseWindow(_window);
+        SdlNative.SDL_DestroyWindow(old);
+        SdlNative.SDL_SyncWindow(_window);
+        UpdateViewport();
+        Clear();
+    }
+
+    /// <summary>Whether the picture filter wants SDL's GPU renderer for this window (as asked when it was made).</summary>
+    internal bool Gpu => _gpu;
+
+    /// <summary>The textures and the filter made with the current renderer, destroyed (before the renderer is).</summary>
+    private void ReleaseRendering()
+    {
+        foreach (var (texture, _) in _hdTextures.Values)
+        {
+            SdlNative.SDL_DestroyTexture(texture);
+        }
+        _hdTextures.Clear();
+        _hdFrame = null;
+        _filter.Dispose();
+        SdlNative.SDL_DestroyTexture(_texture);
+        if (_textTexture != IntPtr.Zero)
+        {
+            SdlNative.SDL_DestroyTexture(_textTexture);
+            _textTexture = IntPtr.Zero;
+        }
     }
 
     public IVideo Video => this;
@@ -111,10 +204,68 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// </summary>
     public HdRenderer? Renderer { get; set; }
 
+    /// <summary>
+    /// How the graphics screen's picture is drawn on the window (docs/SETTINGS.md display.filter); Ctrl+F11 goes to the next one.
+    /// Only the window's picture changes: the frame the game made (screenshots, problem reports, what the oracles compare) does not.
+    /// </summary>
+    // Host feature: like F11 and F12, Ctrl+F11 is a key the original never reads (its BIOS keyboard call does not report F11), so the game loses no key.
+    public PictureFilter Filter
+    {
+        get => _filter.Filter;
+        set
+        {
+            _filter.Filter = value;
+            if (PictureFilters.NeedsShader(value) && _filter.Kind != "shaders")
+            {
+                // render targets and blend modes cannot draw it (SDL's GPU renderer did not start, or its shader did not draw)
+                System.Console.Error.WriteLine($"Picture filters: {PictureFilters.Label(value)} needs the GPU renderer's shader; "
+                    + $"drawn as {PictureFilters.Label(PictureFilters.WithoutShader(value))}");
+            }
+        }
+    }
+
+    private IPictureFilterRenderer _filter = null!;
+
+    /// <summary>The CRT's slight curvature (display.crtCurvature; drawn only with the shaders).</summary>
+    public bool Curvature
+    {
+        get => _filter.Curvature;
+        set => _filter.Curvature = value;
+    }
+
+    /// <summary>What draws the picture filters: "shaders" (SDL's GPU renderer) or "render targets" (tests, the log).</summary>
+    internal string FilterKind => _filter.Kind;
+
+    /// <summary>The GPU renderer's backend when the shaders draw ("direct3d12", "vulkan"), else null (tests, the log).</summary>
+    internal string? GpuDriver => (_filter as SdlShaderPictureFilter)?.Driver;
+
+    /// <summary>The renderer's name ("gpu", "direct3d11", "software" ...).</summary>
+    internal string RendererName => System.Runtime.InteropServices.Marshal.PtrToStringUTF8(SdlNative.SDL_GetRendererName(_renderer)) ?? "";
+
+    /// <summary>SDL's GPU renderer for the window with the shader formats the program brings, or IntPtr.Zero (said on the log).</summary>
+    private static IntPtr GpuRenderer(IntPtr window)
+    {
+        var props = SdlNative.SDL_CreateProperties();
+        SdlNative.SDL_SetStringProperty(props, SdlNative.PropRendererCreateName, "gpu");
+        SdlNative.SDL_SetPointerProperty(props, SdlNative.PropRendererCreateWindow, window);
+        SdlNative.SDL_SetBooleanProperty(props, SdlNative.PropRendererCreateShadersDxil, true);
+        if (typeof(SdlHost).Assembly.GetManifestResourceInfo("Darklands.Host.Sdl.Shaders.picture.frag.spv") is not null)
+        {
+            SdlNative.SDL_SetBooleanProperty(props, SdlNative.PropRendererCreateShadersSpirv, true);
+        }
+        var renderer = SdlNative.SDL_CreateRendererWithProperties(props);
+        SdlNative.SDL_DestroyProperties(props);
+        if (renderer == IntPtr.Zero)
+        {
+            System.Console.Error.WriteLine("Picture filters: SDL's GPU renderer could not start (" + SdlNative.GetErrorText() + "); SDL's own choice instead");
+        }
+        return renderer;
+    }
+
     public MouseState Mouse => _mouse;
 
     /// <summary>
-    /// False from the window's "mouse left" event (SDL_WINDOWEVENT_LEAVE) to its "mouse entered" event or the next motion over it: the
+    /// False from the window's "mouse left" event (SDL_EVENT_WINDOW_MOUSE_LEAVE) to its "mouse entered" event or the next motion over it: the
     /// game leaves its drawn pointer out of the picture meanwhile. The mouse state the game reads keeps the last position over the window
     /// (on entering it takes the point where the host's pointer came in). At the start: true (the game's pointer at the middle until the
     /// host's pointer first moves over the window or enters it, MouseState start above).
@@ -137,7 +288,46 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public bool ShiftHeld => _shift;
 
+    /// <summary>The game's UI says a selection list is up (IInput.SelectionListActive), set before each pump.</summary>
+    public bool SelectionListActive { get; set; }
+
+    /// <summary>
+    /// input.mouseWheel: while a selection list is up (<see cref="SelectionListActive"/>) each notch of the wheel is a tap of ↑ (away
+    /// from the player) or ↓, through the keyboard as the key itself (its make and break codes, the BIOS word); elsewhere the wheel does nothing.
+    /// </summary>
+    // orig: root 047C:0744 (the BIOS key read, INT 16h AH = 0) and root 044A:020E (the game's keyboard interrupt): a notch's key is read as the keyboard's
+    // DIVERGENCE: a host enhancement (the user's decision, input.mouseWheel, on by default; DOSBox-X maps the wheel to the cursor keys
+    //   everywhere): the wheel gives ↑ / ↓ only where they move a selection (GameUi.SelectionList); the game reads the keys a player could have
+    //   pressed (the make and break codes, the BIOS word) and nothing else changes; Host.Headless and the oracle tools have no wheel;
+    //   tests: MouseWheelListTests, SdlWheelTests
+    public bool MouseWheelArrows { get; set; } = true;
+
+    /// <summary>The taps a wheel event gives: positive ↑, negative ↓ (an event the system reports flipped counts the other way), at most 5.</summary>
+    internal static int WheelTaps(int y, uint direction) => Math.Clamp(direction == SdlNative.MouseWheelFlipped ? -y : y, -5, 5);
+
+    /// <summary>The wheel's taps (positive ↑) as the keys themselves, while a selection list is up and input.mouseWheel is on; else nothing.</summary>
+    private void Wheel(int taps)
+    {
+        if (!MouseWheelArrows || !SelectionListActive || taps == 0)
+        {
+            return;
+        }
+        var (key, scanCode, id) = WheelKey(taps > 0);
+        for (var i = 0; i < Math.Abs(taps); i++)
+        {
+            _keyboard.KeyDown(key, scanCode, id, _keyClock.Elapsed.TotalMilliseconds);
+            _keyboard.KeyUp(scanCode, id);
+        }
+    }
+
+    /// <summary>The key, its PC scan code and its SDL scancode (the key's id in the keyboard) for a tap of the wheel.</summary>
+    internal static (int Key, int ScanCode, int Id) WheelKey(bool up) => up ? (Keys.Up, 0x48, 82) : (Keys.Down, 0x50, 81);
+
     public bool TryReadKeyTransition(out int scanCode, out bool released) => _keyboard.TryReadTransition(out scanCode, out released);
+
+    /// <summary>The layout's key of a scancode with Shift (AZERTY's '=' key: '+'), 0 without Shift held: the key events give the unshifted key.</summary>
+    private static int ShiftedKey(int scancode, int mod) =>
+        (mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0 ? SdlNative.SDL_GetKeyFromScancode(scancode, SdlNative.KeyModLeftShift, false) : 0;
 
     /// <summary>The PC scan code (set 1) of the keys the game's keyboard interrupt looks at, 0 for the others.</summary>
     private static int PcScanCode(int sdlScancode) => sdlScancode switch
@@ -170,7 +360,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     public void MovePointer(int x, int y)
     {
         SdlNative.SDL_GetWindowSize(_window, out var ww, out var wh);
-        SdlNative.SDL_GetRendererOutputSize(_renderer, out var rw, out var rh);
+        SdlNative.SDL_GetRenderOutputSize(_renderer, out var rw, out var rh);
         var g = Graphics;
         var px = g.X + (x * 2 + 1) * g.Width / (2 * Screen.Width);
         var py = g.Y + (y * 2 + 1) * g.Height / (2 * Screen.Height);
@@ -195,7 +385,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SdlNative.SDL_RenderClear(_renderer);
         UpdateViewport();
-        SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref _viewport);
+        DrawFrame();
         _showingText = false;
         FinishFrame();
     }
@@ -220,17 +410,27 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private void DrawHdFrame(HdFrame frame)
     {
         var used = new HashSet<RgbaImage>(ReferenceEqualityComparer.Instance);
+        _filter.Begin(frame.Output, layered: true);
         foreach (var item in frame.Items)
         {
             var destination = ToSdl(item.Destination);
             if (ReferenceEquals(item, frame.Base))
             {
-                SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref destination);
+                _filter.DrawGame(_texture, Screen.Width, Screen.Height, item.Destination, blended: false);
                 continue;
             }
             used.Add(item.Texture);
-            SdlNative.SDL_RenderCopyTo(_renderer, HdTexture(item), IntPtr.Zero, ref destination);
+            if (item.Placement is null)
+            {
+                // the overlay (the game's frame again, transparent where a replacement shows): through the filter as the base
+                _filter.DrawGame(HdTexture(item), item.Texture.Width, item.Texture.Height, item.Destination, blended: true);
+                continue;
+            }
+            SdlNative.RenderCopy(_renderer, HdTexture(item), destination);
         }
+        // the CRT's mask over everything, replacements included (the monitor shows them through it too)
+
+        _filter.Finish(frame.Output);
         foreach (var image in _hdTextures.Keys.Where(image => !used.Contains(image)).ToList())
         {
             SdlNative.SDL_DestroyTexture(_hdTextures[image].Texture);
@@ -248,7 +448,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         var texture = kept.Texture;
         if (texture == IntPtr.Zero)
         {
-            texture = SdlNative.SDL_CreateTexture(_renderer, SdlNative.PixelFormatArgb8888, (int)SdlNative.TextureAccessStatic, image.Width, image.Height);
+            texture = SdlNative.SDL_CreateTexture(_renderer, SdlNative.PixelFormatArgb8888, SdlNative.TextureAccessStatic, image.Width, image.Height);
             SdlNative.SDL_SetTextureBlendMode(texture, SdlNative.BlendModeBlend);
             SdlNative.SDL_SetTextureScaleMode(texture, item.Filter == DrawFilter.Linear ? SdlNative.ScaleModeLinear : SdlNative.ScaleModeNearest);
         }
@@ -275,7 +475,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>The console over the picture (when open), then the frame to the window.</summary>
     private void FinishFrame()
     {
-        SdlNative.SDL_GetRendererOutputSize(_renderer, out var w, out var h);
+        SdlNative.SDL_GetRenderOutputSize(_renderer, out var w, out var h);
         Corner?.Draw(_renderer, w, h);
         if (Console is { Console.IsOpen: true } overlay)
         {
@@ -300,7 +500,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         UpdateViewport();
         if (_showingText && _textTexture != IntPtr.Zero)
         {
-            SdlNative.SDL_RenderCopyTo(_renderer, _textTexture, IntPtr.Zero, ref _textViewport);
+            SdlNative.RenderCopy(_renderer, _textTexture, _textViewport);
         }
         else if (_hdFrame is not null)
         {
@@ -310,8 +510,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         else
         {
-            SdlNative.SDL_RenderCopyTo(_renderer, _texture, IntPtr.Zero, ref _viewport);
+            DrawFrame();
         }
+    }
+
+    /// <summary>The game's frame (in <see cref="_texture"/>) at the picture's place, through the picture filter.</summary>
+    private void DrawFrame()
+    {
+        _filter.Begin(Graphics, layered: false);
+        _filter.DrawGame(_texture, Screen.Width, Screen.Height, Graphics, blended: false);
+        _filter.Finish(Graphics);
     }
 
     /// <summary>How the renderer in use stretches the picture (tests).</summary>
@@ -331,9 +539,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     internal int[] ReadBack(out int width, out int height)
     {
         DrawLast();
-        SdlNative.SDL_GetRendererOutputSize(_renderer, out width, out height);
+        SdlNative.SDL_GetRenderOutputSize(_renderer, out width, out height);
         var pixels = new int[width * height];
-        if (SdlNative.SDL_RenderReadPixels(_renderer, IntPtr.Zero, SdlNative.PixelFormatArgb8888, pixels, width * 4) != 0)
+        if (!SdlNative.ReadPixels(_renderer, pixels, width, height))
         {
             throw new SdlHostException("SDL_RenderReadPixels failed: " + SdlNative.GetErrorText());
         }
@@ -346,15 +554,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         if (_textTexture == IntPtr.Zero)
         {
             _textTexture = SdlNative.SDL_CreateTexture(_renderer, SdlNative.PixelFormatArgb8888,
-                (int)SdlNative.TextureAccessStreaming, TextModeRaster.Width, TextModeRaster.Height);
+                SdlNative.TextureAccessStreaming, TextModeRaster.Width, TextModeRaster.Height);
             SdlNative.SDL_SetTextureScaleMode(_textTexture, SdlNative.ScaleModeNearest);
+            SdlNative.SDL_SetTextureBlendMode(_textTexture, SdlNative.BlendModeNone);
         }
         TextModeRaster.Render(screen, TextFont, Clock.Milliseconds, System.Runtime.InteropServices.MemoryMarshal.Cast<int, uint>(_textArgb.AsSpan()));
         SdlNative.SDL_UpdateTexture(_textTexture, IntPtr.Zero, _textArgb, TextModeRaster.Width * 4);
         SdlNative.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SdlNative.SDL_RenderClear(_renderer);
         UpdateViewport();
-        SdlNative.SDL_RenderCopyTo(_renderer, _textTexture, IntPtr.Zero, ref _textViewport);
+        SdlNative.RenderCopy(_renderer, _textTexture, _textViewport);
         _showingText = true;
         FinishFrame();
     }
@@ -370,9 +579,18 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         var pressedThisPump = MouseButtons.None;
         var toggledThisPump = false;
-        while (SdlNative.SDL_PollEvent(out var e) != 0)
+        while (SdlNative.SDL_PollEvent(out var e))
         {
-            if (e.Type == SdlNative.EventKeyDown && e.Keyboard.Keysym.Scancode == SdlNative.ScancodeF11 && Console is not null)
+            // Ctrl+F11: the next picture filter (Filter), shown at once even while the game waits
+            if (IsNextFilterKey(e))
+            {
+                if (e.Keyboard.Repeat == 0)
+                {
+                    NextFilter();
+                }
+                continue;
+            }
+            if (e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeF11 && Console is not null)
             {
                 if (e.Keyboard.Repeat == 0)
                 {
@@ -382,8 +600,8 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 continue;
             }
             // Ctrl-F12: a problem report (docs/REPORTING.md). A host key like F11 and F12: the original never reads F11 or F12, so the game loses no key.
-            if (e.Type == SdlNative.EventKeyDown && e.Keyboard.Keysym.Scancode == SdlNative.ScancodeF12
-                && (e.Keyboard.Keysym.Mod & SdlNative.KeyModCtrl) != 0 && ReportRequested is not null)
+            if (e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeF12
+                && (e.Keyboard.Mod & SdlNative.KeyModCtrl) != 0 && ReportRequested is not null)
             {
                 if (e.Keyboard.Repeat == 0)
                 {
@@ -401,37 +619,40 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     QuitRequested = true;
                     break;
                 case SdlNative.EventKeyDown:
-                    _shift = (e.Keyboard.Keysym.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
+                    _shift = (e.Keyboard.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
                     if (e.Keyboard.Repeat != 0)
                     {
                         break;   // the operating system's own repeat: the keyboard's typematic (PcKeyboard.Tick below) stands in for it
                     }
-                    if (IsCtrlBreak(e.Keyboard.Keysym.Scancode, e.Keyboard.Keysym.Mod))
+                    if (IsCtrlBreak(e.Keyboard.Scancode, e.Keyboard.Mod))
                     {
                         // Ctrl+Pause (the PC keyboard's Break, E0 46 with Ctrl) or a key the system calls Break: to the game as the BIOS
                         // delivers it (PcKeyboard.CtrlBreak; GameUi.QuitCheck ends the program at the card engine's next check)
                         _keyboard.CtrlBreak();
                         break;
                     }
-                    _keyboard.KeyDown(SdlKeyMap.ToGameKey(e.Keyboard.Keysym.Scancode, e.Keyboard.Keysym.Sym, e.Keyboard.Keysym.Mod),
-                        PcScanCode(e.Keyboard.Keysym.Scancode), (int)e.Keyboard.Keysym.Scancode, _keyClock.Elapsed.TotalMilliseconds);
+                    _keyboard.KeyDown(SdlKeyMap.ToGameKey(e.Keyboard.Scancode, e.Keyboard.Key, e.Keyboard.Mod, ShiftedKey(e.Keyboard.Scancode, e.Keyboard.Mod)),
+                        PcScanCode(e.Keyboard.Scancode), (int)e.Keyboard.Scancode, _keyClock.Elapsed.TotalMilliseconds);
                     break;
                 case SdlNative.EventKeyUp:
-                    _shift = (e.Keyboard.Keysym.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
-                    _keyboard.KeyUp(PcScanCode(e.Keyboard.Keysym.Scancode), (int)e.Keyboard.Keysym.Scancode);
+                    _shift = (e.Keyboard.Mod & (SdlNative.KeyModLeftShift | SdlNative.KeyModRightShift)) != 0;
+                    _keyboard.KeyUp(PcScanCode(e.Keyboard.Scancode), (int)e.Keyboard.Scancode);
+                    break;
+                case SdlNative.EventMouseWheel:
+                    Wheel(WheelTaps(WheelTicks(e.Wheel.Y), e.Wheel.Direction));
                     break;
                 case SdlNative.EventMouseMotion:
-                    _mouse = _mouse with { X = ToScreenX(e.Motion.X), Y = ToScreenY(e.Motion.Y) };
+                    _mouse = _mouse with { X = ToScreenX(Whole(e.Motion.X)), Y = ToScreenY(Whole(e.Motion.Y)) };
                     // (a button held captures the mouse: its motion outside the window keeps the pointer hidden)
-                    _pointerInWindow = InWindow(e.Motion.X, e.Motion.Y);
+                    _pointerInWindow = InWindow(Whole(e.Motion.X), Whole(e.Motion.Y));
                     break;
-                case SdlNative.EventWindow when e.WindowEvent == SdlNative.WindowEventLeave:
+                case SdlNative.EventWindowMouseLeave:
                     _pointerInWindow = false;
                     break;
-                case SdlNative.EventWindow when e.WindowEvent == SdlNative.WindowEventEnter:
+                case SdlNative.EventWindowMouseEnter:
                     // where the host's pointer came back in (the motion events that follow move it on)
                     SdlNative.SDL_GetMouseState(out var ex, out var ey);
-                    _mouse = _mouse with { X = ToScreenX(ex), Y = ToScreenY(ey) };
+                    _mouse = _mouse with { X = ToScreenX(Whole(ex)), Y = ToScreenY(Whole(ey)) };
                     _pointerInWindow = true;
                     break;
                 case SdlNative.EventMouseButtonDown:
@@ -452,7 +673,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                     {
                         buttons &= ~button;
                     }
-                    _mouse = new MouseState(ToScreenX(e.Button.X), ToScreenY(e.Button.Y), buttons);
+                    _mouse = new MouseState(ToScreenX(Whole(e.Button.X)), ToScreenY(Whole(e.Button.Y)), buttons);
                     break;
             }
         }
@@ -468,17 +689,42 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     private MouseButtons _releaseNextPump;
 
+    // the wheel's turn not yet a whole tick (SDL3 gives fractions; SDL2 gave whole ticks)
+    private float _wheel;
+
+    /// <summary>The whole ticks of the wheel turned, the rest kept for the next turn.</summary>
+    private int WheelTicks(float y)
+    {
+        _wheel += y;
+        var ticks = (int)_wheel;
+        _wheel -= ticks;
+        return ticks;
+    }
+
+    /// <summary>A press of Ctrl+F11 (either Ctrl key; not with Alt), the key that goes to the next picture filter.</summary>
+    internal static bool IsNextFilterKey(SdlNative.SdlEvent e) =>
+        e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeF11
+        && (e.Keyboard.Mod & SdlNative.KeyModCtrl) != 0 && (e.Keyboard.Mod & SdlNative.KeyModAlt) == 0;
+
+    /// <summary>The next picture filter, the last picture drawn again with it.</summary>
+    internal void NextFilter()
+    {
+        Filter = PictureFilters.Next(Filter);
+        System.Console.Error.WriteLine($"Picture: {PictureFilters.Label(Filter)}");
+        Redraw();
+    }
+
     private void SetConsoleOpen(bool open)
     {
         Console!.Console.IsOpen = open;
         _keyboard.StopRepeating();   // the console takes the keyboard; what it types repeats with the operating system's rate
         if (open)
         {
-            SdlNative.SDL_StartTextInput();
+            SdlNative.SDL_StartTextInput(_window);
         }
         else
         {
-            SdlNative.SDL_StopTextInput();
+            SdlNative.SDL_StopTextInput(_window);
         }
     }
 
@@ -495,7 +741,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 }
                 return true;
             case SdlNative.EventKeyDown:
-                switch (e.Keyboard.Keysym.Sym)
+                switch (e.Keyboard.Key)
                 {
                     case SdlNative.KeyEscape: SetConsoleOpen(false); break;
                     case SdlNative.KeyReturn or SdlNative.KeyKeypadEnter: console.Submit(); break;
@@ -512,7 +758,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 }
                 return true;
             case SdlNative.EventMouseWheel:
-                console.Scroll(e.Wheel.Y * 3);
+                console.Scroll(WheelTicks(e.Wheel.Y) * 3);
                 return true;
             case SdlNative.EventMouseMotion or SdlNative.EventMouseButtonDown or SdlNative.EventMouseButtonUp:
                 return true;
@@ -530,24 +776,55 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     internal IntPtr SdlRenderer => _renderer;
 
     /// <summary>The system's mouse pointer (the game draws its own, so it is hidden while the game runs).</summary>
-    internal static void ShowPointer(bool on) => SdlNative.SDL_ShowCursor(on ? 1 : 0);
+    internal static void ShowPointer(bool on)
+    {
+        if (on)
+        {
+            SdlNative.SDL_ShowCursor();
+        }
+        else
+        {
+            SdlNative.SDL_HideCursor();
+        }
+    }
 
     /// <summary>The smallest size the player can give the window (1 x 1: no limit).</summary>
-    internal void MinimumSize(int width, int height) => SdlNative.SDL_SetWindowMinimumSize(_window, Math.Max(1, width), Math.Max(1, height));
+    internal void MinimumSize(int width, int height)
+    {
+        var scale = WindowScale(SdlNative.SDL_GetDisplayForWindow(_window));
+        SdlNative.SDL_SetWindowMinimumSize(_window, Math.Max(1, Scaled(width, scale)), Math.Max(1, Scaled(height, scale)));
+    }
 
     /// <summary>Gives the window a new size (centred) or the whole screen.</summary>
     internal void Resize(int width, int height, bool fullscreen)
     {
-        SdlNative.SDL_SetWindowFullscreen(_window, 0);
-        SdlNative.SDL_SetWindowSize(_window, width, height);
+        var scale = WindowScale(SdlNative.SDL_GetDisplayForWindow(_window));
+        SdlNative.SDL_SetWindowFullscreen(_window, false);
+        SdlNative.SDL_SetWindowSize(_window, Scaled(width, scale), Scaled(height, scale));
         SdlNative.SDL_SetWindowPosition(_window, SdlNative.WindowCentered, SdlNative.WindowCentered);
         if (fullscreen)
         {
-            SdlNative.SDL_SetWindowFullscreen(_window, SdlNative.WindowFullscreenDesktop);
+            SdlNative.SDL_SetWindowFullscreen(_window, true);
         }
+        // SDL3 may carry these out later (on Wayland, X11): the picture is laid out for the size they give
+        SdlNative.SDL_SyncWindow(_window);
         UpdateViewport();
         Clear();
     }
+
+    /// <summary>
+    /// SDL3 sizes Windows' windows in the screen's pixels (SDL2's program was scaled up by Windows on a screen at more than 100 %,
+    /// a little blurred): the program's window sizes (the 720x400 base, the launcher's 1280x720 ...) are multiplied by the screen's
+    /// scale there, so that a window keeps the size it had with SDL2, now sharp. Elsewhere SDL3 scales itself (Wayland, macOS) or
+    /// never did (X11): 1.
+    /// </summary>
+    private static float WindowScale(uint display) =>
+        OperatingSystem.IsWindows() && display != 0 && SdlNative.SDL_GetDisplayContentScale(display) is var s && s > 0 ? s : 1;
+
+    private static int Scaled(int length, float scale) => (int)Math.Round(length * scale);
+
+    /// <summary>A window coordinate (SDL3 gives them as fractions) in whole points, as SDL2 gave them.</summary>
+    private static int Whole(float coordinate) => (int)MathF.Floor(coordinate);
 
     /// <summary>Both buffers black, so nothing of a previous picture (or of no picture yet) shows until the next frame.</summary>
     internal void Clear()
@@ -563,31 +840,30 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>The usable part of the main screen before any window is open, or null.</summary>
     internal static (int Width, int Height)? MainScreen()
     {
-        if (SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents) != 0)
+        if (!SdlNative.SDL_Init(SdlNative.InitVideo | SdlNative.InitEvents))
         {
             return null;
         }
-        return SdlNative.SDL_GetDisplayUsableBounds(0, out var r) == 0 ? (r.Width, r.Height) : null;
+        return Usable(SdlNative.SDL_GetPrimaryDisplay());
     }
 
     /// <summary>The usable part of the screen the window is on (without the task bar), or null.</summary>
-    internal (int Width, int Height)? UsableScreen()
+    internal (int Width, int Height)? UsableScreen() => Usable(SdlNative.SDL_GetDisplayForWindow(_window));
+
+    /// <summary>A display's usable part in the program's window sizes (<see cref="WindowScale"/>), or null.</summary>
+    private static (int Width, int Height)? Usable(uint display)
     {
-        var display = SdlNative.SDL_GetWindowDisplayIndex(_window);
-        return display >= 0 && SdlNative.SDL_GetDisplayUsableBounds(display, out var r) == 0 ? (r.Width, r.Height) : null;
+        if (display == 0 || !SdlNative.SDL_GetDisplayUsableBounds(display, out var r))
+        {
+            return null;
+        }
+        var scale = WindowScale(display);
+        return ((int)(r.Width / scale), (int)(r.Height / scale));
     }
 
     public void Dispose()
     {
-        foreach (var (texture, _) in _hdTextures.Values)
-        {
-            SdlNative.SDL_DestroyTexture(texture);
-        }
-        SdlNative.SDL_DestroyTexture(_texture);
-        if (_textTexture != IntPtr.Zero)
-        {
-            SdlNative.SDL_DestroyTexture(_textTexture);
-        }
+        ReleaseRendering();
         SdlNative.SDL_DestroyRenderer(_renderer);
         SdlNative.SDL_DestroyWindow(_window);
         SdlNative.SDL_Quit();
@@ -596,7 +872,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>Where the two pictures go in the window's drawable area (<see cref="DisplayLayout"/>).</summary>
     private void UpdateViewport()
     {
-        SdlNative.SDL_GetRendererOutputSize(_renderer, out var w, out var h);
+        SdlNative.SDL_GetRenderOutputSize(_renderer, out var w, out var h);
         _viewport = ToSdl(DisplayLayout.Graphics(w, h));
         _textViewport = ToSdl(DisplayLayout.Text(w, h));
     }
@@ -608,20 +884,18 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private int ToScreenX(int windowX)
     {
         SdlNative.SDL_GetWindowSize(_window, out var ww, out _);
-        SdlNative.SDL_GetRendererOutputSize(_renderer, out var rw, out _);
+        SdlNative.SDL_GetRenderOutputSize(_renderer, out var rw, out _);
         var x = windowX * rw / Math.Max(1, ww);
         return DisplayLayout.ToScreen(Graphics, x, 0, _sampling).X;
     }
 
     private static bool IsSoftware(IntPtr renderer) =>
-        SdlNative.SDL_GetRendererInfo(renderer, out var info) == 0
-        && ((info.Flags & SdlNative.RendererSoftware) != 0
-            || string.Equals(System.Runtime.InteropServices.Marshal.PtrToStringUTF8(info.Name), "software", StringComparison.Ordinal));
+        string.Equals(SdlNative.Text(SdlNative.SDL_GetRendererName(renderer)), "software", StringComparison.Ordinal);
 
     private int ToScreenY(int windowY)
     {
         SdlNative.SDL_GetWindowSize(_window, out _, out var wh);
-        SdlNative.SDL_GetRendererOutputSize(_renderer, out _, out var rh);
+        SdlNative.SDL_GetRenderOutputSize(_renderer, out _, out var rh);
         var y = windowY * rh / Math.Max(1, wh);
         return DisplayLayout.ToScreen(Graphics, 0, y, _sampling).Y;
     }

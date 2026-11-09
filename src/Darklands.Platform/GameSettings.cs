@@ -27,6 +27,12 @@ public sealed class GameSettings
     /// <summary>true: the cleaner drawing of 0.9.5 (GameOptions.CleanDrawing); false/null: the 1992 game's drawing, oddities included.</summary>
     public bool? CleanDrawing { get; set; }
 
+    /// <summary>How the picture is drawn on the window: one of <see cref="PictureFilters.Names"/> (null: sharp).</summary>
+    public string? Filter { get; set; }
+
+    /// <summary>true: the CRT filter's picture slightly curved, as a tube's (null/false: flat).</summary>
+    public bool? CrtCurvature { get; set; }
+
     /// <summary>One of <see cref="SoundCards"/>.</summary>
     public string? SoundCard { get; set; }
 
@@ -58,8 +64,11 @@ public sealed class GameSettings
 
     public string? ScreenshotsFolder { get; set; }
 
-    /// <summary>The SDL host's section: the SDL2 library to load.</summary>
+    /// <summary>The SDL host's section: the SDL3 library to load.</summary>
     public string? SdlLibrary { get; set; }
+
+    /// <summary>The mouse wheel gives ↑ / ↓ in the menus and lists (a host comfort, SDL host): on unless false.</summary>
+    public bool? MouseWheel { get; set; }
 
     /// <summary>The developer console (a host feature, outside the game): on unless false.</summary>
     public bool? ConsoleEnabled { get; set; }
@@ -69,6 +78,15 @@ public sealed class GameSettings
 
     /// <summary>The console's text height in pixels at the base window size (720x400); it scales with the window.</summary>
     public int? ConsoleFontSize { get; set; }
+
+    /// <summary>A copy with its own lists (a change to the copy leaves this one as it is).</summary>
+    public GameSettings Copy()
+    {
+        var copy = (GameSettings)MemberwiseClone();
+        copy.Mods = Mods?.ToList();
+        copy.CommandLine = CommandLine?.ToList();
+        return copy;
+    }
 }
 
 /// <summary>

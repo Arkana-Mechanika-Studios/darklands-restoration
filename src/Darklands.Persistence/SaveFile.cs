@@ -129,6 +129,43 @@ public sealed class SaveFile
         return at + locations * LocationSize > data.Length;
     }
 
+    /// <summary>
+    /// What a file whole as far as its counts go (not <see cref="RunsPastTheEnd"/>) holds that no game has, or null: a month outside 0..11, a
+    /// day outside 0..31, an hour above 23 (a negative hour is the game's own: date-plus-hours does not borrow), location-now (+0x7C)
+    /// outside −1 .. <paramref name="places"/> − 1, or a location table of another length than the game's <paramref name="places"/>.
+    /// Only a file edited by hand (or by another tool) has them; the original then reads past its tables (the month names, the days per
+    /// month, the place records).
+    /// </summary>
+    // C: the ranges are what play gives (every real, synthesised and community save is inside them: DamagedSaveTests); the header's date
+    // C: is year, month, day, hour at +0x68 (OriginalSaves.Read)
+    public static string? ImpossibleValue(ReadOnlySpan<byte> data, int places)
+    {
+        if (data.Length < HeaderSize)
+        {
+            return null;
+        }
+        var (month, day, hour, location) = (BinaryPrimitives.ReadInt16LittleEndian(data[0x6A..]), BinaryPrimitives.ReadInt16LittleEndian(data[0x6C..]),
+            BinaryPrimitives.ReadInt16LittleEndian(data[0x6E..]), BinaryPrimitives.ReadInt16LittleEndian(data[0x7C..]));
+        if (month is < 0 or > 11)
+        {
+            return $"the month {month}";
+        }
+        if (day is < 0 or > 31)
+        {
+            return $"the day {day}";
+        }
+        if (hour > 23)
+        {
+            return $"the hour {hour}";
+        }
+        var table = Parse(data, fixedLocationTable: true).Locations.Count;
+        if (table != places)
+        {
+            return $"{table} places, not the game's {places}";
+        }
+        return location < -1 || location >= places ? $"the location {location}" : null;
+    }
+
     public byte[] ToBytes()
     {
         using var out_ = new MemoryStream();

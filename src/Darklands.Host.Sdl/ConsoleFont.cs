@@ -70,6 +70,7 @@ internal sealed unsafe class ConsoleFont : IDisposable
             _texture = SdlNative.SDL_CreateTexture(renderer, SdlNative.PixelFormatArgb8888, (int)SdlNative.TextureAccessStatic, atlasWidth, atlasHeight);
             SdlNative.SDL_UpdateTexture(_texture, IntPtr.Zero, argb, atlasWidth * 4);
             SdlNative.SDL_SetTextureBlendMode(_texture, SdlNative.BlendModeBlend);
+            SdlNative.SDL_SetTextureScaleMode(_texture, SdlNative.ScaleModeNearest); // drawn at its own size (SDL3 scales linearly unless told)
         }
         CharacterWidth = _glyphs['M'].Present ? _glyphs['M'].Advance : pixelHeight / 2;
     }
@@ -132,7 +133,7 @@ internal sealed unsafe class ConsoleFont : IDisposable
             {
                 var source = new SdlNative.SdlRect { X = g.AtlasX, Y = g.AtlasY, Width = g.Width, Height = g.Height };
                 var target = new SdlNative.SdlRect { X = x + g.OffsetX, Y = y + Ascent + g.OffsetY, Width = g.Width, Height = g.Height };
-                SdlNative.SDL_RenderCopyPart(renderer, _texture, ref source, ref target);
+                SdlNative.RenderCopyPart(renderer, _texture, source, target);
             }
             x += g.Advance;
         }

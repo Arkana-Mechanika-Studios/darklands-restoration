@@ -21,12 +21,12 @@ internal static class SoundCheck
         log.WriteLine("Darklands sound test");
         try
         {
-            var (version, compat) = SdlNative.LinkedVersion();
-            log.WriteLine($"SDL library: {version}{(compat ? " (sdl2-compat: SDL2 on top of SDL3)" : "")}");
+            var version = SdlNative.LinkedVersion();
+            log.WriteLine($"SDL library: {version}");
         }
         catch (Exception e) when (e is DllNotFoundException or EntryPointNotFoundException)
         {
-            log.WriteLine("RESULT: the SDL2 library could not be loaded (" + e.Message + "). Install it (Arch: sudo pacman -S sdl2-compat).");
+            log.WriteLine("RESULT: the SDL3 library could not be loaded (" + e.Message + "). Install it (Debian/Ubuntu: sudo apt install libsdl3-0; Arch: sudo pacman -S sdl3; Fedora: sudo dnf install SDL3), or put libSDL3.so.0 beside the program.");
             return 2;
         }
         foreach (var name in new[] { "SDL_AUDIODRIVER", "SDL_AUDIO_DRIVER", "DARKLANDS_AUDIO_MODE", "PULSE_SERVER", "XDG_RUNTIME_DIR" })
@@ -38,14 +38,14 @@ internal static class SoundCheck
         }
         var drivers = Enumerable.Range(0, Math.Max(0, SdlNative.SDL_GetNumAudioDrivers())).Select(i => SdlNative.Text(SdlNative.SDL_GetAudioDriver(i)) ?? "?");
         log.WriteLine("SDL audio drivers built in: " + string.Join(", ", drivers));
-        if (SdlNative.SDL_InitSubSystem(SdlNative.InitAudio) != 0)
+        if (!SdlNative.SDL_InitSubSystem(SdlNative.InitAudio))
         {
             log.WriteLine("RESULT: SDL could not start its audio: " + SdlNative.GetErrorText());
             log.WriteLine("        Try: SDL_AUDIODRIVER=pulseaudio SDL_AUDIO_DRIVER=pulseaudio ./DarklandsRP --sound-test");
             return 2;
         }
         log.WriteLine("SDL audio driver in use: " + (SdlNative.Text(SdlNative.SDL_GetCurrentAudioDriver()) ?? "none"));
-        var devices = Enumerable.Range(0, Math.Max(0, SdlNative.SDL_GetNumAudioDevices(0))).Select(i => SdlNative.Text(SdlNative.SDL_GetAudioDeviceName(i, 0)) ?? "?").ToList();
+        var devices = SdlNative.PlaybackDevices().Select(d => d.Name).ToList();
         log.WriteLine($"Output devices ({devices.Count}): " + (devices.Count == 0 ? "none listed" : string.Join(" | ", devices)));
         log.WriteLine("Default output device: " + DefaultDevice());
         log.WriteLine("The sound goes to the system's default output device.");
@@ -81,21 +81,15 @@ internal static class SoundCheck
         return 1;
     }
 
-    /// <summary>The default output device's name and own format (SDL 2.24 and later), or why not known.</summary>
+    /// <summary>The default output device's own format and buffer, or why not known.</summary>
     private static string DefaultDevice()
     {
-        try
+        if (!SdlNative.SDL_GetAudioDeviceFormat(SdlNative.AudioDeviceDefaultPlayback, out var spec, out var frames))
         {
-            if (SdlNative.SDL_GetDefaultAudioInfo(out var name, out var spec, 0) != 0)
-            {
-                return "not known (" + SdlNative.GetErrorText() + ")";
-            }
-            return $"{SdlNative.TakeString(name) ?? "?"}: {spec.Freq} Hz, {spec.Channels} channels, format 0x{spec.Format:X4}";
+            return "not known (" + SdlNative.GetErrorText() + ")";
         }
-        catch (EntryPointNotFoundException)
-        {
-            return "not known (SDL older than 2.24)";
-        }
+        var name = SdlNative.Text(SdlNative.SDL_GetAudioDeviceName(SdlNative.AudioDeviceDefaultPlayback)) ?? "the system's default";
+        return $"{name}: {spec.Freq} Hz, {spec.Channels} channels, format 0x{spec.Format:X4}, {frames} frames a buffer";
     }
 
     /// <summary>Beeps through SDL in one mode: true when SDL took about the right amount of sound, not silence.</summary>

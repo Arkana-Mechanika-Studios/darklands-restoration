@@ -8,8 +8,8 @@ using Darklands.Launcher;
 using Darklands.Presentation;
 using Darklands.Rendering;
 
-// Darklands, on SDL2.
-//   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL2.dll] [--screenshots folder]
+// Darklands, on SDL3.
+//   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL3.dll] [--screenshots folder]
 //                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
 //                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console] [--log-window]
 //                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--soundfont file] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
@@ -118,7 +118,9 @@ var cli = new CommandLineOptions
     Fullscreen = arguments.Remove("--fullscreen"),
     HdPack = Option("--hd-pack"),
     CleanDrawing = arguments.Remove("--clean-drawing"),
+    Filter = Option("--filter"),
     NoConsole = arguments.Remove("--no-console"),
+    NoMouseWheel = arguments.Remove("--no-mouse-wheel"),
     Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -156,10 +158,10 @@ if (Resolve(fileSettings) is not { } settings)
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
 NoteRun();
-// SDL2: the settings file or --sdl, else the SDL2.dll next to the program, else DARKLANDS_SDL2_PATH or the developer's
+// SDL3: the settings file or --sdl, else the SDL3.dll next to the program, else DARKLANDS_SDL3_PATH or the developer's
 // local/paths.json "sdl", else the system's
-var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL2.dll");
-SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL2_PATH")));
+var besideProgram = Path.Combine(AppContext.BaseDirectory, "SDL3.dll");
+SdlNative.ConfigureLibrary(settings.SdlLibrary ?? (File.Exists(besideProgram) ? besideProgram : LocalPaths.Get("sdl", "DARKLANDS_SDL3_PATH")));
 if (soundCheck)
 {
     return SoundCheck.Run(folder, settings, Console.Out);
@@ -178,7 +180,9 @@ if (folder is null && launch is null)
 
 var title = "Darklands Restoration Project " + version;
 var window = settings.Window ?? DisplayLayout.WindowSize(null, null);
-using var host = launch is null ? new SdlHost(title, window.Width, window.Height, settings.Fullscreen) : LauncherHost.Open(title);
+// a picture filter drawn by shaders (display.filter) asks for SDL's GPU renderer as the window opens
+var gpu = settings.Filter != PictureFilter.Sharp;
+using var host = launch is null ? new SdlHost(title, window.Width, window.Height, settings.Fullscreen, gpu: gpu) : LauncherHost.Open(title, gpu);
 if (launch is null && !noLauncher && StartKeys.ShiftHeldInWindow())
 {
     // where the keyboard can only be read through the window (not Windows): the window becomes the launcher's
@@ -217,7 +221,8 @@ while (true)
             continue;
         }
         window = settings.Window ?? DisplayLayout.WindowSize(null, null);
-        host.Resize(window.Width, window.Height, settings.Fullscreen);
+        // a new window for the game, made as without the launcher (its own frame from the start): the launcher's goes
+        host.Reopen(window.Width, window.Height, settings.Fullscreen, frameless: false, gpu: settings.Filter != PictureFilter.Sharp);
         NoteRun();
     }
     var start = new StartProgress();
@@ -268,6 +273,10 @@ ResolvedSettings? Resolve(GameSettings file)
 static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports)
 {
     host.Renderer = null;
+    host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
+    host.Curvature = settings.CrtCurvature;
+    // input.mouseWheel (docs/SETTINGS.md): the wheel gives up / down where they move a selection; the game plays the same
+    host.MouseWheelArrows = settings.MouseWheel;
     if (settings.HdPack is { } hdPack)
     {
         // replacement graphics (docs/SETTINGS.md, display.hdPack): drawn by Darklands.Rendering, the game plays the same
@@ -367,6 +376,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     host.Corner = corner;
     game.Options.Apply(settings);
     game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
+    // a pressed button stays long enough to be seen (the original's press lasts as long as its command's work on the machine)
+    game.Ui.PressedButtonMilliseconds = GameUi.PressedButtonFloor;
     var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
     if (saves.FellBack)
     {

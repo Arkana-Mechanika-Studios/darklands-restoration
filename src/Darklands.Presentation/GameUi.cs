@@ -388,6 +388,42 @@ public sealed class GameUi
     /// </summary>
     public bool KeyboardCardMenus { get; set; }
 
+    /// <summary>
+    /// True while the screen up has a selection that the cursor keys ↑ / ↓ move (a card menu and its item or saint box, an open list or pack
+    /// of the character sheet, the shop, barter and loot lists, the load list, the camp, the inn's roster, the alchemy list, the creation
+    /// menus, the menu bar's pull-downs); null or false elsewhere (the map, a battle, a card's text, the sheet with no list open). A screen
+    /// sets it for its loop with <see cref="UseSelectionList"/>, and a screen that opens over such a screen without a list of its own puts
+    /// null there. The waits for any key (<see cref="PollKeyOnly"/>, <see cref="ReadKey"/>,
+    /// <see cref="WaitForKey"/>: the message boxes, the party information) never have one.
+    /// </summary>
+    // Host comfort, not the original's: each present tells the host (IInput.SelectionListActive), which then turns the mouse wheel into ↑ / ↓
+    //   presses (the SDL host's input.mouseWheel, as DOSBox-X maps the wheel to the cursor keys); the game reads them as a player's keys and
+    //   nothing else changes. Hosts without a wheel (Host.Headless, the oracle tools) never give one; tests: MouseWheelListTests
+    public Func<bool>? SelectionList { get; private set; }
+
+    /// <summary>
+    /// Makes <paramref name="active"/> the <see cref="SelectionList"/> until the scope returned is disposed (<c>using var _ = ...</c>), when the
+    /// one before comes back; null for a screen without a list that opens over one with a list.
+    /// </summary>
+    public SelectionListScope UseSelectionList(Func<bool>? active)
+    {
+        var scope = new SelectionListScope(this, SelectionList);
+        SelectionList = active;
+        return scope;
+    }
+
+    /// <summary>A <see cref="UseSelectionList"/>: its disposal puts the screen's <see cref="SelectionList"/> before it back.</summary>
+    public readonly struct SelectionListScope(GameUi ui, Func<bool>? below) : IDisposable
+    {
+        public void Dispose() => ui.SelectionList = below;
+    }
+
+    /// <summary>Above 0 inside a wait for any key: no selection list then.</summary>
+    private int _anyKeyWait;
+
+    /// <summary>What the host is told before each pump (<see cref="SelectionList"/>).</summary>
+    private bool SelectionListActive => _anyKeyWait == 0 && SelectionList?.Invoke() == true;
+
     /// <summary>Game-wide keys (saving, the character sheets): returns true when it took the key.</summary>
     public Func<int, bool>? GameKey { get; set; }
 
@@ -464,14 +500,22 @@ public sealed class GameUi
     public int ReadKey()
     {
         int key;
-        while (!TakeKey(out key))
+        _anyKeyWait++;
+        try
         {
-            Present();
-            if (TakeKey(out key))
+            while (!TakeKey(out key))
             {
-                break;
+                Present();
+                if (TakeKey(out key))
+                {
+                    break;
+                }
+                _host.Clock.Sleep(FrameMilliseconds);
             }
-            _host.Clock.Sleep(FrameMilliseconds);
+        }
+        finally
+        {
+            _anyKeyWait--;
         }
         return key;
     }
@@ -593,6 +637,7 @@ public sealed class GameUi
     // orig: nothing: the original draws straight into video memory; quit-check root 0000:1338 is the check for a quit request that the loops call
     public void Present()
     {
+        _host.Input.SelectionListActive = SelectionListActive;
         _host.Input.Pump();
         CountReleases();
         if (_host.Input.QuitRequested)
@@ -784,7 +829,8 @@ public sealed class GameUi
     /// </summary>
     // orig: `if (root 047C:073D()) key = root 047C:0744();` and the `DS:6EF0 & 1` tests of loops that do not call root 0000:0000
     //   (R037+0x4664's loop, R037+0x7F06 / R037+0x802A's waits)
-    public PlayerAction? PollWithoutBar()
+    /// <param name="rightPresses">Report right presses too (the generator's right click, a host comfort); by default only the left.</param>
+    public PlayerAction? PollWithoutBar(bool rightPresses = false)
     {
         Present();
         if (ReadHostKey(out var key))
@@ -797,7 +843,7 @@ public sealed class GameUi
             return new PlayerAction(key, Mouse.X, Mouse.Y, MouseButtons.None);
         }
         var buttons = Mouse.Buttons;
-        var pressed = buttons & ~_previousButtons & MouseButtons.Left;
+        var pressed = buttons & ~_previousButtons & (rightPresses ? MouseButtons.Left | MouseButtons.Right : MouseButtons.Left);
         _previousButtons = buttons;
         return pressed != MouseButtons.None ? new PlayerAction(Keys.None, Mouse.X, Mouse.Y, pressed) : null;
     }
@@ -840,6 +886,32 @@ public sealed class GameUi
                 return action;
             }
             _host.Clock.Sleep(FrameMilliseconds);
+        }
+    }
+
+    /// <summary>The least time a pressed button's picture is shown in the player's window, in ms (the SDL host sets <see cref="PressedButtonFloor"/>).</summary>
+    /// <remarks>0 (the default; Host.Headless, the oracles, the tests): no wait, as the original.</remarks>
+    public int PressedButtonMilliseconds { get; set; }
+
+    /// <summary>The player's window's minimum for a pressed button: about six frames, long enough to be seen.</summary>
+    public const int PressedButtonFloor = 100;
+
+    /// <summary>Shows a pressed button just drawn (the creation and inn roster commands, the load screen's buttons), then holds it for
+    /// <see cref="PressedButtonMilliseconds"/> before the command runs.</summary>
+    // orig: the screens draw the pressed button (gfx-picture-draw root 047C:05A5), run the command and copy the button's area back
+    //   (root 047C:0553) with no wait between: in the emulated original at 3000 instructions per ms an inn roster command shows its
+    //   button 0.13 ms, a creation command that reads charactr.tmp 36 ms (plus the disk's time); a press that leaves the screen keeps it
+    //   until the next screen is drawn (0.5 to 0.9 s there, the pictures decoded)
+    // DIVERGENCE: host comfort (machine speed): the pressed picture is held in the player's window at least PressedButtonMilliseconds
+    //   (0.1 s) before the command runs, so the press is seen on a fast machine; the command, the drawing and its order are unchanged, and
+    //   nothing is read meanwhile (a key or click waits, as in the BIOS buffer and the mouse driver's counts). Headless and the oracles
+    //   keep 0: no frame or clock of theirs changes.
+    public void PresentPressedButton()
+    {
+        Present();
+        if (PressedButtonMilliseconds > 0)
+        {
+            Wait(PressedButtonMilliseconds, skippable: false);
         }
     }
 
@@ -981,7 +1053,15 @@ public sealed class GameUi
     // orig: `if (root 047C:073D()) key = root 047C:0744();` repeated inline in loops without root 0000:0000 (R034+0x0EE6, ...)
     public int PollKeyOnly()
     {
-        Present();
+        _anyKeyWait++;
+        try
+        {
+            Present();
+        }
+        finally
+        {
+            _anyKeyWait--;
+        }
         if (ReadHostKey(out var key))
         {
             return key;
@@ -1041,16 +1121,24 @@ public sealed class GameUi
     public bool WaitForKey(int milliseconds)
     {
         var end = _host.Clock.Milliseconds + milliseconds;
-        do
+        _anyKeyWait++;
+        try
         {
-            if (Poll() is { IsKey: true })
+            do
             {
-                return true;
+                if (Poll() is { IsKey: true })
+                {
+                    return true;
+                }
+                _host.Clock.Sleep(Math.Min(FrameMilliseconds, milliseconds));
             }
-            _host.Clock.Sleep(Math.Min(FrameMilliseconds, milliseconds));
+            while (_host.Clock.Milliseconds < end);
+            return false;
         }
-        while (_host.Clock.Milliseconds < end);
-        return false;
+        finally
+        {
+            _anyKeyWait--;
+        }
     }
 
     /// <summary>Saves the current screen as a PNG file.</summary>

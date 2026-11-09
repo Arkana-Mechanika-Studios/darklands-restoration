@@ -280,6 +280,12 @@ public sealed partial class TacticalBattle
                     en.PathIndex = 0;
                     en.Moving = true;
                     en.QueueOrder(CombatAction.StandardAttack);
+                    // DIVERGENCE: host timing: enemy-move-phase reads the timer's clock DS:07D4 for the re-path time after the walker's path
+                    //   search (R018+0x0706+0x49D), so a timer callback that comes during the turn's searches makes it one later (battle_oracle
+                    //   fight [0, 0x26, 24910, 62/2/4]: the original's first turn set 672 / 677 / 753 / 736 with the clock 636, the C#'s
+                    //   671 / 676 / 752 / 735 with the set-up's 635, and walker 5 re-pathed at 671 here only; read-only hooks at approach
+                    //   R014+0x2CCA and a write watch on DS:D97C, round battlelead). Where the callback falls is the original's CPU time
+                    //   against the timer; here the clock moves between passes only.
                     en.RepathAt = (ushort)(Scaled(90) + Clock + 30);
                     en.Flags &= ~TacticalFlags.NoTarget;
                     done = true;
@@ -333,13 +339,18 @@ public sealed partial class TacticalBattle
         var power = en.SpellPowers[type];
         en.SpellCharges[type]--;
         en.SpellsLeft--;
+        // orig: the cast's line tests (1D69:000C, R018+0x0706's frame) are one run of clip tests: each reads the point the previous one left
+        //   (BattleMap.ClipResidue), the area counts between them (R014+0x469E) not reaching it (round battlelead: a read-only hook at
+        //   R014+0xF284 in a direct call of R018+0x0706: the fourth member's line read (722, 473), left inside a furniture box by the third, and
+        //   was blocked; the caster had no target and went to its hand weapon); a new caster's run begins with other leftovers
+        var residue = new BattleMap.ClipResidue();
         if (type == 6)
         {
             for (var k = 0; k < Combatant.PartySlots; k++)
             {
                 var t = list[k].Who;
                 var tm = Battle[t];
-                if (tm.IsAble && seen[t] && Map.LineBlocked(en.Position, tm.Position) == 0)
+                if (tm.IsAble && seen[t] && Map.LineBlocked(en.Position, tm.Position, residue: residue) == 0)
                 {
                     if (list[k].Dist < 0x20)
                     {
@@ -363,7 +374,7 @@ public sealed partial class TacticalBattle
         for (var j = 0; j < Combatant.PartySlots; j++)
         {
             var m = Battle[j];
-            if (m.IsAble && seen[j] && Map.LineBlocked(lineStart, m.Position) == 0)
+            if (m.IsAble && seen[j] && Map.LineBlocked(lineStart, m.Position, residue: residue) == 0)
             {
                 var dist = candidates[j].Dist;
                 for (var k = 0; k < Combatant.PartySlots; k++)

@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Darklands.Launcher.Tests" />
+    <!-- the launcher drawn with the host's real picture filter previews (FilterPreviewsTests' screenshots) -->
+    <InternalsVisibleTo Include="Darklands.Host.Sdl.Tests" />
   </ItemGroup>
 
   <ItemGroup>

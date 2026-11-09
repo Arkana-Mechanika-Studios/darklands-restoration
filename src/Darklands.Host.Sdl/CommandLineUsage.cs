@@ -21,12 +21,14 @@ internal static class CommandLineUsage
           --scale <N> | --resolution <WxH>    the window's size
           --fullscreen               full screen
           --clean-drawing            the cleaner drawing of 0.9.5
+          --filter <name>            how the picture is drawn: sharp (default), even, soft, softcrt, hq, crt, crtplus
           --no-banner | --no-intro   skip the start-up screen | the opening animation
           --saves <folder>           where the saved games go
           --screenshots <folder>     where the screenshots go
           --text-font <file>         the text screen's 8x16 font
-          --sdl <file>               the SDL2 library to use
+          --sdl <file>               the SDL3 library to use
           --no-console               no developer console (F11)
+          --no-mouse-wheel           the mouse wheel does not give up / down in the menus and lists
           --log-window               a window with the program's messages (Windows; they always go to the log)
           --sound-test               check the sound without the game, then stop
           --version | --help         the version | this text

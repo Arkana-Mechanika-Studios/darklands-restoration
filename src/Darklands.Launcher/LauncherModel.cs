@@ -23,10 +23,24 @@ internal sealed class LauncherModel
         ("none", "No sound"),
     ];
 
+    /// <summary>The picture filters offered (display.filter), with their labels, in the order ←/→ go through them.</summary>
+    public static readonly IReadOnlyList<(string Value, string Label)> Filters =
+        [.. Enum.GetValues<PictureFilter>().Select(f => (PictureFilters.Name(f), PictureFilters.Label(f)))];
+
+    /// <summary>The label of the picture filter chosen.</summary>
+    public string FilterLabel => Filters.FirstOrDefault(f => f.Value == Filter).Label ?? Filters[0].Label;
+
+    /// <summary>The next (or, with -1, the previous) picture filter.</summary>
+    public void StepFilter(int step)
+    {
+        var i = Math.Max(0, Filters.ToList().FindIndex(f => f.Value == Filter));
+        Filter = Filters[((i + step) % Filters.Count + Filters.Count) % Filters.Count].Value;
+    }
+
     private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool Always) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool Always, bool MouseWheel) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -39,6 +53,7 @@ internal sealed class LauncherModel
         Windows = WindowChoices(display, CurrentWindow(s));
         WindowIndex = Windows.IndexOf(CurrentWindow(s));
         Fullscreen = s.Fullscreen ?? false;
+        Filter = PictureFilters.Name(PictureFilters.Parse(s.Filter) ?? PictureFilter.Sharp);
         HdPack = string.IsNullOrWhiteSpace(s.HdPack) ? null : s.HdPack;
         SoundCard = SoundCards.Any(c => c.Value == s.SoundCard) ? s.SoundCard! : "config";
         Mt32Roms = string.IsNullOrWhiteSpace(s.Mt32Roms) ? null : s.Mt32Roms;
@@ -47,6 +62,7 @@ internal sealed class LauncherModel
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
         Always = s.Launcher ?? false;
+        MouseWheel = s.MouseWheel ?? true;
         Found = context.FoundGameFolders();
         var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
         // the folder the command line (or DARKLANDS_DIR) gives is the one the game would start with: shown first
@@ -56,7 +72,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, Always);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, Always, MouseWheel);
         _automatic = GameFolder;
     }
 
@@ -76,6 +92,9 @@ internal sealed class LauncherModel
     public int WindowIndex { get; set; }
 
     public bool Fullscreen { get; set; }
+
+    /// <summary>The picture filter's settings-file name (one of <see cref="Filters"/>; display.filter).</summary>
+    public string Filter { get; set; }
 
     public string? HdPack { get; set; }
 
@@ -165,6 +184,9 @@ internal sealed class LauncherModel
     /// <summary>This screen at every start.</summary>
     public bool Always { get; set; }
 
+    /// <summary>The mouse wheel moves the selection of the game's menus and lists (input.mouseWheel).</summary>
+    public bool MouseWheel { get; set; }
+
     public bool CanPlay => GameFolderChecked is not null;
 
     /// <summary>What the ROM folder holds; looked at once for each folder (it reads the disk).</summary>
@@ -232,6 +254,10 @@ internal sealed class LauncherModel
         {
             changes["display.fullscreen"] = Fullscreen;
         }
+        if (Filter != _initial.Filter)
+        {
+            changes["display.filter"] = Filter;
+        }
         if (HdPack != _initial.HdPack)
         {
             changes["display.hdPack"] = HdPack?.Replace('\\', '/') ?? "";
@@ -264,39 +290,35 @@ internal sealed class LauncherModel
         {
             changes["startup.launcher"] = Always;
         }
+        if (MouseWheel != _initial.MouseWheel)
+        {
+            changes["input.mouseWheel"] = MouseWheel;
+        }
         return changes;
     }
 
     /// <summary>The settings to run with: the file's, with the changes.</summary>
     public GameSettings Settings()
     {
-        var s = _context.Settings;
+        // every key of the file (cleanDrawing, mods, crtCurvature, console ...), the launcher's rows over it
+        var s = _context.Settings.Copy();
         var window = Windows[WindowIndex];
         var exact = window.Width % BaseWidth == 0 && window.Height == window.Width / BaseWidth * BaseHeight;
-        return new GameSettings
-        {
-            GameFolder = GameFolderChecked is not null ? GameFolder : s.GameFolder,
-            SavesFolder = s.SavesFolder,
-            Scale = exact ? window.Width / BaseWidth : null,
-            Resolution = exact ? null : $"{window.Width}x{window.Height}",
-            Fullscreen = Fullscreen,
-            HdPack = HdPack,
-            SoundCard = SoundCard,
-            Mt32Roms = Mt32Roms,
-            AudioPack = AudioPack,
-            SoundFont = SoundFont,
-            ConfigDrk = s.ConfigDrk,
-            Banner = Banner,
-            Intro = Intro,
-            Launcher = Always,
-            CommandLine = s.CommandLine,
-            TextFont = s.TextFont,
-            ScreenshotsFolder = s.ScreenshotsFolder,
-            SdlLibrary = s.SdlLibrary,
-            ConsoleEnabled = s.ConsoleEnabled,
-            ConsoleFont = s.ConsoleFont,
-            ConsoleFontSize = s.ConsoleFontSize,
-        };
+        s.GameFolder = GameFolderChecked is not null ? GameFolder : s.GameFolder;
+        s.Scale = exact ? window.Width / BaseWidth : null;
+        s.Resolution = exact ? null : $"{window.Width}x{window.Height}";
+        s.Fullscreen = Fullscreen;
+        s.Filter = Filter;
+        s.HdPack = HdPack;
+        s.SoundCard = SoundCard;
+        s.Mt32Roms = Mt32Roms;
+        s.AudioPack = AudioPack;
+        s.SoundFont = SoundFont;
+        s.Banner = Banner;
+        s.Intro = Intro;
+        s.Launcher = Always;
+        s.MouseWheel = MouseWheel;
+        return s;
     }
 
     private static (int Width, int Height) CurrentWindow(GameSettings s)

@@ -15,7 +15,7 @@ How to read an item:
 
 ## Expected differences (do not report these)
 
-Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (356
+Seen as expected, not as a failure. The full lists are [faithfulness/DIVERGENCES.md](faithfulness/DIVERGENCES.md) (367
 entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMMARY.md](faithfulness/SUMMARY.md) (open items).
 
 * The thirteen data-safety fixes (on by default, C# only): the inn cache file rewrite and its limit (the innkeeper may say
@@ -48,7 +48,7 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
 * The party's random seed at character creation comes from the clock in both; do not compare dice there.
 * Sound is compared as the requests to the sound driver; how a request sounds can differ. Event music heard in DOSBox may not be recorded.
 * Alt-Q reading the key at a different moment (host timing).
-* F11 (developer console), F12 (screenshot) and Ctrl-F12 (problem report) exist only in the C# build; the original ignores them.
+* F11 (developer console), F12 (screenshot), Ctrl-F11 (picture filter) and Ctrl-F12 (problem report) exist only in the C# build; the original ignores them.
 * Quirks and registered original bugs are reproduced on purpose, e.g. horses do not shorten travel.
 
 ## How to report a difference
@@ -68,7 +68,7 @@ key in the original); what is different and which side shows what. If you cannot
   Compare: the launcher comes up, finds the game (GOG, Steam or a typed folder), Play starts the game and writes
   `darklands.settings.json`. Proven by: UNPROVEN.
 * [ ] **A2 First run, Linux and Steam Deck.** Do: untar the Linux build, start it (desktop mode; once as a non-Steam game).
-  Compare: SDL2 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
+  Compare: SDL3 found, the game folder found in Steam/Heroic/Wine, keyboard and mouse work, music plays. Proven by:
   UNPROVEN (tried once on a desktop Linux; not yet on a Steam Deck).
 * [ ] **A3 Launcher rows.** Do: window size, fullscreen, sound card, Roland ROM folder with the sound test, Shift at start,
   the SoundFont row, `--setup`, `--no-launcher`, `DarklandsRP Launcher.exe`. Compare: each choice is kept in the settings file and takes effect at the next start. Proven by: `LauncherTests`, `LauncherPackTests`, `SettingsTests` (each choice is kept and read back); how it looks: UNPROVEN.

@@ -70,7 +70,30 @@ public sealed record LauncherContext(
     string? PackGuide = null,
     string? GivenGameFolder = null,
     Func<string?, string?>? FindSoundFont = null,
-    Func<string>? ReportProblem = null);
+    Func<string>? ReportProblem = null,
+    IFilterPreviews? Previews = null);
+
+/// <summary>A picture filter's preview, ready to draw: <see cref="Width"/> x <see cref="Height"/> ARGB pixels.</summary>
+/// <param name="FromGame">Made from the player's own game files (else from a pattern drawn in code).</param>
+public sealed record FilterPreview(int Width, int Height, uint[] Argb, bool FromGame);
+
+/// <summary>
+/// The picture filters' previews (the launcher's Picture row): a piece of a game picture drawn through each filter as the game
+/// window would show it, made away from the launcher's frames and kept. The launcher never waits on it: <see cref="Prepare"/>
+/// only starts the work, <see cref="Get"/> only looks.
+/// </summary>
+public interface IFilterPreviews
+{
+    /// <summary>
+    /// Have every filter's preview made at <paramref name="width"/> x <paramref name="height"/> from the game in
+    /// <paramref name="gameFolder"/> (null or no game there: a pattern drawn in code), the CRT kinds curved when
+    /// <paramref name="curvature"/> is set. Returns at once; asking again for what is made or being made does nothing.
+    /// </summary>
+    void Prepare(string? gameFolder, int width, int height, bool curvature);
+
+    /// <summary>The preview of that filter for the last <see cref="Prepare"/>, or null while it is being made.</summary>
+    FilterPreview? Get(PictureFilter filter);
+}
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
 public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
@@ -151,6 +174,9 @@ public interface ILauncherSurface
     /// <summary>Waits for input and returns what came (at least one item).</summary>
     IReadOnlyList<LauncherInput> Wait();
 
+    /// <summary>Waits for input as <see cref="Wait()"/>, at most <paramref name="timeout"/>: then [<see cref="TimePassed"/>] (the pointer rested: a tooltip shows).</summary>
+    IReadOnlyList<LauncherInput> Wait(TimeSpan timeout) => Wait();
+
     /// <summary>Starts or stops typed-text input (an on-screen keyboard or input method may show).</summary>
     void TextInput(bool on);
 
@@ -158,13 +184,33 @@ public interface ILauncherSurface
     string? Clipboard();
 
     /// <summary>
-    /// Asks the system for a folder (its own dialog); null when not available. The function returns null when the player
+    /// Asks the system for a folder (its own dialog), given its title and where it opens (a folder, or a file to show in its folder);
+    /// null when not available. The function returns null when the player
     /// cancelled, and throws <see cref="NotSupportedException"/> (its message says why) when no dialog could be shown.
     /// </summary>
-    Func<string, string?>? PickFolder { get; }
+    Func<string, string, string?>? PickFolder { get; }
 
-    /// <summary>Asks the system for a SoundFont file (its own dialog); null when not available. Cancelled: null; no dialog: <see cref="NotSupportedException"/>.</summary>
-    Func<string, string?>? PickFile => null;
+    /// <summary>Asks the system for a SoundFont file (its own dialog; title, where it opens, as <see cref="PickFolder"/>); null when not available. Cancelled: null; no dialog: <see cref="NotSupportedException"/>.</summary>
+    Func<string, string, string?>? PickFile => null;
+
+    /// <summary>
+    /// The window has no frame of its own (no title bar): the launcher draws its close and minimise buttons at the top-right corner and
+    /// says where its controls are (<see cref="Controls"/>), so that a drag elsewhere can move the window.
+    /// </summary>
+    bool Frameless => false;
+
+    /// <summary>The window fills the screen (fullscreen, or a compositor such as gamescope that shows it so): no minimise button then.</summary>
+    bool FillsScreen => false;
+
+    /// <summary>Minimises the window (its minimise button).</summary>
+    void Minimise()
+    {
+    }
+
+    /// <summary>Where the controls were drawn, in surface pixels, after each frame (see <see cref="Frameless"/>).</summary>
+    void Controls(IReadOnlyList<(int X, int Y, int Width, int Height)> areas)
+    {
+    }
 }
 
 /// <summary>An input event, in surface pixels.</summary>
@@ -188,6 +234,9 @@ public sealed record SurfaceResized : LauncherInput;
 
 /// <summary>The window's close button.</summary>
 public sealed record CloseRequested : LauncherInput;
+
+/// <summary>Nothing came for the time <see cref="ILauncherSurface.Wait(TimeSpan)"/> was given.</summary>
+public sealed record TimePassed : LauncherInput;
 
 public enum LauncherKey
 {

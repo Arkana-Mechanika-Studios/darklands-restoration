@@ -146,7 +146,9 @@ public sealed class CardOracleTests
                 }
                 var drop = divergences.Where(d => (d.Card == "*" || d.Card == entry.Name) && d.DropCSharp is { Length: > 0 })
                     .Select(d => d.DropCSharp!).ToList();
-                var blind = divergences.Any(d => (d.Card == "*" || d.Card == entry.Name) && d.IgnoreTexts);
+                // a row of NoMineQuest holds only for a start without the mine quest (SourceOfTheHorrors: with the quest the original draws the
+                // option block of the horror, and the texts are compared in full)
+                var blind = divergences.Any(d => (d.Card == "*" || d.Card == entry.Name) && d.IgnoreTexts && (!d.NoMineQuest || WithoutMineQuest(run.Name)));
                 var difference = Compare((Card)Activator.CreateInstance(card.GetType())!, run.Name, run.Value, clock, dump, texts, drop, blind, soundTrace);
                 if (difference is null && blind)
                 {
@@ -802,13 +804,17 @@ public sealed class CardOracleTests
     /// <c>LeaderAbsent</c>, a start state whose leader's slot holds nobody.
     /// </summary>
     private sealed record Divergence(string Card, string Run, string Contains, string Why, string? DropCSharp = null, bool IgnoreTexts = false,
-        string? End = null, bool GuardNotAMember = false, bool LeaderAbsent = false, string? OriginalEnd = null, bool ShortStart = false);
+        string? End = null, bool GuardNotAMember = false, bool LeaderAbsent = false, string? OriginalEnd = null, bool ShortStart = false,
+        bool NoMineQuest = false);
 
     private static List<Divergence> Divergences()
     {
         var path = Path.Combine(Folder(), "card-divergences.json");
         return File.Exists(path) ? JsonSerializer.Deserialize<List<Divergence>>(File.ReadAllText(path), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [] : [];
     }
+
+    /// <summary>Whether a run's start state has no mine quest (Quests.MineDetail -1: a negative detail), the condition of a NoMineQuest row.</summary>
+    public static bool WithoutMineQuest(string runName) => Core.Rules.Quests.MineDetail(CardOracleStates.FromKey(runName.Split(' ')[1])) < 0;
 
     private static bool Justified(List<Divergence> list, string card, string run, string difference, string? originalEnd = null) =>
         list.Any(d => d.DropCSharp is null && (d.Card == "*" || d.Card == card) && (d.Run == "*" || d.Run == run)

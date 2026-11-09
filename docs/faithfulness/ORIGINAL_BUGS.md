@@ -17,8 +17,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | travel | 4 | 0 | 4 |
 | battles | 31 | 13 | 18 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 11 | 6 | 5 |
-| total | 233 | 52 | 181 |
+| screens/presentation | 12 | 7 | 5 |
+| total | 234 | 53 | 181 |
 
 ## Core logic (222)
 
@@ -675,10 +675,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:952` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
-- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:358` `TacticalBattle.Cast`  
-  original: `R018+0x0706` (1F43:0256, draft)  
+- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:369` `TacticalBattle.Cast`  
+  original: `R018+0x0706` (1F43:0256, draft), `R014+0x469E` (0E76:469E, draft), `R014+0xF284` (1D69:0354, draft)  
   why: the loop sets only the line's end (DS:E0A9/E0A7, R018+0x09D5/0x09DC) and relies on its start (DS:E0A5/E0A3, set to the caster at R018+0x0851); the area test it calls for the enemies (R014+0x469E, 0E76:469E) writes the start itself, from its first instruction on (0E76:46E5/46EC: the centre = the member), so after a member's count the next member's line starts at the previous member, not at the caster. Kept (found by f2witch2f: a member behind a wall counted as seen, the target chosen differed).
-- **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:228` `TacticalBattle.Approach`  
+- **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:232` `TacticalBattle.Approach`  
   original: `R014+0x2CCA` (0E76:2CCA, draft)  
   why: the step queued above from the old route (DS:CA30) is kept through the re-path: fighter-step takes it first, from the new route's index 0, so a walker that re-plans makes one step of its old route and then goes on from the new route's second byte (when that step succeeds); and a walker blocked by somebody re-plans only when RepathAt comes (30..120 ticks after its last good step). Seen in the original (battle oracle fights city24, street, wild40, castle7c with route-hand-over R014+0x5D64 and fighter-step hooked: 8 of 27 re-paths took the old byte at index 0, 5 of them a byte other than the new route's first), the fights agree tick for tick with this code. Kept (not data-damaging).
 - **B-dce381** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:228` `TacticalBattle.ChooseOrder`  
@@ -699,33 +699,36 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:425` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:429` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:436` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:440` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (11)
+## Presentation and host (12)
 
-### screens/presentation (11)
+### screens/presentation (12)
 
-- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:214` `BarterScreen.Purchase`  
+- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 - **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:72` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
-- **B-e60d2a** `bug`, flag `FixDamagedSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:388` `DarklandsGame.LoadSavedGame`  
+- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:388` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:441` `DarklandsGame.LoadInGame`  
+- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:400` `DarklandsGame.LoadSavedGame`  
+  original: `R037+0x8ED4` (1C7D:0D24, matched)  
+  why: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:453` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:611` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:623` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:812` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:824` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  
@@ -737,10 +740,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:521` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
-- **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:232` `PartyRosterScreen.Arrow`  
+- **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:234` `PartyRosterScreen.Arrow`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: OriginalBehaviour.FixRosterMissingFigure - a row past the figure list (DS:E7E2, one 4-byte name per figure picture, indexed by the row DS:E7DA) whose number a party slot holds names "pics\small.pic" (R038+0x045F..0x04C3: "pics\" DS:4A3D + the entry + "small.pic" DS:4A43; the entries past the list are zeros: the list filler R037+0x4562 writes only its files' entries and nothing else writes DS:E7F2..DS:E809), which does not exist: the picture load root 0617:045C (R038+0x04CA) calls the opener root 0617:000E, which ends the program (root 0617:067E: mode 3, perror, exit(99)); reproduced: ProgramExitException. Fixed (data safety, DataSafe): nothing is drawn and the screen goes on: the row is handled as one without a member (the figure place below the commands cleared, as above, and nothing else): the shared colours and the palette are left as they were (the original sets them only after the load), so no figure on the screen changes colour. A figure an earlier Up / Left / Right left at (0x0C, 0xA4) stays, as it does when moving onto a row without a member.
-- **B-fd1853** `bug`, flag `FixRosterFigurePreview` - `src/Darklands.Presentation/PartyRosterScreen.cs:502` `PartyRosterScreen.ShowPreview`  
+- **B-fd1853** `bug`, flag `FixRosterFigurePreview` - `src/Darklands.Presentation/PartyRosterScreen.cs:504` `PartyRosterScreen.ShowPreview`  
   original: `R038+0x02F8` (1462:02F8, draft), `R038+0x0000` (1462:0000, draft)  
   why: OriginalBehaviour.FixRosterFigurePreview - the preview is drawn by Up / Left / Right at (0x0C, 0xA4) (the bottom of the party column), where nothing ever clears it (only (0x46, 0xA5, 0x23 x 0x23) is copied back, R038+0x0396 / 0x061E), so each Up figure lands over the earlier ones; by Down at (0x46, 0xA5), below the commands; the picture is the figure list's entry of the ROW number (DS:E7E2 + 4 x DS:E7DA), not the character's own figure, in the colours of the slot whose id equals the row number; a click on the list moves only the highlight (R038+0x0000). Measured: vis10 roster-figure, 11 shots of the original and the Faithful C# at 0 px. Reproduced in Arrow and Click. Fixed (an evident display fix, every player game): this preview.
 

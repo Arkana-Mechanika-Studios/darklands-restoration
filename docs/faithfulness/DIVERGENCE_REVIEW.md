@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 52 entries; recommendations: document: 2, justify: 40, keep: 10.
-- Part B (undefined-memory in core logic): 156 entries; determinism: deterministic: 1, n/a: 83, no: 59, partly: 9, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 2, justify: 40, keep: 11.
+- Part B (undefined-memory in core logic): 158 entries; determinism: deterministic: 1, n/a: 83, no: 61, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -450,11 +450,18 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: a ninth cloud slot (the bytes after the array, DS:A33B) reads as an empty cloud at (0, 0).  
   recommendation: **keep** (checked against the original) - cloud-on-line-test reads one cloud past the array at DS:A33B, which is the far pointer of COMMONSP's lit panel edge (DS:A33B, a DOS segment from request-work-buffer): heap layout, not reproducible. The slot is read as an empty cloud; the residue of the missed box test (bug 0029) is reproduced separately.
 
-### persistence (5)
+### persistence (6)
+
+#### not-modelled (1)
+
+- **D-cd116a** `not-modelled` - `src/Darklands.Persistence/OriginalSaves.cs:119` `OriginalSaves.Read`  
+  original: `R037+0x8ED4` (1C7D:0D24, matched)  
+  divergence: not modelled: on a hand-edited month outside 0..11, location-now outside the places or a short location table the original reads past its tables where they are indexed (undefined memory); the rewrite reads the values as they are and throws IndexOutOfRange in the code that indexes them. The player's game refuses such a file first (OriginalBehaviour.FixImpossibleSavedGame).  
+  recommendation: **keep** (checked against the original) - Only a hand-edited (or another tool's) saved game holds a month outside 0..11, location-now outside the places or a location table shorter than the game's: no play writes one (every real, synthesised and community save is inside the ranges: ImpossibleSaveTests, DamagedSaveTests). The original then reads past its month table, days-per-month table or place records (heap and data-segment bytes, card fuzz rounds 1 and 2 of 2026-11-07); that memory is not modelled, so the rewrite reads the values as they are and throws where it indexes. Data safety, switchable: the player's game refuses such a file first (OriginalBehaviour.FixImpossibleSavedGame, D-9d110d); the testers keep the loader as it was.
 
 #### deliberate-fix (1)
 
-- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:426` `OriginalSaves.static`  
+- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:430` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.  
   recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixSaveWriterSkipsEmptySlots, on in the player's game): the original writes a short file for a party slot of status 0 (the Wild Hunt) that it can crash loading; fixed, every roster record is written and the count is true. The faithful short file is reproduced (D-be90b2).
@@ -473,7 +480,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:454` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:458` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -951,7 +958,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   divergence: the original keeps a window of the map (50 rows by 19 columns) in G and refills it as the view scrolls; this class answers for any cell of the whole decoded map, so the rows are never evicted. A cell outside the map reads 0 here (in the original, whatever the buffer held).  
   deterministic: **partly** (checked against the original); action: **keep** - The original G is R136+0xFCCC[50][19] (index imul 13h + col, asm 159A2), refilled by R030+0x20D2 from the run-length rows (0xD2 bytes per map row) as the view scrolls, with the place-icon list overlaid. Inside the window the content equals this whole-map answer; a column outside it wraps into the neighbouring row and a row outside it shows whatever an earlier refill left, i.e. history dependent. Keep the whole-map semantics unless a read at the map border outside the window is shown to matter (not verified).
 
-### battles (37)
+### battles (39)
 
 - **D-89585b** `undefined-memory` - `src/Darklands.Core/Battles/Attacks.cs:189` `Attacks.MissileChance`  
   original: `R014+0xA738` (18BF:02A8, draft)  
@@ -961,6 +968,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R004+0x06AA` (0E76:06AA, draft)  
   divergence: an item code outside the list (−1 from an empty template entry) reads the bytes before the list in the original; it weighs 0 here.  
   deterministic: **n/a** (checked against the original); action: **document** - monster-type-lookup (0E76:06AA) reads battlefield-item-table[id].x25 (46-byte records at DS:DAE3:3+id*46+0x25); an id of -1 would wrap to DS:DAE3:FFFA, past the loaded DARKLAND.LST (heap, not deterministic). I ran the C# AddKind (same logic as the asm-checked draft) over all 82 enemy types x qualities 1..8 x 20 seeds on the shipped DARKLAND.ENM/.LST (200 item records): WeightOf never received a code outside 0..199, so the case does not occur with the shipped data.
+- **D-31d23e** `undefined-memory` - `src/Darklands.Core/Battles/BattlefieldLevel.cs:237` `BattlefieldLevel.OutsideCell`  
+  original: `R014+0x5ECA` (1462:000A, draft), `R136+0x0000` (20A5:0000, data)  
+  divergence: undefined memory: past the image the original reads the rest of segment 20A5 (R136's data): 20A5:FE00..FFFF are zeros, but from 20A5:FDFF down (a column of -4 and less) lie tables of far pointers to the program's buffers ("014f 2458", "014f 5e58" ... 0x3A paragraphs apart at 20A5:F000..F38D, more at E000..EFFF, filled at run time; 95 battle-call states of round battlefuzz: F000..FDFF the same in all of them, E000..EFFF 21 versions), whose values the DOS memory layout decides; read as cells their low nibbles are walls. A missed shot extended past the west edge (shot-launch's miss, R018+0x02BE) then stops where the rewrite flies on (a direct call, round battlelead: the original's goal (-668, 611) is that of its lines to columns -16 and -19 being free and to -22 and -29 blocked, in the E000..EFFF tables; the rewrite's (-2592, 957), every line free).  
+  deterministic: **no** (checked against the original); action: **keep** - Past the 40 x 40 cells the original reads the rest of segment 20A5: zeros at FE00..FFFF, but from FDFF down (column -4 and less) tables of far pointers to the program's buffers, filled at run time and set by the DOS memory layout (20A5:F000..F38D, E000..EFFF). A missed shot extended past the west edge stops on them in the original (round battlelead, a direct call of shot-launch). The addresses are not game state; the rewrite reads empty cells.
 - **D-990fbb** `undefined-memory` - `src/Darklands.Core/Battles/CombatantSetup.cs:142` `CombatantSetup.FromEnemy`  
   original: `R025+0x0000` (1EF8:0000, draft), `R020+0x0000` (1EF8:0000, draft)  
   divergence: the head bytes the loader does not write (the .enm buffer's earlier content in the original, 0 for a fresh load) are not modelled: they are undefined memory. The .trn -> .enm conversion R020+0x0000 builds the records (0x122 bytes each) in the shared work buffer DS:A895 and writes count x 0x122 bytes of it to the level's .enm file (R020+0x02BD), so the bytes it does not set are what the program last left there (the root's and the cards' text and tables: the city state banks-markt holds the card text "The $marketplace, ..." at DS:A89A, the map states FFFF-separated indices); R025+0x0882 reads the file's record into DS:B899 and R025+0x0264 copies its head over the slot. Here the slot's fields keep what its last enemy left (0 for a fresh one), and the fields the readying and the placing read are set below or after; the destination +0x08..+0x0B (read by R014+0x306A until the enemy first moves) is TacticalBattle.StaleDestinations' (the oracle's injection of the original's values).  
@@ -1013,15 +1024,19 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R008+0x2ADC` (1432:2ADC, draft)  
   divergence: the original writes into the next group slot even when it is the last (into the next level's groups); the C# list grows.  
   deterministic: **n/a** (checked against the original); action: **document** - Wilderness 2ADC has a single call site (the loop i<5 over DS:DF8F[], so at most 5 groups) writing battlefield-group-table[group-total++] of level 0 (a scalar group-total), so the 11th slot is never reached; the C# wilderness run gave at most 4 groups.
-- **D-d6a5dc** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:271` `BattleMap.LineBlocked`  
+- **D-196232** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:47` `BattleMap.ClipResidue`  
+  original: `R014+0xF284` (1D69:0354, draft), `R018+0x04B6` (1F43:0006, draft), `R018+0x0706` (1F43:0256, draft) +1 more  
+  divergence: host timing: the two words lie below the stack pointer between two tests, so a timer interrupt that comes between them (root 047C:00A9, the 18.2 Hz callback, and the interrupt frame) writes its own words there, and the next test then reads those: a write watch on SS:FC44..FC47 during one enemy-line-of-sight run (round battlelead, the fight [0, 0x47, 5172, 12/2/3, 2/2/2]) saw 047C:00A9+0x141/0x142 leave (17,16), (14,9), (14,0) and (852,9612) between tests, where the run's previous point would have been; with (14,0) enemy 7's test of member 0 found the line free (it saw members 0 and 2), with the previous point it is blocked. When an interrupt falls depends on the machine's speed against its timer; the rewrite keeps the uninterrupted run's previous point.  
+  deterministic: **no** (checked against the original); action: **keep** - The clip test R014+0xF284 reads [bp-4]/[bp-2] uninitialised when neither its bottom nor its top case applies (DL 0036); within a run of tests the words keep the previous test's point unless a timer interrupt (root 047C:00A9, the frame pushed below SP) lands between two tests and leaves its own words there (write watch SS:FC44..FC47, round battlelead). When it lands depends on the machine's speed against the 18.2 Hz timer: not reproducible; the rewrite keeps the uninterrupted run's value.
+- **D-d6a5dc** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:277` `BattleMap.LineBlocked`  
   original: `R014+0xEF3C` (1D69:000C, draft)  
   divergence: with a two-argument call the original's mode is stack garbage; callers here pass 0.  
   deterministic: **n/a** (checked against the original); action: **document** - In 1D69:000C the mode argument [bp+0Ah] is read only after 'cmp [bp+6],-1; jne' (a==-1 returns 0 first); every two-argument call (R014 0E76 sight-line-blocked(-1,-1), R014 14F7 twice) and the one-argument call in R018 pass a=-1, so the stack-garbage mode is never read.
-- **D-646096** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:272` `BattleMap.LineBlocked`  
+- **D-646096** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:278` `BattleMap.LineBlocked`  
   original: `R014+0xEF3C` (1D69:000C, draft)  
   divergence: a throw (mode 0x100) with a = −2 reads the record before combatant 0 in the original; 0 here.  
   deterministic: **n/a** (checked against the original); action: **document** - mode 0x100 with a=-2 would read combatants[-2].f6f (DS:9BC4); the only a=-2 caller (R023 sight-line-blocked(-2,-2,0)) passes mode 0, and all mode-0x100 callers in R014 19CD pass a>=0 (chosen-member/i), so combatants[-2] is never indexed.
-- **D-fb3254** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:319` `BattleMap.SegmentHitsBox`  
+- **D-fb3254** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:325` `BattleMap.SegmentHitsBox`  
   original: `R014+0xF284` (1D69:0354, draft), `R014+0xF3E2` (1D69:04B2, draft)  
   divergence: here it keeps the point of the previous clip test of the same run (ClipResidue), a run starting at (0, 0) as on a clean stack, where the original reads another function's leftovers (undefined memory; they agree when they lie outside the box, as in every run probed).  
   deterministic: **no** (checked against the original); action: **keep** - 0354 leaves p (stack [bp-4]/[bp-2], frame 'enter 4') unassigned when c0 has neither bit 4 nor 8 (c0 in {1,2}) and uses it in the second outcode test: if that point is inside the box the result is 'hit'. The slot is at a stack place that depends on the caller's depth (probed in the gate battle: SS:FC44 under R018+0x06AB, SS:FC6A under R018+0x0BE7, SS:FCC6 under R014+0x2A4A); within a run of tests from one frame with nothing else called between it holds the previous test's p (the C# models these runs, BattleMap.ClipResidue), at a run's start another function's leftovers, which is not reproducible (outside the box in every run probed): the C# takes zeros; keep.
@@ -1049,12 +1064,12 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x6818` (14F7:0008, draft)  
   divergence: the original never resets DS:8574 / DS:859E / DS:855A / DS:8540 at a battle's start (they are written only by R014+0x8CB4, 0x8D47..0x8E69, and read by it and by R014+0x6FFC; the start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only; no range fill or file load of them was found, not searched exhaustively): a cloud slot that 0x8CB4 skips (the shown level differs, or it has no puff) keeps the growth its slot had last, possibly from an earlier battle, and its edge boxes (queued whatever the level) use it. Here every field starts at 0. Visual only, rare.  
   deterministic: **no** (checked against the original); action: **keep** - The cloud box growth words DS:8574 / DS:859E / DS:855A / DS:8540 are written only by R014+0x8CB4 (0x8D47..0x8E69) and read by it and by R014+0x6FFC; the battle start R014+0x0285..0x02A2 fills DS:CA30 and DS:C897 only, so a cloud slot that 0x8CB4 skips keeps the growth of an earlier battle in the original. Not reset here. Visual only (the edge boxes of a skipped cloud), rare; no range fill or file load of the words was searched for exhaustively. local/batch/b28 audit
-- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1454` `EffectField.LayOutCloud`  
+- **D-908c6c** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:1459` `EffectField.LayOutCloud`  
   original: `R014+0x9E92` (14F7:3682, draft)  
   divergence: a size above 4 (the trap kinds 10..15 have sizes 6 and 9: the low nibble) writes past the 16-puff arrays on the original's stack; the random numbers are drawn, the extra puffs are not kept.  
   deterministic: **no** (checked against the original); action: **keep** - effect_layout with a size above 4 writes past its 16-puff locals on the stack (return address and saved registers of its caller); the outcome depends on the stack frame (a crash or corrupted locals), not a state that can be modelled. The random numbers are drawn as in the original.
-- **D-c3845f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:416` `TacticalBattle.Cast`  
-  original: `R018+0x0706` (1F43:0256, draft)  
+- **D-c3845f** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:427` `TacticalBattle.Cast`  
+  original: `R018+0x0706` (1F43:0256, draft), `R014+0x469E` (0E76:469E, draft), `R014+0xF284` (1D69:0354, draft)  
   divergence: the original's n would be whatever the stack held (spec D §9.5).  
   deterministic: **no** (checked against the original); action: **keep** - m-count-local is the local at [bp-6Eh] of enemy-move-phase (enter 7Ah); it is assigned only in the loop that finds a candidate with a different count and is read at roll-n(m-count-local). When all five sorted candidates have equal counts (all visible and equally threatened) it holds whatever the stack contained at that depth, overwritten arbitrarily by the many calls the main loop makes between ticks; not reproducible, keep the C# stand-in.
 - **D-6ab284** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:209` `TacticalBattle.Approach`  
@@ -1085,11 +1100,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x4188` (0E76:4188, draft)  
   divergence: directions above 7 leave the offsets uninitialised in the original; the north formation is used.  
   deterministic: **n/a** (checked against the original); action: **document** - effect-begin (0E76:4188) leaves dx/dy unset only for dir outside 0..7. Its callers pass the level's party facing (x1f50) or trigger-record dirs: all 143 IMAPS maps have x1f50 in {0,2,4,6} and every non-placeholder 3350/3382 trigger record has dir 0..7, and the generators write 0,2,4,6 (heading-from-to, gate side), so dir>7 does not occur.
-- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:172` `TacticalBattle.PlaceAround`  
+- **D-ec9a18** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:177` `TacticalBattle.PlaceAround`  
   original: `R024+0x08F2` (1EF8:08F2, draft)  
   divergence: odd directions read stack garbage in the original; the next even direction's offsets are used.  
   deterministic: **n/a** (checked against the original); action: **document** - place-nearby (R024 1EF8:08F2) takes dir from the exit/activation record (+0xC); in the 143 shipped maps exit dirs are 0,2,4,6 only, and across the generated levels (all battlefield types, 100 seeds each) the only odd value is dir 1 in 7 all-zero placeholder exits of the special mine variants 0x82/0x84-0x86 (area 0,0,0,0, never entered), so the garbage dx/dy path cannot be triggered in play.
-- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:320` `TacticalBattle.PlaceEnemies`  
+- **D-c1d46b** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:325` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   divergence: the palettes (ENEMYPAL.DAT ranges) are the screen's; in mode 1 the original adds money from an uninitialised encounter pointer — no money is added here.  
   deterministic: **no** (checked against the original); action: **keep** - enemy-placement-entry mode 1 is called as enemy-placement-overlay-entry(1) from the death handler 0E76:2324 (push 1 only), so enc is the caller's saved SI:DI pair (offset=SI, segment=DI of the death handler's caller) and who the next word; after placing, R136+0xE4E0.pf/gr/fl += enc->pf/gr/fl read through that pseudo-pointer (low memory), i.e. an unpredictable money change depending on register contents and DOS memory. Not reproducible, so adding no money is the sane model (the palette note is a presentation divergence, not memory).
@@ -1097,7 +1112,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   divergence: the bytes the level loader leaves in each .enm record from its buffer's earlier content, and the per-combatant tables' bytes left by earlier battles or by a load's battle-reload (the paths are kept, Combatant.Path; so are the party's place tables, ProgramMemory.PartyTables; so are the chests' offsets, LootStore.ChestOffsets; so are the attack facings, the placed base loads and the saved path, StaleVariables, and the timer word DS:07E6, TimerRate), are this program's (zeros, -1) for a battlefield made here. Such a table is read again by the next battle where nothing sets it first: the original's member 1 starts a second battle with door 1 / side 1 from the first (b35, dungeon-door-back). The others are not: a read watch in the original from each fight's entry (b35, sessions dungeon-door-start, dungeon-door-reload, gate-battle, gen-bhurt-01, gen-bdead-01, dungeon-king-ladder) saw no read before a write of the attack facings (DS:D3FE), what blocked the steps (DS:D5F6), DS:D62B, the placed base loads (DS:C1C1), DS:C4FD, the end time (DS:DA45), nor the saved path and its length (2E38:0C64, DS:DA43) but the battle-state save's own: only the battle file shows the left values.  
   deterministic: **n/a**; action: **keep** - The bytes are what earlier activity of the whole session left in buffers the battle-state save copies whole: the level loader's record buffer at DS:A896 (also used for .atv files) and the per-combatant tables of earlier battles (path tails past the end byte, slots not used since). No game code reads them; reproducing them would need the buffer history of the session. Files written by the original are kept byte for byte (their .enm data is carried as read); only a battlefield made by this program has zeros there.
-- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:343` `TacticalBattle.KeepPlaces`  
+- **D-9146b4** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:351` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   divergence: a member who was not in that battle has whatever bytes the record held in the original; here such members are placed in the level's start formation (the others then put back where they stood).  
   deterministic: **partly** (checked against the original); action: **keep** - Mode 1 runs no effect-begin (R014+0x0058 is skipped without fight-flags 0x20), so each party record keeps x +4, y +6 and the facings +0x19/+0x1A as the last battle left them. A member who joined since that battle has the record bytes of the slot's last occupant (party-join copies the roster record, whose x/y are those of its own last battle, or zero for a new character): a function of play history that the C# does not keep per slot. Placing such a member in the start formation keeps the battle playable; only a party changed between two battles on one battlefield with mode 1 can see it.
@@ -1108,15 +1123,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.  
   deterministic: **no** (checked against the original); action: **keep** - Checked against the original: losing to the Wild Hunt (card 0x41, card oracle with the battle lost, 24 runs) makes 483.07 write a save one record short; loading that file in the lockstep oracle ends in run-time error R6001 (null pointer assignment, exit 255) inside R037+0x8ED4, while DKSAVE40's own short re-save loads garbled. Which happens depends on heap and file bytes; a crash to DOS is not reproduced on purpose (user decision 2026-10-22): the rewrite loads the garbled game. A later 'fixed' mode would stop the Wild Hunt writing such files.
-- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:229` `OriginalSaves.Read`  
+- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:233` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=request-work-buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:319` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:323` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but game-store-entry's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.
-- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:164` `SaveFile.Take`  
+- **D-23cc74** `undefined-memory` - `src/Darklands.Persistence/SaveFile.cs:201` `SaveFile.Take`  
   original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched), `R037+0x4184` (1462:4184, draft)  
   divergence: the original's buffers keep what they held before (a heap block's leftovers), not zeros.  
   deterministic: **no**; action: **keep** - R037+0x8ED4 reads with _dos_read and goes on with a short read; the buffers keep a heap block's previous contents. Only a file read out of step that also ends early reaches it (none of the 72 community saves nor 483.07's own short re-save of DKSAVE40 does: the lockstep oracle loads both sides without it). Reproducing it would need the heap's residue; zeros keep the load from failing.

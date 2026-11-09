@@ -55,6 +55,8 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         DrawScreen(place);
         // orig: R035+0x0000 `while (mouse-button-state & 1);` before the loop (the click that opened the screen is waited out)
         page.WaitForRelease();
+        // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the store's and the member's lists
+        using var wheel = page.Ui.UseSelectionList(static () => true);
         var lit = -1;
         try
         {
