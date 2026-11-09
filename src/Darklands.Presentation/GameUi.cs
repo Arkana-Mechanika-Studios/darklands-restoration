@@ -231,8 +231,8 @@ public sealed class GameUi
     // DIVERGENCE: the steps come on the host's timer frames (IGameTimer.Frames; a timer that counts only the 60 Hz ticks gives 7 frames per 6
     //   ticks), counted from the call that let the cycles run: the original's interrupt comes in the middle of whatever the game was doing,
     //   so a step can come up to a frame (14 ms) earlier or later here. Every step, its colours and the frames between steps are the
-    //   original's (PaletteCycleTests against direct calls of 047C:0362/03DA/040B/042A). Only the battle's palette sets drop the shown steps
-    //   (PaletteSet): a palette set by another screen while cycles were left written would show them until the battle screen ends.
+    //   original's (PaletteCycleTests against direct calls of 047C:0362/03DA/040B/042A). Only the battle's palette sets and the load
+    //   screen (which stops the cycles first, as the original) drop the shown steps (PaletteSet).
     private void ApplyCycles(uint[] palette)
     {
         if (Cycles.Running)

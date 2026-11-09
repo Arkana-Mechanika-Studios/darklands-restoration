@@ -125,9 +125,17 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     /// <summary>The load screen's picture, which also sets its colours (16..255): what a notice shown before any screen has been drawn is drawn over.</summary>
     internal static void PaintBackdrop(GameUi ui) => ui.Canvas.DrawPicture(ui.Assets.Picture("loadscrn"));
 
+    // orig: R037+0x8400..0x8426, before the picture: root 047C:040B(1..4) and DS:07D8 = 0: the battle's palette cycles (when the list
+    //   is opened from a battle) stop and are held, so the picture's palette-load leaves the DAC showing the load screen's own colours
     private void SetUp()
     {
+        for (var slot = 1; slot <= 4; slot++)
+        {
+            ui.Cycles.Stop(slot);
+        }
+        ui.RunCycles(false);
         PaintBackdrop(ui);
+        ui.PaletteSet();
         _page = ui.Canvas.SaveScreen();
         ui.PicturePage = _page;
         _button = ui.Assets.PictureExists("buttncr2") ? ui.Assets.Picture("buttncr2") : null;

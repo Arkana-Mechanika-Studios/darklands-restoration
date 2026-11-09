@@ -132,6 +132,48 @@ public sealed class LoadScreenTests
         Assert.False(modded.IsModded(name.ToUpperInvariant()));
     }
 
+    /// <summary>
+    /// Opened from a battle (Alt-L), the load screen stops the battle's palette cycles before its picture sets the colours, as the
+    /// original (R037+0x8400..0x8426): the list shows the load screen's own colours, not the battle's water and fire turning over
+    /// them (reported as flashing neon colours on the saved games list, rc1).
+    /// </summary>
+    [Fact]
+    public void FromABattleTheListShowsItsOwnColoursNotTheBattlesCycles()
+    {
+        if (GameFolder.Files is not { } files || Copy(files, "DKSAVE1.SAV", "DKSAVE2.SAV") is not { } folder)
+        {
+            return;
+        }
+        uint[] Shown(bool battleCycles)
+        {
+            // a few keys' frames on the list, then Esc
+            var host = new KeyHost(Keys.None, Keys.None, Keys.None, Keys.None, Keys.None, Keys.None);
+            var ui = new GameUi(host, new GameAssets(files));
+            if (battleCycles)
+            {
+                // the battle's cycles as BattleScreen starts them, over colours unlike the load screen's (the battlefield's palette)
+                for (var i = 0x10; i <= 0x1E; i++)
+                {
+                    ui.Canvas.SetColor(i, new Content.Formats.Graphics.Rgb24(0xFF, (byte)(i * 8), 0xFF));
+                }
+                ui.TakeCycle(1, 4, 0x10, 0x15);
+                ui.TakeCycle(2, 6, 0x18, 0x1E);
+                ui.TakeCycle(4, 5, 0x16, 0x17);
+                ui.Cycles.Start(1);
+                ui.Cycles.Start(-2);
+                ui.Cycles.Start(4);
+                ui.RunCycles(true);
+                // the battle has been on screen for a while: the cycles have written their ranges
+                host.Sleep(500);
+                ui.Present();
+            }
+            Assert.Null(new LoadGameScreen(ui, folder, ["", "", ""]).Run(fromStartScreen: false, _ => null));
+            Assert.False(ui.Cycles.Running);
+            return host.LastPalette!;
+        }
+        Assert.Equal(Shown(battleCycles: false), Shown(battleCycles: true));
+    }
+
     private static int Key(char c) => Keys.ForCharacter(c);
 
     /// <summary>A copy of some of the player's saved games in a new temporary folder.</summary>
@@ -169,7 +211,14 @@ public sealed class LoadScreenTests
         /// <summary>The pixels last shown.</summary>
         public byte[]? Last { get; private set; }
 
-        public void Present(Screen screen) => Last = (byte[])screen.Pixels.Clone();
+        /// <summary>The colours last shown.</summary>
+        public uint[]? LastPalette { get; private set; }
+
+        public void Present(Screen screen)
+        {
+            Last = (byte[])screen.Pixels.Clone();
+            LastPalette = (uint[])screen.Palette.Clone();
+        }
 
         public void Pump()
         {
