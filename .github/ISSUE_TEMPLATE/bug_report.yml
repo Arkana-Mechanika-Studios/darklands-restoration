@@ -53,12 +53,6 @@ body:
     attributes:
       label: What the original game does (for a difference)
       description: Which side shows what. Leave empty for a crash or another bug.
-  - type: input
-    id: checklist
-    attributes:
-      label: Checklist item (if any)
-      description: The item of docs/RC-CHECKLIST.md you were comparing, e.g. C4.
-      placeholder: "C4"
   - type: textarea
     id: attachments
     attributes:

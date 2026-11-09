@@ -1,5 +1,8 @@
 # Release-candidate play-through checklist
 
+*The maintainers' own check before a release, not something players are asked to do: to help, just play and report what
+you find ([REPORTING.md](REPORTING.md)).*
+
 A person plays the C# build and the original (DOSBox, the same `DARKLAND` folder, same CONFIG.DRK) side by side and
 ticks each item. Load the same saved game in both whenever an item says so; the saves are shared both ways.
 

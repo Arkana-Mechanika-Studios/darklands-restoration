@@ -14,7 +14,7 @@ GitHub issue yourself**: the program uploads nothing, sends nothing, and has no 
    with the version, the system and the first lines of an error filled in.
 3. Sign in to GitHub, choose the kind (crash, difference from the original game, other bug), say what you did and what happened,
    and **drag the zip into the form**. For a difference from the original, add a screenshot of each side at the same moment
-   (F12 here, DOSBox's capture key in the original) and the checklist item ([RC-CHECKLIST.md](RC-CHECKLIST.md)).
+   (F12 here, DOSBox's capture key in the original) if you can.
 
 If the browser or the folder does not open, the program prints the path and the address; open
 https://github.com/Arkana-Mechanika-Studios/darklands-restoration/issues/new/choose yourself.

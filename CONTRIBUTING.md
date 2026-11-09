@@ -280,8 +280,8 @@ original) to compare.
 Because randomness is deterministic, a save plus steps usually lets a maintainer reproduce a problem exactly. Do
 not attach game files other than your own saves.
 
-**Where to start.** Open an issue (section 7). `docs/RC-CHECKLIST.md` lists the play-through checks used before a
-release; you can take a part of it.
+**Where to start.** Open an issue (section 7). `docs/RC-CHECKLIST.md` is the maintainers'
+own play-through check before a release.
 
 ### Content: packs and translations
 
