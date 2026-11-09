@@ -120,7 +120,8 @@ public sealed class LauncherLayoutTests
     public void ThePacksProblemIsShortenedOnItsLineAndShownInFullInTheDetails()
     {
         Assert.Equal("audio.json: Expected depth", LauncherScreen.ShortProblem(LongFolder, $@"Audio pack: {LongFolder}\audio.json: Expected depth"));
-        Assert.Equal("folder a-pack not found", LauncherScreen.ShortProblem(@"E:\x\a-pack", @"HD pack: folder E:\x\a-pack not found"));
+        var pack = Path.Combine(Path.GetTempPath(), "x", "a-pack");   // this system's own path form: a Windows path is no path on Linux
+        Assert.Equal("folder a-pack not found", LauncherScreen.ShortProblem(pack, $"HD pack: folder {pack} not found"));
 
         // long words (paths) are broken to the width; nothing is lost
         var face = new TextFace(Assets.Italic, 12, null);

@@ -41,7 +41,10 @@ jobs:
 
       - name: SDL3 (Linux; the program loads the system's libSDL3.so.0)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libsdl3-0
+        # no screen on the runner, and SDL 3 picks no video driver by itself there: the window tests ask for the off-screen one
+        run: |
+          sudo apt-get update && sudo apt-get install -y libsdl3-0
+          echo "SDL_VIDEODRIVER=offscreen" >> "$GITHUB_ENV"
 
       - name: Build
         run: dotnet build Darklands.slnx -c Release
