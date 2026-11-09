@@ -159,6 +159,15 @@ public class SettingsParsingTests
         Assert.All(load.Problems, p => Assert.Contains("unknown key", p));
     }
 
+    /// <summary>startup.launcher (the launcher at every start, before DarklandsRP Launcher) is in the files RC1 and RC2 wrote: read without a word.</summary>
+    [Fact]
+    public void TheRetiredLauncherKeyIsReadWithoutAProblem()
+    {
+        var load = SettingsFile.Parse("""{ "startup": { "launcher": true, "intro": false } }""");
+        Assert.Empty(load.Problems);
+        Assert.False(load.Settings.Intro);
+    }
+
     [Theory]
     [InlineData("""{ "display": { "scale": 0 } }""", "display.scale")]
     [InlineData("""{ "display": { "scale": "big" } }""", "display.scale")]

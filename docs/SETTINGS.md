@@ -53,7 +53,6 @@ not meant for players.
 | `sound.audioPack` | none | `--audio-pack <folder>`; `DARKLANDS_AUDIO_PACK` | a folder of replacement music and battle effects (an audio pack, [PACKS.md](PACKS.md)); not part of the original, the game plays the same |
 | `sound.soundFont` | `SOUNDFONT` folder next to the program | `--soundfont <file>` | the SoundFont (`.sf2`) that plays the audio pack's `.mid` files ([PACKS.md](PACKS.md)); a SoundFont named in the pack wins; none found: those cues are skipped |
 | `sound.configDrk` | absent (commented out in the template) | | replaces CONFIG.DRK's words (below) |
-| `startup.launcher` | false | `--setup` (once), `--no-launcher` | the launcher at every start; false: only when needed (below) |
 | `startup.banner` | true | `--no-banner` | the BANNER.DAT banner and the start-up checks |
 | `startup.intro` | true | `--no-intro` | the opening animation |
 | `startup.commandLine` | `[]` | `-- <words>` | the game's own DOS command line (`-Q`, `-O`, `-A<letter>`), a list of words or one string |
@@ -202,7 +201,6 @@ page on GitHub (the only place the notes are when the file is missing), and a wo
 * when started through `DarklandsRP Launcher.exe` (Linux: `DarklandsRP-Launcher`), the small program beside `DarklandsRP.exe`
   that starts it with `--setup`; its Play starts the game;
 * with `--setup`, or while **Shift** is held as the program starts;
-* at every start when `startup.launcher` is true (the launcher's "Show launcher at every start").
 
 `--no-launcher` turns it off. The game folder can be chosen with **Change…** (Windows' folder dialog; on other systems
 Change… lets you type it), typed or pasted (Ctrl+V), dropped on the window, or chosen among the folders found with ←/→.

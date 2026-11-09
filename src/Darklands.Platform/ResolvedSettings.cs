@@ -148,8 +148,6 @@ public sealed class ResolvedSettings
 
     public bool PlayIntro { get; private init; }
 
-    /// <summary>The launcher at every start (the settings file's startup.launcher).</summary>
-    public bool AlwaysLaunch { get; private init; }
 
     public IReadOnlyList<string> CommandLine { get; private init; } = [];
 
@@ -233,7 +231,6 @@ public sealed class ResolvedSettings
             ModsFromCommandLine = cli.Mods.Count > 0,
             ShowBanner = !cli.NoBanner && (file.Banner ?? true),
             PlayIntro = !cli.NoIntro && (file.Intro ?? true),
-            AlwaysLaunch = file.Launcher ?? false,
             CommandLine = cli.GameCommandLine ?? file.CommandLine ?? [],
             TextFont = Pick(cli.TextFont, "DARKLANDS_TEXT_FONT", file.TextFont),
             ScreenshotsFolder = Pick(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),

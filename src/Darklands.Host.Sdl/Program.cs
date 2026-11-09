@@ -87,8 +87,8 @@ if (writeSettings is not null)
     (written ? Console.Out : Console.Error).WriteLine(writeMessage);
     return written ? 0 : 1;
 }
-// the launcher (Darklands.Launcher, the settings screen before the game): --setup, Shift held as the program starts or the
-// settings file's startup.launcher show it, --no-launcher never; else it comes on the first run, when the game cannot be
+// the launcher (Darklands.Launcher, the settings screen before the game): --setup (DarklandsRP Launcher) or Shift held as the
+// program starts show it, --no-launcher never; else it comes on the first run, when the game cannot be
 // found and when the game could not start
 var setup = arguments.Remove("--setup");
 arguments.Remove("--log-window"); // taken at the start (ConsoleWindow.Connect)
@@ -172,7 +172,7 @@ if (!SdlNative.CanLoad())
     return MissingSdl.Tell();
 }
 LauncherReason? launch = noLauncher ? null
-    : setup || settings.AlwaysLaunch || StartKeys.ShiftHeldBeforeWindow() ? LauncherReason.Asked
+    : setup || StartKeys.ShiftHeldBeforeWindow() ? LauncherReason.Asked
     : folder is null ? LauncherReason.GameNotFound
     : firstRun ? LauncherReason.FirstRun
     : null;

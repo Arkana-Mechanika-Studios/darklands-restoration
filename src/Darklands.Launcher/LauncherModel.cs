@@ -40,7 +40,7 @@ internal sealed class LauncherModel
     private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool Always, bool MouseWheel) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -61,7 +61,6 @@ internal sealed class LauncherModel
         SoundFont = string.IsNullOrWhiteSpace(s.SoundFont) ? null : s.SoundFont;
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
-        Always = s.Launcher ?? false;
         MouseWheel = s.MouseWheel ?? true;
         Found = context.FoundGameFolders();
         var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
@@ -72,7 +71,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, Always, MouseWheel);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel);
         _automatic = GameFolder;
     }
 
@@ -181,8 +180,6 @@ internal sealed class LauncherModel
 
     public bool Intro { get; set; }
 
-    /// <summary>This screen at every start.</summary>
-    public bool Always { get; set; }
 
     /// <summary>The mouse wheel moves the selection of the game's menus and lists (input.mouseWheel).</summary>
     public bool MouseWheel { get; set; }
@@ -286,10 +283,6 @@ internal sealed class LauncherModel
         {
             changes["startup.intro"] = Intro;
         }
-        if (Always != _initial.Always)
-        {
-            changes["startup.launcher"] = Always;
-        }
         if (MouseWheel != _initial.MouseWheel)
         {
             changes["input.mouseWheel"] = MouseWheel;
@@ -316,7 +309,6 @@ internal sealed class LauncherModel
         s.SoundFont = SoundFont;
         s.Banner = Banner;
         s.Intro = Intro;
-        s.Launcher = Always;
         s.MouseWheel = MouseWheel;
         return s;
     }
