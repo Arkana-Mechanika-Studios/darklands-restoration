@@ -231,7 +231,7 @@ public sealed class PictureFilterTests
             return;
         }
         using var host = Open(width, height, hd: false, gpu);
-        AssertLikeTheReference(host, filter, curvature: 0, expected: gpu ? filter : PictureFilters.WithoutShader(filter));
+        AssertLikeTheReference(host, filter, curvature: 0, expected: Drawn(host, filter));
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public sealed class PictureFilterTests
             return;
         }
         using var host = Open(1920, 1080, hd: true, gpu);
-        AssertLikeTheReference(host, filter, curvature: 0, tolerance, farShare: farShare);
+        AssertLikeTheReference(host, filter, curvature: 0, tolerance, Drawn(host, filter), farShare);
     }
 
     /// <summary>The CRT kinds' curvature (display.crtCurvature) is drawn by the shader as the reference bends the picture.</summary>
@@ -277,6 +277,13 @@ public sealed class PictureFilterTests
         Assert.Equal(0, shown[(g.Y + 1) * rw + g.X + 1] & 0xFFFFFF);
         Assert.NotEqual(0, shown[(g.Y + g.Height / 2) * rw + g.X + g.Width / 2] & 0xFFFFFF);
     }
+
+    /// <summary>
+    /// The filter the host draws for <paramref name="filter"/>: the filter itself with the shader; without it (no graphics card, as
+    /// on a Linux build machine, where the GPU renderer gives way to render targets) the one drawn in its place.
+    /// </summary>
+    private static PictureFilter Drawn(SdlHost host, PictureFilter filter) =>
+        host.FilterKind == "shaders" ? filter : PictureFilters.WithoutShader(filter);
 
     /// <summary>
     /// The filter drawn by the host and read back against the CPU reference of <paramref name="expected"/> (the filter itself unless
