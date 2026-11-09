@@ -112,9 +112,34 @@ public static class PictureFilterReference
             return (a, b, a == b ? 0 : weight);
         }
 
-        /// <summary>Soft: a Gaussian beam over the 5 x 5 texels around the point, normalised.</summary>
-        public Rgba Soft(double px, double py) =>
-            Gauss(px * sourceWidth / width - 0.5, py * sourceHeight / height - 0.5, PictureFilterMath.SoftSpreadX, PictureFilterMath.SoftSpreadY);
+        /// <summary>
+        /// Soft: a Gaussian beam over the 5 x 5 texels around the point, each texel weighted as well by how near its colour is to
+        /// the texel under the point (<see cref="PictureFilterMath.SoftColourSpread"/>), normalised. Dithering (two near colours)
+        /// blends; text, outlines and figures (far colours) keep their edges.
+        /// </summary>
+        public Rgba Soft(double px, double py)
+        {
+            var u = px * sourceWidth / width - 0.5;
+            var v = py * sourceHeight / height - 0.5;
+            var cx = (int)Math.Floor(u + 0.5);
+            var cy = (int)Math.Floor(v + 0.5);
+            var centre = Texel(cx, cy);
+            var sum = new Rgba(0, 0, 0, 0);
+            var total = 0.0;
+            for (var j = -2; j <= 2; j++)
+            {
+                var dy = (cy + j - v) / PictureFilterMath.SoftSpreadY;
+                for (var i = -2; i <= 2; i++)
+                {
+                    var dx = (cx + i - u) / PictureFilterMath.SoftSpreadX;
+                    var c = Texel(cx + i, cy + j);
+                    var w = Math.Exp(-0.5 * (dx * dx + dy * dy)) * PictureFilterMath.SoftNearness(c.R - centre.R, c.G - centre.G, c.B - centre.B);
+                    sum += Premultiplied(c) * w;
+                    total += w;
+                }
+            }
+            return Straight(sum * (1 / total));
+        }
 
         /// <summary>The texels around (u, v) (texel centres at whole numbers) weighted by a Gaussian of those spreads, normalised.</summary>
         public Rgba Gauss(double u, double v, double spreadX, double spreadY)

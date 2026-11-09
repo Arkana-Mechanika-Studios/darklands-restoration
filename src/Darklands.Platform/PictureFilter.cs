@@ -13,7 +13,7 @@ public enum PictureFilter
     /// <summary>"Sharp bilinear": the picture enlarged by whole numbers with hard pixels, then smoothly to the window: even, crisp pixels at any size.</summary>
     Even,
 
-    /// <summary>A gentle beam-shaped blur, wider across than down, as a 1992 VGA monitor drew: the dithering blends into its colours.</summary>
+    /// <summary>A gentle beam-shaped blur, wider across than down, as a 1992 VGA monitor drew: the dithering blends into its colours; text, outlines and figures keep their edges.</summary>
     Soft,
 
     /// <summary>Soft with the CRT's scanlines and aperture mask: the softer CRT look.</summary>

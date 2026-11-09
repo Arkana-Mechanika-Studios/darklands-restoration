@@ -21,6 +21,15 @@ public static class PictureFilterMath
     // down, less (a VGA monitor drew each of the 200 lines twice, sharp from line to line).
     public const double SoftSpreadX = 0.68, SoftSpreadY = 0.32;
 
+    // Soft: how far apart two colours (channels 0..1, the distance between them) may be and still blend. The game's dithering
+    // pairs near colours (two greens of a field, two greys of stone), well inside it; text, its shadow, outlines and figures
+    // stand far from what is around them, so the beam leaves their edges alone and they stay readable.
+    public const double SoftColourSpread = 0.4;
+
+    /// <summary>Soft's weight for a texel whose colour differs by (dr, dg, db) from the texel under the point: 1 for the same colour.</summary>
+    public static double SoftNearness(double dr, double dg, double db) =>
+        Math.Exp(-0.5 * (dr * dr + dg * dg + db * db) / (SoftColourSpread * SoftColourSpread));
+
     // CRT+: the beam's height (standard deviation, in game rows) for black and for white, between them by brightness; its
     // mask's strength and the beam's spread across (game pixels); the glow's spread and amount; the mean brightness kept before the glow.
     public const double PlusBeamDark = 0.20, PlusBeamBright = 0.36, PlusMaskStrength = 0.30, PlusSpreadX = 0.40;

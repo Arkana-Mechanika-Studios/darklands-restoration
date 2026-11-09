@@ -20,6 +20,7 @@ cbuffer Context : register(b0, space3)
     float4 soft;    // Soft's spread across and down (game pixels), HQ's "same colour" tolerance, CRT+'s spread across
     float4 plus;    // CRT+: beam height for black and for white (game rows), mask strength, mask gain
     float4 plus2;   // CRT+: beam gain, glow spread (game pixels), glow amount, scanline share (0: rows blended, 1: beams)
+    float4 soft2;   // Soft: how far apart two colours may be and still blend (PictureFilterMath.SoftColourSpread); unused
 };
 
 [[vk::combinedImageSampler]] [[vk::binding(0, 2)]]
@@ -97,9 +98,31 @@ float4 Gauss(float u, float v, float spreadX, float spreadY)
     return Straight(sum / total);
 }
 
+// Soft: Gauss, each texel weighted as well by how near its colour is to the texel under the point (PictureFilterMath.SoftNearness):
+// dithering blends, text and outlines keep their edges
 float4 Soft(float2 p)
 {
-    return Gauss(p.x * sizes.x / sizes.z - 0.5, p.y * sizes.y / sizes.w - 0.5, soft.x, soft.y);
+    float u = p.x * sizes.x / sizes.z - 0.5;
+    float v = p.y * sizes.y / sizes.w - 0.5;
+    int cx = int(floor(u + 0.5));
+    int cy = int(floor(v + 0.5));
+    float4 centre = Texel(int2(cx, cy));
+    float4 sum = 0.0;
+    float total = 0.0;
+    for (int j = -2; j <= 2; j++)
+    {
+        float dy = (cy + j - v) / soft.y;
+        for (int i = -2; i <= 2; i++)
+        {
+            float dx = (cx + i - u) / soft.x;
+            float4 c = Texel(int2(cx + i, cy + j));
+            float3 d = c.rgb - centre.rgb;
+            float w = exp(-0.5 * (dx * dx + dy * dy)) * exp(-0.5 * dot(d, d) / (soft2.x * soft2.x));
+            sum += float4(c.rgb * c.a, c.a) * w;
+            total += w;
+        }
+    }
+    return Straight(sum / total);
 }
 
 // the CRT's scanline across the picture's row at py and its aperture column x on a colour

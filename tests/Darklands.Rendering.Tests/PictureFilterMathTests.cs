@@ -156,15 +156,34 @@ public sealed class PictureFilterLookTests
         Assert.All(Render(Picture(40, 25, (_, _) => true), 40, 25, filter, 216, 135), c => Assert.Equal(Light, c));
 
     [Fact]
-    public void SoftBlendsACheckerboardIntoItsColour()
+    public void SoftBlendsADitherOfNearColoursIntoItsColour()
     {
-        // 1-pixel checks: the soft beam leaves less than a fifth of their contrast, around the mean of the two colours
-        var checks = Picture(40, 25, (x, y) => (x + y) % 2 == 0);
+        // 1-pixel checks of two near colours (two greens of a field): the soft beam leaves less than a third of their contrast,
+        // around the mean of the two colours
+        const uint green = 0xFF00A800, darker = 0xFF007C00;
+        var checks = Picture(40, 25, (x, y) => (x + y) % 2 == 0).Select(c => c == Light ? green : darker).ToArray();
         var soft = Render(checks, 40, 25, Darklands.Platform.PictureFilter.Soft, 216, 135);
-        var inner = Enumerable.Range(20, 95).SelectMany(y => Enumerable.Range(20, 176).Select(x => Red(soft[y * 216 + x]))).ToList();
+        int Green(uint c) => (int)(c >> 8 & 0xFF);
+        var inner = Enumerable.Range(20, 95).SelectMany(y => Enumerable.Range(20, 176).Select(x => Green(soft[y * 216 + x]))).ToList();
+        var contrast = Green(green) - Green(darker);
+        Assert.InRange(inner.Max() - inner.Min(), 0, contrast / 3);
+        Assert.InRange(inner.Average(), (Green(green) + Green(darker)) / 2.0 - 4, (Green(green) + Green(darker)) / 2.0 + 4);
+    }
+
+    [Fact]
+    public void SoftKeepsALightStrokeOnADarkGroundReadable()
+    {
+        // a 1-pixel light column (a letter's stroke) on a dark ground, colours far apart: the beam hardly smears it, the
+        // stroke's middle keeps four fifths of its contrast (a plain beam of these spreads: about three fifths) and the ground
+        // beside it stays dark
+        var stroke = Picture(40, 25, (x, _) => x == 20);
+        var soft = Render(stroke, 40, 25, Darklands.Platform.PictureFilter.Soft, 216, 135);
+        var y = 67;
+        var middle = (int)(20.5 * 216 / 40);
+        var beside = (int)(22.5 * 216 / 40);
         var contrast = Red(Light) - Red(Dark);
-        Assert.InRange(inner.Max() - inner.Min(), 0, contrast / 5);
-        Assert.InRange(inner.Average(), (Red(Light) + Red(Dark)) / 2.0 - 8, (Red(Light) + Red(Dark)) / 2.0 + 8);
+        Assert.InRange(Red(soft[y * 216 + middle]), Red(Dark) + contrast * 4 / 5, Red(Light));
+        Assert.InRange(Red(soft[y * 216 + beside]), Red(Dark), Red(Dark) + contrast / 10);
     }
 
     [Fact]

@@ -224,7 +224,7 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
         SdlNative.SDL_SetGPURenderState(_renderer, IntPtr.Zero);
     }
 
-    /// <summary>The shader's uniform buffer (Shaders/picture.frag.hlsl, cbuffer Context): sizes, place, shape, crt, soft, plus, plus2.</summary>
+    /// <summary>The shader's uniform buffer (Shaders/picture.frag.hlsl, cbuffer Context): sizes, place, shape, crt, soft, plus, plus2, soft2.</summary>
     private float[] Uniforms(int sourceWidth, int sourceHeight, int width, int height, int mapWidth, int mapHeight, int x, int y,
         int kx, int ky, int mode, PictureFilter kind)
     {
@@ -241,6 +241,7 @@ internal sealed class SdlShaderPictureFilter : IPictureFilterRenderer
             (float)PictureFilterMath.PlusMaskGain,
             (float)PictureFilterMath.PlusBeamGain, (float)PictureFilterMath.PlusGlowSpread, (float)PictureFilterMath.PlusGlowAmount,
             (float)(depth / PictureFilterMath.ScanlineDepth),
+            (float)PictureFilterMath.SoftColourSpread, 0, 0, 0,
         ];
     }
 
