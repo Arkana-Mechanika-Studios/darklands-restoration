@@ -23,7 +23,7 @@ body:
     attributes:
       label: Version
       description: The release and commit (filled in by the program's report form; also on the start screen and in report.txt).
-      placeholder: "1.0.0-rc1 (commit abc1234)"
+      placeholder: "1.0.0-rc2 (commit abc1234)"
     validations:
       required: true
   - type: input
