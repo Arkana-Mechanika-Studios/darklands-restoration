@@ -50,7 +50,8 @@ its author.
   characters the original fonts cover is part of the groundwork (see the plan).
 * **Fixed screen space.** In Classic, the screens, buttons and menus have fixed sizes. A translation that is longer than
   the English must be shortened or wrapped, and a wrapping routine for long translated words is part of the planned
-  work. Translators should expect to abbreviate.
+  work. Translators should expect to abbreviate; a translation can give a short form for the places where the full
+  text does not fit ([below](#fonts-layout-and-mouse-areas)).
 
 **Not supported as a base:** the original German release. It uses a different `DARKLAND.EXE`; only the English 483.07
 is supported. A German translation would be a translation pack on the English base like any other.
@@ -106,6 +107,46 @@ card-12 = You come to a crossroads. { $party } hesitates.
 Packs will be chosen the way the other packs are (a setting, a command-line option, a launcher row); none of that
 exists yet.
 
+## Fonts, layout and mouse areas
+
+A translation changes the length of the text, and a font pack can change the width of the letters. Both move where
+words land on the screen, and so where a click must go. The plan handles both with one design, shared with the
+replacement fonts planned for 1.1.
+
+**A font has two parts.** Its *metrics* (each character's width, the line height, the spacing) decide where lines
+break and where every word sits. Its *appearance* decides how a character is drawn: the original bitmap, a pack's
+bitmap, a high-resolution picture, later a TrueType glyph. A font pack says which kind it is:
+
+* **Same metrics:** only the look changes (for example sharp high-resolution letters). Every line break, position and
+  mouse area stays the original's, the game's 320x200 picture is unchanged under it, and the pack may be used with the
+  original English in Classic.
+* **Own metrics:** other widths, or characters the original fonts lack. The layout is computed again, so such a font
+  is used with a translation or an enhanced presentation, never with the original English in Classic.
+
+**One layout, read by everything.** Each text the game shows is laid out once: its lines, where each character sits,
+and which part belongs to which choice. The drawing, the highlight under the pointer and the mouse test all read that
+result, so a choice's mouse area is the area of its lines, never coordinates written into a screen. For the original
+English with the original fonts the layout must give exactly the original's line breaks and positions (checked
+against the original); with a translation or another font, the mouse areas follow the text by themselves.
+
+**Three kinds of text on the screens:**
+
+* **Flowing text** (card texts and their choices, message boxes, hints): wraps, and its mouse areas come from the
+  layout.
+* **Fixed slots** (menu items, the lines of a shop's list, labels on the character sheet, buttons): the slot keeps the
+  original's place and size, and its mouse area stays the slot. The text must fit in it: the translation's short form
+  first (a `.short` attribute), then slightly narrower spacing, then the text cut with "…" and shown in full in a
+  hint. The pseudo-locale (step 5) lists every slot that overflows, so translators know where to abbreviate.
+* **Text inside pictures:** a picture pack scoped to the language.
+
+**Clicks give choices, not positions.** The game never receives a mouse position: a click becomes "choice 3" or "buy
+the fifth item" before the game sees it. Wherever a translation or a font puts the words, the game plays the same, and
+saved games and the checks against the original do not depend on the language.
+
+**Finer positions for other fonts.** With a font of its own metrics, positions are counted in quarter pixels, not
+whole pixels of the 320x200 picture, so a high-resolution font can fit a longer line in the original box and stay
+sharp. The original fonts still land on whole pixels, as before.
+
 ## How translators can help now
 
 You do not need the code to be ready to start useful work.
@@ -133,12 +174,20 @@ check passes.
 2. **String-table extraction.** Read the strings of `DARKLAND.EXE` 483.07, the `.MSG` card texts and the data-table
    names from the player's files, and index them under the keys above. Record which characters the original fonts
    cover.
-3. **Fluent overlay loader.** Load `.ftl` files from translation packs over the original-language text. A missing
+3. **Font metrics apart from appearance, and one layout pass.** The split and the shared layout of
+   [the section above](#fonts-layout-and-mouse-areas); mouse areas of flowing text read from the layout. Nothing
+   visible changes: the original English must give the original's frames exactly. The 1.1 high-resolution fonts
+   (same metrics) are built on this step.
+4. **Fluent overlay loader.** Load `.ftl` files from translation packs over the original-language text. A missing
    message falls back to the original text; the game never shows an empty string. The Fluent library is chosen
-   after a trial, before this step. The wrapping routine for long words belongs here.
-4. **Pseudo-locale.** A generated test language with accented and lengthened text, to find strings that were never
-   moved to the message layer and strings that are clipped.
-5. **Guard tests.** Tests that fail when new literal English strings appear in game logic, so step 1 stays done.
+   after a trial, before this step. The wrapping routine for long words belongs here, and so do fonts with their own
+   metrics.
+5. **Pseudo-locale.** A generated test language with accented and lengthened text, to find strings that were never
+   moved to the message layer, strings that are clipped and fixed slots that overflow.
+6. **Fixed slots.** The menus, lists, labels and buttons fit their text into their slot (short form, narrower
+   spacing, "…" with the full text in a hint); their mouse areas stay the slots.
+7. **Guard tests.** Tests that fail when new literal English strings appear in game logic, so step 1 stays done, and
+   tests that fail when a screen tests the mouse against coordinates instead of its layout or its slots.
 
 The restoration's own strings (kind a) move onto the same layer, with their translations kept in the repository.
 
