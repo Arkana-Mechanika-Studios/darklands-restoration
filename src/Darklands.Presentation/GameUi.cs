@@ -644,6 +644,13 @@ public sealed class GameUi
         {
             throw new QuitGameException();
         }
+        if (_keepShownOnce)
+        {
+            // the frame on show stays as it is (KeepShownFrameOnce): what the window showed, its colours and pointer included
+            _keepShownOnce = false;
+            _host.Video.Present(_shown);
+            return;
+        }
         var source = _held ?? _screen;
         source.Pixels.CopyTo(_shown.Pixels, 0);
         source.Palette.CopyTo(_shown.Palette, 0);
@@ -693,6 +700,17 @@ public sealed class GameUi
 
     /// <summary>Ends <see cref="HoldScreen"/>: the next present shows the canvas.</summary>
     public void ReleaseScreen() => _held = null;
+
+    private bool _keepShownOnce;
+
+    /// <summary>
+    /// The next <see cref="Present"/> shows the frame already on show again (its window events are processed as usual), not the canvas:
+    /// a screen whose palette is already set but whose picture is not drawn yet is not seen (the battle's first pass).
+    /// </summary>
+    // orig: the graphics driver's screen-hold (root 047C:0568) and screen-release (root 047C:056F): the screen is hidden while a whole new
+    //   screen is drawn; the battle holds it at battle-entry's head (R002+0x001B) and releases it before its loop (R014+0x02F8), its first
+    //   fight-draw following at once (R014+0x02FF..0x0307), so the old picture is never seen in the battle's palette
+    public void KeepShownFrameOnce() => _keepShownOnce = true;
 
     /// <summary>Shows the 80×25 text screen (the program start) and processes window events; keys stay waiting.</summary>
     // orig: nothing: the program start writes through the BIOS and DOS, see TextConsole

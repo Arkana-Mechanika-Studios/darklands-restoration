@@ -244,6 +244,11 @@ public sealed class BattleScreen : ITacticalView
             // C: a card's picture still waiting for its first text (DS:EE55, GameUi.HoldScreen) is never shown: the battle replaces the screen
             //   (vis10, the city ambush of card 0x24: local/batch/b24fix)
             _ui.ReleaseScreen();
+            // the first pass presents before its first Draw: the canvas still holds the screen of before the battle (a card's picture), already in
+            // the battle's palette (SetPalette in Start), seen as a flash of wrong colours. That present shows the frame on show again; the battle
+            // is seen from the second, after the first pass's Draw (the original's screen-hold until R014+0x02F8, GameUi.KeepShownFrameOnce);
+            // tests: BattleEntryFrameTests
+            _ui.KeepShownFrameOnce();
             // DIVERGENCE: the set-up's picture (fight-main-loop's panel and first fight-draw, R014+0x02FF..0x0307) is not presented here: the
             //   host's first frame comes after the first pass, whose tick has opened order mode for the leader. The original shows it until that
             //   tick (8 timer callbacks), with the member cursor not yet drawn and, in a battle started in the order mode the last one left,
