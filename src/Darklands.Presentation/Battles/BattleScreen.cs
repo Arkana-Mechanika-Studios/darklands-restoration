@@ -25,6 +25,12 @@ public sealed class BattleScreen : ITacticalView
 {
     private const int FrameMilliseconds = 16;
 
+    /// <summary>The edge scroll's pace: at most one step of the view this often (10 a second).</summary>
+    internal const int EdgeScrollMilliseconds = 100;
+
+    // when the edge scroll last stepped (the host's clock)
+    private long _edgeScrolledAt = long.MinValue / 2;
+
     /// <summary>A debugging aid: exactly one timer callback of the 60 Hz clock a pass of the loop, whatever the time (DARKLANDS_BATTLE_TICK_PER_PASS),
     /// as tools/oracle/lockstep.py runs the original's battle.</summary>
     /// <summary>A debugging aid: a line at the head of each pass, the combat clock and the random state (DARKLANDS_BATTLE_TRACE).</summary>
@@ -2402,10 +2408,17 @@ public sealed class BattleScreen : ITacticalView
     // orig: R014+0x323E.. (R014+0x3166) draft: the zones of the edge cursors (KBFLAGS & 3), DS:C866 / DS:C886 changed, then R016+0x0B92
     // (R016+0x0B92: the centre kept within 1..0x27, the view redrawn); tests: BattleUiTests
     // DIVERGENCE: the original scrolls once per pass of its loop (R014+0x3166, no time gate before R016+0x0B92), which runs as fast as the
-    //   machine draws; here once a frame (a pass of the C# battle loop), so the speed of the edge scroll is a host's, not the EXE's.
+    //   machine draws, its whole view redrawn after each step (a few steps a second on the machines of its day); here at most one step
+    //   each EdgeScrollMilliseconds of the host's clock, whatever the frame rate (a step every frame, 60 a second, was far faster
+    //   than the original's). Shift with an arrow scrolls at the keyboard's repeat, as before.
     private void EdgeScroll()
     {
         if (!_ui.ShiftHeld)
+        {
+            return;
+        }
+        var now = _ui.Clock.Milliseconds;
+        if (now - _edgeScrolledAt < EdgeScrollMilliseconds)
         {
             return;
         }
@@ -2447,6 +2460,7 @@ public sealed class BattleScreen : ITacticalView
         {
             return;
         }
+        _edgeScrolledAt = now;
         ScrollView(dc, dr);
     }
 

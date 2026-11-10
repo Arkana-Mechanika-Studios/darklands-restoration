@@ -262,6 +262,20 @@ public class SettingsPrecedenceTests
         Assert.Contains("input.wheel", string.Join(' ', SettingsFile.Parse("""{ "input": { "wheel": 1 } }""").Problems));
     }
 
+    /// <summary>input.cardMenuKeys: on without a settings file, off by the file's false or by --no-card-menu-keys.</summary>
+    [Fact]
+    public void TheCardMenuKeysAreOnUnlessTheFileOrTheCommandLineTurnsThemOff()
+    {
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).CardMenuKeys);
+        var off = SettingsFile.Parse("""{ "input": { "cardMenuKeys": false } }""");
+        Assert.Empty(off.Problems);
+        Assert.False(off.Settings.CardMenuKeys);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, off.Settings).CardMenuKeys);
+        var on = SettingsFile.Parse("""{ "input": { "cardMenuKeys": true } }""").Settings;
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { NoCardMenuKeys = true }, NoEnvironment, on).CardMenuKeys);
+        Assert.Equal("--no-card-menu-keys", new CommandLineOptions { NoCardMenuKeys = true }.Overrides(_ => null)["input.cardMenuKeys"]);
+    }
+
     [Fact]
     public void DefaultsWithNothingSet()
     {
@@ -452,11 +466,11 @@ public class SettingsTemplateTests
             (fromNothing.GameFolder, fromNothing.SavesFolder, fromNothing.Window ?? DisplayLayout.WindowSize(null, null), fromNothing.Fullscreen, fromNothing.SoundChoice, fromNothing.NoAudio,
              fromNothing.Mt32Roms, fromNothing.ConfigDrk, fromNothing.ShowBanner, fromNothing.PlayIntro, string.Join(' ', fromNothing.CommandLine),
              fromNothing.TextFont, fromNothing.ScreenshotsFolder, fromNothing.SdlLibrary, fromNothing.ConsoleEnabled, fromNothing.ConsoleFont,
-             fromNothing.ConsoleFontSize, fromNothing.HdPack, fromNothing.Filter, fromNothing.MouseWheel),
+             fromNothing.ConsoleFontSize, fromNothing.HdPack, fromNothing.Filter, fromNothing.MouseWheel, fromNothing.CardMenuKeys),
             (fromTemplate.GameFolder, fromTemplate.SavesFolder, fromTemplate.Window ?? DisplayLayout.WindowSize(null, null), fromTemplate.Fullscreen, fromTemplate.SoundChoice, fromTemplate.NoAudio,
              fromTemplate.Mt32Roms, fromTemplate.ConfigDrk, fromTemplate.ShowBanner, fromTemplate.PlayIntro, string.Join(' ', fromTemplate.CommandLine),
              fromTemplate.TextFont, fromTemplate.ScreenshotsFolder, fromTemplate.SdlLibrary, fromTemplate.ConsoleEnabled, fromTemplate.ConsoleFont,
-             fromTemplate.ConsoleFontSize, fromTemplate.HdPack, fromTemplate.Filter, fromTemplate.MouseWheel));
+             fromTemplate.ConsoleFontSize, fromTemplate.HdPack, fromTemplate.Filter, fromTemplate.MouseWheel, fromTemplate.CardMenuKeys));
         Assert.Equal(fromNothing.AudioPack, fromTemplate.AudioPack);
         Assert.Equal(fromNothing.SoundFont, fromTemplate.SoundFont);
     }

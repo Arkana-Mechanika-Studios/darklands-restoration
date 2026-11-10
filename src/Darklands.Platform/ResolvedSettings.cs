@@ -50,6 +50,9 @@ public sealed class CommandLineOptions
     /// <summary>--no-mouse-wheel: the wheel does nothing in the menus and lists.</summary>
     public bool NoMouseWheel { get; set; }
 
+    /// <summary>--no-card-menu-keys: at a card menu ↑ / ↓ work only with the pointer over a line, as in the original.</summary>
+    public bool NoCardMenuKeys { get; set; }
+
     /// <summary>The mods of --mod (each given once per --mod); empty: the settings file's.</summary>
     public List<string> Mods { get; set; } = [];
 
@@ -89,6 +92,7 @@ public sealed class CommandLineOptions
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
         By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");
+        By("input.cardMenuKeys", NoCardMenuKeys, "--no-card-menu-keys");
         By("startup.commandLine", GameCommandLine is not null, "--");
         By("mods", Mods.Count > 0, "--mod");
         return fixedKeys;
@@ -159,6 +163,9 @@ public sealed class ResolvedSettings
 
     /// <summary>The mouse wheel gives ↑ / ↓ where they move a selection (a host comfort).</summary>
     public bool MouseWheel { get; private init; }
+
+    /// <summary>↑ / ↓ and the digits at a card menu with the pointer off its lines (an interface convenience, GameUi.KeyboardCardMenus).</summary>
+    public bool CardMenuKeys { get; private init; }
 
     /// <summary>The developer console is available (a host feature).</summary>
     public bool ConsoleEnabled { get; private init; }
@@ -236,6 +243,7 @@ public sealed class ResolvedSettings
             ScreenshotsFolder = Pick(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),
             SdlLibrary = Pick(cli.SdlLibrary, null, file.SdlLibrary),
             MouseWheel = !cli.NoMouseWheel && (file.MouseWheel ?? true),
+            CardMenuKeys = !cli.NoCardMenuKeys && (file.CardMenuKeys ?? true),
             ConsoleEnabled = !cli.NoConsole && (file.ConsoleEnabled ?? true),
             ConsoleFont = file.ConsoleFont,
             ConsoleFontSize = file.ConsoleFontSize ?? 14,

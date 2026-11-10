@@ -40,7 +40,7 @@ internal sealed class LauncherModel
     private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -62,6 +62,7 @@ internal sealed class LauncherModel
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
         MouseWheel = s.MouseWheel ?? true;
+        CardMenuKeys = s.CardMenuKeys ?? true;
         Found = context.FoundGameFolders();
         var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
         // the folder the command line (or DARKLANDS_DIR) gives is the one the game would start with: shown first
@@ -71,7 +72,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys);
         _automatic = GameFolder;
     }
 
@@ -184,6 +185,9 @@ internal sealed class LauncherModel
     /// <summary>The mouse wheel moves the selection of the game's menus and lists (input.mouseWheel).</summary>
     public bool MouseWheel { get; set; }
 
+    /// <summary>Up / down and the digits at a card menu wherever the pointer is (input.cardMenuKeys).</summary>
+    public bool CardMenuKeys { get; set; }
+
     public bool CanPlay => GameFolderChecked is not null;
 
     /// <summary>What the ROM folder holds; looked at once for each folder (it reads the disk).</summary>
@@ -287,6 +291,10 @@ internal sealed class LauncherModel
         {
             changes["input.mouseWheel"] = MouseWheel;
         }
+        if (CardMenuKeys != _initial.CardMenuKeys)
+        {
+            changes["input.cardMenuKeys"] = CardMenuKeys;
+        }
         return changes;
     }
 
@@ -310,6 +318,7 @@ internal sealed class LauncherModel
         s.Banner = Banner;
         s.Intro = Intro;
         s.MouseWheel = MouseWheel;
+        s.CardMenuKeys = CardMenuKeys;
         return s;
     }
 

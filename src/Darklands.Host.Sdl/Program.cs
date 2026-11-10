@@ -121,6 +121,7 @@ var cli = new CommandLineOptions
     Filter = Option("--filter"),
     NoConsole = arguments.Remove("--no-console"),
     NoMouseWheel = arguments.Remove("--no-mouse-wheel"),
+    NoCardMenuKeys = arguments.Remove("--no-card-menu-keys"),
     Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -383,6 +384,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
     // a pressed button stays long enough to be seen (the original's press lasts as long as its command's work on the machine)
     game.Ui.PressedButtonMilliseconds = GameUi.PressedButtonFloor;
+    // input.cardMenuKeys (docs/SETTINGS.md): up / down and the digits at a card menu wherever the pointer is, made of player commands
+    game.Ui.KeyboardCardMenus = settings.CardMenuKeys;
     var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
     if (saves.FellBack)
     {

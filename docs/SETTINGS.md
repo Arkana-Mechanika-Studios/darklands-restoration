@@ -60,6 +60,7 @@ not meant for players.
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
+| `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
 | `sdl.library` | the `SDL3.dll` next to the program (shipped on Windows), else the system's (`libSDL3.so.0`) | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
 | `console.font` | the bundled DejaVu Sans Mono | | a TrueType (.ttf) file for the console, e.g. `"C:/Windows/Fonts/consola.ttf"` |
@@ -243,6 +244,16 @@ card's text, a message box, the character sheet with no list open, where ↑ / �
 nothing. The game reads each notch as the key itself, a press and release a player could have made; nothing else changes. The
 screens say whether a selection is up (`GameUi.SelectionList`), the window turns the wheel into the keys (`IInput.SelectionListActive`).
 The launcher shows it on its Advanced tab, under Start-up: "Mouse wheel in menus"; `--no-mouse-wheel` turns it off for one run.
+
+### Card menu keys
+
+The original's card menus take ↑ / ↓ only while the pointer is over one of the menu's lines; elsewhere it drops them, and so
+drops the wheel's notches too. With `input.cardMenuKeys` on (the default), ↑ / ↓ with the pointer off the lines put the pointer
+on the line they name (from no highlight ↓ the first line, ↑ the last), which the menu then lights as it does for the mouse; and
+the digits 1..9 choose the line of that number as a click on it does (in an item or saint box, the box's lines). With the
+pointer over a line the keys are the original's. Everything is made of a player's own moves and clicks ([COMMANDS.md](COMMANDS.md)),
+so the game plays the same. The launcher shows it on its Advanced tab, under Start-up: "Card menu keys anywhere";
+`--no-card-menu-keys` turns it off for one run.
 
 ### Keys on other layouts
 

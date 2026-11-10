@@ -99,7 +99,7 @@ The headless host runs a battle directly for tests and screenshots:
   place of the release: press on a member, drag, let go elsewhere; while the left button is held the
   member under the pointer is selected (outside order mode) or the order cursor follows it. A release over
   the party panel opens the sheet or says "You can't view …" (a box the battle waits out). Ctrl-click
-  activates a member; Shift with the pointer at an edge scrolls. F10 drives the menu bar from the keyboard
+  activates a member; Shift with the pointer at an edge scrolls (ten steps a second at most, whatever the frame rate). F10 drives the menu bar from the keyboard
   (the game's bar over the battle's menus, the battle standing still while it is up, as while the right
   button holds it); T unfolds the Attack menu to the Throw list. In order mode (and travelling as a group)
   a held direction key moves the pointer once a combat tick, faster the longer it is held, and letting it

@@ -27,7 +27,7 @@ door (no direct call of a menu's choice, no state written by the caller).
 `ChooseLine` on a card's item or saint line opens the box and chooses nothing, as the player's click does; the box's entry is the
 next `ChooseLine`. While a box is up, `ChooseLine` names the box's lines.
 
-The keyboard convenience of the card menus (`GameUi.KeyboardCardMenus`, off unless a host turns it on) is built on these commands,
+The keyboard convenience of the card menus (`GameUi.KeyboardCardMenus`, off unless a host turns it on; the SDL host's `input.cardMenuKeys`, on by default, [SETTINGS.md](SETTINGS.md)) is built on these commands,
 so it is player-equivalent: the key itself is dropped, as the original's menu drops it, and stands for commands carried out in the
 next passes. A digit 1..9 is `ChooseLine(digit - 1)` (on an item or saint line it opens the box; the next digit names the box's
 line). Up / Down with the pointer off the lines is `PointAt` the line they name (from no highlight Down the first line, Up the last),

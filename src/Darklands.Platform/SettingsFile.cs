@@ -318,6 +318,10 @@ public static class SettingsFile
             {
                 settings.MouseWheel = Boolean(key, property.Value) ?? settings.MouseWheel;
             }
+            else if (property.Name == "cardMenuKeys")
+            {
+                settings.CardMenuKeys = Boolean(key, property.Value) ?? settings.CardMenuKeys;
+            }
             else
             {
                 Unknown(key);
@@ -566,7 +570,12 @@ public static class SettingsFile
             // The mouse wheel gives the cursor keys up / down where they move a selection (the card menus, the character sheet's
             // lists and pack, the shop, barter and load lists ...), as DOSBox-X; elsewhere (the map, a battle) it does nothing.
             // Command line: --no-mouse-wheel.
-            "mouseWheel": true
+            "mouseWheel": true,
+
+            // At a card menu, the cursor keys up / down and the wheel work wherever the pointer is: they put the pointer on the
+            // next line (the original takes them only with the pointer over a line), and the digits 1..9 choose a line as a
+            // click does. Command line: --no-card-menu-keys.
+            "cardMenuKeys": true
           },
 
           // Settings of the SDL host only.

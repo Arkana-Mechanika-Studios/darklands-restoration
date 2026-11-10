@@ -68,6 +68,9 @@ public sealed class GameSettings
     /// <summary>The mouse wheel gives ↑ / ↓ in the menus and lists (a host comfort, SDL host): on unless false.</summary>
     public bool? MouseWheel { get; set; }
 
+    /// <summary>↑ / ↓ and the digits work at a card menu with the pointer off its lines (an interface convenience): on unless false.</summary>
+    public bool? CardMenuKeys { get; set; }
+
     /// <summary>The developer console (a host feature, outside the game): on unless false.</summary>
     public bool? ConsoleEnabled { get; set; }
 

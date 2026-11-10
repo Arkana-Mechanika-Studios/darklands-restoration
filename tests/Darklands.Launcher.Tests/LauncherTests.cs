@@ -185,7 +185,7 @@ public sealed class LauncherTests
         var links = new List<string>();
         var tests = new List<string?>();
         // Play, Discord (open it), then back up past Play, Save, the mouse wheel, Opening animation, start-up screen, SoundFont, ROMs, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -193,11 +193,11 @@ public sealed class LauncherTests
     [Fact]
     public void TheMouseWheelInMenusIsASettingOnByDefault()
     {
-        // up from Play: Save, then the mouse wheel (on: the file has no input.mouseWheel)
-        var kept = Run(Context(), Up, Up, Right, Right);
+        // up from Play: Save, the card menu keys, then the mouse wheel (on: the file has no input.mouseWheel)
+        var kept = Run(Context(), Up, Up, Up, Right, Right);
         Assert.False(kept.Changes.ContainsKey("input.mouseWheel"));
         Assert.True(kept.Settings.MouseWheel);
-        var off = Run(Context(), Up, Up, Enter);
+        var off = Run(Context(), Up, Up, Up, Enter);
         Assert.False((bool)off.Changes["input.mouseWheel"]!);
         Assert.False(off.Settings.MouseWheel);
     }
@@ -206,8 +206,22 @@ public sealed class LauncherTests
     public void TheMouseWheelFixedByTheCommandLineIsShownButNotChanged()
     {
         var fixedKeys = new Dictionary<string, string> { ["input.mouseWheel"] = "--no-mouse-wheel" };
-        var result = Run(Context(fixedKeys: fixedKeys), Up, Up, Enter);
+        var result = Run(Context(fixedKeys: fixedKeys), Up, Up, Up, Enter);
         Assert.False(result.Changes.ContainsKey("input.mouseWheel"));
+    }
+
+    [Fact]
+    public void TheCardMenuKeysAreASettingOnByDefault()
+    {
+        // up from Play: Save, then the card menu keys (on: the file has no input.cardMenuKeys)
+        var kept = Run(Context(), Up, Up, Right, Right);
+        Assert.False(kept.Changes.ContainsKey("input.cardMenuKeys"));
+        Assert.True(kept.Settings.CardMenuKeys);
+        var off = Run(Context(), Up, Up, Enter);
+        Assert.False((bool)off.Changes["input.cardMenuKeys"]!);
+        Assert.False(off.Settings.CardMenuKeys);
+        var fixedKeys = new Dictionary<string, string> { ["input.cardMenuKeys"] = "--no-card-menu-keys" };
+        Assert.False(Run(Context(fixedKeys: fixedKeys), Up, Up, Enter).Changes.ContainsKey("input.cardMenuKeys"));
     }
 
     [Fact]

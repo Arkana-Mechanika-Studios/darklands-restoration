@@ -107,6 +107,7 @@ internal sealed class LauncherScreen
         Banner,
         Intro,
         MouseWheel,
+        CardMenuKeys,
         Save,
         Play,
         Discord,
@@ -181,7 +182,7 @@ internal sealed class LauncherScreen
     public bool AdvancedShown => _advanced;
 
     /// <summary>The rows of the Advanced tab; the other settings rows are on General.</summary>
-    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.Banner or Item.Intro or Item.MouseWheel;
+    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys;
 
     private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
 
@@ -198,7 +199,7 @@ internal sealed class LauncherScreen
 
     // Tab and the arrows go through General's rows, then Advanced's (its tab opens), then the buttons and the links
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.Banner, Item.Intro, Item.MouseWheel, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.Banner, Item.Intro, Item.MouseWheel, Item.CardMenuKeys, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
                 && (i != Item.PackGuide || _context.PackGuide is not null) && (i != Item.Report || _context.ReportProblem is not null));
 
@@ -334,7 +335,7 @@ internal sealed class LauncherScreen
             case LauncherKey.Left:
             case LauncherKey.Right:
                 var step = key.Key == LauncherKey.Left ? -1 : 1;
-                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.MouseWheel or Item.GameFolder)
+                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys or Item.GameFolder)
                 {
                     return Activate(_focus, step, cycle: true);
                 }
@@ -477,6 +478,9 @@ internal sealed class LauncherScreen
                 break;
             case Item.MouseWheel:
                 _model.MouseWheel = !_model.MouseWheel;
+                break;
+            case Item.CardMenuKeys:
+                _model.CardMenuKeys = !_model.CardMenuKeys;
                 break;
             case Item.Save:
                 return LauncherChoice.Quit;
@@ -787,6 +791,7 @@ internal sealed class LauncherScreen
             Item.Banner => "startup.banner",
             Item.Intro => "startup.intro",
             Item.MouseWheel => "input.mouseWheel",
+            Item.CardMenuKeys => "input.cardMenuKeys",
             _ => null,
         };
         return key is not null && _model.IsFixed(key, out by);
@@ -1351,6 +1356,7 @@ internal sealed class LauncherScreen
             y = Select(y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner, narrow: true);
             y = Select(y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro, narrow: true);
             y = Select(y, "Mouse wheel in menus", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel, narrow: true);
+            y = Select(y, "Card menu keys anywhere", _model.CardMenuKeys ? "Yes" : "No", Item.CardMenuKeys, narrow: true);
         }
 
         // the panel's foot: Play at the right, the larger; Save and quit at the left, apart from it
@@ -2292,12 +2298,13 @@ internal sealed class LauncherScreen
             Item.Banner => "The text page the 1992 game showed for a few seconds while it loaded.",
             Item.Intro => "The animated opening before the start screen.",
             Item.MouseWheel => "In the game's menus and lists the wheel moves the selection, as the arrow keys do; never on the map or in a battle.",
+            Item.CardMenuKeys => "At a card menu, ↑/↓ and the wheel work wherever the pointer is (the 1992 game needed it over the lines), and 1–9 choose a line.",
             Item.Save => "Writes the changes to the settings file and closes.",
             Item.Play => "Writes the changes to the settings file and starts the game.",
             Item.Discord => "Opens the project's Discord in your browser.",
             Item.Notes => "Opens the release notes of this version in your browser.",
             Item.TabGeneral => "The game folder, the display, the sound card and the packs. Ctrl+Tab: the other tab.",
-            Item.TabAdvanced => "The Roland ROMs, the SoundFont for the packs' MIDI music, the start-up and the mouse wheel. Ctrl+Tab: the other tab.",
+            Item.TabAdvanced => "The Roland ROMs, the SoundFont for the packs' MIDI music, the start-up, the mouse wheel and the card menu keys. Ctrl+Tab: the other tab.",
             Item.Minimise => "Minimises the window.",
             Item.Close => "Closes the launcher (as Esc): the changes are written to the settings file.",
             _ => "",
