@@ -389,6 +389,12 @@ public sealed class GameUi
     public bool KeyboardCardMenus { get; set; }
 
     /// <summary>
+    /// A host's pace for the battle's edge scroll (Shift with the pointer at an edge of the view): at most one step this often, in the
+    /// host clock's milliseconds. 0 (the default, the original's): a step each pass of the battle loop.
+    /// </summary>
+    public int EdgeScrollMilliseconds { get; set; }
+
+    /// <summary>
     /// True while the screen up has a selection that the cursor keys ↑ / ↓ move (a card menu and its item or saint box, an open list or pack
     /// of the character sheet, the shop, barter and loot lists, the load list, the camp, the inn's roster, the alchemy list, the creation
     /// menus, the menu bar's pull-downs); null or false elsewhere (the map, a battle, a card's text, the sheet with no list open). A screen

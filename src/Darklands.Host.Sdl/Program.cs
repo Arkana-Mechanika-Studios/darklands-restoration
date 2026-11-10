@@ -386,6 +386,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.PressedButtonMilliseconds = GameUi.PressedButtonFloor;
     // input.cardMenuKeys (docs/SETTINGS.md): up / down and the digits at a card menu wherever the pointer is, made of player commands
     game.Ui.KeyboardCardMenus = settings.CardMenuKeys;
+    // the battle's edge scroll at ten steps a second at most, whatever the frame rate (the original's: a step each pass of its loop)
+    game.Ui.EdgeScrollMilliseconds = 100;
     var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
     if (saves.FellBack)
     {
