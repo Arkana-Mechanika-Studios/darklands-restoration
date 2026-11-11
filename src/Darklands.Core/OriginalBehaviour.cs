@@ -360,7 +360,9 @@ public sealed class OriginalBehaviour
     /// somebody gone through an exit" for the party's flight even when the others are alive on another level (gone by the stairs): the
     /// battle ends as fled (or left) and every member on another level becomes Away, which the next card may turn into leaving the party
     /// for good. use-exit's reunion test counts him too, so the last member to take the stairs never brings the party together.
-    /// Fixed: a member gone through an exit counts in neither test while an able member is still on the battlefield.
+    /// The same test ends the party's flight through the exit with a member alone on another level: he becomes Away too.
+    /// Fixed: a member gone through an exit counts in neither test while an able member is still on the battlefield (the battle goes on
+    /// with those still there).
     /// </summary>
     // orig: fight-finished R014+0x08FE (the fled test), use-exit R023+0x1618 (the alone loop), data safety
     public bool FixExitedMemberStrandsTheRest { get; set; }

@@ -178,7 +178,9 @@ after 1.0.
     member on that level becomes Away, which the next card may turn into leaving the party for good. use-exit's reunion test (R023+0x1618)
     counts him too, so the last member down the stairs never brings the party together. Faithful keeps both (tests
     `ExitedMemberStrandsTheRestTests`; not reproduced in lockstep: the two split saves offer no reachable exit zone); fixed: a member
-    gone through an exit counts in neither test while an able member is still on the battlefield.
+    gone through an exit counts in neither test while an able member is still on the battlefield. The same switch covers audit row 16,
+    the party's flight through the exit with a member alone on another level, whom the fled branch turned Away too (test
+    `ALoneMemberDownstairsIsNotLeftAwayByTheFlight`): the battle goes on with him.
   * `FixPlaceActionsOnOwnLevel` (party-split audit row 1, 2026-11-11): the level image in memory is the one shown, and the place tests
     (party-place-table R014+0xDC14) and place actions (fighter-goto-action R014+0x2170: door-flip R023+0x00B8, lock-picking R023+0x12C0,
     chest-opening R023+0x13D0, R023+0x153E) read it whatever level the member is on: a member on another level whose Use Door, Pick

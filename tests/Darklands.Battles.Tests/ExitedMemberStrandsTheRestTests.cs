@@ -63,4 +63,42 @@ public sealed class ExitedMemberStrandsTheRestTests
         Assert.False(BattleEnd.IsOver(t.Battle, t));
         Assert.All(others, i => Assert.Equal(CharacterStatus.Able, t.Battle[i].Status));
     }
+    /// <summary>Split audit row 16: the party flees through the exit with an enemy left on its level and one member alone downstairs.
+    /// Faithful: the fled branch of R014+0x08FE ends the battle and turns the lone member Away; fixed (the same switch): he stays.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ALoneMemberDownstairsIsNotLeftAwayByTheFlight(bool fix)
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]),
+            s => s.Behaviour = fix ? OriginalBehaviour.DataSafe : OriginalBehaviour.Faithful);
+        var party = t.Battle.FloorShown;
+        var enemy = t.Battle[Combatant.PartySlots];
+        enemy.Status = CharacterStatus.Able;
+        enemy.Floor = party;
+        var able = Enumerable.Range(0, Combatant.PartySlots).Where(i => t.Battle[i].IsAble).ToArray();
+        var lone = able[^1];
+        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, lone]);
+        Assert.NotEqual(party, t.Battle[lone].Floor);
+        foreach (var i in able[..^1])
+        {
+            t.Battle[i].Floor = BattleEnd.LeftThroughExit;
+            t.Battle[i].Flags |= TacticalFlags.LeftField;
+        }
+        var over = BattleEnd.IsOver(t.Battle, t);
+        if (fix)
+        {
+            Assert.Equal(CharacterStatus.Able, t.Battle[lone].Status);
+            Assert.NotEqual(BattleResult.Fled, t.Battle.Result);
+        }
+        else
+        {
+            Assert.True(over);
+            Assert.Equal(CharacterStatus.Away, t.Battle[lone].Status);
+        }
+    }
 }
