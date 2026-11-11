@@ -240,6 +240,14 @@ public sealed partial class TacticalBattle
     private void PlaceInitialEnemies()
     {
         ActivationsEnabled = true;
+        // BUG: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a
+        //   member left on the old level they appear there, and the end test turns him Away (split audit row 9)
+        int? shownBefore = null;
+        if (Battle.Behaviour.FixFollowersOnShownLevel && Battle.PartyFloor != Battle.FloorShown && Battle.PartyFloor >= 0 && Battle.PartyFloor < _levels.Count)
+        {
+            shownBefore = Battle.FloorShown;
+            SwitchLevel(Battle.PartyFloor);
+        }
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {
             var c = Battle[i];
@@ -254,6 +262,10 @@ public sealed partial class TacticalBattle
             }
         }
         ActivationsAt = Clock;
+        if (shownBefore is { } before)
+        {
+            SwitchLevel(before);
+        }
     }
 
     /// <summary>

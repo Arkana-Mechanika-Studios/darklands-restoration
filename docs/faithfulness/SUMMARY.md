@@ -202,6 +202,11 @@ after 1.0.
     of his level, or a slot past its count (a zero record: level 0 at (0, 0), outside the map; the fuzz of the 138 battlefields: 24 members
     left outside the map on the issue-3 path). Faithful keeps it (tests `StaleStairsBackRecordTests`); fixed: a number past his own
     level's stairs count is not taken, the order does nothing.
+  * `FixFollowersOnShownLevel` (party-split audit row 9, 2026-11-11): when the party has taken the stairs, the enemies of the kinds that
+    follow are placed after a delay of 1 to 4 seconds around the arrival spot on the level shown at that moment (R025+0x0CFC, the delay
+    DS:C2BB from R023+0x17D2): with the view moved to a member left behind on the old level (an unconscious one can be selected) they
+    appear on his level, and the next end test (R014+0x08FE), finding nobody able on the enemies' level, turns him Away and removes the
+    enemies. Faithful keeps it (tests `FollowersOnShownLevelTests`); fixed: they are placed on the party's level, the view coming back.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

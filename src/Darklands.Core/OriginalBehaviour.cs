@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -404,6 +404,15 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: use-exit R023+0x1618 (DS:C8B2[who] = record n's +0x0D read after the level switch), fight-keys R016+0x014E, data safety
     public bool FixStaleStairsBackRecord { get; set; }
+
+    /// <summary>
+    /// When the party has gone down (or up) the stairs, the enemies of the kinds that follow are placed after a delay of 1 to 4 seconds
+    /// around the arrival spot on the level SHOWN at that moment: with the view moved to a member left behind on the old level (an
+    /// unconscious one can be selected), they appear on his level, and the next end test, finding nobody able on the enemies' level, turns
+    /// him Away (lost from the party) and removes the enemies. Fixed: they are placed on the party's level.
+    /// </summary>
+    // orig: R025+0x0CFC (placed on DS:11CA around DS:C3CD), the delay DS:C2BB from R023+0x17D2, fight-finished R014+0x08FE, data safety
+    public bool FixFollowersOnShownLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
