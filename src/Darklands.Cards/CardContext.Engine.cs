@@ -230,7 +230,13 @@ public sealed partial class CardContext
     /// </summary>
     // orig: call-on-saint R029+0x2180 (0E76:2180) matched
     // DIVERGENCE: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.
-    public int InvokeSaint(int who, int saint) => SaintPrayer?.Invoke(who, saint) ?? 0;
+    // C: the card redraw (card-run) starts with its MEM.LOG query, kept for its results (PartyQueries.CardRunQuery).
+    public int InvokeSaint(int who, int saint)
+    {
+        var answer = SaintPrayer?.Invoke(who, saint) ?? 0;
+        Core.Rules.PartyQueries.CardRunQuery(State);
+        return answer;
+    }
 
     /// <summary>The prayer screen (member, saint → result), supplied by the presentation.</summary>
     public Func<int, int, int>? SaintPrayer { get; set; }

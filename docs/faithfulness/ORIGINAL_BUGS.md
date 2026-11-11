@@ -54,10 +54,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-630527** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:144` `CampStay.Teacher`  
   original: `R036+0x08EC` (1462:08EC, draft), `R036+0x1858` (1462:1858, draft), `R036+0x147A` (1462:147A, draft)  
   why: event-search (R029+0x3B62, called at R036+0x156E and by key T and the day's cost) returns the lowest matching slot: with two teachers of one skill here (the alchemist and the university both teach Alchemy) the one in the lower slot always gives the lesson, its fee and its level, whichever row is chosen.
-- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:443` `CampStay.DoTheActivity`  
+- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:445` `CampStay.DoTheActivity`  
   original: `R036+0x147A` (1462:147A, draft)  
   why: no limit at the teacher's ability, which a guild text says a pupil "cannot progress beyond" (MSGFILES): any teacher can take a skill to 99.
-- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:483` `CampStay.GrowRisk`  
+- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:485` `CampStay.GrowRisk`  
   original: `R036+0x1B80` (1462:1B80, draft)  
   why: the weapon-skill test reads +0x57, +0x5C, +0x59, +0x5A, +0x5B, +0x5D: Impact Weapons (+0x58) is not among them.
 - **B-af3f91** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:88` `CityPolitics.ConflictOutcome`  

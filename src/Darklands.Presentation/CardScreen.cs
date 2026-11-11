@@ -61,7 +61,15 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     //   previous card until then): GameUi.HoldScreen until the first text, option list, a screen's wait (GameUi.Poll) or a battle
     // DIVERGENCE: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) the new card's picture is shown at once.
     // C: DS:E959, the block a redraw draws again, is left over from the previous card in the original until the new card shows a text; here a new card starts without one.
+    // C: card-run first appends its MEM.LOG line (R043+0x0000), whose lore level leaves the party query's results: PartyQueries.CardRunQuery
     public void Show(string cardName, string picture)
+    {
+        Core.Rules.PartyQueries.CardRunQuery(context().State);
+        ShowCard(cardName, picture);
+    }
+
+    /// <summary>The card shown as card-run shows it, without card-run's MEM.LOG query (for the clean drawing's own loads).</summary>
+    private void ShowCard(string cardName, string picture)
     {
         _cardName = cardName;
         if (!ui.Options.CleanDrawing)
@@ -87,14 +95,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     {
         if (ui.Options.CleanDrawing)
         {
-            if (picture is null)
-            {
-                ShowWithTheLastPicture(cardName);
-            }
-            else
-            {
-                Show(cardName, picture);
-            }
+            // C: no card-run here in the original, so no MEM.LOG query either (the game state stays as without clean drawing)
+            ShowCard(cardName, picture ?? _mainPicture);
             return;
         }
         _cardName = cardName;
@@ -109,6 +111,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: the block shown last and the menu state stay as they were (card-run does not touch DS:E959 or DS:E898).
     public void ReloadAfterBattle()
     {
+        Core.Rules.PartyQueries.CardRunQuery(context().State);
         if (_cardName.Length == 0)
         {
             return;
@@ -119,7 +122,11 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     }
 
     // orig: R043+0x0A9A (150B:000A) again (thunk 09C0:1EA5) with the card's picture: the picture and the party column
-    public void Reload() => ShowPicture(_pictureName);
+    public void Reload()
+    {
+        Core.Rules.PartyQueries.CardRunQuery(context().State);
+        ShowPicture(_pictureName);
+    }
 
     // orig: card-run-near(card-title, pic) R043+0x0BA0: the picture, and text-bank-read(card-title): after a card that only named itself
     //   (NameTheCard) its own texts are loaded here

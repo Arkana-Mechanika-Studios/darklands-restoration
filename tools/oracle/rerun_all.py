@@ -756,8 +756,10 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
     SESSIONS[_name] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
     BATTLE_RECORDS.add(_name)
 # lugum: the Templar fortress of Lugum (place 188 by Flensburg) from a 483.07 saved game at its graveyard card (kept under
-# local/oracle-saves/lugum, not in the repository): the door in the wall, stairs and doors to the fortress's next levels, an in-battle Alt-S
-for _name in ("fortress-lugum-stairs", "fortress-lugum-back"):
+# local/oracle-saves/lugum, not in the repository): the door in the wall, stairs and doors to the fortress's next levels, an in-battle Alt-S;
+# split: one member alone down the stairs and back by Use Stairs, from the U key and from the Orders menu, and the keyboard menu there (F10,
+# whose Right reads top-scoring-member as card-run's MEM.LOG query left it) (GitHub issue 3)
+for _name in ("fortress-lugum-stairs", "fortress-lugum-back", "fortress-lugum-split", "fortress-lugum-split-menu", "fortress-lugum-split-f10"):
     SESSIONS[_name] = "local/oracle-saves/lugum/DKSAVE2.SAV"
     BATTLE_RECORDS.add(_name)
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,

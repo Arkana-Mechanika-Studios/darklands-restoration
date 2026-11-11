@@ -15,7 +15,8 @@ public abstract class Card
     /// <summary>Shows the card with one of the numbered card pictures.</summary>
     // orig: R043+0x0A9A (150B:000A) draft (bytes match; the byte-match summary counts 22 of the file's 28 functions); tests: CardSmokeTests (card-run: pics\<pic>.pic, text colour 15 for pictures starting with 'x', msgfiles\<name>.msg)
     // C: the card scripts pass image-file-names[n] (a far string) in image-buffer; the number-to-name table is PictureNames.
-    // DIVERGENCE (host): card-run also appends a MEM.LOG line first (R043+0x0000: free DOS memory from INT 21h/48h, the event count, the party's lore level and the date; a debug file nothing reads back); card-run-near does not.
+    // DIVERGENCE (host): card-run also appends a MEM.LOG line first (R043+0x0000: free DOS memory from INT 21h/48h, the event count, the party's lore level and the date; a debug file nothing reads back); card-run-near does not. The lore level's party
+    //   query is kept for its results (PartyQueries.CardRunQuery, in CardScreen.Show).
     protected void Show(CardContext c, int picture) => c.Screen.Show(Name, PictureNames.Of(picture));
 
     // orig: R043+0x0BA0 (150B:0110) draft (matches); tests: CardSmokeTests (card-run-near: the same without the MEM.LOG line and the DS:E957 card-name store)

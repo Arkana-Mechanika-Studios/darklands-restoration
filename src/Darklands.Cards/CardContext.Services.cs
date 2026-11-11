@@ -45,17 +45,32 @@ public sealed partial class CardContext
     /// its own, −2 the pawnshop), <paramref name="categories"/> the item category mask; without
     /// a name the shop slot's own name is shown. The card is shown again afterwards.
     /// </summary>
-    public void Barter(int shop, long categories, string? name = null) =>
+    // orig: R029+0x21AA (0E76:21AA) draft: the barter screen, then card-run (thunk 09C0:1EA5), whose MEM.LOG query (PartyQueries.CardRunQuery)
+    //   is kept for its results; the redraw itself is the card screen's (see OpenItemStore)
+    public void Barter(int shop, long categories, string? name = null)
+    {
         Screens.Barter(shop, name ?? (shop >= 0 && shop < ShopNames.Length ? ShopNames[shop] : ""), categories);
+        Core.Rules.PartyQueries.CardRunQuery(State);
+    }
 
     /// <summary>Camping or lodging (R029 222a): mode 0 at an inn, 1 in the wilderness, 2 other lodging, 3 sleeping rough.</summary>
-    public void Camp(int mode) => Screens.Camp(mode);
+    // orig: R029+0x222A (0E76:222A): the camp screen (thunk 09C0:1EEB), then card-run (thunk 09C0:1EA5): its MEM.LOG query kept (CardRunQuery)
+    public void Camp(int mode)
+    {
+        Screens.Camp(mode);
+        Core.Rules.PartyQueries.CardRunQuery(State);
+    }
 
     /// <summary>The items stored at a location (R029 225c).</summary>
     // orig: R029+0x225C (0E76:225C) draft(fn matched): stash-screen-overlay-entry(location), then card-run(card-title, image-buffer)
     // C: stash-screen does not use its argument (it works on location-now), so the location is not passed on.
     // DIVERGENCE: the card's redraw afterwards (card-run) is the card screen's job here, as for the shop and the camp.
-    public void OpenItemStore(int location) => Screens.ItemStore();
+    // C: card-run's MEM.LOG query is kept for its results (PartyQueries.CardRunQuery).
+    public void OpenItemStore(int location)
+    {
+        Screens.ItemStore();
+        Core.Rules.PartyQueries.CardRunQuery(State);
+    }
 
     // ---- locations ------------------------------------------------------------------
 

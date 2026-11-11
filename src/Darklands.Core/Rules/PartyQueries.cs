@@ -255,6 +255,17 @@ public static class PartyQueries
     }
 
     /// <summary>
+    /// The party query of card-run's MEM.LOG line: every card-run computes the lore level for the line, and that leaves the last
+    /// query's results (<see cref="Party.Last"/>: top-scoring-member, top-value-so-far, top-skill-so-far) as
+    /// <see cref="LoreLevel"/>'s queries set them. The line itself is not written (a debug file nothing reads back); the results stay
+    /// for what reads them later, such as the battle menu bar's keyboard Right with no item chosen (MenuBar.BeforeGameItems).
+    /// </summary>
+    // orig: R043+0x0000 (called first by card-run R043+0x0A9A at 0x0AC7, no condition): party-lore-rating (thunk 09C0:1C1B) at 0x00C0,
+    //   its value only printed; tests: MenuBarTests.TheCardRunQueryLeavesTopScoringMemberForTheKeyboardMenu (lockstep fortress-lugum-split-f10: DS:991D = 1 from the graveyard card's card-run,
+    //   R029+0x026A+0x30, read by root 0000:0DD2's Right in the battle)
+    public static void CardRunQuery(GameState s) => LoreLevel(s);
+
+    /// <summary>
     /// How learned the party is, 1..10 (<c>party-lore-rating</c>): (average best weapon skill +
     /// best missile skill + average Virtue + average Alchemy) / 37, −2 alone, −1 for two, +1
     /// for five.
