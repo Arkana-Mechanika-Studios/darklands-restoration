@@ -284,7 +284,7 @@ public sealed partial class TacticalBattle
         var result = false;
         // BUG: the encounters of the party's level are checked at the places of every member (trigger-check R014+0x4442, only while
         //   DS:11CA == DS:C623): a lone member on another level, at the coordinates of an encounter's sight on the party's level,
-        //   finds it. Kept as the original (party-split audit row 23): an optional rule after 1.0.
+        //   finds it. Kept as the original (party-split audit row 23). Decision: later, an optional fixed rule after 1.0.
         var list = Activations[Battle.FloorShown];
         if (Battle.PartyFloor == Battle.FloorShown && ActivationsEnabled && Running && list.Count != 0)
         {
@@ -342,8 +342,8 @@ public sealed partial class TacticalBattle
     private bool PlaceEnemies(int mode, EnemyGroup? encounter, int who)
     {
         // BUG: a reinforcement wave (mode 1, after a kill) is placed on the level SHOWN from its .enm (R025+0x0000, DS:A6B4 =
-        //   DS:11CA): with a lone member's level shown it lands on his level. Kept as the original (party-split audit row 8): an
-        //   optional rule after 1.0.
+        //   DS:11CA): with a lone member's level shown it lands on his level. Kept as the original (party-split audit row 8).
+        //   Decision: later, an optional fixed rule after 1.0.
         MapPoint origin;
         int spread, facing;
         sbyte[] types, counts;

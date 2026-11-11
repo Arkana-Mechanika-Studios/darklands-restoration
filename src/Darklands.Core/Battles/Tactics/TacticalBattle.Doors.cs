@@ -181,7 +181,7 @@ public sealed partial class TacticalBattle
         }
         // BUG: the picker DS:E1CA is whoever chose a place action last (R016+0x1590), so a Pick Lock order is rolled with the skill
         //   and lock picks of a member who chose another place action after it (R023+0x12C0). Kept as the original (party-split audit
-        //   row 19c): no change.
+        //   row 19c). Decision: never, rare and harmless: only the skill rolled is another member's.
         var c = Battle[_picker];
         var k = c.Items.FindIndex(s => s.Code == 0x40);
         if (k < 0)
@@ -808,7 +808,7 @@ public sealed partial class TacticalBattle
     {
         // BUG: when the last member's stairs bring the party together, the enemies fighting on the level he arrives on count as left
         //   behind with the level left (R023+0x17D2): those of a following kind freeze and come again at his arrival spot, the others
-        //   vanish. Kept as the original (party-split audit row 12): an optional rule after 1.0.
+        //   vanish. Kept as the original (party-split audit row 12). Decision: later, an optional fixed rule after 1.0.
         var seen = new bool[7];
         var cnt = 0;
         var any = false;

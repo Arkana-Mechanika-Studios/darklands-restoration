@@ -425,7 +425,7 @@ public sealed partial class TacticalBattle
         }
         // BUG: the path costs and the answer to an attacker have no floor test (R014+0xF438, R014+0x10232): a combatant can choose a
         //   target on another level, whose path is refused (R014+0x481A returns 2), and stands idle. Kept as the original (party-split
-        //   audit row 25): no change.
+        //   audit row 25). Decision: never, harmless: he stands idle until a target is on his level.
         var (lo, hi) = Opponents(i);
         PathCosts(i, lo, hi);
         var first = IndexOfMinimumCost(i);

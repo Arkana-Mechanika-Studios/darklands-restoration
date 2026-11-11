@@ -36,7 +36,8 @@ public sealed partial class TacticalBattle
         m.Set(OrdersItem.Resume, 2);
         m.Set(OrdersItem.Finished, 2);
         // BUG: with the party split Walk, Flee and Halt are greyed and Use Stairs is on anywhere (R014+0xDE12, R014+0xDF28): the way
-        //   back of a member alone is his stairs-back record, by design. Kept as the original (party-split audit row 27): no change.
+        //   back of a member alone is his stairs-back record, by design. Kept as the original (party-split audit row 27). Decision:
+        //   never, by design: Use Stairs is the way back of a member alone.
         m.Set(OrdersItem.Walk, (byte)(Battle.PartyFloor != Battle.FloorShown ? 2 : 1));
         m.DoorSuffix = BattleMenus.Leader;
         m.Set(OrdersItem.Flee, 2);
@@ -112,7 +113,8 @@ public sealed partial class TacticalBattle
         }
         // BUG: the order menu of a member is built from his place flags, which the place tests set from the level SHOWN (R014+0xDF28):
         //   after the battle ran with another level shown its door, chest and lock entries may belong to that level (harmless once the
-        //   place actions use the member\'s own level). Kept as the original (party-split audit row 2): no change.
+        //   place actions use the member's own level). Kept as the original (party-split audit row 2). Decision: never, harmless once
+        //   a member's place actions use his own level.
         var fl = c.Flags;
         if ((fl & TacticalFlags.InDoorway) != 0)
         {
