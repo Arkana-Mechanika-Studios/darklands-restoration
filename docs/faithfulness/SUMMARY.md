@@ -228,6 +228,13 @@ after 1.0.
     captured state of each battle (battle_calls) give (336, 280), (1072, 392) and (1200, 136) on level 0, as the C#. Faithful keeps it
     (tests `StairsArrivalWithoutPlaceTests`); fixed: when the arrival spot gives no place he is placed around the new level's stairs
     back to his old level, then around a member standing on that level.
+  * `FixFloorsOfResumedBattle` (party-split audit row 17, 2026-11-11): a battle taken up again on the same battlefield in mode 1 (each
+    member standing where the last one left him) puts every member on the level shown at the end (R002+0x0000 clears the members'
+    floors, fight-main-loop R014+0x0000 sets them to DS:11CA) and keeps his x/y: a member who was alone on another level stands on the
+    shown level at his own level's coordinates. Reachable: the mode-1 cards of the dungeons (a Templar desk, a fountain, the riddle
+    door, the pit traps, a chest) follow a battle that a member on the level shown ended by a trigger, with others elsewhere (found by
+    reading the cards; not reproduced in lockstep). Faithful keeps it (tests `FloorsOfResumedBattleTests`); fixed: the battlefield also
+    remembers each member's level at the end, and mode 1 takes him up again there.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

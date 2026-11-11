@@ -368,6 +368,12 @@ public sealed partial class TacticalBattle : IBattleEndActions
                 Battle[i].Position = place.Position;
                 Battle[i].Facing = place.Facing;
                 Battle[i].SpriteFacing = place.SpriteFacing;
+                // BUG: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the
+                //   end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
+                if (Battle.Behaviour.FixFloorsOfResumedBattle && Store.PartyFloors[i] is var floor && floor >= 0 && floor < _levels.Count)
+                {
+                    Battle[i].Floor = floor;
+                }
             }
         }
     }

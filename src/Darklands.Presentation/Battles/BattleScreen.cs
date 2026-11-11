@@ -963,6 +963,7 @@ public sealed class BattleScreen : ITacticalView
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             store.PartyPlaces[i] = b[i].Status == CharacterStatus.Empty ? null : (b[i].Position, b[i].Facing, b[i].SpriteFacing);
+            store.PartyFloors[i] = b[i].Status == CharacterStatus.Empty ? -1 : b[i].Floor;
         }
     }
 

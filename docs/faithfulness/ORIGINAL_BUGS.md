@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 45 | 27 | 18 |
+| battles | 46 | 28 | 18 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 13 | 8 | 5 |
-| total | 249 | 68 | 181 |
+| total | 250 | 69 | 181 |
 
-## Core logic (236)
+## Core logic (237)
 
 ### rules (103)
 
@@ -601,7 +601,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (45)
+### battles (46)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -738,6 +738,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
+- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:371` `TacticalBattle.KeepPlaces`  
+  original: `R014+0x9C4C` (14F7:343C, draft)  
+  why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
 
 ### persistence (2)
 

@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -444,6 +444,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: use-exit R023+0x1618 with place-nearby R024+0x08F2 (the coordinates kept on failure), data safety
     public bool FixStairsArrivalWithoutPlace { get; set; }
+
+    /// <summary>
+    /// A battle taken up again on the same battlefield in mode 1 (members standing where the last one left them: the cards of a dungeon's
+    /// desk, fountain, riddle door, pit or chest, which a member on the level shown sets off) puts every member on the level shown at the
+    /// end, at the x/y he had: a member who was alone on another level stands on the shown level at his own level's coordinates, in a
+    /// wall or the void perhaps. Fixed: each member is taken up again on his own level.
+    /// </summary>
+    // orig: R002+0x0000 (the members' floors DS:A6B4 cleared at the end), fight-main-loop R014+0x0000 (DS:A6B4 = DS:C623 = DS:11CA at the
+    //   start), data safety
+    public bool FixFloorsOfResumedBattle { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
