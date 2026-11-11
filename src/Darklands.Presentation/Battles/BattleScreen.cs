@@ -137,6 +137,10 @@ public sealed class BattleScreen : ITacticalView
     /// timer's tick byte), as tools/oracle/lockstep.py measures them in the original (DARKLANDS_BATTLE_BOX_CALLBACKS).</summary>
     public static Queue<(int During, int After)>? BoxCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_BOX_CALLBACKS"));
 
+    /// <summary>A debugging aid: the other notice boxes of a battle pass (ShowMessage), as the tester measures them in the original
+    /// (DARKLANDS_BATTLE_NOTICE_CALLBACKS): paused, the callbacks after the box up to the next pass, which the host has no time for.</summary>
+    public static Queue<(int During, int After)>? NoticeCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_NOTICE_CALLBACKS"));
+
     /// <summary>The callbacks the original had after the last sheet in its pass (SheetCallbacks), for the pass's end.</summary>
     private int _afterSheetCallbacks;
 
@@ -675,6 +679,7 @@ public sealed class BattleScreen : ITacticalView
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         // C: R002+0x0000 sets DS:C1F0 to the battlefield and DS:D6CE to the seed (the battle file keeps them).
         Array.Clear(_placeNotes);
+        Array.Clear(_tickPlaces);
         Array.Clear(_orderLetters);
         _orderCellRows = 0;
         _pageCellHoldsRows = false;
@@ -746,6 +751,7 @@ public sealed class BattleScreen : ITacticalView
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
         Array.Clear(_placeNotes);
+        Array.Clear(_tickPlaces);
         Array.Clear(_orderLetters);
         _orderCellRows = 0;
         _pageCellHoldsRows = false;
@@ -1068,6 +1074,16 @@ public sealed class BattleScreen : ITacticalView
         }
         _message = null;
         WaitedTicks(ticks);
+        if (OneTickPerPass && NoticeCallbacks is { Count: > 0 } measured)
+        {
+            // C: the host has no time of its own in OneTickPerPass: paused, the timer callbacks after the box up to the next pass (the
+            //   paused tick the wait made due and that tick's draw, after a box a full one) come at the pass's end, as for the hot keys' boxes
+            var (_, after) = measured.Dequeue();
+            if (_battle!.PauseByte != 0)
+            {
+                _afterSheetCallbacks += after;
+            }
+        }
     }
 
     /// <summary>Timer ticks spent inside a call that waits on the timer (notice-display's wait-ticks): the callbacks count them, the clock too
@@ -1324,7 +1340,7 @@ public sealed class BattleScreen : ITacticalView
     // fighter-screen-position R014+0x99F6 left them in the last frame (the sprite's top left in the view)
     public bool KeepInView(int who)
     {
-        var (sx, sy) = _battle!.Battle[who].ScreenPlace;
+        var (sx, sy) = _tickPlaces[who] ?? _battle!.Battle[who].ScreenPlace;
         if (sy < 0x14 || sy > 0xA0 || sx < 0x14 || sx > 0xDC)
         {
             Recentre(who);
@@ -2839,9 +2855,21 @@ public sealed class BattleScreen : ITacticalView
 
     /// <summary>fighter-screen-position's places: each combatant on the level shown (any status but empty) gets its sprite's top left.</summary>
     // orig: fighter-screen-position R014+0x99F6 (14F7:31E6) draft: scrx = foot x − DS:D505[set][facing], scry = DS:C8CA[set] − DS:D5D3[set] + y + 0x69
-    public void SetUpScreenPlaces() => RecordScreenPlaces();
+    public void SetUpScreenPlaces() => RecordScreenPlaces(tickDraw: true);
 
-    private void RecordScreenPlaces()
+    /// <summary>
+    /// The places as the last fight-draw of a tick left them (R014+0x10AA), for the tick's follow test (KeepInView); null: not drawn
+    /// since the battle was set up or taken up (the record's own places then).
+    /// </summary>
+    // orig: the follow test R014+0x1065 reads +0x00 / +0x02 as the tick before drew them: a view moved between two ticks (a member on
+    //   another level selected, floor-view-paint through R016+0x0A2C) is not seen by it until the next fight-draw. GitHub issue 3, lockstep
+    //   castle-rotenburg-split-reselect: member 1 selected after U with the view on level 2, his places at clock 9283 still the frame's
+    //   before the selection (0x99, 6), so the follow centres the view on him and his pending order mode opens in that tick.
+    // DIVERGENCE: the C# draws every pass and keeps the record's places (+0x00 / +0x02, saved with the game) from the last frame drawn; the
+    //   follow reads these tick places instead, the original's fight-draw (ticks, the battle's start and end) being the only writer of both.
+    private readonly (int X, int Y)?[] _tickPlaces = new (int X, int Y)?[Combatant.Count];
+
+    private void RecordScreenPlaces(bool tickDraw)
     {
         var tb = _battle!;
         for (var i = 0; i < Combatant.Count; i++)
@@ -2849,6 +2877,10 @@ public sealed class BattleScreen : ITacticalView
             if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Floor == tb.Battle.FloorShown && SpriteBox(i) is { } box)
             {
                 tb.Battle[i].ScreenPlace = (box.Left - BattlefieldView.Left, box.Top);
+                if (tickDraw)
+                {
+                    _tickPlaces[i] = tb.Battle[i].ScreenPlace;
+                }
             }
         }
     }
@@ -2910,7 +2942,7 @@ public sealed class BattleScreen : ITacticalView
         // keeps (lockstep session dungeon-mine-doormsg: the alarm of a riddle door)
         if (!tb.Stopped)
         {
-            RecordScreenPlaces();
+            RecordScreenPlaces(tb.TickToDraw);
         }
         _view.Draw(canvas, tb.Level, _tiles!);
         var clip = BattlefieldView.Area;
