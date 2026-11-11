@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true, FixCombatAcrossLevels = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -454,6 +454,18 @@ public sealed class OriginalBehaviour
     // orig: R002+0x0000 (the members' floors DS:A6B4 cleared at the end), fight-main-loop R014+0x0000 (DS:A6B4 = DS:C623 = DS:11CA at the
     //   start), data safety
     public bool FixFloorsOfResumedBattle { get; set; }
+
+    /// <summary>
+    /// The enemies' sight test sees the members on the level SHOWN, from enemies on any level, and drops the targets that are not on it;
+    /// archers and casters who lost theirs then see every able member on any level. A missile is made on the level shown at its launch and
+    /// a spell or potion effect lands there: with a member alone on another level shown, enemies on the party's level drop the party and
+    /// go for him, and their shots and spells reach him through the floors (he can die of them); shots between combatants on a hidden
+    /// level never hit (the ammunition lost). Fixed: an enemy sees, keeps and chooses only targets on its own level, a missile flies on
+    /// its shooter's level and an effect lands on the level of its missile.
+    /// </summary>
+    // orig: enemy-line-of-sight R018+0x04B6, the drop block R018+0x0706, R018+0x0000 (missile +0x18 = DS:11CA), R014+0xED10 (the hit test
+    //   on DS:A6B4[target]), R019+0x0000 / 0x0300 (effect level = DS:11CA), data safety
+    public bool FixCombatAcrossLevels { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

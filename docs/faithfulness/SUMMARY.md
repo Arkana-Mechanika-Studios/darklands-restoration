@@ -235,6 +235,13 @@ after 1.0.
     door, the pit traps, a chest) follow a battle that a member on the level shown ended by a trigger, with others elsewhere (found by
     reading the cards; not reproduced in lockstep). Faithful keeps it (tests `FloorsOfResumedBattleTests`); fixed: the battlefield also
     remembers each member's level at the end, and mode 1 takes him up again there.
+  * `FixCombatAcrossLevels` (party-split audit rows 6 and 7, 2026-11-11): the enemies' sight test (enemy-line-of-sight R018+0x04B6) sees
+    the members on the level shown, from enemies on any level, and drops the targets that are not on it (R018+0x0706); archers and
+    casters who lost theirs then see every able member. A missile is made on the level shown at its launch (R018+0x0000) and a spell or
+    potion effect lands there (R019+0x0000 / 0x0300). With a member alone on another level shown, enemies on the party's level drop the
+    party and go for him, and their shots and spells reach him through the floors (he can die of them); shots between combatants on a
+    hidden level never hit, the ammunition lost. Faithful keeps it (tests `CombatAcrossLevelsTests`); fixed: an enemy sees, keeps and
+    chooses only targets on its own level, a missile flies on its shooter's level and an effect lands on the level of its missile.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
