@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -394,6 +394,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fighter-dying R014+0x2324 (the pile's level = DS:11CA, the merge test on DS:11CA), R014+0x2802, data safety
     public bool FixPileOfOtherLevel { get; set; }
+
+    /// <summary>
+    /// use-exit writes a member's stairs-back record number (DS:C8B2) after its level switch: right when he goes alone (the old level is
+    /// shown again), but the NEW level's record when the party comes together, and never for a member separated without moving alone (0:
+    /// unconscious left behind, the last of a group move). With the party split Use Stairs is offered anywhere and sends him through
+    /// that number: record 0 of his level, or a slot past its count (a zero record: level 0 at (0, 0), outside the map). Fixed: a number
+    /// past his own level's stairs count is not taken (the order does nothing).
+    /// </summary>
+    // orig: use-exit R023+0x1618 (DS:C8B2[who] = record n's +0x0D read after the level switch), fight-keys R016+0x014E, data safety
+    public bool FixStaleStairsBackRecord { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

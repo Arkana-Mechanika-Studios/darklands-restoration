@@ -402,7 +402,7 @@ public sealed partial class TacticalBattle
             }
             var leader = Battle[Battle.Leader];
             int? shownBefore = null;
-            if (leader.StairsBack != -1)
+            if (leader.StairsBack != -1 && !StaleStairsRecord(Battle.Leader, leader.StairsBack))
             {
                 if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && leader.Floor != Battle.FloorShown && leader.Floor >= 0
                     && leader.Floor < _levels.Count)
@@ -593,6 +593,10 @@ public sealed partial class TacticalBattle
     private void TakeStairsOrder(int i)
     {
         var c = Battle[i];
+        if (StaleStairsRecord(i, c.StairsExit))
+        {
+            return;
+        }
         int? shownBefore = null;
         if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Floor != Battle.FloorShown && c.Floor >= 0 && c.Floor < _levels.Count)
         {
@@ -607,6 +611,17 @@ public sealed partial class TacticalBattle
         //   Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
         TakeExit(c.StairsExit, i);
         ShowAgainAfterFix(shownBefore, i);
+    }
+
+    /// <summary>Whether record number n is past the stairs count of combatant who's own level, with FixStaleStairsBackRecord on.</summary>
+    private bool StaleStairsRecord(int who, int n)
+    {
+        var floor = Battle[who].Floor;
+        // BUG: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch:
+        //   the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his
+        //   level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
+        return Battle.Behaviour.FixStaleStairsBackRecord && floor >= 0 && floor < _levels.Count
+            && (n < 0 || n >= _levels[floor].GetByte(StairsCountAt));
     }
 
     /// <summary>After a stairs fix showed the actor's own level first (FixStairsRecordOfShownLevel, FixLeaderStairsRecordOfShownLevel):
