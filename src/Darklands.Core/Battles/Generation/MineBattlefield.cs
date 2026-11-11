@@ -22,6 +22,10 @@ public static class MineBattlefield
         var mine = new MineBuilder(g);
         return mine.Build(battlefieldType, specs);
     }
+
+    /// <summary>A debugging aid: feeds the oracle's stale pile words ("0,24011,10699", tools/oracle/timer_marks.py) to the pile filler;
+    /// null or empty for none, as in play.</summary>
+    public static void FeedPileWords(string? text) => MineBuilder.PileWords = MineBuilder.ParsePileWords(text);
 }
 
 /// <summary>The state of one mine being built, and the layouts of the mine types.</summary>
@@ -75,11 +79,14 @@ internal sealed partial class MineBuilder
     //   (tools/oracle/timer_marks.py, lockstep.py --timer-marks: PileWords): with it gen-carry-01 and -33 agree.
     private int StaleStackWord => _pileRollMade ? 0x29CB : 0;
 
-    /// <summary>A debugging aid (DARKLANDS_MINE_PILE_WORDS, "0,24011,10699"): the stale word the original's pile filler took at each fill in
-    /// turn (R009+0x4EAE, tools/oracle/timer_marks.py), the timer interrupt's word where one came between the pile roll and the call; null in
-    /// play (the word is then <see cref="StaleStackWord"/>).</summary>
-    public static Queue<int>? PileWords { get; set; } = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DARKLANDS_MINE_PILE_WORDS")) ? null
-        : new(Environment.GetEnvironmentVariable("DARKLANDS_MINE_PILE_WORDS")!.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)));
+    /// <summary>A debugging aid: the stale word the original's pile filler took at each fill in turn (R009+0x4EAE,
+    /// tools/oracle/timer_marks.py), the timer interrupt's word where one came between the pile roll and the call; null in play (the word is
+    /// then <see cref="StaleStackWord"/>). The headless host sets it from DARKLANDS_MINE_PILE_WORDS through <see cref="MineBattlefield.FeedPileWords"/>.</summary>
+    public static Queue<int>? PileWords { get; set; }
+
+    /// <summary>The oracle's pile words, "0,24011,10699"; null for an empty or missing text.</summary>
+    public static Queue<int>? ParsePileWords(string? text) => string.IsNullOrEmpty(text) ? null
+        : new(text.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)));
 
     /// <summary>The stale word of this fill: the oracle's (PileWords) when it gives one, else the one met when no interrupt comes there.</summary>
     private int FillStaleWord() => PileWords is { Count: > 0 } fed ? fed.Dequeue() : StaleStackWord;

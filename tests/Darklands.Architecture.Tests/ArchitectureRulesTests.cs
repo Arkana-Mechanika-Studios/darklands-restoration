@@ -100,8 +100,9 @@ public sealed class ArchitectureRulesTests
     }
 
     /// <summary>
-    /// The rules are deterministic and do no I/O (ARCHITECTURE.md "Principles"): no file system, no console, no wall clock, no
-    /// System.Random in the model, the card scripts and the simulation. Time and chance come in through IRandomSource and the
+    /// The rules are deterministic and do no I/O (ARCHITECTURE.md "Principles"): no file system, no console, no environment variable, no
+    /// wall clock, no System.Random in the model, the card scripts and the simulation. A tester's trace or the oracle's feed is a
+    /// plain hook the host sets (Darklands.Host.Headless OracleFeeds). Time and chance come in through IRandomSource and the
     /// game's own clock; files come in through Content.
     /// </summary>
     [Fact]
@@ -114,8 +115,6 @@ public sealed class ArchitectureRulesTests
     /// <summary>The places in the rules that do I/O or read the wall clock today, and why.</summary>
     private static readonly Dictionary<string, string> KnownIoOrClock = new()
     {
-        ["Darklands.Core.Randomness.MscRandom"] = "tester trace DARKLANDS_RANDOM_TRACE to the console, off in play (null unless the variable is set)",
-        ["Darklands.Core.Battles.Tactics.TacticalBattle"] = "tester trace DARKLANDS_STEP_TRACE to the console, off in play (null unless the variable is set)",
     };
 
     /// <summary>
@@ -190,7 +189,8 @@ public sealed class ArchitectureRulesTests
         use.Target.FullName is { } name
         && (IoTypes.Contains(name)
             || name is "System.DateTime" or "System.DateTimeOffset" && use.Member is "get_Now" or "get_UtcNow" or "get_Today"
-            || name == "System.Environment" && use.Member.StartsWith("get_TickCount", StringComparison.Ordinal)
+            || name == "System.Environment" && (use.Member.StartsWith("get_TickCount", StringComparison.Ordinal)
+                || use.Member.StartsWith("GetEnvironmentVariable", StringComparison.Ordinal))
             || name == "System.Threading.Thread" && use.Member == "Sleep");
 
     /// <summary>The types of <paramref name="assemblies"/> that make a use <paramref name="breaks"/> matches, each with its first such use.</summary>

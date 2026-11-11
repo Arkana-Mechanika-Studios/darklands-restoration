@@ -815,18 +815,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:846` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the Following bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
-- **B-e9dc75** `bug`, flag `FixFollowersOnShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:243` `TacticalBattle.PlaceInitialEnemies`  
+- **B-e9dc75** `bug`, flag `FixFollowersOnShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:245` `TacticalBattle.PlaceInitialEnemies`  
   original: `R025+0x0CFC` (1EF8:0CFC, draft)  
   why: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a member left on the old level they appear there, and the end test turns him Away (split audit row 9)
-- **B-7ac4d6** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:285` `TacticalBattle.CheckActivations`  
+- **B-7ac4d6** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:287` `TacticalBattle.CheckActivations`  
   original: `R014+0x4442` (0E76:4442, draft)  
   why: the encounters of the party's level are checked at the places of every member (trigger-check R014+0x4442, only while DS:11CA == DS:C623): a lone member on another level, at the coordinates of an encounter's sight on the party's level, finds it. Kept as the original (party-split audit row 23). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-6212cc** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:344` `TacticalBattle.PlaceEnemies`  
+- **B-6212cc** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:346` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   why: a reinforcement wave (mode 1, after a kill) is placed on the level SHOWN from its .enm (R025+0x0000, DS:A6B4 = DS:11CA): with a lone member's level shown it lands on his level. Kept as the original (party-split audit row 8). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-fd4e71** `bug`, flag `FixWokenOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:573` `TacticalBattle.PlaceWoken`  
+- **B-fd4e71** `bug`, flag `FixWokenOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:575` `TacticalBattle.PlaceWoken`  
   original: `R014+0x0DEE` (0E76:0DEE, draft)  
   why: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  

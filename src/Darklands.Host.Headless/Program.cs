@@ -67,6 +67,7 @@ using Darklands.Rendering;
 // The text screen is drawn with the 8x16 font named by DARKLANDS_TEXT_FONT (a 4096-byte BIOS font dump or its base64), else the
 // built-in one.
 
+OracleFeeds.FromEnvironment();
 var argList = args.ToList();
 GameSettings fileSettings = new();
 var settingsIndex = argList.IndexOf("--settings");
