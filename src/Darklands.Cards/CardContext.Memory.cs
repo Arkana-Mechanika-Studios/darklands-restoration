@@ -348,9 +348,11 @@ public sealed partial class CardContext
     /// </summary>
     // orig: R029+0x21AA (0E76:21AA) draft
     // C: the (x, y) words go to the barter screen as one long category mask, low word first.
+    // C: the wrapper's card-run afterwards starts with card-run's MEM.LOG query (PartyQueries.CardRunQuery), kept for its results
     public void OpenShop(int shop, string? name, int low, int high)
     {
         Screens.Barter(shop, name ?? (shop >= 0 && shop < ShopNames.Length ? ShopNames[shop] : ""), (uint)(ushort)low | (long)(ushort)high << 16);
+        Core.Rules.PartyQueries.CardRunQuery(State);
     }
 
     /// <summary>The card that was shown before this one (<c>earlier-screen</c>).</summary>

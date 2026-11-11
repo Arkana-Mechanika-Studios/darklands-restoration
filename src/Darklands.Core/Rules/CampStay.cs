@@ -223,6 +223,8 @@ public sealed class CampStay
         var (oldActivity, oldGain) = (Activity[i], Gain[i]);
         Activity[i] = CampActivity.Alchemy;
         useBench();
+        // C: R029+0x2204 ends with card-run (thunk 09C0:1EA5): its MEM.LOG query's results are kept (PartyQueries.CardRunQuery)
+        PartyQueries.CardRunQuery(_s);
         Gain[i] = Brewing.BatchesBrewing(_s, i);
         if (Gain[i] == 0)
         {

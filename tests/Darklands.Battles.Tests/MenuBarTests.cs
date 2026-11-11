@@ -184,6 +184,39 @@ public sealed class MenuBarTests
     }
 
     /// <summary>
+    /// card-run's MEM.LOG line (R043+0x0000) computes the party's lore level, whose party-top-ability-high leaves top-scoring-member at the
+    /// member with the best missile skill: the original's graveyard card of lockstep fortress-lugum-split-f10 writes DS:991D = 1 there
+    /// (R029+0x026A+0x30, nothing writes it again before the battle), so the battle's F10 Right goes into Game's item -1 and Enter chooses
+    /// nothing. Here the query is kept (PartyQueries.CardRunQuery) and the bar reads its result.
+    /// </summary>
+    [Fact]
+    public void TheCardRunQueryLeavesTopScoringMemberForTheKeyboardMenu()
+    {
+        var host = new FrameHost(Key(Keys.F10), Key(Keys.Right), Key(Keys.Down), Key(Keys.Down), Key(Keys.Enter));
+        if (MusicTests.Start(host) is not var (ui, state, _, _))
+        {
+            return;
+        }
+        for (var i = 0; i < state.Party.Members.Count; i++)
+        {
+            for (var k = 4; k < 7; k++)
+            {
+                state.Party.Members[i].Skills[k] = i == 1 && k == 5 ? 60 : 10;
+            }
+        }
+        state.Party.Last.Member = 0;
+        Core.Rules.PartyQueries.CardRunQuery(state);
+        Assert.Equal(1, state.Party.Last.Member);
+        Assert.Equal(0x0100, MenuBar.BeforeGameItems(state));
+        var chosen = false;
+        var keys = new HotKeys(ui, state, ui.Options) { ChoosePartyOrder = () => chosen = true };
+        ui.GameKey = keys.Handle;
+        ui.MenuBar = MenuBar.ForGame(ui, state, ui.Options, keys);
+        Assert.Null(ui.Poll());
+        Assert.False(chosen);
+    }
+
+    /// <summary>
     /// On Party (the last entry) Right with no item chosen reads DS:987B, the right edge of the dropdown just opened: never 0 there, so the
     /// cursor goes into item -1's sub-menu; Left takes it out again and Down then walks the items as before.
     /// </summary>
