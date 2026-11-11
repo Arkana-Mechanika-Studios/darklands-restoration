@@ -65,6 +65,10 @@ public sealed class BattleMap
 
     public BattlefieldLevel Level { get; set; }
 
+    /// <summary>The level whose walls a combatant's collision test reads when it is not <see cref="Level"/> (OriginalBehaviour.FixWalkingOnOwnLevel;
+    /// null: the level shown, as the original).</summary>
+    public Func<int, BattlefieldLevel?>? OwnLevel { get; set; }
+
     /// <summary>Furniture shapes by tile number (1..15).</summary>
     public IReadOnlyList<FurnitureShape?> Furniture { get; set; }
 
@@ -101,25 +105,25 @@ public sealed class BattleMap
     public Blocking Collides(int who, int x, int y)
     {
         Array.Clear(LastParts);
-        // BUG: the walls and furniture tested are those of the level SHOWN, for a combatant on any level (fighter-collision-pass
-        //   R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown level's walls and walks
-        //   through his own (the fuzz of 318 walks left nobody inside a wall). Kept as the original (party-split audit row 5): an
-        //   optional rule after 1.0.
+        // BUG: OriginalBehaviour.FixWalkingOnOwnLevel - the walls and furniture tested are those of the level SHOWN, for a combatant on any
+        //   level (fighter-collision-pass R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown
+        //   level's walls and walks through his own (party-split audit row 5)
+        var level = OwnLevel?.Invoke(who) ?? Level;
         var me = _battle[who];
         int w = me.HalfWidth, h = me.HalfHeight;
         int right = x + w - 1, left = x - w + 1, bottom = y + h - 1, top = y - h + 1;
         int cx = x >> 5, cy = y >> 4;
         int cellLeft = cx << 5, cellTop = cy << 4;
         // orig: the 3 × 3 cells are read without a bounds check (BattlefieldLevel's indexer reads on past the cells as the original does).
-        var centre = Level[cx, cy];
+        var centre = level[cx, cy];
         if (centre.IsVoid)
         {
             return Blocking.Void;
         }
-        var north = Level[cx, cy - 1];
-        var south = Level[cx, cy + 1];
-        var east = Level[cx + 1, cy];
-        var west = Level[cx - 1, cy];
+        var north = level[cx, cy - 1];
+        var south = level[cx, cy + 1];
+        var east = level[cx + 1, cy];
+        var west = level[cx - 1, cy];
         int cR16 = cellLeft + 16, cB15 = cellTop + 15, cR32 = cellLeft + 32, cM8 = cellTop + 8;
         if (!IgnoreScenery)
         {
@@ -177,7 +181,7 @@ public sealed class BattleMap
         {
             for (var n = 0; n < 9; n++)
             {
-                var cell = Level[cx + n % 3 - 1, cy + n / 3 - 1];
+                var cell = level[cx + n % 3 - 1, cy + n / 3 - 1];
                 var f = cell.Furniture;
                 if (f == 0 || f >= Furniture.Count || Furniture[f] is not { } shape)
                 {

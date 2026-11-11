@@ -242,6 +242,13 @@ after 1.0.
     party and go for him, and their shots and spells reach him through the floors (he can die of them); shots between combatants on a
     hidden level never hit, the ammunition lost. Faithful keeps it (tests `CombatAcrossLevelsTests`); fixed: an enemy sees, keeps and
     chooses only targets on its own level, a missile flies on its shooter's level and an effect lands on the level of its missile.
+  * `FixWalkingOnOwnLevel` (party-split audit row 5, 2026-11-12): the collision test of every step, path search and re-path
+    (fighter-collision-pass R014+0x5ECA; R014+0x1624, R014+0x481A, R014+0xF67A) reads the walls and furniture of the level shown, for a
+    combatant on any level: a member walking on a hidden level is stopped by the shown level's walls and walks through his own, and can
+    stop inside one of them. The walk fuzz (880 walks of a member on the party's level with another level shown, 1500 ticks each)
+    found no figure ending inside a wall of his own level, but Faithful's walks ended elsewhere than with his level shown in 738 of 880,
+    DataSafe's in 347 (the other per-tick tests a member off the level shown skips). Faithful keeps it (tests
+    `WalkingOnOwnLevelTests`); fixed: a combatant on a level not shown is tested against his own level's walls and furniture.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

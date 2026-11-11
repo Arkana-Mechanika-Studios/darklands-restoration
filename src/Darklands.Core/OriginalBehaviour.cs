@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true, FixCombatAcrossLevels = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true, FixCombatAcrossLevels = true, FixWalkingOnOwnLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -466,6 +466,15 @@ public sealed class OriginalBehaviour
     // orig: enemy-line-of-sight R018+0x04B6, the drop block R018+0x0706, R018+0x0000 (missile +0x18 = DS:11CA), R014+0xED10 (the hit test
     //   on DS:A6B4[target]), R019+0x0000 / 0x0300 (effect level = DS:11CA), data safety
     public bool FixCombatAcrossLevels { get; set; }
+
+    /// <summary>
+    /// The collision test of every step, path search and re-path (fighter-collision-pass R014+0x5ECA) reads the walls and furniture of
+    /// the level SHOWN, for a combatant on any level: a member walking on a hidden level is stopped by the shown level's walls and walks
+    /// through his own, and can stop inside one of them. Fixed: a combatant on a level not shown is tested against his own level's walls
+    /// and furniture.
+    /// </summary>
+    // orig: fighter-collision-pass R014+0x5ECA, the step R014+0x1624, path search R014+0x481A, re-path R014+0xF67A, data safety
+    public bool FixWalkingOnOwnLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

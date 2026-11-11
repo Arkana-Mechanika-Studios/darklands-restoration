@@ -141,6 +141,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
         _library = library;
         _view = view;
         Map = new BattleMap(battle, _levels[Math.Clamp(field.StartLevel, 0, _levels.Count - 1)], furniture, field.Terrain.FirstSightBlockingFurniture);
+        Map.OwnLevel = who => Battle.Behaviour.FixWalkingOnOwnLevel && who is >= 0 and < Combatant.Count && Battle[who].Floor is var f
+            && f >= 0 && f < _levels.Count && f != Battle.FloorShown ? _levels[f] : null;
         Paths = new PathFinder(Map);
         Paths.UseHalfSizes(k => battle[k].HalfWidth, k => battle[k].HalfHeight);
         Effects = new EffectField(battle, Map, n => _view.Sound(n), ReadyWeapon, slot => SlotWeapons[slot], () => PauseByte != 0) { Terrain = field.Terrain };

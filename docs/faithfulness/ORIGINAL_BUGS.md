@@ -15,10 +15,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 64 | 31 | 33 |
+| battles | 64 | 32 | 32 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 14 | 8 | 6 |
-| total | 269 | 72 | 197 |
+| total | 269 | 73 | 196 |
 
 ## Core logic (255)
 
@@ -642,9 +642,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f20e47** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:787` `MineBuilder.SetPiece`  
   original: `R009+0x4D56` (182C:0DB6, draft)  
   why: the relic of the deepest section of the dwarf, kobold and vulcan mines (R009+0x4E28..0x4E3B) is forced to quality 35: any relic 0x96..0xAB gets quality 0x23 and type 0x9F whatever DARKLAND.LST gives it, as the fortress relics (R011+0x096A).
-- **B-499aa0** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:104` `BattleMap.Collides`  
+- **B-85e0a9** `bug`, flag `FixWalkingOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:108` `BattleMap.Collides`  
   original: `R014+0x5ECA` (1462:000A, draft)  
-  why: the walls and furniture tested are those of the level SHOWN, for a combatant on any level (fighter-collision-pass R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown level's walls and walks through his own (the fuzz of 318 walks left nobody inside a wall). Kept as the original (party-split audit row 5): an optional rule after 1.0.
+  why: OriginalBehaviour.FixWalkingOnOwnLevel - the walls and furniture tested are those of the level SHOWN, for a combatant on any level (fighter-collision-pass R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown level's walls and walks through his own (party-split audit row 5)
 - **B-e080d4** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/LootStore.cs:154` `LootStore.Merge`  
   original: `R014+0xE930` (19CD:33C0, draft)  
   why: loot counts wrap at 255: the counts are added in a byte with no limit test, so equal items totalling more than 255 wrap and the excess is lost.
@@ -786,13 +786,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
-- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:371` `TacticalBattle.KeepPlaces`  
+- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:373` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
-- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:856` `TacticalBattle.Tick`  
+- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:858` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row 28): an optional rule after 1.0.
-- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:886` `TacticalBattle.Tick`  
+- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:888` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21): no change.
 
