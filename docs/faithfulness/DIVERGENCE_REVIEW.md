@@ -449,7 +449,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0xD6DA` (19CD:216A, draft)  
   divergence: a record whose handler word is not one of the eight types (a marker the generator left) would be called through its raw words in the original; here nothing happens.  
   recommendation: **justify** - triggers (R014 19CD 1E92 and the trigger loop) call the record's handler word through the far pointer the level loader set; the generators only write the eight handler types (0 secret door .. 8 wall alarm) into trigger records, so a record with another word does not occur in generated levels. Calling raw words would jump into arbitrary code; nothing to reproduce.
-- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:1082` `TacticalBattle.MissileTrap`  
+- **D-e70eea** `other` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:1088` `TacticalBattle.MissileTrap`  
   original: `R023+0x0E30` (1EF8:0E30, draft)  
   divergence: an odd direction leaves the line's globals as the last test left them in the original.  
   recommendation: **keep** - missile_trap (R014 19CD 3258): the direction comes from the trap record written by the generators, which use the even directions 0/2/4/6 only; an odd one would reuse the line globals of the last sight-line-blocked call (deterministic in principle, but it needs a corrupt record). Kept as a guard.

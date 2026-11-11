@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 37 | 19 | 18 |
+| battles | 38 | 20 | 18 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 13 | 8 | 5 |
-| total | 241 | 60 | 181 |
+| total | 242 | 61 | 181 |
 
-## Core logic (228)
+## Core logic (229)
 
 ### rules (103)
 
@@ -601,7 +601,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (37)
+### battles (38)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -681,6 +681,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:476` `TacticalBattle.ConsumeSlotAsOriginal`  
   original: `R014+0xB434` (18BF:0FA4, draft)  
   why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
+- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:640` `TacticalBattle.Triggers`  
+  original: `R014+0xD6DA` (19CD:216A, draft)  
+  why: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level: an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
 - **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:713` `EffectField.DropWornOut`  
   original: `R019+0x0914` (1EF8:0914, matched)  
   why: items are consumed until none of that type and quality is left: the spares stacked with the worn piece (worn down with it by WearItem) are thrown away with it.

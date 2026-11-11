@@ -637,6 +637,12 @@ public sealed partial class TacticalBattle
     private void Triggers(int i)
     {
         var c = Battle[i];
+        // BUG: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level:
+        //   an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
+        if (Battle.Behaviour.FixTriggersOfOtherLevels && c.Floor != Battle.FloorShown)
+        {
+            return;
+        }
         for (var k = 0; k < Level.GetByte(TriggerCountAt); k++)
         {
             var at = TriggersAt + 14 * k;

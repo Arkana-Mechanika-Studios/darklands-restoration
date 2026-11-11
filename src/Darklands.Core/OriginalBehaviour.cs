@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -377,6 +377,14 @@ public sealed class OriginalBehaviour
     //   R023+0x13D0, R023+0x153E), data safety
     public bool FixPlaceActionsOnOwnLevel { get; set; }
 
+    /// <summary>
+    /// The trigger test of each tick (secret doors, hidden traps, dart and spell traps, pits, wall openings, alarms) reads the triggers of
+    /// the level SHOWN at the place of every member, and of every enemy for the traps, whatever level they are on: a member on another
+    /// level sets off the shown level's alarm (the battle ends with its card though nobody is there), its dart or spell trap (hitting
+    /// whoever stands there) or finds its secret doors and traps by remote. Fixed: only those on the level shown spring its triggers.
+    /// </summary>
+    // orig: R014+0xD6DA (no floor test), handlers R014+0xD882 / 0xD966 / 0xDA18 / 0xDACA, R023+0x0D88 / 0x0E30 / 0x0812, data safety
+    public bool FixTriggersOfOtherLevels { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
