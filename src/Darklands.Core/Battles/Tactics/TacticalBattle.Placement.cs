@@ -564,6 +564,15 @@ public sealed partial class TacticalBattle
     private void PlaceWoken(int i)
     {
         var c = Battle[i];
+        // BUG: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to
+        //   any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
+        var own = Battle.Behaviour.FixWokenOnOtherLevel && c.Floor >= 0 && c.Floor < _levels.Count;
+        int? shownBefore = null;
+        if (own && c.Floor != Battle.FloorShown)
+        {
+            shownBefore = Battle.FloorShown;
+            SwitchLevel(c.Floor);
+        }
         var first = true;
         var any = false;
         var anchor = i;
@@ -601,7 +610,7 @@ public sealed partial class TacticalBattle
                 r = 30;
                 any = true;
             }
-            else if (Battle[anchor].IsAble)
+            else if (Battle[anchor].IsAble && !(own && Battle[anchor].Floor != c.Floor))
             {
                 from = Battle[anchor].Position;
                 anchor++;
@@ -613,6 +622,10 @@ public sealed partial class TacticalBattle
             }
         }
         Map.StrictWalls = false;
+        if (shownBefore is { } before)
+        {
+            SwitchLevel(before);
+        }
         _view.RowChanged(i);
     }
 }

@@ -207,6 +207,11 @@ after 1.0.
     DS:C2BB from R023+0x17D2): with the view moved to a member left behind on the old level (an unconscious one can be selected) they
     appear on his level, and the next end test (R014+0x08FE), finding nobody able on the enemies' level, turns him Away and removes the
     enemies. Faithful keeps it (tests `FollowersOnShownLevelTests`); fixed: they are placed on the party's level, the view coming back.
+  * `FixWokenOnOtherLevel` (party-split audit row 15, 2026-11-11): after a fight the unconscious are woken and put on a free spot near
+    where they lay (fight-recovery R014+0x0DEE), tested against the walls and sight of the level shown, and after 60 pixels next to any
+    able member on any level: a member woken on a level not shown can land inside a wall of his own level (stuck) or at the coordinates
+    of a member of another level. Faithful keeps it (tests `WokenOnOtherLevelTests`); fixed: the search is made on his own level, next to
+    members of that level only, the level shown coming back.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

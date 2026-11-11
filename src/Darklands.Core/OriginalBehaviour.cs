@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -413,6 +413,15 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R025+0x0CFC (placed on DS:11CA around DS:C3CD), the delay DS:C2BB from R023+0x17D2, fight-finished R014+0x08FE, data safety
     public bool FixFollowersOnShownLevel { get; set; }
+
+    /// <summary>
+    /// After a fight the unconscious are woken and put on a free spot near where they lay, tested against the walls and sight of the
+    /// level SHOWN, and after 60 pixels next to any able member, on whatever level: a member woken on a level not shown can land inside a
+    /// wall of his own level (stuck) or at the coordinates of a member of another level. Fixed: the search is made on his own level (the
+    /// level shown coming back), next to members of that level only.
+    /// </summary>
+    // orig: fight-recovery R014+0x0DEE (the free-spot and sight tests on DS:11CA, the anchors any able member), data safety
+    public bool FixWokenOnOtherLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
