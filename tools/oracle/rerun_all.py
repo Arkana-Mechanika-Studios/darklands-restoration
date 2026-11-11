@@ -762,6 +762,12 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
 for _name in ("fortress-lugum-stairs", "fortress-lugum-back", "fortress-lugum-split", "fortress-lugum-split-menu", "fortress-lugum-split-f10"):
     SESSIONS[_name] = "local/oracle-saves/lugum/DKSAVE2.SAV"
     BATTLE_RECORDS.add(_name)
+# issue3: the reporter's saved game on the travel map by night (kept under local/oracle-saves/issue3, not in the repository; every member's
+# Stealth set to 99 so the night climb succeeds): the castle of Rotenburg climbed by night, its guards beaten, one member alone down the
+# keep's stairs and back by Use Stairs from the U key and from the Orders menu (GitHub issue 3)
+for _name in ("castle-rotenburg-split", "castle-rotenburg-split-menu"):
+    SESSIONS[_name] = "local/oracle-saves/issue3/DKSAVE6.SAV"
+    BATTLE_RECORDS.add(_name)
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,
 # taken up from a save made in the mine's battle), the per-battle state carried from one battle to the next. Only the seeds that agree are
 # here (27, 28, 36 of 1..40; since round spawn 2, 4, 8, 15, 22, 24, 38, 40; since round reload 05, by its still:<n> wait for the
