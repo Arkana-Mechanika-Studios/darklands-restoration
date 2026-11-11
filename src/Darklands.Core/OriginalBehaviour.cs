@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -434,6 +434,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fight-keys R016+0x1182 / 0x1072 / 0x10B2 / 0x0F76 with the place tests R014+0xD04E / 0xD328 / 0xD402, data safety
     public bool FixLeaderKeysOnOtherLevel { get; set; }
+
+    /// <summary>
+    /// use-exit places the combatant who took the stairs around the arrival spot of the record (+8..+11) on the new level; when no place
+    /// there is free (place-nearby fails), he keeps the coordinates he had on the old level. Some generated mines hold a record whose
+    /// arrival spot lies away from the stairs it belongs to, amid cells that are not ground (mines 0x0E, 0x0F, 0x10 at some seeds, on the
+    /// way back up to level 0): he stands in the void, out of reach. Fixed: when the arrival spot gives no place, he is placed around the
+    /// new level's stairs that lead back to his old level, then around a member standing on that level.
+    /// </summary>
+    // orig: use-exit R023+0x1618 with place-nearby R024+0x08F2 (the coordinates kept on failure), data safety
+    public bool FixStairsArrivalWithoutPlace { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

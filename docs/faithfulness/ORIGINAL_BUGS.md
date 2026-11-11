@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 44 | 26 | 18 |
+| battles | 45 | 27 | 18 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 13 | 8 | 5 |
-| total | 248 | 67 | 181 |
+| total | 249 | 68 | 181 |
 
-## Core logic (235)
+## Core logic (236)
 
 ### rules (103)
 
@@ -601,7 +601,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (44)
+### battles (45)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -672,15 +672,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2a15e1** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:634` `TacticalBattle.LeaderAway`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixLeaderKeysOnOtherLevel - the leader's U, O, P and D use his stairs record, door or chest index from the place tests of the level SHOWN: alone on another level he acts on the party's level by remote (split audit row 3)
-- **B-5e9887** `bug`, flag `FixStaleStairsBackRecord` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:643` `TacticalBattle.StaleStairsRecord`  
+- **B-5e9887** `bug`, flag `FixStaleStairsBackRecord` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:673` `TacticalBattle.StaleStairsRecord`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch: the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
-- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:693` `TacticalBattle.TakeExit`  
+- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:724` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
-- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:712` `TacticalBattle.TakeExit`  
+- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:743` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another level: once anyone has left, the party never comes together by the stairs (split audit row 10)
+- **B-fcc034** `bug`, flag `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:770` `TacticalBattle.TakeExit`  
+  original: `R023+0x1618` (1EF8:1618, draft)  
+  why: OriginalBehaviour.FixStairsArrivalWithoutPlace - when no place around the arrival spot is free, place-nearby fails and he keeps the coordinates of his old level (some generated mines: an arrival spot away from its stairs, amid cells that are not ground; he stands in the void; lockstep of direct use-exit calls, split audit fuzz)
 - **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:233` `TacticalBattle.PartyLocations`  
   original: `R014+0xDC14` (19CD:26A4, draft)  
   why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)

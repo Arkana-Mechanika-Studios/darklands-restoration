@@ -636,6 +636,36 @@ public sealed partial class TacticalBattle
         return Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[Battle.Leader].Floor != Battle.FloorShown;
     }
 
+    /// <summary>FixStairsArrivalWithoutPlace: around the shown level's stairs back to <paramref name="from"/>, then any stairs, then around
+    /// a member standing on this level.</summary>
+    private void PlaceAfterFailedArrival(int who, int from)
+    {
+        var count = Level.GetByte(StairsCountAt);
+        foreach (var back in new[] { true, false })
+        {
+            for (var k = 0; k < count; k++)
+            {
+                var at = StairsAt + 14 * k;
+                if (back != ((sbyte)Level.GetByte(at + 6) == from))
+                {
+                    continue;
+                }
+                var box = new MapPoint(Level.GetWord(at) + Level.GetByte(at + 4) / 2, Level.GetWord(at + 2) + Level.GetByte(at + 5) / 2);
+                if (PlaceAround(who, box, Level.GetByte(at + 12) & 7))
+                {
+                    return;
+                }
+            }
+        }
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (i != who && Battle[i].IsAble && Battle[i].Floor == Battle[who].Floor && PlaceAround(who, Battle[i].Position, Battle[i].Facing & 6))
+            {
+                return;
+            }
+        }
+    }
+
     /// <summary>Whether record number n is past the stairs count of combatant who's own level, with FixStaleStairsBackRecord on.</summary>
     private bool StaleStairsRecord(int who, int n)
     {
@@ -680,6 +710,7 @@ public sealed partial class TacticalBattle
             return;
         }
         var old = Battle.FloorShown;
+        var cameFrom = Battle[who].Floor;
         var at = StairsAt + 14 * n;
         var record = Level.Image.AsSpan(at, 14).ToArray();
         // DIVERGENCE: a record whose level (+6) the battle does not have (a slot past the count with other bytes, never seen in the
@@ -736,7 +767,13 @@ public sealed partial class TacticalBattle
             }
         }
         var spot = new MapPoint((short)(record[8] | record[9] << 8), (short)(record[10] | record[11] << 8));
-        PlaceAround(who, spot, record[12]);
+        // BUG: OriginalBehaviour.FixStairsArrivalWithoutPlace - when no place around the arrival spot is free, place-nearby fails and he keeps
+        //   the coordinates of his old level (some generated mines: an arrival spot away from its stairs, amid cells that are not ground; he
+        //   stands in the void; lockstep of direct use-exit calls, split audit fuzz)
+        if (!PlaceAround(who, spot, record[12]) && Battle.Behaviour.FixStairsArrivalWithoutPlace)
+        {
+            PlaceAfterFailedArrival(who, cameFrom);
+        }
         if (Battle.PartyFloor == lvl)
         {
             // orig: R023+0x1618 floor-view-paint(who) when the party has gone over: the view's centre becomes the cell of the member who

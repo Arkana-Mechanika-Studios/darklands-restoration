@@ -220,6 +220,14 @@ after 1.0.
     again at its arrival spot, from wherever he stood), opens its door or chest or picks its lock by remote; travelling together U sends
     every able member, on whatever level, through the leader's record. Faithful keeps it (tests `LeaderKeysOnOtherLevelTests`); fixed:
     the leader's keys do nothing while he is not on the level shown, and U travelling together takes only the members on his level.
+  * `FixStairsArrivalWithoutPlace` (party-split audit fuzz, 2026-11-11): use-exit (R023+0x1618) places the combatant who took the stairs
+    around the record's arrival spot on the new level (place-nearby R024+0x08F2); when no place there is free he keeps the coordinates
+    of his old level. Some generated mines hold a record whose arrival spot lies away from its stairs, amid cells that are not ground:
+    in mines 0x0F (seed 4885), 0x0E (7816) and 0x10 (4885) a member who goes down to level 1 and back up stands on level 0 at his
+    level-1 coordinates, in the void, out of reach. The original does the same: direct calls of its use-exit and level-change from a
+    captured state of each battle (battle_calls) give (336, 280), (1072, 392) and (1200, 136) on level 0, as the C#. Faithful keeps it
+    (tests `StairsArrivalWithoutPlaceTests`); fixed: when the arrival spot gives no place he is placed around the new level's stairs
+    back to his old level, then around a member standing on that level.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
