@@ -973,9 +973,20 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         else
         {
-            foreach (var (at, before) in _unsavedLevelBytes)
+            // the original reloads the level from its file at the next switch to it (R024+0x059A): what changed without DS:D4E4 is lost
+            // (use-exit's stairs mark, a sprung trap's sign, a found trap, an encounter removed when its placement failed; split audit
+            // row 18)
+            var floor = Enumerable.Range(0, _levels.Count).FirstOrDefault(i => ReferenceEquals(_levels[i], Map.Level), -1);
+            if (Store.FloorFiles is { } floors && floor >= 0 && floor < floors.Length && floors[floor].Length == Level.Image.Length)
             {
-                Level.SetByte(at, before);
+                floors[floor].CopyTo(Level.Image, 0);
+            }
+            else
+            {
+                for (var k = _unsavedLevelBytes.Count - 1; k >= 0; k--)
+                {
+                    Level.SetByte(_unsavedLevelBytes[k].At, _unsavedLevelBytes[k].Before);
+                }
             }
         }
         _unsavedLevelBytes.Clear();
@@ -1022,8 +1033,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>Shows another level (level-change).</summary>
     // orig: level-change R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (the .flr/.atv files are BattlefieldStore.FloorFiles / ActivationFiles, which only the battle
-    // file reads): a level switched to is not read back from its file, so what changed in it without DS:D4E4 is kept here but for
-    // use-exit's stairs mark (SaveLevelOrLoseUnsaved); the hidden wall lists of unopened doors are applied by LevelShown.
+    // file reads): a level left without DS:D4E4 gets its file's image back (SaveLevelOrLoseUnsaved), as the original's reload loses what
+    // changed, but its activations (.atv) stay as they are in memory; the hidden wall lists of unopened doors are applied by LevelShown.
     public void SwitchLevel(int floor)
     {
         if (floor < 0 || floor >= _levels.Count)
