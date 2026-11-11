@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The seventeen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The eighteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -179,6 +179,13 @@ after 1.0.
     counts him too, so the last member down the stairs never brings the party together. Faithful keeps both (tests
     `ExitedMemberStrandsTheRestTests`; not reproduced in lockstep: the two split saves offer no reachable exit zone); fixed: a member
     gone through an exit counts in neither test while an able member is still on the battlefield.
+  * `FixPlaceActionsOnOwnLevel` (party-split audit row 1, 2026-11-11): the level image in memory is the one shown, and the place tests
+    (party-place-table R014+0xDC14) and place actions (fighter-goto-action R014+0x2170: door-flip R023+0x00B8, lock-picking R023+0x12C0,
+    chest-opening R023+0x13D0, R023+0x153E) read it whatever level the member is on: a member on another level whose Use Door, Pick
+    Lock, Open Chest, Dissolve Lock or Disarm Trap runs while it is shown works the door or chest with his index on the shown level
+    (waking that level's encounter behind it) and his own is untouched. Faithful keeps it (tests `PlaceActionsOnOwnLevelTests`; not
+    reproduced in lockstep yet); fixed: the place tests leave a member on another level alone, and his place action is carried out with
+    his own level shown, the level shown before coming back.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

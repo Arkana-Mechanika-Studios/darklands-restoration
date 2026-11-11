@@ -230,6 +230,12 @@ public sealed partial class TacticalBattle
             {
                 continue;
             }
+            // BUG: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level
+            //   standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
+            if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Floor != Battle.FloorShown)
+            {
+                continue;
+            }
             var was = ((int)c.Flags & 2) >> 1;
             DoorAt(i);
             if (Changed(was, 2, 0xDA) is { } door)

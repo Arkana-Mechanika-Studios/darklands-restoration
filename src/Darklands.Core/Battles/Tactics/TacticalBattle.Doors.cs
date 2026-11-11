@@ -267,6 +267,27 @@ public sealed partial class TacticalBattle
     private void DoPlaceAction(int i)
     {
         var c = Battle[i];
+        // BUG: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the door or chest index of a member on another level is used on the level SHOWN
+        //   (door-flip, lock-picking, chest-opening, R023+0x153E read the image of DS:11CA): another level's door or chest is toggled,
+        //   picked, opened or disarmed, and his own is untouched (split audit row 1)
+        int? shownBefore = null;
+        if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Floor != Battle.FloorShown && c.Floor >= 0 && c.Floor < _levels.Count
+            && c.Place is PlaceAction.UseDoor or PlaceAction.PickDoorLock or PlaceAction.PickChestLock or PlaceAction.OpenChest
+                or PlaceAction.DissolveLock or PlaceAction.DisarmChestTrap)
+        {
+            shownBefore = Battle.FloorShown;
+            SwitchLevel(c.Floor);
+        }
+        DoPlaceActionHere(i);
+        if (shownBefore is { } before && Battle.FloorShown != before)
+        {
+            SwitchLevel(before);
+        }
+    }
+
+    private void DoPlaceActionHere(int i)
+    {
+        var c = Battle[i];
         if (c.Place == PlaceAction.UseDoor)
         {
             ToggleDoor(c.Door, i);

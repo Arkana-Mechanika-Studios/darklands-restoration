@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -364,6 +364,19 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fight-finished R014+0x08FE (the fled test), use-exit R023+0x1618 (the alone loop), data safety
     public bool FixExitedMemberStrandsTheRest { get; set; }
+
+    /// <summary>
+    /// The level image in memory is the one SHOWN: the place tests of each tick (which door, stairs, chest region a member stands in) and
+    /// the place actions (Use Door, Pick Lock, Open Chest, Dissolve Lock, Disarm Trap) read it whatever level the member is on. A member on
+    /// another level whose order runs while it is shown toggles, picks, opens or disarms the door or chest with his index on the level
+    /// shown (waking that level's encounter behind it; a zero record past its count), and his own is untouched; standing at a place of
+    /// the shown level's map he gets its index. Fixed: the place tests leave a member on another level alone, and his place action is
+    /// carried out with his own level shown (the level shown before comes back).
+    /// </summary>
+    // orig: party-place-table R014+0xDC14, fighter-goto-action R014+0x2170 (door-flip R023+0x00B8, lock-picking R023+0x12C0, chest-opening
+    //   R023+0x13D0, R023+0x153E), data safety
+    public bool FixPlaceActionsOnOwnLevel { get; set; }
+
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
