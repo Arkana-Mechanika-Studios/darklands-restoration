@@ -371,12 +371,14 @@ public sealed partial class TacticalBattle
                 return;
             }
             var leader = Battle[Battle.Leader];
+            int? shownBefore = null;
             if (leader.StairsBack != -1)
             {
                 if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && leader.Floor != Battle.FloorShown && leader.Floor >= 0
                     && leader.Floor < _levels.Count)
                 {
                     // the fix: the leader's own level shown first, so the record is his own level's
+                    shownBefore = Battle.FloorShown;
                     SwitchLevel(leader.Floor);
                 }
                 // BUG: OriginalBehaviour.FixLeaderStairsRecordOfShownLevel - with the party split and the battle running, U (R016+0x014E,
@@ -386,6 +388,7 @@ public sealed partial class TacticalBattle
                 //   level 1; past the count, whatever the generator left there) and the lone member stays. Only paused, with the member
                 //   selected, does U or Orders > Use Stairs bring the member back (the menu's Use Stairs is greyed while the battle runs).
                 TakeExit(leader.StairsBack, Battle.Leader);
+                ShowAgainAfterFix(shownBefore, Battle.Leader);
             }
             return;
         }
@@ -560,9 +563,11 @@ public sealed partial class TacticalBattle
     private void TakeStairsOrder(int i)
     {
         var c = Battle[i];
+        int? shownBefore = null;
         if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Floor != Battle.FloorShown && c.Floor >= 0 && c.Floor < _levels.Count)
         {
             // the fix: his own level shown first, so the record is his own level's
+            shownBefore = Battle.FloorShown;
             SwitchLevel(c.Floor);
         }
         // BUG: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test):
@@ -571,6 +576,18 @@ public sealed partial class TacticalBattle
         //   left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the
         //   Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
         TakeExit(c.StairsExit, i);
+        ShowAgainAfterFix(shownBefore, i);
+    }
+
+    /// <summary>After a stairs fix showed the actor's own level first (FixStairsRecordOfShownLevel, FixLeaderStairsRecordOfShownLevel):
+    /// unless the party came together on the level he went to (the view is the party's level then), the level shown before comes back,
+    /// rather than the actor's old level, which use-exit leaves shown and which may now be empty.</summary>
+    private void ShowAgainAfterFix(int? shownBefore, int who)
+    {
+        if (shownBefore is { } before && Battle.PartyFloor != Battle[who].Floor && Battle.FloorShown != before)
+        {
+            SwitchLevel(before);
+        }
     }
 
     /// <summary>

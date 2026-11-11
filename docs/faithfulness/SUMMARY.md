@@ -169,7 +169,9 @@ after 1.0.
     button held between alone deselects nobody (the menu bar's run; the battle stays paused). Fixed: the leader still takes the stairs
     (U outside order mode is his action), through his own level's record (the view goes to his level first): at Rotenburg and at Lugum
     he follows the lone member down (tests `LeaderStairsRecordOfShownLevelTests`). With the leader's own level shown nothing changes
-    (`fortress-lugum-split-running-leader`, the leader alone).
+    (`fortress-lugum-split-running-leader`, the leader alone). After either stairs fix the level that was shown comes back unless the
+    party came together where he went (use-exit leaves the actor's old level shown, which the fix had switched to and which may now be
+    empty).
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

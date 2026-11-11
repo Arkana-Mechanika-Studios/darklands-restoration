@@ -69,6 +69,8 @@ public sealed class LeaderStairsRecordOfShownLevelTests
         // record 0 of his own level: the stairs the lone member took, so the leader joins him
         Assert.Equal(expected, t.Battle[leader].Floor);
         Assert.Equal(his, t.Battle[Who].Floor);
+        // the view: the level shown before U (the lone member's), not the leader's old level
+        Assert.Equal(his, t.Battle.FloorShown);
     }
 
     [Fact]
