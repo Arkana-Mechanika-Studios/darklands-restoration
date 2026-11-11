@@ -370,6 +370,12 @@ public sealed partial class TacticalBattle
                 }
                 return;
             }
+            // BUG: with the party split and the battle running, U (R016+0x014E, not paused) sends the LEADER through his stairs-back
+            // record (DS:C8B2[leader]) of the level shown, not the member who went alone: when the view shows the lone member's floor and
+            // the leader stayed with the party on another, the leader leaves through stairs of a floor he is not on (in the Rotenburg
+            // keep of GitHub issue 3, from level 3 to level 1) and the lone member stays. Only paused, with the member selected, does
+            // U or Orders > Use Stairs bring him back (the menu's Use Stairs is greyed while the battle runs). Kept as the original
+            // (lockstep: the issue 3 matrix, original and C# tick for tick); a fix belongs to the optional rules after 1.0.
             var leader = Battle[Battle.Leader];
             if (leader.StairsBack != -1)
             {
