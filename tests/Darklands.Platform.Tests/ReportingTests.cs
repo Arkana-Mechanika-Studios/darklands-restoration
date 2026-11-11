@@ -397,6 +397,18 @@ public sealed class ReportingTests : IDisposable
         Assert.True(url.Length <= IssueForm.MaxLength);
     }
 
+    /// <summary>Issue #3: a player's own report leaves "What happened" to the player, or gives only what they wrote in the program.</summary>
+    [Fact]
+    public void A_players_report_leaves_what_happened_to_the_player()
+    {
+        var f = MakeFixture();
+        var empty = System.Web.HttpUtility.ParseQueryString(new Uri(f.Service.IssueUrl(crash: false, "Ctrl-F12", null, null)).Query);
+        Assert.Null(empty["what_happened"]);
+        Assert.Equal("1.0.0-test (commit abc1234)", empty["version"]);
+        var written = System.Web.HttpUtility.ParseQueryString(new Uri(f.Service.IssueUrl(crash: false, "Ctrl-F12", "  The stairs did nothing. ", null)).Query);
+        Assert.Equal("The stairs did nothing.", written["what_happened"]);
+    }
+
     [Fact]
     public void Opening_the_folder_and_the_browser_fails_quietly_with_the_path_said()
     {

@@ -66,17 +66,21 @@ public sealed class ReportService(ReportLocations locations, string version, str
         return result;
     }
 
-    /// <summary>The issue form's address, prefilled from the report (version, commit, system, trigger, the first lines of the exception).</summary>
+    /// <summary>
+    /// The issue form's address, prefilled from the report (version, commit, system; for a crash, the first lines of the exception). A
+    /// player's own report leaves "What happened" to the player (what they wrote in the program, if anything): a prefilled sentence there
+    /// was taken for text the form would not let them replace (issue #3).
+    /// </summary>
     public string IssueUrl(bool crash, string? source, string? playerText, Exception? exception)
     {
-        var happened = crash ? "The program crashed." : "Reported by the player" + (source is null ? "." : " (" + source + ").");
+        var happened = crash ? "The program crashed." : "";
         if (exception is not null)
         {
             happened += "\n\n" + _scrubber.Scrub(IssueForm.FirstLines(exception.ToString()));
         }
         if (!string.IsNullOrWhiteSpace(playerText))
         {
-            happened += "\n\n" + playerText.Trim();
+            happened += (happened.Length > 0 ? "\n\n" : "") + playerText.Trim();
         }
         var title = crash ? "Crash: " + (exception?.GetType().Name ?? "unhandled error") : null;
         return IssueForm.Url(crash ? IssueForm.KindCrash : IssueForm.KindOther, VersionText, SystemText, happened, title);

@@ -49,4 +49,5 @@ You can read any of them, and delete them whenever you like.
 
 The build stamps the commit it was made from (`AssemblyMetadata("Commit")`: `GITHUB_SHA` in CI, else the short commit from git,
 else `unknown`). The issue form is `.github/ISSUE_TEMPLATE/bug_report.yml`; the address the program opens fills its fields `kind`,
-`version`, `system` and `what_happened` (and the title), and is kept under 6,000 characters.
+`version`, `system` and, for a crash, `what_happened` with the error's first lines (and the title); a player's own report leaves
+`what_happened` to the player, or fills it only with what they wrote in the program. The address is kept under 6,000 characters.

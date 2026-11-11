@@ -24,7 +24,7 @@ public static class IssueForm
     /// <param name="kind">One of the form's kinds.</param>
     /// <param name="version">The version with the commit.</param>
     /// <param name="system">Operating system and .NET.</param>
-    /// <param name="happened">What happened: the trigger and the first lines of the error; cut to fit <see cref="MaxLength"/>.</param>
+    /// <param name="happened">What happened: the trigger and the first lines of the error; cut to fit <see cref="MaxLength"/>; empty: the field is left empty.</param>
     /// <param name="title">The issue's title, or null.</param>
     public static string Url(string kind, string version, string system, string happened, string? title = null)
     {
@@ -34,7 +34,7 @@ public static class IssueForm
             + "&version=" + Uri.EscapeDataString(version)
             + "&system=" + Uri.EscapeDataString(system)
             + (title is null ? "" : "&title=" + Uri.EscapeDataString(title))
-            + "&what_happened=" + Uri.EscapeDataString(text);
+            + (text.Length == 0 ? "" : "&what_happened=" + Uri.EscapeDataString(text));
 
         var url = Build(happened);
         var text = happened;
