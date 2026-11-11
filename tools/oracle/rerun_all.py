@@ -759,7 +759,10 @@ for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
 # local/oracle-saves/lugum, not in the repository): the door in the wall, stairs and doors to the fortress's next levels, an in-battle Alt-S;
 # split: one member alone down the stairs and back by Use Stairs, from the U key and from the Orders menu, and the keyboard menu there (F10,
 # whose Right reads top-scoring-member as card-run's MEM.LOG query left it) (GitHub issue 3)
-for _name in ("fortress-lugum-stairs", "fortress-lugum-back", "fortress-lugum-split", "fortress-lugum-split-menu", "fortress-lugum-split-f10"):
+for _name in ("fortress-lugum-stairs", "fortress-lugum-back", "fortress-lugum-split", "fortress-lugum-split-menu", "fortress-lugum-split-f10",
+              # running: U with the battle running after the lone member was selected and Space pressed (the leader goes through his
+              # record number read on the level shown, OriginalBehaviour.FixLeaderStairsRecordOfShownLevel off); -leader: the leader alone
+              "fortress-lugum-split-running", "fortress-lugum-split-running-leader"):
     SESSIONS[_name] = "local/oracle-saves/lugum/DKSAVE2.SAV"
     BATTLE_RECORDS.add(_name)
 # issue3: the reporter's saved game on the travel map by night (kept under local/oracle-saves/issue3, not in the repository; every member's
@@ -770,7 +773,10 @@ for _name in ("fortress-lugum-stairs", "fortress-lugum-back", "fortress-lugum-sp
 for _name in ("castle-rotenburg-split", "castle-rotenburg-split-menu", "castle-rotenburg-split-reselect", "castle-rotenburg-split-reselect-menu",
               "castle-rotenburg-split-reselect-order", "castle-rotenburg-split-reselect-back", "castle-rotenburg-split-reselect-resume",
               # arrow: Shift and an arrow with the party split (the USE STAIRS notice, paused) before Use Stairs
-              "castle-rotenburg-split-arrow", "castle-rotenburg-split-arrow-menu"):
+              "castle-rotenburg-split-arrow", "castle-rotenburg-split-arrow-menu",
+              # running: U with the battle running after the lone member was selected and Space pressed (with the right button held
+              # between, -rbutton): the leader goes through his record number read on the level shown (FixLeaderStairsRecordOfShownLevel off)
+              "castle-rotenburg-split-running", "castle-rotenburg-split-running-rbutton"):
     SESSIONS[_name] = "local/oracle-saves/issue3/DKSAVE6.SAV"
     BATTLE_RECORDS.add(_name)
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,

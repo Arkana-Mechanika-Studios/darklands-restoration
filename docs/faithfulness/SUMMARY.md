@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The fifteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The sixteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -159,6 +159,17 @@ after 1.0.
     `castle-rotenburg-split-reselect*`); fixed: his own level is shown first and its record taken, so he takes his own stairs back, as
     Use Stairs is offered for (tests `StairsRecordOfShownLevelTests`). In both modes a record naming a level the battle does not have is
     ignored rather than ending the program (a registered divergence; never seen in the generated levels).
+  * `FixLeaderStairsRecordOfShownLevel` (GitHub issue 3, 2026-11-11, B-cbc59a): with the party split over two levels and the battle
+    running, U (fight-keys R016+0x014E, not paused) sends the LEADER through his stairs-back record number (DS:C8B2[leader], a record of
+    his level) read from the level SHOWN (use-exit R023+0x1618, no count test). With the view on the lone member's level (the member
+    selected with his number key, which pauses in order mode, then Space) the leader leaves through stairs of a floor he is not on and the
+    lone member stays. Lockstep, original and Faithful C# agreeing: the reporter's Rotenburg keep (Ebhard alone on level 2, the leader on
+    level 3) sends the leader to level 1 (sessions `castle-rotenburg-split-running`, `-rbutton`); Lugum (Kostik alone on level 4, the
+    leader on level 2) puts him back on level 2 at the foot of the stairs from level 4 (`fortress-lugum-split-running`). The right
+    button held between alone deselects nobody (the menu bar's run; the battle stays paused). Fixed: the leader still takes the stairs
+    (U outside order mode is his action), through his own level's record (the view goes to his level first): at Rotenburg and at Lugum
+    he follows the lone member down (tests `LeaderStairsRecordOfShownLevelTests`). With the leader's own level shown nothing changes
+    (`fortress-lugum-split-running-leader`, the leader alone).
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

@@ -370,15 +370,21 @@ public sealed partial class TacticalBattle
                 }
                 return;
             }
-            // BUG: with the party split and the battle running, U (R016+0x014E, not paused) sends the LEADER through his stairs-back
-            // record (DS:C8B2[leader]) of the level shown, not the member who went alone: when the view shows the lone member's floor and
-            // the leader stayed with the party on another, the leader leaves through stairs of a floor he is not on (in the Rotenburg
-            // keep of GitHub issue 3, from level 3 to level 1) and the lone member stays. Only paused, with the member selected, does
-            // U or Orders > Use Stairs bring him back (the menu's Use Stairs is greyed while the battle runs). Kept as the original
-            // (lockstep: the issue 3 matrix, original and C# tick for tick); a fix belongs to the optional rules after 1.0.
             var leader = Battle[Battle.Leader];
             if (leader.StairsBack != -1)
             {
+                if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && leader.Floor != Battle.FloorShown && leader.Floor >= 0
+                    && leader.Floor < _levels.Count)
+                {
+                    // the fix: the leader's own level shown first, so the record is his own level's
+                    SwitchLevel(leader.Floor);
+                }
+                // BUG: OriginalBehaviour.FixLeaderStairsRecordOfShownLevel - with the party split and the battle running, U (R016+0x014E,
+                //   not paused) sends the LEADER through his stairs-back record number (DS:C8B2[leader]) read on the level SHOWN, not
+                //   his own: with the view on the lone member's floor (he was selected, then deselected) and the leader with the party
+                //   on another, the leader leaves through a record of a floor he is not on (GitHub issue 3: from Rotenburg level 3 to
+                //   level 1; past the count, whatever the generator left there) and the lone member stays. Only paused, with the member
+                //   selected, does U or Orders > Use Stairs bring the member back (the menu's Use Stairs is greyed while the battle runs).
                 TakeExit(leader.StairsBack, Battle.Leader);
             }
             return;

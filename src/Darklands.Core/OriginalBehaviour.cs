@@ -57,7 +57,8 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true,
+        FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
     };
@@ -342,6 +343,17 @@ public sealed class OriginalBehaviour
     // orig: fighter-goto-action R014+0x22B2..0x22CB (use-exit with DS:C77E[i]), use-exit R023+0x1618 (record n of the level shown,
     //   R023+0x162B..0x164A, no count test), data safety
     public bool FixStairsRecordOfShownLevel { get; set; }
+
+    /// <summary>
+    /// With the party split over two levels and the battle running (not paused), U sends the leader through his stairs-back record
+    /// number (DS:C8B2[leader], a record of HIS level) read from the level SHOWN: with the view on another floor (the lone member
+    /// selected, then deselected: GitHub issue 3) it is that floor's record n, past its count as a rule, so the leader leaves through
+    /// stairs of a floor he is not on, to the wrong place or level, and the lone member stays. Fixed: the leader still takes the
+    /// stairs (U outside order mode is his action), through his own level's record (the view goes to his level first).
+    /// </summary>
+    // orig: fight-keys R016+0x014E (1EF8:014E, the U case with DS:11CA != DS:C623, not paused), use-exit R023+0x1618 (record n of
+    //   the level shown, R023+0x162B..0x164A, no count test), data safety
+    public bool FixLeaderStairsRecordOfShownLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
