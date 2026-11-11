@@ -19,7 +19,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 53 entries; recommendations: document: 2, justify: 40, keep: 11.
+- Part A (not-modelled, deliberate-fix, other in core logic): 54 entries; recommendations: document: 2, justify: 40, keep: 12.
 - Part B (undefined-memory in core logic): 158 entries; determinism: deterministic: 1, n/a: 83, no: 61, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
@@ -375,9 +375,9 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
 
-### battles (16)
+### battles (17)
 
-#### not-modelled (5)
+#### not-modelled (6)
 
 - **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:57` `FortressBattlefield.BuildFortress`  
   original: `R011+0x0000` (1432:0000, draft)  
@@ -387,6 +387,10 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0x199C` (0E76:199C, draft), `R014+0x465E` (0E76:465E, draft)  
   divergence: not reproduced, the original then works on undefined memory: the knock-back test reads record -1's target byte (DS:9C1F, only for a heavy hit), queued damage[-1] (DS:D70A) and, when it is above 0, writes was-hit[-1] (DS:D4F1); damage-resolve(-1) (R014+0xAE1E) and the test after it read record -1's status byte (DS:9BE9, the menu bar's sub-menu item records), which act only for a value of 1, 2 or 3  
   recommendation: **keep** (checked against the original) - R014+0x199C with target -1 and a hit exchange (the cave dragon after the victim draw found nobody): asm R014+0x1A80..0x1B9B reads [bx-0x6361] (DS:9C1F) only for exchange 2, [bx-0x28F4] with bx=-2 (DS:D70A), writes [si-0x2B0E] with si=-1 (DS:D4F1) when above 0, calls R014+0xAE1E(-1), which acts only when DS:9BE9 is 1 (else it returns at 0xAE36), and tests DS:9BE9 for 2/3. These bytes are not modelled (menu bar sub-menu records and the bytes before two tables); fight cave60 agrees in all 1,204 ticks and in sound with them left out. The sound and the action state are reproduced.
+- **D-726d7c** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:564` `TacticalBattle.TakeExit`  
+  original: `R023+0x1618` (1EF8:1618, draft)  
+  divergence: a record past the level image (n > 77, 0x2FB8 + 14 n beyond its 0x33FC bytes) would read what follows the image in segment 20A5; not reproduced (no caller gives such an n: the tables hold record numbers of up to the six slots, and 0xFF is tested before, R016+0x014E).  
+  recommendation: **keep** (checked against the original) - use-exit R023+0x1618 copies record n of the level image with no count test (fixed here, GitHub issue 3); an n past the image (over 77) reads the bytes after the level image in segment 20A5. No caller gives one: the record tables hold up to the six slots and 0xFF is tested first (R016+0x014E). Not reproduced, keep the guard.
 - **D-5471a9** `not-modelled` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:476` `TacticalBattle.ConsumeSlotAsOriginal`  
   original: `R014+0xB434` (18BF:0FA4, draft)  
   divergence: entry m × 64 + k outside the packs (member −1 with a slot below 64: before them, from 2E38:FEBE after the wrap; members 2..4 with slot 255: past them, in the formula and saint tables and the item-definition far pointers, 2E38:07BE..), which the battle does not hold: nothing is changed (the original's write there is not modelled).  
@@ -1056,7 +1060,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R016+0x0E7E` (1EF8:0E7E, draft)  
   divergence: a first byte past the thirteen combatant records (a saved game's bytes) would write past them; here nothing is done.  
   deterministic: **n/a** (checked against the original); action: **justify** - R016+0x0E7E reads DS:C624[0] with cbw and uses it as a record index (imul 0xFA for the path table at 20A5:6238, shl 7 for the 0x80-byte records (status byte DS:9C69)). Every writer of the byte stores a party slot (R016+0x0E2E: status-1 members 0..4; R022+0x07AA: F1..F5 or a member hot spot), so only a saved game written by something else can hold another value; the original would then write past the thirteen records (host memory). Nothing to reproduce.
-- **D-d2c8b5** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:635` `TacticalBattle.LeaveLevel`  
+- **D-d2c8b5** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:643` `TacticalBattle.LeaveLevel`  
   original: `R023+0x17D2` (1EF8:17D2, draft)  
   divergence: the encounter record it adds keeps undefined memory, not modelled. Its kinds (+0x08..+0x0A) are the local words of slots 4..6 (bp-0x24), written only for a kind with an able enemy (R023+0x1A04..0x1A1A): the first (no kind 4 exists) and a kind with none left hold the stack's leftovers, with a count of 0 (here -1 for the first, 0 for the others); the reinforcement part +0x14..+0x1D is not written (R023+0x1A27..0x1A9D write +0x00..+0x13 only), so the table slot keeps what it held (here the new group's defaults). These bytes go into a battle file saved after the change; the battle-call adapter of R023+0x17D2 takes the original's bytes there (local/batch/b2).  
   deterministic: **no** (checked against the original); action: **justify** - Undefined memory (audit18, asm of R023+0x19FD..0x1ACA): the record at es:0x47EE + 0x1E x count gets +0x00/+0x02 (the nearest enemy), +0x04 = 0x10, +0x06 = 0xFF, +0x07 = 0, +0x0E..+0x13 from 2E38:0BB0, and its kinds/counts +0x08..+0x0D from the words at bp-0x24 / bp-0x1E (R023+0x1A7D..0x1A8D); the kind words are written only at R023+0x1A17 for an able enemy, so a kind with a count of 0 keeps the stack word; +0x14..+0x1D are never written. The rewrite gives -1 / 0 and the new group defaults. Only these unset bytes differ: the R023+0x17D2 direct calls of round B2 (e11..e13) agree with the adapter taking the original bytes there, but for 6 jobs whose fuzzed state puts an enemy in animation slot 1..3 (its count word overlays a kind word, the C: note in LeaveLevel). Replaces the old inline (DIVERGENCE) note on the first kind, which was not registered.

@@ -556,9 +556,17 @@ public sealed partial class TacticalBattle
     /// </summary>
     // orig: use-exit R023+0x1618 (1EF8:1618) draft
     // C: the wall group of the stairs is uncovered on the NEW level (opened-door-list of that level; the list read from the new image).
+    // C: no test of n against the level's stairs count (byte +0x2FB6): R023+0x162B..0x164A copies record n of the level shown, past the
+    //   count too. A member alone on another level whose Stairs order is given with the view back on the party's level (another member
+    //   selected after U, GitHub issue 3) takes the record of his own level's index from the party's level: in the Rotenburg keep slot 2
+    //   past level 3's one record holds the same bytes as level 2's record 2 (to level 3), so he comes back (lockstep
+    //   castle-rotenburg-split-reselect: use-exit(2, 3) at clock 9283 with DS:11CA = DS:C623 = 3).
+    // DIVERGENCE: a record past the level image (n > 77, 0x2FB8 + 14 n beyond its 0x33FC bytes) would read what follows the image in
+    //   segment 20A5; not reproduced (no caller gives such an n: the tables hold record numbers of up to the six slots, and 0xFF is tested
+    //   before, R016+0x014E).
     private void TakeExit(int n, int who)
     {
-        if (n < 0 || n >= Level.GetByte(StairsCountAt))
+        if (n < 0 || StairsAt + 14 * (n + 1) > Level.Image.Length)
         {
             return;
         }

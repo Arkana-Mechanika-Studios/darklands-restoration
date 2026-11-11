@@ -657,7 +657,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-d71b85** `bug`, flag `FixDissolveKeyMember` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:527` `TacticalBattle.DissolveKey`  
   original: `R016+0x0F76` (1EF8:0F76, draft), `R014+0xB434` (18BF:0FA4, draft)  
   why: OriginalBehaviour.FixDissolveKeyMember - R016+0x0FAF..0x0FBA: use-up-slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the pointer, R014+0xB785, else −1, R014+0xB7F5) with member 0's slot byte (absolute, not indexed), no test of either: another member's stack, or the entries before the packs.
-- **B-e7ca8e** `bug`, flag `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:569` `TacticalBattle.TakeExit`  
+- **B-e7ca8e** `bug`, flag `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:577` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
 - **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:449` `TacticalBattle.UseUpDissolveSlot`  
