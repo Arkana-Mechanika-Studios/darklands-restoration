@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
     };
@@ -329,6 +329,19 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fighter-goto-action R014+0x2256..0x2263 (use-up-slot 18BF:0FA4 with DS:C7CD[m]), data safety, data-damaging
     public bool FixStaleDissolveSlot { get; set; }
+
+    /// <summary>
+    /// The Stairs order of a member alone on another level is carried out by use-exit with his stairs-back record number (DS:C8B2,
+    /// a record of HIS level), read from the level SHOWN when the order is given: with the view moved back to the party's level
+    /// before Space (another member selected after Use Stairs, GitHub issue 3) it is that level's record n, past its count as a
+    /// rule. Those slots hold what the generators left there (castles and mines build every level in one buffer and clear only the
+    /// counts): zeros (level 0 at (0, 0)), another level's record or stale bytes, so he goes to the wrong place or level, or comes
+    /// back by chance (the Rotenburg keep). Fixed: his own level's record is taken (the view goes to his level first), so he always
+    /// takes his own stairs back, as Use Stairs is offered for.
+    /// </summary>
+    // orig: fighter-goto-action R014+0x22B2..0x22CB (use-exit with DS:C77E[i]), use-exit R023+0x1618 (record n of the level shown,
+    //   R023+0x162B..0x164A, no count test), data safety
+    public bool FixStairsRecordOfShownLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
