@@ -768,7 +768,9 @@ for _name in ("fortress-lugum-stairs", "fortress-lugum-back", "fortress-lugum-sp
 # reselect: the reporter's own keys, Use Stairs (U or the menu) and then another member selected before Space (Resume), his own order
 # or the first member selected again: the order still goes, use-exit reading his record past the party level's count
 for _name in ("castle-rotenburg-split", "castle-rotenburg-split-menu", "castle-rotenburg-split-reselect", "castle-rotenburg-split-reselect-menu",
-              "castle-rotenburg-split-reselect-order", "castle-rotenburg-split-reselect-back", "castle-rotenburg-split-reselect-resume"):
+              "castle-rotenburg-split-reselect-order", "castle-rotenburg-split-reselect-back", "castle-rotenburg-split-reselect-resume",
+              # arrow: Shift and an arrow with the party split (the USE STAIRS notice, paused) before Use Stairs
+              "castle-rotenburg-split-arrow", "castle-rotenburg-split-arrow-menu"):
     SESSIONS[_name] = "local/oracle-saves/issue3/DKSAVE6.SAV"
     BATTLE_RECORDS.add(_name)
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,

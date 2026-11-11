@@ -679,6 +679,23 @@ def box_callbacks(log) -> list[tuple[int, int]]:
     return out
 
 
+def notice_callbacks(log) -> list[tuple[int, int]]:
+    """[(during, after)] for each other notice box in a battle pass (notice-display root 0000:24BC outside the bar, not after a hot key of
+    box_callbacks: the "USE STAIRS" notice of a step key with the party split, a door's or a sheet's message ...), in order: the C# host counts
+    the wait's ticks itself (WaitedTicks); paused, the callbacks after the box up to the next pass (the tick it made due and that tick's draw)
+    are the original's time, which the C# host has not (issue 3, Shift and an arrow in castle-rotenburg-split-scroll: "box callbacks 150,21",
+    a second paused tick the next pass)."""
+    out, last = [], None
+    for l in log:
+        if l.startswith("key ") and "(battle pass " in l:
+            last = l.split()[1]
+        elif l.startswith("box callbacks "):
+            if last not in ("2000", "2100", "3200", "2E00"):
+                out.append(tuple(int(v) for v in l.split()[2].split(",")))
+            last = None
+    return out
+
+
 def menu_callbacks(log) -> list[tuple[int, int]]:
     """[(during, after)] for each run of the menu bar in a battle, from the original's log ("menu callbacks 1420,54 (battle pass 310)"): root 0000:0000
     with the bar up holds the clock while DS:07D1 counts on; after: up to the next pass (or the next bar run)."""
@@ -838,6 +855,9 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     if boxes:
         # and for the hot keys' message boxes in a battle (notice-display's wait of the timer's tick byte)
         env["DARKLANDS_BATTLE_BOX_CALLBACKS"] = ";".join("%d,%d" % p for p in boxes)
+    if notices := notice_callbacks(log or ()):
+        # and for the other notice boxes in a battle pass (their wait counted by the host; paused, the callbacks after them)
+        env["DARKLANDS_BATTLE_NOTICE_CALLBACKS"] = ";".join("%d,%d" % p for p in notices)
     if regain:
         # the callbacks inside the endurance regain's loop, by the clock at its first read: before which member (timer_marks.py; the
         # jumps' format, its tick count unused)

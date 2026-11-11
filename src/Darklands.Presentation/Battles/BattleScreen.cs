@@ -137,6 +137,10 @@ public sealed class BattleScreen : ITacticalView
     /// timer's tick byte), as tools/oracle/lockstep.py measures them in the original (DARKLANDS_BATTLE_BOX_CALLBACKS).</summary>
     public static Queue<(int During, int After)>? BoxCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_BOX_CALLBACKS"));
 
+    /// <summary>A debugging aid: the other notice boxes of a battle pass (ShowMessage), as the tester measures them in the original
+    /// (DARKLANDS_BATTLE_NOTICE_CALLBACKS): paused, the callbacks after the box up to the next pass, which the host has no time for.</summary>
+    public static Queue<(int During, int After)>? NoticeCallbacks { get; set; } = ParseSheetCallbacks(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_NOTICE_CALLBACKS"));
+
     /// <summary>The callbacks the original had after the last sheet in its pass (SheetCallbacks), for the pass's end.</summary>
     private int _afterSheetCallbacks;
 
@@ -1070,6 +1074,16 @@ public sealed class BattleScreen : ITacticalView
         }
         _message = null;
         WaitedTicks(ticks);
+        if (OneTickPerPass && NoticeCallbacks is { Count: > 0 } measured)
+        {
+            // C: the host has no time of its own in OneTickPerPass: paused, the timer callbacks after the box up to the next pass (the
+            //   paused tick the wait made due and that tick's draw, after a box a full one) come at the pass's end, as for the hot keys' boxes
+            var (_, after) = measured.Dequeue();
+            if (_battle!.PauseByte != 0)
+            {
+                _afterSheetCallbacks += after;
+            }
+        }
     }
 
     /// <summary>Timer ticks spent inside a call that waits on the timer (notice-display's wait-ticks): the callbacks count them, the clock too
