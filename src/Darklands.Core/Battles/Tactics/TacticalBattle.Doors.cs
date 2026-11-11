@@ -440,6 +440,10 @@ public sealed partial class TacticalBattle
             return;
         }
         var l = Battle.Leader;
+        if (LeaderAway())
+        {
+            return;
+        }
         if (Menus.On(OrdersItem.UseStairs))
         {
             if (MoveMode == 0)
@@ -448,9 +452,12 @@ public sealed partial class TacticalBattle
             }
             else
             {
+                var from = Battle[l].Floor;
                 for (var i = 0; i < Combatant.PartySlots; i++)
                 {
-                    if (Battle[i].IsAble)
+                    // BUG: OriginalBehaviour.FixLeaderKeysOnOtherLevel - travelling together U sends every able member, on whatever level,
+                    //   through the leader's stairs record (split audit row 3)
+                    if (Battle[i].IsAble && !(Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[i].Floor != from))
                     {
                         // C: every member takes the LEADER's stairs record.
                         TakeExit(Battle[l].StairsExit, i);
@@ -483,6 +490,10 @@ public sealed partial class TacticalBattle
             }
             return;
         }
+        if (LeaderAway())
+        {
+            return;
+        }
         OpenChest(Battle.Leader);
         _view.MapChanged();
         CancelAction(Battle.Leader);
@@ -507,7 +518,7 @@ public sealed partial class TacticalBattle
             }
             return false;
         }
-        if (!Menus.On(OrdersItem.PickLock))
+        if (!Menus.On(OrdersItem.PickLock) || LeaderAway())
         {
             return false;
         }
@@ -548,6 +559,10 @@ public sealed partial class TacticalBattle
                 // orig: R016+0x13B6 (1EF8:13B6) matched: R016+0x1590(4)
                 ChoosePlace(PlaceAction.DisarmChestTrap);
             }
+            return;
+        }
+        if (LeaderAway())
+        {
             return;
         }
         var l = Battle.Leader;
@@ -611,6 +626,14 @@ public sealed partial class TacticalBattle
         //   Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
         TakeExit(c.StairsExit, i);
         ShowAgainAfterFix(shownBefore, i);
+    }
+
+    /// <summary>The leader is not on the level shown (FixLeaderKeysOnOtherLevel on): his keys outside order mode do nothing.</summary>
+    private bool LeaderAway()
+    {
+        // BUG: OriginalBehaviour.FixLeaderKeysOnOtherLevel - the leader's U, O, P and D use his stairs record, door or chest index from the
+        //   place tests of the level SHOWN: alone on another level he acts on the party's level by remote (split audit row 3)
+        return Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[Battle.Leader].Floor != Battle.FloorShown;
     }
 
     /// <summary>Whether record number n is past the stairs count of combatant who's own level, with FixStaleStairsBackRecord on.</summary>

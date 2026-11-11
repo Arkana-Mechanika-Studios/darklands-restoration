@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -422,6 +422,16 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fight-recovery R014+0x0DEE (the free-spot and sight tests on DS:11CA, the anchors any able member), data safety
     public bool FixWokenOnOtherLevel { get; set; }
+
+    /// <summary>
+    /// The leader's keys outside order mode (U, O, P, D, the battle running) act on his stairs record, door or chest index from the place
+    /// tests of the level SHOWN: with the leader alone on another level and the view on the party's level, he takes that level's stairs,
+    /// opens its door or chest or picks its lock by remote; travelling together, U sends every able member, on whatever level, through
+    /// the leader's record. Fixed: the leader's keys do nothing while he is not on the level shown, and U travelling together takes only
+    /// the members on his level.
+    /// </summary>
+    // orig: fight-keys R016+0x1182 / 0x1072 / 0x10B2 / 0x0F76 with the place tests R014+0xD04E / 0xD328 / 0xD402, data safety
+    public bool FixLeaderKeysOnOtherLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

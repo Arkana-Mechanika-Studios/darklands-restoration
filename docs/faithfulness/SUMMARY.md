@@ -212,6 +212,12 @@ after 1.0.
     able member on any level: a member woken on a level not shown can land inside a wall of his own level (stuck) or at the coordinates
     of a member of another level. Faithful keeps it (tests `WokenOnOtherLevelTests`); fixed: the search is made on his own level, next to
     members of that level only, the level shown coming back.
+  * `FixLeaderKeysOnOtherLevel` (party-split audit row 3, 2026-11-11): the leader's keys outside order mode (fight-keys R016+0x1182 /
+    0x1072 / 0x10B2 / 0x0F76, the battle running) act on his stairs record, door or chest index from the place tests of the level shown:
+    with the leader alone on another level and the view on the party's level (not split for the keys) he takes that level's stairs (put
+    again at its arrival spot, from wherever he stood), opens its door or chest or picks its lock by remote; travelling together U sends
+    every able member, on whatever level, through the leader's record. Faithful keeps it (tests `LeaderKeysOnOtherLevelTests`); fixed:
+    the leader's keys do nothing while he is not on the level shown, and U travelling together takes only the members on his level.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
