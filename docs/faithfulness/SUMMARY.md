@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The sixteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The seventeen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -172,6 +172,13 @@ after 1.0.
     (`fortress-lugum-split-running-leader`, the leader alone). After either stairs fix the level that was shown comes back unless the
     party came together where he went (use-exit leaves the actor's old level shown, which the fix had switched to and which may now be
     empty).
+  * `FixExitedMemberStrandsTheRest` (party-split audit row 10, 2026-11-11): a member who left through an exit keeps status 1 with floor
+    -99. The end test (fight-finished R014+0x08FE) takes "nobody able on the enemies' floor and somebody gone through an exit" for the
+    party's flight even when the others are alive on another level, gone by the stairs: the battle ends as fled (or left) and every
+    member on that level becomes Away, which the next card may turn into leaving the party for good. use-exit's reunion test (R023+0x1618)
+    counts him too, so the last member down the stairs never brings the party together. Faithful keeps both (tests
+    `ExitedMemberStrandsTheRestTests`; not reproduced in lockstep: the two split saves offer no reachable exit zone); fixed: a member
+    gone through an exit counts in neither test while an able member is still on the battlefield.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

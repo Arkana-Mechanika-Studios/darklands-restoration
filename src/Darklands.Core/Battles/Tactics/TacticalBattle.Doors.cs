@@ -650,7 +650,10 @@ public sealed partial class TacticalBattle
         var alone = true;
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
-            if (Battle[i].IsAble && Battle[i].Floor != lvl)
+            // BUG: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another
+            //   level: once anyone has left, the party never comes together by the stairs (split audit row 10)
+            if (Battle[i].IsAble && Battle[i].Floor != lvl
+                && !(Battle.Behaviour.FixExitedMemberStrandsTheRest && Battle[i].Floor == BattleEnd.LeftThroughExit))
             {
                 alone = false;
             }

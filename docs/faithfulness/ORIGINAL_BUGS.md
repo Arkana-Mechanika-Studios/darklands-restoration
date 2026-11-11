@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 33 | 15 | 18 |
+| battles | 35 | 17 | 18 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 13 | 8 | 5 |
-| total | 237 | 56 | 181 |
+| total | 239 | 58 | 181 |
 
-## Core logic (224)
+## Core logic (226)
 
 ### rules (103)
 
@@ -601,7 +601,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (33)
+### battles (35)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -618,7 +618,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dd3d33** `bug`, flag `FixLootExitTestReadsWords` - `src/Darklands.Core/Battles/BattleEnd.cs:44` `BattleEnd.LootSkips`  
   original: `R040+0x0C22` (1462:0C22, draft)  
   why: OriginalBehaviour.FixLootExitTestReadsWords - the test reads fighter-floor-level (a byte table, DS:A6B4) as words at 2 x slot: it skips slot s only when combatant 2s's floor is -99 (0x9D) and combatant 2s + 1's is -1 (0xFF), so a member who left is not skipped (direct calls of R040+0x0C22 from the battle state street-p100 with key D and DS:8DC4 = 0: member 1's floor byte 0x9D gives DS:8DC4 = 1 without the message; floor bytes 2, 3 = 0x9D, 0xFF give DS:8DC4 = 2 after R022+0x04E4); tests: BattleEndTests
-- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:380` `BattleEnd.ImproveSkills`  
+- **B-9d748e** `bug`, flag `FixExitedMemberStrandsTheRest` - `src/Darklands.Core/Battles/BattleEnd.cs:100` `BattleEnd.IsOver`  
+  original: `R014+0x08FE` (0E76:08FE, draft)  
+  why: OriginalBehaviour.FixExitedMemberStrandsTheRest - with one member gone through an exit and the others alive on another level (the stairs), nobody on the enemies' floor reads as the party's flight: the battle ends as fled or left and the members on the other level become Away (split audit row 10); the fix lets the tests below see them (the real-combat switch to their floor).
+- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:389` `BattleEnd.ImproveSkills`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (spend-ammunition), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
@@ -660,9 +663,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bdd7dd** `bug`, flag `FixStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:582` `TacticalBattle.TakeStairsOrder`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test): a member alone on another level whose order is given with the view back on the party's level (another member selected after Use Stairs, then Space: GitHub issue 3) takes that level's record n, past its count as a rule, whatever the generator left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
-- **B-e7ca8e** `bug`, flag `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:634` `TacticalBattle.TakeExit`  
+- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:634` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
+- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:653` `TacticalBattle.TakeExit`  
+  original: `R023+0x1618` (1EF8:1618, draft)  
+  why: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another level: once anyone has left, the party never comes together by the stairs (split audit row 10)
 - **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:449` `TacticalBattle.UseUpDissolveSlot`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
   why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
