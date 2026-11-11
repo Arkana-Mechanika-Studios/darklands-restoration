@@ -169,6 +169,8 @@ public sealed class OriginalBugsOfTheKeysTests
         var to = (sbyte)level.GetByte(StairsAt + 6);
         const int wall = 1;
         level.SetByte(StairsAt + 7, wall);
+        // the planted byte is the level file's too (a level left without DS:D4E4 is read back from its file)
+        typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
         var spot = new MapPoint(level.GetWord(StairsAt) + level.GetByte(StairsAt + 4) / 2, level.GetWord(StairsAt + 2) + level.GetByte(StairsAt + 5) / 2);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -207,5 +209,28 @@ public sealed class OriginalBugsOfTheKeysTests
         Assert.NotEqual(to, t.Battle.FloorShown);
         Assert.Equal(to, t.Battle[t.Battle.Leader].Floor);
         Assert.Equal(expected, t.LevelAt(from).GetByte(StairsAt + 7));
+    }
+    /// <summary>R024+0x059A reloads a level from its file at each switch to it; R024+0x05B4 saves the level left only when DS:D4E4 is set:
+    /// any change made without it (a sprung trap's sign, a found trap) is lost by a switch away and back (split audit row 18).</summary>
+    [Theory]
+    [InlineData(false, 0x5A)]
+    [InlineData(true, 0xA5)]
+    public void AChangeWithoutTheLevelChangedFlagIsLostByASwitch(bool changed, int expected)
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var t = Start(OriginalBehaviour.Faithful, 0x0B, 4242);
+        Assert.True(t.LevelCount >= 2);
+        var from = t.Battle.FloorShown;
+        const int at = 0x33F0;
+        t.Level.SetByte(at, 0x5A);
+        typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
+        t.Level.SetByte(at, 0xA5);
+        t.LevelChanged = changed;
+        t.SwitchLevel((from + 1) % t.LevelCount);
+        t.SwitchLevel(from);
+        Assert.Equal(expected, t.Level.GetByte(at));
     }
 }

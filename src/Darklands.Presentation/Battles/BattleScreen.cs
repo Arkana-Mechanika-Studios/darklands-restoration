@@ -963,6 +963,7 @@ public sealed class BattleScreen : ITacticalView
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             store.PartyPlaces[i] = b[i].Status == CharacterStatus.Empty ? null : (b[i].Position, b[i].Facing, b[i].SpriteFacing);
+            store.PartyFloors[i] = b[i].Status == CharacterStatus.Empty ? -1 : b[i].Floor;
         }
     }
 
@@ -2872,6 +2873,9 @@ public sealed class BattleScreen : ITacticalView
     private void RecordScreenPlaces(bool tickDraw)
     {
         var tb = _battle!;
+        // BUG: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode
+        //   (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as
+        //   the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
         for (var i = 0; i < Combatant.Count; i++)
         {
             if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Floor == tb.Battle.FloorShown && SpriteBox(i) is { } box)

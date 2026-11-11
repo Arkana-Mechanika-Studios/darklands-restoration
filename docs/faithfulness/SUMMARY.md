@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The fifteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The twenty-one data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -159,6 +159,96 @@ after 1.0.
     `castle-rotenburg-split-reselect*`); fixed: his own level is shown first and its record taken, so he takes his own stairs back, as
     Use Stairs is offered for (tests `StairsRecordOfShownLevelTests`). In both modes a record naming a level the battle does not have is
     ignored rather than ending the program (a registered divergence; never seen in the generated levels).
+  * `FixLeaderStairsRecordOfShownLevel` (GitHub issue 3, 2026-11-11, B-cbc59a): with the party split over two levels and the battle
+    running, U (fight-keys R016+0x014E, not paused) sends the LEADER through his stairs-back record number (DS:C8B2[leader], a record of
+    his level) read from the level SHOWN (use-exit R023+0x1618, no count test). With the view on the lone member's level (the member
+    selected with his number key, which pauses in order mode, then Space) the leader leaves through stairs of a floor he is not on and the
+    lone member stays. Lockstep, original and Faithful C# agreeing: the reporter's Rotenburg keep (Ebhard alone on level 2, the leader on
+    level 3) sends the leader to level 1 (sessions `castle-rotenburg-split-running`, `-rbutton`); Lugum (Kostik alone on level 4, the
+    leader on level 2) puts him back on level 2 at the foot of the stairs from level 4 (`fortress-lugum-split-running`). The right
+    button held between alone deselects nobody (the menu bar's run; the battle stays paused). Fixed: the leader still takes the stairs
+    (U outside order mode is his action), through his own level's record (the view goes to his level first): at Rotenburg and at Lugum
+    he follows the lone member down (tests `LeaderStairsRecordOfShownLevelTests`). With the leader's own level shown nothing changes
+    (`fortress-lugum-split-running-leader`, the leader alone). After either stairs fix the level that was shown comes back unless the
+    party came together where he went (use-exit leaves the actor's old level shown, which the fix had switched to and which may now be
+    empty).
+  * `FixExitedMemberStrandsTheRest` (party-split audit row 10, 2026-11-11): a member who left through an exit keeps status 1 with floor
+    -99. The end test (fight-finished R014+0x08FE) takes "nobody able on the enemies' floor and somebody gone through an exit" for the
+    party's flight even when the others are alive on another level, gone by the stairs: the battle ends as fled (or left) and every
+    member on that level becomes Away, which the next card may turn into leaving the party for good. use-exit's reunion test (R023+0x1618)
+    counts him too, so the last member down the stairs never brings the party together. Faithful keeps both (tests
+    `ExitedMemberStrandsTheRestTests`; not reproduced in lockstep: the two split saves offer no reachable exit zone); fixed: a member
+    gone through an exit counts in neither test while an able member is still on the battlefield. The same switch covers audit row 16,
+    the party's flight through the exit with a member alone on another level, whom the fled branch turned Away too (test
+    `ALoneMemberDownstairsIsNotLeftAwayByTheFlight`): the battle goes on with him.
+  * `FixPlaceActionsOnOwnLevel` (party-split audit row 1, 2026-11-11): the level image in memory is the one shown, and the place tests
+    (party-place-table R014+0xDC14) and place actions (fighter-goto-action R014+0x2170: door-flip R023+0x00B8, lock-picking R023+0x12C0,
+    chest-opening R023+0x13D0, R023+0x153E) read it whatever level the member is on: a member on another level whose Use Door, Pick
+    Lock, Open Chest, Dissolve Lock or Disarm Trap runs while it is shown works the door or chest with his index on the shown level
+    (waking that level's encounter behind it) and his own is untouched. Faithful keeps it (tests `PlaceActionsOnOwnLevelTests`; not
+    reproduced in lockstep yet); fixed: the place tests leave a member on another level alone, and his place action is carried out with
+    his own level shown, the level shown before coming back.
+  * `FixTriggersOfOtherLevels` (party-split audit row 4, 2026-11-11): the trigger test of each tick (R014+0xD6DA, no floor test) reads
+    the triggers of the level shown at the place of every member, and of every enemy for the traps, whatever level they are on: a member
+    on another level sets off the shown level's alarm (the battle ends with its card though nobody is there), its dart or spell trap, or
+    finds its secret doors and traps by remote. Faithful keeps it (tests `TriggersOfOtherLevelsTests`; not reproduced in lockstep yet);
+    fixed: only those on the level shown spring its triggers.
+  * `FixPileOfOtherLevel` (party-split audit row 29, 2026-11-11): the pack of a combatant who falls becomes a loot pile on the level
+    shown (fighter-dying R014+0x2324: the pile's level DS:11CA, merged with a pile of that level near his place, nudged by its screen
+    tiles), whatever level he fell on: a member who dies alone on a level not shown leaves his belongings on another level, out of reach
+    until a victory gathers every pile, lost after a flight. Faithful keeps it (tests `PileOfOtherLevelTests`; not reproduced in
+    lockstep yet); fixed: the pile lies on his own level at his place.
+  * `FixStaleStairsBackRecord` (party-split audit row 14, 2026-11-11): use-exit writes a member's stairs-back record number (DS:C8B2)
+    after its level switch: right when he goes alone, but the new level's record when the party comes together, and never for a member
+    separated without moving alone (0). With the party split Use Stairs is offered anywhere and sends him through that number: record 0
+    of his level, or a slot past its count (a zero record: level 0 at (0, 0), outside the map; the fuzz of the 138 battlefields: 24 members
+    left outside the map on the issue-3 path). Faithful keeps it (tests `StaleStairsBackRecordTests`); fixed: a number past his own
+    level's stairs count is not taken, the order does nothing.
+  * `FixFollowersOnShownLevel` (party-split audit row 9, 2026-11-11): when the party has taken the stairs, the enemies of the kinds that
+    follow are placed after a delay of 1 to 4 seconds around the arrival spot on the level shown at that moment (R025+0x0CFC, the delay
+    DS:C2BB from R023+0x17D2): with the view moved to a member left behind on the old level (an unconscious one can be selected) they
+    appear on his level, and the next end test (R014+0x08FE), finding nobody able on the enemies' level, turns him Away and removes the
+    enemies. Faithful keeps it (tests `FollowersOnShownLevelTests`); fixed: they are placed on the party's level, the view coming back.
+  * `FixWokenOnOtherLevel` (party-split audit row 15, 2026-11-11): after a fight the unconscious are woken and put on a free spot near
+    where they lay (fight-recovery R014+0x0DEE), tested against the walls and sight of the level shown, and after 60 pixels next to any
+    able member on any level: a member woken on a level not shown can land inside a wall of his own level (stuck) or at the coordinates
+    of a member of another level. Faithful keeps it (tests `WokenOnOtherLevelTests`); fixed: the search is made on his own level, next to
+    members of that level only, the level shown coming back.
+  * `FixLeaderKeysOnOtherLevel` (party-split audit row 3, 2026-11-11): the leader's keys outside order mode (fight-keys R016+0x1182 /
+    0x1072 / 0x10B2 / 0x0F76, the battle running) act on his stairs record, door or chest index from the place tests of the level shown:
+    with the leader alone on another level and the view on the party's level (not split for the keys) he takes that level's stairs (put
+    again at its arrival spot, from wherever he stood), opens its door or chest or picks its lock by remote; travelling together U sends
+    every able member, on whatever level, through the leader's record. Faithful keeps it (tests `LeaderKeysOnOtherLevelTests`); fixed:
+    the leader's keys do nothing while he is not on the level shown, and U travelling together takes only the members on his level.
+  * `FixStairsArrivalWithoutPlace` (party-split audit fuzz, 2026-11-11): use-exit (R023+0x1618) places the combatant who took the stairs
+    around the record's arrival spot on the new level (place-nearby R024+0x08F2); when no place there is free he keeps the coordinates
+    of his old level. Some generated mines hold a record whose arrival spot lies away from its stairs, amid cells that are not ground:
+    in mines 0x0F (seed 4885), 0x0E (7816) and 0x10 (4885) a member who goes down to level 1 and back up stands on level 0 at his
+    level-1 coordinates, in the void, out of reach. The original does the same: direct calls of its use-exit and level-change from a
+    captured state of each battle (battle_calls) give (336, 280), (1072, 392) and (1200, 136) on level 0, as the C#. Faithful keeps it
+    (tests `StairsArrivalWithoutPlaceTests`); fixed: when the arrival spot gives no place he is placed around the new level's stairs
+    back to his old level, then around a member standing on that level.
+  * `FixFloorsOfResumedBattle` (party-split audit row 17, 2026-11-11): a battle taken up again on the same battlefield in mode 1 (each
+    member standing where the last one left him) puts every member on the level shown at the end (R002+0x0000 clears the members'
+    floors, fight-main-loop R014+0x0000 sets them to DS:11CA) and keeps his x/y: a member who was alone on another level stands on the
+    shown level at his own level's coordinates. Reachable: the mode-1 cards of the dungeons (a Templar desk, a fountain, the riddle
+    door, the pit traps, a chest) follow a battle that a member on the level shown ended by a trigger, with others elsewhere (found by
+    reading the cards; not reproduced in lockstep). Faithful keeps it (tests `FloorsOfResumedBattleTests`); fixed: the battlefield also
+    remembers each member's level at the end, and mode 1 takes him up again there.
+  * `FixCombatAcrossLevels` (party-split audit rows 6 and 7, 2026-11-11): the enemies' sight test (enemy-line-of-sight R018+0x04B6) sees
+    the members on the level shown, from enemies on any level, and drops the targets that are not on it (R018+0x0706); archers and
+    casters who lost theirs then see every able member. A missile is made on the level shown at its launch (R018+0x0000) and a spell or
+    potion effect lands there (R019+0x0000 / 0x0300). With a member alone on another level shown, enemies on the party's level drop the
+    party and go for him, and their shots and spells reach him through the floors (he can die of them); shots between combatants on a
+    hidden level never hit, the ammunition lost. Faithful keeps it (tests `CombatAcrossLevelsTests`); fixed: an enemy sees, keeps and
+    chooses only targets on its own level, a missile flies on its shooter's level and an effect lands on the level of its missile.
+  * `FixWalkingOnOwnLevel` (party-split audit row 5, 2026-11-12): the collision test of every step, path search and re-path
+    (fighter-collision-pass R014+0x5ECA; R014+0x1624, R014+0x481A, R014+0xF67A) reads the walls and furniture of the level shown, for a
+    combatant on any level: a member walking on a hidden level is stopped by the shown level's walls and walks through his own, and can
+    stop inside one of them. The walk fuzz (880 walks of a member on the party's level with another level shown, 1500 ticks each)
+    found no figure ending inside a wall of his own level, but Faithful's walks ended elsewhere than with his level shown in 738 of 880,
+    DataSafe's in 347 (the other per-tick tests a member off the level shown skips). Faithful keeps it (tests
+    `WalkingOnOwnLevelTests`); fixed: a combatant on a level not shown is tested against his own level's walls and furniture.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

@@ -290,9 +290,18 @@ def orig_md(e: Entry, index: Index) -> str:
     return "original: " + ", ".join(shown) + more
 
 
+def decision(e: Entry) -> str:
+    """The decision about a bug kept as the original, from the closing sentence of its note: "Decision: later, <rule>." or
+    "Decision: never, <reason>." (later: an optional fixed rule after 1.0; never: no change). Empty when the note has none."""
+    m = re.search(r"Decision: (later|never), (.+?)\.?\s*$", e.note) if e.kind == "BUG" else None
+    return f"{m.group(1)}: {m.group(2)}" if m else ""
+
+
 def entry_md(e: Entry, index: Index, extra: str = "") -> str:
     tag = e.cls if e.cls else e.kind.lower()
     head = f"- **{e.id}** `{tag}`{extra} - `{e.file}:{e.line}` `{loc(e)}`  \n  {orig_md(e, index)}  \n  why: {e.note}\n"
+    if decision(e):
+        head += f"  decision: {decision(e)}\n"
     return head
 
 
@@ -484,11 +493,11 @@ def gen_csvs(entries, index):
         o, c, s = orig_cells(e, index)
         divs.append([e.id, e.cls, e.area, "core" if e.core else "other", e.file, e.line, e.type, e.member, o, c, s, e.orig_line, e.form, e.note])
     files["divergences.csv"] = csv_text(h, divs)
-    hb = ["id", "area", "core", "fix_flag", "file", "line", "type", "member", "original", "original_coordinates", "original_status", "original_comment_line", "form", "note"]
+    hb = ["id", "area", "core", "fix_flag", "file", "line", "type", "member", "original", "original_coordinates", "original_status", "original_comment_line", "form", "note", "decision"]
     bugs = []
     for e in sorted((e for e in entries if e.kind == "BUG"), key=sort_key):
         o, c, s = orig_cells(e, index)
-        bugs.append([e.id, e.area, "core" if e.core else "other", ";".join(e.flags) if e.flags else "none", e.file, e.line, e.type, e.member, o, c, s, e.orig_line, e.form, e.note])
+        bugs.append([e.id, e.area, "core" if e.core else "other", ";".join(e.flags) if e.flags else "none", e.file, e.line, e.type, e.member, o, c, s, e.orig_line, e.form, e.note, decision(e)])
     files["original_bugs.csv"] = csv_text(hb, bugs)
     hu = ["id", "area", "core", "file", "line", "type", "member", "original", "original_coordinates", "original_status", "original_comment_line", "form", "note"]
     for kind, name in (("UNCERTAIN", "uncertain.csv"), ("DORMANT", "dormant.csv")):

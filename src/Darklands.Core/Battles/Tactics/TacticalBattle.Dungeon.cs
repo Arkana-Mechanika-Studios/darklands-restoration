@@ -59,6 +59,9 @@ public sealed partial class TacticalBattle
     private int _picker;
 
     /// <summary>DS:CA99: the pick/dissolve entries are about a door (1) or a chest (0).</summary>
+    // BUG: DS:CA99 follows the leader's place tests, so a member's Dissolve Lock order dissolves a door or a chest by the leader's
+    //   last place, not his own (fighter-goto-action R014+0x2170 case 7). Kept as the original (party-split audit row 20). Decision:
+    //   later, an optional fixed rule after 1.0.
     public bool LockIsDoor { get; private set; }
 
     /// <summary>DS:C865: the selected member stands next to a loot pile.</summary>
@@ -230,6 +233,12 @@ public sealed partial class TacticalBattle
             {
                 continue;
             }
+            // BUG: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level
+            //   standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
+            if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Floor != Battle.FloorShown)
+            {
+                continue;
+            }
             var was = ((int)c.Flags & 2) >> 1;
             DoorAt(i);
             if (Changed(was, 2, 0xDA) is { } door)
@@ -281,6 +290,9 @@ public sealed partial class TacticalBattle
         }
         for (var k = 0; k < Level.GetByte(DoorCountAt); k++)
         {
+            // BUG: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table
+            //   R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an
+            //   optional fixed rule after 1.0.
             var at = DoorsAt + 14 * k;
             if (Level.GetByte(DoorOpenAt + k) != 0 || Level.GetByte(at + 7) != 0 || Level.GetWord(at) <= 0)
             {
@@ -631,6 +643,12 @@ public sealed partial class TacticalBattle
     private void Triggers(int i)
     {
         var c = Battle[i];
+        // BUG: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level:
+        //   an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
+        if (Battle.Behaviour.FixTriggersOfOtherLevels && c.Floor != Battle.FloorShown)
+        {
+            return;
+        }
         for (var k = 0; k < Level.GetByte(TriggerCountAt); k++)
         {
             var at = TriggersAt + 14 * k;

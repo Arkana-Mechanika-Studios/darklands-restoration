@@ -141,6 +141,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
         _library = library;
         _view = view;
         Map = new BattleMap(battle, _levels[Math.Clamp(field.StartLevel, 0, _levels.Count - 1)], furniture, field.Terrain.FirstSightBlockingFurniture);
+        Map.OwnLevel = who => Battle.Behaviour.FixWalkingOnOwnLevel && who is >= 0 and < Combatant.Count && Battle[who].Floor is var f
+            && f >= 0 && f < _levels.Count && f != Battle.FloorShown ? _levels[f] : null;
         Paths = new PathFinder(Map);
         Paths.UseHalfSizes(k => battle[k].HalfWidth, k => battle[k].HalfHeight);
         Effects = new EffectField(battle, Map, n => _view.Sound(n), ReadyWeapon, slot => SlotWeapons[slot], () => PauseByte != 0) { Terrain = field.Terrain };
@@ -368,6 +370,12 @@ public sealed partial class TacticalBattle : IBattleEndActions
                 Battle[i].Position = place.Position;
                 Battle[i].Facing = place.Facing;
                 Battle[i].SpriteFacing = place.SpriteFacing;
+                // BUG: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the
+                //   end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
+                if (Battle.Behaviour.FixFloorsOfResumedBattle && Store.PartyFloors[i] is var floor && floor >= 0 && floor < _levels.Count)
+                {
+                    Battle[i].Floor = floor;
+                }
             }
         }
     }
@@ -847,6 +855,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         {
             for (var j = first + 1; j < Combatant.PartySlots; j++)
             {
+                // BUG: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on
+                //   one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row
+                //   28). Decision: later, an optional fixed rule after 1.0.
                 if (Battle[j].IsAble && Battle[j].Floor != Battle[first].Floor)
                 {
                     GroupMoveAllowed = false;
@@ -874,6 +885,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
             return true;
         }
         // orig: R014+0x1065..0x10A7: with DS:11B1 the view follows the active member (DS:17B0) by its place in the last frame
+        // BUG: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN
+        //   (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21).
+        //   Decision: never, display only: the view stops following him.
         if (FollowsActive && _view.KeepInView(Battle.ActiveMember))
         {
             // orig: R014+0x10A1: after floor-view-paint (09C0:1C2F) DS:D9E4 = DS:07D4 + 8 again (the tester's rise -5: the redraw's time)
@@ -973,9 +987,20 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         else
         {
-            foreach (var (at, before) in _unsavedLevelBytes)
+            // the original reloads the level from its file at the next switch to it (R024+0x059A): what changed without DS:D4E4 is lost
+            // (use-exit's stairs mark, a sprung trap's sign, a found trap, an encounter removed when its placement failed; split audit
+            // row 18)
+            var floor = Enumerable.Range(0, _levels.Count).FirstOrDefault(i => ReferenceEquals(_levels[i], Map.Level), -1);
+            if (Store.FloorFiles is { } floors && floor >= 0 && floor < floors.Length && floors[floor].Length == Level.Image.Length)
             {
-                Level.SetByte(at, before);
+                floors[floor].CopyTo(Level.Image, 0);
+            }
+            else
+            {
+                for (var k = _unsavedLevelBytes.Count - 1; k >= 0; k--)
+                {
+                    Level.SetByte(_unsavedLevelBytes[k].At, _unsavedLevelBytes[k].Before);
+                }
             }
         }
         _unsavedLevelBytes.Clear();
@@ -1022,8 +1047,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>Shows another level (level-change).</summary>
     // orig: level-change R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (the .flr/.atv files are BattlefieldStore.FloorFiles / ActivationFiles, which only the battle
-    // file reads): a level switched to is not read back from its file, so what changed in it without DS:D4E4 is kept here but for
-    // use-exit's stairs mark (SaveLevelOrLoseUnsaved); the hidden wall lists of unopened doors are applied by LevelShown.
+    // file reads): a level left without DS:D4E4 gets its file's image back (SaveLevelOrLoseUnsaved), as the original's reload loses what
+    // changed, but its activations (.atv) stay as they are in memory; the hidden wall lists of unopened doors are applied by LevelShown.
     public void SwitchLevel(int floor)
     {
         if (floor < 0 || floor >= _levels.Count)

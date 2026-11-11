@@ -170,6 +170,18 @@ public sealed partial class TacticalBattle
     // when lock picks were found, so nothing depends on it.
     private bool PickLock(int lockAt)
     {
+        if (_picker is < 0 or >= Combatant.Count)
+        {
+            // DIVERGENCE: DS:E1CA is set by every place choice (R016+0x1590), 0xFF with nobody selected (H outside order mode, R016+0x101E):
+            //   a member's Pick Lock given before and carried out after it reads combatant record -1, its inventory and DS:D68D[-1]
+            //   (the bytes before the tables, not modelled) at R023+0x12C0 and ORs the skill-use bits into the word before DS:D68D. Here the
+            //   lock is not picked and the no-lock-picks message shows, as when that inventory holds no item 0x40 (split audit row 19).
+            _view.Message(NoLockPicksText, 150);
+            return false;
+        }
+        // BUG: the picker DS:E1CA is whoever chose a place action last (R016+0x1590), so a Pick Lock order is rolled with the skill
+        //   and lock picks of a member who chose another place action after it (R023+0x12C0). Kept as the original (party-split audit
+        //   row 19c). Decision: never, rare and harmless: only the skill rolled is another member's.
         var c = Battle[_picker];
         var k = c.Items.FindIndex(s => s.Code == 0x40);
         if (k < 0)
@@ -256,6 +268,27 @@ public sealed partial class TacticalBattle
     // orig: fighter-goto-action R014+0x2170 (0E76:2170) matched
     // C: every case is a separate if (the action is cancelled at the end of each), so only the first that applies acts.
     private void DoPlaceAction(int i)
+    {
+        var c = Battle[i];
+        // BUG: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the door or chest index of a member on another level is used on the level SHOWN
+        //   (door-flip, lock-picking, chest-opening, R023+0x153E read the image of DS:11CA): another level's door or chest is toggled,
+        //   picked, opened or disarmed, and his own is untouched (split audit row 1)
+        int? shownBefore = null;
+        if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Floor != Battle.FloorShown && c.Floor >= 0 && c.Floor < _levels.Count
+            && c.Place is PlaceAction.UseDoor or PlaceAction.PickDoorLock or PlaceAction.PickChestLock or PlaceAction.OpenChest
+                or PlaceAction.DissolveLock or PlaceAction.DisarmChestTrap)
+        {
+            shownBefore = Battle.FloorShown;
+            SwitchLevel(c.Floor);
+        }
+        DoPlaceActionHere(i);
+        if (shownBefore is { } before && Battle.FloorShown != before)
+        {
+            SwitchLevel(before);
+        }
+    }
+
+    private void DoPlaceActionHere(int i)
     {
         var c = Battle[i];
         if (c.Place == PlaceAction.UseDoor)
@@ -370,16 +403,25 @@ public sealed partial class TacticalBattle
                 }
                 return;
             }
-            // BUG: with the party split and the battle running, U (R016+0x014E, not paused) sends the LEADER through his stairs-back
-            // record (DS:C8B2[leader]) of the level shown, not the member who went alone: when the view shows the lone member's floor and
-            // the leader stayed with the party on another, the leader leaves through stairs of a floor he is not on (in the Rotenburg
-            // keep of GitHub issue 3, from level 3 to level 1) and the lone member stays. Only paused, with the member selected, does
-            // U or Orders > Use Stairs bring him back (the menu's Use Stairs is greyed while the battle runs). Kept as the original
-            // (lockstep: the issue 3 matrix, original and C# tick for tick); a fix belongs to the optional rules after 1.0.
             var leader = Battle[Battle.Leader];
-            if (leader.StairsBack != -1)
+            int? shownBefore = null;
+            if (leader.StairsBack != -1 && !StaleStairsRecord(Battle.Leader, leader.StairsBack))
             {
+                if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && leader.Floor != Battle.FloorShown && leader.Floor >= 0
+                    && leader.Floor < _levels.Count)
+                {
+                    // the fix: the leader's own level shown first, so the record is his own level's
+                    shownBefore = Battle.FloorShown;
+                    SwitchLevel(leader.Floor);
+                }
+                // BUG: OriginalBehaviour.FixLeaderStairsRecordOfShownLevel - with the party split and the battle running, U (R016+0x014E,
+                //   not paused) sends the LEADER through his stairs-back record number (DS:C8B2[leader]) read on the level SHOWN, not
+                //   his own: with the view on the lone member's floor (he was selected, then deselected) and the leader with the party
+                //   on another, the leader leaves through a record of a floor he is not on (GitHub issue 3: from Rotenburg level 3 to
+                //   level 1; past the count, whatever the generator left there) and the lone member stays. Only paused, with the member
+                //   selected, does U or Orders > Use Stairs bring the member back (the menu's Use Stairs is greyed while the battle runs).
                 TakeExit(leader.StairsBack, Battle.Leader);
+                ShowAgainAfterFix(shownBefore, Battle.Leader);
             }
             return;
         }
@@ -401,6 +443,10 @@ public sealed partial class TacticalBattle
             return;
         }
         var l = Battle.Leader;
+        if (LeaderAway())
+        {
+            return;
+        }
         if (Menus.On(OrdersItem.UseStairs))
         {
             if (MoveMode == 0)
@@ -409,9 +455,12 @@ public sealed partial class TacticalBattle
             }
             else
             {
+                var from = Battle[l].Floor;
                 for (var i = 0; i < Combatant.PartySlots; i++)
                 {
-                    if (Battle[i].IsAble)
+                    // BUG: OriginalBehaviour.FixLeaderKeysOnOtherLevel - travelling together U sends every able member, on whatever level,
+                    //   through the leader's stairs record (split audit row 3)
+                    if (Battle[i].IsAble && !(Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[i].Floor != from))
                     {
                         // C: every member takes the LEADER's stairs record.
                         TakeExit(Battle[l].StairsExit, i);
@@ -444,6 +493,10 @@ public sealed partial class TacticalBattle
             }
             return;
         }
+        if (LeaderAway())
+        {
+            return;
+        }
         OpenChest(Battle.Leader);
         _view.MapChanged();
         CancelAction(Battle.Leader);
@@ -468,7 +521,7 @@ public sealed partial class TacticalBattle
             }
             return false;
         }
-        if (!Menus.On(OrdersItem.PickLock))
+        if (!Menus.On(OrdersItem.PickLock) || LeaderAway())
         {
             return false;
         }
@@ -509,6 +562,10 @@ public sealed partial class TacticalBattle
                 // orig: R016+0x13B6 (1EF8:13B6) matched: R016+0x1590(4)
                 ChoosePlace(PlaceAction.DisarmChestTrap);
             }
+            return;
+        }
+        if (LeaderAway())
+        {
             return;
         }
         var l = Battle.Leader;
@@ -554,9 +611,15 @@ public sealed partial class TacticalBattle
     private void TakeStairsOrder(int i)
     {
         var c = Battle[i];
+        if (StaleStairsRecord(i, c.StairsExit))
+        {
+            return;
+        }
+        int? shownBefore = null;
         if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Floor != Battle.FloorShown && c.Floor >= 0 && c.Floor < _levels.Count)
         {
             // the fix: his own level shown first, so the record is his own level's
+            shownBefore = Battle.FloorShown;
             SwitchLevel(c.Floor);
         }
         // BUG: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test):
@@ -565,6 +628,67 @@ public sealed partial class TacticalBattle
         //   left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the
         //   Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
         TakeExit(c.StairsExit, i);
+        ShowAgainAfterFix(shownBefore, i);
+    }
+
+    /// <summary>The leader is not on the level shown (FixLeaderKeysOnOtherLevel on): his keys outside order mode do nothing.</summary>
+    private bool LeaderAway()
+    {
+        // BUG: OriginalBehaviour.FixLeaderKeysOnOtherLevel - the leader's U, O, P and D use his stairs record, door or chest index from the
+        //   place tests of the level SHOWN: alone on another level he acts on the party's level by remote (split audit row 3)
+        return Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[Battle.Leader].Floor != Battle.FloorShown;
+    }
+
+    /// <summary>FixStairsArrivalWithoutPlace: around the shown level's stairs back to <paramref name="from"/>, then any stairs, then around
+    /// a member standing on this level.</summary>
+    private void PlaceAfterFailedArrival(int who, int from)
+    {
+        var count = Level.GetByte(StairsCountAt);
+        foreach (var back in new[] { true, false })
+        {
+            for (var k = 0; k < count; k++)
+            {
+                var at = StairsAt + 14 * k;
+                if (back != ((sbyte)Level.GetByte(at + 6) == from))
+                {
+                    continue;
+                }
+                var box = new MapPoint(Level.GetWord(at) + Level.GetByte(at + 4) / 2, Level.GetWord(at + 2) + Level.GetByte(at + 5) / 2);
+                if (PlaceAround(who, box, Level.GetByte(at + 12) & 7))
+                {
+                    return;
+                }
+            }
+        }
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (i != who && Battle[i].IsAble && Battle[i].Floor == Battle[who].Floor && PlaceAround(who, Battle[i].Position, Battle[i].Facing & 6))
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>Whether record number n is past the stairs count of combatant who's own level, with FixStaleStairsBackRecord on.</summary>
+    private bool StaleStairsRecord(int who, int n)
+    {
+        var floor = Battle[who].Floor;
+        // BUG: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch:
+        //   the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his
+        //   level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
+        return Battle.Behaviour.FixStaleStairsBackRecord && floor >= 0 && floor < _levels.Count
+            && (n < 0 || n >= _levels[floor].GetByte(StairsCountAt));
+    }
+
+    /// <summary>After a stairs fix showed the actor's own level first (FixStairsRecordOfShownLevel, FixLeaderStairsRecordOfShownLevel):
+    /// unless the party came together on the level he went to (the view is the party's level then), the level shown before comes back,
+    /// rather than the actor's old level, which use-exit leaves shown and which may now be empty.</summary>
+    private void ShowAgainAfterFix(int? shownBefore, int who)
+    {
+        if (shownBefore is { } before && Battle.PartyFloor != Battle[who].Floor && Battle.FloorShown != before)
+        {
+            SwitchLevel(before);
+        }
     }
 
     /// <summary>
@@ -589,6 +713,7 @@ public sealed partial class TacticalBattle
             return;
         }
         var old = Battle.FloorShown;
+        var cameFrom = Battle[who].Floor;
         var at = StairsAt + 14 * n;
         var record = Level.Image.AsSpan(at, 14).ToArray();
         // DIVERGENCE: a record whose level (+6) the battle does not have (a slot past the count with other bytes, never seen in the
@@ -618,7 +743,10 @@ public sealed partial class TacticalBattle
         var alone = true;
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
-            if (Battle[i].IsAble && Battle[i].Floor != lvl)
+            // BUG: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another
+            //   level: once anyone has left, the party never comes together by the stairs (split audit row 10)
+            if (Battle[i].IsAble && Battle[i].Floor != lvl
+                && !(Battle.Behaviour.FixExitedMemberStrandsTheRest && Battle[i].Floor == BattleEnd.LeftThroughExit))
             {
                 alone = false;
             }
@@ -642,7 +770,13 @@ public sealed partial class TacticalBattle
             }
         }
         var spot = new MapPoint((short)(record[8] | record[9] << 8), (short)(record[10] | record[11] << 8));
-        PlaceAround(who, spot, record[12]);
+        // BUG: OriginalBehaviour.FixStairsArrivalWithoutPlace - when no place around the arrival spot is free, place-nearby fails and he keeps
+        //   the coordinates of his old level (some generated mines: an arrival spot away from its stairs, amid cells that are not ground; he
+        //   stands in the void; lockstep of direct use-exit calls, split audit fuzz)
+        if (!PlaceAround(who, spot, record[12]) && Battle.Behaviour.FixStairsArrivalWithoutPlace)
+        {
+            PlaceAfterFailedArrival(who, cameFrom);
+        }
         if (Battle.PartyFloor == lvl)
         {
             // orig: R023+0x1618 floor-view-paint(who) when the party has gone over: the view's centre becomes the cell of the member who
@@ -672,6 +806,9 @@ public sealed partial class TacticalBattle
     //   a battle file saved after the change; the battle-call adapter of R023+0x17D2 takes the original's bytes there (local/batch/b2).
     private void LeaveLevel(int who, byte[] exit)
     {
+        // BUG: when the last member's stairs bring the party together, the enemies fighting on the level he arrives on count as left
+        //   behind with the level left (R023+0x17D2): those of a following kind freeze and come again at his arrival spot, the others
+        //   vanish. Kept as the original (party-split audit row 12). Decision: later, an optional fixed rule after 1.0.
         var seen = new bool[7];
         var cnt = 0;
         var any = false;

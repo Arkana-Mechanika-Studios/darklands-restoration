@@ -408,6 +408,9 @@ public sealed partial class TacticalBattle
         Cursor = OrderCursor.None;
         if (Battle.PartyFloor != Battle.FloorShown)
         {
+            // BUG: with the party split every click on the view gives USE STAIRS (R014+0xC33C), and the walk refusal of
+            //   command-mode-end (R014+0xBCA8, real combat only) cannot be reached with Walk greyed. Kept as the original (party-split
+            //   audit row 26). Decision: never, the split mode's own controls, as designed.
             _view.Message(UseStairsText, 0x96);
             return false;
         }

@@ -221,6 +221,10 @@ public sealed class BattlefieldStore
     /// </summary>
     public (MapPoint Position, int Facing, int SpriteFacing)?[] PartyPlaces { get; } = new (MapPoint, int, int)?[5];
 
+    /// <summary>Each party slot's level when the last battle here ended (−1: unknown), which OriginalBehaviour.FixFloorsOfResumedBattle
+    /// gives back in mode 1 (the original keeps none: everybody is on the level shown).</summary>
+    public int[] PartyFloors { get; } = [-1, -1, -1, -1, -1];
+
     /// <summary>
     /// Each level's files as last written (level%d.flr, the floor image; level%d.atv, the activations): the prepared levels, then the
     /// level in the buffer whenever it is saved, which level-change, the battle's end and the in-battle save do only while DS:D4E4 is

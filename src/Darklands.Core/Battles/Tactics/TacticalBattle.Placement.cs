@@ -240,6 +240,14 @@ public sealed partial class TacticalBattle
     private void PlaceInitialEnemies()
     {
         ActivationsEnabled = true;
+        // BUG: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a
+        //   member left on the old level they appear there, and the end test turns him Away (split audit row 9)
+        int? shownBefore = null;
+        if (Battle.Behaviour.FixFollowersOnShownLevel && Battle.PartyFloor != Battle.FloorShown && Battle.PartyFloor >= 0 && Battle.PartyFloor < _levels.Count)
+        {
+            shownBefore = Battle.FloorShown;
+            SwitchLevel(Battle.PartyFloor);
+        }
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {
             var c = Battle[i];
@@ -254,6 +262,10 @@ public sealed partial class TacticalBattle
             }
         }
         ActivationsAt = Clock;
+        if (shownBefore is { } before)
+        {
+            SwitchLevel(before);
+        }
     }
 
     /// <summary>
@@ -270,6 +282,9 @@ public sealed partial class TacticalBattle
     private bool CheckActivations()
     {
         var result = false;
+        // BUG: the encounters of the party's level are checked at the places of every member (trigger-check R014+0x4442, only while
+        //   DS:11CA == DS:C623): a lone member on another level, at the coordinates of an encounter's sight on the party's level,
+        //   finds it. Kept as the original (party-split audit row 23). Decision: later, an optional fixed rule after 1.0.
         var list = Activations[Battle.FloorShown];
         if (Battle.PartyFloor == Battle.FloorShown && ActivationsEnabled && Running && list.Count != 0)
         {
@@ -326,6 +341,9 @@ public sealed partial class TacticalBattle
     // uninitialised encounter pointer — no money is added here.
     private bool PlaceEnemies(int mode, EnemyGroup? encounter, int who)
     {
+        // BUG: a reinforcement wave (mode 1, after a kill) is placed on the level SHOWN from its .enm (R025+0x0000, DS:A6B4 =
+        //   DS:11CA): with a lone member's level shown it lands on his level. Kept as the original (party-split audit row 8).
+        //   Decision: later, an optional fixed rule after 1.0.
         MapPoint origin;
         int spread, facing;
         sbyte[] types, counts;
@@ -552,6 +570,15 @@ public sealed partial class TacticalBattle
     private void PlaceWoken(int i)
     {
         var c = Battle[i];
+        // BUG: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to
+        //   any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
+        var own = Battle.Behaviour.FixWokenOnOtherLevel && c.Floor >= 0 && c.Floor < _levels.Count;
+        int? shownBefore = null;
+        if (own && c.Floor != Battle.FloorShown)
+        {
+            shownBefore = Battle.FloorShown;
+            SwitchLevel(c.Floor);
+        }
         var first = true;
         var any = false;
         var anchor = i;
@@ -589,7 +616,7 @@ public sealed partial class TacticalBattle
                 r = 30;
                 any = true;
             }
-            else if (Battle[anchor].IsAble)
+            else if (Battle[anchor].IsAble && !(own && Battle[anchor].Floor != c.Floor))
             {
                 from = Battle[anchor].Position;
                 anchor++;
@@ -601,6 +628,10 @@ public sealed partial class TacticalBattle
             }
         }
         Map.StrictWalls = false;
+        if (shownBefore is { } before)
+        {
+            SwitchLevel(before);
+        }
         _view.RowChanged(i);
     }
 }

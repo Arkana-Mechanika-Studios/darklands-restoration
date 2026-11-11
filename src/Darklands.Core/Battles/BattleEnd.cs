@@ -97,6 +97,14 @@ public static class BattleEnd
                 nobodyLeft = false;
             }
         }
+        // BUG: OriginalBehaviour.FixExitedMemberStrandsTheRest - with one member gone through an exit and the others alive on another level
+        //   (the stairs), nobody on the enemies' floor reads as the party's flight: the battle ends as fled or left and the members on the
+        //   other level become Away (split audit row 10); the fix lets the tests below see them (the real-combat switch to their floor).
+        if (nobodyLeft && gone != 0 && b.Behaviour.FixExitedMemberStrandsTheRest
+            && party.Any(m => m.IsAble && m.Floor != LeftThroughExit && m.Floor != enemyFloor))
+        {
+            nobodyLeft = false;
+        }
         if (nobodyLeft && gone != 0)
         {
             if (b.RealCombat)
@@ -144,7 +152,8 @@ public static class BattleEnd
                     }
                 }
                 actions.LootAfterFight();
-                var first = Array.FindIndex(party, m => m.IsAble);
+                // the fix: the floor of a member still on the battlefield, not -99
+                var first = Array.FindIndex(party, m => m.IsAble && !(b.Behaviour.FixExitedMemberStrandsTheRest && m.Floor == LeftThroughExit));
                 if (first >= 0)
                 {
                     b.PartyFloor = party[first].Floor;

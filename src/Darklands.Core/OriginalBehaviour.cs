@@ -57,7 +57,8 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixGhostPartySlot = true, FixDamagedSavedGame = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true, FixCombatAcrossLevels = true, FixWalkingOnOwnLevel = true,
+        FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
     };
@@ -342,6 +343,138 @@ public sealed class OriginalBehaviour
     // orig: fighter-goto-action R014+0x22B2..0x22CB (use-exit with DS:C77E[i]), use-exit R023+0x1618 (record n of the level shown,
     //   R023+0x162B..0x164A, no count test), data safety
     public bool FixStairsRecordOfShownLevel { get; set; }
+
+    /// <summary>
+    /// With the party split over two levels and the battle running (not paused), U sends the leader through his stairs-back record
+    /// number (DS:C8B2[leader], a record of HIS level) read from the level SHOWN: with the view on another floor (the lone member
+    /// selected, then deselected: GitHub issue 3) it is that floor's record n, past its count as a rule, so the leader leaves through
+    /// stairs of a floor he is not on, to the wrong place or level, and the lone member stays. Fixed: the leader still takes the
+    /// stairs (U outside order mode is his action), through his own level's record (the view goes to his level first).
+    /// </summary>
+    // orig: fight-keys R016+0x014E (1EF8:014E, the U case with DS:11CA != DS:C623, not paused), use-exit R023+0x1618 (record n of
+    //   the level shown, R023+0x162B..0x164A, no count test), data safety
+    public bool FixLeaderStairsRecordOfShownLevel { get; set; }
+
+    /// <summary>
+    /// A member who left through an exit keeps status 1 with floor -99. The end test then takes "nobody able on the enemies' floor and
+    /// somebody gone through an exit" for the party's flight even when the others are alive on another level (gone by the stairs): the
+    /// battle ends as fled (or left) and every member on another level becomes Away, which the next card may turn into leaving the party
+    /// for good. use-exit's reunion test counts him too, so the last member to take the stairs never brings the party together.
+    /// The same test ends the party's flight through the exit with a member alone on another level: he becomes Away too.
+    /// Fixed: a member gone through an exit counts in neither test while an able member is still on the battlefield (the battle goes on
+    /// with those still there).
+    /// </summary>
+    // orig: fight-finished R014+0x08FE (the fled test), use-exit R023+0x1618 (the alone loop), data safety
+    public bool FixExitedMemberStrandsTheRest { get; set; }
+
+    /// <summary>
+    /// The level image in memory is the one SHOWN: the place tests of each tick (which door, stairs, chest region a member stands in) and
+    /// the place actions (Use Door, Pick Lock, Open Chest, Dissolve Lock, Disarm Trap) read it whatever level the member is on. A member on
+    /// another level whose order runs while it is shown toggles, picks, opens or disarms the door or chest with his index on the level
+    /// shown (waking that level's encounter behind it; a zero record past its count), and his own is untouched; standing at a place of
+    /// the shown level's map he gets its index. Fixed: the place tests leave a member on another level alone, and his place action is
+    /// carried out with his own level shown (the level shown before comes back).
+    /// </summary>
+    // orig: party-place-table R014+0xDC14, fighter-goto-action R014+0x2170 (door-flip R023+0x00B8, lock-picking R023+0x12C0, chest-opening
+    //   R023+0x13D0, R023+0x153E), data safety
+    public bool FixPlaceActionsOnOwnLevel { get; set; }
+
+    /// <summary>
+    /// The trigger test of each tick (secret doors, hidden traps, dart and spell traps, pits, wall openings, alarms) reads the triggers of
+    /// the level SHOWN at the place of every member, and of every enemy for the traps, whatever level they are on: a member on another
+    /// level sets off the shown level's alarm (the battle ends with its card though nobody is there), its dart or spell trap (hitting
+    /// whoever stands there) or finds its secret doors and traps by remote. Fixed: only those on the level shown spring its triggers.
+    /// </summary>
+    // orig: R014+0xD6DA (no floor test), handlers R014+0xD882 / 0xD966 / 0xDA18 / 0xDACA, R023+0x0D88 / 0x0E30 / 0x0812, data safety
+    public bool FixTriggersOfOtherLevels { get; set; }
+
+    /// <summary>
+    /// The pack of a combatant who falls becomes a loot pile on the level SHOWN, merged with a pile of that level near his place and
+    /// nudged by the shown screen's tiles, whatever level he fell on: a member who dies alone on a level not shown leaves his belongings
+    /// on another level (in a wall there, perhaps), out of reach until a victory gathers every pile; after a flight they are lost with the
+    /// battlefield. Fixed: the pile lies on his own level, merged only with a pile there.
+    /// </summary>
+    // orig: fighter-dying R014+0x2324 (the pile's level = DS:11CA, the merge test on DS:11CA), R014+0x2802, data safety
+    public bool FixPileOfOtherLevel { get; set; }
+
+    /// <summary>
+    /// use-exit writes a member's stairs-back record number (DS:C8B2) after its level switch: right when he goes alone (the old level is
+    /// shown again), but the NEW level's record when the party comes together, and never for a member separated without moving alone (0:
+    /// unconscious left behind, the last of a group move). With the party split Use Stairs is offered anywhere and sends him through
+    /// that number: record 0 of his level, or a slot past its count (a zero record: level 0 at (0, 0), outside the map). Fixed: a number
+    /// past his own level's stairs count is not taken (the order does nothing).
+    /// </summary>
+    // orig: use-exit R023+0x1618 (DS:C8B2[who] = record n's +0x0D read after the level switch), fight-keys R016+0x014E, data safety
+    public bool FixStaleStairsBackRecord { get; set; }
+
+    /// <summary>
+    /// When the party has gone down (or up) the stairs, the enemies of the kinds that follow are placed after a delay of 1 to 4 seconds
+    /// around the arrival spot on the level SHOWN at that moment: with the view moved to a member left behind on the old level (an
+    /// unconscious one can be selected), they appear on his level, and the next end test, finding nobody able on the enemies' level, turns
+    /// him Away (lost from the party) and removes the enemies. Fixed: they are placed on the party's level.
+    /// </summary>
+    // orig: R025+0x0CFC (placed on DS:11CA around DS:C3CD), the delay DS:C2BB from R023+0x17D2, fight-finished R014+0x08FE, data safety
+    public bool FixFollowersOnShownLevel { get; set; }
+
+    /// <summary>
+    /// After a fight the unconscious are woken and put on a free spot near where they lay, tested against the walls and sight of the
+    /// level SHOWN, and after 60 pixels next to any able member, on whatever level: a member woken on a level not shown can land inside a
+    /// wall of his own level (stuck) or at the coordinates of a member of another level. Fixed: the search is made on his own level (the
+    /// level shown coming back), next to members of that level only.
+    /// </summary>
+    // orig: fight-recovery R014+0x0DEE (the free-spot and sight tests on DS:11CA, the anchors any able member), data safety
+    public bool FixWokenOnOtherLevel { get; set; }
+
+    /// <summary>
+    /// The leader's keys outside order mode (U, O, P, D, the battle running) act on his stairs record, door or chest index from the place
+    /// tests of the level SHOWN: with the leader alone on another level and the view on the party's level, he takes that level's stairs,
+    /// opens its door or chest or picks its lock by remote; travelling together, U sends every able member, on whatever level, through
+    /// the leader's record. Fixed: the leader's keys do nothing while he is not on the level shown, and U travelling together takes only
+    /// the members on his level.
+    /// </summary>
+    // orig: fight-keys R016+0x1182 / 0x1072 / 0x10B2 / 0x0F76 with the place tests R014+0xD04E / 0xD328 / 0xD402, data safety
+    public bool FixLeaderKeysOnOtherLevel { get; set; }
+
+    /// <summary>
+    /// use-exit places the combatant who took the stairs around the arrival spot of the record (+8..+11) on the new level; when no place
+    /// there is free (place-nearby fails), he keeps the coordinates he had on the old level. Some generated mines hold a record whose
+    /// arrival spot lies away from the stairs it belongs to, amid cells that are not ground (mines 0x0E, 0x0F, 0x10 at some seeds, on the
+    /// way back up to level 0): he stands in the void, out of reach. Fixed: when the arrival spot gives no place, he is placed around the
+    /// new level's stairs that lead back to his old level, then around a member standing on that level.
+    /// </summary>
+    // orig: use-exit R023+0x1618 with place-nearby R024+0x08F2 (the coordinates kept on failure), data safety
+    public bool FixStairsArrivalWithoutPlace { get; set; }
+
+    /// <summary>
+    /// A battle taken up again on the same battlefield in mode 1 (members standing where the last one left them: the cards of a dungeon's
+    /// desk, fountain, riddle door, pit or chest, which a member on the level shown sets off) puts every member on the level shown at the
+    /// end, at the x/y he had: a member who was alone on another level stands on the shown level at his own level's coordinates, in a
+    /// wall or the void perhaps. Fixed: each member is taken up again on his own level.
+    /// </summary>
+    // orig: R002+0x0000 (the members' floors DS:A6B4 cleared at the end), fight-main-loop R014+0x0000 (DS:A6B4 = DS:C623 = DS:11CA at the
+    //   start), data safety
+    public bool FixFloorsOfResumedBattle { get; set; }
+
+    /// <summary>
+    /// The enemies' sight test sees the members on the level SHOWN, from enemies on any level, and drops the targets that are not on it;
+    /// archers and casters who lost theirs then see every able member on any level. A missile is made on the level shown at its launch and
+    /// a spell or potion effect lands there: with a member alone on another level shown, enemies on the party's level drop the party and
+    /// go for him, and their shots and spells reach him through the floors (he can die of them); shots between combatants on a hidden
+    /// level never hit (the ammunition lost). Fixed: an enemy sees, keeps and chooses only targets on its own level, a missile flies on
+    /// its shooter's level and an effect lands on the level of its missile.
+    /// </summary>
+    // orig: enemy-line-of-sight R018+0x04B6, the drop block R018+0x0706, R018+0x0000 (missile +0x18 = DS:11CA), R014+0xED10 (the hit test
+    //   on DS:A6B4[target]), R019+0x0000 / 0x0300 (effect level = DS:11CA), data safety
+    public bool FixCombatAcrossLevels { get; set; }
+
+    /// <summary>
+    /// The collision test of every step, path search and re-path (fighter-collision-pass R014+0x5ECA) reads the walls and furniture of
+    /// the level SHOWN, for a combatant on any level: a member walking on a hidden level is stopped by the shown level's walls and walks
+    /// through his own, and can stop inside one of them. Fixed: a combatant on a level not shown is tested against his own level's walls
+    /// and furniture.
+    /// </summary>
+    // orig: fighter-collision-pass R014+0x5ECA, the step R014+0x1624, path search R014+0x481A, re-path R014+0xF67A, data safety
+    public bool FixWalkingOnOwnLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

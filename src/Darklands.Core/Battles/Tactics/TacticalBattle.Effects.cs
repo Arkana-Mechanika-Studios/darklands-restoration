@@ -387,6 +387,11 @@ public sealed class EffectField : IEffectClouds
     /// <param name="quality">The potion's quality (clamped to 20..49: three grades).</param>
     /// <param name="target">The combatant aimed at (−1 a spot): it gets the stronger effect.</param>
     // orig: effect-cast R019+0x0000 (1EF8:0000) matched; tests: Oracle:effects.json
+    /// <summary>The level an effect is made on: the level shown (R019+0x0000 / 0x0300), or with FixCombatAcrossLevels its missile's.</summary>
+    // BUG: OriginalBehaviour.FixCombatAcrossLevels - a spell or potion effect lands on the level SHOWN, whatever level its missile flew on
+    //   (split audit row 7)
+    private int EffectLevel(int floor) => Battle.Behaviour.FixCombatAcrossLevels && floor >= 0 ? floor : Battle.FloorShown;
+
     public void Lands(int x, int y, int thrower, int type, int quality, int target, int floor)
     {
         // C: root 0410:001A clamps signed.
@@ -402,7 +407,7 @@ public sealed class EffectField : IEffectClouds
             a.X = x;
             a.Y = y;
             a.Size = 0x49;
-            a.Level = (sbyte)Battle.FloorShown;
+            a.Level = (sbyte)EffectLevel(floor);
             switch (dur / 10)
             {
                 case 2:
@@ -430,7 +435,7 @@ public sealed class EffectField : IEffectClouds
             m.X = x;
             m.Y = y;
             m.Frame = 0x40;
-            m.Level = (sbyte)Battle.FloorShown;
+            m.Level = (sbyte)EffectLevel(floor);
             m.Kind = (byte)(type - 6);
             MarkerActs(++MarkerCount - 1, type, thrower, dur, target, floor);
             _sound(0x0D);
@@ -465,7 +470,7 @@ public sealed class EffectField : IEffectClouds
             r.Y = y;
             r.Kind = (byte)type;
             r.Size = Unsigned(0x21DC + type);
-            r.Level = (sbyte)Battle.FloorShown;
+            r.Level = (sbyte)EffectLevel(floor);
         }
         _clouds[CloudCount].Until = (ushort)(Unsigned(0x2202 + type * 3 + dur / 10) * 60 + Clock);
         CloudActs(++CloudCount - 1, dur, target, floor);

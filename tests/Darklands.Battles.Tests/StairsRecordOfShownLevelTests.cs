@@ -67,12 +67,14 @@ public sealed class StairsRecordOfShownLevelTests
         {
             return;
         }
-        var (t, _, his, back) = Split(OriginalBehaviour.DataSafe);
+        var (t, party, his, back) = Split(OriginalBehaviour.DataSafe);
         Plant(t, t.Battle.FloorShown, back, his);
         var expected = (sbyte)t.LevelAt(his).GetByte(StairsAt + 14 * back + 6);
         Order(t);
         Assert.Equal(expected, t.Battle[Who].Floor);
         Assert.NotEqual(his, t.Battle[Who].Floor);
+        // the view: the party's level again (shown before the order), not his old, empty level
+        Assert.Equal(party, t.Battle.FloorShown);
     }
 
     [Theory]
