@@ -101,6 +101,10 @@ public sealed class BattleMap
     public Blocking Collides(int who, int x, int y)
     {
         Array.Clear(LastParts);
+        // BUG: the walls and furniture tested are those of the level SHOWN, for a combatant on any level (fighter-collision-pass
+        //   R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown level's walls and walks
+        //   through his own (the fuzz of 318 walks left nobody inside a wall). Kept as the original (party-split audit row 5): an
+        //   optional rule after 1.0.
         var me = _battle[who];
         int w = me.HalfWidth, h = me.HalfHeight;
         int right = x + w - 1, left = x - w + 1, bottom = y + h - 1, top = y - h + 1;

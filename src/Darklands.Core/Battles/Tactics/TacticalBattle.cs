@@ -853,6 +853,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         {
             for (var j = first + 1; j < Combatant.PartySlots; j++)
             {
+                // BUG: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on
+                //   one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row
+                //   28): an optional rule after 1.0.
                 if (Battle[j].IsAble && Battle[j].Floor != Battle[first].Floor)
                 {
                     GroupMoveAllowed = false;
@@ -880,6 +883,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
             return true;
         }
         // orig: R014+0x1065..0x10A7: with DS:11B1 the view follows the active member (DS:17B0) by its place in the last frame
+        // BUG: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN
+        //   (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21): no
+        //   change.
         if (FollowsActive && _view.KeepInView(Battle.ActiveMember))
         {
             // orig: R014+0x10A1: after floor-view-paint (09C0:1C2F) DS:D9E4 = DS:07D4 + 8 again (the tester's rise -5: the redraw's time)

@@ -306,6 +306,9 @@ public sealed partial class TacticalBattle
             LeaveField(Battle.Leader);
             return;
         }
+        // BUG: travelling together X sends out every able member, members on other levels too (R016+0x1242), and U every able member
+        //   through the leader's record, a member gone through the exit too (R016+0x1182). Kept as the original (party-split audit row
+        //   11): an optional rule after 1.0.
         if (!Battle.RealCombat)
         {
             for (var i = 0; i < Combatant.PartySlots; i++)
@@ -322,6 +325,10 @@ public sealed partial class TacticalBattle
     private void LeaveField(int i)
     {
         var c = Battle[i];
+        // BUG: U has no status test of the leader (R016+0x014E, R016+0x1182): it moves a dead or unconscious leader's body
+        //   through the stairs, or brings back a leader who left through the exit (an ordinary combatant again: nobody is
+        //   stranded and the battle can still end). Kept as the original (party-split audit row 30): an optional rule after
+        //   1.0.
         c.Floor = BattleEnd.LeftThroughExit;
         c.Flags = (c.Flags & ~TacticalFlags.InExitZone) | TacticalFlags.LeftField;
         ForgetTarget(i);

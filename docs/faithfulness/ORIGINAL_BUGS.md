@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 74 | 3 | 71 |
 | events | 8 | 4 | 4 |
 | travel | 4 | 0 | 4 |
-| battles | 49 | 31 | 18 |
+| battles | 64 | 31 | 33 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 13 | 8 | 5 |
-| total | 253 | 72 | 181 |
+| screens/presentation | 14 | 8 | 6 |
+| total | 269 | 72 | 197 |
 
-## Core logic (240)
+## Core logic (255)
 
 ### rules (103)
 
@@ -601,7 +601,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (49)
+### battles (64)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -642,58 +642,82 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f20e47** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:787` `MineBuilder.SetPiece`  
   original: `R009+0x4D56` (182C:0DB6, draft)  
   why: the relic of the deepest section of the dwarf, kobold and vulcan mines (R009+0x4E28..0x4E3B) is forced to quality 35: any relic 0x96..0xAB gets quality 0x23 and type 0x9F whatever DARKLAND.LST gives it, as the fortress relics (R011+0x096A).
+- **B-499aa0** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:104` `BattleMap.Collides`  
+  original: `R014+0x5ECA` (1462:000A, draft)  
+  why: the walls and furniture tested are those of the level SHOWN, for a combatant on any level (fighter-collision-pass R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown level's walls and walks through his own (the fuzz of 318 walks left nobody inside a wall). Kept as the original (party-split audit row 5): an optional rule after 1.0.
 - **B-e080d4** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/LootStore.cs:154` `LootStore.Merge`  
   original: `R014+0xE930` (19CD:33C0, draft)  
   why: loot counts wrap at 255: the counts are added in a byte with no limit test, so equal items totalling more than 255 wrap and the excess is lost.
 - **B-e1ca2c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/PathFinder.cs:115` `PathFinder.Find`  
   original: `R014+0x481A` (12F7:000A, draft)  
   why: R014+0x48CA leaves through the common exit (R014+0x4B36): R014+0x4B5A (for an enemy) puts every door that is no twin back to the open flags DS:E0C0 kept at the last enemy search that opened them, though this search opened none, and copies those flags back (DS:E0C0 to the level's +0x33D3): a door opened or shut since then is set back.
-- **B-71b924** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:479` `TacticalBattle.PlanGroupMove`  
+- **B-c0fd6c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Ai.cs:426` `TacticalBattle.Rethink`  
+  original: `R014+0x10232` (1DB7:0E22, draft)  
+  why: the path costs and the answer to an attacker have no floor test (R014+0xF438, R014+0x10232): a combatant can choose a target on another level, whose path is refused (R014+0x481A returns 2), and stands idle. Kept as the original (party-split audit row 25): no change.
+- **B-70431c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:309` `TacticalBattle.ExitKey`  
+  original: `R016+0x1242` (1EF8:1242, draft), `R016+0x138E` (1EF8:138E, draft)  
+  why: travelling together X sends out every able member, members on other levels too (R016+0x1242), and U every able member through the leader's record, a member gone through the exit too (R016+0x1182). Kept as the original (party-split audit row 11): an optional rule after 1.0.
+- **B-69078f** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:328` `TacticalBattle.LeaveField`  
+  original: `R016+0x1242` (1EF8:1242, draft), `R016+0x138E` (1EF8:138E, draft)  
+  why: U has no status test of the leader (R016+0x014E, R016+0x1182): it moves a dead or unconscious leader's body through the stairs, or brings back a leader who left through the exit (an ordinary combatant again: nobody is stranded and the battle can still end). Kept as the original (party-split audit row 30): an optional rule after 1.0.
+- **B-71b924** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Commands.cs:486` `TacticalBattle.PlanGroupMove`  
   original: `R014+0xC75C` (19CD:11EC, draft)  
   why: a path of fewer than 2 steps (a lead whose first step meets its target gives the bare 0xFF) is read before its start: the previous combatant's path bytes 248, 249 (for combatant 0 the last loot pile record's +10, +11, 20A5:6236, which no code writes: 0 here).
-- **B-25f2a4** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:270` `TacticalBattle.DoPlaceAction`  
+- **B-a0bf7c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:182` `TacticalBattle.PickLock`  
+  original: `R023+0x12C0` (1EF8:12C0, draft)  
+  why: the picker DS:E1CA is whoever chose a place action last (R016+0x1590), so a Pick Lock order is rolled with the skill and lock picks of a member who chose another place action after it (R023+0x12C0). Kept as the original (party-split audit row 19c): no change.
+- **B-25f2a4** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:273` `TacticalBattle.DoPlaceAction`  
   original: `R014+0x2170` (0E76:2170, draft)  
   why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the door or chest index of a member on another level is used on the level SHOWN (door-flip, lock-picking, chest-opening, R023+0x153E read the image of DS:11CA): another level's door or chest is toggled, picked, opened or disarmed, and his own is untouched (split audit row 1)
-- **B-afe397** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel`, `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:395` `TacticalBattle.UseKey`  
+- **B-afe397** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel`, `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:398` `TacticalBattle.UseKey`  
   original: `R016+0x1182` (1EF8:1182, draft), `R016+0x0000` (1EF8:0000, draft)  
   why: OriginalBehaviour.FixStairsKeyWithoutSelection - R016+0x0165..0x0169 copies entry [DS:A6B2] of the two member tables without testing it: with nobody selected (0xFF) entry -1, DS:C77D = DS:C8B1 (the bytes before the tables).
-- **B-cbc59a** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:414` `TacticalBattle.UseKey`  
+- **B-cbc59a** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:417` `TacticalBattle.UseKey`  
   original: `R016+0x1182` (1EF8:1182, draft), `R016+0x0000` (1EF8:0000, draft)  
   why: OriginalBehaviour.FixLeaderStairsRecordOfShownLevel - with the party split and the battle running, U (R016+0x014E, not paused) sends the LEADER through his stairs-back record number (DS:C8B2[leader]) read on the level SHOWN, not his own: with the view on the lone member's floor (he was selected, then deselected) and the leader with the party on another, the leader leaves through a record of a floor he is not on (GitHub issue 3: from Rotenburg level 3 to level 1; past the count, whatever the generator left there) and the lone member stays. Only paused, with the member selected, does U or Orders > Use Stairs bring the member back (the menu's Use Stairs is greyed while the battle runs).
-- **B-b02169** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:458` `TacticalBattle.UseKey`  
+- **B-b02169** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:461` `TacticalBattle.UseKey`  
   original: `R016+0x137A` (1EF8:137A, draft), `R016+0x1590` (1EF8:1590, draft)  
   why: OriginalBehaviour.FixLeaderKeysOnOtherLevel - travelling together U sends every able member, on whatever level, through the leader's stairs record (split audit row 3)
-- **B-d71b85** `bug`, flag `FixDissolveKeyMember` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:581` `TacticalBattle.DissolveKey`  
+- **B-d71b85** `bug`, flag `FixDissolveKeyMember` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:584` `TacticalBattle.DissolveKey`  
   original: `R016+0x0F76` (1EF8:0F76, draft), `R014+0xB434` (18BF:0FA4, draft)  
   why: OriginalBehaviour.FixDissolveKeyMember - R016+0x0FAF..0x0FBA: use-up-slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the pointer, R014+0xB785, else −1, R014+0xB7F5) with member 0's slot byte (absolute, not indexed), no test of either: another member's stack, or the entries before the packs.
-- **B-bdd7dd** `bug`, flag `FixStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:622` `TacticalBattle.TakeStairsOrder`  
+- **B-bdd7dd** `bug`, flag `FixStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:625` `TacticalBattle.TakeStairsOrder`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test): a member alone on another level whose order is given with the view back on the party's level (another member selected after Use Stairs, then Space: GitHub issue 3) takes that level's record n, past its count as a rule, whatever the generator left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
-- **B-2a15e1** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:634` `TacticalBattle.LeaderAway`  
+- **B-2a15e1** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:637` `TacticalBattle.LeaderAway`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixLeaderKeysOnOtherLevel - the leader's U, O, P and D use his stairs record, door or chest index from the place tests of the level SHOWN: alone on another level he acts on the party's level by remote (split audit row 3)
-- **B-5e9887** `bug`, flag `FixStaleStairsBackRecord` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:673` `TacticalBattle.StaleStairsRecord`  
+- **B-5e9887** `bug`, flag `FixStaleStairsBackRecord` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:676` `TacticalBattle.StaleStairsRecord`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch: the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
-- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:724` `TacticalBattle.TakeExit`  
+- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:727` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
-- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:743` `TacticalBattle.TakeExit`  
+- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:746` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another level: once anyone has left, the party never comes together by the stairs (split audit row 10)
-- **B-fcc034** `bug`, flag `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:770` `TacticalBattle.TakeExit`  
+- **B-fcc034** `bug`, flag `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:773` `TacticalBattle.TakeExit`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsArrivalWithoutPlace - when no place around the arrival spot is free, place-nearby fails and he keeps the coordinates of his old level (some generated mines: an arrival spot away from its stairs, amid cells that are not ground; he stands in the void; lockstep of direct use-exit calls, split audit fuzz)
-- **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:233` `TacticalBattle.PartyLocations`  
+- **B-4595d9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:809` `TacticalBattle.LeaveLevel`  
+  original: `R023+0x17D2` (1EF8:17D2, draft)  
+  why: when the last member's stairs bring the party together, the enemies fighting on the level he arrives on count as left behind with the level left (R023+0x17D2): those of a following kind freeze and come again at his arrival spot, the others vanish. Kept as the original (party-split audit row 12): an optional rule after 1.0.
+- **B-b2de46** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:62` `TacticalBattle.LockIsDoor`  
+  original: `R024+0x0000` (1EF8:0000, draft)  
+  why: DS:CA99 follows the leader's place tests, so a member's Dissolve Lock order dissolves a door or a chest by the leader's last place, not his own (fighter-goto-action R014+0x2170 case 7). Kept as the original (party-split audit row 20): an optional rule after 1.0.
+- **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:236` `TacticalBattle.PartyLocations`  
   original: `R014+0xDC14` (19CD:26A4, draft)  
   why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
-- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:455` `TacticalBattle.UseUpDissolveSlot`  
+- **B-9116a9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:293` `TacticalBattle.PartyLocations`  
+  original: `R014+0xDC14` (19CD:26A4, draft)  
+  why: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24): an optional rule after 1.0.
+- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:461` `TacticalBattle.UseUpDissolveSlot`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
   why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
-- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:476` `TacticalBattle.ConsumeSlotAsOriginal`  
+- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:482` `TacticalBattle.ConsumeSlotAsOriginal`  
   original: `R014+0xB434` (18BF:0FA4, draft)  
   why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
-- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:640` `TacticalBattle.Triggers`  
+- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:646` `TacticalBattle.Triggers`  
   original: `R014+0xD6DA` (19CD:216A, draft)  
   why: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level: an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
 - **B-71d98a** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:391` `EffectField.EffectLevel`  
@@ -723,6 +747,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fd2ef4** `bug`, flag `FixPileOfOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Loot.cs:25` `TacticalBattle.LeavePile`  
   original: `R014+0x2324` (0E76:2324, draft)  
   why: OriginalBehaviour.FixPileOfOtherLevel - the pile goes to the level SHOWN whatever level he fell on (merged with a pile of that level near his place, nudged by its screen tiles): a member dying alone on a level not shown leaves his pack on another level (split audit row 29)
+- **B-7b43c9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Menus.cs:38` `TacticalBattle.ResetOrderMenu`  
+  original: `R014+0xDE12` (19CD:28A2, draft)  
+  why: with the party split Walk, Flee and Halt are greyed and Use Stairs is on anywhere (R014+0xDE12, R014+0xDF28): the way back of a member alone is his stairs-back record, by design. Kept as the original (party-split audit row 27): no change.
+- **B-5eea75** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Menus.cs:113` `TacticalBattle.BuildOrderMenu`  
+  original: `R014+0xDF28` (19CD:29B8, draft)  
+  why: the order menu of a member is built from his place flags, which the place tests set from the level SHOWN (R014+0xDF28): after the battle ran with another level shown its door, chest and lock entries may belong to that level (harmless once the place actions use the member\'s own level). Kept as the original (party-split audit row 2): no change.
 - **B-a3cd1d** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Missiles.cs:115` `TacticalBattle.LaunchMissile`  
   original: `R018+0x0000` (1EF8:0000, matched)  
   why: OriginalBehaviour.FixCombatAcrossLevels - the missile is made on the level SHOWN at its launch: between combatants on a hidden level it never hits, and from the party's level it reaches a lone member through the floors (split audit row 7)
@@ -732,16 +762,25 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-8f3e7c** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:281` `TacticalBattle.ChoosePlace`  
   original: `R016+0x1590` (1EF8:1590, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - flags[-1]'s high byte is the pause byte DS:A695 (R016+0x15BE, bx = -2)
-- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:684` `TacticalBattle.LeaveWithNobodySelected`  
+- **B-92ec65** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:411` `TacticalBattle.OrderClick`  
+  original: `R014+0xC33C` (19CD:0DCC, draft)  
+  why: with the party split every click on the view gives USE STAIRS (R014+0xC33C), and the walk refusal of command-mode-end (R014+0xBCA8, real combat only) cannot be reached with Walk greyed. Kept as the original (party-split audit row 26): no change.
+- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:687` `TacticalBattle.LeaveWithNobodySelected`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: OriginalBehaviour.FixLeaveOrderModeWithoutSelection - Enter travelling individually (R016+0x0734) calls it with nobody selected, and a cursor target left by the button held over a member (R014+0xB632..: the target of that member's order) gives the order to record -1: for 0x400 the pause byte loses 0x10; the 0x1BE test clears it too; a missile (0x80) sets 0x02 of the pause byte; a missile or a throw sets exchange[12] = 7 (Ready) and repath[12] = the order clock DS:C867; an attack with bit 1 (or adjacent) sets exchange[12] = 7; a walk to a spot sets exchange[12] = 0 and give-up[12] = the order clock + 30, or, the party split in real combat, shows "USE STAIRS..." (DS:064A) for 150 ticks.
-- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:837` `TacticalBattle.CancelOrder`  
+- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:840` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
 - **B-e9dc75** `bug`, flag `FixFollowersOnShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:243` `TacticalBattle.PlaceInitialEnemies`  
   original: `R025+0x0CFC` (1EF8:0CFC, draft)  
   why: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a member left on the old level they appear there, and the end test turns him Away (split audit row 9)
-- **B-fd4e71** `bug`, flag `FixWokenOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:567` `TacticalBattle.PlaceWoken`  
+- **B-7ac4d6** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:285` `TacticalBattle.CheckActivations`  
+  original: `R014+0x4442` (0E76:4442, draft)  
+  why: the encounters of the party's level are checked at the places of every member (trigger-check R014+0x4442, only while DS:11CA == DS:C623): a lone member on another level, at the coordinates of an encounter's sight on the party's level, finds it. Kept as the original (party-split audit row 23): an optional rule after 1.0.
+- **B-6212cc** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:344` `TacticalBattle.PlaceEnemies`  
+  original: `R025+0x0000` (1EF8:0000, draft)  
+  why: a reinforcement wave (mode 1, after a kill) is placed on the level SHOWN from its .enm (R025+0x0000, DS:A6B4 = DS:11CA): with a lone member's level shown it lands on his level. Kept as the original (party-split audit row 8): an optional rule after 1.0.
+- **B-fd4e71** `bug`, flag `FixWokenOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:573` `TacticalBattle.PlaceWoken`  
   original: `R014+0x0DEE` (0E76:0DEE, draft)  
   why: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  
@@ -750,6 +789,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:371` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
+- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:856` `TacticalBattle.Tick`  
+  original: `R014+0x0F58` (0E76:0F58, draft)  
+  why: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row 28): an optional rule after 1.0.
+- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:886` `TacticalBattle.Tick`  
+  original: `R014+0x0F58` (0E76:0F58, draft)  
+  why: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21): no change.
 
 ### persistence (2)
 
@@ -760,13 +805,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (13)
+## Presentation and host (14)
 
-### screens/presentation (13)
+### screens/presentation (14)
 
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
+- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.cs:2876` `BattleScreen.RecordScreenPlaces`  
+  original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
+  why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22): no change.
 - **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:72` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
