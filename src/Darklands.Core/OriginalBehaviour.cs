@@ -57,7 +57,7 @@ public sealed class OriginalBehaviour
     public static OriginalBehaviour DataSafe => new()
     {
         FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true,
+        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
         FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
@@ -385,6 +385,15 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R014+0xD6DA (no floor test), handlers R014+0xD882 / 0xD966 / 0xDA18 / 0xDACA, R023+0x0D88 / 0x0E30 / 0x0812, data safety
     public bool FixTriggersOfOtherLevels { get; set; }
+
+    /// <summary>
+    /// The pack of a combatant who falls becomes a loot pile on the level SHOWN, merged with a pile of that level near his place and
+    /// nudged by the shown screen's tiles, whatever level he fell on: a member who dies alone on a level not shown leaves his belongings
+    /// on another level (in a wall there, perhaps), out of reach until a victory gathers every pile; after a flight they are lost with the
+    /// battlefield. Fixed: the pile lies on his own level, merged only with a pile there.
+    /// </summary>
+    // orig: fighter-dying R014+0x2324 (the pile's level = DS:11CA, the merge test on DS:11CA), R014+0x2802, data safety
+    public bool FixPileOfOtherLevel { get; set; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a

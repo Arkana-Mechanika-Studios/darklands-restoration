@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The nineteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The twenty data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -191,6 +191,11 @@ after 1.0.
     on another level sets off the shown level's alarm (the battle ends with its card though nobody is there), its dart or spell trap, or
     finds its secret doors and traps by remote. Faithful keeps it (tests `TriggersOfOtherLevelsTests`; not reproduced in lockstep yet);
     fixed: only those on the level shown spring its triggers.
+  * `FixPileOfOtherLevel` (party-split audit row 29, 2026-11-11): the pack of a combatant who falls becomes a loot pile on the level
+    shown (fighter-dying R014+0x2324: the pile's level DS:11CA, merged with a pile of that level near his place, nudged by its screen
+    tiles), whatever level he fell on: a member who dies alone on a level not shown leaves his belongings on another level, out of reach
+    until a victory gathers every pile, lost after a flight. Faithful keeps it (tests `PileOfOtherLevelTests`; not reproduced in
+    lockstep yet); fixed: the pile lies on his own level at his place.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,

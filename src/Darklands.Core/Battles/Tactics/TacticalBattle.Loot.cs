@@ -22,14 +22,19 @@ public sealed partial class TacticalBattle
     private void LeavePile(Combatant c, AnimationSlot slot)
     {
         var loot = Store.Loot;
-        var pile = new LootPile { Level = Battle.FloorShown };
+        // BUG: OriginalBehaviour.FixPileOfOtherLevel - the pile goes to the level SHOWN whatever level he fell on (merged with a pile of that
+        //   level near his place, nudged by its screen tiles): a member dying alone on a level not shown leaves his pack on another level
+        //   (split audit row 29)
+        var own = Battle.Behaviour.FixPileOfOtherLevel && c.Floor >= 0 && c.Floor < _levels.Count && c.Floor != Battle.FloorShown;
+        var level = own ? c.Floor : Battle.FloorShown;
+        var pile = new LootPile { Level = level };
         if (slot.DropsLoot)
         {
             // DIVERGENCE: n is the signed char +0x7E (cbw); for a pack left at -1 items (Inventory.KeepEach on an empty pack) the
             // original copies n * 6 = 65530 bytes into DS:[C291] (_fmemcpy, 0E76:2629-262E: over the data segment and the stack)
             // and the game dies; here the count is taken as 0 and the pile is empty.
             var n = c.Items.Count;
-            var near = LootPiles.FindIndex(p => p.Level == Battle.FloorShown
+            var near = LootPiles.FindIndex(p => p.Level == level
                 && c.Position.X - 16 <= p.Position.X && p.Position.X < c.Position.X + 16
                 && c.Position.Y - 16 <= p.Position.Y && p.Position.Y < c.Position.Y + 16);
             if (near == -1)
@@ -62,7 +67,10 @@ public sealed partial class TacticalBattle
         }
         // C: (else) the record keeps offset −2, count 0.
         pile.Position = c.Position;
-        pile.Position = NudgePile(pile.Position);
+        if (!own)
+        {
+            pile.Position = NudgePile(pile.Position);
+        }
         if (slot.CorpseKind == 1)
         {
             pile.Visible = true;

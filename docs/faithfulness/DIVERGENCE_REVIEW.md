@@ -1088,7 +1088,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R014+0x2CCA` (0E76:2CCA, draft)  
   divergence: DS:D6FB is a byte; an index past 249 reads the next combatant's path in the original (wrapped here).  
   deterministic: **n/a** (checked against the original); action: **document** - DS:D6FB[i] advances once per completed step (0E76 line 1151) and the walk stops at the 0xFF terminator that path copy 1554/15D0 writes at index DS:E118<=249 (the search is limited to 249 steps), so the index never exceeds 249 and fighter-path-table[i][idx] never reads the next combatant's 250-byte row.
-- **D-b3b34d** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Loot.cs:28` `TacticalBattle.LeavePile`  
+- **D-b3b34d** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Loot.cs:33` `TacticalBattle.LeavePile`  
   original: `R014+0x2324` (0E76:2324, draft)  
   divergence: n is the signed char +0x7E (cbw); for a pack left at -1 items (Inventory.KeepEach on an empty pack) the original copies n * 6 = 65530 bytes into DS:[C291] (_fmemcpy, 0E76:2629-262E: over the data segment and the stack) and the game dies; here the count is taken as 0 and the pile is empty.  
   deterministic: **yes** (checked against the original); action: **keep** - fighter-dying 0E76:2448 reads the count with cbw and copies count * 6 bytes (0E76:25F9-262E, _fmemcpy 06A1:2EB4) into DS:[C291]: with -1 that is 65530 bytes over DGROUP and the stack, and the game dies. The count -1 comes from item-keep-percent on an empty pack (B-e458c5). A crash cannot be reproduced usefully; the empty pile is kept.
