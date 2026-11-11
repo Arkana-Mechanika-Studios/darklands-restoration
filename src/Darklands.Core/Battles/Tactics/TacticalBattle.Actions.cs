@@ -29,7 +29,7 @@ public sealed partial class TacticalBattle
                 var set = AnimationSet(i);
                 if (c.Place == PlaceAction.Stairs && Battle.FloorShown != Battle.PartyFloor)
                 {
-                    TakeExit(c.StairsExit, i);
+                    TakeStairsOrder(i);
                     CancelAction(i);
                     continue;
                 }

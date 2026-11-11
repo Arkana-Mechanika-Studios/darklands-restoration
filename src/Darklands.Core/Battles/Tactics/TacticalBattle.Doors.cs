@@ -314,7 +314,7 @@ public sealed partial class TacticalBattle
         }
         if (c.Place == PlaceAction.Stairs)
         {
-            TakeExit(c.StairsExit, i);
+            TakeStairsOrder(i);
             CancelAction(i);
         }
         if (c.Place == PlaceAction.Leave)
@@ -549,6 +549,24 @@ public sealed partial class TacticalBattle
 
     // ---- stairs and levels ------------------------------------------------------------------
 
+    /// <summary>The Stairs order of combatant i carried out: use-exit with his stairs record number (DS:C77E[i]).</summary>
+    // orig: fighter-goto-action R014+0x22B2..0x22CB and fight-actions R014+0x11CA..0x11E7: use-exit(DS:C77E[i], i)
+    private void TakeStairsOrder(int i)
+    {
+        var c = Battle[i];
+        if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Floor != Battle.FloorShown && c.Floor >= 0 && c.Floor < _levels.Count)
+        {
+            // the fix: his own level shown first, so the record is his own level's
+            SwitchLevel(c.Floor);
+        }
+        // BUG: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test):
+        //   a member alone on another level whose order is given with the view back on the party's level (another member selected
+        //   after Use Stairs, then Space: GitHub issue 3) takes that level's record n, past its count as a rule, whatever the generator
+        //   left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the
+        //   Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
+        TakeExit(c.StairsExit, i);
+    }
+
     /// <summary>
     /// Combatant <paramref name="who"/> takes stairs record n to another level: when no able member
     /// is left behind the party moves (the enemies follow or stay as an encounter); it is placed
@@ -573,6 +591,13 @@ public sealed partial class TacticalBattle
         var old = Battle.FloorShown;
         var at = StairsAt + 14 * n;
         var record = Level.Image.AsSpan(at, 14).ToArray();
+        // DIVERGENCE: a record whose level (+6) the battle does not have (a slot past the count with other bytes, never seen in the
+        //   generated levels: their slots hold zeros or castle and mine records) would make level-change (R024+0x059A) read a level
+        //   file the battle never wrote; here the order is ignored (nothing written, nobody moved) rather than the program stopped.
+        if ((sbyte)record[6] < 0 || (sbyte)record[6] >= _levels.Count)
+        {
+            return;
+        }
         var wall = (sbyte)Level.GetByte(at + 7);
         // BUG: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called
         // at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change

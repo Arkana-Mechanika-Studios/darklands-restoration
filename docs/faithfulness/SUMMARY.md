@@ -40,7 +40,7 @@ after 1.0.
   coordinates) and fixed by default in the player's game, which uses `OriginalBehaviour.DataSafe`. What
   the fixed game writes is still read by the original: saves are shared both ways. Future data-safety
   fixes go into `DataSafe`, and only those, besides the evident display fixes the user chose for every player game (below).
-* The fourteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
+* The fifteen data-safety fixes now in `DataSafe` (the bugs are in `original_bugs.csv`; all but `FixGhostPartySlot`,
   `FixLeavingMemberRecordTail`, `FixRosterMissingFigure`, `FixLoadTwoSlotsOneRecord` and `FixMapQuitFreedBuffers` are also registered as deliberate fixes in `divergences.csv`):
   * `FixInnCacheRewrite`: the rewrite of a known store in CACHE.TMP (stash-store R035+0x1468, the inn
     cache bug) writes a 101-byte header over a 198-byte header's offsets and copies the other stores from
@@ -147,6 +147,18 @@ after 1.0.
     Hans's row 1 nobody's; the 13 shots of the original and the Faithful C# agree. Faithful keeps it (B-9db08d,
     `InnRosterTests.TheColourKeysChangeTheSlotOfTheRowNumberUnlessFixed`); fixed: the highlighted row's own character's colours,
     nobody's on a row the list did not show.
+  * `FixStairsRecordOfShownLevel` (GitHub issue 3, 2026-11-11): the Stairs order of a member alone on another level is carried out
+    by use-exit (R023+0x1618, from fighter-goto-action R014+0x22B2 or fight-actions R014+0x11E2) with his stairs-back record number
+    (DS:C8B2, a record of HIS level), read from the level SHOWN, with no test of the level's stairs count (R023+0x162B..0x164A). With the
+    view back on the party's level when the order is given (Use Stairs, then another member selected, then Space) it is that level's
+    record n, past its count as a rule. The slots past the count hold what the generators left there: castles and mines build every
+    level in one buffer and clear only the counts (scan of the 138 battlefields, 12 seeds each, 372 multi-level fields: zeros, which
+    send him to level 0 at (0, 0); copies of another level's records; stale bytes leading to another level or back to the shown one;
+    no level number the battle lacks). He then goes to a wrong place or level, or comes back by chance (the reporter's Rotenburg keep:
+    slot 2 of level 3 holds level 2's record to level 3). Faithful reproduces the read (fc02d71; sessions
+    `castle-rotenburg-split-reselect*`); fixed: his own level is shown first and its record taken, so he takes his own stairs back, as
+    Use Stairs is offered for (tests `StairsRecordOfShownLevelTests`). In both modes a record naming a level the battle does not have is
+    ignored rather than ending the program (a registered divergence; never seen in the generated levels).
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
