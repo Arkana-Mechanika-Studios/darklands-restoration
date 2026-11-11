@@ -170,6 +170,15 @@ public sealed partial class TacticalBattle
     // when lock picks were found, so nothing depends on it.
     private bool PickLock(int lockAt)
     {
+        if (_picker is < 0 or >= Combatant.Count)
+        {
+            // DIVERGENCE: DS:E1CA is set by every place choice (R016+0x1590), 0xFF with nobody selected (H outside order mode, R016+0x101E):
+            //   a member's Pick Lock given before and carried out after it reads combatant record -1, its inventory and DS:D68D[-1]
+            //   (the bytes before the tables, not modelled) at R023+0x12C0 and ORs the skill-use bits into the word before DS:D68D. Here the
+            //   lock is not picked and the no-lock-picks message shows, as when that inventory holds no item 0x40 (split audit row 19).
+            _view.Message(NoLockPicksText, 150);
+            return false;
+        }
         var c = Battle[_picker];
         var k = c.Items.FindIndex(s => s.Code == 0x40);
         if (k < 0)

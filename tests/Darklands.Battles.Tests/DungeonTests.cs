@@ -1,3 +1,4 @@
+using System.Reflection;
 using Darklands.Cards;
 using Darklands.Core.Battles;
 using Darklands.Core.Battles.Tactics;
@@ -221,6 +222,38 @@ public sealed class DungeonTests
         Run(tactics, 16);
         Assert.Equal(0, level.GetByte(RegionsAt + 0x2C * r + 8));
         Assert.True((b[leader].SkillsUsed & SkillUse.ArtificeSucceeded) != 0);
+    }
+
+    /// <summary>H with nobody selected (Halt on, travelling individually) after a Pick Lock order: the picker DS:E1CA becomes 0xFF
+    /// (R016+0x1590), and the order carried out reads record -1 in the original (not modelled): no crash, the lock stays, the
+    /// no-lock-picks message (split audit row 19).</summary>
+    [Fact]
+    public void APickLockOrderAfterHaltWithNobodySelectedLeavesTheLock()
+    {
+        if (GameFolder.Files is null)
+        {
+            return;
+        }
+        var (_, tactics) = Start(0x0A, 777);
+        var b = tactics.Battle;
+        var level = tactics.Level;
+        var r = Enumerable.Range(0, level.GetByte(0x300C)).First(k => (level.GetByte(RegionsAt + 0x2C * k + 8) & 0x7F) != 0);
+        var locked = level.GetByte(RegionsAt + 0x2C * r + 8);
+        var leader = b.Leader;
+        b[leader].Skills[14] = 99;
+        b[leader].Items.Add(new ItemStack(0x40, 0x69, 40, 1, 1));
+        b[leader].Position = Centre(level, RegionsAt + 0x2C * r);
+        Run(tactics, 16);
+        tactics.EnterOrderMode(leader);
+        tactics.OrderPlace(leader, PlaceAction.PickChestLock);
+        Assert.Equal(-1, tactics.Selected);
+        tactics.Menus.Set(OrdersItem.Halt, 1);
+        typeof(TacticalBattle).GetProperty("MoveMode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!.SetValue(tactics, 0);
+        tactics.Halt(-1);
+        tactics.TogglePause();
+        Run(tactics, 16);
+        Assert.Equal(locked, level.GetByte(RegionsAt + 0x2C * r + 8));
+        Assert.True((b[leader].SkillsUsed & SkillUse.ArtificeSucceeded) == 0);
     }
 
     /// <summary>The whole party on stairs takes them: the party is on the other level, the level shown.</summary>
