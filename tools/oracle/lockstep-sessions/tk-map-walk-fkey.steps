@@ -1,0 +1,32 @@
+# Lockstep session (prefinal-cov, the ctrlbreak lead: F1..F5 / Ctrl-F1..F5 on the map): DKSAVE17 on the map. Right twice in one pass (a step
+# east: DS:8676 = 3), then F2 in the next pass (the original ends F1..F5 at R030+0x109E too: the step in place after a walked pass), the same
+# with Ctrl-F2, F1, F5 and Ctrl-F4; states after each
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+tkey:0:right,right
+tkey:0:f2
+wait:100
+state:after-f2
+tkey:0:left,left
+tkey:0:ctrlf2
+wait:100
+state:after-ctrlf2
+tkey:0:right,right
+tkey:0:f1
+wait:100
+state:after-f1
+tkey:0:left,left
+tkey:0:f5
+wait:100
+state:after-f5
+tkey:0:right,right
+tkey:0:ctrlf4
+wait:100
+state:after-ctrlf4
+tkey:0:left,left
+tkey:0:ctrlf1
+wait:100
+state:after-ctrlf1

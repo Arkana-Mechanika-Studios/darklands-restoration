@@ -83,6 +83,7 @@ public sealed class PartyPanel(GameAssets assets)
         var drawn = page.SaveScreen();
         for (var i = 0; i < Party.MaxMembers; i++)
         {
+            // orig: the row's rectangle copied to the page clipped, root 0000:14F6 draft (bytes match), called by the row set root 0000:1716
             canvas.CopyFrom(drawn, 3, i * RowHeight + 1, 0x36, 0x26);
         }
     }

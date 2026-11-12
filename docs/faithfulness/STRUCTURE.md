@@ -13,29 +13,37 @@ each one; a reviewed lead that is in order goes to `structure-reviewed.csv` with
 
 | | count |
 |---|---:|
-| C# units with a trace (types left out) | 4563 |
-| original functions compared | 5586 |
-| comparisons (functions one C# unit implements together are compared as one) | 3435 |
-| comparisons without a finding | 3182 |
-| implemented functions not compared (cited only in statements, types or map.csv) | 2684 |
+| C# units with a trace (types left out) | 4607 |
+| original functions compared | 5592 |
+| comparisons (functions one C# unit implements together are compared as one) | 3420 |
+| comparisons without a finding | 3150 |
+| implemented functions not compared (cited only in statements, types or map.csv) | 2703 |
 
 ## Findings
 
 | check | what it means | open | reviewed |
 |---|---|---:|---:|
 | `draws` | one side draws random numbers, the other never does | 0 | 2 |
-| `args` | a shared call passes a constant the other side never uses | 0 | 4 |
-| `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 7 |
-| `missing` | a game-logic call of the original the C# does not make | 0 | 74 |
-| `extra` | a traced call the original does not make (three calls deep) | 0 | 83 |
-| `order` | two shared calls in the opposite order | 0 | 30 |
-| `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 0 | 28 |
-| `decisions` | fewer than half the original's conditional branches | 0 | 66 |
+| `args` | a shared call passes a constant the other side never uses | 0 | 3 |
+| `stores` | the C# assigns a constant that appears nowhere in the original's code | 0 | 6 |
+| `missing` | a game-logic call of the original the C# does not make | 7 | 89 |
+| `extra` | a traced call the original does not make (three calls deep) | 11 | 72 |
+| `order` | two shared calls in the opposite order | 10 | 24 |
+| `consts` | a `cmp`/`test` constant of the original that appears nowhere in the C# | 3 | 26 |
+| `decisions` | fewer than half the original's conditional branches | 2 | 65 |
 
 ## Open findings by area
 
 | area | draws | args | stores | missing | extra | order | consts | decisions |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
+| battlefield generation | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| battles (tactical) | 0 | 0 | 0 | 3 | 6 | 3 | 2 | 2 |
+| card engine | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 |
+| cards (event scripts) | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 |
+| resident core (root) | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
+| rules (strategic core, event toolkit) | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| screens (inventory, barter, alchemy, saints, cache, camp, creation, saves, loot) | 0 | 0 | 0 | 1 | 1 | 2 | 1 | 0 |
+| start-up | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 |
 
 ## Limits
 
