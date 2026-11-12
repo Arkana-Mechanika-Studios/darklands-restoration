@@ -404,10 +404,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: "menu-choice-index = 2" and "param-plus-6 = 0x64" overwrite the chosen potion and the chance (the parameter is volatile), a left-over test cheat; the failure branch can never run (the draw is 0..99 against 100) but still draws.
 - **B-77afe4** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:316` `CathedralByDay.AskForARelic`  
   original: `R056+0x2782` (19C4:0EC2, asm), `R056+0x26CA` (19C4:0E0A, asm)  
-  why: the errand is made for giver 0, the town's merchants, where the card's own tests (an errand open, one done: option 8) look for 3, the bishop: the merchants pay for it and the canon gives a new errand at every visit.
-- **B-7fade3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:361` `CathedralByDay.AcceptTheRelic`  
+  why: the errand is made for giver 0, the town's merchants, where the card's own tests (an errand open, one done: option 8) look for 3, the bishop: the merchants pay for it and the canon gives a new errand at every visit. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
+- **B-7fade3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S056/CathedralByDay.cs:362` `CathedralByDay.AcceptTheRelic`  
   original: `R056+0x2782` (19C4:0EC2, asm), `R056+0x26CA` (19C4:0E0A, asm)  
-  why: neither the thing fetched is taken nor the reward event ended: the relic can be taken again and again.
+  why: neither the thing fetched is taken nor the reward event ended: the relic can be taken again and again. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
 - **B-2fec94** `bug`, flag `FixUniversityFormulasTried` - `src/Darklands.Cards/Scripts/S056/University_Unive00.cs:185` `University_Unive00.AskAboutFormulas`  
   original: `R056+0x0D14` (18C0:0494, matched)  
   why: a failed formulas search records the saints line (type 0, R056+0x0D88) as tried, so on the next visit that week the saints line is shut and the formulas line open again (fix flag FixUniversityFormulasTried).
