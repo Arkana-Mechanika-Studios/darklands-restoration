@@ -101,20 +101,25 @@ public sealed class LauncherPreviewTests
         screen.Render(canvas);
         ToPicture(screen);
         var clock = new Stopwatch();
-        var worst = 0.0;
-        for (var i = 0; i < 21; i++)
+        var frames = new double[21];
+        for (var i = 0; i < frames.Length; i++)
         {
             screen.Handle(Right);
             clock.Restart();
             screen.Render(canvas);
-            worst = Math.Max(worst, clock.Elapsed.TotalMilliseconds);
+            frames[i] = clock.Elapsed.TotalMilliseconds;
         }
+        Array.Sort(frames);
+        var median = frames[frames.Length / 2];
+        var worst = frames[^1];
         File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "launcher-stepping-timing.txt"),
-            $"{DateTime.Now:s} slowest of 21 frames while stepping the Picture row at 1280x720: {worst:F1} ms{Environment.NewLine}");
+            $"{DateTime.Now:s} 21 frames while stepping the Picture row at 1280x720: median {median:F1} ms, slowest {worst:F1} ms{Environment.NewLine}");
         Assert.Single(previews.Asked.Distinct());
         Assert.True(previews.Asked[0].Curved);   // the settings file's CRT curvature reaches the previews
         Assert.True(previews.Gets >= 21);
-        Assert.True(worst < 100, $"the slowest frame while stepping took {worst:F1} ms");   // a test machine's debug build; the report gives release figures
+        // The median, not the slowest frame: a preview made on the frames would slow every one of them, while one stall of a shared CI
+        // machine (873 ms once, on GitHub's Windows runner) slows a single frame. A test machine's debug build; the report gives release figures.
+        Assert.True(median < 100, $"the median frame while stepping took {median:F1} ms (slowest {worst:F1} ms)");
     }
 
     private static GameSettings Curved(GameSettings settings)
