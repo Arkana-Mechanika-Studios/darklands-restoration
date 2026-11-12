@@ -779,6 +779,27 @@ for _name in ("castle-rotenburg-split", "castle-rotenburg-split-menu", "castle-r
               "castle-rotenburg-split-running", "castle-rotenburg-split-running-rbutton"):
     SESSIONS[_name] = "local/oracle-saves/issue3/DKSAVE6.SAV"
     BATTLE_RECORDS.add(_name)
+# prefinal: the party-split audit's rows in lockstep (Faithful agreeing with the original; the DataSafe end states in
+# docs/faithfulness/SUMMARY.md): Lugum's split (rows 3, 4, 5) and battles given by the request step (rows 6, 7; the pit, dart trap and
+# chest routines of battlefield 0x88), and the request step's own probe
+SESSIONS["fortress-lugum-split-door"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
+BATTLE_RECORDS.add("fortress-lugum-split-door")
+SESSIONS["fortress-lugum-split-alarm"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
+BATTLE_RECORDS.add("fortress-lugum-split-alarm")
+SESSIONS["fortress-lugum-split-walk"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
+BATTLE_RECORDS.add("fortress-lugum-split-walk")
+SESSIONS["castle-request31-split-sight"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("castle-request31-split-sight")
+SESSIONS["castle-request31-split-archers"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("castle-request31-split-archers")
+SESSIONS["dungeon-request136-pit"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("dungeon-request136-pit")
+SESSIONS["dungeon-request136-dart"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("dungeon-request136-dart")
+SESSIONS["dungeon-request136-chest"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("dungeon-request136-chest")
+SESSIONS["gate-request-castle124"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("gate-request-castle124")
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,
 # taken up from a save made in the mine's battle), the per-battle state carried from one battle to the next. Only the seeds that agree are
 # here (27, 28, 36 of 1..40; since round spawn 2, 4, 8, 15, 22, 24, 38, 40; since round reload 05, by its still:<n> wait for the
