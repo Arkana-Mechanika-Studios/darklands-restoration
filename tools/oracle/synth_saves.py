@@ -22,6 +22,9 @@ variants:
           past 0x41 (R030+0x0C44's 11D8 arm); the month moved to 6 (the walk's two weeks end in month 7)
   hurt    the first four members hurt and ill for the battle's party panel: endurance / strength at 1, 0 and above the maximum, a dead,
           an unconscious and a poisoned member (status byte +0x14)
+  hardy   every party member's perception 50, endurance 50 and strength 45 (current = maximum) and weapon skills (0..6) at 60, all within
+          what the character creation allows (attributes 1..99, skills 0..99): the dungeon sessions' searches (R023+0x0812 compares
+          perception with the trigger's roll), alarms and stairs fights; each change is printed (record, field, old, new)
   king, stonebox  a game saved in the mine of Rammelsburg's battle (the original's DKSAVE2 of savemid-mine, with its .BSV) moved to level 3
           before the dwarf king's riddle door / to level 6 before the stone box's door (battle_level; the .BSV is written beside the target)
 """
@@ -357,8 +360,30 @@ def night_hunt(drop: bool, full: bool):
     return edit
 
 
+SKILL = 0x6B
+PARTY_IDS = 0xF3
+HARDY_ATTRIBUTES = {0: ("endurance", 50), 1: ("strength", 45), 3: ("perception", 50)}
+HARDY_SKILLS = {k: 60 for k in range(7)}
+
+
+def hardy(b: bytearray) -> None:
+    """The party's members (the records the five party slots name) with the attributes and skills of HARDY_*; current = maximum."""
+    for slot in range(5):
+        record = struct.unpack_from("<h", b, PARTY_IDS + 2 * slot)[0]
+        if record < 0:
+            continue
+        at = HEAD_END + record * CHAR
+        for k, (name, value) in HARDY_ATTRIBUTES.items():
+            for field, off in (("", ATTR), (" maximum", ATTR_MAX)):
+                print("slot %d record %d %s%s: %d -> %d" % (slot, record, name, field, b[at + off + k], value))
+                b[at + off + k] = value
+        for k, value in HARDY_SKILLS.items():
+            print("slot %d record %d skill %d: %d -> %d" % (slot, record, k, b[at + SKILL + k], value))
+            b[at + SKILL + k] = value
+
+
 VARIANTS = {"dragonev": dragon_events, "ev300": full_events, "q7night": night_hunt(True, True), "q7nightfree": night_hunt(True, False),
-            "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "unlist0": unlisted(0), "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
+            "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "unlist0": unlisted(0), "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt, "hardy": hardy,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}
 
