@@ -177,7 +177,7 @@ after 1.0.
     party's flight even when the others are alive on another level, gone by the stairs: the battle ends as fled (or left) and every
     member on that level becomes Away, which the next card may turn into leaving the party for good. use-exit's reunion test (R023+0x1618)
     counts him too, so the last member down the stairs never brings the party together. Faithful keeps both (tests
-    `ExitedMemberStrandsTheRestTests`; not reproduced in lockstep: the two split saves offer no reachable exit zone); fixed: a member
+    `ExitedMemberStrandsTheRestTests`; C# tests only, lockstep not reached: in Lugum's split the leader reaches level 2's exit zone and goes through it, but the members left on level 2 take no walk order with the party split, so the last one down the stairs was never set up); fixed: a member
     gone through an exit counts in neither test while an able member is still on the battlefield. The same switch covers audit row 16,
     the party's flight through the exit with a member alone on another level, whom the fled branch turned Away too (test
     `ALoneMemberDownstairsIsNotLeftAwayByTheFlight`): the battle goes on with him.
@@ -185,40 +185,47 @@ after 1.0.
     (party-place-table R014+0xDC14) and place actions (fighter-goto-action R014+0x2170: door-flip R023+0x00B8, lock-picking R023+0x12C0,
     chest-opening R023+0x13D0, R023+0x153E) read it whatever level the member is on: a member on another level whose Use Door, Pick
     Lock, Open Chest, Dissolve Lock or Disarm Trap runs while it is shown works the door or chest with his index on the shown level
-    (waking that level's encounter behind it) and his own is untouched. Faithful keeps it (tests `PlaceActionsOnOwnLevelTests`; not
-    reproduced in lockstep yet); fixed: the place tests leave a member on another level alone, and his place action is carried out with
+    (waking that level's encounter behind it) and his own is untouched. Faithful keeps it (tests `PlaceActionsOnOwnLevelTests`; C# tests only, lockstep not reached:
+    with the party split, order mode's U takes Use Stairs before Use Door, and no member's place action could be run with another
+    level shown); fixed: the place tests leave a member on another level alone, and his place action is carried out with
     his own level shown, the level shown before coming back.
   * `FixTriggersOfOtherLevels` (party-split audit row 4, 2026-11-11): the trigger test of each tick (R014+0xD6DA, no floor test) reads
     the triggers of the level shown at the place of every member, and of every enemy for the traps, whatever level they are on: a member
     on another level sets off the shown level's alarm (the battle ends with its card though nobody is there), its dart or spell trap, or
-    finds its secret doors and traps by remote. Faithful keeps it (tests `TriggersOfOtherLevelsTests`; not reproduced in lockstep yet);
+    finds its secret doors and traps by remote. Faithful keeps it (tests `TriggersOfOtherLevelsTests`; lockstep session
+    `fortress-lugum-split-alarm`: the leader alone on level 4 stands in level 2's furniture alarm box with level 2 shown, the alarm
+    fires and the battle ends with its card, the original agreeing tick for tick; DataSafe: he stands there and the battle goes on);
     fixed: only those on the level shown spring its triggers.
   * `FixPileOfOtherLevel` (party-split audit row 29, 2026-11-11): the pack of a combatant who falls becomes a loot pile on the level
     shown (fighter-dying R014+0x2324: the pile's level DS:11CA, merged with a pile of that level near his place, nudged by its screen
     tiles), whatever level he fell on: a member who dies alone on a level not shown leaves his belongings on another level, out of reach
-    until a victory gathers every pile, lost after a flight. Faithful keeps it (tests `PileOfOtherLevelTests`; not reproduced in
-    lockstep yet); fixed: the pile lies on his own level at his place.
+    until a victory gathers every pile, lost after a flight. Faithful keeps it (tests `PileOfOtherLevelTests`; C# tests only, lockstep not reached: an
+    enemy sees only the members on the level shown, so none attacks a member alone on a hidden level); fixed: the pile lies on his own level at his place.
   * `FixStaleStairsBackRecord` (party-split audit row 14, 2026-11-11): use-exit writes a member's stairs-back record number (DS:C8B2)
     after its level switch: right when he goes alone, but the new level's record when the party comes together, and never for a member
     separated without moving alone (0). With the party split Use Stairs is offered anywhere and sends him through that number: record 0
     of his level, or a slot past its count (a zero record: level 0 at (0, 0), outside the map; the fuzz of the 138 battlefields: 24 members
-    left outside the map on the issue-3 path). Faithful keeps it (tests `StaleStairsBackRecordTests`); fixed: a number past his own
+    left outside the map on the issue-3 path). Faithful keeps it (tests `StaleStairsBackRecordTests`; C# tests only, lockstep not reached: not attempted within the round's timebox); fixed: a number past his own
     level's stairs count is not taken, the order does nothing.
   * `FixFollowersOnShownLevel` (party-split audit row 9, 2026-11-11): when the party has taken the stairs, the enemies of the kinds that
     follow are placed after a delay of 1 to 4 seconds around the arrival spot on the level shown at that moment (R025+0x0CFC, the delay
     DS:C2BB from R023+0x17D2): with the view moved to a member left behind on the old level (an unconscious one can be selected) they
     appear on his level, and the next end test (R014+0x08FE), finding nobody able on the enemies' level, turns him Away and removes the
-    enemies. Faithful keeps it (tests `FollowersOnShownLevelTests`); fixed: they are placed on the party's level, the view coming back.
+    enemies. Faithful keeps it (tests `FollowersOnShownLevelTests`; C# tests only, lockstep not reached: in the requested battles tried no
+    enemy kind followed to the new level within the 1 to 4 seconds); fixed: they are placed on the party's level, the view coming back.
   * `FixWokenOnOtherLevel` (party-split audit row 15, 2026-11-11): after a fight the unconscious are woken and put on a free spot near
     where they lay (fight-recovery R014+0x0DEE), tested against the walls and sight of the level shown, and after 60 pixels next to any
     able member on any level: a member woken on a level not shown can land inside a wall of his own level (stuck) or at the coordinates
-    of a member of another level. Faithful keeps it (tests `WokenOnOtherLevelTests`); fixed: the search is made on his own level, next to
+    of a member of another level. Faithful keeps it (tests `WokenOnOtherLevelTests`; C# tests only, lockstep not reached: no setup left a member
+    unconscious alone on a hidden level at a fight's end); fixed: the search is made on his own level, next to
     members of that level only, the level shown coming back.
   * `FixLeaderKeysOnOtherLevel` (party-split audit row 3, 2026-11-11): the leader's keys outside order mode (fight-keys R016+0x1182 /
     0x1072 / 0x10B2 / 0x0F76, the battle running) act on his stairs record, door or chest index from the place tests of the level shown:
     with the leader alone on another level and the view on the party's level (not split for the keys) he takes that level's stairs (put
     again at its arrival spot, from wherever he stood), opens its door or chest or picks its lock by remote; travelling together U sends
-    every able member, on whatever level, through the leader's record. Faithful keeps it (tests `LeaderKeysOnOtherLevelTests`); fixed:
+    every able member, on whatever level, through the leader's record. Faithful keeps it (tests `LeaderKeysOnOtherLevelTests`; lockstep
+    session `fortress-lugum-split-door`: the leader alone on level 4 at the place of level 2's door, level 2 shown, U opens level 2's
+    door from level 4, the original agreeing; DataSafe: nothing happens); fixed:
     the leader's keys do nothing while he is not on the level shown, and U travelling together takes only the members on his level.
   * `FixStairsArrivalWithoutPlace` (party-split audit fuzz, 2026-11-11): use-exit (R023+0x1618) places the combatant who took the stairs
     around the record's arrival spot on the new level (place-nearby R024+0x08F2); when no place there is free he keeps the coordinates
@@ -233,14 +240,17 @@ after 1.0.
     floors, fight-main-loop R014+0x0000 sets them to DS:11CA) and keeps his x/y: a member who was alone on another level stands on the
     shown level at his own level's coordinates. Reachable: the mode-1 cards of the dungeons (a Templar desk, a fountain, the riddle
     door, the pit traps, a chest) follow a battle that a member on the level shown ended by a trigger, with others elsewhere (found by
-    reading the cards; not reproduced in lockstep). Faithful keeps it (tests `FloorsOfResumedBattleTests`); fixed: the battlefield also
+    reading the cards; C# tests only, lockstep not reached: not attempted within the round's timebox). Faithful keeps it (tests `FloorsOfResumedBattleTests`); fixed: the battlefield also
     remembers each member's level at the end, and mode 1 takes him up again there.
   * `FixCombatAcrossLevels` (party-split audit rows 6 and 7, 2026-11-11): the enemies' sight test (enemy-line-of-sight R018+0x04B6) sees
     the members on the level shown, from enemies on any level, and drops the targets that are not on it (R018+0x0706); archers and
     casters who lost theirs then see every able member. A missile is made on the level shown at its launch (R018+0x0000) and a spell or
     potion effect lands there (R019+0x0000 / 0x0300). With a member alone on another level shown, enemies on the party's level drop the
     party and go for him, and their shots and spells reach him through the floors (he can die of them); shots between combatants on a
-    hidden level never hit, the ammunition lost. Faithful keeps it (tests `CombatAcrossLevelsTests`); fixed: an enemy sees, keeps and
+    hidden level never hit, the ammunition lost. Faithful keeps it (tests `CombatAcrossLevelsTests`; lockstep sessions `castle-request31-split-sight`: with member 4
+    alone on level 1 shown the enemies on level 0 stand idle beside the party, and `castle-request31-split-archers`: an archer on
+    level 0 shoots member 4 on level 1 through the floors, the original agreeing in both; DataSafe: they fight the party on their own
+    level; the other half of row 7, shots on a hidden level never hitting, C# tests only, lockstep not reached); fixed: an enemy sees, keeps and
     chooses only targets on its own level, a missile flies on its shooter's level and an effect lands on the level of its missile.
   * `FixWalkingOnOwnLevel` (party-split audit row 5, 2026-11-12): the collision test of every step, path search and re-path
     (fighter-collision-pass R014+0x5ECA; R014+0x1624, R014+0x481A, R014+0xF67A) reads the walls and furniture of the level shown, for a
@@ -248,7 +258,8 @@ after 1.0.
     stop inside one of them. The walk fuzz (880 walks of a member on the party's level with another level shown, 1500 ticks each)
     found no figure ending inside a wall of his own level, but Faithful's walks ended elsewhere than with his level shown in 738 of 880,
     DataSafe's in 347 (the other per-tick tests a member off the level shown skips). Faithful keeps it (tests
-    `WalkingOnOwnLevelTests`); fixed: a combatant on a level not shown is tested against his own level's walls and furniture.
+    `WalkingOnOwnLevelTests`; lockstep session `fortress-lugum-split-walk`: the leader walking alone on level 4 with level 2 shown is
+    stopped by level 2's wall at (188,491), the original agreeing; DataSafe: he reaches his destination); fixed: a combatant on a level not shown is tested against his own level's walls and furniture.
 * One evident display fix the user chose for every player game is in `DataSafe` too (2026-11-07):
   * `FixRosterFigurePreview`: the inn roster's figure preview (R038+0x02F8, R038+0x0000). The original draws it with Up / Left / Right
     at (0x0C, 0xA4), the bottom of the party column, and nothing ever clears that place (only (0x46, 0xA5, 0x23 x 0x23) is copied back,
@@ -587,6 +598,34 @@ the character sheet and barter. The battle needed more: the opening frame drawn 
 tick with its random draws, the view's centre and following, the combat clock running while the
 battle sets up, and after it the dead leaving the party, the unconscious waking and the combatant
 records written back as the original writes them.
+
+
+The prefinal round (2026-11-12) added a session step and a tester option, nine sessions, and found four faults of the tester:
+- **The step `request:`** gives the arguments of every battle entered after it (the twelve words a card passes to R002+0x0000,
+  checked to be values the game's callers pass). Without the step, no hook is installed.
+- **`lockstep.py --datasafe`** plays the C# side with the data-safety fixes against the same recording, to show a Faithful bug's
+  fixed end state.
+- **The sessions:**
+  - `fortress-lugum-split-door`, `-alarm` and `-walk` (party-split rows 3, 4 and 5);
+  - `castle-request31-split-sight` and `-archers` (rows 6 and 7);
+  - `dungeon-request136-pit`, `-dart` and `-chest`: the first sessions to reach the pit R014+0xD882, trap-shot R023+0x0E30 and
+    chest-opening R023+0x13D0;
+  - `gate-request-castle124`.
+- **Not reached by any session, with the reason:**
+  - the secret-door search R023+0x0812 and furniture removal R023+0x0AEA: the battlefields' enemies hold the way, even with a party
+    of raised attributes (a save copy, local `hardy`);
+  - the followers' placement R025+0x0CFC: the party, pinned in melee, never took the stairs in real combat;
+  - the corrupt battle-file exits R003+0x19CA and R003+0x19E8: the game never writes such a file.
+- **Faults of the tester,** each checked by a variant that agrees, none a difference in the C#. Sessions keep clear of them:
+  - a held key after `bwait:1` reaches the C# one pass late;
+  - a battle click while the battle runs is let go about two passes early on the C# side;
+  - the step after the marching-order dialog lands one pass late;
+  - a clock rise before a draw is folded into the melee phase's rise (`orig_side.clock_jumps`).
+  - So sessions pause before a battle click and a dialog, and wait two passes before a held key.
+- **The Battles tests' flake** was a race between parallel tests: the menus' globals (CharacterCreationScreen.Shared, DS:E7DA/E7DC)
+  and the battle's debugging hooks were one per process, so another test emptied an open inn roster. They are now per thread.
+  There was no change to a game: a game runs on one thread, and no other thread of the hosts reads them. Then 100 consecutive
+  passes.
 
 ## Battle oracle
 

@@ -803,11 +803,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:373` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
-- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:858` `TacticalBattle.Tick`  
+- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:859` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row 28). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:888` `TacticalBattle.Tick`  
+- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:889` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21). Decision: never, display only: the view stops following him.
   decision: never: display only: the view stops following him
