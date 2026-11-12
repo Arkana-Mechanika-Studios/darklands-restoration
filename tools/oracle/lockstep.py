@@ -824,10 +824,17 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
             args.append("tclick:%s,%d" % (v, next(tick_held, 0)))
         elif k == "wait" and pause_shift and i in pause_shift:
             args.append("still:%d" % pause_shift[i])
+        elif k == "request":
+            pass                                                   # the battle's arguments: the environment below
         else:
             args.append("%s:%s" % (k, v) if v else k)
     import os
     env = dict(os.environ, DARKLANDS_BATTLE_TICK_PER_PASS="1")   # one 60 Hz tick a battle pass, as the original is run here
+    requests = [v for k, v in steps if k == "request"]
+    if requests:
+        # request:<12 words> (orig_side.battle_request): every battle after the step takes these arguments in the original; the C# host's battles
+        # all take them (BattleScreens.Battle), so a session with the step fights its battles after it
+        env["DARKLANDS_BATTLE_REQUEST"] = requests[-1]
     env["DARKLANDS_SOUND_LOG"] = "1"                              # the host writes its music requests and driver commands (sound_compare)
     if battle_trace:
         env["DARKLANDS_BATTLE_TRACE"] = "records" if battle_trace == "records" else "1"

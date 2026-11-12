@@ -80,10 +80,33 @@ CLICK_MS = 300                      # how long a scripted click holds the left b
 
 
 
+BATTLE_ARGUMENTS = (P(0x0E76), 0x0000)      # R002+0x0000, the battle's entry: 12 words (mode, battlefield, seed, three enemy groups)
+
+
+def battle_request(value: str) -> list[int]:
+    """The 12 words of a request step, within what the game's callers pass: mode 0..3, a battlefield type 0..137, a seed word, and three
+    enemy groups (type -1 none or 0..255, quality 0..9, count 0..12)."""
+    v = [int(t) for t in value.split(",")]
+    groups = [v[3:6], v[6:9], v[9:12]]
+    if len(v) != 12 or not 0 <= v[0] <= 3 or not 0 <= v[1] <= 137 or not 0 <= v[2] <= 0xFFFF \
+            or any(not (-1 <= t <= 255 and 0 <= q <= 9 and 0 <= n <= 12) for t, q, n in groups):
+        raise SystemExit("request:%s is not a battle's arguments as the game passes them" % value)
+    return v
+
+
 class Session(Machine):
     """The DOS machine with EMS, a deterministic clock, no drivers and the script's input."""
     fast_search = True                  # False: the state capture's match search emulated as well (the capture bench compares both)
     direct_ram = True                   # the memory from a buffer of ours (fast_capture reads and writes it in place)
+
+    def _requested_battle(self, m):
+        """At the battle's entry: the request's words in place of the card's (the 12 arguments above the return address)."""
+        if self.battle_request is None:
+            return
+        given = [m.sarg(k) for k in range(12)]
+        for k, v in enumerate(self.battle_request):
+            m.put_word(m.reg("SS"), m.reg("SP") + 4 + 2 * k, v & 0xFFFF)
+        self.log.append("battle %s -> request %s at %d ms" % (given, self.battle_request, self.ms))
 
     def __init__(self, exe: bytes, game: str, **kw):
         super().__init__(exe, game, **kw)
@@ -196,6 +219,9 @@ class Session(Machine):
         self.shift = 0
         self.ctrl = 0
         self.write(*KEYBOARD_FLAGS, bytes([self.shift]))
+        # request:<mode,battlefield,seed,a,b,c,a,b,c,a,b,c> (a session step): the arguments of every battle entered after the step, as a card
+        # passes them to R002+0x0000; the hook is installed only for a script with such a step, so a session without one runs as before
+        self.battle_request = None
         self.port60 = 0                 # the byte port 60h gives (the keyboard's scan byte while _keyboard_irq runs the INT 9 handler)
         self.after_bwait = False        # the step being given is one a bwait held whose battle passes came
         self.pass_keys = []             # kdown / kup steps due at the head of the next battle pass (see _next_key)
@@ -356,6 +382,8 @@ class Session(Machine):
             elif kind == "ctrl":
                 self.ctrl = CTRL_BIT if value == "on" else 0
                 self.write(*KEYBOARD_FLAGS, bytes([self.shift | self.ctrl]))
+            elif kind == "request":
+                self.battle_request = battle_request(value)
         if not self.script:
             raise Stop("script ended")
         kind, value = self.script[0]
@@ -1269,6 +1297,8 @@ def run_original(exe: Path, game: str, steps, save: Path | None, budget: int, ba
         # a session from the start screen without a saved game: the character creation reads SAVES\DEFAULT (R037+0x4184), hidden from the game folder
         s.vfs.put("saves/default", (Path(game) / "SAVES" / "DEFAULT").read_bytes())
     s.script = list(steps)
+    if any(kind == "request" for kind, _ in steps):        # before the machine runs (see Session.battle_request)
+        s.hook(*BATTLE_ARGUMENTS, s._requested_battle, record="R002")
     s.battle_trace = battle_trace
     s.sheet_in = s.sheet_out = None
     s.hook(P(0x1EF8), 0x0066, lambda m: setattr(m, "sheet_in", m.word(DS, CALLBACKS)), record="R022")
