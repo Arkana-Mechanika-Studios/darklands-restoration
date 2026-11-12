@@ -702,6 +702,11 @@ def menu_callbacks(log) -> list[tuple[int, int]]:
     return [tuple(int(v) for v in l.split()[2].split(",")) for l in log if l.startswith("menu callbacks ")]
 
 
+# --datasafe: the C# side plays the data-safety fixes (OriginalBehaviour.DataSafe) against the same original, to show a Faithful bug's
+# fixed end state; the sides are then expected to part where the fix acts
+DATASAFE = False
+
+
 def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out: Path, battle_trace=False, set_up_ticks=(), clock_jumps=(), stale_dest=None,
                 sheets=(), resume_clocks=(), loot=(), log=None, pause_shift=None, menus=(), boxes=(), carry=(), ticks=None, regain=(), piles=()):
     """The session in the C# headless host: (states {name: (sav, random, card)}, its output)."""
@@ -717,6 +722,8 @@ def run_rewrite(headless: Path, game: str, steps, save: Path | None, seeds, out:
     shots = out / "cs"
     shutil.rmtree(shots, ignore_errors=True)
     args = [str(headless), game, str(shots), "clock:" + ",".join(str(v) for v in (seeds or [1])), "saves:" + str(saves)]
+    if DATASAFE:
+        args.append("datasafe")
     if ticks is not None:
         args.append("ticks:%d" % ticks)
     # bwait:<n>: the original gives the step n + 1 battle passes after the previous one was taken; the C# host takes three frames more
@@ -1038,6 +1045,7 @@ def main():
     ap.add_argument("out")
     ap.add_argument("--save", help="a .SAV given to both as SAVES/DKSAVE0.SAV (with its .BSV)")
     ap.add_argument("--headless", default=str(HEADLESS))
+    ap.add_argument("--datasafe", action="store_true", help="the C# side with the data-safety fixes (expected to part from the original)")
     ap.add_argument("--budget", type=int, default=2_000_000_000)
     ap.add_argument("--battle-trace", action="store_true", help="original-battle.trace / rewrite-battle.trace: each battle pass")
     ap.add_argument("--battle-records", action="store_true", help="as --battle-trace, each pass line with the combatant records, queued damage and attack rates (battle_oracle.py's), compared by combat clock: report.json's battle")
@@ -1049,6 +1057,8 @@ def main():
     import recording
     recording.add_arguments(ap)
     a = ap.parse_args()
+    global DATASAFE
+    DATASAFE = a.datasafe
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     steps = read_script(Path(a.script))
