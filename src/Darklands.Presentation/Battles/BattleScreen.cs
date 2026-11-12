@@ -2069,6 +2069,13 @@ public sealed class BattleScreen : ITacticalView
             case Keys.Home:
                 Arrow(7);
                 return;
+            // orig: R014+0x0F6B..0x0F85: fight-tick still runs every 8 timer callbacks (DS:07D1) while the battle is paused and its fight-draw
+            //   re-rolls the clouds' puffs and edges and the animated pieces.
+            // DIVERGENCE: host timing (the former U-00dcd4): how many timer callbacks each paused pass of the original takes is its CPU time against the
+            //   timer, so it varies with the machine; the host's paused passes are not tied to that timer, so the C# draws the clouds' re-rolled
+            //   jitter frame on another pass than the original in a paused shot (3,497 px in the cloud boxes, vis10 shots c and d of D-09fbc1).
+            //   The re-roll itself, its random sequence and the unpaused frames are the original's (lockstep sessions with a pause agree); the
+            //   saved game is unaffected.
             case Keys.Space:
                 tb.TogglePause();
                 return;

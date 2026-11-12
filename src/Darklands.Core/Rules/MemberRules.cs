@@ -230,6 +230,7 @@ public static class MemberRules
 
     /// <summary>Sets the encumbrance, not below 0 (stored in the record's signed byte).</summary>
     // orig: member-tiredness-set R029+0x00E4 (0E76:00E4) matched; tests: FidelityFixTests
+    // orig: the integer maximum of two values, R029+0x4F94 (1367:0084) matched, as the clamp at zero below
     public static void SetEncumbrance(GameState s, int who, int value) => s.Party.Slot(who).Encumbrance = (sbyte)Math.Max(value, 0);
 
     /// <summary>Adds to the encumbrance, not below 0.</summary>

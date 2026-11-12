@@ -11,7 +11,7 @@ public static class Practice
     /// value and ignores it). The chance roll comes first.
     /// </summary>
     // orig: improvement-roll R029+0x18A8 (0E76:18A8) matched; tests: Oracle:rules.json R029+0x18A8; PracticeAndItemsTests
-    // C: limit-to-0-99(v) is called and its result dropped; abs(100 - v) >= roll-below(100), then roll-below(hi - lo) (n < 2 counts as 2).
+    // C: limit-to-0-99(v) (R029+0x4F1A, 1367:000A, matched) is called and its result dropped; abs(100 - v) >= roll-below(100), then roll-below(hi - lo) (n < 2 counts as 2).
     public static int ImproveRoll(GameState s, int value, int low, int high) =>
         Math.Abs(100 - value) >= s.Random.Below(100) ? s.Random.Below(high - low) + low : low;
 

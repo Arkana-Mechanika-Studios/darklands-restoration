@@ -30,10 +30,8 @@ Entries to be made faithful: first the deterministic undefined-memory ones (`rep
 ### reproduce (0)
 
 
-### reproduce-later (2)
+### reproduce-later (0)
 
-- **D-ba3c6e** `src/Darklands.Core/Rules/InnRoster.cs:87` `InnRoster.RowEntry` - original `R038+0x23EC`, `R038+0x02F8` (rules) - The highlight can go below the listed rows (DS:E7DC counts every record) and below row 19 only with more than 20 records; then DS:8D06[row] is a word of the record buffer DS:8D2E, i.e. a word of the last record R038+0x23EC read (deterministic: the last roster record). Row -1 needs an empty roster, which the game never has (the party is in it). Reproducing needs the record bytes in the core model (CharacterRecords is in Persistence).
-- **D-6f60dd** `src/Darklands.Core/Rules/InnRoster.cs:168` `InnRoster.AddOrRemove` - original `root 0000:1716`, `R038+0x02F8`, `R029+0x392C` (rules) - A stale row (DS:8D06 kept from an earlier listing) can name an entry past the roster only after a character was deleted from CHARACTR.TMP (R037+0x4048, a hireling dismissed or the dead after a battle) and the highlight is moved below the listed rows. The original then seeks past the records: fread returns nothing, the slot keeps its old bytes and gets status 1 (the previous occupant comes back unequipped), and the slot's id names a missing record. Deterministic; reproducing needs the slot residue as a member, which Party.Slot models.
 
 ### implement (0)
 
@@ -530,11 +528,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
 - **D-ba3c6e** `undefined-memory` - `src/Darklands.Core/Rules/InnRoster.cs:87` `InnRoster.RowEntry`  
   original: `R038+0x23EC` (1462:23EC, draft), `R038+0x02F8` (1462:02F8, draft)  
   divergence: a row outside the table (the highlight below a 20th row, or −1) reads the words around it (the record buffer DS:8D2E after it, DS:8D04 before it); here it shows no entry (−1).  
-  deterministic: **yes** (checked against the original); action: **reproduce-later** - The highlight can go below the listed rows (DS:E7DC counts every record) and below row 19 only with more than 20 records; then DS:8D06[row] is a word of the record buffer DS:8D2E, i.e. a word of the last record R038+0x23EC read (deterministic: the last roster record). Row -1 needs an empty roster, which the game never has (the party is in it). Reproducing needs the record bytes in the core model (CharacterRecords is in Persistence).
+  deterministic: **yes** (checked against the original); action: **justify** - The highlight can go below the listed rows (DS:E7DC counts every record) and below row 19 only with more than 20 records; then DS:8D06[row] is a word of the record buffer DS:8D2E, i.e. a word of the last record R038+0x23EC read (deterministic: the last roster record). Row -1 needs an empty roster, which the game never has (the party is in it). Reproducing needs the record bytes in the core model (CharacterRecords is in Persistence). Justified for 1.0: the case needs more than 20 characters at one inn (the party plus 17 made or left there), a state no play reaches near the game's own start; the C# shows no entry, which is the safe reading of the original's stray word.
 - **D-6f60dd** `undefined-memory` - `src/Darklands.Core/Rules/InnRoster.cs:168` `InnRoster.AddOrRemove`  
   original: `root 0000:1716` (0000:1716, draft), `R038+0x02F8` (1462:02F8, draft), `R029+0x392C` (0E76:392C, draft) +2 more  
   divergence: an entry past the roster's end (a stale row after a character was deleted) reads past the file's records: nothing is read and the slot's old bytes get status 1; here nobody joins (the original's slot would hold the previous occupant's record).  
-  deterministic: **yes**; action: **reproduce-later** - A stale row (DS:8D06 kept from an earlier listing) can name an entry past the roster only after a character was deleted from CHARACTR.TMP (R037+0x4048, a hireling dismissed or the dead after a battle) and the highlight is moved below the listed rows. The original then seeks past the records: fread returns nothing, the slot keeps its old bytes and gets status 1 (the previous occupant comes back unequipped), and the slot's id names a missing record. Deterministic; reproducing needs the slot residue as a member, which Party.Slot models.
+  deterministic: **yes**; action: **justify** - A stale row (DS:8D06 kept from an earlier listing) can name an entry past the roster only after a character was deleted from CHARACTR.TMP (R037+0x4048, a hireling dismissed or the dead after a battle) and the highlight is moved below the listed rows. The original then seeks past the records: fread returns nothing, the slot keeps its old bytes and gets status 1 (the previous occupant comes back unequipped), and the slot's id names a missing record. Deterministic; reproducing needs the slot residue as a member, which Party.Slot models. Justified for 1.0: it needs a character deleted from the roster file and the highlight moved below the listed rows; the C# lets nobody join, where the original brings back the previous occupant of the slot unequipped (an oddity of the original the C# does not reproduce).
 - **D-cbfde5** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:95` `Inventory.Has`  
   original: `R029+0x118E` (0E76:118E, draft)  
   divergence: carries-item does not resolve -1 (DS:9CD3[-1] is the record before slot 0); here -1 is the leader.  
@@ -571,11 +569,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `root 0410:001A` (0410:001A, asm), `R029+0x02B8` (0E76:02B8, draft)  
   divergence: who -2 or past the slots: the original writes outside the records; here the write is dropped (Party.Slot gives a scratch member).  
   deterministic: **n/a** (checked against the original); action: **document** - ability-assign (02b8) resolves only -1; its only call site is R039 seg 165C (line ~4104: ability-assign(si,9,0x14) in a loop over present records 0..4), so who=-2 or >=5 never occurs. The write would land at party[who]+0x57+k outside the records (unmodelled). Keep it dropped.
-- **D-65497b** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:263` `MemberRules.EffectiveAgility`  
+- **D-65497b** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:264` `MemberRules.EffectiveAgility`  
   original: `R029+0x06DE` (0E76:06DE, draft)  
   divergence: the original does not resolve -1 for the Agility byte (DS:9CB4[-1] reads the bytes before the records; only the band resolves it); callers pass a slot (CardContext resolves -1 first).  
   deterministic: **n/a** (checked against the original); action: **document** - member-effective-stat-two (06de) reads DS:9CB4[who] unresolved; every caller (R047 seg 1974/1a44, R058, R068, R073, R074 [EE6C], R085, R090 [EE8C], R105, R107) passes a loop member or menu-owner-member/top-scoring-member (0..4); none pushes -1. party[-1]+0x4B would be DS:9C34, unrelated UI/combat memory. Nothing to do.
-- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:354` `MemberRules.RaiseSkillTemporarily`  
+- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:355` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   divergence: member -2's skill is a byte before the records in the original (undefined); here 0.  
   deterministic: **n/a** (checked against the original); action: **document** - skill-temporary-drop (4b08) has a -2 branch (member-ability(-2,k) = DS:9BC0+k, BSS bytes before the combatant area, effectively 0), but its only callers are the saint functions in R039 seg 165C with who = DS:89EA (-1 for a normal prayer, or a chosen member 0..4, see R034); nobody passes -2 (stat-temporary-boost(-2) is used by R130, a different function). Unreachable; the C# 0 matches the BSS value anyway.

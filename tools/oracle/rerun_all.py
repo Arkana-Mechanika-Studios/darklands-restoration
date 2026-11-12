@@ -1059,6 +1059,11 @@ SESSIONS.update({
 })
 
 
+# prefinal-cov: the alchemy list scrolled past its 17 rows (R033+0x1116), on a save whose members know all 66 formulas (synth_saves allformulas)
+SESSIONS["alchemy-scroll"] = "synth/Dksave10-allformulas.sav"
+SESSIONS["tk-map-walk-fkey"] = "DKSAVE17.SAV"   # prefinal-cov: F1..F5 / Ctrl-F1..F5 after a walked pass on the map (the ctrlbreak lead): agrees
+
+
 # c3battle: the early B1 battle sessions left open, rerun on the current original side with the round's compare rules, and Space in a running
 # battle (local/batch/c3battle)
 SESSIONS.update({

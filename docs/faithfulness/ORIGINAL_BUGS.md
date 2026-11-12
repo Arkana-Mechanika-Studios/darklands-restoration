@@ -120,13 +120,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-308359** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:196` `MemberRules.HealAttribute`  
   original: `R029+0x08F2` (0E76:08F2, draft)  
   why: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
-- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:288` `MemberRules.RaiseAttributeTemporarily`  
+- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:289` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: (-2) a member above the boost ends the call and the reduced boost carries over (FixWholePartyBoosts).
-- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:325` `MemberRules.RaiseAttributeTemporarily`  
+- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:326` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: a temporary attribute boost that is not wholly applied lowers the attribute for good: the boost is cut only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either order) leaves the attribute lower than before. The whole-party path above does the same.
-- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:353` `MemberRules.RaiseSkillTemporarily`  
+- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:354` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   why: (-2) member-ability(-2) and raise-skill-by(-2) for each present member (FixWholePartyBoosts).
 - **B-014a8d** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:126` `PartyQueries.MinAttributeSum`  
@@ -372,7 +372,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-169e5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:108` `FortressByDay.ReceiveACommission`  
   original: `R050+0x21F8` (1A06:0518, matched), `R050+0x24E0` (1A06:0800, matched)  
   why: a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
-- **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:217` `FortressByDay.SeekService`  
+- **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:218` `FortressByDay.SeekService`  
   original: `R050+0x2298` (1A06:05B8, matched)  
   why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
 - **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:153` `Docks.PassageHint`  
@@ -826,7 +826,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
-- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.cs:2876` `BattleScreen.RecordScreenPlaces`  
+- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.cs:2883` `BattleScreen.RecordScreenPlaces`  
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
   why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
   decision: never: display only: his order mode opens when he is drawn again

@@ -38,7 +38,7 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
 * Window, scale, fullscreen, pointer and key timing are the host's. Animation speed and exact frame phase can differ.
 * The battle clouds (potion gas): the depth order and clipping now follow the original (D-09fbc1 is closed); only the colour
   cycling phase and the puffs' random jitter frame by frame can differ, and a paused battle may show one more jitter frame
-  than the original (open lead, an UNCERTAIN row).
+  than the original (host timing, registered as D-1270b9).
 * The battle pointer, the party panel in battle, the mine battle's post and the loot picture's "-" were fixed in batch 27;
   report any of them that still differs.
 * Shift hints on two cards whose hint handlers leave the member unset (the village graveyard, the heir lines after the dragon): the

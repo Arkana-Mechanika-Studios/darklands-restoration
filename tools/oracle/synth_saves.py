@@ -16,6 +16,8 @@ variants:
   q7night, q7nightfree, q7nightkept  DKSAVE99 at 22h for quest 7's night travel: its fact 5 dropped and the table full / dropped only / kept and full (night_hunt)
   month<N>[d<D>]  the date moved to month N (and day D): the seasons of the travel map
   pos<column>x<row>  the party moved to map cell (column, row) (header words +0x7E / +0x80); the .BSV beside the source is copied: the starts of the travel map's edge and paging walks
+  allformulas  every member knows all 66 formulas (the 22 formula bytes at record +0x94 hold 0x07 each): the alchemist's list of formulas holds more rows
+          than the 17 it shows, so Up / Down at the window's ends scroll it (R033+0x0D54 redraws the list, R033+0x1116)
   out3    member 3 unconscious (status 2), a member within the party size who is not able
   sea     the party moved onto the open sea at map cell (72, 200): column 72 is deep water (ocean) from row 201 up to the map's top, so a walk
           north meets no encounter roll (a step onto deep water ends before it) and pages the map's row buffer backwards with its top
@@ -80,6 +82,14 @@ def kitchen(b: bytearray, members: int = 4) -> None:
         for i, e in enumerate(new):
             b[base + PACK + ENTRY * i:base + PACK + ENTRY * (i + 1)] = e
         b[base + PACK_COUNT] = len(new)
+
+
+def all_formulas(b: bytearray) -> None:
+    """every member of the party knows all 66 formulas (formula f = bit f % 3 of byte f // 3 of the 22 bytes at record +0x94)."""
+    n = struct.unpack_from("<H", b, 0xF1)[0]
+    for member in range(n):
+        base = HEAD_END + member * CHAR + 0x94
+        b[base:base + 22] = bytes([0x07]) * 22
 
 
 ATTR, ATTR_MAX, STATUS = 0x5D, 0x64, 0x14
@@ -357,7 +367,7 @@ def night_hunt(drop: bool, full: bool):
     return edit
 
 
-VARIANTS = {"dragonev": dragon_events, "ev300": full_events, "q7night": night_hunt(True, True), "q7nightfree": night_hunt(True, False),
+VARIANTS = {"allformulas": all_formulas, "dragonev": dragon_events, "ev300": full_events, "q7night": night_hunt(True, True), "q7nightfree": night_hunt(True, False),
             "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "unlist0": unlisted(0), "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
             "away16": away_card(0x16), "away7a": away_card(0x7A), "awaya5": away_card(0xA5)}

@@ -149,6 +149,7 @@ public sealed class FortressByDay : Card
                 }
                 else
                 {
+                    // orig: smaller-of is the integer minimum R029+0x4FA4 (1367:0094) matched
                     // C: smaller-of(roll-below(3) + 1, hours-remaining-until(18)): hours-remaining-until is evaluated first; it draws nothing.
                     var until = TimeOfDay.HoursUntil(c.State.Date.Hour, 18);
                     c.Variables.Numbers[0] = Math.Min(c.Random(3) + 1, until);
