@@ -3,7 +3,7 @@ namespace Darklands.Content.Formats.Battles;
 /// <summary>
 /// A battle sprite in the graphics driver's row-run form, used by the battlefield tiles
 /// (BC tile sets), the misc battle graphics (BATTLEGR.IMG) and the IMC animation frames:
-/// a width byte, a height byte, then for each row a pixel count, the row's first column and
+/// a width byte (the width minus one), a height byte, then for each row a pixel count, the row's first column and
 /// that many pixels. Colour 0 is transparent.
 /// </summary>
 // orig: gfx-sprite-draw root 047C (the graphics driver interface; the drawing itself is in MGRAPHIC.EXE, not in DARKLAND.EXE) asm

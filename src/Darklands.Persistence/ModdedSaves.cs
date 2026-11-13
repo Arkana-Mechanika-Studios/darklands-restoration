@@ -69,7 +69,7 @@ public static class ModdedSaves
         }
     }
 
-    private static readonly JsonSerializerOptions Indented = new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+    private static readonly JsonSerializerOptions IndentedJson = new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
     /// <summary>The companion file's name for a saved game's name ("DKSAVE3.SAV" gives "DKSAVE3.MODS.JSON").</summary>
     public static string CompanionOf(string savName)
@@ -96,7 +96,7 @@ public static class ModdedSaves
             real[CardKeys[i]] = cards[i];
             saved[CardKeys[i]] = (int)RecordBytes.Word(header, OriginalSaves.CardFieldOffsets[i]);
         }
-        static JsonArray Marks(IEnumerable<ModMark> marks) =>
+        static JsonArray MarksToJson(IEnumerable<ModMark> marks) =>
             new(marks.Select(m => (JsonNode)new JsonObject { ["id"] = m.Id, ["name"] = m.Name, ["version"] = m.Version }).ToArray());
         var file = new JsonObject
         {
@@ -105,12 +105,12 @@ public static class ModdedSaves
             ["note"] = "Written by the Darklands Restoration beside a game saved with mods. The .SAV is in the original format and names only the game's own cards (savedAs); this file keeps the mods' card numbers (cards).",
             ["save"] = savName.ToUpperInvariant(),
             ["sha256"] = Convert.ToHexString(SHA256.HashData(sav)),
-            ["mods"] = Marks(active),
-            ["playedWith"] = Marks(ModsUsed(state)),
+            ["mods"] = MarksToJson(active),
+            ["playedWith"] = MarksToJson(ModsUsed(state)),
             ["cards"] = real,
             ["savedAs"] = saved,
         };
-        return file.ToJsonString(Indented);
+        return file.ToJsonString(IndentedJson);
     }
 
     /// <summary>
@@ -142,28 +142,28 @@ public static class ModdedSaves
             {
                 return new ModdedLoad([], "the companion file belongs to an earlier game saved under this name; it is ignored");
             }
-            var savedWith = Marks(file["mods"]);
-            MarkUsed(state, Marks(file["playedWith"]).Concat(savedWith));
+            var savedWith = MarksFromJson(file["mods"]);
+            MarkUsed(state, MarksFromJson(file["playedWith"]).Concat(savedWith));
             var active = mods?.Active ?? [];
             var missing = savedWith.Where(m => active.All(a => a.Id != m.Id)).ToList();
             if (file["cards"] is JsonObject cards)
             {
                 var hasCard = mods?.HasCard ?? (n => n <= OriginalSaves.LastOriginalCard);
-                int? Real(string key) => cards[key]?.GetValueKind() == JsonValueKind.Number ? (int)cards[key]! : null;
+                int? RealCardAt(string key) => cards[key]?.GetValueKind() == JsonValueKind.Number ? (int)cards[key]! : null;
                 // only a mod's new card (above 365) comes back from the file, and only when it can run now
-                if (Real("current") is { } current && current > OriginalSaves.LastOriginalCard && hasCard(current))
+                if (RealCardAt("current") is { } current && current > OriginalSaves.LastOriginalCard && hasCard(current))
                 {
                     state.CurrentCard = current;
                 }
-                if (Real("saved") is { } saved && saved > OriginalSaves.LastOriginalCard && hasCard(saved))
+                if (RealCardAt("saved") is { } saved && saved > OriginalSaves.LastOriginalCard && hasCard(saved))
                 {
                     state.SavedCard = saved;
                 }
-                if (Real("saved2") is { } saved2 && saved2 > OriginalSaves.LastOriginalCard && hasCard(saved2))
+                if (RealCardAt("saved2") is { } saved2 && saved2 > OriginalSaves.LastOriginalCard && hasCard(saved2))
                 {
                     state.SavedCard2 = saved2;
                 }
-                if (Real("previous") is { } previous && previous > OriginalSaves.LastOriginalCard && hasCard(previous))
+                if (RealCardAt("previous") is { } previous && previous > OriginalSaves.LastOriginalCard && hasCard(previous))
                 {
                     state.PreviousCard = previous;
                 }
@@ -189,7 +189,7 @@ public static class ModdedSaves
                 return false;
             }
             return string.Equals((string?)file["sha256"], Convert.ToHexString(SHA256.HashData(sav)), StringComparison.OrdinalIgnoreCase)
-                && Marks(file["mods"]).Concat(Marks(file["playedWith"])).Any();
+                && MarksFromJson(file["mods"]).Concat(MarksFromJson(file["playedWith"])).Any();
         }
         catch (Exception e) when (e is InvalidOperationException or FormatException or JsonException or OverflowException)
         {
@@ -197,7 +197,7 @@ public static class ModdedSaves
         }
     }
 
-    private static List<ModMark> Marks(JsonNode? list) =>
+    private static List<ModMark> MarksFromJson(JsonNode? list) =>
         list is JsonArray array
             ? array.OfType<JsonObject>()
                 .Select(o => new ModMark((string?)o["id"] ?? "", (string?)o["name"] ?? (string?)o["id"] ?? "", (string?)o["version"] ?? ""))

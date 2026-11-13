@@ -334,16 +334,16 @@ public sealed class PanDecoder
     private sealed class Pan0070Decoder
     {
         // Local model of the original 0DFC:0070 stream expander.
-        private const int BufferBase = 0xA897;
-        private const int BufferEnd = 0xB896;
-        private const int InitialSi = BufferBase + 0x1000;
+        private const int RingBufferStart = 0xA897;
+        private const int RingBufferEnd = 0xB896;
+        private const int InitialReadPosition = RingBufferStart + 0x1000;
 
         private readonly ReadOnlyMemory<byte> _raw;
         private readonly Dictionary<int, byte> _memory = new Dictionary<int, byte>();
-        private int _si = InitialSi;
+        private int _bufferReadPosition = InitialReadPosition;
         private int _rawOffset;
-        private int _bp;
-        private int _dx;
+        private int _controlWord;
+        private int _controlBitsLeft;
         private bool _carry;
 
         public Pan0070Decoder(ReadOnlySpan<byte> raw)
@@ -354,7 +354,7 @@ public sealed class PanDecoder
         public int DecodeSpan(List<byte> output)
         {
             var spanStart = output.Count;
-            if (_dx == 0)
+            if (_controlBitsLeft == 0)
             {
                 InitialControlWord();
             }
@@ -412,28 +412,28 @@ public sealed class PanDecoder
         private void InitialControlWord()
         {
             EnsureWord();
-            _bp = LoadWord();
-            _dx = 0x0010;
+            _controlWord = LoadWord();
+            _controlBitsLeft = 0x0010;
         }
 
         private void RefreshControlWord()
         {
             EnsureWord();
-            _bp = Shr(_bp);
+            _controlWord = Shr(_controlWord);
             var word = LoadWord();
-            _dx = 0x0010;
-            _bp = Rcl(word);
+            _controlBitsLeft = 0x0010;
+            _controlWord = Rcl(word);
         }
 
         private bool NextControlBit()
         {
-            _dx = (_dx - 1) & 0xFFFF;
-            if (_dx == 0)
+            _controlBitsLeft = (_controlBitsLeft - 1) & 0xFFFF;
+            if (_controlBitsLeft == 0)
             {
                 RefreshControlWord();
             }
 
-            _bp = Rcr(_bp);
+            _controlWord = Rcr(_controlWord);
             return _carry;
         }
 
@@ -471,7 +471,7 @@ public sealed class PanDecoder
 
         private void EnsureWord()
         {
-            if (_si >= BufferEnd)
+            if (_bufferReadPosition >= RingBufferEnd)
             {
                 Refill();
             }
@@ -479,7 +479,7 @@ public sealed class PanDecoder
 
         private void EnsureByte()
         {
-            if (_si > BufferEnd)
+            if (_bufferReadPosition > RingBufferEnd)
             {
                 Refill();
             }
@@ -487,15 +487,15 @@ public sealed class PanDecoder
 
         private void Refill()
         {
-            var saved = _memory.TryGetValue(_si, out var savedByte) ? savedByte : (byte)0;
-            _si = (_si - 0x1000) & 0xFFFF;
-            _memory[_si] = saved;
+            var saved = _memory.TryGetValue(_bufferReadPosition, out var savedByte) ? savedByte : (byte)0;
+            _bufferReadPosition = (_bufferReadPosition - 0x1000) & 0xFFFF;
+            _memory[_bufferReadPosition] = saved;
 
             var span = _raw.Span;
             var count = Math.Min(0x1000, span.Length - _rawOffset);
             for (var index = 0; index < count; index++)
             {
-                _memory[BufferBase + index] = span[_rawOffset + index];
+                _memory[RingBufferStart + index] = span[_rawOffset + index];
             }
 
             _rawOffset += count;
@@ -503,8 +503,8 @@ public sealed class PanDecoder
 
         private byte LoadByte()
         {
-            var value = _memory.TryGetValue(_si, out var byteValue) ? byteValue : (byte)0;
-            _si = (_si + 1) & 0xFFFF;
+            var value = _memory.TryGetValue(_bufferReadPosition, out var byteValue) ? byteValue : (byte)0;
+            _bufferReadPosition = (_bufferReadPosition + 1) & 0xFFFF;
             return value;
         }
 

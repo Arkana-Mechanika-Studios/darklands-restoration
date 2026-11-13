@@ -391,7 +391,7 @@ public sealed class BattlefieldForces
                 firstTemplate[k] = t;
                 total[t] += members[k];
             }
-            var anyMissile = false;
+            var anyRanged = false;
             for (var k = 0; k < kinds.Count; k++)
             {
                 var kind = kinds[k];
@@ -399,7 +399,7 @@ public sealed class BattlefieldForces
                 {
                     continue;
                 }
-                anyMissile = true;
+                anyRanged = true;
                 if (distinct <= 1 || total[firstTemplate[k]] <= 1)
                 {
                     continue;
@@ -424,7 +424,7 @@ public sealed class BattlefieldForces
                         break;
                 }
             }
-            MergeDuplicates(kinds, firstTemplate, anyMissile);
+            MergeDuplicates(kinds, firstTemplate, anyRanged);
             ApplyGroupBonuses(kinds, templates, groups);
             TrainSpecialTroops(kinds, templates);
         }
@@ -455,7 +455,7 @@ public sealed class BattlefieldForces
     }
 
     /// <summary>A kind whose template family appeared before takes over the earlier kind's weapon and colours.</summary>
-    private static void MergeDuplicates(List<EnemyKind> kinds, int[] firstTemplate, bool anyMissile)
+    private static void MergeDuplicates(List<EnemyKind> kinds, int[] firstTemplate, bool anyRanged)
     {
         var remaining = kinds.Count;
         for (var k = 0; k < kinds.Count; k++)
@@ -468,7 +468,7 @@ public sealed class BattlefieldForces
                 }
                 var kind = kinds[k];
                 var earlier = kinds[x];
-                if (remaining > 2 || anyMissile)
+                if (remaining > 2 || anyRanged)
                 {
                     // The first item that was its weapon becomes the earlier kind's weapon.
                     for (var j = 0; j < kind.Items.Count; j++)

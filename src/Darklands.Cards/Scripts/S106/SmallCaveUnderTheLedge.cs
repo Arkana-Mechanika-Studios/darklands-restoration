@@ -35,8 +35,8 @@ public sealed class SmallCaveUnderTheLedge : Card
             _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
             // C: (location-now + 100) % 100, a signed remainder, non-negative for any location.
-            var v = (c.Here + 100) % 100;
-            c.State.SavedCard = v <= 25 ? Unguarded : v <= 50 ? Tatzelwurm : Bandits;
+            var placeNumber = (c.Here + 100) % 100;
+            c.State.SavedCard = placeNumber <= 25 ? Unguarded : placeNumber <= 50 ? Tatzelwurm : Bandits;
         }
         else
         {

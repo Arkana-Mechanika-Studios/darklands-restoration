@@ -47,7 +47,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     //   R030+0x1300, and the redraws of world-map-start, the `redraw` label of 0c44, the portrait click and the menu bar's party-icons-stale
     private bool _mapDirty = true;
     // orig: the view of R030: DS:286A the first column shown, DS:286E the first row of the row buffer, DS:286C the first row shown in it; the
-    //   marker's position in the view is DS:2866 / DS:2868 (here _x - _originX, _y - _originY)
+    //   marker's position in the view is DS:2866 / DS:2868 (here _markerX - _originX, _markerY - _originY)
     /// <summary>A debugging aid: each step of the marker, as tools/oracle/lockstep.py prints the original's (DARKLANDS_TRACE_MAP).</summary>
     public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_TRACE_MAP") is null ? null : Console.WriteLine;
 
@@ -65,10 +65,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private int _originX => _viewColumn * WorldMap.TileWidth;
 
     private int _originY => (_viewTop + _viewRows) * WorldMap.RowHeight;
-    private int _x;
-    private int _y;
-    private int _direction;
-    private int _frame;
+    private int _markerX;
+    private int _markerY;
+    private int _markerDirection;
+    private int _markerFrame;
     private int _background = 0x68;
     private string _coordinates = "";
 
@@ -185,7 +185,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             // orig: the start of R030+0x0C44 (+0x54/+0x63), every pass: party-map-column / party-map-row = the cell under the marker (after the last pass's
             //   scroll). The menu bar (Poll above) comes before it, as menu-bar-loop does in world-map-loop: a save there holds the cell of the
             //   previous pass, the one the last walk stepped from.
-            var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
+            var (cellColumn, cellRow) = WorldMap.CellAt(_markerX, _markerY);
             state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
             var (dx, dy) = keyRead ? DirectionOf(key) : TowardTarget(target);
             var ownCase = false;
@@ -224,8 +224,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                     //   return kf; } }`: a step in place in the last pass's direction (its time and roll); then the scroll block, the marker
                     //   drawn with DS:8676, and `if (key) DS:2910++` (R030+0x12E5: key 0, the Ctrl-Break's, leaves the frame)
                     // C: lockstep sessions kbreak-map-walk (key 0 after a walk: 12E7 taken) and tk-map-walk-key (a letter after a walk)
-                    _direction = Memory.StepDirection;
-                    var inPlace = travel.Step(_x, _y);
+                    _markerDirection = Memory.StepDirection;
+                    var inPlace = travel.Step(_markerX, _markerY);
                     Trace?.Invoke($"step in place d={Memory.StepDirection} -> {inPlace.Outcome}");
                     if (inPlace.Outcome != StepOutcome.Walked)
                     {
@@ -238,7 +238,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                     }
                     else if (key != Keys.None)
                     {
-                        _frame = (_frame + 1) % 8;
+                        _markerFrame = (_markerFrame + 1) % 8;
                     }
                     ui.DelayClock(StepClock);
                     continue;
@@ -249,10 +249,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 {
                     Memory.StepDirection = 0;
                 }
-                _direction = Memory.StepDirection;
+                _markerDirection = Memory.StepDirection;
                 if (key != Keys.None || !ownCase)
                 {
-                    _frame = (_frame + 1) % 8;
+                    _markerFrame = (_markerFrame + 1) % 8;
                 }
                 ui.DelayClock(StepClock);
                 continue;
@@ -335,7 +335,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // C: the marker stands (sprite row 9) and every pass lets one step's time go by at the same place, with wait-ticks(75) before and after; the loop ends on a key press (checked after both delays) or when a mouse button is down (checked at the top). Any result of 1300 other than "walked on" leaves the loop: an arrival, an encounter, or a blocked step (impossible in place). DS:A891 is 1 until the first step and 3 after it.
     private int? Rest(GameState state, OverlandTravel travel)
     {
-        _frame = 0;
+        _markerFrame = 0;
         state.MapLeaveMode = 1;
         try
         {
@@ -363,16 +363,16 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             // C: wait-ticks(75) is the pass's own wait (R030+0x3096 on clock(), which moves only at the BIOS tick): about two ticks, not 75 ms of
             // real time (as the pass's DelayClock(StepClock); a rest of a second: the same hour as the original, where the C# was an hour ahead)
             ui.DelayClock(RestMilliseconds);
-            var result = travel.Step(_x, _y);
+            var result = travel.Step(_markerX, _markerY);
             Trace?.Invoke($"rest step -> {result.Outcome}");
             state.MapLeaveMode = 3;
             if (result.Outcome != StepOutcome.Walked)
             {
                 return result.Card > 0 ? result.Card : null;
             }
-            _direction = WaitingDirection;
+            _markerDirection = WaitingDirection;
             Draw(state);
-            _frame = (_frame + 1) % 8;
+            _markerFrame = (_markerFrame + 1) % 8;
             ui.DelayClock(RestMilliseconds);
         }
         return null;
@@ -386,7 +386,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         FreeBuffer(state, "S");
         // C: 25be reads the cell buffer 20d2 filled for the view (Draw), under the marker as the view's registers place it: at the west / north
         //   border the block starts one cell east / south (WorldMap.BufferOffset), and it is read flat (CellBuffer.CampWatch)
-        var (row, column) = CellBuffer.MarkerCell(_x - _originX, _y - _originY, _viewTop, _viewRows);
+        var (row, column) = CellBuffer.MarkerCell(_markerX - _originX, _markerY - _originY, _viewTop, _viewRows);
         Camp?.Invoke(map.Buffer.CampWatch(state.Party.Members.Count, row, column));
         UseMapPalette(state);
         return travel.AmbushInCamp() is { } card and > 0 ? card : null;
@@ -400,8 +400,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // C: the numbers are NOT the party's cell: the row is (DS:2868 + 11) / 4 + DS:286E + DS:286C (one more than party-map-row, no - 1) and the column uses +9 (odd rows) or +17 (even rows) where the party's cell uses +16 / +24 and -1; the display is a debugging aid and keeps its own arithmetic.
     private string CoordinateText()
     {
-        var row = (_y + 11) / WorldMap.RowHeight;
-        var column = (row - 1) % 2 != 0 ? (_x + 9) / WorldMap.TileWidth : (_x + 17) / WorldMap.TileWidth;
+        var row = (_markerY + 11) / WorldMap.RowHeight;
+        var column = (row - 1) % 2 != 0 ? (_markerX + 9) / WorldMap.TileWidth : (_markerX + 17) / WorldMap.TileWidth;
         return $"character X:{column:00} Y:{row:00}";
     }
 
@@ -413,8 +413,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         // orig: each case clamps only the axis it moves and only on the side it moves to (left `if (DS:2866 < 0xB)`, right `> 0xF7`,
         //   up `< 0xD`, down `> 0xB1`, R030+0x0CFE..0x0E5A), and the vertical clamp sits inside the moving branch: a pass that does not move
         //   y does not clamp it, so a marker that world-map-start put below 0xB1 stays there until a vertical pixel is taken
-        var x = _x + dx;
-        var y = _y;
+        var x = _markerX + dx;
+        var y = _markerY;
         if (dx < 0)
         {
             x = _originX + Math.Max(x - _originX, 0xB);
@@ -432,18 +432,18 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 y = dy < 0 ? _originY + Math.Max(y - _originY, 0xD) : _originY + Math.Min(y - _originY, 0xB1);
             }
         }
-        _direction = DirectionNumber(dx, dy);
-        _frame = (_frame + 1) % 8;
+        _markerDirection = DirectionNumber(dx, dy);
+        _markerFrame = (_markerFrame + 1) % 8;
         var result = travel.Step(x, y);
         // orig: DS:8676 = the case's direction, put back to 0 by a step that did not walk on (R030+0x10D6)
-        Memory.StepDirection = result.Outcome == StepOutcome.Walked ? _direction : 0;
+        Memory.StepDirection = result.Outcome == StepOutcome.Walked ? _markerDirection : 0;
         Trace?.Invoke($"step d={dx},{dy} view {x - _originX},{y - _originY} col {_viewColumn} top {_viewTop} rows {_viewRows} cell {state.MapPosition.X},{state.MapPosition.Y} -> {result.Outcome}");
         // orig: for a result of 0 or more (blocked, arrived, an encounter) 0c44 puts the marker back and returns before the scroll block; only a
         //   plain walk (-1) keeps the new position (the cell the party stands on is OverlandTravel.Step's)
         if (result.Outcome == StepOutcome.Walked)
         {
-            _x = x;
-            _y = y;
+            _markerX = x;
+            _markerY = y;
             Scroll();
         }
         return result;
@@ -494,12 +494,12 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         _viewColumn = viewColumn;
         _viewTop = top;
         _viewRows = rows;
-        _x = _originX + markerX;
-        _y = _originY + markerY;
-        var (cellColumn, cellRow) = WorldMap.CellAt(_x, _y);
+        _markerX = _originX + markerX;
+        _markerY = _originY + markerY;
+        var (cellColumn, cellRow) = WorldMap.CellAt(_markerX, _markerY);
         state.MapPosition = new Core.World.MapPosition(cellColumn, cellRow);
-        _frame = 0;
-        _direction = 0;
+        _markerFrame = 0;
+        _markerDirection = 0;
     }
 
     /// <summary>The view jumps when the party comes near its edge; the marker keeps its place on the map but at the map's borders.</summary>
@@ -508,11 +508,11 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     //   the shown rows are kept in 1 .. 0x53; at the bottom (height - top - 0x30 <= rows) the buffer is the last 0x83 rows and the marker moves by
     //   (old - new rows) * 5 pixels (rows are 4 pixels: the marker leaves its cell); with DS:2866 < 0x14 or > 0xE2 the view moves 8 columns and the
     //   marker 0x80 pixels, the view kept in 0 .. width - 0x11 with the marker corrected by 16 per column at the borders
-    // C: the marker's map pixel (_x, _y) is what the next pass reads the party's cell from (0c44 +0x54/+0x63, TravelLoop): the bottom correction moves the party.
+    // C: the marker's map pixel (_markerX, _markerY) is what the next pass reads the party's cell from (0c44 +0x54/+0x63, TravelLoop): the bottom correction moves the party.
     private void Scroll()
     {
-        var vx = _x - _originX;
-        var vy = _y - _originY;
+        var vx = _markerX - _originX;
+        var vy = _markerY - _originY;
         var (oldColumn, oldTop, oldRows) = (_viewColumn, _viewTop, _viewRows);
         if (vy < 0x14 || vy > 0xAA)
         {
@@ -578,8 +578,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 vx += vx < 0x14 ? 0x80 : -0x80;
             }
         }
-        _x = _originX + vx;
-        _y = _originY + vy;
+        _markerX = _originX + vx;
+        _markerY = _originY + vy;
         _mapDirty |= _viewColumn != oldColumn || _viewRows != oldRows;
     }
 
@@ -596,7 +596,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             _page.DrawMap(map, _pictures!, _viewColumn, _viewTop, _viewRows, (byte)_background,
                 ui.Assets.PictureExists("mapheada") ? ui.Assets.Picture("mapheada").Image : null, Clock(state));
         }
-        _page.DrawParty(_pictures!, firstRow, _x - _originX, _y - _originY, _direction, _frame, (byte)_background);
+        _page.DrawParty(_pictures!, firstRow, _markerX - _originX, _markerY - _originY, _markerDirection, _markerFrame, (byte)_background);
         _page.CopyTo(canvas);
         panel.Draw(canvas, state.Party);
         if (_coordinates.Length > 0)
@@ -751,7 +751,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         {
             return (0, 0);
         }
-        return (Math.Sign(t.X - (_x - _originX)), Math.Sign(t.Y - (_y - _originY)));
+        return (Math.Sign(t.X - (_markerX - _originX)), Math.Sign(t.Y - (_markerY - _originY)));
     }
 
     /// <summary>Sprite row: 1 north, 2 north-east … 8 north-west; 0 standing.</summary>

@@ -49,18 +49,18 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     private const int WildMusic = 0x15;
 
     /// <summary>The poaching risk carries over from stay to stay (the game keeps it in a global).</summary>
-    private int _risk;
-    private int _dailyRisk;
+    private int _poachingRisk;
+    private int _dailyPoachingRisk;
 
     /// <summary>The teacher list's rows and the teacher picked, also kept from stay to stay (DS:8A38, DS:89FA).</summary>
     private readonly int[] _teacherRows = new int[EventLog.Capacity];
     private int _chosenTeacher;
 
-    private GameState _s = null!;
+    private GameState _state = null!;
     private CampStay _stay = null!;
     private SavedScreen _back = null!;
     private SavedRegion? _teacherBox;
-    private int _chosen;
+    private int _chosenMember;
 
     /// <summary>Sets the Save Game and Load Saved Game items of the hot keys and the menu bar (1 on, 2 off).</summary>
     public Action<int>? SaveAndLoad { get; set; }
@@ -79,9 +79,9 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         // orig: R036+0x0082: DS:9C3D = music-start(5); `if (mode == 1) music-start(0x15); else if (roll-below(2)) music-start(9); else music-start(10);`
         ui.SaveMusic();
         ui.PlayMusic((CampPlace)mode == CampPlace.Wilderness ? WildMusic : state.Random.Below(2) != 0 ? 9 : 10);
-        _s = state;
+        _state = state;
         _stay = new CampStay(state, (CampPlace)mode, _teacherRows) {
-            Risk = _risk, DailyRisk = _dailyRisk, ChosenTeacher = _chosenTeacher,
+            Risk = _poachingRisk, DailyRisk = _dailyPoachingRisk, ChosenTeacher = _chosenTeacher,
             Hourglass = hours => Darklands.Presentation.Hourglass.Show(ui, state.Date, hours),
         };
         try
@@ -96,7 +96,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         }
         finally
         {
-            _risk = _stay.Risk;
+            _poachingRisk = _stay.Risk;
             _chosenTeacher = _stay.ChosenTeacher;
         }
     }
@@ -109,14 +109,14 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     /// </summary>
     public void CampInTheWild(GameState state, int dailyRisk)
     {
-        _dailyRisk = dailyRisk;
+        _dailyPoachingRisk = dailyRisk;
         // orig: R036+0x000B: the release count cleared and one waiting key thrown away
         ui.TakeLeftReleases();
         ui.TryReadKey(out _);
-        _risk = state.Events.Started(EventKinds.SafeCamping) ? 0
+        _poachingRisk = state.Events.Started(EventKinds.SafeCamping) ? 0
             : state.Events.Started(EventKinds.CampRisk) ? state.Events.Value(EventKinds.CampRisk) : 0;
         Stay(state, (int)CampPlace.Wilderness);
-        state.Events.Create(-2, -1, 0, EventKinds.CampRisk, 0, _risk, 0, state.Random.Below(48) + 12, 0, 0);
+        state.Events.Create(-2, -1, 0, EventKinds.CampRisk, 0, _poachingRisk, 0, state.Random.Below(48) + 12, 0, 0);
     }
 
     private bool Wild => _stay.Place == CampPlace.Wilderness;
@@ -129,7 +129,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     /// <summary>The screen's loop; false when it ended by a click on an empty party row (the game then skips its clean-up).</summary>
     private bool Run()
     {
-        _chosen = 0;
+        _chosenMember = 0;
         _teacherBox = null;
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the member chosen
         using var wheel = ui.UseSelectionList(static () => true);
@@ -216,11 +216,11 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 // orig: R036+0x059F: the wait (R036+0x05AB), the member of the release's row; an empty slot returns at once
                 ui.WaitForButtonRelease();
                 var member = ry / PartyPanel.RowHeight;
-                if (!_s.Party.Slot(member).IsPresent)
+                if (!_state.Party.Slot(member).IsPresent)
                 {
                     return false;
                 }
-                sheet.Show(_s, member);
+                sheet.Show(_state, member);
                 Redraw();
                 // orig: R036+0x05F5 the wait again, R036+0x0604 the release count cleared; no key this pass
                 ui.WaitForButtonRelease();
@@ -261,7 +261,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     // orig: R036+0x02B2..: `if (teachers here > i) { DS:89FA = i; key = 0x1454; the box closes }`
     private int TeacherKey(int row)
     {
-        if (_s.Events.CountAt(EventKinds.Teacher, _s.CurrentLocation) > row)
+        if (_state.Events.CountAt(EventKinds.Teacher, _state.CurrentLocation) > row)
         {
             _stay.ChosenTeacher = row;
             CloseTeacherBox();
@@ -282,7 +282,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 return row < MenuLines.Length ? Keys.ForCharacter(MenuLines[row][0]) : Keys.None;
             case 3:
                 var member = (y - 0x2D) / 0x12;
-                return member < Party.MaxMembers && _s.Party.Slot(member).IsPresent ? Keys.ForCharacter((char)('1' + member)) : Keys.None;
+                return member < Party.MaxMembers && _state.Party.Slot(member).IsPresent ? Keys.ForCharacter((char)('1' + member)) : Keys.None;
         }
         return Keys.None;
     }
@@ -292,10 +292,10 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     /// <summary>A key of the camp screen; true when the stay is over.</summary>
     private bool HandleKey(int key)
     {
-        var i = _chosen;
+        var i = _chosenMember;
         if (key is >= Keys.F1 and <= Keys.F5 && (key & 0xFF) == 0)
         {
-            sheet.Show(_s, (key >> 8) - (Keys.F1 >> 8));
+            sheet.Show(_state, (key >> 8) - (Keys.F1 >> 8));
             Redraw();
             // orig: R036+0x0EB6 the button waited out, R036+0x0EC5 the release count cleared
             ui.WaitForButtonRelease();
@@ -305,22 +305,22 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         if (key is >= CtrlF1 and <= CtrlF1 + 0x400 && (key & 0xFF) == 0)
         {
             var m = (key >> 8) - (CtrlF1 >> 8);
-            if (m < _s.Party.Members.Count && _s.Party.Members[m].IsAble)
+            if (m < _state.Party.Members.Count && _state.Party.Members[m].IsAble)
             {
-                _s.Party.LeaderIndex = m;
-                panel.Draw(ui.Canvas, _s.Party);
+                _state.Party.LeaderIndex = m;
+                panel.Draw(ui.Canvas, _state.Party);
             }
             return false;
         }
         if (key == Keys.AltQ)
         {
-            Brewing.AbandonAll(_s);
+            Brewing.AbandonAll(_state);
             throw new QuitGameException();
         }
         switch (Keys.CharacterOf(key))
         {
             case >= '1' and <= '5':
-                _chosen = Keys.CharacterOf(key) - '1';
+                _chosenMember = Keys.CharacterOf(key) - '1';
                 DrawPartyList();
                 DrawActivityMenu();
                 return false;
@@ -339,7 +339,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             case 'a':
                 if (_stay.CanDoAlchemy(i))
                 {
-                    _stay.DoAlchemy(i, () => alchemy.Use(_s, i, (int)_stay.Place));
+                    _stay.DoAlchemy(i, () => alchemy.Use(_state, i, (int)_stay.Place));
                     Redraw();
                 }
                 return false;
@@ -390,21 +390,21 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         {
             do
             {
-                if (--_chosen < 0)
+                if (--_chosenMember < 0)
                 {
-                    _chosen = Party.MaxMembers;
+                    _chosenMember = Party.MaxMembers;
                 }
             }
-            while (!_s.Party.Slot(_chosen).IsPresent);
+            while (!_state.Party.Slot(_chosenMember).IsPresent);
         }
         else if (key == Keys.Down)
         {
             do
             {
-                _chosen++;
+                _chosenMember++;
             }
-            while (!_s.Party.Slot(_chosen % Party.MaxMembers).IsPresent);
-            _chosen %= Party.MaxMembers;
+            while (!_state.Party.Slot(_chosenMember % Party.MaxMembers).IsPresent);
+            _chosenMember %= Party.MaxMembers;
         }
         else
         {
@@ -421,7 +421,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     private void Redraw()
     {
         _teacherBox = null;
-        _back = ScreenDrawing.DrawBackground(ui, panel, _s.Party, Wild ? "campwild" : "campcity");
+        _back = ScreenDrawing.DrawBackground(ui, panel, _state.Party, Wild ? "campwild" : "campcity");
         DrawActivityMenu();
         _back = ui.Canvas.SaveScreen();
         DrawPartyList();
@@ -435,7 +435,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         var (dim, lit) = Wild ? ((byte)7, (byte)8) : ((byte)2, (byte)10);
         bool[] usable =
         [
-            true, _stay.CanRegainStrength(_chosen), _stay.CanPray(_chosen), _stay.CanDoAlchemy(_chosen), _stay.CanEarnMoney,
+            true, _stay.CanRegainStrength(_chosenMember), _stay.CanPray(_chosenMember), _stay.CanDoAlchemy(_chosenMember), _stay.CanEarnMoney,
             _stay.CanGuard, _stay.TeachersHere,
         ];
         for (var k = 0; k < MenuLines.Length; k++)
@@ -453,12 +453,12 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         ui.Canvas.CopyFrom(_back, 0x46, 0x2D, 0x82, 0x5A);
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            var m = _s.Party.Slot(i);
+            var m = _state.Party.Slot(i);
             if (!m.IsAble)
             {
                 continue;
             }
-            var color = _chosen == i ? ChosenColor : PartyColor;
+            var color = _chosenMember == i ? ChosenColor : PartyColor;
             var y = i * 0x12 + 0x30;
             ui.Text.Draw(ui.Canvas, 0x49, y, m.ShortName + "...", color);
             var text = string.Format(System.Globalization.CultureInfo.InvariantCulture, ActivityTexts[(int)_stay.Activity[i]],
@@ -482,7 +482,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             var cost = _stay.DayCost();
             var price = _stay.LodgingPrice;
             var at = $"You consider staying here today, at {price / 12}gr, {price % 12}pf.";
-            var purse = _s.Party.Purse;
+            var purse = _state.Party.Purse;
             if (cost > 0 && purse < Money.FromPfennigs(cost))
             {
                 text = at + "  But, you do not have enough money.   For the day you will:";

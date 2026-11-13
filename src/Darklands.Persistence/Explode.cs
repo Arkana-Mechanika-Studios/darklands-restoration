@@ -16,14 +16,14 @@ public sealed class Explode
     /// <summary>Takes <paramref name="size"/> bytes of output at <paramref name="at"/>.</summary>
     public delegate void WriteBlock(byte[] buffer, int at, int size);
 
-    private int _ctype;
+    private int _literalCoding;
     private int _outputPos;
-    private int _dsizeBits;
-    private int _dsizeMask;
-    private int _bitBuff;
+    private int _dictionaryBits;
+    private int _dictionaryMask;
+    private int _bitBuffer;
     private int _extraBits;
-    private int _inPos;
-    private int _inBytes;
+    private int _inputPos;
+    private int _inputLength;
     private ReadBlock _read = (_, _, _) => 0;
     private WriteBlock _write = (_, _, _) => { };
 
@@ -35,10 +35,10 @@ public sealed class Explode
 
     private readonly byte[] _distPosCodes = new byte[0x100];
     private readonly byte[] _lengthCodes = new byte[0x100];
-    private readonly byte[] _asciiTable2C34 = new byte[0x100];
-    private readonly byte[] _asciiTable2D34 = new byte[0x100];
-    private readonly byte[] _asciiTable2E34 = new byte[0x80];
-    private readonly byte[] _asciiTable2EB4 = new byte[0x100];
+    private readonly byte[] _literalByLow8Bits = new byte[0x100];
+    private readonly byte[] _literalAfter4Bits = new byte[0x100];
+    private readonly byte[] _literalAfter6Bits = new byte[0x80];
+    private readonly byte[] _literalAfter8Bits = new byte[0x100];
     private readonly byte[] _chBitsAsc = new byte[0x100];
 
     /// <summary>
@@ -77,22 +77,22 @@ public sealed class Explode
     {
         _write = write;
         _read = read;
-        _inBytes = read(_in, 0, 0x800);
-        if (_inBytes <= 4)
+        _inputLength = read(_in, 0, 0x800);
+        if (_inputLength <= 4)
         {
             return 3;
         }
-        _ctype = _in[0];
-        _bitBuff = _in[2];
-        _dsizeBits = _in[1];
+        _literalCoding = _in[0];
+        _bitBuffer = _in[2];
+        _dictionaryBits = _in[1];
         _extraBits = 0;
-        _inPos = 3;
-        if (_dsizeBits is < 4 or > 6)
+        _inputPos = 3;
+        if (_dictionaryBits is < 4 or > 6)
         {
             return 1;
         }
-        _dsizeMask = 0xFFFF >> (16 - _dsizeBits);
-        switch (_ctype)
+        _dictionaryMask = 0xFFFF >> (16 - _dictionaryBits);
+        switch (_literalCoding)
         {
             case 0:
                 break;
@@ -161,13 +161,13 @@ public sealed class Explode
     // orig: R003+0x28CC (1016:0ECC) asm
     private int DecodeLiteral()
     {
-        if ((_bitBuff & 1) != 0)
+        if ((_bitBuffer & 1) != 0)
         {
             if (WasteBits(1) != 0)
             {
                 return 0x306;
             }
-            int code = _lengthCodes[_bitBuff & 0xFF];
+            int code = _lengthCodes[_bitBuffer & 0xFF];
             if (WasteBits(DclTables.LenBits[code]) != 0)
             {
                 return 0x306;
@@ -175,7 +175,7 @@ public sealed class Explode
             int extra = DclTables.ExLenBits[code];
             if (extra != 0)
             {
-                var value = (((1 << extra) - 1) & _bitBuff) + DclTables.LenBase[code];
+                var value = (((1 << extra) - 1) & _bitBuffer) + DclTables.LenBase[code];
                 if (WasteBits(extra) != 0)
                 {
                     return 0x306;
@@ -189,23 +189,23 @@ public sealed class Explode
             return 0x306;
         }
         int literal;
-        if (_ctype == 0)
+        if (_literalCoding == 0)
         {
-            literal = _bitBuff & 0xFF;
+            literal = _bitBuffer & 0xFF;
             return WasteBits(8) != 0 ? 0x306 : literal;
         }
-        if ((_bitBuff & 0xFF) != 0)
+        if ((_bitBuffer & 0xFF) != 0)
         {
-            literal = _asciiTable2C34[_bitBuff & 0xFF];
+            literal = _literalByLow8Bits[_bitBuffer & 0xFF];
             if (literal == 0xFF)
             {
-                if ((_bitBuff & 0x3F) != 0)
+                if ((_bitBuffer & 0x3F) != 0)
                 {
                     if (WasteBits(4) != 0)
                     {
                         return 0x306;
                     }
-                    literal = _asciiTable2D34[_bitBuff & 0xFF];
+                    literal = _literalAfter4Bits[_bitBuffer & 0xFF];
                 }
                 else
                 {
@@ -213,7 +213,7 @@ public sealed class Explode
                     {
                         return 0x306;
                     }
-                    literal = _asciiTable2E34[_bitBuff & 0x7F];
+                    literal = _literalAfter6Bits[_bitBuffer & 0x7F];
                 }
             }
         }
@@ -223,7 +223,7 @@ public sealed class Explode
             {
                 return 0x306;
             }
-            literal = _asciiTable2EB4[_bitBuff & 0xFF];
+            literal = _literalAfter8Bits[_bitBuffer & 0xFF];
         }
         return WasteBits(_chBitsAsc[literal & 0xFF]) != 0 ? 0x306 : literal & 0xFF;
     }
@@ -232,7 +232,7 @@ public sealed class Explode
     // orig: R003+0x2A0A (1016:100A) asm
     private int DecodeDistance(int length)
     {
-        int code = _distPosCodes[_bitBuff & 0xFF];
+        int code = _distPosCodes[_bitBuffer & 0xFF];
         if (WasteBits(DclTables.DistBits[code]) != 0)
         {
             return 0;
@@ -240,13 +240,13 @@ public sealed class Explode
         int distance, bits;
         if (length == 2)
         {
-            distance = code << 2 | (_bitBuff & 3);
+            distance = code << 2 | (_bitBuffer & 3);
             bits = 2;
         }
         else
         {
-            distance = code << _dsizeBits | (_dsizeMask & _bitBuff);
-            bits = _dsizeBits;
+            distance = code << _dictionaryBits | (_dictionaryMask & _bitBuffer);
+            bits = _dictionaryBits;
         }
         return WasteBits(bits) != 0 ? 0 : distance + 1;
     }
@@ -257,23 +257,23 @@ public sealed class Explode
     {
         if (count <= _extraBits)
         {
-            _bitBuff >>= count;
+            _bitBuffer >>= count;
             _extraBits -= count;
             return 0;
         }
-        _bitBuff >>= _extraBits;
-        if (_inPos >= _inBytes)
+        _bitBuffer >>= _extraBits;
+        if (_inputPos >= _inputLength)
         {
-            _inBytes = _read(_in, 0, 0x800);
-            if (_inBytes == 0)
+            _inputLength = _read(_in, 0, 0x800);
+            if (_inputLength == 0)
             {
                 return 1;
             }
-            _inPos = 0;
+            _inputPos = 0;
         }
-        _bitBuff |= _in[_inPos++] << 8;
+        _bitBuffer |= _in[_inputPos++] << 8;
         var rest = count - _extraBits;
-        _bitBuff = (_bitBuff >> rest) & 0xFFFF;
+        _bitBuffer = (_bitBuffer >> rest) & 0xFFFF;
         _extraBits = 8 - rest;
         return 0;
     }
@@ -301,26 +301,26 @@ public sealed class Explode
             int code = DclTables.ChCodeAsc[literal];
             var mask = 0xFF;
             var shift = 0;
-            var table = _asciiTable2C34;
+            var table = _literalByLow8Bits;
             int bits = _chBitsAsc[literal];
             if (bits > 8)
             {
                 if ((code & 0xFF) != 0)
                 {
-                    _asciiTable2C34[code & 0xFF] = 0xFF;
+                    _literalByLow8Bits[code & 0xFF] = 0xFF;
                     shift = 4;
-                    table = _asciiTable2D34;
+                    table = _literalAfter4Bits;
                     if ((code & 0x3F) == 0)
                     {
                         shift = 6;
-                        table = _asciiTable2E34;
+                        table = _literalAfter6Bits;
                         mask = 0x7F;
                     }
                 }
                 else
                 {
                     shift = 8;
-                    table = _asciiTable2EB4;
+                    table = _literalAfter8Bits;
                 }
             }
             code >>= shift;

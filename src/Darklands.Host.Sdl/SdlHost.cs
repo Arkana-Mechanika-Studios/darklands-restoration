@@ -100,10 +100,10 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         SdlNative.SDL_SetTextureScaleMode(_texture, SdlNative.ScaleModeNearest);
         SdlNative.SDL_SetTextureBlendMode(_texture, SdlNative.BlendModeNone);
         SdlNative.SDL_HideCursor();
-        _filter = (IPictureFilterRenderer?)SdlShaderPictureFilter.Create(_renderer, System.Console.Error.WriteLine) ?? new SdlPictureFilter(_renderer);
+        _filterRenderer = (IPictureFilterRenderer?)SdlShaderPictureFilter.Create(_renderer, System.Console.Error.WriteLine) ?? new SdlPictureFilter(_renderer);
         if (gpu)
         {
-            System.Console.Error.WriteLine($"Picture filters: {_filter.Kind} on SDL's {RendererName} renderer" + (GpuDriver is { } driver ? $" ({driver})" : ""));
+            System.Console.Error.WriteLine($"Picture filters: {_filterRenderer.Kind} on SDL's {RendererName} renderer" + (GpuDriver is { } driver ? $" ({driver})" : ""));
         }
         UpdateViewport();
     }
@@ -121,7 +121,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     {
         var old = _window;
         var display = SdlNative.SDL_GetDisplayForWindow(old);
-        var (filter, curvature) = (_filter.Filter, _filter.Curvature);
+        var (filter, curvature) = (_filterRenderer.Filter, _filterRenderer.Curvature);
         // the old window black at once, as the game's first picture is, while the new one is made (its renderer takes a moment)
         Clear();
         // what was drawn with the old renderer goes with it (the console's and the corner's fonts are loaded again on the new one)
@@ -130,7 +130,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         ReleaseRendering();
         SdlNative.SDL_DestroyRenderer(_renderer);
         Open(width, height, fullscreen, frameless, gpu, hidden: true, display);
-        (_filter.Filter, _filter.Curvature) = (filter, curvature);
+        (_filterRenderer.Filter, _filterRenderer.Curvature) = (filter, curvature);
         Clear();
         SdlNative.SDL_HideWindow(old);
         SdlNative.SDL_ShowWindow(_window);
@@ -153,7 +153,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         _hdTextures.Clear();
         _hdFrame = null;
-        _filter.Dispose();
+        _filterRenderer.Dispose();
         SdlNative.SDL_DestroyTexture(_texture);
         if (_textTexture != IntPtr.Zero)
         {
@@ -211,11 +211,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     // Host feature: like F11 and F12, Ctrl+F11 is a key the original never reads (its BIOS keyboard call does not report F11), so the game loses no key.
     public PictureFilter Filter
     {
-        get => _filter.Filter;
+        get => _filterRenderer.Filter;
         set
         {
-            _filter.Filter = value;
-            if (PictureFilters.NeedsShader(value) && _filter.Kind != "shaders")
+            _filterRenderer.Filter = value;
+            if (PictureFilters.NeedsShader(value) && _filterRenderer.Kind != "shaders")
             {
                 // render targets and blend modes cannot draw it (SDL's GPU renderer did not start, or its shader did not draw)
                 System.Console.Error.WriteLine($"Picture filters: {PictureFilters.Label(value)} needs the GPU renderer's shader; "
@@ -224,20 +224,20 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
     }
 
-    private IPictureFilterRenderer _filter = null!;
+    private IPictureFilterRenderer _filterRenderer = null!;
 
     /// <summary>The CRT's slight curvature (display.crtCurvature; drawn only with the shaders).</summary>
     public bool Curvature
     {
-        get => _filter.Curvature;
-        set => _filter.Curvature = value;
+        get => _filterRenderer.Curvature;
+        set => _filterRenderer.Curvature = value;
     }
 
     /// <summary>What draws the picture filters: "shaders" (SDL's GPU renderer) or "render targets" (tests, the log).</summary>
-    internal string FilterKind => _filter.Kind;
+    internal string FilterKind => _filterRenderer.Kind;
 
     /// <summary>The GPU renderer's backend when the shaders draw ("direct3d12", "vulkan"), else null (tests, the log).</summary>
-    internal string? GpuDriver => (_filter as SdlShaderPictureFilter)?.Driver;
+    internal string? GpuDriver => (_filterRenderer as SdlShaderPictureFilter)?.Driver;
 
     /// <summary>The renderer's name ("gpu", "direct3d11", "software" ...).</summary>
     internal string RendererName => System.Runtime.InteropServices.Marshal.PtrToStringUTF8(SdlNative.SDL_GetRendererName(_renderer)) ?? "";
@@ -410,27 +410,27 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     private void DrawHdFrame(HdFrame frame)
     {
         var used = new HashSet<RgbaImage>(ReferenceEqualityComparer.Instance);
-        _filter.Begin(frame.Output, layered: true);
+        _filterRenderer.Begin(frame.Output, layered: true);
         foreach (var item in frame.Items)
         {
             var destination = ToSdl(item.Destination);
             if (ReferenceEquals(item, frame.Base))
             {
-                _filter.DrawGame(_texture, Screen.Width, Screen.Height, item.Destination, blended: false);
+                _filterRenderer.DrawGame(_texture, Screen.Width, Screen.Height, item.Destination, blended: false);
                 continue;
             }
             used.Add(item.Texture);
             if (item.Placement is null)
             {
                 // the overlay (the game's frame again, transparent where a replacement shows): through the filter as the base
-                _filter.DrawGame(HdTexture(item), item.Texture.Width, item.Texture.Height, item.Destination, blended: true);
+                _filterRenderer.DrawGame(HdTexture(item), item.Texture.Width, item.Texture.Height, item.Destination, blended: true);
                 continue;
             }
             SdlNative.RenderCopy(_renderer, HdTexture(item), destination);
         }
         // the CRT's mask over everything, replacements included (the monitor shows them through it too)
 
-        _filter.Finish(frame.Output);
+        _filterRenderer.Finish(frame.Output);
         foreach (var image in _hdTextures.Keys.Where(image => !used.Contains(image)).ToList())
         {
             SdlNative.SDL_DestroyTexture(_hdTextures[image].Texture);
@@ -517,9 +517,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>The game's frame (in <see cref="_texture"/>) at the picture's place, through the picture filter.</summary>
     private void DrawFrame()
     {
-        _filter.Begin(Graphics, layered: false);
-        _filter.DrawGame(_texture, Screen.Width, Screen.Height, Graphics, blended: false);
-        _filter.Finish(Graphics);
+        _filterRenderer.Begin(Graphics, layered: false);
+        _filterRenderer.DrawGame(_texture, Screen.Width, Screen.Height, Graphics, blended: false);
+        _filterRenderer.Finish(Graphics);
     }
 
     /// <summary>How the renderer in use stretches the picture (tests).</summary>

@@ -45,7 +45,7 @@ public sealed class RowBuffer
         Load(top, -1);
     }
 
-    /// <summary>The rows from <paramref name="top"/> on, after the rows from <paramref name="old"/> on (-1: none, read them all).</summary>
+    /// <summary>The rows from <paramref name="top"/> on, after the rows from <paramref name="oldTop"/> on (-1: none, read them all).</summary>
     // orig: R030+0x1DD4(file, top, old) (1462:1DD4): old == top: nothing. old == -1: read rows top .. top + 0x82 into slots 0 .. 0x82.
     //   old < top (d = top - old): memmove(slot 0, slot d, (0x83 - d) * 0xD2), then read rows top + d .. top + 0x82 into slots d .. 0x82.
     //   old > top (d = old - top): memmove(slot d, slot 0, d * 0xD2), then read rows top .. top + d - 1 into slots 0 .. d - 1.
@@ -55,26 +55,26 @@ public sealed class RowBuffer
     //   place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from
     //   world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced:
     //   the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
-    public void Load(int top, int old)
+    public void Load(int top, int oldTop)
     {
-        if (old == top)
+        if (oldTop == top)
         {
             return;
         }
         int start, count, seek;
-        if (old == -1)
+        if (oldTop == -1)
         {
             (start, count, seek) = (0, Slots, top);
         }
-        else if (old < top)
+        else if (oldTop < top)
         {
-            var d = top - old;
+            var d = top - oldTop;
             Array.Copy(_block, d * SlotSize, _block, 0, (Slots - d) * SlotSize);
             (start, count, seek) = (d, Slots - d, top + d);
         }
         else
         {
-            var d = old - top;
+            var d = oldTop - top;
             Array.Copy(_block, 0, _block, d * SlotSize, d * SlotSize);
             (start, count, seek) = (0, d, top);
         }

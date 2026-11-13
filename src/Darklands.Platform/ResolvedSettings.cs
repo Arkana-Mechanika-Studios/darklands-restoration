@@ -183,8 +183,8 @@ public sealed class ResolvedSettings
     public static ResolvedSettings Resolve(CommandLineOptions cli, Func<string, string?> environment, GameSettings file)
     {
         static string? Set(string? text) => string.IsNullOrWhiteSpace(text) ? null : text;
-        string? Pick(string? fromCli, string? variable, string? fromFile) =>
-            Set(fromCli) ?? (variable is null ? null : Set(environment(variable))) ?? Set(fromFile);
+        string? FirstGiven(string? fromCommandLine, string? environmentVariable, string? fromFile) =>
+            Set(fromCommandLine) ?? (environmentVariable is null ? null : Set(environment(environmentVariable))) ?? Set(fromFile);
 
         int? scale;
         string? resolution;
@@ -220,29 +220,29 @@ public sealed class ResolvedSettings
         }
         return new ResolvedSettings
         {
-            GameFolder = Pick(cli.GameFolder, "DARKLANDS_DIR", file.GameFolder),
-            SavesFolder = Pick(cli.SavesFolder, "DARKLANDS_SAVES", file.SavesFolder),
+            GameFolder = FirstGiven(cli.GameFolder, "DARKLANDS_DIR", file.GameFolder),
+            SavesFolder = FirstGiven(cli.SavesFolder, "DARKLANDS_SAVES", file.SavesFolder),
             Window = window,
             Fullscreen = cli.Fullscreen || (file.Fullscreen ?? false),
-            HdPack = Pick(cli.HdPack, null, file.HdPack),
+            HdPack = FirstGiven(cli.HdPack, null, file.HdPack),
             CleanDrawing = cli.CleanDrawing || (file.CleanDrawing ?? false),
             Filter = filter,
             CrtCurvature = file.CrtCurvature ?? false,
             SoundChoice = sound is null or "config" or "none" ? null : sound,
             // no audio device at all: from --no-audio, from --sound none, or from sound.card none in the settings file (unless --sound names a card)
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
-            Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
-            AudioPack = Pick(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
-            SoundFont = Pick(cli.SoundFont, null, file.SoundFont),
+            Mt32Roms = FirstGiven(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
+            AudioPack = FirstGiven(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
+            SoundFont = FirstGiven(cli.SoundFont, null, file.SoundFont),
             ConfigDrk = file.ConfigDrk,
             Mods = cli.Mods.Count > 0 ? cli.Mods.ToList() : file.Mods?.Where(m => !string.IsNullOrWhiteSpace(m)).ToList() ?? [],
             ModsFromCommandLine = cli.Mods.Count > 0,
             ShowBanner = !cli.NoBanner && (file.Banner ?? true),
             PlayIntro = !cli.NoIntro && (file.Intro ?? true),
             CommandLine = cli.GameCommandLine ?? file.CommandLine ?? [],
-            TextFont = Pick(cli.TextFont, "DARKLANDS_TEXT_FONT", file.TextFont),
-            ScreenshotsFolder = Pick(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),
-            SdlLibrary = Pick(cli.SdlLibrary, null, file.SdlLibrary),
+            TextFont = FirstGiven(cli.TextFont, "DARKLANDS_TEXT_FONT", file.TextFont),
+            ScreenshotsFolder = FirstGiven(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),
+            SdlLibrary = FirstGiven(cli.SdlLibrary, null, file.SdlLibrary),
             MouseWheel = !cli.NoMouseWheel && (file.MouseWheel ?? true),
             CardMenuKeys = !cli.NoCardMenuKeys && (file.CardMenuKeys ?? true),
             ConsoleEnabled = !cli.NoConsole && (file.ConsoleEnabled ?? true),

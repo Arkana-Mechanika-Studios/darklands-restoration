@@ -70,17 +70,17 @@ public sealed class CharacterCreationScreen
 
     /// <summary>The last word of the record buffer DS:8B52 (DS:8BD0), which the character generator's panel reads as DS:8BD2[-1]; 0 at start-up.</summary>
     [ThreadStatic]
-    private static int s_recordBuffer;
+    private static int s_recordBufferLastWord;
 
     /// <summary>The last word of the record buffer as this menu's list left it (the character generator's panel reads it).</summary>
-    internal static int RecordBuffer => s_recordBuffer;
+    internal static int RecordBuffer => s_recordBufferLastWord;
 
     /// <summary>The menus' globals as a new run of the program finds them (DarklandsGame.RestartProgram): the menu state and the record buffer's word.</summary>
     // orig: DS:E7DA, DS:E7DC, DS:8D06, DS:E7E0, DS:E753..DS:E76A, DS:E890..DS:E894 and DS:8BD0 at their start-up values (PartyMenuState's)
     public static void ProgramStart()
     {
         Shared = new PartyMenuState();
-        s_recordBuffer = 0;
+        s_recordBufferLastWord = 0;
     }
 
     private readonly GameUi _ui;
@@ -217,7 +217,7 @@ public sealed class CharacterCreationScreen
                 case 'c':
                     Press('c', () =>
                     {
-                        creation.RecordBufferWord = s_recordBuffer;
+                        creation.RecordBufferWord = s_recordBufferLastWord;
                         if (new CharacterGeneratorScreen(_ui, _data, _world, creation).Run() is { } made)
                         {
                             // orig: R037+0x38AA stores DS:907E (location-now, the start-up city here: the load of "default" leaves it) in the record's first word before writing it
@@ -489,7 +489,7 @@ public sealed class CharacterCreationScreen
         {
             var last = _roster.Characters[count - 1];
             var high = last.OriginalRecord is { Length: > 0x7F } r ? r[0x7F] : 0;
-            s_recordBuffer = (short)((byte)last.Pack.Stacks | high << 8);
+            s_recordBufferLastWord = (short)((byte)last.Pack.Stacks | high << 8);
         }
         CopyBack(0xC5, 0x14, 0x73, 0x14);
         for (var i = 0; i < count; i++)

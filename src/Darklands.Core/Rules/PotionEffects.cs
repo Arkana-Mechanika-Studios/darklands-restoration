@@ -58,7 +58,7 @@ public static class PotionEffects
         var stack = m.Pack[index];
         var q = stack.Quality;
         var r = s.Random;
-        int Band(int low, int middle, int high, int best) => q <= 25 ? low : q <= 35 ? middle : q <= 45 ? high : best;
+        int Band(int low, int middle, int high, int aboveHigh) => q <= 25 ? low : q <= 35 ? middle : q <= 45 ? high : aboveHigh;
         int ThreeBands(int low, int middle, int high) => q <= 25 ? low : q <= 35 ? middle : high;
         int Raise(int lowBase, int lowRange, int midBase, int midRange, int highBase, int highRange) =>
             q <= 25 ? r.Below(lowRange) + lowBase : q <= 35 ? r.Below(midRange) + midBase : q <= 45 ? r.Below(highRange) + highBase : 5;

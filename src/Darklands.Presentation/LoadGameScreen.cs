@@ -33,10 +33,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     private const int ModMarkX = 0x138;
 
     // The screen's globals: DS:8C4C saves, DS:8C52 first shown, DS:8C50 cursor row, DS:8C54 rows shown, R136+0x1145E the rows' file names.
-    private int _count;
-    private int _first;
-    private int _cursor;
-    private int _shown;
+    private int _saveCount;
+    private int _firstShownIndex;
+    private int _cursorRow;
+    private int _rowsShown;
     private readonly string[] _names = new string[Rows];
     private bool _fromStart;
     private SavedScreen _page = null!;
@@ -93,10 +93,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             {
                 ScreenDrawing.WaitForRelease(ui);
                 var row = (ui.Mouse.Y - 0x14) / 16;
-                if (_shown > row)
+                if (_rowsShown > row)
                 {
                     Highlight(false);
-                    _cursor = row;
+                    _cursorRow = row;
                     Highlight(true);
                 }
             }
@@ -139,9 +139,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         _page = ui.Canvas.SaveScreen();
         ui.PicturePage = _page;
         _button = ui.Assets.PictureExists("buttncr2") ? ui.Assets.Picture("buttncr2") : null;
-        _count = folder.Count();
-        _first = 0;
-        _cursor = 0;
+        _saveCount = folder.Count();
+        _firstShownIndex = 0;
+        _cursorRow = 0;
     }
 
     // orig: R037+0x847E: the page copied to the screen, the labels (095e), the list (06e6)
@@ -177,7 +177,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     private void DrawList()
     {
         ui.Canvas.CopyFrom(_page, 0xC3, 0x14, 0x7D, 0x91);
-        _shown = 0;
+        _rowsShown = 0;
         var names = folder.Names();
         if (names.Count == 0)
         {
@@ -187,19 +187,19 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         var skip = 0;
         foreach (var name in names)
         {
-            if (skip++ < _first)
+            if (skip++ < _firstShownIndex)
             {
                 continue;
             }
-            if (++_shown > Rows)
+            if (++_rowsShown > Rows)
             {
-                _shown--;
+                _rowsShown--;
                 break;
             }
-            _names[_shown - 1] = name;
+            _names[_rowsShown - 1] = name;
             var s = folder.Summary(name);
             var line = $"{s.Place} {s.Year}/{s.Month + 1}/{s.Day}  {s.Hour}";
-            var y = _shown << 4;
+            var y = _rowsShown << 4;
             // DIVERGENCE: no original: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) a saved game of a modded game
             //   (its own companion file, SaveFolder.IsModded) carries the mod mark at the right end of its first line, which stops short of it.
             //   Classic draws the list as the original.
@@ -215,9 +215,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                 ui.Text.Draw(ui.Canvas, ModMarkX, y + 6, ModMark, LineColor);
             }
         }
-        if (_count <= _cursor)
+        if (_saveCount <= _cursorRow)
         {
-            _cursor = _shown - 1;
+            _cursorRow = _rowsShown - 1;
         }
         Highlight(true);
     }
@@ -227,11 +227,11 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         if (on)
         {
-            ui.Canvas.Recolor(0xC4, (_cursor << 4) + 0x16, 0x7B, 0x10, LineColor, LineHighlight);
+            ui.Canvas.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineColor, LineHighlight);
         }
         else
         {
-            ui.Canvas.Recolor(0xC4, (_cursor << 4) + 0x16, 0x7B, 0x10, LineHighlight, LineColor);
+            ui.Canvas.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineHighlight, LineColor);
         }
         ui.Present();
     }
@@ -269,23 +269,23 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         switch (key)
         {
             case Keys.Home:
-                _cursor = _first = 0;
+                _cursorRow = _firstShownIndex = 0;
                 DrawList();
                 break;
             case Keys.Up:
             case Keys.Left:
                 Highlight(false);
-                if (--_cursor < 0)
+                if (--_cursorRow < 0)
                 {
-                    if (_first != 0)
+                    if (_firstShownIndex != 0)
                     {
-                        _first--;
-                        _cursor = 0;
+                        _firstShownIndex--;
+                        _cursorRow = 0;
                         DrawList();
                     }
                     else
                     {
-                        _cursor = 0;
+                        _cursorRow = 0;
                     }
                 }
                 Highlight(true);
@@ -293,17 +293,17 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             case Keys.Right:
             case Keys.Down:
                 Highlight(false);
-                if (++_cursor >= _shown)
+                if (++_cursorRow >= _rowsShown)
                 {
                     // C: `if (DS:8C4C - 9 < ++DS:8C52) { DS:8C50--; DS:8C52--; } else { DS:8C50--; redraw }`
-                    if (_count - Rows < ++_first)
+                    if (_saveCount - Rows < ++_firstShownIndex)
                     {
-                        _cursor--;
-                        _first--;
+                        _cursorRow--;
+                        _firstShownIndex--;
                     }
                     else
                     {
-                        _cursor--;
+                        _cursorRow--;
                         DrawList();
                     }
                 }
@@ -312,8 +312,8 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             case Keys.End:
                 // orig: DS:8C52 = limit-to-range(0, 9999, DS:8C4C - 9); DS:8C50 = limit-to-range(0, DS:8C4C, 8);
                 // C: with fewer than nine games the cursor is put one past them; the list puts it back on the last row.
-                _first = Math.Clamp(_count - Rows, 0, 9999);
-                _cursor = Math.Clamp(8, 0, Math.Max(_count, 0));
+                _firstShownIndex = Math.Clamp(_saveCount - Rows, 0, 9999);
+                _cursorRow = Math.Clamp(8, 0, Math.Max(_saveCount, 0));
                 DrawList();
                 break;
         }
@@ -325,7 +325,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // C: the shield pictures are the party panel's (loaded on demand); root 0000:2652(0x35) is an empty function.
     private LoadedGame? Load(Func<string, LoadedGame?> load)
     {
-        if (_shown <= _cursor)
+        if (_rowsShown <= _cursorRow)
         {
             return null;
         }
@@ -335,7 +335,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x30, Label(0), LabelColor);
         ui.PresentPressedButton();
-        var loaded = load(_names[_cursor]);
+        var loaded = load(_names[_cursorRow]);
         if (loaded is null)
         {
             // a refused load (FixDamagedSavedGame): the screen as it was, without the pressed button
@@ -361,9 +361,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         ui.PresentPressedButton();
         if (new MessageBox(ui).Ask("Delete this Game?"))
         {
-            if (_names[_cursor] is { } name && folder.Delete(name, Playing))
+            if (_names[_cursorRow] is { } name && folder.Delete(name, Playing))
             {
-                _count--;
+                _saveCount--;
             }
             DrawList();
         }

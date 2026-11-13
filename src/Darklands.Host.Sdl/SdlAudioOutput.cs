@@ -12,9 +12,9 @@ namespace Darklands.Host.Sdl;
 /// </summary>
 internal sealed class SdlAudioOutput : IPcmOutput
 {
-    private const uint AudioS16Sys = 0x8010; // SDL_AUDIO_S16LE
-    private const uint AudioS32Sys = 0x8020; // SDL_AUDIO_S32LE
-    private const uint AudioF32Sys = 0x8120; // SDL_AUDIO_F32LE
+    private const uint AudioS16Le = 0x8010; // SDL_AUDIO_S16LE
+    private const uint AudioS32Le = 0x8020; // SDL_AUDIO_S32LE
+    private const uint AudioF32Le = 0x8120; // SDL_AUDIO_F32LE
 
     /// <summary>Frames per buffer asked for (SDL2's spec.samples): what the callback renders at a time and the queue's unit.</summary>
     private const int AskedFrames = 1024;
@@ -151,7 +151,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
         }
         // the device's buffer as SDL2's was asked for: 1024 frames
         SdlNative.SDL_SetHint(SdlNative.HintAudioDeviceSampleFrames, AskedFrames.ToString(System.Globalization.CultureInfo.InvariantCulture));
-        var desired = new SdlNative.SdlAudioSpec { Format = AudioS16Sys, Channels = 2, Freq = 44100 };
+        var desired = new SdlNative.SdlAudioSpec { Format = AudioS16Le, Channels = 2, Freq = 44100 };
         var known = SdlNative.SDL_GetAudioDeviceFormat(SdlNative.AudioDeviceDefaultPlayback, out var device, out var deviceFrames);
         if (native && known)
         {
@@ -159,7 +159,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
             desired = desired with
             {
                 Freq = device.Freq > 0 ? device.Freq : 44100,
-                Format = FormatName(device.Format) == "?" ? AudioS16Sys : device.Format,
+                Format = FormatName(device.Format) == "?" ? AudioS16Le : device.Format,
             };
         }
         SdlAudioOutput? output = null;
@@ -192,14 +192,14 @@ internal sealed class SdlAudioOutput : IPcmOutput
 
     private static string FormatName(uint format) => format switch
     {
-        AudioS16Sys => "signed 16-bit",
-        AudioS32Sys => "signed 32-bit",
-        AudioF32Sys => "32-bit float",
+        AudioS16Le => "signed 16-bit",
+        AudioS32Le => "signed 32-bit",
+        AudioF32Le => "32-bit float",
         _ => "?",
     };
 
     /// <summary>Bytes of one sample in the format written.</summary>
-    private int SampleBytes => _format is AudioS32Sys or AudioF32Sys ? 4 : 2;
+    private int SampleBytes => _format is AudioS32Le or AudioF32Le ? 4 : 2;
 
     public void Start(IPcmSource source)
     {
@@ -265,7 +265,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
     {
         switch (_format)
         {
-            case AudioF32Sys:
+            case AudioF32Le:
                 if (_floats.Length != samples.Length)
                 {
                     _floats = new float[samples.Length];
@@ -276,7 +276,7 @@ internal sealed class SdlAudioOutput : IPcmOutput
                 }
                 Marshal.Copy(_floats, 0, target, samples.Length);
                 break;
-            case AudioS32Sys:
+            case AudioS32Le:
                 if (_ints.Length != samples.Length)
                 {
                     _ints = new int[samples.Length];

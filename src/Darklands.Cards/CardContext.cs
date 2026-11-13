@@ -44,7 +44,7 @@ public sealed partial class CardVariables
 /// <summary>What a card script works with: the game, the screen, the world data and the rules.</summary>
 public sealed partial class CardContext(GameState state, WorldData world, ICardScreen screen)
 {
-    private readonly bool _rulesConnected = ConnectRules(state, world, screen);
+    private readonly bool _rulesConnected = ConnectRulesToCardScreen(state, world, screen);
 
     public GameState State => state;
 

@@ -176,20 +176,20 @@ public static class OriginalSaves
             PhilosophersStone = Word(h, PhilosophersStoneAt),
             LeaderIndex = (sbyte)h[LeaderAt],
         };
-        var used = new HashSet<int>();
-        var withoutRecord = new List<int>();
+        var readRecordIds = new HashSet<int>();
+        var slotsWithoutRecord = new List<int>();
         for (var slot = 0; slot < SaveFile.PartySlots; slot++)
         {
             var id = file.PartyIds[slot];
             Character member;
-            if (id >= 0 && id < state.Roster.Characters.Count && !used.Add(id))
+            if (id >= 0 && id < state.Roster.Characters.Count && !readRecordIds.Add(id))
             {
                 // A second slot naming an already read record stays empty (the reasons follow).
                 // C: a second slot naming a record already read: saved-game-read R037+0x8ED4 reads each record into the FIRST slot naming it
                 // C: (R037+0x96BE..0x96D3 searches the slots from 0), so this slot gets nothing and keeps the slot memory (status 0 after the
                 // C: load's clear, zeros after start-up); ids[] keep naming the record (CharacterRoster.KeepSecondSlot), and the writer
                 // C: R037+0x2ACE writes the record from the first slot again (R037+0x3520..0x3531): such a save stays as it was.
-                withoutRecord.Add(slot);
+                slotsWithoutRecord.Add(slot);
                 // C: the load screen then exits (code 99): R037+0x86DA..0x8754 loads pics\shield<letter>.pic for every slot whose id is not
                 //   -1, and this slot's letter byte (DS:9C6A + 0x80 x slot) is 0, so "pics\shield.pic" is missing (lockstep session
                 //   carry-dup-resave: program exit 99 at R037+0x84BA+0x29F); the slot is listed in SlotsWithoutRecord, and DarklandsGame.LoadSavedGame
@@ -274,7 +274,7 @@ public static class OriginalSaves
             Images = (byte[])file.Images.Clone(),
             Palettes = (byte[])file.Palettes.Clone(),
         };
-        return new LoadedGame(state, h[MusicAt] == 1, h[SoundAt] == 1, Text(h, CommentAt, CommentLength)) { SlotsWithoutRecord = withoutRecord };
+        return new LoadedGame(state, h[MusicAt] == 1, h[SoundAt] == 1, Text(h, CommentAt, CommentLength)) { SlotsWithoutRecord = slotsWithoutRecord };
     }
 
     /// <summary>
@@ -417,8 +417,8 @@ public static class OriginalSaves
             member.ImagePalette.AsSpan(0, Math.Min(member.ImagePalette.Length, SaveFile.PaletteSize))
                 .CopyTo(file.Palettes.AsSpan(slot * SaveFile.PaletteSize, SaveFile.PaletteSize));
         }
-        // C: `next`: the charactr.tmp record the writer's next read gets.
-        var next = 0;
+        // C: `nextStoredRecord`: the charactr.tmp record the writer's next read gets.
+        var nextStoredRecord = 0;
         for (var i = 0; i < state.Roster.Characters.Count; i++)
         {
             var slot = Array.IndexOf(state.Roster.PartySlots, i);
@@ -434,7 +434,7 @@ public static class OriginalSaves
                     continue;
                 }
                 file.Characters.Add(fighting ? PartyRecordInBattle(member, inBattle![slot]) : CharacterRecords.Write(member));
-                next++;
+                nextStoredRecord++;
             }
             else if (slot >= 0 && !state.Behaviour.FixSaveWriterSkipsEmptySlots)
             {
@@ -444,7 +444,7 @@ public static class OriginalSaves
             }
             else
             {
-                file.Characters.Add(CharacterRecords.Write(state.Roster.StoredRecord(next++)));
+                file.Characters.Add(CharacterRecords.Write(state.Roster.StoredRecord(nextStoredRecord++)));
             }
         }
         file.CharacterCount = state.Roster.Characters.Count;

@@ -29,8 +29,8 @@ public static class EnemyRecords
         }
         r[0x0C] = (byte)k.EndsBattleWhenKilled;
         r[0x0D] = k.Class;
-        PutText(r, 0x0E, 4, k.Image);
-        PutText(r, 0x12, 0x14, k.Name);
+        PutTextOverZeros(r, 0x0E, 4, k.Image);
+        PutTextOverZeros(r, 0x12, 0x14, k.Name);
         r[0x26] = (byte)k.Byte26;
         r[0x27] = (byte)k.Byte27;
         r[0x28] = (byte)k.WeaponType;
@@ -94,7 +94,7 @@ public static class EnemyRecords
     }
 
     // C: _fstrcpy copies up to the terminating zero; the bytes after it keep the default record's bytes (zeros).
-    private static void PutText(byte[] r, int at, int size, string text)
+    private static void PutTextOverZeros(byte[] r, int at, int size, string text)
     {
         var bytes = Encoding.Latin1.GetBytes(text);
         bytes.AsSpan(0, Math.Min(bytes.Length, size - 1)).CopyTo(r.AsSpan(at));

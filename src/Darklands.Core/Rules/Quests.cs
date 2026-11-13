@@ -16,7 +16,7 @@ public static class Quests
     public const int Dragon = 4;
     public const int Mine = 12;
 
-    private const int Fact = EventKinds.LocationFact;
+    private const int LocationFact = EventKinds.LocationFact;
 
     /// <summary>
     /// Resolves the quests with <paramref name="tag"/> at <paramref name="loc"/> (−1 = any;
@@ -109,7 +109,7 @@ public static class Quests
         log.Create(-2, lair, 0, 0x2B, 0, 2, 0, EventLog.Forever, 0, 0);
         foreach (var type in new[] { 1, 3, 4, 7, 6 })
         {
-            log.Create(-2, lair, 0, Fact, type, 0, 0, EventLog.OneYear, 0, Dragon);
+            log.Create(-2, lair, 0, LocationFact, type, 0, 0, EventLog.OneYear, 0, Dragon);
         }
         var n = 0;
         for (var i = Location.CityCount; i < s.Locations.Count; i++)
@@ -185,7 +185,7 @@ public static class Quests
         var day = FeastDayNearThisMonth(s);
         var until = GameDate.Create(s.Date.Year, 0, day, 0);
         PlanSabbat(s, day, s.Date.DaysUntil(until));
-        log.Create(-2, 0, 0x5F, Fact, 2, 0, 0, EventLog.Forever, 0, Sabbat);
+        log.Create(-2, 0, 0x5F, LocationFact, 2, 0, 0, EventLog.Forever, 0, Sabbat);
     }
 
     /// <summary>The fact that ends on the sabbat's day and starts it at a random sabbat site.</summary>
@@ -195,7 +195,7 @@ public static class Quests
     //   segment); here nothing is written. No sabbat is planned from then on (the quest still exists, so nothing starts it again): SabbatSite gives -1.
     private static void PlanSabbat(GameState s, int day, int days)
     {
-        var ev = s.Events.Create(-2, 0, 0x63, Fact, 4, day, (int)ExpiryHandler.SabbatBegins, days * 24,
+        var ev = s.Events.Create(-2, 0, 0x63, LocationFact, 4, day, (int)ExpiryHandler.SabbatBegins, days * 24,
             (int)EventFlags.CallExpiryHandler, Sabbat);
         // Arguments right to left: the y position is drawn first.
         var y = s.Random.Below(900);
@@ -217,7 +217,7 @@ public static class Quests
         var site = e.Data1;
         s.Locations[site].ArrivalCard = 0x13E;
         var log = s.Events;
-        var ending = log.Create(-2, 0, 0x63, Fact, 5, 0, (int)ExpiryHandler.SabbatEnds, 0x30, (int)EventFlags.CallExpiryHandler, Sabbat);
+        var ending = log.Create(-2, 0, 0x63, LocationFact, 5, 0, (int)ExpiryHandler.SabbatEnds, 0x30, (int)EventFlags.CallExpiryHandler, Sabbat);
         if (log[ending] is { } end)
         {
             end.Data1 = site;
@@ -309,7 +309,7 @@ public static class Quests
     //   the quest's end clears its facts); the start card and every sabbat's begin plan the next one. The card oracle's start states have no sabbat
     //   quest at all, so its $SabbatLocation reads locations[-1] (D-09b57b).
     public static int SabbatSite(GameState s) =>
-        s.Events[s.Events.Find(Fact, 4, -1, -1, Sabbat, -1)] is { } f ? f.Data1 : -1;
+        s.Events[s.Events.Find(LocationFact, 4, -1, -1, Sabbat, -1)] is { } f ? f.Data1 : -1;
 
     /// <summary>The planned sabbat's day of the month (<c>thunk 09C0:21A7</c>).</summary>
     // orig: R039+0x1CD2 (1462:1CD2) matched; day-of-month-from-year-day R029+0x5892 (1367:0982) matched
@@ -384,7 +384,7 @@ public static class Quests
         }
         foreach (var t in new[] { 2, 3, 4 })
         {
-            log.Create(-2, factLocation, 0, Fact, t, 0, 0, 9998, 0, 3);
+            log.Create(-2, factLocation, 0, LocationFact, t, 0, 0, 9998, 0, 3);
         }
         // C: no return statement: AX still holds the last event-create's result (checked against
         // the asm: nothing after the call touches AX), i.e. the 0x2B event's slot.
@@ -412,7 +412,7 @@ public static class Quests
             q.Data2 = 2;
             q.Data3 = item;
         }
-        log.Create(-2, s.CurrentLocation, 0x5F, Fact, 5, 0, 0, EventLog.Forever, 0, 7);
+        log.Create(-2, s.CurrentLocation, 0x5F, LocationFact, 5, 0, 0, EventLog.Forever, 0, 7);
     }
 
     /// <summary>

@@ -59,7 +59,7 @@ public sealed class FrameTicker
 
     public static double FrameSeconds => FramePeriod / PitClock;
 
-    private sbyte _skip = 7; // [7DAh]
+    private sbyte _framesUntilIdleFrame = 7; // [7DAh]
     private TimerTrack? _track;
     private int _trackFrame;
     private TimerTrack? _pending;
@@ -101,15 +101,15 @@ public sealed class FrameTicker
             if (_trackFrame >= _track.TicksPerFrame.Count)
             {
                 _track = null;
-                _skip = 7;
+                _framesUntilIdleFrame = 7;
             }
         }
         else
         {
-            _skip--;
-            if (_skip <= 0)
+            _framesUntilIdleFrame--;
+            if (_framesUntilIdleFrame <= 0)
             {
-                _skip = 7;
+                _framesUntilIdleFrame = 7;
                 ticks = 0;
             }
             else

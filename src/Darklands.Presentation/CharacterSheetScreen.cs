@@ -103,7 +103,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     /// <summary>The back page (the game's backdrop-window) the sheet restores rectangles from.</summary>
     private readonly Screen _backScreen = new();
 
-    private GameState _s = null!;
+    private GameState _state = null!;
     private int _who;
     private int _cursor;
     private bool _open;
@@ -125,7 +125,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
 
     private Canvas Screen => ui.Canvas;
 
-    private Character Member => _s.Party.Slot(_who);
+    private Character Member => _state.Party.Slot(_who);
 
     private Box Current => Boxes[_cursor];
 
@@ -145,7 +145,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     //   member box skips it
     public void Show(GameState state, int who)
     {
-        _s = state;
+        _state = state;
         _who = who;
         // orig: member-sheet-screen's guard: status 0 or 5 leaves at once
         if (Member.Status is CharacterStatus.Empty or CharacterStatus.Away)
@@ -299,7 +299,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             SaveAndLoad?.Invoke(1);
             return true;
         }
-        if (_s.Party.Slot(m).Status == CharacterStatus.Able)
+        if (_state.Party.Slot(m).Status == CharacterStatus.Able)
         {
             // orig: R031+0x0124: in a battle (DS:907A == 1) a member standing on floor 0x9D gets thunk 09C0:1D51(m) instead
             if (CannotView?.Invoke(m) == true)
@@ -324,7 +324,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 SaveAndLoad?.Invoke(1);
                 return true;
             }
-            if (_s.Party.Slot(m).Status == CharacterStatus.Able)
+            if (_state.Party.Slot(m).Status == CharacterStatus.Able)
             {
                 // orig: the battle branch (thunk 09C0:1D51) as for a click
                 if (CannotView?.Invoke(m) == true)
@@ -339,7 +339,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         if (key == Keys.Enter && _cursor is >= FirstMemberBox and <= FirstMemberBox + 4)
         {
             var m = _cursor - FirstMemberBox;
-            if (_s.Party.Slot(m).Status == CharacterStatus.Empty)
+            if (_state.Party.Slot(m).Status == CharacterStatus.Empty)
             {
                 // C: the original returns here without the clean-up of R031+0x08F6 (fonts and pointer stay as the sheet set them).
                 return true;
@@ -484,11 +484,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         if (key is >= CtrlF1 and <= CtrlF1 + 0x400 && (key & 0xFF) == 0)
         {
             var m = (key >> 8) - (CtrlF1 >> 8);
-            if (m >= (PartySize?.Invoke() ?? _s.Party.Members.Count) || _s.Party.Members[m].Status != CharacterStatus.Able)
+            if (m >= (PartySize?.Invoke() ?? _state.Party.Members.Count) || _state.Party.Members[m].Status != CharacterStatus.Able)
             {
                 return;
             }
-            _s.Party.LeaderIndex = m;
+            _state.Party.LeaderIndex = m;
             DrawPanel();
             // C: the case falls through into the 1..5 "give" case with key = the new leader's number,
             // so with the pack open the item goes to member (m & 7) − 1 (Ctrl-F2 gives to member 0).
@@ -509,11 +509,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 }
                 if (ui.ShiftHeld)
                 {
-                    Inventory.RemoveStackAt(_s, _who, Index);
+                    Inventory.RemoveStackAt(_state, _who, Index);
                 }
                 else
                 {
-                    Inventory.TakeAt(_s, _who, Index);
+                    Inventory.TakeAt(_state, _who, Index);
                 }
                 RedrawBodyUnderPanel();
                 DrawListPanel(PackBox);
@@ -526,23 +526,23 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 if (Keys.IsLetter(key, 'a'))
                 {
                     // orig: R031+0x5A02 (18E7:11B2) via PackRules.Equip
-                    PackRules.Equip(_s, _who, Index);
+                    PackRules.Equip(_state, _who, Index);
                 }
                 else
                 {
                     // orig: R031+0x5B38 (18E7:12E8) via Inventory.Unequip
-                    Inventory.Unequip(_s, _who, Index);
+                    Inventory.Unequip(_state, _who, Index);
                 }
                 AfterEquipping();
                 return;
             case 'p' when _cursor == PackBox && _open:
                 // C: R031+0x1B2C: as for A and U no test of the pack's count: a line past the end drinks the entry left there (the count of the
                 // pack, a signed char, goes down all the same: item-erase; -1 from an empty pack), and the list count DS:E7A4 follows it signed.
-                if (!PotionEffects.CanDrink(_s, Member.Pack[Index].Code))
+                if (!PotionEffects.CanDrink(_state, Member.Pack[Index].Code))
                 {
                     return;
                 }
-                PotionEffects.DrinkFromPack(_s, _who, Index);
+                PotionEffects.DrinkFromPack(_state, _who, Index);
                 if (Member.Pack.Stacks < _listCount)
                 {
                     if (_top[PackBox, _who] != 0)
@@ -606,7 +606,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             {
                 return;
             }
-            var target = _s.Party.Slot(to);
+            var target = _state.Party.Slot(to);
             if (target.Status is CharacterStatus.Empty or CharacterStatus.Away || Index >= Member.Pack.Count)
             {
                 return;
@@ -614,12 +614,12 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             if (ui.ShiftHeld)
             {
                 // orig: R031+0x48CC (hand-over-stack) R031+0x48CC (18E7:007C) via PackRules.GiveStack
-                PackRules.GiveStack(_s, _who, (key & 0xF) - 1, Index);
+                PackRules.GiveStack(_state, _who, (key & 0xF) - 1, Index);
             }
             else
             {
                 // orig: R031+0x4850 (hand-over-one) R031+0x4850 (18E7:0000) via PackRules.GiveOne
-                PackRules.GiveOne(_s, _who, (key & 0xF) - 1, Index);
+                PackRules.GiveOne(_state, _who, (key & 0xF) - 1, Index);
             }
             RedrawBodyUnderPanel();
             _underPanel = Screen.Save(Current.PanelX - 1, Current.PanelY, Current.PanelW + 3, Current.PanelH + 0x11);
@@ -669,7 +669,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     if (Member.Pack.Count > to)
                     {
                         // orig: R031+0x5922 (item-relocate) R031+0x5922 (18E7:10D2) via PackRules.Move
-                        PackRules.Move(_s, _who, _top[k, _who] + (y - b.PanelY - k) / 8, _top[k, _who] + to);
+                        PackRules.Move(_state, _who, _top[k, _who] + (y - b.PanelY - k) / 8, _top[k, _who] + to);
                         DrawListPanel(k);
                     }
                 }
@@ -678,7 +678,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     if (k == FormulaeBox)
                     {
                         // orig: alchemy-screen-overlay-entry → R033+0x16FA (alchemy-screen-body), formula from R031+0x42AC
-                        alchemy.ShowFormula(_s, _who, NthFormula(index));
+                        alchemy.ShowFormula(_state, _who, NthFormula(index));
                     }
                     else
                     {
@@ -694,21 +694,21 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 // C: any list may be dropped on the equipment box: from Formulae or Saints the line number readies that pack stack.
                 if (index < Member.Pack.Count)
                 {
-                    PackRules.Equip(_s, _who, index);
+                    PackRules.Equip(_state, _who, index);
                 }
                 AfterEquipping();
             }
         }
-        else if (_s.Party.Slot(my / PartyPanel.RowHeight).Status is not (CharacterStatus.Empty or CharacterStatus.Away) && b.HoldsItems)
+        else if (_state.Party.Slot(my / PartyPanel.RowHeight).Status is not (CharacterStatus.Empty or CharacterStatus.Away) && b.HoldsItems)
         {
             var to = my / PartyPanel.RowHeight;
             if (shift)
             {
-                PackRules.GiveStack(_s, _who, to, index);
+                PackRules.GiveStack(_state, _who, to, index);
             }
             else
             {
-                PackRules.GiveOne(_s, _who, to, index);
+                PackRules.GiveOne(_state, _who, to, index);
             }
             // DORMANT: the original also redraws for a drag from the equipment box (k == 6), which is no list and never gets here.
             if (k == PackBox)
@@ -801,7 +801,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             if (k == NameBox && _cursor == k)
             {
-                _s.Party.LeaderIndex = _who;
+                _state.Party.LeaderIndex = _who;
                 DrawPanel();
                 Screen.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
                 DrawBoxText(NameBox);
@@ -909,7 +909,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private void DrawPanel()
     {
         Screen.CopyFrom(BackPage, 0, 0, PartyPanel.Width, Canvas.Height);
-        panel.Draw(Screen, _s.Party);
+        panel.Draw(Screen, _state.Party);
         Screen.Outline(0, _who * PartyPanel.RowHeight, 59, _who == 4 ? 39 : 40, MemberFrameColor);
     }
 
@@ -1012,7 +1012,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             case 0:
                 c.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
                 t.Draw(c, b.X + 5, 3, m.Name, TextColor);
-                t.Draw(c, b.X + 0x82, b.Y + 3, _s.Party.LeaderIndex == _who ? "Leader" : "Not Leader", TextColor);
+                t.Draw(c, b.X + 0x82, b.Y + 3, _state.Party.LeaderIndex == _who ? "Leader" : "Not Leader", TextColor);
                 break;
             case 1:
                 t.Draw(c, b.X + 5, b.Y + 3, "Age", TextColor);
@@ -1022,7 +1022,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             case 2:
                 c.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
                 string[] loads = ["Light Load", "Normal Load", "Heavy Load", "Overloaded"];
-                t.Draw(c, b.X + 0x0C, b.Y + 4, loads[MemberRules.EncumbranceBand(_s, _who)], TextColor);
+                t.Draw(c, b.X + 0x0C, b.Y + 4, loads[MemberRules.EncumbranceBand(_state, _who)], TextColor);
                 // C: the load is a signed byte (record +0x35) and the limit Str + End in int.
                 t.Draw(c, b.X + 0x48, b.Y + 4, $"{(sbyte)m.Encumbrance:00}/{m[Attribute.Strength] + m[Attribute.Endurance]:00}", TextColor);
                 break;
@@ -1046,8 +1046,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 string[] none = ["No Weapon", "No V:Armor", "No L:Armor", "No Shield", "No Msl Wpn"];
                 for (var slot = 0; slot < 5; slot++)
                 {
-                    var code = Inventory.EquippedType(_s, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_s, _who, (EquipmentSlot)slot) : -1;
-                    t.Draw(c, b.X + 4, 0x58 + slot * 10, code != -1 ? _s.Item(code).ShortName : none[slot], TextColor);
+                    var code = Inventory.EquippedType(_state, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_state, _who, (EquipmentSlot)slot) : -1;
+                    t.Draw(c, b.X + 4, 0x58 + slot * 10, code != -1 ? _state.Item(code).ShortName : none[slot], TextColor);
                 }
                 DrawBoxText(2);
                 break;
@@ -1098,18 +1098,18 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 for (var slot = 0; slot < 5; slot++)
                 {
                     // C: the original indexes the item list with slot-item's result, −1 included, when the type is set but no stack matches.
-                    var code = Inventory.EquippedType(_s, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_s, _who, (EquipmentSlot)slot) : -1;
+                    var code = Inventory.EquippedType(_state, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_state, _who, (EquipmentSlot)slot) : -1;
                     if (code != -1)
                     {
-                        t.Draw(c, x + 4, 0x58 + slot * 10, _s.Item(code).Name, TextColor);
+                        t.Draw(c, x + 4, 0x58 + slot * 10, _state.Item(code).Name, TextColor);
                     }
                     else
                     {
                         t.Draw(c, x + 5, 0x58 + slot * 10, none[slot], TextColor);
                     }
                 }
-                if (_s.Events.OwnedBy(EventKinds.SkillBoost, _who) || _s.Events.OwnedBy(EventKinds.AttributeBoost, _who)
-                    || _s.Events.OwnedBy(EventKinds.PotionBonus, _who))
+                if (_state.Events.OwnedBy(EventKinds.SkillBoost, _who) || _state.Events.OwnedBy(EventKinds.AttributeBoost, _who)
+                    || _state.Events.OwnedBy(EventKinds.PotionBonus, _who))
                 {
                     t.Draw(c, x + 5, 0x8A, "Enhc/Bless", TextColor);
                 }
@@ -1133,7 +1133,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     if (_top[k, _who] + j < m.Pack.Count)
                     {
                         var st = m.Pack[_top[k, _who] + j];
-                        t.Draw(c, x + 9, j * 8 + y + 9, $"{_s.Item(st.Code & 0xFFF).Name} {st.Quality:00}q ({st.Count})", ListColor);
+                        t.Draw(c, x + 9, j * 8 + y + 9, $"{_state.Item(st.Code & 0xFFF).Name} {st.Quality:00}q ({st.Count})", ListColor);
                     }
                 }
                 HighlightLine(k);

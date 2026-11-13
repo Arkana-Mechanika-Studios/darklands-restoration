@@ -71,12 +71,12 @@ public static class CreationDataDecoder
             data.StringTable(Segment, 0x28CB, 0x10));
         var texts = data.StringTable(Segment, 0x1DDF, 0x41);
         var palettes = Enumerable.Range(0, 5).Select(i => data.Bytes(0x20A5, 0x33FC + 24 * i, 24).ToArray()).ToList();
-        return new CreationData(new CreationTables(backgrounds, occupations, aging, names) { EntryAt = k => EntryAnywhere(data, k) },
+        return new CreationData(new CreationTables(backgrounds, occupations, aging, names) { EntryAt = k => EntryByWrappedIndex(data, k) },
             texts, palettes);
     }
 
     /// <summary>The entry at 2CC1 + k × 0x3A as a 16-bit offset in the segment (the C index wraps); zeros where the image ends.</summary>
-    private static Occupation EntryAnywhere(ProgramData data, int k)
+    private static Occupation EntryByWrappedIndex(ProgramData data, int k)
     {
         var at = (0x2CC1 + k * EntrySize) & 0xFFFF;
         try

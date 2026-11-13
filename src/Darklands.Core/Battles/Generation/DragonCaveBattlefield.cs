@@ -48,12 +48,12 @@ public static class DragonCaveBattlefield
         level.ExitCards = new LevelExitCards(-2, -2, -2, -2, -2);
         // C: _fstrcpy(name, "") writes only the terminating zero.
         level.Image[0x33C8] = 0;
-        for (var row = 0; row < BattlefieldLevel.Size; row++)
+        for (var x = 0; x < BattlefieldLevel.Size; x++)
         {
-            for (var col = 0; col < BattlefieldLevel.Size; col++)
+            for (var y = 0; y < BattlefieldLevel.Size; y++)
             {
-                level[row, col] = BattlefieldCell.Void;
-                level.SetFloorByte(row, col, 0);
+                level[x, y] = BattlefieldCell.Void;
+                level.SetFloorByte(x, y, 0);
             }
         }
     }

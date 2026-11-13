@@ -100,19 +100,19 @@ public sealed class TemplarWritingDesk : Card
     private static void LearnAFormula(CardContext c, Character scholar)
     {
         var first = c.Random(FormulaCount);
-        var n = first;
-        while (GroupHasAFormula(scholar, n / 3))
+        var candidate = first;
+        while (GroupHasAFormula(scholar, candidate / 3))
         {
-            if (++n >= FormulaCount)
+            if (++candidate >= FormulaCount)
             {
-                n = 0;
+                candidate = 0;
             }
-            if (n == first)
+            if (candidate == first)
             {
                 break;
             }
         }
-        scholar.Formulas.Add(n);
+        scholar.Formulas.Add(candidate);
     }
 
     private static bool GroupHasAFormula(Character scholar, int group) =>

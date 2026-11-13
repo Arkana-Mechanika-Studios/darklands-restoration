@@ -38,10 +38,10 @@ internal sealed class GameTimer(FrameTicker ticker)
     // C: ([7EAh] + [7EAh] >> 4) / 0F89h with unsigned 16-bit division: 4280h gives 4.
     public static readonly int FastMultiplier = (FramePeriod + (FramePeriod >> 4)) / 0x0F89;
 
-    private int _multiplier = 1;      // [7E6h]: interrupts per frame
-    private int _countdown = 1;       // [7EEh]
-    private int _period = FramePeriod; // [7E4h] / [7E2h]: the timer's divisor in effect
-    private int _pendingPeriod = FramePeriod;
+    private int _interruptsPerFrame = 1;      // [7E6h]: interrupts per frame
+    private int _interruptsLeftInFrame = 1;       // [7EEh]
+    private int _timerDivisor = FramePeriod; // [7E4h] / [7E2h]: the timer's divisor in effect
+    private int _pendingDivisor = FramePeriod;
 
     /// <summary>The frames and ticks (shared with the presentation through <see cref="IGameTimer"/>).</summary>
     public FrameTicker Ticker { get; } = ticker;
@@ -53,10 +53,10 @@ internal sealed class GameTimer(FrameTicker ticker)
     public Action<long>? Ticked { get; set; }
 
     /// <summary>Seconds until the next timer interrupt.</summary>
-    public double InterruptInterval => _period / PitClock;
+    public double InterruptInterval => _timerDivisor / PitClock;
 
     /// <summary>True while the driver has the timer running fast.</summary>
-    public bool Fast => _multiplier != 1;
+    public bool Fast => _interruptsPerFrame != 1;
 
     /// <summary>One timer interrupt.</summary>
     // orig: (interrupt handler) root 047C:01EA asm - dec [7EEh]; at zero reload it from
@@ -66,13 +66,13 @@ internal sealed class GameTimer(FrameTicker ticker)
     //   to it every 70 frames (047C:026A..0284); here the timer is exact and never drifts.
     public void Interrupt(ITimerClient driver)
     {
-        if (--_countdown == 0)
+        if (--_interruptsLeftInFrame == 0)
         {
-            _countdown = _multiplier;
-            _period = _pendingPeriod;
+            _interruptsLeftInFrame = _interruptsPerFrame;
+            _timerDivisor = _pendingDivisor;
             Frame(driver);
         }
-        if (_multiplier != 1)
+        if (_interruptsPerFrame != 1)
         {
             driver.FastTick();
         }
@@ -93,14 +93,14 @@ internal sealed class GameTimer(FrameTicker ticker)
             if (request < 0)
             {
                 // orig: root 047C:00D7 - back to one interrupt per frame
-                _multiplier = 1;
-                _pendingPeriod = FramePeriod;
+                _interruptsPerFrame = 1;
+                _pendingDivisor = FramePeriod;
             }
             else if (request > 0)
             {
                 // orig: root 047C:00C4 - [7E6h] = [7E8h], divisor [7EAh] / [7E8h]
-                _multiplier = FastMultiplier;
-                _pendingPeriod = FramePeriod / FastMultiplier; // C: unsigned 16-bit division, remainder dropped
+                _interruptsPerFrame = FastMultiplier;
+                _pendingDivisor = FramePeriod / FastMultiplier; // C: unsigned 16-bit division, remainder dropped
             }
             Ticked?.Invoke(tick);
         }

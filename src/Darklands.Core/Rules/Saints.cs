@@ -77,13 +77,13 @@ public static class Saints
     //   record +0x60. All 136 functions pass their own t5/t4/t2 and a bonus of 0 (the bonus param-plus-10 is always 0).
     public static int Chance(GameState s, int who, int saint, int favor)
     {
-        var t = SaintTable.Of(saint);
+        var info = SaintTable.Of(saint);
         if (saint == SaintTable.NeedsAWoman && PartyQueries.AbleWomen(s) == 0)
         {
             return 0;
         }
         var virtue = s.Party.Slot(who)[Skill.Virtue];
-        return t.MinVirtue <= virtue && t.MinFavor <= favor ? (virtue - t.MinVirtue) / 2 - t.MinFavor + t.BaseChance + favor : 0;
+        return info.MinVirtue <= virtue && info.MinFavor <= favor ? (virtue - info.MinVirtue) / 2 - info.MinFavor + info.BaseChance + favor : 0;
     }
 
     /// <summary>The chance when the least favor is spent; 0 if the member's Divine Favor is lower (<c>saint-odds-low</c>).</summary>

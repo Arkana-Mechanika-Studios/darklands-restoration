@@ -184,14 +184,14 @@ public sealed class CharacterGeneratorScreen
 
     private const int Minus = 0x0C2D;
 
-    /// <summary>Clicking an attribute or skill row selects it; clicking the selected row is <paramref name="act"/> ('+' for the left button).</summary>
-    private int SelectRow(int row, int x, int width, int act = Plus)
+    /// <summary>Clicking an attribute or skill row selects it; clicking the selected row is <paramref name="actionKey"/> ('+' for the left button).</summary>
+    private int SelectRow(int row, int x, int width, int actionKey = Plus)
     {
-        var plus = _creation.Cursor == row ? act : Keys.None;
+        var keyGiven = _creation.Cursor == row ? actionKey : Keys.None;
         Screen.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Selected, Shadow);
         _creation.SelectRow(row);
         Screen.Recolor(x, row * 8 + 0x14, width, 8, Shadow, Selected);
-        return plus;
+        return keyGiven;
     }
 
     /// <summary>The mouse over the list highlights the row (and describes it in the lists).</summary>

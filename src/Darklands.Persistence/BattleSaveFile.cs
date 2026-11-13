@@ -111,11 +111,11 @@ public sealed class BattleSaveFile
         // C: a raw size of -1 or 0 removes the file; otherwise it is written back with the raw size the header gives.
         if (file.HeaderWords[TerrainSize] is not (0 or 0xFFFF))
         {
-            file.File1164 = Sized(Block(data, ref at, file.HeaderWords[TerrainPacked], "terrf", "terrnf"), file.HeaderWords[TerrainSize]);
+            file.File1164 = ResizedTo(Block(data, ref at, file.HeaderWords[TerrainPacked], "terrf", "terrnf"), file.HeaderWords[TerrainSize]);
         }
         if (file.HeaderWords[LootSize] is not (0 or 0xFFFF))
         {
-            file.File1162 = Sized(Block(data, ref at, file.HeaderWords[LootPacked], "cf", "cache"), file.HeaderWords[LootSize]);
+            file.File1162 = ResizedTo(Block(data, ref at, file.HeaderWords[LootPacked], "cf", "cache"), file.HeaderWords[LootSize]);
         }
         return file;
     }
@@ -200,7 +200,7 @@ public sealed class BattleSaveFile
     }
 
     // C: DS:D90F / DS:D919 the block (the reader hands out at most what is left), DS:D917 counts what the writer took.
-    private static ushort Pack(Implode compressor, byte[] data, int dictionary, List<byte> output)
+    private static ushort Pack(Implode compressor, byte[] data, int dictionarySize, List<byte> output)
     {
         var read = 0;
         var written = 0;
@@ -219,7 +219,7 @@ public sealed class BattleSaveFile
                 output.AddRange(buffer.AsSpan(at, size));
                 written += size;
             },
-            0, dictionary);
+            0, dictionarySize);
         return (ushort)written;
     }
 
@@ -235,7 +235,7 @@ public sealed class BattleSaveFile
         return bytes;
     }
 
-    private static byte[] Sized(byte[] data, int size) => data.Length == size ? data : data.AsSpan(0, Math.Min(size, data.Length)).ToArray().Concat(new byte[Math.Max(0, size - data.Length)]).ToArray();
+    private static byte[] ResizedTo(byte[] data, int size) => data.Length == size ? data : data.AsSpan(0, Math.Min(size, data.Length)).ToArray().Concat(new byte[Math.Max(0, size - data.Length)]).ToArray();
 }
 
 /// <summary>One level of the battlefield a battle file remembers (level%d.flr, .atv, .enm).</summary>

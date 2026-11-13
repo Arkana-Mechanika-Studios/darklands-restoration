@@ -513,9 +513,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     private readonly TextFont _font = TextFont.FromEnvironment(SettingsTextFont ?? LocalPaths.Get("textfont", "DARKLANDS_TEXT_FONT"));
     private Screen? _last;
     private TextScreen? _lastText;
-    private int _idleFrames;
-    private bool _held;
-    private long _now;
+    private int _framesToWait;
+    private bool _buttonHeldByScript;
+    private long _clockMs;
 
     public int ShotsTaken { get; private set; }
 
@@ -547,21 +547,21 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     public bool CtrlHeld { get; private set; }
 
     public void MovePointer(int x, int y) => Mouse = Mouse with { X = x, Y = y };
-    public long Milliseconds => _now;
+    public long Milliseconds => _clockMs;
 
     public void Present(Screen screen)
     {
         _last = screen;
         _lastText = null;
-        if (_record > 0)
+        if (_framesToRecord > 0)
         {
-            _record--;
-            _recorded++;
-            Shot($"rec{_recorded:D5}");
+            _framesToRecord--;
+            _recordedCount++;
+            Shot($"rec{_recordedCount:D5}");
         }
         if (_tailSize > 0)
         {
-            _tail.Enqueue((_now, (byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone()));
+            _tail.Enqueue((_clockMs, (byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone()));
             while (_tail.Count > _tailSize)
             {
                 _tail.Dequeue();
@@ -588,10 +588,10 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         _tail.Clear();
     }
 
-    private int _record, _recorded;
+    private int _framesToRecord, _recordedCount;
 
     /// <summary>The rec step: saves the next n frames presented.</summary>
-    public void Record(int frames) => _record = frames;
+    public void Record(int frames) => _framesToRecord = frames;
 
     public void PresentText(TextScreen screen)
     {
@@ -604,7 +604,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     {
         if (_lastText is not null)
         {
-            PngWriter.Write(_lastText, _font, _now, Path.Combine(output, name + ".png"));
+            PngWriter.Write(_lastText, _font, _clockMs, Path.Combine(output, name + ".png"));
             ShotsTaken++;
         }
         else if (_last is not null)
@@ -628,8 +628,8 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 
     public void Sleep(int milliseconds)
     {
-        _now += Math.Max(1, milliseconds);
-        Advanced?.Invoke(_now);
+        _clockMs += Math.Max(1, milliseconds);
+        Advanced?.Invoke(_clockMs);
     }
 
     public bool TryReadKey(out int key)
@@ -644,7 +644,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             _breakKey = Keys.None;
             _keys.Clear();
             _breakArmed = true;
-            Console.WriteLine($"kbreak after the key at {_now} ms");
+            Console.WriteLine($"kbreak after the key at {_clockMs} ms");
         }
         return true;
     }
@@ -721,33 +721,33 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 
     public void Pump()
     {
-        _now += 16;
-        Advanced?.Invoke(_now);
+        _clockMs += 16;
+        Advanced?.Invoke(_clockMs);
         if (_tickClickUntil >= 0)
         {
-            if (_now < _tickClickUntil)
+            if (_clockMs < _tickClickUntil)
             {
                 return;
             }
             _tickClickUntil = -1;
             Mouse = Mouse with { Buttons = MouseButtons.None };
-            Console.WriteLine($"tclick let go at {_now} ms");
-            _idleFrames = 2;
+            Console.WriteLine($"tclick let go at {_clockMs} ms");
+            _framesToWait = 2;
             return;
         }
         if (_tickClick is { } click)
         {
-            if (_now < _tickClickAt)
+            if (_clockMs < _tickClickAt)
             {
                 return;
             }
             Mouse = new MouseState(click.X, click.Y, MouseButtons.Left);
-            _tickClickUntil = _now + Math.Max(1, click.Hold);
+            _tickClickUntil = _clockMs + Math.Max(1, click.Hold);
             _tickClick = null;
-            Console.WriteLine($"tclick {click.X},{click.Y} at {_now} ms");
+            Console.WriteLine($"tclick {click.X},{click.Y} at {_clockMs} ms");
             return;
         }
-        if (Mouse.Buttons != MouseButtons.None && !_held && _mapHold == 0)
+        if (Mouse.Buttons != MouseButtons.None && !_buttonHeldByScript && _mapHold == 0)
         {
             // a click stays down over two pumps (a screen may present twice a frame before it polls)
             if (++_clickPumps < 2 || _onMap && Mouse.Buttons == MouseButtons.Left && Mouse.X > 60 && Mouse.Y >= 16 && !_clickRead && _clickPumps < 6)
@@ -761,7 +761,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         }
         if (_tickKeys is not null)
         {
-            if (_now < _tickKeysAt)
+            if (_clockMs < _tickKeysAt)
             {
                 return;
             }
@@ -769,15 +769,15 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             {
                 _keys.Enqueue(key);
             }
-            Console.WriteLine($"tkey {_tickKeys.Length} key(s) at {_now} ms");
+            Console.WriteLine($"tkey {_tickKeys.Length} key(s) at {_clockMs} ms");
             _tickKeys = null;
             // a tkey, tclick or kbreak right after it counts its ticks from these keys (the original's from the read that takes them)
-            _idleFrames = NextCountsTicks() ? 0 : 2;
+            _framesToWait = NextCountsTicks() ? 0 : 2;
             return;
         }
         if (_breakStep is not null)
         {
-            if (_now < _breakAt)
+            if (_clockMs < _breakAt)
             {
                 return;
             }
@@ -785,21 +785,21 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             {
                 _breakKey = KeyFor(_breakStep);
                 _keys.Enqueue(_breakKey);
-                Console.WriteLine($"kbreak {_breakStep} pressed at {_now} ms");
+                Console.WriteLine($"kbreak {_breakStep} pressed at {_clockMs} ms");
             }
             else
             {
                 _keys.Clear();
                 _breakArmed = true;
-                Console.WriteLine($"kbreak at {_now} ms");
+                Console.WriteLine($"kbreak at {_clockMs} ms");
             }
             _breakStep = null;
-            _idleFrames = NextCountsTicks() ? 0 : 2;
+            _framesToWait = NextCountsTicks() ? 0 : 2;
             return;
         }
-        if (_idleFrames > 0)
+        if (_framesToWait > 0)
         {
-            _idleFrames--;
+            _framesToWait--;
             return;
         }
         if (_stillTarget > 0)
@@ -823,25 +823,25 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 // the battle takes it in this pass: the count of still: starts again (orig_side.py: a key ends the battle's pause)
                 _stillPasses = 0;
                 // a tkey or tclick after it counts its ticks from this key (the original's from the read that takes it): taken at the next pump
-                _idleFrames = NextCountsTicks() ? 0 : 2;
+                _framesToWait = NextCountsTicks() ? 0 : 2;
                 break;
             case "click":
                 var (x, y) = Point(value);
                 Mouse = new MouseState(x, y, MouseButtons.Left);
                 _clickRead = false;
-                _idleFrames = 2;
+                _framesToWait = 2;
                 break;
             case "mapclick":
                 var at = value.Split(',');
                 Mouse = new MouseState(int.Parse(at[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(at[1], System.Globalization.CultureInfo.InvariantCulture), MouseButtons.Left);
                 _mapHold = int.Parse(at[2], System.Globalization.CultureInfo.InvariantCulture);
-                _idleFrames = 2;
+                _framesToWait = 2;
                 break;
             case "rclick":
                 // the right button pressed for two pumps as click does the left (tools/oracle/orig_side.py: the driver's right-button bit)
                 var (rx, ry) = Point(value);
                 Mouse = new MouseState(rx, ry, MouseButtons.Right);
-                _idleFrames = 2;
+                _framesToWait = 2;
                 break;
             case "move":
                 var (mx, my) = Point(value);
@@ -851,15 +851,15 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             case "ldown":
                 // a button held down (the menu bar with the right one, the hover cursor with the left) until rup/lup
                 var (hx, hy) = Point(value);
-                _held = true;
+                _buttonHeldByScript = true;
                 Mouse = new MouseState(hx, hy, kind == "rdown" ? MouseButtons.Right : MouseButtons.Left);
-                _idleFrames = 2;
+                _framesToWait = 2;
                 break;
             case "rup":
             case "lup":
-                _held = false;
+                _buttonHeldByScript = false;
                 Mouse = Mouse with { Buttons = MouseButtons.None };
-                _idleFrames = 2;
+                _framesToWait = 2;
                 break;
             case "shift":
                 ShiftHeld = value == "on";
@@ -869,17 +869,17 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "tkey":
                 var (ticks, names) = (value.Split(':', 2)[0], value.Split(':', 2)[1]);
-                _tickKeysAt = _now + (long)Math.Round(int.Parse(ticks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
+                _tickKeysAt = _clockMs + (long)Math.Round(int.Parse(ticks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
                 _tickKeys = names.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(KeyFor).ToArray();
                 break;
             case "kbreak":
                 var (breakTicks, breakKey) = (value.Split(':', 2)[0], value.Contains(':') ? value.Split(':', 2)[1] : "");
-                _breakAt = _now + (long)Math.Round(int.Parse(breakTicks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
+                _breakAt = _clockMs + (long)Math.Round(int.Parse(breakTicks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
                 _breakStep = breakKey;
                 break;
             case "tclick":
                 var (clickTicks, clickAt) = (value.Split(':', 2)[0], value.Split(':', 2)[1].Split(','));
-                _tickClickAt = _now + (long)Math.Round(int.Parse(clickTicks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
+                _tickClickAt = _clockMs + (long)Math.Round(int.Parse(clickTicks, System.Globalization.CultureInfo.InvariantCulture) * 1000.0 / 60);
                 _tickClick = (int.Parse(clickAt[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(clickAt[1], System.Globalization.CultureInfo.InvariantCulture),
                     clickAt.Length > 2 ? int.Parse(clickAt[2], System.Globalization.CultureInfo.InvariantCulture) : 300);
                 break;
@@ -889,7 +889,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 _transitions.Enqueue((Convert.ToInt32(value, 16), kind == "kup"));
                 break;
             case "wait":
-                _idleFrames = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                _framesToWait = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                 break;
             case "still":
                 _stillTarget = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
@@ -897,7 +897,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "untilover":
                 // the battle runs on until it ends (the screen returns)
-                _idleFrames = int.MaxValue;
+                _framesToWait = int.MaxValue;
                 break;
             case "shot":
                 Shot(value);

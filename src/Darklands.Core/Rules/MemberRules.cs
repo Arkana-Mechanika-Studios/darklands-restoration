@@ -486,11 +486,11 @@ public static class MemberRules
     {
         const int strength = (int)Characters.Attribute.Strength;
         const int endurance = (int)Characters.Attribute.Endurance;
-        var lost = s.Random.Below(multiplier * Attribute(s, who, strength) / 40 + 1) - 1;
-        lost = Math.Min(Math.Max(lost, minStrength), AttributeMaximum(s, who, strength));
-        AddAttribute(s, who, strength, -lost);
-        var tired = s.Random.Below(multiplier * Attribute(s, who, endurance) / 20 + 1) - 1;
-        tired = Math.Min(Math.Max(Math.Max(tired, lost), minEndurance), AttributeMaximum(s, who, endurance));
-        AddAttribute(s, who, endurance, -tired);
+        var strengthLoss = s.Random.Below(multiplier * Attribute(s, who, strength) / 40 + 1) - 1;
+        strengthLoss = Math.Min(Math.Max(strengthLoss, minStrength), AttributeMaximum(s, who, strength));
+        AddAttribute(s, who, strength, -strengthLoss);
+        var enduranceLoss = s.Random.Below(multiplier * Attribute(s, who, endurance) / 20 + 1) - 1;
+        enduranceLoss = Math.Min(Math.Max(Math.Max(enduranceLoss, strengthLoss), minEndurance), AttributeMaximum(s, who, endurance));
+        AddAttribute(s, who, endurance, -enduranceLoss);
     }
 }

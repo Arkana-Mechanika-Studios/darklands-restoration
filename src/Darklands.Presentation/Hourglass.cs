@@ -24,7 +24,7 @@ internal static class Hourglass
         }
         ScreenDrawing.WaitForRelease(ui);
         var canvas = ui.ShownCanvas;
-        var (band, day, month) = (date.Hour / 3, (int)date.Day, (int)date.Month);
+        var (threeHourPeriod, day, month) = (date.Hour / 3, (int)date.Day, (int)date.Month);
         canvas.Recolor(DialX, DialY, DialWidth, DialHeight, 0, 5);
         var saved = canvas.Save(DialX, DialY, DialWidth, DialHeight);
         if (ui.Assets.PictureExists("timer01"))
@@ -33,7 +33,7 @@ internal static class Hourglass
         }
         for (var i = 0; i < steps; i++)
         {
-            if (band >= 8)
+            if (threeHourPeriod >= 8)
             {
                 if (++day > Core.Time.GameDate.DaysInMonth(month))
                 {
@@ -43,17 +43,17 @@ internal static class Hourglass
                         month = 0;
                     }
                 }
-                band -= 8;
+                threeHourPeriod -= 8;
             }
             // orig: R043+0x3576 key-waiting-test (a look), R043+0x3582 DS:6EF0 & 1
             if (!ui.KeyWaiting && !ui.Mouse.Left)
             {
-                DrawHourglass(ui, canvas, band % 8, day, month);
+                DrawHourglass(ui, canvas, threeHourPeriod % 8, day, month);
                 Delay(ui, 400);
             }
-            band++;
+            threeHourPeriod++;
         }
-        DrawHourglass(ui, canvas, band % 8, day, month);
+        DrawHourglass(ui, canvas, threeHourPeriod % 8, day, month);
         if (!ui.KeyWaiting && !ui.Mouse.Left)
         {
             Delay(ui, 1000);
@@ -98,7 +98,7 @@ internal static class Hourglass
     private static void DrawHourglass(GameUi ui, Canvas canvas, int frame, int day, int month)
     {
         // C: R043+0x37D0..0x37D3 (150B:2D40..2D43): cmp ax, 7 / ja leaves at once for a frame above 7 as an unsigned word, so no picture is drawn for a
-        // C: negative one (the clock of an edited saved game: hour -3 gives band -1, and -1 % 8 stays -1); the texts under it are still drawn.
+        // C: negative one (the clock of an edited saved game: hour -3 gives threeHourPeriod -1, and -1 % 8 stays -1); the texts under it are still drawn.
         var (picture, flipX, flipY) = frame switch
         {
             0 => ("timer03", false, true),

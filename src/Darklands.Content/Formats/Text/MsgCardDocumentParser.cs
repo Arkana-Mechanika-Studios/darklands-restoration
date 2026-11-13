@@ -10,13 +10,13 @@ public static class MsgCardDocumentParser
     private const ushort ScannerLowerBound = 0x0000;
     private const ushort ScannerTextYUpperBound = 0x00C8;
     private const ushort ScannerTextXUpperBound = 0x0140;
-    private const byte Byte06 = 0x06;
+    private const byte BattleOptionByte = 0x06;
     private const byte Byte0A = 0x0A;
-    private const byte Byte10 = 0x10;
-    private const byte Byte14 = 0x14;
-    private const byte Byte15 = 0x15;
-    private const byte Byte16 = 0x16;
-    private const byte Byte1D = 0x1D;
+    private const byte ItemOptionByte = 0x10;
+    private const byte ParagraphByte = 0x14;
+    private const byte PlainOptionByte = 0x15;
+    private const byte SaintOptionByte = 0x16;
+    private const byte IndentByte = 0x1D;
 
     /// <summary>
     /// Parses one MSGFILES payload into raw card records and raw low text bytes.
@@ -137,13 +137,13 @@ public static class MsgCardDocumentParser
             value,
             value switch
             {
-                Byte06 => MsgCardRawLowTextByteKind.Byte06,
+                BattleOptionByte => MsgCardRawLowTextByteKind.Byte06,
                 Byte0A => MsgCardRawLowTextByteKind.Byte0A,
-                Byte10 => MsgCardRawLowTextByteKind.Byte10,
-                Byte14 => MsgCardRawLowTextByteKind.Byte14,
-                Byte15 => MsgCardRawLowTextByteKind.Byte15,
-                Byte16 => MsgCardRawLowTextByteKind.Byte16,
-                Byte1D => MsgCardRawLowTextByteKind.Byte1D,
+                ItemOptionByte => MsgCardRawLowTextByteKind.Byte10,
+                ParagraphByte => MsgCardRawLowTextByteKind.Byte14,
+                PlainOptionByte => MsgCardRawLowTextByteKind.Byte15,
+                SaintOptionByte => MsgCardRawLowTextByteKind.Byte16,
+                IndentByte => MsgCardRawLowTextByteKind.Byte1D,
                 _ => MsgCardRawLowTextByteKind.UnknownBelow20
             }));
     }

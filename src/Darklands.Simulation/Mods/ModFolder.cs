@@ -115,7 +115,7 @@ public sealed class ModFolder
     }
 
     /// <summary>A whole number of the JSON (false for a text "400", a fraction or a value too large).</summary>
-    private static bool Int(JsonElement e, out int value)
+    private static bool TryReadInt(JsonElement e, out int value)
     {
         value = 0;
         return e.ValueKind == JsonValueKind.Number && e.TryGetInt32(out value);
@@ -137,7 +137,7 @@ public sealed class ModFolder
             {
                 return Fail("must be an object");
             }
-            if (!card.TryGetProperty("number", out var n) || !Int(n, out var number))
+            if (!card.TryGetProperty("number", out var n) || !TryReadInt(n, out var number))
             {
                 return Fail("needs a whole \"number\" (not text)");
             }
@@ -154,7 +154,7 @@ public sealed class ModFolder
             int? savesAs = null;
             if (card.TryGetProperty("savesAs", out var s))
             {
-                if (!Int(s, out var saved))
+                if (!TryReadInt(s, out var saved))
                 {
                     return Fail("\"savesAs\" must be a whole card number (not text)");
                 }
@@ -171,7 +171,7 @@ public sealed class ModFolder
             }
             var picture = card.TryGetProperty("picture", out var p) ? p.ValueKind switch
             {
-                JsonValueKind.Number when Int(p, out var pn) => PictureNames.Of(pn),
+                JsonValueKind.Number when TryReadInt(p, out var pn) => PictureNames.Of(pn),
                 JsonValueKind.String => p.GetString() ?? "",
                 _ => null,
             } : overrides && number is >= 0 and <= CardRegistry.LastOriginalCard ? PictureNames.Of(CardTable.Find(number)?.Picture ?? -1) : "";
@@ -249,7 +249,7 @@ public sealed class ModFolder
                 var before = new List<int>();
                 foreach (var item in beforeValue.ValueKind == JsonValueKind.Array ? beforeValue.EnumerateArray().ToList() : [beforeValue])
                 {
-                    if (!Int(item, out var number) || number < 0)
+                    if (!TryReadInt(item, out var number) || number < 0)
                     {
                         return Fail<DataPage>($"{where}: \"ifPreviousCard\" must be a card number or a list of them");
                     }
@@ -265,7 +265,7 @@ public sealed class ModFolder
             }
             if (page.TryGetProperty("chance", out var chanceValue))
             {
-                if (!Int(chanceValue, out var chance) || chance is < 0 or > 100)
+                if (!TryReadInt(chanceValue, out var chance) || chance is < 0 or > 100)
                 {
                     return Fail<DataPage>($"{where}: \"chance\" must be a whole number from 0 to 100");
                 }
@@ -397,7 +397,7 @@ public sealed class ModFolder
             {
                 if (holder.TryGetProperty(key, out var v))
                 {
-                    if (!Int(v, out var count))
+                    if (!TryReadInt(v, out var count))
                     {
                         return FailNumber($"{where}: \"{key}\" must be a whole number");
                     }
@@ -419,7 +419,7 @@ public sealed class ModFolder
             }
             if (v.ValueKind == JsonValueKind.Number)
             {
-                return Int(v, out var card) && card is >= 0 and <= CardRegistry.LastModCard
+                return TryReadInt(v, out var card) && card is >= 0 and <= CardRegistry.LastModCard
                     ? new CardTarget.Card(card)
                     : Fail<CardTarget>($"{where}: \"{key}\" card numbers are 0 to {CardRegistry.LastModCard}");
             }
@@ -442,7 +442,7 @@ public sealed class ModFolder
             {
                 return fallback;
             }
-            return Int(v, out var value) && value >= low && value <= high ? value : FailNumber($"{where}: \"{key}\" must be a whole number from {low} to {high}");
+            return TryReadInt(v, out var value) && value >= low && value <= high ? value : FailNumber($"{where}: \"{key}\" must be a whole number from {low} to {high}");
         }
 
         /// <summary>A text as the card font's bytes: printable ASCII and line breaks; $Name inserts a value as in the game's texts.</summary>

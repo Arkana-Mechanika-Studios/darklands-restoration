@@ -226,7 +226,7 @@ public sealed partial class TacticalBattle
             if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
             {
                 // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - M with nobody selected: 15BE clears bit 0x10 of flags[-1]'s high byte, the pause byte DS:A695 (bx = -2)
-                PauseByte = (byte)(PauseByte & ~FlagsHighByte);
+                PauseByte = (byte)(PauseByte & ~FollowingBitInPauseByte);
             }
             return;
         }
@@ -255,7 +255,7 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>The flee bit (0x1000) of a member's flags in the high byte of its word: what an access to flags[-1] reaches in DS:A695.</summary>
-    private const int FlagsHighByte = (int)TacticalFlags.Following >> 8;
+    private const int FollowingBitInPauseByte = (int)TacticalFlags.Following >> 8;
 
     /// <summary>A place action is chosen (Use Door, Stairs, Pick Lock …): it is given when order mode ends.</summary>
     // orig: R016+0x1590 (1EF8:1590) matched
@@ -279,7 +279,7 @@ public sealed partial class TacticalBattle
         else if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
         {
             // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - flags[-1]'s high byte is the pause byte DS:A695 (R016+0x15BE, bx = -2)
-            PauseByte = (byte)(PauseByte & ~FlagsHighByte);
+            PauseByte = (byte)(PauseByte & ~FollowingBitInPauseByte);
         }
         _picker = Selected;
     }
@@ -840,7 +840,7 @@ public sealed partial class TacticalBattle
             // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on
             // flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte
             // of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
-            PauseByte = (byte)((PauseByte & ~FlagsHighByte) | (_fleeBefore ? FlagsHighByte : 0));
+            PauseByte = (byte)((PauseByte & ~FollowingBitInPauseByte) | (_fleeBefore ? FollowingBitInPauseByte : 0));
         }
         _orderMode = false;
         _targetChosen = false;

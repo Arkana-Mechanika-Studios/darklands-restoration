@@ -34,7 +34,7 @@ internal sealed class LauncherScreen
 
     // the colours of messages and status lines as given (for the dark hint bar); on parchment they become ink (OnParchment)
     private const uint PaleRed = 0xFF9E8C;
-    private const uint PaleBlue = 0xE8DCC4;
+    private const uint PaleCream = 0xE8DCC4;
     private const uint Green = 0xA6DB8E;
 
     private readonly LauncherModel _model;
@@ -379,7 +379,7 @@ internal sealed class LauncherScreen
         if (IsFixed(item, out var fixedBy))
         {
             _message = $"Set by {fixedBy}: change it there.";
-            _messageColour = PaleBlue;
+            _messageColour = PaleCream;
             return null;
         }
         switch (item)
@@ -408,7 +408,7 @@ internal sealed class LauncherScreen
                     _focus = Item.GameFolder;
                     StartEditing(_model.GameFolder ?? "");
                     _message ??= "Type or paste (Ctrl+V) the folder, or drop it on this window.";
-                    _messageColour = PaleBlue;
+                    _messageColour = PaleCream;
                 }
                 break;
             case Item.Window:
@@ -601,7 +601,7 @@ internal sealed class LauncherScreen
             : "a sound pack: OGG or WAV files named after the game's music and effects";
         if (!cycle && _surface.PickFolder is null)
         {
-            (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleBlue);
+            (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleCream);
             return;
         }
         if (!cycle && Pick("Choose the folder of " + what, _model.PackOf(kind), out var chosen))
@@ -922,12 +922,12 @@ internal sealed class LauncherScreen
         {
             canvas.Fill(image, 0x3A2E22);
             var wait = previews is null ? "No preview here." : "Preparing the preview…";
-            caption.Draw(canvas, wait, image.X + (image.Width - caption.Measure(wait)) / 2, image.Y + (image.Height - caption.LineHeight) / 2, PaleBlue);
+            caption.Draw(canvas, wait, image.X + (image.Width - caption.Measure(wait)) / 2, image.Y + (image.Height - caption.LineHeight) / 2, PaleCream);
         }
         canvas.Frame(image, Math.Max(1, v.Len(1)), 0x8A7454);
         var note = preview is { FromGame: false } ? "A test pattern (no game folder); the game window shows the game itself."
             : "A picture of your game, about as the game window will show it.";
-        caption.Draw(canvas, Fit(caption, note, image.Width, fromEnd: false), image.X, image.Bottom + v.Len(6), PaleBlue);
+        caption.Draw(canvas, Fit(caption, note, image.Width, fromEnd: false), image.X, image.Bottom + v.Len(6), PaleCream);
         PreviewArea = frame;
     }
 
@@ -1322,7 +1322,7 @@ internal sealed class LauncherScreen
             y = Folder(y, null, _editing ? _editText + "_" : _model.GameFolder ?? "", Item.GameFolder, Item.Change, Part.Row);
             y = Status(y, Item.GameFolder, _model.GameFolderChecked is not null
                 ? ("Found" + (_model.GameFolderSource is { } source ? $" ({source})." : "."), Green)
-                : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleBlue) : ("No Darklands there (DARKLAND.EXE).", PaleRed));
+                : _model.GameFolder is null ? ("Type its folder, drop it on this window or press Change…", PaleCream) : ("No Darklands there (DARKLAND.EXE).", PaleRed));
 
             y = Section("Display", "icon-display", y);
             y = Select(y, "Window size", LauncherModel.SizeLabel(_model.Windows[_model.WindowIndex]), Item.Window);
@@ -1628,11 +1628,11 @@ internal sealed class LauncherScreen
         }
         else if (_statusShown.TryGetValue(row, out var status) && (status.Colour == PaleRed || _statusCut.Contains(row)))
         {
-            yield return (status.Text, status.Colour == PaleBlue ? Cream : status.Colour);
+            yield return (status.Text, status.Colour == PaleCream ? Cream : status.Colour);
         }
         if (Help(item) is { Length: > 0 } help)
         {
-            yield return (help, PaleBlue);
+            yield return (help, PaleCream);
         }
     }
 
@@ -2205,7 +2205,7 @@ internal sealed class LauncherScreen
     {
         if (_model.PackOf(kind) is not { } folder)
         {
-            return (kind == PackKind.Pictures ? "None: the game's own pictures." : "None: the game's own music and sounds.", PaleBlue);
+            return (kind == PackKind.Pictures ? "None: the game's own pictures." : "None: the game's own music and sounds.", PaleCream);
         }
         return PackProblem(kind) is { } problem ? (problem, PaleRed) : (PackSummary(kind, _model.Pack(folder)), Green);
     }
@@ -2243,7 +2243,7 @@ internal sealed class LauncherScreen
             return ("Plays the packs' MIDI (.mid) music.", Green);
         }
         // short enough to fit its line at every window size; the row's tooltip says more (any .sf2, where to get the free one, its licence)
-        return ("None found: put any General MIDI .sf2 in " + SoundFontFolder + ".", PaleBlue);
+        return ("None found: put any General MIDI .sf2 in " + SoundFontFolder + ".", PaleCream);
     }
 
     /// <summary>A free General MIDI SoundFont the launcher points to when none is found (not included: it is about 140 MB); any .sf2 the player has works as well.</summary>
@@ -2258,10 +2258,10 @@ internal sealed class LauncherScreen
         "cm32l" => roms.Cm32l ? ("CM-32L ROMs found.", Green) : ("No CM-32L ROMs here: the FM music plays instead.", PaleRed),
         _ => (roms.Mt32, roms.Cm32l) switch
         {
-            (true, true) => ("MT-32 and CM-32L ROMs found (for a Roland sound card).", PaleBlue),
-            (true, false) => ("MT-32 ROMs found (for a Roland sound card).", PaleBlue),
-            (false, true) => ("CM-32L ROMs found (for a Roland sound card).", PaleBlue),
-            _ => ("No ROMs here: needed only for a Roland sound card.", PaleBlue),
+            (true, true) => ("MT-32 and CM-32L ROMs found (for a Roland sound card).", PaleCream),
+            (true, false) => ("MT-32 ROMs found (for a Roland sound card).", PaleCream),
+            (false, true) => ("CM-32L ROMs found (for a Roland sound card).", PaleCream),
+            _ => ("No ROMs here: needed only for a Roland sound card.", PaleCream),
         },
     };
 

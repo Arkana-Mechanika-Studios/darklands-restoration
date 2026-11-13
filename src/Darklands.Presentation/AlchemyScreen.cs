@@ -33,24 +33,24 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     private const int KeyD = 0x2064;
     private const int KeyCapitalD = 0x2044;
 
-    private GameState _s = null!;
+    private GameState _state = null!;
     private BrewingBench _bench = null!;
     private SavedScreen _back = null!;
-    private int _current;
-    private int _row;
+    private int _currentBatch;
+    private int _listRow;
     private bool _formulaPage;
-    private int _hover = -1;
+    private int _hoverRow = -1;
     private bool _canAddBatch;
 
-    private Batch Selected => _bench.Batches[_current];
+    private Batch Selected => _bench.Batches[_currentBatch];
 
     // orig: R033+0x0000 (the key loop); leaving: R033+0x0628 (fonts, frees DARKLAND.ALC)
     /// <summary>The alchemy screen for <paramref name="member"/>; <paramref name="place"/> (the camp mode) goes into the brew.</summary>
     public void Use(GameState state, int member, int place)
     {
-        _s = state;
-        _current = 0;
-        _row = 0;
+        _state = state;
+        _currentBatch = 0;
+        _listRow = 0;
         _bench = new BrewingBench(state, formulas, member);
         _back = ScreenDrawing.DrawBackground(ui, panel, state.Party, "alcscrn1");
         DrawBatchPage();
@@ -115,7 +115,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     // C: the picture DS:3232 loaded and shown, the party panel drawn again, then the batch page (DS:324E == 0) or the formula page
     private void RedrawAfterPartyInformation()
     {
-        _back = ScreenDrawing.DrawBackground(ui, panel, _s.Party, "alcscrn1");
+        _back = ScreenDrawing.DrawBackground(ui, panel, _state.Party, "alcscrn1");
         if (_formulaPage)
         {
             DrawFormulaPage();
@@ -203,10 +203,10 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     {
         var canvas = ui.Canvas;
         ScreenDrawing.Overlay(ui, "alchem13", ListX, 0x1D);
-        _current = Math.Min(_current, _bench.Batches.Count);
-        for (var i = _current - _row; i < _bench.Batches.Count; i++)
+        _currentBatch = Math.Min(_currentBatch, _bench.Batches.Count);
+        for (var i = _currentBatch - _listRow; i < _bench.Batches.Count; i++)
         {
-            var row = i - _current + _row;
+            var row = i - _currentBatch + _listRow;
             if (row >= VisibleRows || i < 0)
             {
                 continue;
@@ -222,7 +222,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     }
 
     private void HighlightRow(bool on) =>
-        ui.Canvas.Recolor(ListX + 1, _row * RowHeight + ListTop, 0x5A, RowHeight, on ? ListColor : ListHighlight, on ? ListHighlight : ListColor);
+        ui.Canvas.Recolor(ListX + 1, _listRow * RowHeight + ListTop, 0x5A, RowHeight, on ? ListColor : ListHighlight, on ? ListHighlight : ListColor);
 
     // orig: R033+0x1018 (1462:1018) draft (bytes match)
     /// <summary>The chosen formula's full name and description in the book.</summary>
@@ -256,27 +256,27 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
                 DrawFormulaPage();
                 break;
             case Keys.Up:
-                if (_current == 0)
+                if (_currentBatch == 0)
                 {
                     return;
                 }
                 HighlightRow(false);
-                _current--;
-                if (_row > 0)
+                _currentBatch--;
+                if (_listRow > 0)
                 {
-                    _row--;
+                    _listRow--;
                 }
                 DrawList();
                 DrawSelectedFormula();
                 break;
             case Keys.Down:
-                if (_bench.Batches.Count - 1 <= _current)
+                if (_bench.Batches.Count - 1 <= _currentBatch)
                 {
                     return;
                 }
                 HighlightRow(false);
-                _current++;
-                _row = Math.Min(_row + 1, VisibleRows - 1);
+                _currentBatch++;
+                _listRow = Math.Min(_listRow + 1, VisibleRows - 1);
                 DrawList();
                 DrawSelectedFormula();
                 break;
@@ -291,16 +291,16 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     private void PickRow(int y)
     {
         HighlightRow(false);
-        var offset = _current - _row;
-        _row = Math.Clamp((y - ListTop) >> 3, 0, VisibleRows);
-        if (_row + offset >= _bench.Batches.Count)
+        var offset = _currentBatch - _listRow;
+        _listRow = Math.Clamp((y - ListTop) >> 3, 0, VisibleRows);
+        if (_listRow + offset >= _bench.Batches.Count)
         {
-            _current = _bench.Batches.Count - 1;
-            _row = Math.Clamp(_current, 0, VisibleRows);
+            _currentBatch = _bench.Batches.Count - 1;
+            _listRow = Math.Clamp(_currentBatch, 0, VisibleRows);
         }
         else
         {
-            _current = offset + _row;
+            _currentBatch = offset + _listRow;
         }
         DrawList();
         DrawSelectedFormula();
@@ -315,11 +315,11 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         var canvas = ui.Canvas;
         var b = Selected;
         var f = b.Formula;
-        var m = _s.Party.Slot(_bench.Alchemist);
+        var m = _state.Party.Slot(_bench.Alchemist);
         canvas.CopyFrom(_back, 0x3C, 0, 0x104, 200);
         _canAddBatch = _bench.HasIngredients(f);
         ScreenDrawing.Wrapped(ui, $"{m.ShortName}'s Formula - making {b.Count} batches.", 0xEA, 0x49, 0x0D, HeadingColor);
-        ScreenDrawing.Wrapped(ui, $"{Brewing.BaseChance(b.Count)} + {_s.Party.PhilosophersStone}ps + {m[Attribute.Intelligence]}int + " +
+        ScreenDrawing.Wrapped(ui, $"{Brewing.BaseChance(b.Count)} + {_state.Party.PhilosophersStone}ps + {m[Attribute.Intelligence]}int + " +
             $"{m[Skill.Alchemy]}alch - {f.MysticNumber}mn = {_bench.Chance(b)}% success.", 0xEA, 0x49, 0x15, HeadingColor);
         ui.Text.Draw(canvas, MenuX, MenuTop, ScreenDrawing.Hotkey('M') + "ore batches", _canAddBatch ? MenuColor : MenuGreyed);
         ui.Text.Draw(canvas, MenuX, MenuTop + 8, ScreenDrawing.Hotkey('F') + "ewer batches", MenuColor);
@@ -335,7 +335,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             if (ing.Count != 0)
             {
                 var have = _bench.Stock(ing.Item);
-                ui.Text.Draw(canvas, 0xC8, y, $"{ing.Count} {_s.Item(ing.Item).Name} ({have})", have >= ing.Count ? MenuColor : MenuGreyed);
+                ui.Text.Draw(canvas, 0xC8, y, $"{ing.Count} {_state.Item(ing.Item).Name} ({have})", have >= ing.Count ? MenuColor : MenuGreyed);
             }
             y += 8;
         }
@@ -349,14 +349,14 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             Selected.Count--;
             _bench.Release(Selected.Formula);
             DrawFormulaPage();
-            _hover = -1;
+            _hoverRow = -1;
         }
         else if (Keys.IsLetter(key, 'm') && _canAddBatch)
         {
             Selected.Count++;
             _bench.Reserve(Selected.Formula);
             DrawFormulaPage();
-            _hover = -1;
+            _hoverRow = -1;
         }
     }
 
@@ -384,10 +384,10 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         if (!mouse.Left && overMenu)
         {
             var k = (mouse.Y - MenuTop) / 8;
-            if (k != _hover)
+            if (k != _hoverRow)
             {
-                ui.Canvas.Recolor(0x46, _hover * 8 + MenuTop, 0x6E, 8, MenuHover, MenuColor);
-                _hover = k;
+                ui.Canvas.Recolor(0x46, _hoverRow * 8 + MenuTop, 0x6E, 8, MenuHover, MenuColor);
+                _hoverRow = k;
                 ui.Canvas.Recolor(0x46, k * 8 + MenuTop, 0x6E, 8, MenuColor, MenuHover);
             }
         }
@@ -411,10 +411,10 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
                     _ => 0,
                 };
         }
-        else if (!_formulaPage && !mouse.Left && _hover != -1)
+        else if (!_formulaPage && !mouse.Left && _hoverRow != -1)
         {
-            ui.Canvas.Recolor(0x46, _hover * 8 + MenuTop, 0xB4, 8, MenuHover, MenuColor);
-            _hover = -1;
+            ui.Canvas.Recolor(0x46, _hoverRow * 8 + MenuTop, 0xB4, 8, MenuHover, MenuColor);
+            _hoverRow = -1;
         }
         if (_formulaPage)
         {

@@ -168,42 +168,42 @@ public sealed class SaveFile
 
     public byte[] ToBytes()
     {
-        using var out_ = new MemoryStream();
-        out_.Write(Fixed(Header, HeaderSize));
-        PutWord(out_, PartySize);
-        PutWord(out_, CharacterCount ?? Characters.Count);
+        using var stream = new MemoryStream();
+        stream.Write(RequireLength(Header, HeaderSize));
+        PutWord(stream, PartySize);
+        PutWord(stream, CharacterCount ?? Characters.Count);
         foreach (var id in PartyIds)
         {
-            PutWord(out_, id);
+            PutWord(stream, id);
         }
-        out_.Write(Fixed(Images, PartySlots * ImageSize));
-        out_.Write(Fixed(Palettes, PartySlots * PaletteSize));
+        stream.Write(RequireLength(Images, PartySlots * ImageSize));
+        stream.Write(RequireLength(Palettes, PartySlots * PaletteSize));
         foreach (var record in Characters)
         {
-            out_.Write(Fixed(record, CharacterSize));
+            stream.Write(RequireLength(record, CharacterSize));
         }
-        PutWord(out_, Events.Count);
+        PutWord(stream, Events.Count);
         foreach (var record in Events)
         {
-            out_.Write(Fixed(record, EventSize));
+            stream.Write(RequireLength(record, EventSize));
         }
-        PutWord(out_, Locations.Count);
+        PutWord(stream, Locations.Count);
         foreach (var record in Locations)
         {
-            out_.Write(Fixed(record, LocationSize));
+            stream.Write(RequireLength(record, LocationSize));
         }
-        out_.Write(Cache);
-        return out_.ToArray();
+        stream.Write(Cache);
+        return stream.ToArray();
     }
 
     // C: the loader's _dos_read returns what the file still holds and the game goes on; reading as the loader, the bytes past the end
     // C: are zeros here.
     // DIVERGENCE: the original's buffers keep what they held before (a heap block's leftovers), not zeros.
-    private static ReadOnlySpan<byte> Take(ReadOnlySpan<byte> data, ref int at, bool lenient, int length)
+    private static ReadOnlySpan<byte> Take(ReadOnlySpan<byte> data, ref int at, bool padWithZeros, int length)
     {
         if (at + length > data.Length)
         {
-            if (!lenient)
+            if (!padWithZeros)
             {
                 throw new InvalidDataException($"the saved game ends at {data.Length} bytes, inside a section that needs {at + length}");
             }
@@ -220,8 +220,8 @@ public sealed class SaveFile
         return slice;
     }
 
-    private static int Word(ReadOnlySpan<byte> data, ref int at, bool lenient) =>
-        BinaryPrimitives.ReadUInt16LittleEndian(Take(data, ref at, lenient, 2));
+    private static int Word(ReadOnlySpan<byte> data, ref int at, bool padWithZeros) =>
+        BinaryPrimitives.ReadUInt16LittleEndian(Take(data, ref at, padWithZeros, 2));
 
     private static void PutWord(Stream s, int value)
     {
@@ -229,6 +229,6 @@ public sealed class SaveFile
         s.WriteByte((byte)(value >> 8));
     }
 
-    private static byte[] Fixed(byte[] bytes, int length) =>
+    private static byte[] RequireLength(byte[] bytes, int length) =>
         bytes.Length == length ? bytes : throw new InvalidDataException($"a section of {bytes.Length} bytes where the file has {length}");
 }

@@ -54,7 +54,7 @@ public sealed class SaveFolder(string path)
     // orig: the _dos_read sequence of R037+0x8896: name 0x15, desc 0x4F, seed, a word, year, month, day, hour
     public SaveSummary Summary(string fileName)
     {
-        using var file = File.OpenRead(Find(fileName) ?? throw new FileNotFoundException(fileName));
+        using var file = File.OpenRead(FindIgnoringCase(fileName) ?? throw new FileNotFoundException(fileName));
         var h = new byte[0x70];
         file.ReadAtLeast(h, h.Length, throwOnEndOfStream: false);
         return new SaveSummary(fileName, Text(h, 0, 0x15), Text(h, 0x15, 0x4F), Word(h, 0x68), Word(h, 0x6A), Word(h, 0x6C), Word(h, 0x6E));
@@ -67,7 +67,7 @@ public sealed class SaveFolder(string path)
     // New code (no original): the load screen's mod mark (LoadGameScreen, only in the presets that draw clean).
     public bool IsModded(string fileName)
     {
-        if (Find(ModdedSaves.CompanionOf(fileName)) is not { } companion || Find(fileName) is not { } sav)
+        if (FindIgnoringCase(ModdedSaves.CompanionOf(fileName)) is not { } companion || FindIgnoringCase(fileName) is not { } sav)
         {
             return false;
         }
@@ -89,7 +89,7 @@ public sealed class SaveFolder(string path)
         for (var n = 0; ; n++)
         {
             var name = $"dksave{n}.sav";
-            if (Find(name) is null)
+            if (FindIgnoringCase(name) is null)
             {
                 return name;
             }
@@ -102,22 +102,22 @@ public sealed class SaveFolder(string path)
     /// game was saved in, and ends the program on a short or corrupt one; a missing battle file is fine).
     /// </summary>
     public bool IsDamaged(string fileName) =>
-        Find(fileName) is { } file && (SaveFile.RunsPastTheEnd(File.ReadAllBytes(file))
-            || Find(BattleFileOf(fileName)) is { } battle && !BattleSaveFile.IsReadable(File.ReadAllBytes(battle)));
+        FindIgnoringCase(fileName) is { } file && (SaveFile.RunsPastTheEnd(File.ReadAllBytes(file))
+            || FindIgnoringCase(BattleFileOf(fileName)) is { } battle && !BattleSaveFile.IsReadable(File.ReadAllBytes(battle)));
 
     /// <summary>What the saved game holds that no game has (<see cref="SaveFile.ImpossibleValue"/>), or null; null for a missing file.</summary>
     public string? ImpossibleValue(string fileName, int places) =>
-        Find(fileName) is { } file ? SaveFile.ImpossibleValue(File.ReadAllBytes(file), places) : null;
+        FindIgnoringCase(fileName) is { } file ? SaveFile.ImpossibleValue(File.ReadAllBytes(file), places) : null;
 
     /// <summary>Reads a saved game and its battle file.</summary>
     public LoadedGame Load(string fileName, IGameData data, GameState? running = null)
     {
         Used?.Invoke(fileName, true);
-        var sav = File.ReadAllBytes(Find(fileName) ?? throw new FileNotFoundException(fileName));
-        var bsv = Find(BattleFileOf(fileName)) is { } battle ? File.ReadAllBytes(battle) : [];
+        var sav = File.ReadAllBytes(FindIgnoringCase(fileName) ?? throw new FileNotFoundException(fileName));
+        var bsv = FindIgnoringCase(BattleFileOf(fileName)) is { } battle ? File.ReadAllBytes(battle) : [];
         var loaded = OriginalSaves.Read(sav, bsv, fileName, data, running);
         // a game saved with mods: its companion file marks it and gives the mods' card numbers back (ModdedSaves)
-        if (Find(ModdedSaves.CompanionOf(fileName)) is { } companion)
+        if (FindIgnoringCase(ModdedSaves.CompanionOf(fileName)) is { } companion)
         {
             string text;
             try
@@ -144,13 +144,13 @@ public sealed class SaveFolder(string path)
         var (sav, bsv) = OriginalSaves.Write(state, comment, music, soundEffects, inBattle, Mods?.SavedCardOf);
         File.WriteAllBytes(System.IO.Path.Combine(Path, name.ToUpperInvariant()), sav);
         var battle = BattleFileOf(name);
-        File.WriteAllBytes(Find(battle) ?? System.IO.Path.Combine(Path, battle.ToUpperInvariant()), bsv);
+        File.WriteAllBytes(FindIgnoringCase(battle) ?? System.IO.Path.Combine(Path, battle.ToUpperInvariant()), bsv);
         OriginalSaves.Saved(state, name, sav);
         // DIVERGENCE: no original: a game with mods (loaded now, or played with before) is marked by a companion file beside the .SAV;
         //   a companion file left over from an earlier save of this name (deleted outside this program) is removed. Classic writes none.
         var active = Mods?.Active ?? [];
         ModdedSaves.MarkUsed(state, active);
-        var companion = Find(ModdedSaves.CompanionOf(name));
+        var companion = FindIgnoringCase(ModdedSaves.CompanionOf(name));
         if (ModdedSaves.ModsUsed(state).Count > 0)
         {
             File.WriteAllText(companion ?? System.IO.Path.Combine(Path, ModdedSaves.CompanionOf(name)), ModdedSaves.Write(state, sav, name, cards, active));
@@ -176,16 +176,16 @@ public sealed class SaveFolder(string path)
         {
             return false;
         }
-        if (Find(fileName) is { } sav)
+        if (FindIgnoringCase(fileName) is { } sav)
         {
             File.Delete(sav);
         }
-        if (Find(BattleFileOf(fileName)) is { } bsv)
+        if (FindIgnoringCase(BattleFileOf(fileName)) is { } bsv)
         {
             File.Delete(bsv);
         }
         // DIVERGENCE: no original: a modded game's companion file goes with it
-        if (Find(ModdedSaves.CompanionOf(fileName)) is { } companion)
+        if (FindIgnoringCase(ModdedSaves.CompanionOf(fileName)) is { } companion)
         {
             File.Delete(companion);
         }
@@ -196,7 +196,7 @@ public sealed class SaveFolder(string path)
     private static string BattleFileOf(string fileName) => fileName.Length >= 3 ? fileName[..^3] + "bsv" : fileName + ".bsv";
 
     /// <summary>The file of that name in the folder, whatever the case of its letters (DOS names are case-blind).</summary>
-    private string? Find(string fileName) =>
+    private string? FindIgnoringCase(string fileName) =>
         Directory.Exists(Path)
             ? Directory.EnumerateFiles(Path).FirstOrDefault(f => string.Equals(System.IO.Path.GetFileName(f), fileName, StringComparison.OrdinalIgnoreCase))
             : null;

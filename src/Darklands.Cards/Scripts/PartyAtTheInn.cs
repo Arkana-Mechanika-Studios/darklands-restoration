@@ -50,20 +50,20 @@ public sealed class PartyAtTheInn : Card
         c.SetCardItems();
         c.SetCardSaints();
 
-        int menuText;
+        int menuBlock;
         if (state.Party.Members.Count == 1)
         {
             ShowPicture(c, AlonePicture);
-            menuText = 1;   // C: local-in-di = 1 is both the text block and (card-option-flag-1 = local-in-di) the option state "enabled"
+            menuBlock = 1;   // C: local-in-di = 1 is both the text block and (card-option-flag-1 = local-in-di) the option state "enabled"
         }
         else
         {
             TellThePact(c);
-            menuText = 6;
+            menuBlock = 6;
         }
 
         // orig: card-option-enabled[0..3] = 1, card-option-enabled[4..9] = 0; card-option-handler[0..9] = R054+0x0DC8 .. 074c (the hints), the handlers after the menu are 0410 .. 0740
-        var menu = Menu(c, menuText);
+        var menu = Menu(c, menuBlock);
         menu.Enable(0, 1, 2, 3);
         c.Next = Number;
         return menu.Run(

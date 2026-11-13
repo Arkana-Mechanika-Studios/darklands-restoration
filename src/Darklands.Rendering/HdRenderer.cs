@@ -29,7 +29,7 @@ public sealed class HdRenderer(HdPack pack)
     private readonly RgbaImage _overlay = new(Screen.Width, Screen.Height);
     private readonly Dictionary<int, RgbaImage?> _replacements = [];
     private readonly int[] _drawingAt = new int[Screen.Width * Screen.Height];
-    private Dictionary<DrawingKey, Kept> _kept = [];
+    private Dictionary<DrawingKey, DrawingCache> _cache = [];
 
     public HdPack Pack => pack;
 
@@ -49,23 +49,23 @@ public sealed class HdRenderer(HdPack pack)
         var drawings = FindDrawings(screen);
         if (drawings.Count == 0)
         {
-            _kept = [];
+            _cache = [];
             return new HdFrame(output, items);
         }
-        var kept = new Dictionary<DrawingKey, Kept>();
+        var newCache = new Dictionary<DrawingKey, DrawingCache>();
         for (var d = 0; d < drawings.Count; d++)
         {
             var drawing = drawings[d];
-            var keep = _kept.GetValueOrDefault(drawing.Key) ?? new Kept();
-            kept[drawing.Key] = keep;
-            var effect = Effect(screen, drawing, keep);
+            var cached = _cache.GetValueOrDefault(drawing.Key) ?? new DrawingCache();
+            newCache[drawing.Key] = cached;
+            var effect = Effect(screen, drawing, cached);
             var placement = drawing.Placement with { Effect = effect };
             var texture = Exclusive(d, drawing.Placement)
-                ? Whole(placement, drawing.Replacement, keep)
-                : Masked(placement, drawing.Replacement, keep);
+                ? Whole(placement, drawing.Replacement, cached)
+                : Masked(placement, drawing.Replacement, cached);
             items.Add(new DrawItem(texture, Destination(placement, output), DrawFilter.Linear, placement));
         }
-        _kept = kept;
+        _cache = newCache;
         for (var i = 0; i < _overlay.Argb.Length; i++)
         {
             _overlay.Argb[i] = _drawingAt[i] >= 0 ? 0 : _base.Argb[i];
@@ -193,7 +193,7 @@ public sealed class HdRenderer(HdPack pack)
     /// the screen's where the drawing owns the pixel, else with the current palette's colour of its own index; the lines
     /// are fitted again only when the set of changed pairs changes.
     /// </summary>
-    private static PaletteEffect? Effect(Screen screen, Drawing drawing, Kept keep)
+    private static PaletteEffect? Effect(Screen screen, Drawing drawing, DrawingCache cached)
     {
         if (drawing.OwnColors is not { } colors)
         {
@@ -201,41 +201,41 @@ public sealed class HdRenderer(HdPack pack)
         }
         var placement = drawing.Placement;
         var (width, height) = (placement.Width, placement.Height);
-        if (keep.OwnIndex is null || keep.OwnColors is not { } kept || kept.Pixels != colors.Pixels || kept.Palette != colors.Palette)
+        if (cached.OwnIndex is null || cached.OwnColors is not { } kept || kept.Pixels != colors.Pixels || kept.Palette != colors.Palette)
         {
             // the asset's own colour index per pixel (screen orientation): the same every frame
-            (keep.OwnIndex, keep.OwnColors) = (new byte[width * height], colors);
+            (cached.OwnIndex, cached.OwnColors) = (new byte[width * height], colors);
             for (var row = 0; row < height; row++)
             {
                 var sourceRow = placement.FlipY ? height - 1 - row : row;
                 for (var column = 0; column < width; column++)
                 {
-                    keep.OwnIndex[row * width + column] = colors.Pixels[sourceRow * width + (placement.FlipX ? width - 1 - column : column)];
+                    cached.OwnIndex[row * width + column] = colors.Pixels[sourceRow * width + (placement.FlipX ? width - 1 - column : column)];
                 }
             }
-            keep.ShownIndex = null;
+            cached.ShownIndex = null;
         }
         // per pixel the palette index shown: the screen's where the drawing owns the pixel, else its own index
         var shownIndex = new byte[width * height];
         for (var t = 0; t < shownIndex.Length; t++)
         {
             var at = drawing.ScreenAt[t];
-            shownIndex[t] = at >= 0 ? screen.Pixels[at] : keep.OwnIndex[t];
+            shownIndex[t] = at >= 0 ? screen.Pixels[at] : cached.OwnIndex[t];
         }
-        if (keep.ShownIndex is not null && keep.ShownPalette is not null
-            && keep.ShownIndex.AsSpan().SequenceEqual(shownIndex) && keep.ShownPalette.AsSpan().SequenceEqual(screen.Palette))
+        if (cached.ShownIndex is not null && cached.ShownPalette is not null
+            && cached.ShownIndex.AsSpan().SequenceEqual(shownIndex) && cached.ShownPalette.AsSpan().SequenceEqual(screen.Palette))
         {
-            return keep.Effect;
+            return cached.Effect;
         }
-        (keep.ShownIndex, keep.ShownPalette) = (shownIndex, (uint[])screen.Palette.Clone());
+        (cached.ShownIndex, cached.ShownPalette) = (shownIndex, (uint[])screen.Palette.Clone());
         // pixels counted per (own index, shown index): 65536 counters, then merged by colour
-        var counts = keep.Counts ??= new int[65536];
+        var counts = cached.Counts ??= new int[65536];
         Array.Clear(counts);
         var ownPalette = colors.Palette;
         var changed = false;
         for (var t = 0; t < shownIndex.Length; t++)
         {
-            var (o, i) = (keep.OwnIndex[t], shownIndex[t]);
+            var (o, i) = (cached.OwnIndex[t], shownIndex[t]);
             if (((ownPalette[o] ^ screen.Palette[i]) & 0xFFFFFF) != 0)
             {
                 counts[o << 8 | i]++;
@@ -244,7 +244,7 @@ public sealed class HdRenderer(HdPack pack)
         }
         if (!changed)
         {
-            keep.Effect = null;
+            cached.Effect = null;
             return null;
         }
         var byColor = new SortedDictionary<ulong, int>();
@@ -257,12 +257,12 @@ public sealed class HdRenderer(HdPack pack)
             }
         }
         var keys = byColor.Keys.ToArray();
-        if (keep.Lines is null || keep.Pairs is null || !keep.Pairs.AsSpan().SequenceEqual(keys))
+        if (cached.Lines is null || cached.Pairs is null || !cached.Pairs.AsSpan().SequenceEqual(keys))
         {
-            keep.Lines = ColorLines.Fit([.. byColor.Select(p => (((uint)(p.Key >> 32), (uint)p.Key), p.Value))], width * height);
-            keep.Pairs = keys;
+            cached.Lines = ColorLines.Fit([.. byColor.Select(p => (((uint)(p.Key >> 32), (uint)p.Key), p.Value))], width * height);
+            cached.Pairs = keys;
         }
-        var lines = keep.Lines;
+        var lines = cached.Lines;
         var lineAt = new int[65536];
         for (var k = 0; k < counts.Length; k++)
         {
@@ -274,29 +274,29 @@ public sealed class HdRenderer(HdPack pack)
         var lineOf = new int[width * height];
         for (var t = 0; t < lineOf.Length; t++)
         {
-            var k = keep.OwnIndex[t] << 8 | shownIndex[t];
+            var k = cached.OwnIndex[t] << 8 | shownIndex[t];
             lineOf[t] = counts[k] > 0 ? lineAt[k] : lines.Unchanged;
         }
-        keep.Effect = new PaletteEffect(lines, lineOf);
-        return keep.Effect;
+        cached.Effect = new PaletteEffect(lines, lineOf);
+        return cached.Effect;
     }
 
     /// <summary>
     /// The whole replacement, turned as drawn, through the palette effect: the pack's picture itself without either; else
     /// kept from the last frame, repainted only where a pixel's line changed (and marked changed only there).
     /// </summary>
-    private static RgbaImage Whole(AssetPlacement drawing, RgbaImage replacement, Kept keep)
+    private static RgbaImage Whole(AssetPlacement drawing, RgbaImage replacement, DrawingCache cached)
     {
         if (!drawing.FlipX && !drawing.FlipY && drawing.Effect is null)
         {
-            keep.Texture = null;
+            cached.Texture = null;
             return replacement;
         }
         var lines = drawing.Effect?.Lines;
         var lineOf = drawing.Effect?.LineOf;
-        if (keep.Texture is { } texture && keep.Mask is null && ReferenceEquals(keep.TextureLines, lines))
+        if (cached.Texture is { } texture && cached.Mask is null && ReferenceEquals(cached.TextureLines, lines))
         {
-            if (lineOf is null || keep.LineOf is null || ReferenceEquals(lineOf, keep.LineOf))
+            if (lineOf is null || cached.LineOf is null || ReferenceEquals(lineOf, cached.LineOf))
             {
                 return texture;
             }
@@ -304,7 +304,7 @@ public sealed class HdRenderer(HdPack pack)
             int left = int.MaxValue, top = int.MaxValue, right = -1, bottom = -1;
             for (var t = 0; t < lineOf.Length; t++)
             {
-                if (lineOf[t] != keep.LineOf[t])
+                if (lineOf[t] != cached.LineOf[t])
                 {
                     var (column, row) = (t % drawing.Width, t / drawing.Width);
                     (left, top, right, bottom) = (Math.Min(left, column), Math.Min(top, row), Math.Max(right, column), Math.Max(bottom, row));
@@ -314,29 +314,29 @@ public sealed class HdRenderer(HdPack pack)
             {
                 var area = Paint(texture, drawing, replacement, null, left, top, right + 1, bottom + 1);
                 texture.Changed(area.X, area.Y, area.Width, area.Height);
-                keep.LineOf = lineOf;
+                cached.LineOf = lineOf;
             }
             return texture;
         }
         texture = new RgbaImage(replacement.Width, replacement.Height);
         Paint(texture, drawing, replacement, null, 0, 0, drawing.Width, drawing.Height);
-        (keep.Texture, keep.Mask, keep.TextureLines, keep.LineOf) = (texture, null, lines, lineOf);
+        (cached.Texture, cached.Mask, cached.TextureLines, cached.LineOf) = (texture, null, lines, lineOf);
         return texture;
     }
 
     /// <summary>The replacement transparent outside the drawing's own pixels (kept while the pixels and colours stay).</summary>
-    private static RgbaImage Masked(AssetPlacement drawing, RgbaImage replacement, Kept keep)
+    private static RgbaImage Masked(AssetPlacement drawing, RgbaImage replacement, DrawingCache cached)
     {
         var lines = drawing.Effect?.Lines;
         var lineOf = drawing.Effect?.LineOf;
-        if (keep.Texture is { } kept && keep.Mask is { } mask && mask.AsSpan().SequenceEqual(drawing.Owned)
-            && ReferenceEquals(keep.TextureLines, lines) && (lineOf is null || lineOf.AsSpan().SequenceEqual(keep.LineOf)))
+        if (cached.Texture is { } kept && cached.Mask is { } mask && mask.AsSpan().SequenceEqual(drawing.Owned)
+            && ReferenceEquals(cached.TextureLines, lines) && (lineOf is null || lineOf.AsSpan().SequenceEqual(cached.LineOf)))
         {
             return kept;
         }
         var texture = new RgbaImage(replacement.Width, replacement.Height);
         Paint(texture, drawing, replacement, drawing.Owned, 0, 0, drawing.Width, drawing.Height);
-        (keep.Texture, keep.Mask, keep.TextureLines, keep.LineOf) = (texture, (bool[])drawing.Owned.Clone(), lines, lineOf);
+        (cached.Texture, cached.Mask, cached.TextureLines, cached.LineOf) = (texture, (bool[])drawing.Owned.Clone(), lines, lineOf);
         return texture;
     }
 
@@ -395,7 +395,7 @@ public sealed class HdRenderer(HdPack pack)
     private sealed record Drawing(DrawingKey Key, AssetPlacement Placement, RgbaImage Replacement, (byte[] Pixels, uint[] Palette)? OwnColors, int[] ScreenAt);
 
     /// <summary>What a drawing keeps from one frame to the next: its fitted lines and the texture made last.</summary>
-    private sealed class Kept
+    private sealed class DrawingCache
     {
         public (byte[] Pixels, uint[] Palette)? OwnColors;
         public byte[]? OwnIndex;

@@ -44,12 +44,12 @@ public sealed class DragonBlightedLand : Card
         // C: the growth is drawn as an argument of event-advance, before the event is chosen.
         var growth = c.Random(2);
         c.Events.Update(-1, -1, 0x1C, 1, growth, DragonQuest, EventUpdate.Add);
-        var what = blight < 2 ? c.Random(3) : blight < 4 ? c.Random(8) : c.Random(10) + 3;
+        var mishap = blight < 2 ? c.Random(3) : blight < 4 ? c.Random(8) : c.Random(10) + 3;
         // C: settings-block (DS:EE53) is written only on the dragon's three ways in (R081+0x20B2 / 0x20E4 / 0x2114); when the ruined
         // outlaws' battle keeps the card, its menu shows the block the card before left. Direct call j_dragon.py (local/batch/evid1o):
-        // R081+0x1848 with DS:EE53 = 0x2B, the blight query stubbed to 5, what = 7, battle-driver stubbed to 5 -> card-option-lines(0x2B).
+        // R081+0x1848 with DS:EE53 = 0x2B, the blight query stubbed to 5, mishap = 7, battle-driver stubbed to 5 -> card-option-lines(0x2B).
         // C: settings-block is CardContext.OptionsBlock, which every card that writes it keeps (OptionsBlockCards and the cards' own stores).
-        switch (what)
+        switch (mishap)
         {
             case 0:
                 c.Screen.Text(0);

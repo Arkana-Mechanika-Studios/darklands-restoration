@@ -66,8 +66,8 @@ public sealed class MenuBar
 
     private readonly GameUi _ui;
     private readonly Canvas _canvas;
-    private readonly int[] _x0;
-    private readonly int[] _x1;
+    private readonly int[] _titleLeft;
+    private readonly int[] _titleRight;
 
     // the state of root 0000 (DGROUP): drawn DS:9409, bar entry lit DS:A2E7 and its range DS:9C1E..DS:9C20, dropdown DS:940D, sub-menu DS:940F, rows DS:0204 / DS:0206, over a row DS:944B / DS:9783, the sub-menu's item DS:A340
     private bool _drawn;
@@ -83,23 +83,23 @@ public sealed class MenuBar
     private int _subParent = NoRow;
 
     // dropdown geometry DS:9789 (x), DS:987B (right), DS:9A45 (key column), DS:99E7 (width), DS:99E9 (bottom), DS:9413 (items)
-    private int _ddX;
-    private int _ddRight;
-    private int _ddKeyX;
-    private int _ddWidth;
-    private int _ddBottom;
-    private int _ddCount;
+    private int _dropdownX;
+    private int _dropdownRight;
+    private int _dropdownKeyX;
+    private int _dropdownWidth;
+    private int _dropdownBottom;
+    private int _dropdownCount;
 
     // sub-menu geometry DS:9C29 (x), DS:9C3A (right), DS:9C51 (count column), DS:9C53 (text), DS:9C48 (keys), DS:9C3F (width), DS:9C27 (y), DS:9C44 (bottom), DS:9415 (items)
-    private int _sX;
-    private int _sRight;
-    private int _sCountWidth;
-    private int _sTextX;
-    private int _sKeyX;
-    private int _sWidth;
-    private int _sY;
-    private int _sBottom;
-    private int _sCount;
+    private int _subMenuX;
+    private int _subMenuRight;
+    private int _subMenuCountWidth;
+    private int _subMenuTextX;
+    private int _subMenuKeyX;
+    private int _subMenuWidth;
+    private int _subMenuY;
+    private int _subMenuBottom;
+    private int _subMenuCount;
 
     private SavedRegion? _underBar;
     private SavedRegion? _underDropdown;
@@ -136,8 +136,8 @@ public sealed class MenuBar
         _ui = ui;
         _canvas = ui.Canvas;
         Menus = menus;
-        _x0 = new int[menus.Count];
-        _x1 = new int[menus.Count];
+        _titleLeft = new int[menus.Count];
+        _titleRight = new int[menus.Count];
     }
 
     public IReadOnlyList<Menu> Menus { get; }
@@ -191,7 +191,7 @@ public sealed class MenuBar
     public static int BeforeGameItems(GameState state) => (state.Party.Last.Member & 0xFF) << 8;
 
     /// <summary>DS:987B: the right edge of the last dropdown opened (0 before the first).</summary>
-    public int DropdownRight => _ddRight;
+    public int DropdownRight => _dropdownRight;
 
     /// <summary>Runs the bar while the right button is held (or, with <paramref name="keyboard"/>, until the keyboard menu ends), then the chosen item.</summary>
     // orig: menu-bar-loop(m, 0): (hotkey-table for a waiting key is GameUi's) the loop: in menu mode a key or the right button goes to 0dd2; active while the right button is held or menu mode is on: menu-bar-paint and menu-bar-pointer-follow; once inactive with the bar drawn: DS:9409 = 0, the dropdown closed (0bc2), then the item under the pointer (DS:944B: items[DS:0204], if enabled and DS:9413 > DS:0204) and the sub-item (DS:9783: items[DS:A340].sub[DS:0206], if enabled and DS:9415 > DS:0206) are called, the window's colour and font put back first
@@ -261,7 +261,7 @@ public sealed class MenuBar
         if (_overItem)
         {
             _overItem = false;
-            if (menu >= 0 && item >= 0 && item < _ddCount && Menus[menu].Items[item] is { On: 1 } chosen)
+            if (menu >= 0 && item >= 0 && item < _dropdownCount && Menus[menu].Items[item] is { On: 1 } chosen)
             {
                 chosen.Run();
             }
@@ -270,7 +270,7 @@ public sealed class MenuBar
         {
             _overSub = false;
             if (menu >= 0 && parent >= 0 && parent < Menus[menu].Items.Count && Menus[menu].Items[parent].SubMenu is { } subs &&
-                sub >= 0 && sub < _sCount && sub < subs.Count && subs[sub].On == 1)
+                sub >= 0 && sub < _subMenuCount && sub < subs.Count && subs[sub].On == 1)
             {
                 subs[sub].Run();
             }
@@ -330,10 +330,10 @@ public sealed class MenuBar
         for (var j = 0; j < Menus.Count; j++)
         {
             var width = _ui.Text.Measure(Menus[j].Title);
-            _x0[j] = x;
+            _titleLeft[j] = x;
             _ui.Text.Draw(_canvas, WindowX + x + 4, 3, Menus[j].Title, Menus[j].Opens == 1 ? Enabled : Disabled);
             x += width + 8;
-            _x1[j] = x - 1;
+            _titleRight[j] = x - 1;
         }
         (_dropdownOpen, _submenuOpen, _drawn, _lit) = (false, false, true, -1);
     }
@@ -348,7 +348,7 @@ public sealed class MenuBar
             _overItem = false;
             for (var j = 0; j < Menus.Count; j++)
             {
-                if (x < _x0[j] || _x1[j] < x)
+                if (x < _titleLeft[j] || _titleRight[j] < x)
                 {
                     continue;
                 }
@@ -369,30 +369,30 @@ public sealed class MenuBar
                         _dropdownOpen = false;
                         _itemRow = -1;
                     }
-                    (_lit, _litX0, _litX1) = (j, _x0[j], _x1[j]);
+                    (_lit, _litX0, _litX1) = (j, _titleLeft[j], _titleRight[j]);
                     Recolor(_litX0, 0, _litX1 - _litX0 + 1, BarHeight, Enabled, Lit);
                     if (Menus[j].Opens == 1)
                     {
-                        OpenDropdown(Menus[j].Items, _x0[j], my);
+                        OpenDropdown(Menus[j].Items, _titleLeft[j], my);
                     }
                 }
-                else if (_itemRow >= 0 && _itemRow < _ddCount)
+                else if (_itemRow >= 0 && _itemRow < _dropdownCount)
                 {
-                    Recolor(_ddX, _itemRow * RowHeight + BarHeight, _ddWidth, RowHeight, Lit, Enabled);
+                    Recolor(_dropdownX, _itemRow * RowHeight + BarHeight, _dropdownWidth, RowHeight, Lit, Enabled);
                     _itemRow = -1;
                 }
             }
             return;
         }
-        if (_dropdownOpen && x >= _ddX && x <= _ddRight && my >= BarHeight && _ddBottom >= my)
+        if (_dropdownOpen && x >= _dropdownX && x <= _dropdownRight && my >= BarHeight && _dropdownBottom >= my)
         {
             _overItem = true;
             var row = (my - BarHeight) / RowHeight;
             if (row != _itemRow)
             {
-                if (_itemRow >= 0 && _itemRow < _ddCount)
+                if (_itemRow >= 0 && _itemRow < _dropdownCount)
                 {
-                    Recolor(_ddX, _itemRow * RowHeight + BarHeight, _ddWidth, RowHeight, Lit, Enabled);
+                    Recolor(_dropdownX, _itemRow * RowHeight + BarHeight, _dropdownWidth, RowHeight, Lit, Enabled);
                 }
                 if (_submenuOpen)
                 {
@@ -400,14 +400,14 @@ public sealed class MenuBar
                     _subParent = NoRow;
                 }
                 _itemRow = row;
-                if (_itemRow < _ddCount)
+                if (_itemRow < _dropdownCount)
                 {
-                    Recolor(_ddX, _itemRow * RowHeight + BarHeight, _ddWidth, RowHeight, Enabled, Lit);
+                    Recolor(_dropdownX, _itemRow * RowHeight + BarHeight, _dropdownWidth, RowHeight, Enabled, Lit);
                     // C: row == DS:9413 reads the terminating entry (empty text, no sub-menu)
                     var item = Menus[_lit].Items[_itemRow];
                     if (item.SubMenu is { } subMenu && !_submenuOpen && item.On == 1)
                     {
-                        OpenSubmenu(subMenu, _ddRight + 1, _itemRow * RowHeight + BarHeight);
+                        OpenSubmenu(subMenu, _dropdownRight + 1, _itemRow * RowHeight + BarHeight);
                         _subParent = _itemRow;
                     }
                 }
@@ -415,39 +415,39 @@ public sealed class MenuBar
             }
             if (_subRow != NoRow)
             {
-                Recolor(_sX, _subRow * RowHeight + _sY + 1, _sWidth, RowHeight, Lit, Enabled);
+                Recolor(_subMenuX, _subRow * RowHeight + _subMenuY + 1, _subMenuWidth, RowHeight, Lit, Enabled);
                 _subRow = NoRow;
             }
             return;
         }
-        if (_submenuOpen && x >= _sX && x <= _sRight && _sY <= my && _sBottom >= my)
+        if (_submenuOpen && x >= _subMenuX && x <= _subMenuRight && _subMenuY <= my && _subMenuBottom >= my)
         {
             _overSub = true;
             var row = (my - BarHeight) / RowHeight;
             if (row - _subParent != _subRow)
             {
-                if (_subRow >= 0 && _subRow < _sCount)
+                if (_subRow >= 0 && _subRow < _subMenuCount)
                 {
-                    Recolor(_sX, _subRow * RowHeight + _sY + 1, _sWidth, RowHeight, Lit, Enabled);
+                    Recolor(_subMenuX, _subRow * RowHeight + _subMenuY + 1, _subMenuWidth, RowHeight, Lit, Enabled);
                 }
                 _subRow = row - _subParent;
-                if (_subRow >= 0 && _subRow < _sCount)
+                if (_subRow >= 0 && _subRow < _subMenuCount)
                 {
-                    Recolor(_sX, _subRow * RowHeight + _sY + 1, _sWidth, RowHeight, Enabled, Lit);
+                    Recolor(_subMenuX, _subRow * RowHeight + _subMenuY + 1, _subMenuWidth, RowHeight, Enabled, Lit);
                 }
             }
             return;
         }
         if (_overItem)
         {
-            Recolor(_ddX, _itemRow * RowHeight + BarHeight, _ddWidth, RowHeight, Lit, Enabled);
+            Recolor(_dropdownX, _itemRow * RowHeight + BarHeight, _dropdownWidth, RowHeight, Lit, Enabled);
             _overItem = false;
             _itemRow = -1;
             return;
         }
         if (_overSub)
         {
-            Recolor(_sX, _subRow * RowHeight + _sY + 1, _sWidth, RowHeight, Lit, Enabled);
+            Recolor(_subMenuX, _subRow * RowHeight + _subMenuY + 1, _subMenuWidth, RowHeight, Lit, Enabled);
             _overSub = false;
             _subRow = NoRow;
         }
@@ -457,26 +457,26 @@ public sealed class MenuBar
     // C: (y - 0xe) / 8 truncates toward zero: opening with the pointer at y 7..11 of the bar lights the first item.
     private void OpenDropdown(IReadOnlyList<Item> items, int x, int y)
     {
-        _ddCount = items.Count;
+        _dropdownCount = items.Count;
         var nameWidth = items.Max(i => _ui.Text.Measure(i.Text()));
         var keyWidth = items.Max(i => _ui.Text.Measure(i.Key));
-        _ddX = x;
-        _ddRight = x + keyWidth + nameWidth + 9;
-        _ddKeyX = _ddX + nameWidth + 6;
-        _ddWidth = _ddRight - _ddX + 1;
-        _ddBottom = (_ddCount << 3) + 0x0E;
-        _underDropdown = _canvas.Save(WindowX + _ddX, BarHeight, _ddWidth, (_ddCount << 3) + 3);
-        ScreenDrawing.FrameBox(_canvas, _ui.Assets.CommonSprites, WindowX + _ddX, 0x0B, _ddWidth, (_ddCount << 3) + 4, BoxColor);
-        for (var j = 0; j < _ddCount; j++)
+        _dropdownX = x;
+        _dropdownRight = x + keyWidth + nameWidth + 9;
+        _dropdownKeyX = _dropdownX + nameWidth + 6;
+        _dropdownWidth = _dropdownRight - _dropdownX + 1;
+        _dropdownBottom = (_dropdownCount << 3) + 0x0E;
+        _underDropdown = _canvas.Save(WindowX + _dropdownX, BarHeight, _dropdownWidth, (_dropdownCount << 3) + 3);
+        ScreenDrawing.FrameBox(_canvas, _ui.Assets.CommonSprites, WindowX + _dropdownX, 0x0B, _dropdownWidth, (_dropdownCount << 3) + 4, BoxColor);
+        for (var j = 0; j < _dropdownCount; j++)
         {
             var color = items[j].On == 1 ? Enabled : Disabled;
             _ui.Text.Draw(_canvas, WindowX + x + 3, 0x0E + j * RowHeight, items[j].Text(), color);
-            _ui.Text.Draw(_canvas, WindowX + _ddKeyX, 0x0E + j * RowHeight, items[j].Key, color);
+            _ui.Text.Draw(_canvas, WindowX + _dropdownKeyX, 0x0E + j * RowHeight, items[j].Key, color);
         }
         _itemRow = (y - 0x0E) / RowHeight;
-        if (_itemRow >= 0 && _itemRow < _ddCount)
+        if (_itemRow >= 0 && _itemRow < _dropdownCount)
         {
-            Recolor(_ddX, (_itemRow << 3) + BarHeight, _ddWidth, RowHeight, Enabled, Lit);
+            Recolor(_dropdownX, (_itemRow << 3) + BarHeight, _dropdownWidth, RowHeight, Enabled, Lit);
         }
         _dropdownOpen = true;
     }
@@ -485,32 +485,32 @@ public sealed class MenuBar
     // C: the area is saved to the back page one pixel right and down of where it is and put back from there: the same rectangle.
     private void OpenSubmenu(IReadOnlyList<SubItem> subs, int x, int y)
     {
-        _sCount = subs.Count;
+        _subMenuCount = subs.Count;
         string Count(SubItem s) => s.Count.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
         var countWidth = subs.Where(s => s.Count >= 2).Select(s => _ui.Text.Measure(Count(s))).DefaultIfEmpty(0).Max();
         var nameWidth = subs.Max(s => _ui.Text.Measure(s.Text()));
         var keyWidth = subs.Max(s => _ui.Text.Measure(s.Key));
-        _sCountWidth = countWidth != 0 ? countWidth + 3 : 0;
-        _sX = x - 1;
-        _sRight = _sX + keyWidth + _sCountWidth + nameWidth + 9;
-        _sTextX = _sX + _sCountWidth + 3;
-        _sKeyX = _sX + _sCountWidth + nameWidth + 6;
-        _sWidth = _sRight - _sX + 1;
-        _sY = y - 1;
-        _sBottom = _sY + (_sCount << 3) - 1;
-        _underSubmenu = _canvas.Save(WindowX + _sX, _sY, _sWidth, (_sCount << 3) + 4);
-        ScreenDrawing.FrameBox(_canvas, _ui.Assets.CommonSprites, WindowX + _sX, _sY, _sWidth, (_sCount << 3) + 4, BoxColor);
-        for (var j = 0; j < _sCount; j++)
+        _subMenuCountWidth = countWidth != 0 ? countWidth + 3 : 0;
+        _subMenuX = x - 1;
+        _subMenuRight = _subMenuX + keyWidth + _subMenuCountWidth + nameWidth + 9;
+        _subMenuTextX = _subMenuX + _subMenuCountWidth + 3;
+        _subMenuKeyX = _subMenuX + _subMenuCountWidth + nameWidth + 6;
+        _subMenuWidth = _subMenuRight - _subMenuX + 1;
+        _subMenuY = y - 1;
+        _subMenuBottom = _subMenuY + (_subMenuCount << 3) - 1;
+        _underSubmenu = _canvas.Save(WindowX + _subMenuX, _subMenuY, _subMenuWidth, (_subMenuCount << 3) + 4);
+        ScreenDrawing.FrameBox(_canvas, _ui.Assets.CommonSprites, WindowX + _subMenuX, _subMenuY, _subMenuWidth, (_subMenuCount << 3) + 4, BoxColor);
+        for (var j = 0; j < _subMenuCount; j++)
         {
             var color = subs[j].On == 1 ? Enabled : Disabled;
-            var lineY = _sY + j * RowHeight + 3;
+            var lineY = _subMenuY + j * RowHeight + 3;
             if (subs[j].Count > 1)
             {
                 var number = Count(subs[j]);
-                _ui.Text.Draw(_canvas, WindowX + (_sCountWidth - _ui.Text.Measure(number)) / 2 + _sX + 3, lineY, number, color);
+                _ui.Text.Draw(_canvas, WindowX + (_subMenuCountWidth - _ui.Text.Measure(number)) / 2 + _subMenuX + 3, lineY, number, color);
             }
-            _ui.Text.Draw(_canvas, WindowX + _sTextX, lineY, subs[j].Text(), color);
-            _ui.Text.Draw(_canvas, WindowX + _sKeyX, lineY, subs[j].Key, color);
+            _ui.Text.Draw(_canvas, WindowX + _subMenuTextX, lineY, subs[j].Text(), color);
+            _ui.Text.Draw(_canvas, WindowX + _subMenuKeyX, lineY, subs[j].Key, color);
         }
         _subRow = NoRow;
         _submenuOpen = true;

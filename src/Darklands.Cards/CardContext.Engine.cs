@@ -15,7 +15,7 @@ public sealed partial class CardContext
     /// </summary>
     public bool RulesConnected => _rulesConnected;
 
-    private static bool ConnectRules(GameState state, WorldData world, ICardScreen screen)
+    private static bool ConnectRulesToCardScreen(GameState state, WorldData world, ICardScreen screen)
     {
         if (state.Data is Core.World.NoGameData)
         {

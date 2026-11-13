@@ -37,7 +37,7 @@ internal sealed class LauncherModel
         Filter = Filters[((i + step) % Filters.Count + Filters.Count) % Filters.Count].Value;
     }
 
-    private static readonly double[] Factors = [1, 1.5, 2, 2.5, 3, 4];
+    private static readonly double[] WindowScaleFactors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
     private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys) _initial;
@@ -340,7 +340,7 @@ internal sealed class LauncherModel
     /// <summary>The sizes that fit the screen (all of them when its size is unknown), and the current one.</summary>
     private static List<(int Width, int Height)> WindowChoices((int Width, int Height)? display, (int Width, int Height) current)
     {
-        var sizes = Factors
+        var sizes = WindowScaleFactors
             .Select(f => ((int)(BaseWidth * f), (int)(BaseHeight * f)))
             .Where(size => display is not { } d || (size.Item1 <= d.Width && size.Item2 <= d.Height))
             .ToList();

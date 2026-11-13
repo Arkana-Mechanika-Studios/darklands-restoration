@@ -32,8 +32,8 @@ public static class MonthlyUpdate
         }
         if (month % 3 == 0)
         {
-            var from = s.Here?.Position ?? s.MapPosition;
-            var castle = LocationRules.FarOfType(s, from.X, from.Y, Icons.RuinedRaubritterCastle);
+            var searchOrigin = s.Here?.Position ?? s.MapPosition;
+            var castle = LocationRules.FarOfType(s, searchOrigin.X, searchOrigin.Y, Icons.RuinedRaubritterCastle);
             if (castle != s.CurrentLocation && castle != -1)
             {
                 var place = s.Locations[castle];

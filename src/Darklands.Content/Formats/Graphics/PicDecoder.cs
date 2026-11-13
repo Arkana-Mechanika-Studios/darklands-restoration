@@ -178,46 +178,46 @@ public sealed class PicDecoder
         return new Palette256(colors);
     }
 
-    private static List<int> LzwBytesToIndexes(ReadOnlySpan<byte> data, int mode)
+    private static List<int> UnpackLzwCodes(ReadOnlySpan<byte> data, int mode)
     {
         // The packed code width grows until it reaches the mode-specific limit.
         var parsedIndexes = new List<int>();
         var offset = 0;
-        var usableBits = 0;
-        var usableBitCount = 0;
-        var indicatorLength = 1;
-        var indicatorFlag = 0x001;
-        var nextThreshold = 0x0100;
-        var decodedCounter = 0;
+        var bitBuffer = 0;
+        var bitCount = 0;
+        var extraBitCount = 1;
+        var extraBitsMask = 0x001;
+        var widenAfterCodes = 0x0100;
+        var codesSinceWider = 0;
 
         while (offset < data.Length)
         {
-            while (usableBitCount < 8 + indicatorLength && offset < data.Length)
+            while (bitCount < 8 + extraBitCount && offset < data.Length)
             {
-                usableBits |= data[offset++] << usableBitCount;
-                usableBitCount += 8;
+                bitBuffer |= data[offset++] << bitCount;
+                bitCount += 8;
             }
 
-            while (usableBitCount >= 8 + indicatorLength)
+            while (bitCount >= 8 + extraBitCount)
             {
-                var index = usableBits & (((indicatorFlag << 8) & 0xFF00) | 0x00FF);
-                usableBits >>= 8;
-                usableBitCount -= 8;
-                usableBits >>= indicatorLength;
-                usableBitCount -= indicatorLength;
-                decodedCounter++;
-                if (decodedCounter == nextThreshold)
+                var index = bitBuffer & (((extraBitsMask << 8) & 0xFF00) | 0x00FF);
+                bitBuffer >>= 8;
+                bitCount -= 8;
+                bitBuffer >>= extraBitCount;
+                bitCount -= extraBitCount;
+                codesSinceWider++;
+                if (codesSinceWider == widenAfterCodes)
                 {
-                    decodedCounter = 0;
-                    indicatorLength++;
-                    indicatorFlag = (indicatorFlag << 1) | 1;
-                    nextThreshold <<= 1;
-                    if (8 + indicatorLength > mode)
+                    codesSinceWider = 0;
+                    extraBitCount++;
+                    extraBitsMask = (extraBitsMask << 1) | 1;
+                    widenAfterCodes <<= 1;
+                    if (8 + extraBitCount > mode)
                     {
-                        decodedCounter = 0;
-                        indicatorLength = 1;
-                        indicatorFlag = 0x001;
-                        nextThreshold = 0x0100;
+                        codesSinceWider = 0;
+                        extraBitCount = 1;
+                        extraBitsMask = 0x001;
+                        widenAfterCodes = 0x0100;
                     }
                 }
 
@@ -234,7 +234,7 @@ public sealed class PicDecoder
         // 256 an empty string, new strings from 0x101; when it is full the next code starts a new dictionary as a plain byte.
         // Each string is kept as (prefix code, last byte, length, first byte) and written out backwards: the bytes are those of the
         // list-of-strings form this replaced (PicDecoderReferenceTests compares the two on every picture).
-        var indexes = LzwBytesToIndexes(data, mode);
+        var indexes = UnpackLzwCodes(data, mode);
         var size = Math.Max(1 << mode, 0x0101);
         var maxEntries = 1 << mode;
         var prefix = new int[size];

@@ -156,7 +156,7 @@ public static class SettingsFile
                     case "savesFolder": settings.SavesFolder = FilePath(name, value); break;
                     case "textFont": settings.TextFont = FilePath(name, value); break;
                     case "screenshotsFolder": settings.ScreenshotsFolder = FilePath(name, value); break;
-                    case "mods": settings.Mods = Words(name, value)?.Select(Environment.ExpandEnvironmentVariables).ToList() ?? settings.Mods; break;
+                    case "mods": settings.Mods = Tokens(name, value)?.Select(Environment.ExpandEnvironmentVariables).ToList() ?? settings.Mods; break;
                     case "display": Section(name, value, settings, Display); break;
                     case "sound": Section(name, value, settings, Sound); break;
                     case "startup": Section(name, value, settings, Startup); break;
@@ -287,9 +287,9 @@ public static class SettingsFile
                 switch (property.Name)
                 {
                     case "card": card = CardNumber(field, property.Value); break;
-                    case "port": port = Word(field, property.Value); break;
-                    case "irq": irq = Word(field, property.Value); break;
-                    case "dma": dma = Word(field, property.Value); break;
+                    case "port": port = Number16(field, property.Value); break;
+                    case "irq": irq = Number16(field, property.Value); break;
+                    case "dma": dma = Number16(field, property.Value); break;
                     default: Unknown(field); break;
                 }
             }
@@ -307,7 +307,7 @@ public static class SettingsFile
                 case "banner": settings.Banner = Boolean(key, property.Value) ?? settings.Banner; break;
                 case "intro": settings.Intro = Boolean(key, property.Value) ?? settings.Intro; break;
                 case "launcher": break; // retired (1.0): the launcher at every start; DarklandsRP Launcher shows it, so old files are read without a warning
-                case "commandLine": settings.CommandLine = Words(key, property.Value) ?? settings.CommandLine; break;
+                case "commandLine": settings.CommandLine = Tokens(key, property.Value) ?? settings.CommandLine; break;
                 default: Unknown(key); break;
             }
         }
@@ -421,7 +421,7 @@ public static class SettingsFile
         }
 
         /// <summary>A 16-bit word: a whole number, or text such as "0x220" or "220h" (hexadecimal) or "544".</summary>
-        private int? Word(string key, JsonElement value)
+        private int? Number16(string key, JsonElement value)
         {
             if (value.ValueKind == JsonValueKind.Null)
             {
@@ -451,7 +451,7 @@ public static class SettingsFile
                 return known;
             }
             var before = problems.Count;
-            var number = Word(key, value);
+            var number = Number16(key, value);
             if (number is null && problems.Count > before)
             {
                 problems[^1] = $"\"{key}\" must be the card's number (0 AdLib, 2 Sound Blaster, 4 Sound Blaster Pro 2, 7 Roland, 127 speaker ...) or a name ({string.Join(", ", ConfigDrkSettings.CardNames.Keys)}); ignored";
@@ -459,7 +459,7 @@ public static class SettingsFile
             return number;
         }
 
-        private List<string>? Words(string key, JsonElement value)
+        private List<string>? Tokens(string key, JsonElement value)
         {
             if (value.ValueKind == JsonValueKind.Null)
             {

@@ -54,7 +54,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     private readonly Func<int, bool> _eventStarted = eventStarted ?? state.Events.Started;
     private int _minutes;
-    private int _danger;
+    private int _dangerCounter;
 
     // orig: DS:D843, a program global: the map's party drawing R030+0x16C6 and the step write it, no load touches it (a write watch over
     //   gen-carry-07: R030+0x16C6's writes only, none by the Alt-L's load R037+0x8B76), so the wild battlefield generator (R008+0x009C) and the
@@ -115,7 +115,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     public void Begin()
     {
         _minutes = 0;
-        _danger = 0;
+        _dangerCounter = 0;
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);
         // C: at the start the row buffer was just read for the view (RowBuffer.Open): the buffer holds the map's own cells
         PartyTerrain = FreshTerrainUnderMarker(column, row);
@@ -166,13 +166,13 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
             return new StepResult(StepOutcome.Walked);
         }
         // C: the danger counter DS:E488 rises with probability 10/500 per step while it is below 10: roll-below(500) <= 9 is drawn only then.
-        if (_danger < 10 && state.Random.Below(500) <= 9)
+        if (_dangerCounter < 10 && state.Random.Below(500) <= 9)
         {
-            _danger++;
+            _dangerCounter++;
         }
         // C: w = R030+0x2D44(t, found) is computed (no draw) before roll-below(1000) is drawn; "(DS:E488 + 1) * w < roll-below(1000)" is int arithmetic.
         var weight = EncounterWeight(terrain, near);
-        if ((_danger + 1) * weight < state.Random.Below(1000))
+        if ((_dangerCounter + 1) * weight < state.Random.Below(1000))
         {
             return new StepResult(StepOutcome.Walked);
         }
@@ -239,8 +239,8 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         for (var i = 0; i < state.Locations.Count; i++)
         {
             var p = state.Locations[i];
-            var u = p.NoticeRange;
-            if (p.X < column + 1 - (u + 1) / 2 || p.X > column + (u + 1) / 2 || p.Y < row - u || p.Y > row + u + 1)
+            var noticeRange = p.NoticeRange;
+            if (p.X < column + 1 - (noticeRange + 1) / 2 || p.X > column + (noticeRange + 1) / 2 || p.Y < row - noticeRange || p.Y > row + noticeRange + 1)
             {
                 continue;
             }

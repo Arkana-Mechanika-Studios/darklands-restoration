@@ -46,7 +46,7 @@ public sealed class Implode
     /// <summary>The end code: literal 0x305.</summary>
     private const int EndCode = 0x305;
 
-    private readonly byte[] _w = new byte[WorkSize];
+    private readonly byte[] _work = new byte[WorkSize];
 
     /// <summary>DS:6F12: the partial-match table of the repetition search (0x204 words, in DGROUP, not in the work area).</summary>
     private readonly ushort[] _next = new ushort[0x204];
@@ -62,7 +62,7 @@ public sealed class Implode
     /// <summary>A compressor whose work area starts with <paramref name="workArea"/> (what the memory held before; the rest zeros).</summary>
     public Implode(ReadOnlySpan<byte> workArea)
     {
-        workArea[..Math.Min(workArea.Length, WorkSize)].CopyTo(_w);
+        workArea[..Math.Min(workArea.Length, WorkSize)].CopyTo(_work);
     }
 
     /// <summary>
@@ -101,14 +101,14 @@ public sealed class Implode
             case 0:
                 for (var i = 0; i < 0x100; i++)
                 {
-                    _w[ChBitsAt + i] = 9;
+                    _work[ChBitsAt + i] = 9;
                     SetWord(ChCodesAt + 2 * i, 2 * i);
                 }
                 break;
             case 1:
                 for (var i = 0xFF; i >= 0; i--)
                 {
-                    _w[ChBitsAt + i] = (byte)(DclTables.ChBitsAsc[i] + 1);
+                    _work[ChBitsAt + i] = (byte)(DclTables.ChBitsAsc[i] + 1);
                     SetWord(ChCodesAt + 2 * i, DclTables.ChCodeAsc[i] << 1);
                 }
                 break;
@@ -122,12 +122,12 @@ public sealed class Implode
             var count = 1 << DclTables.ExLenBits[k];
             for (var extra = 0; extra < count; extra++, n++)
             {
-                _w[ChBitsAt + n] = (byte)(DclTables.LenBits[k] + 1 + DclTables.ExLenBits[k]);
+                _work[ChBitsAt + n] = (byte)(DclTables.LenBits[k] + 1 + DclTables.ExLenBits[k]);
                 SetWord(ChCodesAt + 2 * n, (((extra << DclTables.LenBits[k]) | DclTables.LenCode[k]) << 1) + 1);
             }
         }
-        DclTables.DistCode.CopyTo(_w, DistCodesAt);
-        DclTables.DistBits.CopyTo(_w, DistBitsAt);
+        DclTables.DistCode.CopyTo(_work, DistCodesAt);
+        DclTables.DistBits.CopyTo(_work, DistBitsAt);
         WriteCompressed();
         return 0;
     }
@@ -137,10 +137,10 @@ public sealed class Implode
     private void WriteCompressed()
     {
         var input = WorkBuffAt + Word(DsizeBytes) + 0x204;
-        _w[OutBuffAt] = _w[Ctype];
-        _w[OutBuffAt + 1] = _w[DsizeBits];
+        _work[OutBuffAt] = _work[Ctype];
+        _work[OutBuffAt + 1] = _work[DsizeBits];
         SetWord(OutBytes, 2);
-        Array.Clear(_w, OutBuffAt + 2, 0x800);
+        Array.Clear(_work, OutBuffAt + 2, 0x800);
         var phase = 0;
         var ended = false;
         SetWord(OutBits, 0);
@@ -149,7 +149,7 @@ public sealed class Implode
             int toLoad = 0x1000, total = 0;
             while (true)
             {
-                var loaded = _read(_w, WorkBuffAt + Word(DsizeBytes) + 0x204 + total, toLoad);
+                var loaded = _read(_work, WorkBuffAt + Word(DsizeBytes) + 0x204 + total, toLoad);
                 if (loaded == 0)
                 {
                     if (total == 0 && phase == 0)
@@ -216,7 +216,7 @@ public sealed class Implode
                     var next = FindRepetition(at + 1);
                     if (next > savedLength && (savedLength + 1 < next || savedDistance > 0x80))
                     {
-                        OutputBits(_w[ChBitsAt + _w[at]], Word(ChCodesAt + 2 * _w[at]));
+                        OutputBits(_work[ChBitsAt + _work[at]], Word(ChCodesAt + 2 * _work[at]));
                         at++;
                         length = next;
                         goto Decide;
@@ -225,29 +225,29 @@ public sealed class Implode
                     SetWord(Distance, savedDistance);
                 }
             Repetition:
-                OutputBits(_w[ChBitsAt + length + 0xFE], Word(ChCodesAt + 2 * (length + 0xFE)));
+                OutputBits(_work[ChBitsAt + length + 0xFE], Word(ChCodesAt + 2 * (length + 0xFE)));
                 if (length == 2)
                 {
                     var high = Word(Distance) >> 2;
-                    OutputBits(_w[DistBitsAt + high], _w[DistCodesAt + high]);
-                    OutputBits(2, _w[Distance] & 3);
+                    OutputBits(_work[DistBitsAt + high], _work[DistCodesAt + high]);
+                    OutputBits(2, _work[Distance] & 3);
                 }
                 else
                 {
-                    var high = Word(Distance) >> (_w[DsizeBits] & 0x1F);
-                    OutputBits(_w[DistBitsAt + high], _w[DistCodesAt + high]);
+                    var high = Word(Distance) >> (_work[DsizeBits] & 0x1F);
+                    OutputBits(_work[DistBitsAt + high], _work[DistCodesAt + high]);
                     OutputBits(Word(DsizeBits), Word(DsizeMask) & Word(Distance));
                 }
                 at += length;
                 continue;
             Literal:
-                OutputBits(_w[ChBitsAt + _w[at]], Word(ChCodesAt + 2 * _w[at]));
+                OutputBits(_work[ChBitsAt + _work[at]], Word(ChCodesAt + 2 * _work[at]));
                 at++;
             }
             if (!ended)
             {
                 // C: the dictionary and the look-ahead move down by 0x1000 (a forward copy within the work area).
-                Array.Copy(_w, WorkBuffAt + 0x1000, _w, WorkBuffAt, Word(DsizeBytes) + 0x204);
+                Array.Copy(_work, WorkBuffAt + 0x1000, _work, WorkBuffAt, Word(DsizeBytes) + 0x204);
                 at -= 0x1000;
             }
             input = at;
@@ -261,12 +261,12 @@ public sealed class Implode
 
     private void WriteEnd()
     {
-        OutputBits(_w[ChBitsAt + EndCode], Word(ChCodesAt + 2 * EndCode));
+        OutputBits(_work[ChBitsAt + EndCode], Word(ChCodesAt + 2 * EndCode));
         if (Word(OutBits) != 0)
         {
             SetWord(OutBytes, Word(OutBytes) + 1);
         }
-        _write(_w, OutBuffAt, Word(OutBytes));
+        _write(_work, OutBuffAt, Word(OutBytes));
     }
 
     /// <summary>
@@ -278,11 +278,11 @@ public sealed class Implode
     // checks the first byte only). The counting pass reads the byte at end (one past the range).
     private void SortPairs(int begin, int end)
     {
-        Array.Clear(_w, PairHashIndexAt, 0x900 * 2);
+        Array.Clear(_work, PairHashIndexAt, 0x900 * 2);
         var count = (end - begin) & 0xFFFF;
         for (int k = 0, p = begin; k < count || (count == 0 && k < 0x10000); k++, p++)
         {
-            var slot = PairHashIndexAt + 2 * (_w[p] * 8 + _w[p + 1]);
+            var slot = PairHashIndexAt + 2 * (_work[p] * 8 + _work[p + 1]);
             SetWord(slot, Word(slot) + 2);
         }
         var sum = PairHashOffsetsAt;
@@ -293,7 +293,7 @@ public sealed class Implode
         }
         for (int k = 0, p = end; k < count || (count == 0 && k < 0x10000); k++)
         {
-            int second = _w[p--], first = _w[p];
+            int second = _work[p--], first = _work[p];
             var slot = PairHashIndexAt + 2 * (first * 8 + second);
             SetWord(slot, Word(slot) - 2);
             SetWord(Word(slot), p);
@@ -311,7 +311,7 @@ public sealed class Implode
     private int FindRepetition(int input)
     {
         var best = 1;
-        var slot = PairHashIndexAt + 2 * (_w[input] * 8 + _w[input + 1]);
+        var slot = PairHashIndexAt + 2 * (_work[input] * 8 + _work[input + 1]);
         var p = Word(slot);
         var lowest = (input - Word(DsizeBytes) + 1) & 0xFFFF;
         if (Word(p) < lowest)
@@ -336,13 +336,13 @@ public sealed class Implode
         si = input;
         cx = si;
         bx = best - 1;
-        al = _w[bx + si];
+        al = _work[bx + si];
         goto Compare;
 
     Restart:
         bx = best - 1;
         si = input;
-        al = _w[bx + si];
+        al = _work[bx + si];
         cx = si;
     Resume:
         si = cx;
@@ -354,11 +354,11 @@ public sealed class Implode
             return best >= 2 ? best : 0;
         }
     Compare:
-        if (_w[bx + di] != al)
+        if (_work[bx + di] != al)
         {
             goto NextCandidate;
         }
-        zf = _w[si] == _w[di];
+        zf = _work[si] == _work[di];
         si++;
         di++;
         if (!zf)
@@ -404,8 +404,8 @@ public sealed class Implode
         cx = best;
         do
         {
-            al = _w[input + di];
-            if (_w[input + si] != al)
+            al = _work[input + di];
+            if (_work[input + si] != al)
             {
                 si = _next[si];
                 if ((short)si >= 0)
@@ -462,7 +462,7 @@ public sealed class Implode
                     return best;
                 }
             }
-            while (Pair(bx + di) != Pair(bx + si) || _w[si] != _w[di]);
+            while (Pair(bx + di) != Pair(bx + si) || _work[si] != _work[di]);
             cx = 2;
             candidate = di;
             di += 2;
@@ -492,9 +492,9 @@ public sealed class Implode
         best = cx;
         do
         {
-            al = _w[input + matchedAt];
+            al = _work[input + matchedAt];
             bx = matchedNext;
-            if (_w[input + bx] != al)
+            if (_work[input + bx] != al)
             {
                 bx = _next[bx];
                 if ((short)bx >= 0)
@@ -520,7 +520,7 @@ public sealed class Implode
         equal = false;
         while (count != 0)
         {
-            equal = _w[si] == _w[di];
+            equal = _work[si] == _work[di];
             si++;
             di++;
             count--;
@@ -532,7 +532,7 @@ public sealed class Implode
         return count;
     }
 
-    private int Pair(int at) => _w[at] | _w[at + 1] << 8;
+    private int Pair(int at) => _work[at] | _work[at + 1] << 8;
 
     /// <summary>Puts the low <paramref name="count"/> bits of <paramref name="bits"/> into the output, low bit first.</summary>
     // orig: R003+0x24D2 (1016:0AD2) asm
@@ -547,14 +547,14 @@ public sealed class Implode
         }
         var used = Word(OutBits);
         var at = Word(OutBytes);
-        _w[OutBuffAt + at] |= (byte)(value << used);
+        _work[OutBuffAt + at] |= (byte)(value << used);
         var filled = used + count;
         SetWord(OutBits, filled);
         if (filled > 8)
         {
             at++;
             value >>= 8 - used;
-            _w[OutBuffAt + at] = (byte)value;
+            _work[OutBuffAt + at] = (byte)value;
             SetWord(OutBits, filled & 7);
         }
         else
@@ -576,26 +576,26 @@ public sealed class Implode
     // orig: R003+0x2621 (1016:0C21) asm
     private void FlushOutput()
     {
-        _write(_w, OutBuffAt, 0x800);
-        var filling = _w[OutBuffAt + Word(OutBytes)];
-        var after = _w[OutBuffAt + 0x800];
+        _write(_work, OutBuffAt, 0x800);
+        var filling = _work[OutBuffAt + Word(OutBytes)];
+        var after = _work[OutBuffAt + 0x800];
         SetWord(OutBytes, Word(OutBytes) - 0x800);
-        Array.Clear(_w, OutBuffAt, 0x802);
+        Array.Clear(_work, OutBuffAt, 0x802);
         if (Word(OutBytes) != 0)
         {
-            _w[OutBuffAt] = after;
+            _work[OutBuffAt] = after;
         }
         if (Word(OutBits) != 0)
         {
-            _w[OutBuffAt + Word(OutBytes)] = filling;
+            _work[OutBuffAt + Word(OutBytes)] = filling;
         }
     }
 
-    private int Word(int at) => _w[at] | _w[at + 1] << 8;
+    private int Word(int at) => _work[at] | _work[at + 1] << 8;
 
     private void SetWord(int at, int value)
     {
-        _w[at] = (byte)value;
-        _w[at + 1] = (byte)(value >> 8);
+        _work[at] = (byte)value;
+        _work[at + 1] = (byte)(value >> 8);
     }
 }
