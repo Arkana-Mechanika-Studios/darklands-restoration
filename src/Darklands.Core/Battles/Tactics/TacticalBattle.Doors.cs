@@ -692,19 +692,19 @@ public sealed partial class TacticalBattle
     }
 
     /// <summary>
-    /// Combatant <paramref name="who"/> takes stairs record n to another level: when no able member
+    /// Combatant <paramref name="who"/> takes stairs record <paramref name="stairsRecord"/> to another level: when no able member
     /// is left behind the party moves (the enemies follow or stay as an encounter); it is placed
     /// round the stairs' spot there.
     /// </summary>
     // orig: use-exit R023+0x1618 (1EF8:1618) draft
     // C: the wall group of the stairs is uncovered on the NEW level (opened-door-list of that level; the list read from the new image).
-    // C: no test of n against the level's stairs count (byte +0x2FB6): R023+0x162B..0x164A copies record n of the level shown, past the
+    // C: no test of stairsRecord against the level's stairs count (byte +0x2FB6): R023+0x162B..0x164A copies that record of the level shown, past the
     //   count too. A member alone on another level whose Stairs order is given with the view back on the party's level (another member
     //   selected after U, GitHub issue 3) takes the record of his own level's index from the party's level: in the Rotenburg keep slot 2
     //   past level 3's one record holds the same bytes as level 2's record 2 (to level 3), so he comes back (lockstep
     //   castle-rotenburg-split-reselect: use-exit(2, 3) at clock 9283 with DS:11CA = DS:C623 = 3).
-    // DIVERGENCE: a record past the level image (n > 77, 0x2FB8 + 14 n beyond its 0x33FC bytes) would read what follows the image in
-    //   segment 20A5; not reproduced (no caller gives such an n: the tables hold record numbers of up to the six slots, and 0xFF is tested
+    // DIVERGENCE: a record past the level image (stairsRecord > 77, 0x2FB8 + 14 × stairsRecord beyond its 0x33FC bytes) would read what
+    //   follows the image in segment 20A5; not reproduced (no caller gives such a record: the tables hold record numbers of up to the six slots, and 0xFF is tested
     //   before, R016+0x014E).
     private void TakeStairs(int stairsRecord, int who)
     {
@@ -738,14 +738,14 @@ public sealed partial class TacticalBattle
             LevelChanged = true;
         }
         LevelShown.SetByte(at + 7, 0xFF);
-        int newFloor = (sbyte)LevelShown.GetByte(at + 6);
-        Battle[who].Level = newFloor;
+        int newLevel = (sbyte)LevelShown.GetByte(at + 6);
+        Battle[who].Level = newLevel;
         var alone = true;
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             // BUG: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another
             //   level: once anyone has left, the party never comes together by the stairs (split audit row 10)
-            if (Battle[i].IsAble && Battle[i].Level != newFloor
+            if (Battle[i].IsAble && Battle[i].Level != newLevel
                 && !(Battle.Behaviour.FixExitedMemberStrandsTheRest && Battle[i].Level == BattleEnd.LeftThroughExit))
             {
                 alone = false;
@@ -753,16 +753,16 @@ public sealed partial class TacticalBattle
         }
         if (alone)
         {
-            Battle.PartyLevel = newFloor;
+            Battle.PartyLevel = newLevel;
             LeaveLevel(who, record);
             Battle.RealCombat = false;
         }
-        SwitchLevel(newFloor);
+        SwitchLevel(newLevel);
         if (wall != -1)
         {
             // orig: R023+0x1764: the wall group opened on the new level, DS:D4E4 = 1
             LevelChanged = true;
-            OpenGroupBit(newFloor, wall);
+            OpenGroupBit(newLevel, wall);
             foreach (var (x, y) in WallGroup(wall))
             {
                 // C: this copy reads the list words as (y, x) bytes: c[1] is the column, c[0] the row (the same cells).
@@ -777,7 +777,7 @@ public sealed partial class TacticalBattle
         {
             PlaceAfterFailedArrival(who, cameFrom);
         }
-        if (Battle.PartyLevel == newFloor)
+        if (Battle.PartyLevel == newLevel)
         {
             // orig: R023+0x1618 floor-view-paint(who) when the party has gone over: the view's centre becomes the cell of the member who
             // took the stairs (R017+0x0000 with who, not -1); lockstep dungeon-king-door (local/batch/b32/a7-king)

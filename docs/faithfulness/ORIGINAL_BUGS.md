@@ -538,7 +538,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: `roll-below(100) == p` where every other card has `<=`; kept as the original has it.
 - **B-08a606** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S118/TemplarWritingDesk.cs:98` `TemplarWritingDesk.LearnAFormula`  
   original: `R118+0x21DC` (1A2B:02AC, matched)  
-  why: the search tests known-recipes[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n whose group of three has any formula known, not just n itself. If all groups do, the first n is learnt.
+  why: the search tests known-recipes[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any candidate whose group of three has any formula known, not just the candidate itself. If all groups do, the first is learnt.
 - **B-1eb8d6** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S128/CollectorsCommission.cs:108` `CollectorsCommission.Run`  
   original: `R128+0x0BF0` (18F7:0000, matched), `R128+0x138A` (18F7:079A, matched), `R128+0x13C6` (18F7:07D6, matched) +28 more  
   why: debt notes name their holder by +0x2A % 2 (Medici, Fugger), but MerchantHouseOffices finds them in office +0x2A % 4, so the named office is often not the one that holds them.

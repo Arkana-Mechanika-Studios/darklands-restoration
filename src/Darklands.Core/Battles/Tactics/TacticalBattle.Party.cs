@@ -10,7 +10,7 @@ public sealed partial class TacticalBattle
     /// members on another level than the enemies leave the fight going on.
     /// </summary>
     // orig: yield-action R022+0x03E4 (1EF8:03E4) matched
-    // C: the card is the level's word at +0x1F44 (the surrender exit card, named "Unknown" in the enum) and, with members gone, the one after it (+0x1F46).
+    // C: the card is the level's word at +0x1F44 (the surrender exit card, LevelExitCards.Surrendered) and, with members gone, the one after it (+0x1F46).
     public void Surrender()
     {
         if (!Battle.RealCombat)

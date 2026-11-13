@@ -5,7 +5,7 @@ namespace Darklands.Core.Events;
 /// <summary>
 /// The 300 timed-event slots and every operation the rules and card scripts use on them
 /// (<c>event-*</c>, <c>open-quest-*</c>, <c>resolved-quest-*</c>, <c>place-flag*</c>). Durations are in hours;
-/// <see cref="UntilEndOf1499"/> hours means "until the end of 1499".
+/// a duration of <see cref="UntilEndOf1499"/> (9999) makes <see cref="Create"/> end the event at <see cref="EndOf1499"/>.
 /// </summary>
 /// <remarks>
 /// Faithful details: queries (except <see cref="Count(int)"/>, <see cref="Exists"/>'s slot scan
@@ -192,7 +192,7 @@ public sealed class EventLog
     /// <summary>
     /// Extends the matching event (type, owner, tag exact; location exact or −1 = any) by
     /// <paramref name="hours"/>, or creates it running from now (<c>event-refresh</c>). A new event
-    /// gets <paramref name="hours"/> literally: <see cref="UntilEndOf1499"/> is not special here.
+    /// gets <paramref name="hours"/> literally: 9999 is taken as 9999 hours here.
     /// </summary>
     // orig: event-refresh R029+0x2D5C (0E76:2D5C) draft; tests: EventLogTests
     public int Renew(int owner, int location, int extra, int kind, int type, int value, int handler, int hours,

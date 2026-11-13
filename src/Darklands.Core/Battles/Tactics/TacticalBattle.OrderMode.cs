@@ -64,8 +64,8 @@ public sealed partial class TacticalBattle
         set => ProgramMemory.OrderSpot = value;
     }
 
-    /// <summary>DS:D6EA: the member's flee bit when order mode began; DS:C867: the clock then.</summary>
-    private bool _fleeBefore;
+    /// <summary>DS:D6EA: the member's Following bit (order letter F) when order mode began; DS:C867: the clock then.</summary>
+    private bool _followingBefore;
     private ushort _orderClock;
 
     /// <summary>DS:C1CE / DS:C1F2 / DS:E1C8: the potion chosen to throw, its quality, and whether it cannot be thrown at a spot (potion 4, Eater-Water).</summary>
@@ -149,7 +149,7 @@ public sealed partial class TacticalBattle
         CursorKeysOn = true;
         Battle[member].Selected = true;
         _view.RowChanged(-1);
-        _fleeBefore = (Battle[member].Flags & TacticalFlags.Following) != 0;
+        _followingBefore = (Battle[member].Flags & TacticalFlags.Following) != 0;
         OrderAction = -1;
         PlaceOrder = -1;
         _targetChosen = false;
@@ -249,12 +249,12 @@ public sealed partial class TacticalBattle
             CursorTarget = -1;
             Cursor = OrderCursor.None;
         }
-        // 15BE (the letter) clears the flee bit after drawing it.
+        // 15BE (the letter) clears the Following bit (order letter F) after drawing it.
         _view.OrderLetterDrawn();
         Battle[Selected].Flags &= ~TacticalFlags.Following;
     }
 
-    /// <summary>The flee bit (0x1000) of a member's flags in the high byte of its word: what an access to flags[-1] reaches in DS:A695.</summary>
+    /// <summary>The Following bit (0x1000, order letter F) of a member's flags in the high byte of its word: what an access to flags[-1] reaches in DS:A695.</summary>
     private const int FollowingBitInPauseByte = (int)TacticalFlags.Following >> 8;
 
     /// <summary>A place action is chosen (Use Door, Stairs, Pick Lock …): it is given when order mode ends.</summary>
@@ -832,7 +832,7 @@ public sealed partial class TacticalBattle
         if (Selected != -1)
         {
             var c = Battle[Selected];
-            c.Flags = _fleeBefore ? c.Flags | TacticalFlags.Following : c.Flags & ~TacticalFlags.Following;
+            c.Flags = _followingBefore ? c.Flags | TacticalFlags.Following : c.Flags & ~TacticalFlags.Following;
             c.Selected = false;
         }
         else if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
@@ -840,7 +840,7 @@ public sealed partial class TacticalBattle
             // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on
             // flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte
             // of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
-            PauseByte = (byte)((PauseByte & ~FollowingBitInPauseByte) | (_fleeBefore ? FollowingBitInPauseByte : 0));
+            PauseByte = (byte)((PauseByte & ~FollowingBitInPauseByte) | (_followingBefore ? FollowingBitInPauseByte : 0));
         }
         _orderMode = false;
         _targetChosen = false;

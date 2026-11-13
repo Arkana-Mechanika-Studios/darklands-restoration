@@ -66,8 +66,8 @@ public sealed record MsgCardScannerValues(
 /// One raw byte below `0x20` observed in a MSG card text payload.
 /// </summary>
 /// <remarks>
-/// This is a data-only byte observation. It is not an option row, renderer
-/// action, navigation command, or original scanner output table. Nothing outside the parser reads
+/// This is a data-only byte observation: the byte that marks an option line (and its kind) or another control code, not the
+/// option row itself, nor a renderer action, navigation command, or original scanner output table. Nothing outside the parser reads
 /// these observations yet (<c>MsgCard.RawLowTextBytes</c> is only filled).
 /// </remarks>
 public readonly record struct MsgCardRawLowTextByte(

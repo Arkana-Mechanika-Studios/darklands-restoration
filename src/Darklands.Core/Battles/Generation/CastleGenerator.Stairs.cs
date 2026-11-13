@@ -6,7 +6,7 @@ internal sealed partial class CastleGenerator
 {
     /// <summary>On every level except 1: puts a stair arrival where each stair of the neighbouring level (below for the upper levels, level 1 for the cellar) lands.</summary>
     // orig: R006+0x34B8 (18FA:0008) draft
-    // C: the original's code is a tangle of jumps (the room search, the increment, the call); this is its flow. oko is not reset between stairs: a
+    // C: the routine's flow (the room search, the increment, the call) is written here as loops. oko is not reset between stairs: a
     // failed placement leaves it 0 for the next stair, which then skips straight to copying the other level's room.
     // C: slotn ([bp-4]) is set only by the strip search (R006+0x3ACC, 0x3B4D, 0x3BFE); a stair that fails before it (the first of the
     // level, or one after stairs that never searched) passes the word the call left: the planner calls through thunk 09C0:1BE9 (R005+0x032A)

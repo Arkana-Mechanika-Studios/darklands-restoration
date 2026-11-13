@@ -88,7 +88,7 @@ public static class BattleEnd
         }
         var enemyFloor = b.EnemyLevel;
         // Everybody still standing there has left through an exit?
-        var noAbleOnEnemyFloor = true;
+        var noAbleOnEnemyLevel = true;
         var gone = 0;
         foreach (var m in party)
         {
@@ -98,18 +98,18 @@ public static class BattleEnd
             }
             else if (m.IsAble && m.Level == enemyFloor)
             {
-                noAbleOnEnemyFloor = false;
+                noAbleOnEnemyLevel = false;
             }
         }
         // BUG: OriginalBehaviour.FixExitedMemberStrandsTheRest - with one member gone through an exit and the others alive on another level
         //   (the stairs), nobody on the enemies' floor reads as the party's flight: the battle ends as fled or left and the members on the
         //   other level become Away (split audit row 10); the fix lets the tests below see them (the real-combat switch to their floor).
-        if (noAbleOnEnemyFloor && gone != 0 && b.Behaviour.FixExitedMemberStrandsTheRest
+        if (noAbleOnEnemyLevel && gone != 0 && b.Behaviour.FixExitedMemberStrandsTheRest
             && party.Any(m => m.IsAble && m.Level != LeftThroughExit && m.Level != enemyFloor))
         {
-            noAbleOnEnemyFloor = false;
+            noAbleOnEnemyLevel = false;
         }
-        if (noAbleOnEnemyFloor && gone != 0)
+        if (noAbleOnEnemyLevel && gone != 0)
         {
             if (b.RealCombat)
             {
@@ -133,20 +133,20 @@ public static class BattleEnd
         if (b.RealCombat)
         {
             // Nobody standing on the enemies' floor but somebody elsewhere: go there.
-            noAbleOnEnemyFloor = true;
+            noAbleOnEnemyLevel = true;
             var elsewhere = 0;
             foreach (var m in party)
             {
                 if (m.Level == enemyFloor && m.IsAble)
                 {
-                    noAbleOnEnemyFloor = false;
+                    noAbleOnEnemyLevel = false;
                 }
                 else if (m.Level != enemyFloor && m.IsAble)
                 {
                     elsewhere++;
                 }
             }
-            if (noAbleOnEnemyFloor && elsewhere != 0)
+            if (noAbleOnEnemyLevel && elsewhere != 0)
             {
                 foreach (var m in party)
                 {

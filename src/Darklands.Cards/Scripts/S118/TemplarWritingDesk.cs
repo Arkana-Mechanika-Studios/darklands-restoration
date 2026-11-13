@@ -95,8 +95,8 @@ public sealed class TemplarWritingDesk : Card
     /// A random formula 0..65, moved on (wrapping) past any whose byte of the formula table
     /// already holds a known formula, then learnt.
     /// </summary>
-    // BUG: the search tests known-recipes[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any n
-    // whose group of three has any formula known, not just n itself. If all groups do, the first n is learnt.
+    // BUG: the search tests known-recipes[m][n / 3] && 1 << n % 3 (logical, not bitwise): it skips any
+    // candidate whose group of three has any formula known, not just the candidate itself. If all groups do, the first is learnt.
     private static void LearnAFormula(CardContext c, Character scholar)
     {
         var first = c.Random(FormulaCount);

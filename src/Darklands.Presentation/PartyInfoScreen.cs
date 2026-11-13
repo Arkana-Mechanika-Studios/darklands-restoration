@@ -35,7 +35,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     private const int TownCenterX = 0x102;
 
     private SavedScreen _back = null!;
-    private int _nextTabTown;
+    private int _nextTabCity;
 
     // orig: R034+0x0EE6 and R034+0x11BC (background, fonts 1)
     /// <summary>The F6 party information screen: the pointer over the small map names the nearest town, Tab and Shift-Tab step through the towns, any other key or the left button leaves.</summary>
@@ -45,7 +45,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         //   map's (5, 0) behind); tests: PointerHotSpotTests
         (ui.PointerHotSpot, ui.PointerShape) = ((0, 0), null);
         var canvas = ui.Canvas;
-        _nextTabTown = state.InCity ? state.CurrentLocation : LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y);
+        _nextTabCity = state.InCity ? state.CurrentLocation : LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y);
         _back = ScreenDrawing.DrawBackground(ui, panel, state.Party, "ptystats");
         DrawPartyMarker(state);
         DrawWealthAndPlace(state);
@@ -97,14 +97,14 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     /// <summary>Tab marks the next town, Shift-Tab the one before (the counter runs one ahead, as in the game).</summary>
     private void StepToTown(GameState state, bool back)
     {
-        if (back && (_nextTabTown -= 2) < 0)
+        if (back && (_nextTabCity -= 2) < 0)
         {
-            _nextTabTown = Location.CityCount - 1;
+            _nextTabCity = Location.CityCount - 1;
         }
-        DescribeTown(state, _nextTabTown, 0x7A, 0x32);
-        if (++_nextTabTown >= Location.CityCount)
+        DescribeTown(state, _nextTabCity, 0x7A, 0x32);
+        if (++_nextTabCity >= Location.CityCount)
         {
-            _nextTabTown = 0;
+            _nextTabCity = 0;
         }
     }
 

@@ -69,7 +69,7 @@ public sealed partial class TacticalBattle
         FollowsActive = true;
         Battle.ActiveMember = i;
         // R016+0x0A72..0x0A7D: DS:D6EA = the member's flee bit (flags 0x1000), after order mode was left
-        _fleeBefore = (c.Flags & TacticalFlags.Following) != 0;
+        _followingBefore = (c.Flags & TacticalFlags.Following) != 0;
         if (c.Level != Battle.LevelShown)
         {
             SwitchLevel(c.Level);

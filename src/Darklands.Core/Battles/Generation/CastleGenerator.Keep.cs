@@ -79,7 +79,7 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Level 1: chooses the room the gate belongs to (the keep or a tower) and adds the gate path room.</summary>
     // orig: R006+0x01CC (15AF:01CC) draft; checked against asm
-    // C: the original's loops re-roll the gate side until the strip is wide enough (4 cells) and its middle fits.
+    // C: the gate side is re-rolled until the strip is wide enough (4 cells) and its middle fits.
     private void PlanGate(int battlefieldType)
     {
         if (_level != 1)

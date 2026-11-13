@@ -28,8 +28,9 @@ public sealed partial class CardContext
     /// <summary>The fight's seed (<c>encounter-seed</c>).</summary>
     public int BattleSeed { get => State.BattleOrders.Seed; set => State.BattleOrders.Seed = value; }
 
-    /// <summary>Flags for the start of the next fight (<c>fight-flags</c>, DS:9080; bit 8: the foes expected the party).</summary>
-    // C: bit 0 (persistent) and 0x100 (resume) are named in BattleRequest; the meaning of the other bits is not established; the cards OR in the value 8 before an ambush.
+    /// <summary>Flags for the start of the next fight (<c>fight-flags</c>, DS:9080); see TacticalBattle.Start for 4, 8 and 0x80.</summary>
+    // C: 1 (persistent) and 0x100 (resume) are named in BattleRequest; TacticalBattle.Start reads 4, 8 (re-enables the first disabled
+    //   activation of the level shown) and 0x80; the cards OR in 8 before some fights (MineRealmDoor, FortressGuardpost).
     public int CombatFlags { get => State.BattleOrders.Flags; set => State.BattleOrders.Flags = value; }
 
     /// <summary>

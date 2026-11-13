@@ -782,7 +782,7 @@ public static class FortressBattlefield
 
         /// <summary>One of the 22 random items (0x96..0xAB).</summary>
         // orig: R011+0x16D2 (1432:16D2) draft ("close"); the 22-way table checked against asm
-        // DORMANT: the original's switch falls off the end for a roll outside 1..22, which cannot happen.
+        // DORMANT: a roll outside 1..22 would take no arm of the 22-way table, which cannot happen.
         private int RandomItem() => FirstRandomItem - 1 + g.Roll(22);
 
         private static int LootGroupAt(int group) => LootGroupsAt + LootGroupStride * group;
