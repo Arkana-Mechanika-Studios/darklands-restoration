@@ -47,7 +47,7 @@ public sealed class DwarfStoneBox_MineB01 : Card
             new MenuLine(() =>
                 {
                     c.BattleMode = 1;
-                    c.BattleEnemy = 0x0B;
+                    c.BattlefieldType = 0x0B;
                     c.BattleSeed = c.Random(1000);
                     c.Next = -2;
                 }, OptionHint.Saying(NoRisk)));
@@ -59,7 +59,7 @@ public sealed class DwarfStoneBox_MineB01 : Card
     {
         c.Events.Create(Who.Everybody, c.Here, 0, EventKinds.LocationFact, 0x0B, 0, 0, 0x63, 0, MineQuestTag);
         c.BattleMode = 1;
-        c.BattleEnemy = 0x0B;
+        c.BattlefieldType = 0x0B;
         c.BattleSeed = c.Random(1000);
         c.Next = -3;
     }

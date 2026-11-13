@@ -16,7 +16,7 @@ internal static class LastCastle
     public static void Fight(CardContext c, int enemy)
     {
         c.BattleMode = 0;
-        c.BattleEnemy = enemy;
+        c.BattlefieldType = enemy;
         c.BattleSeed = c.Random(1000);
         c.Next = -2;
     }

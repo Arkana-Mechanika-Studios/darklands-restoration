@@ -17,10 +17,10 @@ public static class MineBattlefield
     // Oracle:mine.json
     // C: the specs are the caller's words a..h: (type, quality, count) of the first two enemy specs, then the type and quality of the
     // third, which the fixed-layout mines read as the section to build and its turn.
-    public static int Build(GenerationState g, int battlefield, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] specs)
     {
         var mine = new MineBuilder(g);
-        return mine.Build(battlefield, specs);
+        return mine.Build(battlefieldType, specs);
     }
 }
 

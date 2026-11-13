@@ -23,9 +23,9 @@ public static class CitadelBattlefield
 
     /// <summary>Builds the room for a battlefield type; returns the number of levels (0 for a type that is not one).</summary>
     // orig: R013+0x0000 (1432:0000) draft (matched per the draft notes); jump table and the test of the first spec checked against asm; tests: Oracle:special.json
-    public static int Build(GenerationState g, int battlefield, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] specs)
     {
-        switch (battlefield)
+        switch (battlefieldType)
         {
             case 0x57:
                 BuildCourt(g);

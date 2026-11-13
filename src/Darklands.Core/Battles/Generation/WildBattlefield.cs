@@ -76,14 +76,14 @@ public static class WildBattlefield
 
     /// <summary>Builds the battlefield (always one level, level0.flr) and sets the combat flags it needs.</summary>
     // orig: R008+0x0000 (1432:0000) draft (byte-matched per the draft notes; calls checked against asm)
-    public static int Build(GenerationState g, int battlefield, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] specs)
     {
         var plan = new MapPlan();
-        ChooseTerrain(g, battlefield, plan);
-        var level = LoadMap(g, battlefield, plan);
+        ChooseTerrain(g, battlefieldType, plan);
+        var level = LoadMap(g, battlefieldType, plan);
         WriteOutdoorTiles(g, level, plan);
-        ReplaceFurniture(g, battlefield, level, plan);
-        PlaceForces(g, battlefield, level, plan, new EnemySpecs(specs));
+        ReplaceFurniture(g, battlefieldType, level, plan);
+        PlaceForces(g, battlefieldType, level, plan, new EnemySpecs(specs));
         // C: all markers and objects are dropped before the level is saved; levelNo (+0x1F40) is not written (0 in every IWILD member).
         level.ObjectCount = 0;
         g.Save(level);
@@ -92,11 +92,11 @@ public static class WildBattlefield
 
     /// <summary>The terrain the map is chosen for, and whether the sabbat furniture set is used.</summary>
     // orig: R008+0x009C (1432:009C) draft (byte-matched per the draft notes; jump table checked against asm)
-    private static void ChooseTerrain(GenerationState g, int bf, MapPlan plan)
+    private static void ChooseTerrain(GenerationState g, int battlefieldType, MapPlan plan)
     {
         plan.Terrain = g.Context.WorldTerrain;
         plan.SabbatSet = false;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x33 or 0x3F or 0x40 or 0x41 or (>= 0x45 and <= 0x51) or (>= 0x6F and <= 0x73):
                 plan.SabbatSet = true;
@@ -121,10 +121,10 @@ public static class WildBattlefield
 
     /// <summary>Chooses and loads the prepared map "iwild{family}.{hundreds}{tens}{units}".</summary>
     // orig: R008+0x0172 (1432:0172) draft ("close"; both jump tables and the draws re-read in the asm)
-    private static BattlefieldLevel LoadMap(GenerationState g, int bf, MapPlan plan)
+    private static BattlefieldLevel LoadMap(GenerationState g, int battlefieldType, MapPlan plan)
     {
         var family = 0;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x32 or 0x55:
                 family = SpecialFamily;
@@ -443,7 +443,7 @@ public static class WildBattlefield
     /// </summary>
     // orig: R008+0x0926 (1432:0926) draft (code matches, jump tables differ; the draft's labels of three
     // thresholds arms were wrong: asm table terrain-4 maps them to 8/9, 0x0A/0x0B, 0x0C/0x0D, see ThinningFor)
-    private static void ReplaceFurniture(GenerationState g, int bf, BattlefieldLevel level, MapPlan plan)
+    private static void ReplaceFurniture(GenerationState g, int battlefieldType, BattlefieldLevel level, MapPlan plan)
     {
         var d = g.Terrain;
         int tileset;
@@ -462,7 +462,7 @@ public static class WildBattlefield
             d.SetSetName(TileKind.Furniture, "outgrpa");
             tileset = 0;
         }
-        var counts = CountPlaceholders(bf, level);
+        var counts = CountPlaceholders(battlefieldType, level);
         var slots = AssignSlots(g, d, plan, counts, tileset);
         var thinning = ThinningFor(plan.Terrain, g.Context.ForceMap);
         plan.Special = false;
@@ -470,7 +470,7 @@ public static class WildBattlefield
         {
             for (var y = 1; y <= 38; y++)
             {
-                ReplaceCell(g, bf, level, plan, d, slots, thinning, x, y);
+                ReplaceCell(g, battlefieldType, level, plan, d, slots, thinning, x, y);
             }
         }
     }
@@ -492,11 +492,11 @@ public static class WildBattlefield
     }
 
     /// <summary>How many placeholder codes 5, 6, 7/8, 9, 10, 16, 17, 18 and 19 the map uses (some battlefield types reserve a slot).</summary>
-    private static Dictionary<int, int> CountPlaceholders(int bf, BattlefieldLevel level)
+    private static Dictionary<int, int> CountPlaceholders(int battlefieldType, BattlefieldLevel level)
     {
         var count = new Dictionary<int, int>();
         void Add(int code) => count[code] = count.GetValueOrDefault(code) + 1;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x36:
                 Add(17);
@@ -701,7 +701,7 @@ public static class WildBattlefield
     }
 
     /// <summary>One cell of the furniture pass: thin, pick the rotation, pick the slot, write furniture and rotation.</summary>
-    private static void ReplaceCell(GenerationState g, int bf, BattlefieldLevel level, MapPlan plan, TerrainDescription d, FurnitureSlots s, Thinning thin, int x, int y)
+    private static void ReplaceCell(GenerationState g, int battlefieldType, BattlefieldLevel level, MapPlan plan, TerrainDescription d, FurnitureSlots s, Thinning thin, int x, int y)
     {
         var hgtMark = 0;
         var cell = level[x, y].Bits;
@@ -747,7 +747,7 @@ public static class WildBattlefield
                 }
                 if (code == 15)
                 {
-                    switch (bf)
+                    switch (battlefieldType)
                     {
                         case 0x36:
                             code = 17;
@@ -845,12 +845,12 @@ public static class WildBattlefield
 
     /// <summary>Chooses the enemies and where everybody stands; places the party and the groups.</summary>
     // orig: R008+0x1388 (1432:1388) draft ("close"; asm re-read in full)
-    private static void PlaceForces(GenerationState g, int bf, BattlefieldLevel level, MapPlan plan, EnemySpecs e)
+    private static void PlaceForces(GenerationState g, int battlefieldType, BattlefieldLevel level, MapPlan plan, EnemySpecs e)
     {
         // C: flag is a byte; layout_type may set it.
         var flag = plan.Tens == 1 || plan.Special;
-        var layoutType = LayoutType(bf, ref flag, e);
-        ChooseEnemies(g, bf, e);
+        var layoutType = LayoutType(battlefieldType, ref flag, e);
+        ChooseEnemies(g, battlefieldType, e);
         var placement = PlanPlacement(g, layoutType, flag, e);
 
         var o = level.Object(CityBattlefield.PickMarker(g, level, placement.PartyMarker, out _));
@@ -877,8 +877,8 @@ public static class WildBattlefield
             }
             var marker = CityBattlefield.PickMarker(g, level, placement.GroupMarker[i], out _);
             // C: the original also gets a "selected kind" (1..3 → g1..g3) from this call, maps it and never uses it.
-            var (batch, pool) = ReinforcementParams(g, bf, e);
-            var r = AddGroup(g, bf, level, placement.ReinforcementMarker, marker, batch, pool,
+            var (batch, pool) = ReinforcementParams(g, battlefieldType, e);
+            var r = AddGroup(g, battlefieldType, level, placement.ReinforcementMarker, marker, batch, pool,
                 (g1, placement.Count[i, 0]), (g2, placement.Count[i, 1]), (g3, placement.Count[i, 2]));
             if (r >= 0 && faced == 0)
             {
@@ -887,11 +887,11 @@ public static class WildBattlefield
                 level.PartyFacing = GenerationState.DirectionBetween(px, py, faced, group.Y / 16);
             }
         }
-        if (bf is 0x31 or 0x35 or 0x47 or 0x78)
+        if (battlefieldType is 0x31 or 0x35 or 0x47 or 0x78)
         {
             g.Timed = true;
         }
-        if (bf == 0x55)
+        if (battlefieldType == 0x55)
         {
             // The cell behind the party gets floor decoration 7.
             var (bx, by) = level.PartyFacing switch
@@ -907,9 +907,9 @@ public static class WildBattlefield
 
     /// <summary>The layout type (0x2E..0x30, 0x3B, 0x43 or the battlefield type itself) from the card's specs; may force the "near" flag.</summary>
     // orig: R008+0x1694 (1432:1694) draft ("close"; asm table re-read)
-    private static int LayoutType(int bf, ref bool flag, EnemySpecs card)
+    private static int LayoutType(int battlefieldType, ref bool flag, EnemySpecs card)
     {
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x32 or 0x33 or 0x38 or 0x3F or 0x44 or 0x45 or 0x55 or 0x6F or 0x70 or 0x76:
                 return 0x2F;
@@ -930,13 +930,13 @@ public static class WildBattlefield
                 return 0x30;
             default:
                 // Includes battlefield types no wilderness battle uses (0x56..0x60 ...): the original's explicit arms all return bf.
-                return bf;
+                return battlefieldType;
         }
     }
 
     /// <summary>Rewrites the enemy specs of the card by battlefield type, the party's lore and its able members.</summary>
     // orig: R008+0x1790 (1432:1790) draft (code matches, jump tables differ; case labels checked against the asm table, every arm re-read)
-    private static void ChooseEnemies(GenerationState g, int bf, EnemySpecs e)
+    private static void ChooseEnemies(GenerationState g, int battlefieldType, EnemySpecs e)
     {
         var lore = g.Context.LoreLevel();
         var able = g.Context.AbleMembers;
@@ -944,7 +944,7 @@ public static class WildBattlefield
         int R(int sides) => g.Roll(sides);
         int Clamp(int value, int min, int max) => Math.Max(Math.Min(value, max), min);
         var cardQuality3 = e.Quality3;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x36:
                 if (lore >= 8)
@@ -1477,10 +1477,10 @@ public static class WildBattlefield
 
     /// <summary>The reinforcement batch and pool of a group, by battlefield type (the "selected kind" of the original is never used).</summary>
     // orig: R008+0x294E (1432:294E) draft (byte-matched per the draft notes; asm re-read)
-    private static (int Batch, int Pool) ReinforcementParams(GenerationState g, int bf, EnemySpecs e)
+    private static (int Batch, int Pool) ReinforcementParams(GenerationState g, int battlefieldType, EnemySpecs e)
     {
         int batch = 0, pool = 0;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x3B:
                 if (e.Type1 == 0x2A)
@@ -1536,7 +1536,7 @@ public static class WildBattlefield
     /// <returns>The group's number on the level, or −1 when none was made.</returns>
     // orig: R008+0x2ADC (1432:2ADC) draft ("close"; asm re-read)
     // DIVERGENCE: the original writes into the next group slot even when it is the last (into the next level's groups); the C# list grows.
-    private static int AddGroup(GenerationState g, int bf, BattlefieldLevel level, int reinforcementMarker, int marker, int batch, int pool,
+    private static int AddGroup(GenerationState g, int battlefieldType, BattlefieldLevel level, int reinforcementMarker, int marker, int batch, int pool,
         (int Kind, int Count) first, (int Kind, int Count) second, (int Kind, int Count) third)
     {
         var (k1, n1) = first;
@@ -1574,7 +1574,7 @@ public static class WildBattlefield
             group.Kinds[0] = (sbyte)k1;
             group.Counts[0] = (sbyte)n1;
             j = 1;
-            MarkSlot(g, bf, k1);
+            MarkSlot(g, battlefieldType, k1);
         }
         // C: batch is never negative, so the second kind is also taken with a count of 0 or below.
         if (k2 is >= 0 and < 12 && (n2 > 0 || batch >= 0))
@@ -1582,7 +1582,7 @@ public static class WildBattlefield
             group.Kinds[j] = (sbyte)k2;
             group.Counts[j] = (sbyte)n2;
             j++;
-            MarkSlot(g, bf, k2);
+            MarkSlot(g, battlefieldType, k2);
             if (batch >= 0 && reinforcement >= 0)
             {
                 var r = level.Object(reinforcement);
@@ -1602,7 +1602,7 @@ public static class WildBattlefield
             group.Kinds[j] = (sbyte)k3;
             group.Counts[j] = (sbyte)n3;
             j++;
-            MarkSlot(g, bf, k3);
+            MarkSlot(g, battlefieldType, k3);
         }
         if (j > 0)
         {
@@ -1615,9 +1615,9 @@ public static class WildBattlefield
     /// <summary>Marks the kind's record (byte +0x0C) for battlefield type 0x75 when its template is one of 0x1E..0x22.</summary>
     // orig: R008+0x2D34 (1432:2D34) draft (byte-matched per the draft notes)
     // C: what the mark means (monsters-reset sets it to 0).
-    private static void MarkSlot(GenerationState g, int bf, int kind)
+    private static void MarkSlot(GenerationState g, int battlefieldType, int kind)
     {
-        if (bf == 0x75 && g.Forces.Templates[0][kind] is >= 0x1E and <= 0x22)
+        if (battlefieldType == 0x75 && g.Forces.Templates[0][kind] is >= 0x1E and <= 0x22)
         {
             g.Forces.Kinds[0][kind].EndsBattleWhenKilled = 1;
         }

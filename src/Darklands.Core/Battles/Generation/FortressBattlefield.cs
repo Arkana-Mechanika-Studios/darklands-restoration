@@ -55,9 +55,9 @@ public static class FortressBattlefield
     // C: the meaning of the two specs' qualities the fortress tests: the second (== 1) shrinks every group by one, the third (== 1) starts the party on level 1.
     // DORMANT: Context.ForceMap (DS:C100, always -1) would force the start level to a number 0..15.
     // DIVERGENCE: the four level buffers (request-work-buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.
-    public static int BuildFortress(GenerationState g, int battlefield, out int start, (int Type, int Quality, int Count)[] specs)
+    public static int BuildFortress(GenerationState g, int battlefieldType, out int start, (int Type, int Quality, int Count)[] specs)
     {
-        _ = battlefield;
+        _ = battlefieldType;
         var fortress = new Fortress(g);
         g.MarkPersistent();
         WriteFortressTileDescription(g.Terrain);
@@ -123,9 +123,9 @@ public static class FortressBattlefield
     // DIVERGENCE: the original works in the battle's static floor image; the map fills it completely, so nothing of an earlier battle remains.
     // C: the groups are placed with the "smaller groups" byte DS:E051 the tombs never set: 0 in a fresh program, else the setting of
     // the last fortress built in this program (GenerationProcessMemory).
-    public static int BuildTombs(GenerationState g, int battlefield, (int Type, int Quality, int Count)[] specs)
+    public static int BuildTombs(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] specs)
     {
-        _ = battlefield;
+        _ = battlefieldType;
         g.MarkPersistent();
         WriteTombTileDescription(g.Terrain);
         var level = g.Context.Maps.Load($"imisctom.{g.Roll(2):000}");

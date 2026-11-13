@@ -141,7 +141,7 @@ public static class OriginalSaves
             // globals the save does not hold.
             var orders = running.BattleOrders;
             state.BattleOrders.Mode = orders.Mode;
-            state.BattleOrders.Enemy = orders.Enemy;
+            state.BattleOrders.BattlefieldType = orders.BattlefieldType;
             state.BattleOrders.Seed = orders.Seed;
             orders.EnemyTypes.CopyTo(state.BattleOrders.EnemyTypes, 0);
             state.BattleOrders.Flags = orders.Flags;

@@ -17,7 +17,7 @@ public sealed class BattleOrders
     public int Mode { get; set; }
 
     /// <summary><c>battle-enemy-group</c> (DS:A768): the battlefield type (the level for mode 3).</summary>
-    public int Enemy { get; set; }
+    public int BattlefieldType { get; set; }
 
     /// <summary><c>encounter-seed</c> (DS:A76A).</summary>
     public int Seed { get; set; }

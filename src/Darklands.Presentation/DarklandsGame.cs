@@ -607,7 +607,7 @@ public sealed class DarklandsGame
         orders.Flags |= 1;
         try
         {
-            orders.Result = battles.Battle(new BattleRequest(orders.Enemy, orders.Seed,
+            orders.Result = battles.Battle(new BattleRequest(orders.BattlefieldType, orders.Seed,
                 [(-1, orders.EnemyTypes[0], 0), (-1, orders.EnemyTypes[1], 0), (-1, orders.EnemyTypes[2], 0)],
                 orders.Mode, Persistent: true, CombatFlags: orders.Flags, Resume: state.ResumeBattle));
         }
@@ -711,7 +711,7 @@ public sealed class DarklandsGame
             LoadInGame(state, inBattle: true);
         };
         // orig: battle-driver R029+0x2278: a card's own battle (battle-entry with mode 0).
-        context.Battle = (side, seed, p) => battles.Battle(new BattleRequest(side, seed,
+        context.Battle = (battlefieldType, seed, p) => battles.Battle(new BattleRequest(battlefieldType, seed,
             [(p[0], p[1], p[2]), (p[3], p[4], p[5]), (p[6], p[7], p[8])]));
         context.PlayFilm = steps => Cinematics.Film(steps);
         // orig: battle-driver R029+0x2278: nobody left after the battle: music-start(0x12), the death film, exit_(0)

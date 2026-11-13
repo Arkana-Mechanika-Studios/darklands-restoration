@@ -84,11 +84,11 @@ internal sealed partial class CastleGenerator
     /// <summary>Plans the levels for a battlefield type; returns the number of levels.</summary>
     // orig: layout-battlefield-entry R005+0x0000 (1432:0000) draft; checked against asm (calls and order)
     // C: n is counted before castle-builder-entry runs and the start level it reports is relative to the lowest level.
-    public int Plan(int battlefield)
+    public int Plan(int battlefieldType)
     {
         ClearWork();
-        PlanLevels(battlefield);
-        if (battlefield != 0)
+        PlanLevels(battlefieldType);
+        if (battlefieldType != 0)
         {
             _g.MarkPersistent();
         }
@@ -116,13 +116,13 @@ internal sealed partial class CastleGenerator
     // orig: R005+0x022A (1432:022A) draft; checked against asm (order of the calls)
     // C: the last level number is re-read by the loop test and may be lowered by the stair planner when no way up was found.
     // C: layout-depth stays at the last value the loop set, even when that level was skipped; the final widen uses it.
-    private void PlanLevels(int battlefield)
+    private void PlanLevels(int battlefieldType)
     {
         _lowestLevel = 6;
         _highestLevel = -1;
         _topLevel = _lastLevel = Roll(2) + 2;
         _topLevelBuilt = _cellarBuilt = 1;
-        if (battlefield == 0)
+        if (battlefieldType == 0)
         {
             _lastLevel = 1;
             _topLevel = 2;
@@ -153,11 +153,11 @@ internal sealed partial class CastleGenerator
             {
                 BuildKeep();
             }
-            PlaceTowers(battlefield);
+            PlaceTowers(battlefieldType);
             _lastKeepRoom[_level] = _roomCount[_level] - 1;
             if (_level == 1)
             {
-                PlanGate(battlefield);
+                PlanGate(battlefieldType);
                 _gateRoom = _roomCount[_level] - 1;
             }
             else
@@ -184,9 +184,9 @@ internal sealed partial class CastleGenerator
                 _lastCastleRoom[level] = _roomCount[level] - 1;
                 if (level >= 1 && level < _lastLevel)
                 {
-                    PlaceStairs(battlefield);
+                    PlaceStairs(battlefieldType);
                 }
-                BuildCorridors(battlefield);
+                BuildCorridors(battlefieldType);
                 if (_level == 0)
                 {
                     _cellarBuilt = 0;

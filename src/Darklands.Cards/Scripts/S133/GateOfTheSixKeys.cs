@@ -29,7 +29,7 @@ public sealed class GateOfTheSixKeys : Card
             ShowPicture(c, OpenGate);
             c.Screen.Text(1);
             c.BattleMode = 0;
-            c.BattleEnemy = 0x5D;
+            c.BattlefieldType = 0x5D;
             c.BattleSeed = c.Random(1000);
         }
         else

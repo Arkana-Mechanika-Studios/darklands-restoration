@@ -66,7 +66,7 @@ public sealed class TemplarGraveyard : Card
     private static void StartBattle(CardContext c, int mode, int enemy)
     {
         c.CardBattle.Mode = mode;
-        c.CardBattle.Enemy = enemy;
+        c.CardBattle.BattlefieldType = enemy;
         c.CardBattle.Seed = c.Random(1000);
         c.Next = -2;
     }

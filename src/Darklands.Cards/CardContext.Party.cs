@@ -399,12 +399,12 @@ public sealed partial class CardContext
     public int RejoinAway() => PartyRules.RejoinAway(State);
 
     /// <summary>
-    /// <c>battle-driver</c>(side, seed, ...): side −1 = random, seed −2 = this location, −1 =
+    /// <c>battle-driver</c>(battlefield type, seed, ...): battlefield type −1 = random (0 or 1), seed −2 = this location, −1 =
     /// random; the battle itself is the <see cref="Battle"/> hook (until it exists the result
     /// is 0). Afterwards the dead leave and time is brought up to date.
     /// </summary>
     // orig: battle-driver R029+0x2278 (0E76:2278) matched
-    // C: the side is drawn (roll-below(2)) before the seed (roll-below(1000)); the battle gets seed + party-random-seed.
+    // C: the battlefield type is drawn (roll-below(2)) before the seed (roll-below(1000)); the battle gets seed + party-random-seed.
     // C: what cards-teardown R043+0x054E and cards-setup R043+0x078E change around the battle (both run directly on a city state, local/batch/nmB):
     //   the event table goes to events.tmp and comes back (EventLog.Shutdown / Reload), the generator is seeded from the clock
     //   (TimePassage.Reseed) and city-record is read again from DARKLAND.CTY (CityFile.ReloadAfterBattle). The rest leaves the game as it was:
@@ -423,16 +423,16 @@ public sealed partial class CardContext
     //   (EventLog.Shutdown: the battle and party-member-erase-overlay-entry after it run on an empty table) and ends with sound-start(1) (root 047C:078A):
     //   the music stops before the battle driver is loaded; with nobody left after the battle: music-start(0x12), the death film and
     //   exit_(0) (AllDead).
-    public int RunBattle(int side, int seed, params int[] parameters)
+    public int RunBattle(int battlefieldType, int seed, params int[] parameters)
     {
         Events.Shutdown();
         PlaySound(1);
-        if (side == -1)
+        if (battlefieldType == -1)
         {
-            side = Random(2);
+            battlefieldType = Random(2);
         }
         var battleSeed = PartyRules.BattleSeed(State, seed);
-        var result = Battle?.Invoke(side, battleSeed, parameters) ?? 0;
+        var result = Battle?.Invoke(battlefieldType, battleSeed, parameters) ?? 0;
         PartyRules.AfterBattle(State, DeleteMember);
         if (!State.Party.Slots.Any(m => m.OccupiesSlot))
         {
@@ -450,6 +450,6 @@ public sealed partial class CardContext
     /// <summary>Nobody is left after a card's battle: the death tune and film, and the end of the game (supplied by the game; it does not return).</summary>
     public Action? AllDead { get; set; }
 
-    /// <summary>The battle (side, seed, the card's battle parameters → <c>battle-outcome</c>), supplied by the game.</summary>
+    /// <summary>The battle (battlefield type, seed, the card's battle parameters → <c>battle-outcome</c>), supplied by the game.</summary>
     public Func<int, int, int[], int>? Battle { get; set; }
 }

@@ -135,7 +135,7 @@ public sealed class GoldenTraceTests
     [
         "Next", "CardItems", "CardSaints", "MenuMember", "MenuSlot", "MenuPopup", "Variables", "BattleSetup",
         "LastBattleResult", "MapLeaveMode", "StandingSeen", "Memory", "Support", "BattleTargetSlain", "EncounterApproach",
-        "OptionsBlock", "BattleMode", "BattleEnemy", "BattleSeed", "CombatFlags", "BattleResult", "CardBattle",
+        "OptionsBlock", "BattleMode", "BattlefieldType", "BattleSeed", "CombatFlags", "BattleResult", "CardBattle",
         "LastCastleFlags",
     ];
 

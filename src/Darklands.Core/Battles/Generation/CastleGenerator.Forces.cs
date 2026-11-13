@@ -5,21 +5,21 @@ internal sealed partial class CastleGenerator
 {
     /// <summary>Places the party on level l if it starts there, and the enemy groups the battlefield type calls for.</summary>
     // orig: R007+0x18F8 (15AF:18F8) draft
-    private void PlaceForces(int l, int start, int battlefield, int side, GroupSpec[] specs)
+    private void PlaceForces(int l, int start, int battlefieldType, int side, GroupSpec[] specs)
     {
         var room = 0;
         var dir = 0;
         if (start == l)
         {
-            PlaceParty(l, battlefield, start, out room, out dir);
+            PlaceParty(l, battlefieldType, start, out room, out dir);
         }
-        switch (battlefield)
+        switch (battlefieldType)
         {
             case 8:
-                PlaceCampGroup(l, start, battlefield, specs);
+                PlaceCampGroup(l, start, battlefieldType, specs);
                 break;
             case 0:
-                GuardGate(l, start, battlefield, dir, specs);
+                GuardGate(l, start, battlefieldType, dir, specs);
                 break;
             case 1:
             case 2:
@@ -29,29 +29,29 @@ internal sealed partial class CastleGenerator
             case 6:
             case 7:
             case 0x7A:
-                PlaceRoomGroups(l, start, side, battlefield, room, dir, specs);
+                PlaceRoomGroups(l, start, side, battlefieldType, room, dir, specs);
                 break;
             case 0x27:
             case 0x28:
-                PlaceStairGuards(l, start, battlefield, room, dir, specs);
+                PlaceStairGuards(l, start, battlefieldType, room, dir, specs);
                 break;
             case 0x7B:
             case 0x7C:
             case 0x7D:
             case 0x7E:
-                PlaceSpreadGroups(l, start, side, battlefield, room, dir, specs);
+                PlaceSpreadGroups(l, start, side, battlefieldType, room, dir, specs);
                 break;
         }
     }
 
     /// <summary>Chooses the party's room and the side it enters from, and writes its start position and facing.</summary>
     // orig: R007+0x1D78 (15AF:1D78) draft; checked against asm
-    private void PlaceParty(int l, int battlefield, int start, out int room, out int dir)
+    private void PlaceParty(int l, int battlefieldType, int start, out int room, out int dir)
     {
         room = 0;
         dir = -1;
         int i;
-        switch (battlefield)
+        switch (battlefieldType)
         {
             case 0:
             case 5:
@@ -315,20 +315,20 @@ internal sealed partial class CastleGenerator
     /// <summary>The enemy kind of a request group when that group may be placed on this level; −1 otherwise.</summary>
     // orig: the pattern if (30e6(...)) m = monster-type-lookup(lv, type, quality) (Forces.AddKind),
     // repeated inline in R007+0x224E, R007+0x23D4 and R007+0x2CDC, each calling monster-type-lookup R004+0x06AA
-    private int KindFor(int battlefield, int l, int k, int side, GroupSpec spec) =>
-        MayPlaceGroup(battlefield, l, k, side) ? _g.Forces.AddKind(l - _lowestLevel, spec.Type, spec.Quality) : -1;
+    private int KindFor(int battlefieldType, int l, int k, int side, GroupSpec spec) =>
+        MayPlaceGroup(battlefieldType, l, k, side) ? _g.Forces.AddKind(l - _lowestLevel, spec.Type, spec.Quality) : -1;
 
     /// <summary>Type 0: the guards of the gate on level 1, next to the keep's gate.</summary>
     // orig: R007+0x224E (15AF:224E) draft
-    private void GuardGate(int l, int start, int battlefield, int dir, GroupSpec[] specs)
+    private void GuardGate(int l, int start, int battlefieldType, int dir, GroupSpec[] specs)
     {
         if (start != l)
         {
             return;
         }
-        var m1 = KindFor(battlefield, l, 1, -1, specs[0]);
-        var m2 = KindFor(battlefield, l, 2, -1, specs[1]);
-        var m3 = KindFor(battlefield, l, 3, -1, specs[2]);
+        var m1 = KindFor(battlefieldType, l, 1, -1, specs[0]);
+        var m2 = KindFor(battlefieldType, l, 2, -1, specs[1]);
+        var m3 = KindFor(battlefieldType, l, 3, -1, specs[2]);
         if (m1 < 0 && m2 < 0 && m3 < 0)
         {
             return;
@@ -376,11 +376,11 @@ internal sealed partial class CastleGenerator
     // and the switch falls through from 0x7A to 1 to 2.
     // C: for the unused slot the original writes has[-1] (the byte before its local table) when the slot holds -1 (R007+0x2577); that byte is the high byte
     // of the word at bp-0x20, which R007+0x258C sets to 0 before anything reads it: a dead store, skipped here.
-    private void PlaceRoomGroups(int l, int start, int side, int battlefield, int room, int dir, GroupSpec[] specs)
+    private void PlaceRoomGroups(int l, int start, int side, int battlefieldType, int room, int dir, GroupSpec[] specs)
     {
-        var m1 = KindFor(battlefield, l, 1, side, specs[0]);
-        var m2 = KindFor(battlefield, l, 2, side, specs[1]);
-        var m3 = KindFor(battlefield, l, 3, side, specs[2]);
+        var m1 = KindFor(battlefieldType, l, 1, side, specs[0]);
+        var m2 = KindFor(battlefieldType, l, 2, side, specs[1]);
+        var m3 = KindFor(battlefieldType, l, 3, side, specs[2]);
         if (m1 < 0 && m2 < 0 && m3 < 0)
         {
             return;
@@ -388,7 +388,7 @@ internal sealed partial class CastleGenerator
         var boss = -1;
         if (side == l)
         {
-            switch (battlefield)
+            switch (battlefieldType)
             {
                 case 3:
                 case 0x7A:
@@ -431,12 +431,12 @@ internal sealed partial class CastleGenerator
             {
                 g1 = m1;
             }
-            var skip = battlefield == 0x7A && boss == i;
-            if (!skip && (battlefield == 0x7A || battlefield == 1) && i == room && i >= 1)
+            var skip = battlefieldType == 0x7A && boss == i;
+            if (!skip && (battlefieldType == 0x7A || battlefieldType == 1) && i == room && i >= 1)
             {
                 skip = true;
             }
-            if (!skip && (battlefield == 0x7A || battlefield is 1 or 2))
+            if (!skip && (battlefieldType == 0x7A || battlefieldType is 1 or 2))
             {
                 var k = RoomKind(l, i);
                 if (k == 2)
@@ -464,7 +464,7 @@ internal sealed partial class CastleGenerator
             }
             else if (!skip)
             {
-                switch (battlefield)
+                switch (battlefieldType)
                 {
                     case 3:
                     case 6:
@@ -504,7 +504,7 @@ internal sealed partial class CastleGenerator
                     case 5:
                     {
                         var j = 1;
-                        if (battlefield == 5)
+                        if (battlefieldType == 5)
                         {
                             if (l == 1)
                             {
@@ -580,13 +580,13 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Type 8: one camp group in the hall of level l.</summary>
     // orig: R007+0x2964 (15AF:2964) draft
-    private void PlaceCampGroup(int l, int start, int battlefield, GroupSpec[] specs)
+    private void PlaceCampGroup(int l, int start, int battlefieldType, GroupSpec[] specs)
     {
         _ = start;
         if (RoomKind(l, 0) == 2)
         {
-            var m1 = KindFor(battlefield, l, 1, -1, specs[0]);
-            var m2 = KindFor(battlefield, l, 2, -1, specs[1]);
+            var m1 = KindFor(battlefieldType, l, 1, -1, specs[0]);
+            var m2 = KindFor(battlefieldType, l, 2, -1, specs[1]);
             if (m1 >= 0 || m2 >= 0)
             {
                 // C: the room argument is the part number of room 0 (0 in practice); AddGroup reads the kind of that room number.
@@ -600,7 +600,7 @@ internal sealed partial class CastleGenerator
     // orig: R007+0x2A44 (15AF:2A44) draft
     // C: ex holds the indexes of the first two matching stairs, which the loop below compares with the room index (a quirk of the original:
     // checked against asm R007+0x2A44, the loop over the exits and the compares at 0x2BA2/0x2BF0).
-    private void PlaceStairGuards(int l, int start, int battlefield, int room, int dir, GroupSpec[] specs)
+    private void PlaceStairGuards(int l, int start, int battlefieldType, int room, int dir, GroupSpec[] specs)
     {
         var lv = l - _lowestLevel;
         var m1 = -1;
@@ -717,15 +717,15 @@ internal sealed partial class CastleGenerator
                 AddGroup(l, px, py, 0x10, i, m1, a1, m2, a2, m3, a3);
             }
         }
-        _ = battlefield;
+        _ = battlefieldType;
     }
 
     /// <summary>Types 0x7B..0x7E: the enemies spread over the rooms of each level.</summary>
     // orig: R007+0x2CDC (15AF:2CDC) draft; checked against asm
-    private void PlaceSpreadGroups(int l, int start, int side, int battlefield, int room, int dir, GroupSpec[] specs)
+    private void PlaceSpreadGroups(int l, int start, int side, int battlefieldType, int room, int dir, GroupSpec[] specs)
     {
-        var m1 = KindFor(battlefield, l, 1, side, specs[0]);
-        var m2 = KindFor(battlefield, l, 2, side, specs[1]);
+        var m1 = KindFor(battlefieldType, l, 1, side, specs[0]);
+        var m2 = KindFor(battlefieldType, l, 2, side, specs[1]);
         if (m1 < 0 && m2 < 0)
         {
             return;
@@ -743,14 +743,14 @@ internal sealed partial class CastleGenerator
             }
         }
         var boss = -1;
-        if (side == l && battlefield > 0x7A)
+        if (side == l && battlefieldType > 0x7A)
         {
             // C: the draft left type 0x7B without a leader; the asm picks one for 0x7B, 0x7C and 0x7D (checked against asm R007+0x2CDC).
-            if (battlefield == 0x7B || battlefield == 0x7C || battlefield == 0x7D)
+            if (battlefieldType == 0x7B || battlefieldType == 0x7C || battlefieldType == 0x7D)
             {
                 boss = Roll(_lastCastleRoom[l] + 1) - 1;
             }
-            else if (battlefield == 0x7E)
+            else if (battlefieldType == 0x7E)
             {
                 if (l == 1 && Roll(2) == 1)
                 {
@@ -765,7 +765,7 @@ internal sealed partial class CastleGenerator
         MarkKind(l, m1);
         var perRoom = new int[30];
         var count = specs[1].Count;
-        if (battlefield == 0x7E)
+        if (battlefieldType == 0x7E)
         {
             if (_topLevel == l)
             {
@@ -858,13 +858,13 @@ internal sealed partial class CastleGenerator
 
     /// <summary>May group k (1..3) of the request be placed on level l?</summary>
     // orig: R007+0x30E6 (15AF:30E6) draft; checked against asm
-    private bool MayPlaceGroup(int battlefield, int l, int k, int side)
+    private bool MayPlaceGroup(int battlefieldType, int l, int k, int side)
     {
         if (l < _lowestLevel || l > _highestLevel || k < 1 || k > 3)
         {
             return false;
         }
-        switch (battlefield)
+        switch (battlefieldType)
         {
             case 0:
                 if (l == 1)

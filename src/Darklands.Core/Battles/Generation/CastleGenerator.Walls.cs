@@ -62,9 +62,9 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Opens the walls beside each stair, then gives every room cell its wall pieces (and objects).</summary>
     // orig: R007+0x0698 (15AF:0698) draft
-    private void OpenExitsAndDecorateWalls(int battlefield, int l)
+    private void OpenExitsAndDecorateWalls(int battlefieldType, int l)
     {
-        _ = battlefield;
+        _ = battlefieldType;
         for (var i = 0; i < _stairCount[l]; i++)
         {
             var x = _w.StairWord(l, i, 0);

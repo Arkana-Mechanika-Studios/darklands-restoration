@@ -50,7 +50,7 @@ public sealed class TemplarFortressGate : Card
     private static void EnterTheGraveyard(CardContext c)
     {
         c.EventHere(0x64, 1);
-        c.CardBattle.Enemy = 0x5E;
+        c.CardBattle.BattlefieldType = 0x5E;
         c.CardBattle.Mode = 0;
         c.CardBattle.Parameters[0] = 0;
         c.CardBattle.Parameters[1] = 0;

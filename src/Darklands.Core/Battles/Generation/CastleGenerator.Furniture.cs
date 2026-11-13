@@ -12,7 +12,7 @@ internal sealed partial class CastleGenerator
     // orig: R007+0x345A (15AF:345A) draft
     // C: "DS:51AC" in the draft is the number of chests so far (the byte at +0x300C of the floor image): a chest is allowed only while that
     // number is below the level's random limit (1..3) minus 1.
-    private void Furnish(int battlefield, int l, ref int chests)
+    private void Furnish(int battlefieldType, int l, ref int chests)
     {
         for (var i = 0; i < _stairCount[l]; i++)
         {
@@ -38,7 +38,7 @@ internal sealed partial class CastleGenerator
             var kind = RoomKind(l, r);
             if (kind == 2)
             {
-                FurnishHall(battlefield, l, r);
+                FurnishHall(battlefieldType, l, r);
             }
             var placed = 0;
             for (var x = o0; x <= o1; x++)
@@ -50,7 +50,7 @@ internal sealed partial class CastleGenerator
                         continue;
                     }
                     var force = chests == 0 && limit - 1 > 0;
-                    var obj = RandomObject(battlefield, l, kind, force);
+                    var obj = RandomObject(battlefieldType, l, kind, force);
                     if (obj == 5)
                     {
                         if (limit - 1 <= (sbyte)Img[ChestCountAt] || chests > 19 || placed > 0 || o3 == y || !BlockUnused(l, x, y))
@@ -60,7 +60,7 @@ internal sealed partial class CastleGenerator
                         AddChest(l, x, y, ref chests);
                         placed++;
                     }
-                    else if (obj == 9 && battlefield == 8)
+                    else if (obj == 9 && battlefieldType == 8)
                     {
                         obj = 0;
                     }
@@ -72,13 +72,13 @@ internal sealed partial class CastleGenerator
 
     /// <summary>Furnishes a keep hall: a table with benches (above the ground), a throne (lowest level) and a raised step (above the ground).</summary>
     // orig: R007+0x3694 (15AF:3694) draft
-    private void FurnishHall(int battlefield, int l, int room)
+    private void FurnishHall(int battlefieldType, int l, int room)
     {
         if (l > 0)
         {
-            PlaceTable(battlefield, l, room);
+            PlaceTable(battlefieldType, l, room);
         }
-        if (_lowestLevel == l && battlefield != 0)
+        if (_lowestLevel == l && battlefieldType != 0)
         {
             PlaceThrone(l, room);
         }
@@ -90,7 +90,7 @@ internal sealed partial class CastleGenerator
 
     /// <summary>A table with benches in the middle of the hall.</summary>
     // orig: R007+0x36E2 (15AF:36E2) draft
-    private void PlaceTable(int battlefield, int l, int room)
+    private void PlaceTable(int battlefieldType, int l, int room)
     {
         var o0 = Room(l, room, X0);
         var o1 = Room(l, room, X1);
@@ -123,7 +123,7 @@ internal sealed partial class CastleGenerator
         }
         var kind = 8;
         var n = 1;
-        if (battlefield != 8 && Roll(4) > 1)
+        if (battlefieldType != 8 && Roll(4) > 1)
         {
             kind = 9;
             if (Roll(2) == 1)
@@ -369,7 +369,7 @@ internal sealed partial class CastleGenerator
     /// <summary>A random object for a room of this kind: 5 chest, 2/3/4/7/8/9 furniture (0 none); a forced pick is always a chest.</summary>
     // orig: R007+0x3E3E (15AF:3E3E) draft
     // DORMANT: kind 3 rolls 1..4 and has an arm for 5 (object 4) that no roll reaches.
-    private int RandomObject(int battlefield, int l, int kind, bool force)
+    private int RandomObject(int battlefieldType, int l, int kind, bool force)
     {
         var r = 0;
         if (l == 0)
@@ -401,7 +401,7 @@ internal sealed partial class CastleGenerator
         {
             r = 5;
         }
-        if (battlefield == 0 && r == 9)
+        if (battlefieldType == 0 && r == 9)
         {
             r = 8;
         }

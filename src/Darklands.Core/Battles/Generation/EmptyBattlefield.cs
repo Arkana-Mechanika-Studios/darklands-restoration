@@ -10,7 +10,7 @@ namespace Darklands.Core.Battles.Generation;
 // cards, door and exit records ...): GenerationProcessMemory.FloorImage, zeros in a fresh program.
 public static class EmptyBattlefield
 {
-    public static int Build(GenerationState g, int battlefield, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] specs)
     {
         var level = new BattlefieldLevel(g.Context.Process.FloorImage is { Length: BattlefieldLevel.ImageSize } previous
             ? (byte[])previous.Clone()
@@ -30,7 +30,7 @@ public static class EmptyBattlefield
         var k2 = Map(specs[1]);
         var k3 = Map(specs[2]);
         EmptyGroup(g, gateSide, (k1, specs[0].Count), (k2, specs[1].Count), (k3, specs[2].Count));
-        _ = battlefield;
+        _ = battlefieldType;
         return 1;
     }
 

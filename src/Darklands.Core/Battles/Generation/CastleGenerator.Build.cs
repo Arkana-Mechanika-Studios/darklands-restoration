@@ -23,7 +23,7 @@ internal sealed partial class CastleGenerator
     /// <param name="specs">The three enemy groups of the request (type, quality, count); overwritten for the types that choose their own.</param>
     // orig: castle-builder-entry R007+0x0000 (15AF:0000) draft; checked against asm (order of calls)
     // C: the start level is relative to the lowest level (layout-battlefield-entry subtracts it afterwards).
-    public int BuildLevels(int battlefield, GroupSpec[] specs)
+    public int BuildLevels(int battlefieldType, GroupSpec[] specs)
     {
         var chests = 0;
         for (var l = _lowestLevel; l <= _highestLevel; l++)
@@ -31,21 +31,21 @@ internal sealed partial class CastleGenerator
             SplitIntoParts(l);
         }
         WriteTileDescription();
-        ChooseStart(battlefield, out var start, out var side);
-        ChooseGroups(battlefield, specs);
+        ChooseStart(battlefieldType, out var start, out var side);
+        ChooseGroups(battlefieldType, specs);
         for (var l = _lowestLevel; l <= _highestLevel; l++)
         {
             ClearFloor(l);
             WritePartLists(l);
-            OpenExitsAndDecorateWalls(battlefield, l);
+            OpenExitsAndDecorateWalls(battlefieldType, l);
             if (l == 1)
             {
                 MarkGate(l);
             }
             LinkParts(l);
             WriteStairExits(l);
-            PlaceForces(l, start, battlefield, side, specs);
-            Furnish(battlefield, l, ref chests);
+            PlaceForces(l, start, battlefieldType, side, specs);
+            Furnish(battlefieldType, l, ref chests);
             _g.Save(_floor);
         }
         ApplyKindMarks();
@@ -182,13 +182,13 @@ internal sealed partial class CastleGenerator
     /// <summary>Where the party starts: the level (and, for some types, a second level that holds the enemy leader), by battlefield type.</summary>
     // orig: R007+0x1A5E (15AF:1A5E) draft
     // C: the second level (side) is -1 for the types that do not set it.
-    private void ChooseStart(int battlefield, out int start, out int side)
+    private void ChooseStart(int battlefieldType, out int start, out int side)
     {
         var n = _highestLevel - _lowestLevel + 1;
         side = -1;
         start = 0;
         int m;
-        switch (battlefield)
+        switch (battlefieldType)
         {
             case 0:
                 start = 1;
@@ -247,7 +247,7 @@ internal sealed partial class CastleGenerator
     /// <summary>Replaces the request's three groups with the ones the battlefield type calls for (nothing changes for types 0, 0x27 and 0x28).</summary>
     // orig: R007+0x1BFE (15AF:1BFE) draft; checked against asm
     // C: type 8 reads the request's second count as the first group's quality and the second group's count.
-    private void ChooseGroups(int battlefield, GroupSpec[] specs)
+    private void ChooseGroups(int battlefieldType, GroupSpec[] specs)
     {
         var typeA = 0;
         var qualityA = 0;
@@ -257,7 +257,7 @@ internal sealed partial class CastleGenerator
         var typeC = -1;
         var qualityC = 1;
         var lore = _g.Context.LoreLevel();
-        switch (battlefield)
+        switch (battlefieldType)
         {
             case 1:
             case 2:

@@ -11,12 +11,12 @@ namespace Darklands.Core.Battles.Generation;
 public static class CastleBattlefield
 {
     /// <summary>Builds the battlefield; returns the number of levels and sets the level the party starts on.</summary>
-    public static int Build(GenerationState g, int battlefield, out int start, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, out int start, (int Type, int Quality, int Count)[] specs)
     {
         var generator = new CastleGenerator(g);
-        var levels = generator.Plan(battlefield);
+        var levels = generator.Plan(battlefieldType);
         var groups = specs.Select(s => new GroupSpec(s.Type, s.Quality, s.Count)).ToArray();
-        start = generator.BuildLevels(battlefield, groups);
+        start = generator.BuildLevels(battlefieldType, groups);
         return levels;
     }
 }

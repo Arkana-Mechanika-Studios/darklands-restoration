@@ -21,10 +21,10 @@ public static class DragonCaveBattlefield
 
     /// <summary>Builds the cave; always one level.</summary>
     // orig: R012+0x0000 (1432:0000) draft (matched per the draft notes); checked against asm (the dragon test and the call order); tests: Oracle:special.json
-    public static int Build(GenerationState g, int battlefield, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] specs)
     {
         // C: the test reads the three specs' types in turn; one dragon among them makes it the dragon cave.
-        var kind = specs.Take(3).Any(s => s.Type is DragonType or DragonTypeToo) ? Dragon : battlefield;
+        var kind = specs.Take(3).Any(s => s.Type is DragonType or DragonTypeToo) ? Dragon : battlefieldType;
         var level = new BattlefieldLevel(new byte[BattlefieldLevel.ImageSize]);
         ClearLevel(level);
         WriteTileDescription(g, kind);

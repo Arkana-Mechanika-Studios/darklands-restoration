@@ -11,8 +11,8 @@ public sealed class CardBattle(Core.Battles.BattleOrders orders)
     /// <summary>The battle's kind (<c>battle-kind</c>).</summary>
     public int Mode { get => orders.Mode; set => orders.Mode = value; }
 
-    /// <summary>The enemy or encounter type (<c>battle-enemy-group</c>).</summary>
-    public int Enemy { get => orders.Enemy; set => orders.Enemy = value; }
+    /// <summary>The battlefield type (<c>battle-enemy-group</c>; the level for mode 3).</summary>
+    public int BattlefieldType { get => orders.BattlefieldType; set => orders.BattlefieldType = value; }
 
     /// <summary>The encounter seed (<c>encounter-seed</c>).</summary>
     public int Seed { get => orders.Seed; set => orders.Seed = value; }

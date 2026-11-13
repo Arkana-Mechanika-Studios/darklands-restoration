@@ -6,7 +6,7 @@ internal sealed partial class CastleGenerator
     /// <summary>Adds the towers: copied from the level below, random ones on level 1, or those of the level above for the cellar.</summary>
     // orig: R006+0x0886 (1637:0006) draft
     // C: a level above 1 copies every room of level 1 from 1 to its last keep room; the cellar copies the rooms of level 1 that are towers with a stair down.
-    private void PlaceTowers(int battlefield)
+    private void PlaceTowers(int battlefieldType)
     {
         if (_level > 1)
         {
@@ -38,7 +38,7 @@ internal sealed partial class CastleGenerator
         else if (_level == 1)
         {
             var n = Roll(5) - 1;
-            if (battlefield == 0x27)
+            if (battlefieldType == 0x27)
             {
                 n = Max(n, 2);
             }

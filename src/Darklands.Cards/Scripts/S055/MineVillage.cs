@@ -83,23 +83,23 @@ public sealed class MineVillage : Card
         switch (c.MineSort())
         {
             case 0:
-                c.BattleSetup.Enemy = 0x0B;
+                c.BattleSetup.BattlefieldType = 0x0B;
                 break;
             case 2:
-                c.BattleSetup.Enemy = 0x0D;
+                c.BattleSetup.BattlefieldType = 0x0D;
                 break;
             default:
                 // C: the remainder keeps the sign of the detail, so a negative detail falls to the default.
                 switch (c.MineDetail() % 3)
                 {
                     case 0:
-                        c.BattleSetup.Enemy = 0x0E;
+                        c.BattleSetup.BattlefieldType = 0x0E;
                         break;
                     case 2:
-                        c.BattleSetup.Enemy = 0x0F;
+                        c.BattleSetup.BattlefieldType = 0x0F;
                         break;
                     default:
-                        c.BattleSetup.Enemy = 0x10;
+                        c.BattleSetup.BattlefieldType = 0x10;
                         break;
                 }
                 break;

@@ -12,30 +12,30 @@ public static class CityBattlefield
 {
     /// <summary>Builds the battlefield; returns the number of levels and sets the start level.</summary>
     // orig: city-builder-entry R010+0x0000 (1432:0000) draft (byte-matched per the draft notes)
-    public static int Build(GenerationState g, int battlefield, out int start, (int Type, int Quality, int Count)[] specs)
+    public static int Build(GenerationState g, int battlefieldType, out int start, (int Type, int Quality, int Count)[] specs)
     {
-        var type = BattleType(g, battlefield);
+        var type = BattleType(g, battlefieldType);
         WriteTileDescription(g, type);
         switch (type)
         {
             case 7:
                 start = 0;
-                return BuildOutdoor(g, battlefield, specs);
+                return BuildOutdoor(g, battlefieldType, specs);
             case 8:
                 start = 0;
-                return BuildKeep(g, battlefield, specs);
+                return BuildKeep(g, battlefieldType, specs);
             case 9:
-                return BuildCastle(g, battlefield, out start, specs);
+                return BuildCastle(g, battlefieldType, out start, specs);
             default:
                 start = 0;
-                return BuildStreet(g, battlefield, type, specs);
+                return BuildStreet(g, battlefieldType, type, specs);
         }
     }
 
     /// <summary>The city battle type (1..9) for a battlefield type; several types choose at random.</summary>
     // orig: city-fight-kind R010+0x0102 (1432:0102) draft (byte-matched per the draft notes)
     // C: each random arm returns for every roll result (no fall-through happens).
-    public static int BattleType(GenerationState g, int battlefield) => battlefield switch
+    public static int BattleType(GenerationState g, int battlefieldType) => battlefieldType switch
     {
         0x20 => g.Roll(2),
         0x13 or 0x14 or 0x1E => g.Roll(3),
@@ -184,7 +184,7 @@ public static class CityBattlefield
 
     /// <summary>Street maps (types 1..6).</summary>
     // orig: R010+0x08AA (1432:08AA) draft (byte-matched per the draft notes)
-    private static int BuildStreet(GenerationState g, int bf, int type, (int Type, int Quality, int Count)[] s)
+    private static int BuildStreet(GenerationState g, int battlefieldType, int type, (int Type, int Quality, int Count)[] s)
     {
         int[] variants = [0, 4, 2, 2, 3, 2, 1, 1, 1, 1];
         var mapNumber = g.Roll(variants[type]) - 1 + (type - 1) * 100;
@@ -195,7 +195,7 @@ public static class CityBattlefield
         VaryStreetCells(g, level, type);
         var sideA = g.Roll(2) == 1;
         int startId;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x1B or 0x2B:
                 startId = 0x15;
@@ -220,16 +220,16 @@ public static class CityBattlefield
         var (ft2, fq2, fn2) = s[1];
         var (ft3, fq3, fn3) = s[2];
         var reinforcementPool = 0;
-        if (bf == 0x20)
+        if (battlefieldType == 0x20)
         {
             reinforcementPool = fq3;
             fq3 = fq2 - 1;
         }
         var (m1, m2, m3) = MapKinds(g, 0, s[0], s[1], (ft3, fq3, fn3));
-        var nearFlag = bf is 0x11 or 0x13 or 0x15 or 0x18 or 0x1A or 0x56;
+        var nearFlag = battlefieldType is 0x11 or 0x13 or 0x15 or 0x18 or 0x1A or 0x56;
         var sideB = g.Roll(2) == 1;
         int a, b, c, r;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x1B:
                 a = PickMarker(g, level, 2, out _);
@@ -280,7 +280,7 @@ public static class CityBattlefield
                 (a, r) = ReinforcedSpot(sideA, mapNumber);
                 a = PickMarker(g, level, a, out _);
                 r = PickMarker(g, level, r, out _);
-                if (bf == 0x23)
+                if (battlefieldType == 0x23)
                 {
                     // C: m3 is mapped above but not placed.
                     AddGroup(g, level, 0, 0, a, r, 3, fq3, true, 1, m1, fn1, m2, fn2, -1, 0);
@@ -308,7 +308,7 @@ public static class CityBattlefield
                 AddGroup(g, level, 0, 0, a, -1, 0, 0, true, 1, m1, fn1, m2, fn2, m3, fn3);
                 break;
         }
-        if (bf == 0x1A)
+        if (battlefieldType == 0x1A)
         {
             g.Timed = true;
         }
@@ -436,7 +436,7 @@ public static class CityBattlefield
 
     /// <summary>The open ground by the walls (type 7, battlefield types 0x15, 0x16).</summary>
     // orig: R010+0x2526 (1432:2526) draft ("close")
-    private static int BuildOutdoor(GenerationState g, int bf, (int Type, int Quality, int Count)[] s)
+    private static int BuildOutdoor(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] s)
     {
         var level = g.Context.Maps.Load("icity.600");
         MapTurn.Apply(level, g.Roll(8) - 1, turnExitTargets: true);
@@ -448,7 +448,7 @@ public static class CityBattlefield
         level.PartyFacing = 0;
         level.PartyRoom = (sbyte)o.Room;
         var (m1, m2, m3) = MapKinds(g, 0, s[0], s[1], s[2]);
-        var nearFlag = bf == 0x15;
+        var nearFlag = battlefieldType == 0x15;
         var sideB = g.Roll(2) == 1;
         AddGroup(g, level, 0, 0, PickMarker(g, level, DirectionCode(sideA, sideB, nearFlag), out _), -1, 0, 0, true, 1,
             m1, s[0].Count, m2, s[1].Count, m3, s[2].Count);
@@ -524,7 +524,7 @@ public static class CityBattlefield
 
     /// <summary>The two-level keep (type 8, battlefield types 0x1F, 0x21, 0x2C, 0x2D, 0x6B).</summary>
     // orig: R010+0x1516 (1432:1516) draft ("close")
-    private static int BuildKeep(GenerationState g, int bf, (int Type, int Quality, int Count)[] s)
+    private static int BuildKeep(GenerationState g, int battlefieldType, (int Type, int Quality, int Count)[] s)
     {
         var levels = new[] { g.Context.Maps.Load("icity.700"), g.Context.Maps.Load("icity.701") };
         levels[0].LevelNumber = 0;
@@ -532,7 +532,7 @@ public static class CityBattlefield
         VaryKeepCells(g, levels, 8, 0, 1);
         var inside = false;
         int startId, startLevel, rv = 0;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x1F:
                 (startId, startLevel, inside) = (3, 0, true);
@@ -569,7 +569,7 @@ public static class CityBattlefield
         var (ft2, fq2, fn2) = s[1];
         var (ft3, fq3, fn3) = s[2];
         int g1 = -1, g2 = -1;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x21:
                 g.MarkPersistent();
@@ -630,7 +630,7 @@ public static class CityBattlefield
             default:
                 {
                     var (m1, m2, m3) = MapKinds(g, 0, s[0], s[1], s[2]);
-                    AddGroup(g, levels[0], 0, 0, PickMarker(g, levels[0], bf == 0x1F ? 2 : 3, out _), -1, 0, 0, true, 1,
+                    AddGroup(g, levels[0], 0, 0, PickMarker(g, levels[0], battlefieldType == 0x1F ? 2 : 3, out _), -1, 0, 0, true, 1,
                         m1, fn1, m2, fn2, m3, fn3);
                     break;
                 }
@@ -647,13 +647,13 @@ public static class CityBattlefield
 
     /// <summary>The castle (type 9, battlefield types 0x1C, 0x1D, 0x29, 0x2A, 0x6A): one or two levels.</summary>
     // orig: R010+0x1B22 (1432:1B22) draft ("close")
-    private static int BuildCastle(GenerationState g, int bf, out int start, (int Type, int Quality, int Count)[] s)
+    private static int BuildCastle(GenerationState g, int battlefieldType, out int start, (int Type, int Quality, int Count)[] s)
     {
         var first = 0;
         var last = 1;
         var unlockStart = false;
         int startId;
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x2A:
                 (startId, start, unlockStart) = (21, 1, true);
@@ -688,7 +688,7 @@ public static class CityBattlefield
         var (ft1, fq1, fn1) = s[0];
         var (ft2, fq2, fn2) = s[1];
         var (ft3, fq3, fn3) = s[2];
-        switch (bf)
+        switch (battlefieldType)
         {
             case 0x1C:
                 {

@@ -64,7 +64,7 @@ public sealed class DwarfWantsPotions_MineB00 : Card
                 {
                     c.Screen.Text(9);
                     c.BattleMode = 1;
-                    c.BattleEnemy = 0x0B;
+                    c.BattlefieldType = 0x0B;
                     c.Next = -3;
                 }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(() => TakeTheCuirass(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
@@ -176,7 +176,7 @@ public sealed class DwarfWantsPotions_MineB00 : Card
         c.Screen.ShowPicture(PictureNames.Of(DwarfAngryPicture));
         c.Screen.Text(3);
         c.BattleMode = 1;
-        c.BattleEnemy = 0x0B;
+        c.BattlefieldType = 0x0B;
         c.BattleSeed = c.Random(1000);
         c.Next = -4;
     }

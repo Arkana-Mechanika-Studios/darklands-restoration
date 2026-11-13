@@ -315,7 +315,7 @@ public sealed class GenerationState
 // original's 138-word table)
 public static class BattlefieldBuilder
 {
-    public static GeneratedBattlefield Build(BattlefieldContext context, int battlefield, int seed, IReadOnlyList<(int Type, int Quality, int Count)> groups)
+    public static GeneratedBattlefield Build(BattlefieldContext context, int battlefieldType, int seed, IReadOnlyList<(int Type, int Quality, int Count)> groups)
     {
         var random = context.Random;
         // C: srand(location-now); r = rand(); srand(seed): r fixes the enemies' colours for this place.
@@ -327,41 +327,41 @@ public static class BattlefieldBuilder
         var specs = Specs(groups);
         int levels;
         var start = 0;
-        switch (Generator(battlefield))
+        switch (Generator(battlefieldType))
         {
             case BattlefieldGenerator.City:
-                levels = CityBattlefield.Build(state, battlefield, out start, specs);
+                levels = CityBattlefield.Build(state, battlefieldType, out start, specs);
                 break;
             case BattlefieldGenerator.Wilderness:
-                levels = WildBattlefield.Build(state, battlefield, specs);
+                levels = WildBattlefield.Build(state, battlefieldType, specs);
                 start = 0;
                 break;
             case BattlefieldGenerator.Castle:
-                levels = CastleBattlefield.Build(state, battlefield, out start, specs);
+                levels = CastleBattlefield.Build(state, battlefieldType, out start, specs);
                 break;
             case BattlefieldGenerator.Mine:
-                levels = MineBattlefield.Build(state, battlefield, specs);
+                levels = MineBattlefield.Build(state, battlefieldType, specs);
                 start = 0;
                 break;
             case BattlefieldGenerator.TemplarFortress:
-                levels = FortressBattlefield.BuildFortress(state, battlefield, out start, specs);
+                levels = FortressBattlefield.BuildFortress(state, battlefieldType, out start, specs);
                 break;
             case BattlefieldGenerator.Tombs:
-                levels = FortressBattlefield.BuildTombs(state, battlefield, specs);
+                levels = FortressBattlefield.BuildTombs(state, battlefieldType, specs);
                 start = 0;
                 break;
             case BattlefieldGenerator.DragonCave:
-                levels = DragonCaveBattlefield.Build(state, battlefield, specs);
+                levels = DragonCaveBattlefield.Build(state, battlefieldType, specs);
                 start = 0;
                 break;
             case BattlefieldGenerator.Baphomet when context.Citadel is not null:
-                levels = CitadelBattlefield.Build(state, battlefield, specs);
+                levels = CitadelBattlefield.Build(state, battlefieldType, specs);
                 start = 0;
                 break;
             default:
                 // DIVERGENCE: the citadel needs LCASTLE; without it (and for battlefield types no generator handles, as in the
                 // original) the field is empty (blank-battlefield, R008 2D62).
-                levels = EmptyBattlefield.Build(state, battlefield, specs);
+                levels = EmptyBattlefield.Build(state, battlefieldType, specs);
                 start = 0;
                 break;
         }
@@ -384,7 +384,7 @@ public static class BattlefieldBuilder
 
     /// <summary>Which generator overlay builds a battlefield type.</summary>
     // orig: battlefield-builder-entry's switch (R004+0x00E0..0x024F)
-    public static BattlefieldGenerator Generator(int battlefield) => battlefield switch
+    public static BattlefieldGenerator Generator(int battlefieldType) => battlefieldType switch
     {
         <= 8 and >= 0 or 0x27 or 0x28 or >= 0x7A and <= 0x7E => BattlefieldGenerator.Castle,
         >= 0x0A and <= 0x10 or >= 0x66 and <= 0x69 or 0x6C or 0x6D or >= 0x7F and <= 0x89 => BattlefieldGenerator.Mine,

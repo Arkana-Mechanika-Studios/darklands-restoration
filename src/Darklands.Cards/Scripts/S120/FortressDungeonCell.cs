@@ -80,7 +80,7 @@ public sealed class FortressDungeonCell : Card
     private static void Escape(CardContext c)
     {
         c.BattleMode = 3;
-        c.BattleEnemy = 8;
+        c.BattlefieldType = 8;
         c.Next = -2;
     }
 

@@ -116,7 +116,7 @@ public sealed class FortressGuardpost : Card
         ShowPicture(c, PotionPicture);
         c.Screen.Text(3);
         c.BattleMode = 3;
-        c.BattleEnemy = 4;
+        c.BattlefieldType = 4;
         c.Next = -2;
     }
 

@@ -25,8 +25,8 @@ public sealed class BattleWords(Core.Battles.BattleOrders orders)
     /// <summary>DS:A766 <c>battle-kind</c>.</summary>
     public int Mode { get => orders.Mode; set => orders.Mode = value; }
 
-    /// <summary>DS:A768 <c>battle-enemy-group</c>.</summary>
-    public int Enemy { get => orders.Enemy; set => orders.Enemy = value; }
+    /// <summary>DS:A768 <c>battle-enemy-group</c>: the battlefield type.</summary>
+    public int BattlefieldType { get => orders.BattlefieldType; set => orders.BattlefieldType = value; }
 
     /// <summary>DS:A76A <c>encounter-seed</c>.</summary>
     public int Seed { get => orders.Seed; set => orders.Seed = value; }

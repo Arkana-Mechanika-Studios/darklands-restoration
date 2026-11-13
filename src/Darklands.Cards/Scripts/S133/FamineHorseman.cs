@@ -171,7 +171,7 @@ public sealed class FamineHorseman : Card
     {
         c.LastCastleFlags |= 0x1010;
         c.BattleMode = 0;
-        c.BattleEnemy = 0x57;
+        c.BattlefieldType = 0x57;
         c.BattleSeed = c.Random(1000);
         c.Next = -2;
     }

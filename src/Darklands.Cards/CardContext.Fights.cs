@@ -22,8 +22,8 @@ public sealed partial class CardContext
     // orig: battle-kind DS:A766, battle-enemy-group DS:A768, encounter-seed DS:A76A, battle-outcome DS:A893
     public int BattleMode { get => State.BattleOrders.Mode; set => State.BattleOrders.Mode = value; }
 
-    /// <summary>The enemies of the fight (<c>battle-enemy-group</c>).</summary>
-    public int BattleEnemy { get => State.BattleOrders.Enemy; set => State.BattleOrders.Enemy = value; }
+    /// <summary>The battlefield type of the fight (<c>battle-enemy-group</c>; the level for mode 3).</summary>
+    public int BattlefieldType { get => State.BattleOrders.BattlefieldType; set => State.BattleOrders.BattlefieldType = value; }
 
     /// <summary>The fight's seed (<c>encounter-seed</c>).</summary>
     public int BattleSeed { get => State.BattleOrders.Seed; set => State.BattleOrders.Seed = value; }

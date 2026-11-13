@@ -10,7 +10,7 @@ namespace Darklands.Cards;
 /// </summary>
 public sealed partial class CardContext
 {
-    // The battle a card asks for (BattleMode, BattleEnemy, BattleSeed), CombatFlags (DS:9080), the bank notes
+    // The battle a card asks for (BattleMode, BattlefieldType, BattleSeed), CombatFlags (DS:9080), the bank notes
     // (Party.BankNotes, DS:9072), DeleteMember (party-member-erase), RandomName (made-up-name) and the pop-up hints (CardMenu.cs) are
     // the shared ones (CardContext.Memory, Helpers, Fights and Battles files).
 

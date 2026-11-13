@@ -30,7 +30,7 @@ public sealed class DwarfKing_MineB02 : Card
                 {
                     c.Screen.Text(1);
                     c.BattleMode = 1;
-                    c.BattleEnemy = 0x0B;
+                    c.BattlefieldType = 0x0B;
                     c.BattleSeed = c.Random(1000);
                     c.Next = -3;
                 }, OptionHint.Saying(CardTexts.EncounterTheUnknown)));
