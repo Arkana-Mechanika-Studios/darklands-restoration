@@ -202,6 +202,11 @@ internal static class Adapters
 
     private static readonly BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic;
 
+    /// <summary>Writes the private field <paramref name="name"/> of <paramref name="target"/>. A name the type does not have throws
+    /// <see cref="MissingMemberException"/>, which the run lets through, so a renamed field fails the test instead of dropping its jobs.</summary>
+    private static void SetField(object target, string name, object? value) =>
+        (target.GetType().GetField(name, Fields) ?? throw new MissingMemberException(target.GetType().Name, name)).SetValue(target, value);
+
     /// <summary>
     /// camp watch R030+0x25BE: the cell buffer as 20d2 filled it for the views the job lists (the call's view last; the bytes after the buffer
     /// keep the icons earlier draws left there), read under the marker DS:2866/2868 with the view's DS:286E/286C. Jobs without the view's words
@@ -231,10 +236,10 @@ internal static class Adapters
     private static int? Step(WorldCallsTests.Context c)
     {
         var travel = new OverlandTravel(c.State, c.Map);
-        var type = typeof(OverlandTravel);
-        type.GetField("_minutes", Fields)!.SetValue(travel, c.Job.Word(0x8672));
-        type.GetField("_danger", Fields)!.SetValue(travel, c.Job.Word(0xE488));
-        type.GetField("_terrain", Fields)!.SetValue(travel, c.Job.Word(0xD843));
+        SetField(travel, "_minutes", c.Job.Word(0x8672));
+        SetField(travel, "_dangerCounter", c.Job.Word(0xE488));
+        // DS:D843: OverlandTravel's PartyTerrain is GameState.PartyTerrain
+        c.State.PartyTerrain = c.Job.Word(0xD843);
         travel.HourPassed = () => TimePassage.Advance(c.State, 1);
         travel.View = () => (c.Job.Word(0x286A), c.Job.Word(0x286C));
         var x = c.U(0) + 16 * c.Job.Word(0x286A);

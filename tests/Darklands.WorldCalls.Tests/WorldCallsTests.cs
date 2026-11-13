@@ -148,6 +148,11 @@ public sealed class WorldCallsTests(Xunit.Abstractions.ITestOutputHelper output)
         {
             return ("SKIP", e.Message);
         }
+        catch (MissingMemberException)
+        {
+            // an adapter reaching a member that is no longer there (a rename): a fault of the test, not a lead
+            throw;
+        }
         catch (Exception e)
         {
             return ("EXCEPTION", e.GetType().Name + ": " + e.Message + (verbose ? "\n" + e.StackTrace : ""));

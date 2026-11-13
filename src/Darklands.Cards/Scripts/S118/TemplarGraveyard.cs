@@ -63,6 +63,7 @@ public sealed class TemplarGraveyard : Card
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
 
     /// <summary>Sets up the battle the main loop fights when the card returns −2.</summary>
+    /// <param name="battlefieldType">The battlefield type; for mode 3, the level of the battlefield to enter.</param>
     private static void StartBattle(CardContext c, int mode, int battlefieldType)
     {
         c.CardBattle.Mode = mode;
@@ -71,7 +72,7 @@ public sealed class TemplarGraveyard : Card
         c.Next = -2;
     }
 
-    /// <summary>The right name: a door opens in the fortress wall (battle mode 3, battlefield type 2).</summary>
+    /// <summary>The right name: a door opens in the fortress wall (battle mode 3: level 2 of the fortress).</summary>
     // orig: R118+0x0B7E (18C2:02DE) matched (twin R118+0x0F26); tests: CardSmokeTests
     private static void TheDoorOpens(CardContext c)
     {

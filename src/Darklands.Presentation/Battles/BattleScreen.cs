@@ -620,7 +620,7 @@ public sealed class BattleScreen : ITacticalView
         };
         // battle-entry's modes: 0 builds a new battlefield (fight-flags 0x10); 1..3 go back onto the last one (kept with its
         // levels and the encounters not met yet, as the original keeps the level files): 1 and 2 show the level shown when the last
-        // battle ended (1 with the party where it stood, 2 at that level's start), 3 shows level `Battlefield` (at its start).
+        // battle ended (1 with the party where it stood, 2 at that level's start), 3 shows level `BattlefieldType` (the level for mode 3, at its start).
         // orig: R002+0x0098..0x00EE checked against the asm; tests: RevisitTests
         // C: seen only from a synthetic save (vis10 visleads-prison-battle: card 0x16B's mode 1 from a city): without a .BSV the original
         //   fights on the level files the machine holds (background row 3), with a .BSV of no levels (the game's 282-byte DKSAVE0.BSV) on

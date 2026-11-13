@@ -1925,7 +1925,7 @@ Darklands.Core.Battles.Tactics.TacticalBattle.PickKey(),R016+0x10B2,R016+0x10B2,
 Darklands.Core.Battles.Tactics.TacticalBattle.DissolveKey(),R016+0x0F76,R016+0x0F76,matched,,
 Darklands.Core.Battles.Tactics.TacticalBattle.OpenDoorsForSearch(),R014+0x481A;R014+0x4B5A,R014+0x481A;R014+0x4B5A,draft,,the enemies' doors of a path search
 Darklands.Core.Battles.Tactics.TacticalBattle.PrepareLevels(),R024+0x0000,R024+0x0000,draft,DungeonTests,the tac.txt dump is not kept
-Darklands.Core.Battles.Tactics.TacticalBattle.LevelShown(),level-change;R024+0x059A,R024+0x059A,draft,,divergence: the levels stay in memory
+Darklands.Core.Battles.Tactics.TacticalBattle.AfterSwitchLevel(),level-change;R024+0x059A,R024+0x059A,draft,,divergence: the levels stay in memory
 Darklands.Core.Battles.Tactics.TacticalBattle.LaunchTrapMissile(),shot-launch;R018+0x0000,R018+0x0000,matched,,the who < 0 branch
 Darklands.Core.Battles.Tactics.TacticalBattle.InAnyBox(),R014+0xC75C,R014+0xC75C,draft,,
 Darklands.Core.Battles.Tactics.TacticalBattle.InitMenus(),battle-menus-switch-on;R000+0x0F04,R000+0x0F04,draft,,

@@ -7,9 +7,11 @@ public sealed class Party
 {
     public const int MaxMembers = 5;
 
-    /// <summary>The party slots in order up to the last occupied one (party-headcount, at most <see cref="MaxMembers"/>): a slot may
-    /// hold an empty, dead or away record (see <see cref="Character.OccupiesSlot"/>). The five-slot table goes on past it: see
-    /// <see cref="Slot"/> and <see cref="SpareRecord"/>.</summary>
+    /// <summary>The party slots in order up to party-headcount (at most <see cref="MaxMembers"/>). <see cref="TrimToSize"/> (party-leave,
+    /// party-member-erase, a load) cuts the list after the last occupied slot; a slot emptied otherwise (a dead member on the hour, a
+    /// member who joined at the inn leaving) stays in it. So a slot may hold an empty, dead or away record (see
+    /// <see cref="Character.OccupiesSlot"/>). The five-slot table goes on past the list: see <see cref="Slot"/> and
+    /// <see cref="SpareRecord"/>.</summary>
     public List<Character> Slots { get; } = [];
 
     /// <summary>Index of the leader in <see cref="Slots"/>.</summary>
@@ -24,7 +26,7 @@ public sealed class Party
     public int Seed { get; set; }
 
     /// <summary>
-    /// The leader's slot. The leader byte may name a slot past the last occupied one: a leader removed from the last slot while no
+    /// The leader's slot. The leader byte may name a slot past <see cref="Slots"/>: a leader removed from the last slot while no
     /// other member is able keeps the index (party-leave / party-member-erase); that slot's record is then the emptied one (<see cref="Slot"/>).
     /// </summary>
     // C: party[leader] reads the fixed five-slot table (DS:9C69), whatever party-headcount is.
@@ -105,7 +107,7 @@ public sealed class Party
     private readonly Character?[] _spare = new Character?[MaxMembers];
 
     /// <summary>
-    /// The record a slot past the last occupied one still holds (a departed member's, or a loaded slot's), null if none was left there:
+    /// The record a slot past <see cref="Slots"/> still holds (a departed member's, or a loaded slot's), null if none was left there:
     /// party-leave and party-member-erase clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
     /// </summary>
     // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party-member-erase R037+0x3F30 writes the status byte and nothing else of the record
