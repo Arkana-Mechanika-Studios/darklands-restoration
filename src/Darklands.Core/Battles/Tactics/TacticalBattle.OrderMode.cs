@@ -613,7 +613,7 @@ public sealed partial class TacticalBattle
                 c.Moving = false;
                 if (OrderAction == 0x80)
                 {
-                    ReadyWeapon(i, c.ReadiedWeapon, 0x80);
+                    ReadyWeapon(i, c.MissileWeapon, 0x80);
                     c.Target = (sbyte)CursorTarget;
                     c.Action = CombatAction.Missile;
                     // R014+0xBE85: 0x02 of the flags' high byte (0x200)

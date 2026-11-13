@@ -807,7 +807,7 @@ public sealed class EffectField : IEffectClouds
         var c = Battle[i];
         if ((c.FullStrength & 0x80) == 0x80 && !string.Equals(_attackCode(c.AnimationSlot), "PT", StringComparison.OrdinalIgnoreCase))
         {
-            ReadyWeapon(i, c.ReadiedWeapon, 0x80);
+            ReadyWeapon(i, c.MissileWeapon, 0x80);
         }
         else
         {

@@ -200,7 +200,7 @@ public sealed partial class TacticalBattle
             }
             CombatantSetup.Refresh(c, m);
             var shooting = c.Action == CombatAction.Missile || (Selected == i && OrderAction == 0x80);
-            if (c.IsAble && shooting && c.ReadiedWeapon == -1)
+            if (c.IsAble && shooting && c.MissileWeapon == -1)
             {
                 c.Action = CombatAction.None;
                 c.State = ActionState.Idle;

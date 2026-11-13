@@ -446,7 +446,7 @@ public sealed partial class TacticalBattle
                 }
                 if (kind.Class != 2)
                 {
-                    var weapon = kind.MissileFlag == 0 ? c.DefaultWeapon : c.ReadiedWeapon;
+                    var weapon = kind.MissileFlag == 0 ? c.DefaultWeapon : c.MissileWeapon;
                     ReadyWeapon(si, weapon, kind.MissileFlag);
                 }
                 else

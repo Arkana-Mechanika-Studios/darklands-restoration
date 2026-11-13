@@ -2718,7 +2718,7 @@ public sealed class BattleScreen : ITacticalView
                     y += 8;
                 }
             }
-            t = c.ReadiedWeapon != -1 ? c.ReadiedWeapon : c.EnemyClass == 2 ? 0x22 : -1;
+            t = c.MissileWeapon != -1 ? c.MissileWeapon : c.EnemyClass == 2 ? 0x22 : -1;
             if (t != -1)
             {
                 small.Draw(canvas, 4, y, TypeName(0x0277, t) + bonus, 0x0F);

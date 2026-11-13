@@ -29,7 +29,7 @@ public static class CombatantRecords
         c.AimDelay = (sbyte)r[0x1D];
         c.FightingValue = r[0x20];
         c.AimingValue = r[0x21];
-        c.ReadiedWeapon = (sbyte)r[0x22];
+        c.MissileWeapon = (sbyte)r[0x22];
         c.ReadiedMinimumSkill = (sbyte)r[0x23];
         c.PiercingResistance = (sbyte)r[0x24];
         c.WeaponBonus = r[0x48];
@@ -48,7 +48,7 @@ public static class CombatantRecords
         c.Protection = r[0x55];
         c.MinimumStrength = (sbyte)r[0x56];
         c.FullStrength = r[0x57];
-        c.WeaponQuality = (sbyte)r[0x58];
+        c.HandWeaponQuality = (sbyte)r[0x58];
         c.ReadiedSkill = (sbyte)r[0x59];
         c.MissileQuality = (sbyte)r[0x5A];
         c.ShieldQuality = (sbyte)r[0x5B];
@@ -83,7 +83,7 @@ public static class CombatantRecords
         r[0x1D] = (byte)c.AimDelay;
         r[0x20] = c.FightingValue;
         r[0x21] = c.AimingValue;
-        r[0x22] = (byte)c.ReadiedWeapon;
+        r[0x22] = (byte)c.MissileWeapon;
         r[0x23] = (byte)c.ReadiedMinimumSkill;
         r[0x24] = (byte)c.PiercingResistance;
         r[0x48] = c.WeaponBonus;
@@ -102,7 +102,7 @@ public static class CombatantRecords
         r[0x55] = c.Protection;
         r[0x56] = (byte)c.MinimumStrength;
         r[0x57] = c.FullStrength;
-        r[0x58] = (byte)c.WeaponQuality;
+        r[0x58] = (byte)c.HandWeaponQuality;
         r[0x59] = (byte)c.ReadiedSkill;
         r[0x5A] = (byte)c.MissileQuality;
         r[0x5B] = (byte)c.ShieldQuality;

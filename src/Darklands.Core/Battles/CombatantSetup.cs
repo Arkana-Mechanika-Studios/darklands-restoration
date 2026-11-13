@@ -46,8 +46,8 @@ public static class CombatantSetup
         c.ArmourQuality[0] = (sbyte)member.VitalArmor.Quality;
         c.ArmourQuality[1] = (sbyte)member.LimbArmor.Quality;
         c.DefaultWeapon = (sbyte)member.Weapon.Type;
-        c.WeaponQuality = (sbyte)member.Weapon.Quality;
-        c.ReadiedWeapon = (sbyte)member.MissileWeapon.Type;
+        c.HandWeaponQuality = (sbyte)member.Weapon.Quality;
+        c.MissileWeapon = (sbyte)member.MissileWeapon.Type;
         c.MissileQuality = (sbyte)member.MissileWeapon.Quality;
         c.ShieldType = (sbyte)member.Shield.Type;
         c.ShieldQuality = (sbyte)member.Shield.Quality;
@@ -84,8 +84,8 @@ public static class CombatantSetup
         c.ArmourQuality[0] = (sbyte)member.VitalArmor.Quality;
         c.ArmourQuality[1] = (sbyte)member.LimbArmor.Quality;
         c.DefaultWeapon = (sbyte)member.Weapon.Type;
-        c.WeaponQuality = (sbyte)member.Weapon.Quality;
-        c.ReadiedWeapon = (sbyte)member.MissileWeapon.Type;
+        c.HandWeaponQuality = (sbyte)member.Weapon.Quality;
+        c.MissileWeapon = (sbyte)member.MissileWeapon.Type;
         c.MissileQuality = (sbyte)member.MissileWeapon.Quality;
         c.ShieldType = (sbyte)member.Shield.Type;
         c.ShieldQuality = (sbyte)member.Shield.Quality;
@@ -117,7 +117,7 @@ public static class CombatantSetup
             member.Skills[k] = c.Skills[k];
         }
         // C: the record's +0x22 / +0x5A as the battle left them (an empty slot keeps its quality byte)
-        member.MissileWeapon = new EquippedItem(c.ReadiedWeapon < 0 ? -1 : c.ReadiedWeapon, c.MissileQuality);
+        member.MissileWeapon = new EquippedItem(c.MissileWeapon < 0 ? -1 : c.MissileWeapon, c.MissileQuality);
         // The effects wear armour down and throw it away when it is worn through (R019 0968 / 0914).
         // orig: the party record is the combatant record: an empty armour slot keeps its quality byte (+0x4F / +0x50) as it was: the
         // loaded file's (a stale 0 for a member who never wore armour) until R019+0x0914 sets 0x19 on a piece worn through; the combat
@@ -158,7 +158,7 @@ public static class CombatantSetup
         c.AnimationSlot = slot;
         c.Target = -1;
         c.StepDelay = c.FrameDelay = 8;
-        c.ReadiedWeapon = kind.MissileType;
+        c.MissileWeapon = kind.MissileType;
         c.MissileQuality = kind.MissileQuality;
         c.PiercingResistance = kind.PiercingResistance;
         c.WeaponBonus = kind.WeaponBonus;
@@ -169,7 +169,7 @@ public static class CombatantSetup
             c.ArmourQuality[k] = kind.ArmourQualities[k];
         }
         c.DefaultWeapon = kind.WeaponType;
-        c.WeaponQuality = kind.WeaponQuality;
+        c.HandWeaponQuality = kind.WeaponQuality;
         c.Protection = kind.Protection;
         c.ShieldQuality = kind.ShieldQuality;
         c.ShieldType = kind.ShieldType;
@@ -191,7 +191,7 @@ public static class CombatantSetup
         c.AttackRate = 0xFF;
         if (kind.Class != 2)
         {
-            var weapon = kind.MissileFlag == 0 ? c.DefaultWeapon : c.ReadiedWeapon;
+            var weapon = kind.MissileFlag == 0 ? c.DefaultWeapon : c.MissileWeapon;
             Attacks.ReadyWeapon(battle, index, weapon, kind.MissileFlag);
         }
         c.Status = CharacterStatus.Able;

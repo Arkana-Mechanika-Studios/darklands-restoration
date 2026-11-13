@@ -106,7 +106,7 @@ public sealed partial class TacticalBattle
                 }
                 return;
             }
-            if (c.ReadiedWeapon == -1 || !Attacks.CanFire(Battle, a))
+            if (c.MissileWeapon == -1 || !Attacks.CanFire(Battle, a))
             {
                 m.Attack[(int)AttackItem.Missile] = 2;
             }

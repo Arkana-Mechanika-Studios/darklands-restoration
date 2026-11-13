@@ -65,8 +65,8 @@ public sealed partial class Combatant
     /// <summary>+0x21: the aiming value with the readied weapon (skill less the strength and skill shortfalls), used by the missile chance. The name is not established.</summary>
     public byte AimingValue { get; set; }
 
-    /// <summary>+0x22: the readied weapon's type (−1 none); for party members the missile weapon slot.</summary>
-    public sbyte ReadiedWeapon { get; set; } = -1;
+    /// <summary>+0x22: the missile weapon's type (−1 none; a party member's missile weapon slot); the hand weapon is <see cref="DefaultWeapon"/>.</summary>
+    public sbyte MissileWeapon { get; set; } = -1;
 
     /// <summary>+0x23: minimum skill of the readied weapon.</summary>
     public sbyte ReadiedMinimumSkill { get; set; }
@@ -120,7 +120,7 @@ public sealed partial class Combatant
     public byte FullStrength { get; set; }
 
     /// <summary>+0x58: quality of the hand weapon.</summary>
-    public sbyte WeaponQuality { get; set; } = 25;
+    public sbyte HandWeaponQuality { get; set; } = 25;
 
     /// <summary>+0x59: skill with the readied weapon.</summary>
     public sbyte ReadiedSkill { get; set; }

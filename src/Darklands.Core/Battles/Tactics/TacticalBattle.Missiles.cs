@@ -69,7 +69,7 @@ public sealed partial class TacticalBattle
         int sprite = 5, speed = 15;
         if (type == 0)
         {
-            switch (c.ReadiedWeapon)
+            switch (c.MissileWeapon)
             {
                 case 0x17:
                     (sprite, speed) = (5, 15);

@@ -442,7 +442,7 @@ public sealed partial class TacticalBattle
             //   are empty records (their kinds 5/6 and weapons are not kept).
             if (ProgramMemory.Modifiers is null && c.Status == CharacterStatus.Empty)
             {
-                c.DefaultWeapon = c.ReadiedWeapon = 0;
+                c.DefaultWeapon = c.MissileWeapon = 0;
                 c.FullStrength = 0;
                 if (i >= Combatant.PartySlots)
                 {

@@ -395,12 +395,12 @@ public static class BattleEnd
             // instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
             if (used.HasFlag(SkillUse.MissileHit))
             {
-                TryImprove(b, i, b.Tables.SkillCategory(m.ReadiedWeapon), 1, changed);
+                TryImprove(b, i, b.Tables.SkillCategory(m.MissileWeapon), 1, changed);
                 used &= (SkillUse)0xED;
             }
             else if (used.HasFlag(SkillUse.Missile))
             {
-                TryImprove(b, i, b.Tables.SkillCategory(m.ReadiedWeapon), 0, changed);
+                TryImprove(b, i, b.Tables.SkillCategory(m.MissileWeapon), 0, changed);
                 used &= (SkillUse)0xFD;
             }
             if (used.HasFlag(SkillUse.Thrown))

@@ -300,7 +300,7 @@ public sealed partial class TacticalBattle
             {
                 if (Map.LineBlocked(en.Position, Battle[t].Position, e, t, 0x80, _turnResidue) == 0)
                 {
-                    ReadyWeapon(e, en.ReadiedWeapon, 0x80);
+                    ReadyWeapon(e, en.MissileWeapon, 0x80);
                     en.Target = (sbyte)t;
                     en.Action = CombatAction.Missile;
                     en.EngageAt = Clock;

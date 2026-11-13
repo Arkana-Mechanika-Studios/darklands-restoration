@@ -340,14 +340,14 @@ public sealed partial class TacticalBattle
                 {
                     c.SkillsUsed |= SkillUse.Missile;
                 }
-                if (c.ReadiedWeapon is >= 0x17 and <= 0x1A)
+                if (c.MissileWeapon is >= 0x17 and <= 0x1A)
                 {
-                    DropRecoverable(c.ReadiedWeapon, c.MissileQuality);
+                    DropRecoverable(c.MissileWeapon, c.MissileQuality);
                 }
                 // The draw is always made: 70% of arrows and quarrels can be picked up afterwards.
                 if (Scaled(10) < 7)
                 {
-                    var ammunition = Battle.Tables.AmmunitionType(c.ReadiedWeapon);
+                    var ammunition = Battle.Tables.AmmunitionType(c.MissileWeapon);
                     if (ammunition is 0x40 or 0x41)
                     {
                         DropRecoverable(ammunition, 0x19);

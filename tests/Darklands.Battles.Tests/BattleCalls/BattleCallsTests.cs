@@ -178,7 +178,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             {
                 throw new SkipJob("a spell's sprite family is the shooter's animation slot's code: the slot is one of the seven loaded");
             }
-            if (job.Args[2] == 0 && c.Battle[job.Args[0]].ReadiedWeapon is < 0x17 or > 0x21)
+            if (job.Args[2] == 0 && c.Battle[job.Args[0]].MissileWeapon is < 0x17 or > 0x21)
             {
                 throw new SkipJob("a weapon that is no missile weapon: the original's sprite and speed are uninitialised (a documented divergence)");
             }
@@ -405,7 +405,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             var set = CallersSet(c, job);
             var shooter = c.Battle[job.Args[0]];
             if (shooter.State == ActionState.Swinging && shooter.NextFrameAt <= c.Battle.Clock && shooter.Frame + 1 == shooter.SequenceLength - 1
-                && shooter.ReadiedWeapon is < 0x17 or > 0x21)
+                && shooter.MissileWeapon is < 0x17 or > 0x21)
             {
                 throw new SkipJob("a shot without a missile weapon readied: the missile order needs one (the original's sprite and speed are then a stack word's)");
             }

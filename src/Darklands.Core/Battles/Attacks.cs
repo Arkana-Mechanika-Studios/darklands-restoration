@@ -487,7 +487,7 @@ public static class Attacks
         }
         // C: a weapon of −1 with the missile flag indexes the tables at −1 (the byte before each table).
         c.AttackRate = 0xFF;
-        c.StrikeQuality = missileFlag == 0 ? c.WeaponQuality : c.MissileQuality;
+        c.StrikeQuality = missileFlag == 0 ? c.HandWeaponQuality : c.MissileQuality;
         c.WeaponSpeed = tables.WeaponSpeed(weapon);
         c.WeaponClass = tables.WeaponClass(weapon);
         c.WeaponDamage = tables.WeaponDamage(weapon);
@@ -529,7 +529,7 @@ public static class Attacks
     public static bool CanFire(Battle battle, int i)
     {
         var c = battle[i];
-        var ammunition = battle.Tables.AmmunitionType(c.ReadiedWeapon);
+        var ammunition = battle.Tables.AmmunitionType(c.MissileWeapon);
         return ammunition == 0 || Carries(battle, i, (byte)ammunition, 25);
     }
 
@@ -542,16 +542,16 @@ public static class Attacks
     {
         var c = battle[i];
         c.AttackRate = 0xFF;
-        var weapon = c.ReadiedWeapon;
+        var weapon = c.MissileWeapon;
         var ammunition = battle.Tables.AmmunitionType(weapon);
         var left = ammunition == 0
             ? ConsumeItem(battle, i, (byte)weapon, (byte)c.MissileQuality)
             : ConsumeItem(battle, i, (byte)ammunition, 25);
         if (left == -1)
         {
-            if (battle.Tables.AmmunitionType(c.ReadiedWeapon) == 0)
+            if (battle.Tables.AmmunitionType(c.MissileWeapon) == 0)
             {
-                c.ReadiedWeapon = -1;
+                c.MissileWeapon = -1;
             }
             ranOut?.Invoke(i);
             c.EnemyClass = 0;
