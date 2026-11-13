@@ -45,7 +45,7 @@ public sealed class BattleScreens
     public Core.Battles.Generation.BattlefieldMemory Memory => _state().Battlefield;
 
     /// <summary>
-    /// Runs one battle. <see cref="BattleRequest.Battlefield"/> is the battlefield type (the
+    /// Runs one battle. <see cref="BattleRequest.BattlefieldType"/> is the battlefield type (the
     /// card's <c>battle-enemy-group</c>, or <c>battle-driver</c>'s first argument), <see cref="BattleRequest.Seed"/>
     /// the battle seed, the groups the three (enemy type, quality, number) specs.
     /// </summary>
@@ -56,7 +56,7 @@ public sealed class BattleScreens
         if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_REQUEST") is { Length: > 0 } given)
         {
             var v = given.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
-            request = request with { Mode = v[0], Battlefield = v[1], Seed = v[2], Groups = [(v[3], v[4], v[5]), (v[6], v[7], v[8]), (v[9], v[10], v[11])] };
+            request = request with { Mode = v[0], BattlefieldType = v[1], Seed = v[2], Groups = [(v[3], v[4], v[5]), (v[6], v[7], v[8]), (v[9], v[10], v[11])] };
         }
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none in a battle
         using var wheel = _ui.UseSelectionList(null);

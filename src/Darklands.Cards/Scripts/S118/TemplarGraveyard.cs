@@ -63,15 +63,15 @@ public sealed class TemplarGraveyard : Card
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
 
     /// <summary>Sets up the battle the main loop fights when the card returns −2.</summary>
-    private static void StartBattle(CardContext c, int mode, int enemy)
+    private static void StartBattle(CardContext c, int mode, int battlefieldType)
     {
         c.CardBattle.Mode = mode;
-        c.CardBattle.BattlefieldType = enemy;
+        c.CardBattle.BattlefieldType = battlefieldType;
         c.CardBattle.Seed = c.Random(1000);
         c.Next = -2;
     }
 
-    /// <summary>The right name: a door opens in the fortress wall (battle mode 3, enemy 2).</summary>
+    /// <summary>The right name: a door opens in the fortress wall (battle mode 3, battlefield type 2).</summary>
     // orig: R118+0x0B7E (18C2:02DE) matched (twin R118+0x0F26); tests: CardSmokeTests
     private static void TheDoorOpens(CardContext c)
     {

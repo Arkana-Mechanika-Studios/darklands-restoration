@@ -347,9 +347,9 @@ public sealed class NightAssaultOnTheKeep : Card
         {
             // C: the switch is on a char argument; any value but 0..2 takes the default (0x7E), as way 3 does.
             // C: battle-driver's arguments are evaluated right to left; the guard count is the only draw, made before the battle.
-            var side = wayIn switch { 0 => 0x7B, 1 => 0x7C, 2 => 0x7D, _ => 0x7E };
+            var battlefieldType = wayIn switch { 0 => 0x7B, 1 => 0x7C, 2 => 0x7D, _ => 0x7E };
             var guards = c.Random(5) + 3;
-            switch (c.RunBattle(side, -2, 3, 2, guards, 0x24, 4, 1, -1, 0, 0))
+            switch (c.RunBattle(battlefieldType, -2, 3, 2, guards, 0x24, 4, 1, -1, 0, 0))
             {
                 case 0:
                     c.AdjustReputation(NearestCity(), 10, 20);

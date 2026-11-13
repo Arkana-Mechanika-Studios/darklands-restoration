@@ -30,8 +30,8 @@ public sealed class RulesOracleTests
         "R029+0x179C", "R029+0x1800", "party_max_attr_skill",
     ];
 
-    private const int BestValue = DataSegment * 16 + 0x99E6;
-    private const int BestMember = DataSegment * 16 + 0x991D;
+    private const int LastQueryValue = DataSegment * 16 + 0x99E6;
+    private const int LastQueryMember = DataSegment * 16 + 0x991D;
     private const int BestSkill = DataSegment * 16 + 0x99EB;
     private const int BestAttribute = DataSegment * 16 + 0x9C1D;
     private const int AttributeMember = DataSegment * 16 + 0x9A44;
@@ -174,8 +174,8 @@ public sealed class RulesOracleTests
         };
         Assert.True((byte)c.Ax == (byte)result, $"{function}: {(byte)c.Ax} vs {result}");
         var last = s.Party.Last;
-        AssertIfChanged(c, BestValue, last.Value, function);
-        AssertIfChanged(c, BestMember, last.Member, function);
+        AssertIfChanged(c, LastQueryValue, last.Value, function);
+        AssertIfChanged(c, LastQueryMember, last.Member, function);
         AssertIfChanged(c, BestSkill, last.Skill, function);
         AssertIfChanged(c, BestAttribute, last.AttributeValue, function);
         AssertIfChanged(c, AttributeMember, last.AttributeMember, function);

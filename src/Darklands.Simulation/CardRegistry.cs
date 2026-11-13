@@ -29,7 +29,7 @@ public sealed record RegisteredCard(Card Card, CardSource Source, int SavesAs);
 /// Precedence: a number is looked up among the mod cards first, then among the game's. A mod card numbered above
 /// <see cref="LastOriginalCard"/> is a new card; a mod card with a game card's number replaces that card only when it is
 /// registered as an override. Mods register in their load order; when two register the same number, the later one wins
-/// and the replacement is logged. The map (0x0C), the end of the game (0x62) and the negative codes (battles, quit) are
+/// and the replacement is logged. The map (0x0C), the end of the cards (0x62, EndOfCards) and the negative codes (battles, quit) are
 /// not cards the dispatcher runs and cannot be registered.
 /// </remarks>
 // orig: the card table R136+0xD090[] that the dispatch loop of root 03A1:000A indexes (CardDispatcher): Original holds the scripts of its entries

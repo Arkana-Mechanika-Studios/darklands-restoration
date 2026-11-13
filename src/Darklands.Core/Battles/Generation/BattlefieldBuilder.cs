@@ -223,7 +223,7 @@ public sealed class BattlefieldStore
 
     /// <summary>Each party slot's level when the last battle here ended (−1: unknown), which OriginalBehaviour.FixFloorsOfResumedBattle
     /// gives back in mode 1 (the original keeps none: everybody is on the level shown).</summary>
-    public int[] PartyFloors { get; } = [-1, -1, -1, -1, -1];
+    public int[] PartyLevels { get; } = [-1, -1, -1, -1, -1];
 
     /// <summary>
     /// Each level's files as last written (level%d.flr, the floor image; level%d.atv, the activations): the prepared levels, then the

@@ -1092,7 +1092,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   deterministic: **yes** (checked against the original); action: **keep** - fighter-dying 0E76:2448 reads the count with cbw and copies count * 6 bytes (0E76:25F9-262E, _fmemcpy 06A1:2EB4) into DS:[C291]: with -1 that is 65530 bytes over DGROUP and the stack, and the game dies. The count -1 comes from item-keep-percent on an empty pack (B-e458c5). A crash cannot be reproduced usefully; the empty pile is kept.
 - **D-2455e7** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Missiles.cs:60` `TacticalBattle.LaunchMissile`  
   original: `R018+0x0000` (1EF8:0000, matched)  
-  divergence: the speed and sprite of a readied weapon that is none of the missile items 0x17..0x21 (uninitialised in the original) are 15 / 5 here.  
+  divergence: the speed and sprite of a missile weapon that is none of the missile items 0x17..0x21 (uninitialised in the original) are 15 / 5 here.  
   deterministic: **n/a**; action: **justify** - shot-launch leaves speed/sprite uninitialised only for a weapon type outside the missile types (0x17..0x21); a missile is only launched for a readied missile weapon or a trap weapon, all inside that range, so the case does not occur.
 - **D-9daa05** `undefined-memory` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:374` `TacticalBattle.HoverWithNobodySelected`  
   original: `R014+0xC044` (19CD:0AD4, draft)  

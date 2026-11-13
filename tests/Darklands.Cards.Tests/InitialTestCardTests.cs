@@ -36,7 +36,7 @@ public sealed class InitialTestCardTests
         var state = CardHarness.NewGame(seed: 3, location: 3);
         // The scripted screen chooses line 8 (+99), then moves on to line 9 (the end of the game).
         var (next, _) = CardHarness.Run(new InitialTestCard(), state, option: 8);
-        Assert.Equal(0x62, next);
+        Assert.Equal(CardContext.EndOfCards, next);
         Assert.Equal(0x63, LocationRules.Query(state, 3, 0));
     }
 }

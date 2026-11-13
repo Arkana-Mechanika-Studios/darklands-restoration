@@ -654,7 +654,7 @@ public sealed class BattleScreen : ITacticalView
             }
         }
         var reuse = request.Mode != 0 && _owner.LastField is { } last && _owner.LastFieldLocation == _state.CurrentLocation;
-        var field = reuse ? _owner.LastField! : BattlefieldBuilder.Build(context, request.Battlefield, request.Seed, request.Groups);
+        var field = reuse ? _owner.LastField! : BattlefieldBuilder.Build(context, request.BattlefieldType, request.Seed, request.Groups);
         if (!reuse && _state.BattleFile is { } before)
         {
             // C: DS:C7A4 (the chests' loot file offsets) is not cleared for a new battlefield: the preparation sets the offsets of its
@@ -668,7 +668,7 @@ public sealed class BattleScreen : ITacticalView
         _owner.LastField = field;
         _owner.LastFieldLocation = _state.CurrentLocation;
         var floor = !reuse ? field.StartLevel
-            : request.Mode == 3 ? Math.Clamp(request.Battlefield, 0, field.Levels.Count - 1)
+            : request.Mode == 3 ? Math.Clamp(request.BattlefieldType, 0, field.Levels.Count - 1)
             : field.Store.LevelShown >= 0 ? field.Store.LevelShown : field.StartLevel;
         var battle = new Battle(_assets.Tables, _state.Random)
         {
@@ -686,7 +686,7 @@ public sealed class BattleScreen : ITacticalView
         _framesOverHatching = false;
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
-            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
+            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.BattlefieldType, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
             StaleFlags = _state.BattleFile is { } program ? [.. Enumerable.Range(0, Combatant.Count).Select(i => (ushort)(program.Variables[BattleVariables.Flags + 2 * i] | program.Variables[BattleVariables.Flags + 2 * i + 1] << 8))] : null,
             StalePaths = _state.BattleFile is { } heldFile ? (heldFile.Variables[BattleVariables.Paths..(BattleVariables.Paths + Combatant.Count * Combatant.PathLength)],
                 heldFile.Variables[BattleVariables.PathIndex..(BattleVariables.PathIndex + Combatant.Count)]) : null,
@@ -758,7 +758,7 @@ public sealed class BattleScreen : ITacticalView
         _framesOverHatching = false;
         _battle = new TacticalBattle(battle, field, furniture, _library, this)
         {
-            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.Battlefield, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
+            ProgramMemory = _owner.GenerationMemory, BattlefieldType = request.BattlefieldType, Seed = request.Seed, CursorKeys = _owner.CursorKeys,
         };
         TakePanelSelection(battle);
         _battle.TakeOrderMode(_ui.PanelOrderMode.On);
@@ -789,7 +789,7 @@ public sealed class BattleScreen : ITacticalView
         _battle.ReadBattleFile(file);
         // orig: R002+0x0000 sets DS:C1F0 to the call's battlefield after the restore R003+0x0CE8 read the file's (a game loaded from the start
         // screen: DS:A768 still 0); lockstep dungeon-king-ladder (local/batch/b32/a7-king)
-        _battle.BattlefieldType = request.Battlefield;
+        _battle.BattlefieldType = request.BattlefieldType;
         SetPalette(field.Terrain.BackgroundPalette);
         StartCycles();
         (_view.CentreColumn, _view.CentreRow) = _owner.ViewCentre;
@@ -963,7 +963,7 @@ public sealed class BattleScreen : ITacticalView
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             store.PartyPlaces[i] = b[i].Status == CharacterStatus.Empty ? null : (b[i].Position, b[i].Facing, b[i].SpriteFacing);
-            store.PartyFloors[i] = b[i].Status == CharacterStatus.Empty ? -1 : b[i].Level;
+            store.PartyLevels[i] = b[i].Status == CharacterStatus.Empty ? -1 : b[i].Level;
         }
     }
 
@@ -1159,11 +1159,11 @@ public sealed class BattleScreen : ITacticalView
     public void FramesOfNobodyDrawn() => _pageCellHoldsRows = true;
 
     // orig: R016+0x15BE (1EF8:15BE) draft (checked against the asm)
-    // C: the end of every order choice (TacticalBattle.ChooseOrder, ChoosePlace, ChooseThrow): the letter of DS:A6B0 into DS:9085 (1: 'F' when the flee bit 0x1000 of the member's flags is set, else 'W'; 6 'B', 0x0A 'V', 0x12 'A',
+    // C: the end of every order choice (TacticalBattle.ChooseOrder, ChoosePlace, ChooseThrow): the letter of DS:A6B0 into DS:9085 (1: 'F' when the Following bit 0x1000 of the member's flags is set, else 'W'; 6 'B', 0x0A 'V', 0x12 'A',
     //   0x22 'P', 0x40 'R', 0x80 'M', 0x100 'T'; 0x400: the place action DS:A6D1 through the table at R016+0x1664: 1, 2 'U', 3, 6 'P', 4, 7 'D',
     //   5 'O', 8 'X', 10 'H'), DS:9086 = 0; the patch DS:A6C2 at (6, 0x28 x DS:A6B2 + 0x1F) of the page DS:0168, the letter there in colour
     //   0xFF (the window colour put back after), the cell's 10 x font-height pixels copied to the screen DS:0190 (root 047C:0553), then the
-    //   flee bit cleared. Nothing else draws the row until the panel rows (root 0000:1716) draw it again (vis10 session visleads-order-letter:
+    //   Following bit cleared. Nothing else draws the row until the panel rows (root 0000:1716) draw it again (vis10 session visleads-order-letter:
     //   each order key's letter white in the row, the same letter after a key that chose nothing; after Enter the rows' own letter)
     // DIVERGENCE: any other order or place action (in the game: place action 9, Loot Bodies, R016+0x13CA) leaves DS:9085 as its last writer
     //   left it, a text buffer shared by many screens, and draws its first byte; here the patch only.

@@ -381,7 +381,7 @@ public sealed class EffectField : IEffectClouds
     /// <summary>
     /// effect-cast: an effect of <paramref name="type"/> lands at (x, y) — a slowing area (9), a
     /// flash or blast marker (6..8), or a cloud (any other type) — and acts at once on whoever
-    /// is in it on <paramref name="floor"/>.
+    /// is in it on <paramref name="level"/>.
     /// </summary>
     /// <param name="thrower">The thrower (p3; for the flash: whose opponents are blinded).</param>
     /// <param name="quality">The potion's quality (clamped to 20..49: three grades).</param>
@@ -390,9 +390,9 @@ public sealed class EffectField : IEffectClouds
     /// <summary>The level an effect is made on: the level shown (R019+0x0000 / 0x0300), or with FixCombatAcrossLevels its missile's.</summary>
     // BUG: OriginalBehaviour.FixCombatAcrossLevels - a spell or potion effect lands on the level SHOWN, whatever level its missile flew on
     //   (split audit row 7)
-    private int EffectLevel(int floor) => Battle.Behaviour.FixCombatAcrossLevels && floor >= 0 ? floor : Battle.LevelShown;
+    private int EffectLevel(int level) => Battle.Behaviour.FixCombatAcrossLevels && level >= 0 ? level : Battle.LevelShown;
 
-    public void Lands(int x, int y, int thrower, int type, int quality, int target, int floor)
+    public void Lands(int x, int y, int thrower, int type, int quality, int target, int level)
     {
         // C: root 0410:001A clamps signed.
         var dur = Math.Clamp(quality, 0x14, 0x31);
@@ -407,7 +407,7 @@ public sealed class EffectField : IEffectClouds
             a.X = x;
             a.Y = y;
             a.Size = 0x49;
-            a.Level = (sbyte)EffectLevel(floor);
+            a.Level = (sbyte)EffectLevel(level);
             switch (dur / 10)
             {
                 case 2:
@@ -435,9 +435,9 @@ public sealed class EffectField : IEffectClouds
             m.X = x;
             m.Y = y;
             m.Frame = 0x40;
-            m.Level = (sbyte)EffectLevel(floor);
+            m.Level = (sbyte)EffectLevel(level);
             m.Kind = (byte)(type - 6);
-            MarkerActs(++MarkerCount - 1, type, thrower, dur, target, floor);
+            MarkerActs(++MarkerCount - 1, type, thrower, dur, target, level);
             _sound(0x0D);
             return;
         }
@@ -470,22 +470,22 @@ public sealed class EffectField : IEffectClouds
             r.Y = y;
             r.Kind = (byte)type;
             r.Size = Unsigned(0x21DC + type);
-            r.Level = (sbyte)EffectLevel(floor);
+            r.Level = (sbyte)EffectLevel(level);
         }
         _clouds[CloudCount].Until = (ushort)(Unsigned(0x2202 + type * 3 + dur / 10) * 60 + Clock);
-        CloudActs(++CloudCount - 1, dur, target, floor);
+        CloudActs(++CloudCount - 1, dur, target, level);
         _sound(0x0C);
     }
 
-    /// <summary>The cloud acts on everybody of the floor inside it (and in sight of its centre) who does not resist its type.</summary>
+    /// <summary>The cloud acts on everybody of the level inside it (and in sight of its centre) who does not resist its type.</summary>
     // orig: R019+0x0300 (1EF8:0300) matched; tests: Oracle:effects.json
-    private void CloudActs(int n, int dur, int target, int floor)
+    private void CloudActs(int n, int dur, int target, int level)
     {
         var kind = _clouds[n].Kind;
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if (c.Status != CharacterStatus.Able || c.Level != floor || !Inside(_clouds[n].X, _clouds[n].Y, _clouds[n].Size, i)
+            if (c.Status != CharacterStatus.Able || c.Level != level || !Inside(_clouds[n].X, _clouds[n].Y, _clouds[n].Size, i)
                 || (c.EffectImmunity & (1 << kind)) != 0)
             {
                 continue;
@@ -563,13 +563,13 @@ public sealed class EffectField : IEffectClouds
 
     /// <summary>A flash (6: the thrower's opponents who look toward it are held) or a blast (7 Thunderbolt, 8 Arabian Fire: damage, armour worn).</summary>
     // orig: R019+0x058A (1EF8:058A) matched; tests: Oracle:effects.json
-    private void MarkerActs(int n, int type, int thrower, int dur, int target, int floor)
+    private void MarkerActs(int n, int type, int thrower, int dur, int target, int level)
     {
         var m = _markers[n];
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if (c.Status != CharacterStatus.Able || c.Level != floor || (c.EffectImmunity & (1 << type)) != 0)
+            if (c.Status != CharacterStatus.Able || c.Level != level || (c.EffectImmunity & (1 << type)) != 0)
             {
                 continue;
             }

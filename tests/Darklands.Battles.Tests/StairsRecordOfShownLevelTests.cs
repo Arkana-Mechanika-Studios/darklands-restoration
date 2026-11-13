@@ -19,7 +19,7 @@ public sealed class StairsRecordOfShownLevelTests
 
     /// <summary>The Rotenburg-like split: member 1 alone through record 0 of the party's level, the view back on the party's level, his
     /// Stairs order set as the split menu sets it (exit = back).</summary>
-    private static (TacticalBattle T, int PartyFloor, int HisFloor, int Back) Split(OriginalBehaviour behaviour)
+    private static (TacticalBattle T, int PartyLevel, int HisLevel, int Back) Split(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
         var party = t.Battle.LevelShown;

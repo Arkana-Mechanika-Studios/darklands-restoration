@@ -33,14 +33,14 @@ public sealed class TemplarFortressGate : Card
             new MenuLine(_ => CallOnASaint(c, menu), () => OptionHint.Say("Select a person and a saint.")),
             // DORMANT: lines 3..9 are never enabled. Each (R118+0x18DC, R118+0x1936, R118+0x1990,
             // R118+0x19EA, R118+0x1A44, R118+0x1A9E, R118+0x1AF8) would show text 0,
-            // pass no time and close the card (0x62); hints 043a..0656 say "unknown" for no one.
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown));
+            // pass no time and end the card loop (EndOfCards, 0x62); hints 043a..0656 say "unknown" for no one.
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown));
     }
 
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
@@ -105,7 +105,7 @@ public sealed class TemplarFortressGate : Card
     }
 
     // orig: R118+0x18DC (1984:041C) matched (dormant; twins 0476, 04d0, 052a, 0584, 05de, 0638)
-    private static void CloseTheCard(CardContext c)
+    private static void EndTheCards(CardContext c)
     {
         c.Screen.Text(0);
         c.PassHours(0);

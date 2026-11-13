@@ -180,7 +180,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         state.MapPosition = new MapPosition(column, row);
         state.CurrentLocation = near;
         // C: found != -1 && EncounterCard != 0x62 && roll-below(100) <= 60 -> 2000: the place's own encounter card (short-circuit: no draw unless the place has one that is not 0x62).
-        if (near >= 0 && state.Locations[near].EncounterCard != 0x62 && state.Random.Below(100) <= 60)
+        if (near >= 0 && state.Locations[near].EncounterCard != CardDispatcher.EndOfCards && state.Random.Below(100) <= 60)
         {
             return new StepResult(StepOutcome.Encounter, state.Locations[near].EncounterCard);
         }
@@ -220,7 +220,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         {
             var p = state.Locations[i];
             if (p.X >= column - reach && p.X <= column + reach + 1 && p.Y >= row - reach && p.Y <= row + reach + 1 &&
-                p.ArrivalCard != 0x62)
+                p.ArrivalCard != CardDispatcher.EndOfCards)
             {
                 return i;
             }

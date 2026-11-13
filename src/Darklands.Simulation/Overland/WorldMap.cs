@@ -24,7 +24,7 @@ public sealed class WorldMap
     public WorldMap(WorldMapData terrain, IEnumerable<Location> places)
     {
         _terrain = terrain;
-        foreach (var place in places.Where(p => !p.IsCity && p.ArrivalCard != 0x62 && p.Icon != 15))
+        foreach (var place in places.Where(p => !p.IsCity && p.ArrivalCard != CardDispatcher.EndOfCards && p.Icon != 15))
         {
             _icons[(place.X, place.Y)] = Terrain.PlaceIconCode(place.Icon);
             _iconList.Add((place.X, place.Y, Terrain.PlaceIconCode(place.Icon)));

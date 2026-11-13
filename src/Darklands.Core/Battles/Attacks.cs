@@ -524,7 +524,7 @@ public static class Attacks
         c.AimingValue = (byte)Math.Clamp(aiming, 0, 0xFF);
     }
 
-    /// <summary>True when the readied weapon needs no ammunition or the combatant carries ammunition of quality 25.</summary>
+    /// <summary>True when the missile weapon needs no ammunition or the combatant carries ammunition of quality 25.</summary>
     // orig: may-shoot R014+0xB092 (18BF:0C02) draft (byte-matched per the draft notes)
     public static bool CanFire(Battle battle, int i)
     {

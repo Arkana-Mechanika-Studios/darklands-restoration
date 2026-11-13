@@ -201,7 +201,7 @@ public static class BattleVariables
 
     public const int PartyLevel = 0x16D2;
 
-    /// <summary>DS:C651: the enemies' floor as the end-of-battle test last found it.</summary>
+    /// <summary>DS:C651: the enemies' level as the end-of-battle test last found it.</summary>
     public const int EnemyLevel = 0x16D3;
 
     /// <summary>DS:C925, DS:C978 (words), DS:C989, DS:CA1B (bytes): the alarm trigger.</summary>

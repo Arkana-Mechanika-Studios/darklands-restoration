@@ -68,7 +68,7 @@ public sealed class OverlandTests
         return state;
     }
 
-    private static Location Place(int index, int x, int y, int icon = 0, int notice = 0, int danger = 0, int arrival = 0, int encounter = 0x62) =>
+    private static Location Place(int index, int x, int y, int icon = 0, int notice = 0, int danger = 0, int arrival = 0, int encounter = CardContext.EndOfCards) =>
         new() { Index = index, X = x, Y = y, Icon = icon, NoticeRange = notice, Danger = danger, ArrivalCard = arrival == 0 ? 100 + index : arrival, EncounterCard = encounter };
 
     private static (int X, int Y) PixelOf(int column, int row) => (column * 16, row * 4 - 4);
@@ -332,7 +332,7 @@ public sealed class OverlandTests
             Place(0, 5, 5),                                      // a city: part of the map itself
             Place(92, 6, 6, icon: 8),                            // a village -> 0x1D
             Place(93, 7, 7, icon: 15),                           // a dragon lair: no icon
-            Place(94, 8, 8, icon: 3, arrival: 0x62),             // closed (card 0x62): no icon
+            Place(94, 8, 8, icon: 3, arrival: CardContext.EndOfCards),             // closed (card 0x62): no icon
             Place(95, 9, 9, icon: 3),                            // 0x33
         };
         var map = new WorldMap(Data(30, 30, (_, _) => Terrain.Plains), places);

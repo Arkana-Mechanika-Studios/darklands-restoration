@@ -52,12 +52,12 @@ public sealed partial class TacticalBattle
 
     /// <summary>
     /// Launches a missile from <paramref name="who"/> (−1/−2 a trap from the line start) at
-    /// <paramref name="target"/> (−1 a spot): a weapon missile (type 0) by the readied weapon, a
+    /// <paramref name="target"/> (−1 a spot): a weapon missile (type 0) by the missile weapon, a
     /// spell (type ≥ 6) by the caster's sprite family. A missing shot flies past (extend_miss).
     /// </summary>
     // orig: shot-launch R018+0x0000 (1EF8:0000) matched
     // C: traps (who −1/−2, from the line-of-sight globals) go through LaunchTrapMissile.
-    // DIVERGENCE: the speed and sprite of a readied weapon that is none of the missile items 0x17..0x21 (uninitialised in the original) are 15 / 5 here.
+    // DIVERGENCE: the speed and sprite of a missile weapon that is none of the missile items 0x17..0x21 (uninitialised in the original) are 15 / 5 here.
     public void LaunchMissile(int who, int target, int type, int spell = 0, int power = 0)
     {
         if (Missiles.Count == 0x11)

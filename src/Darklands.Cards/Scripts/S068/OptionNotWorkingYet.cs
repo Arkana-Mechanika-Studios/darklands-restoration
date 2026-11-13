@@ -1,7 +1,8 @@
 namespace Darklands.Cards.Scripts;
 
 /// <summary>
-/// "$NoGo00.msg": the card the game leads to when a scene is not finished: "Sorry, this option
+/// "$NoGo00.msg": card 0x62, whose number is also the main loop's stop code (<see cref="CardContext.EndOfCards"/>): a
+/// card that returns 0x62 ends the card loop, so the loop never calls this card's function. Its text: "Sorry, this option
 /// isn't working yet." It offers to go back to the previous scene, to the city's main street or
 /// side street, or to the outside of the city (the other lines say the same and go back).
 /// </summary>

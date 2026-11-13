@@ -49,13 +49,13 @@ public sealed class OriginalBugsOfTheKeysTests
         Assert.True(t.Paused);
         t.Menus.Set(OrdersItem.UseStairs, 1);
         t.StairsBackBeforeTable = 0x5A;
-        t.StairsExitBeforeTable = 0;
+        t.StairsToTakeBeforeTable = 0;
         t.UseKey(-1);
-        Assert.Equal(expected, t.StairsExitBeforeTable);
+        Assert.Equal(expected, t.StairsToTakeBeforeTable);
         Assert.Equal(0x5A, t.StairsBackBeforeTable);
     }
 
-    /// <summary>R016+0x13D4: with nobody selected the flee bit of D6EA lands on the pause byte DS:A695: 1 becomes 0x11 (D6EA = 1), where the tests of "paused" and "running" both refuse it.</summary>
+    /// <summary>R016+0x13D4: with nobody selected the Following bit of D6EA lands on the pause byte DS:A695: 1 becomes 0x11 (D6EA = 1), where the tests of "paused" and "running" both refuse it.</summary>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -68,7 +68,7 @@ public sealed class OriginalBugsOfTheKeysTests
         var t = Start(new OriginalBehaviour { FixEscapeWithoutSelectionPauseByte = fix });
         t.TogglePause();
         Assert.Equal(1, t.PauseByte);
-        typeof(TacticalBattle).GetField("_fleeBefore", Any)!.SetValue(t, true);
+        typeof(TacticalBattle).GetField("_followingBefore", Any)!.SetValue(t, true);
         t.CancelOrder();
         if (fix)
         {
@@ -109,7 +109,7 @@ public sealed class OriginalBugsOfTheKeysTests
         {
             t.TogglePause();
         }
-        typeof(TacticalBattle).GetField("_fleeBefore", Any)!.SetValue(t, true);
+        typeof(TacticalBattle).GetField("_followingBefore", Any)!.SetValue(t, true);
         t.CancelOrder();
         Assert.Equal(0x11, t.PauseByte);
         var clock = t.Battle.Clock;
@@ -131,7 +131,7 @@ public sealed class OriginalBugsOfTheKeysTests
         }
         var t = Start(new OriginalBehaviour());
         t.TogglePause();
-        typeof(TacticalBattle).GetField("_fleeBefore", Any)!.SetValue(t, false);
+        typeof(TacticalBattle).GetField("_followingBefore", Any)!.SetValue(t, false);
         t.CancelOrder();
         Assert.Equal(1, t.PauseByte);
         t.PauseByte = 0x11;

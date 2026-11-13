@@ -12,7 +12,7 @@ public interface IBattleEndActions
     void OpenLoot(int member);
 
     /// <summary><c>level-change</c>: show another level.</summary>
-    void SwitchLevel(int floor);
+    void SwitchLevel(int level);
 
     /// <summary>The screen parts of <c>fight-mode-exit</c>, <c>fight-recovery</c>'s placing of the woken and the redraws.</summary>
     void LeftCombatMode();
@@ -86,7 +86,7 @@ public static class BattleEnd
                 break;
             }
         }
-        var enemyFloor = b.EnemyLevel;
+        var enemyLevel = b.EnemyLevel;
         // Everybody still standing there has left through an exit?
         var noAbleOnEnemyLevel = true;
         var gone = 0;
@@ -96,7 +96,7 @@ public static class BattleEnd
             {
                 gone++;
             }
-            else if (m.IsAble && m.Level == enemyFloor)
+            else if (m.IsAble && m.Level == enemyLevel)
             {
                 noAbleOnEnemyLevel = false;
             }
@@ -105,7 +105,7 @@ public static class BattleEnd
         //   (the stairs), nobody on the enemies' floor reads as the party's flight: the battle ends as fled or left and the members on the
         //   other level become Away (split audit row 10); the fix lets the tests below see them (the real-combat switch to their floor).
         if (noAbleOnEnemyLevel && gone != 0 && b.Behaviour.FixExitedMemberStrandsTheRest
-            && party.Any(m => m.IsAble && m.Level != LeftThroughExit && m.Level != enemyFloor))
+            && party.Any(m => m.IsAble && m.Level != LeftThroughExit && m.Level != enemyLevel))
         {
             noAbleOnEnemyLevel = false;
         }
@@ -137,11 +137,11 @@ public static class BattleEnd
             var elsewhere = 0;
             foreach (var m in party)
             {
-                if (m.Level == enemyFloor && m.IsAble)
+                if (m.Level == enemyLevel && m.IsAble)
                 {
                     noAbleOnEnemyLevel = false;
                 }
-                else if (m.Level != enemyFloor && m.IsAble)
+                else if (m.Level != enemyLevel && m.IsAble)
                 {
                     elsewhere++;
                 }
@@ -150,7 +150,7 @@ public static class BattleEnd
             {
                 foreach (var m in party)
                 {
-                    if (m.Level == enemyFloor && m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
+                    if (m.Level == enemyLevel && m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                     {
                         m.Status = CharacterStatus.Away;
                     }
@@ -181,7 +181,7 @@ public static class BattleEnd
             var noneConscious = true;
             foreach (var m in party)
             {
-                if (m.Status != CharacterStatus.Empty && m.Level != LeftThroughExit && m.Level == enemyFloor)
+                if (m.Status != CharacterStatus.Empty && m.Level != LeftThroughExit && m.Level == enemyLevel)
                 {
                     if (m.IsAble)
                     {
@@ -390,7 +390,7 @@ public static class BattleEnd
                 TryImprove(b, i, b.Tables.SkillCategory(m.DefaultWeapon), 0, changed);
                 used &= (SkillUse)0xFE;
             }
-            // BUG: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or
+            // BUG: the missile skill is the missile weapon's at the battle's end: a member who threw his last javelin or
             // axe has weapon -1 (spend-ammunition), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised
             // instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
             if (used.HasFlag(SkillUse.MissileHit))

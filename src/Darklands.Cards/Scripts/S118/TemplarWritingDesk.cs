@@ -41,13 +41,13 @@ public sealed class TemplarWritingDesk : Card
             //   CardBattle is the persistent BattleOrders, which keep the enemy, seed and the rest.
             new MenuLine(_ => { c.CardBattle.Mode = 1; c.Next = -2; }, Unknown),
             // DORMANT: lines 5..9 are never enabled. Each (R118+0x24B2, R118+0x250C, R118+0x2566,
-            // R118+0x25C0, R118+0x261A) would show text 0, pass no time and close the card (0x62);
+            // R118+0x25C0, R118+0x261A) would show text 0, pass no time and end the card loop (EndOfCards, 0x62);
             // hints 05a0..0708 say "unknown" for no one.
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown),
-            new MenuLine(_ => CloseTheCard(c), Unknown));
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown),
+            new MenuLine(_ => EndTheCards(c), Unknown));
     }
 
     private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
@@ -130,7 +130,7 @@ public sealed class TemplarWritingDesk : Card
     }
 
     // orig: R118+0x24B2 (1A2B:0582) matched (dormant; twins 05dc, 0636, 0690, 06ea)
-    private static void CloseTheCard(CardContext c)
+    private static void EndTheCards(CardContext c)
     {
         c.Screen.Text(0);
         c.PassHours(0);

@@ -391,7 +391,7 @@ public sealed class CardMenu
 
     /// <summary>
     /// The handler most card files keep for option lines their text does not have: the card's first text
-    /// again (unless <paramref name="showFirstText"/> is false), then the end-of-game marker 0x62.
+    /// again (unless <paramref name="showFirstText"/> is false), then card 0x62 (<see cref="CardContext.EndOfCards"/>: the main loop stops).
     /// </summary>
     // orig: e.g. R119+0x10C8 (18D0:0748) matched (the repeat-the-opening handler of the R119..R135 card files)
     public static void ShowFirstTextAndEnd(CardContext c, bool showFirstText = true)

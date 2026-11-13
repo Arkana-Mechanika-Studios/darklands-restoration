@@ -185,13 +185,13 @@ public sealed class SoldiersClosingInAtTheWall : Card
     /// The guards' fight: their groups depend on the party's lore (arguments are evaluated right to left,
     /// so the second group's random number is drawn before the first's).
     /// </summary>
-    private static int FightTheGuards(CardContext c, int side, int seed)
+    private static int FightTheGuards(CardContext c, int battlefieldType, int seed)
     {
         var lore = c.PartyLoreLevel();
         var third = lore % 3 + 1;
         var second = c.Random(4) + lore / 3 + 1;
         var first = c.Random(2) + lore / 4 + 1;
-        return c.RunBattle(side, seed, 8, first, second, 0x21, third, 1, -1, 0, 0);
+        return c.RunBattle(battlefieldType, seed, 8, first, second, 0x21, third, 1, -1, 0, 0);
     }
 
     /// <summary>The result of the fight: unrest, the guards' attitude, the cards that follow.</summary>

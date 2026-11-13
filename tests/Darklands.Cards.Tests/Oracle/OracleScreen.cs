@@ -401,7 +401,7 @@ public sealed class OracleScreens(List<string> log) : IGameScreens
 
     public int Battle(BattleRequest request)
     {
-        log.Add($"screen battle {request.Battlefield} {request.Seed}");
+        log.Add($"screen battle {request.BattlefieldType} {request.Seed}");
         return 0;
     }
 }

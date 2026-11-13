@@ -3,7 +3,7 @@ namespace Darklands.Cards.Scripts;
 /// <summary>
 /// "$Merch00": a merchant of the city makes the party a special proposition (a rare item as the
 /// reward for a dangerous service). The card has no option lines in its text; whichever line is
-/// chosen shows the merchant's speech and leads to card 0x62 (the "cannot be entered" card).
+/// chosen shows the merchant's speech and leads to card 0x62 (EndOfCards: the main loop stops).
 /// </summary>
 // orig: R053+0x2EE4 (1B26:0004) matched; tests: CardSmokeTests
 public sealed class MerchantsProposal_Merch00 : Card

@@ -32,14 +32,14 @@ public interface IGameScreens
 }
 
 /// <summary>
-/// What a card asks for when it starts a fight: battlefield kind, seed and up to three enemy
+/// What a card asks for when it starts a fight: battlefield type, seed and up to three enemy
 /// groups (type, quality, number); <paramref name="Mode"/> is battle-entry's mode (0 a new
 /// battlefield, 1 back onto the last one, 2 through a door of it, 3 through a door onto level
-/// <paramref name="Battlefield"/>); <paramref name="Persistent"/> is fight-flags bit 0 (the main
+/// <paramref name="BattlefieldType"/>); <paramref name="Persistent"/> is fight-flags bit 0 (the main
 /// loop's battles: winning does not end the battle, the party leaves through an exit); <paramref name="Resume"/> is bit 0x100 of the
 /// combat flags (DS:9080) (a game saved in a battle: the battle is taken up again from the program's battle file).
 /// </summary>
-public sealed record BattleRequest(int Battlefield, int Seed, IReadOnlyList<(int Type, int Quality, int Count)> Groups, int Mode = 0, bool Persistent = false,
+public sealed record BattleRequest(int BattlefieldType, int Seed, IReadOnlyList<(int Type, int Quality, int Count)> Groups, int Mode = 0, bool Persistent = false,
     int CombatFlags = 0, bool Resume = false);
 
 /// <summary>Screens a host does not provide: each says so and returns (a battle counts as won).</summary>

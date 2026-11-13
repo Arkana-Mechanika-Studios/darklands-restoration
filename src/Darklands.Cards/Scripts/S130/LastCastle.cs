@@ -10,13 +10,13 @@ internal static class LastCastle
     /// <summary>The enemy group the castle's rooms send the party back to the courtyard with.</summary>
     public const int CourtyardEnemy = 0x57;
 
-    /// <summary>Ends the card with a fight (battle mode 0) against <paramref name="enemy"/>, on a fresh seed.</summary>
+    /// <summary>Ends the card with a fight (battle mode 0) on battlefield type <paramref name="battlefieldType"/>, on a fresh seed.</summary>
     // orig: the battle ending repeated inline in the R130..R133 last-castle handlers (e.g. R130+0x0EDA) matched
     // C: encounter-seed = roll-below(1000) is the last draw of the handler, after battle-kind / battle-enemy-group are set.
-    public static void Fight(CardContext c, int enemy)
+    public static void Fight(CardContext c, int battlefieldType)
     {
         c.BattleMode = 0;
-        c.BattlefieldType = enemy;
+        c.BattlefieldType = battlefieldType;
         c.BattleSeed = c.Random(1000);
         c.Next = -2;
     }

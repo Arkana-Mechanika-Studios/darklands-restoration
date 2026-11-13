@@ -305,9 +305,9 @@ public sealed class OriginalBehaviour
     public bool FixStairsKeyWithoutSelection { get; set; }
 
     /// <summary>
-    /// Esc with nobody selected (paused, outside order mode) writes the flee bit to flags[−1]'s high byte, which is the pause
+    /// Esc with nobody selected (paused, outside order mode) writes the Following bit to flags[−1]'s high byte, which is the pause
     /// byte DS:A695: with DS:D6EA = 1 it becomes 0x11, which the tests for "paused" (== 1) and for "running" (== 0) both refuse
-    /// (the battle's tests of it are mixed: Space then resumes, the AI and melee stay frozen). Fixed: no flee bit is written.
+    /// (the battle's tests of it are mixed: Space then resumes, the AI and melee stay frozen). Fixed: no Following bit is written.
     /// </summary>
     // orig: R016+0x13D4 (1EF8:13D4), the xor at R016+0x13F9 with bx = −2
     public bool FixEscapeWithoutSelectionPauseByte { get; set; }

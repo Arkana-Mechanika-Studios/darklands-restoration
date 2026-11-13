@@ -514,7 +514,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                     throw new SkipJob($"the leader's stairs record {n} past the level's {c.Input.Far[0x2FB6]}: R014+0xDC14 sets it from a stairs record of the level");
                 }
             }
-            if (key == 0x011B && c.Input.Ds[0xA695] == 1 && (sbyte)c.Input.Ds[OrderOverlay.Selected] == -1 && c.Input.Ds[OrderOverlay.FleeBefore] != 0)
+            if (key == 0x011B && c.Input.Ds[0xA695] == 1 && (sbyte)c.Input.Ds[OrderOverlay.Selected] == -1 && c.Input.Ds[OrderOverlay.FollowingBefore] != 0)
             {
                 throw new SkipJob("Esc while paused with nobody selected and DS:D6EA set: the original's pause byte becomes 0x11 (R016+0x13F9), which the rewrite's flag does not hold");
             }

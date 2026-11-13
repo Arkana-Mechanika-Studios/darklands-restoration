@@ -366,8 +366,8 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>DS:C77D: the byte before the members' stairs-exit table (DS:C77E, <see cref="Combatant.StairsToTake"/>); nothing reads it, only the original's out-of-range index (−1) reaches it, kept for faithfulness.</summary>
-    public byte StairsExitBeforeTable { get; set; }
+    /// <summary>DS:C77D: the byte before the members' stairs table (DS:C77E, <see cref="Combatant.StairsToTake"/>); nothing reads it, only the original's out-of-range index (−1) reaches it, kept for faithfulness.</summary>
+    public byte StairsToTakeBeforeTable { get; set; }
 
     /// <summary>DS:C8B1: the byte before the members' stairs-back table (DS:C8B2, <see cref="Combatant.StairsBack"/>).</summary>
     public byte StairsBackBeforeTable { get; set; }
@@ -397,7 +397,7 @@ public sealed partial class TacticalBattle
                     {
                         // BUG: OriginalBehaviour.FixStairsKeyWithoutSelection - R016+0x0165..0x0169 copies entry [DS:A6B2] of the two member
                         // tables without testing it: with nobody selected (0xFF) entry -1, DS:C77D = DS:C8B1 (the bytes before the tables).
-                        StairsExitBeforeTable = StairsBackBeforeTable;
+                        StairsToTakeBeforeTable = StairsBackBeforeTable;
                     }
                     ChoosePlace(PlaceAction.Stairs);
                 }

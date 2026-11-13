@@ -42,7 +42,7 @@ public interface ITacticalView : IBattleViewport
 
     /// <summary>
     /// An order was chosen in order mode: the selected member's order letter is drawn alone in its panel row (R016+0x15BE), from the
-    /// order, the place action and the flee bit as they are now; it stays until the row is drawn again.
+    /// order, the place action and the Following bit as they are now; it stays until the row is drawn again.
     /// </summary>
     void OrderLetterDrawn()
     {
@@ -187,7 +187,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>The level on screen (its index is <see cref="Battle.LevelShown"/>); the combatants may stand on other levels.</summary>
     public BattlefieldLevel LevelShown => Map.Level;
 
-    public BattlefieldLevel LevelAt(int floor) => _levels[floor];
+    public BattlefieldLevel LevelAt(int level) => _levels[level];
 
     public int LevelCount => _levels.Count;
 
@@ -374,9 +374,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
                 Battle[i].SpriteFacing = place.SpriteFacing;
                 // BUG: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the
                 //   end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
-                if (Battle.Behaviour.FixFloorsOfResumedBattle && Store.PartyFloors[i] is var floor && floor >= 0 && floor < _levels.Count)
+                if (Battle.Behaviour.FixFloorsOfResumedBattle && Store.PartyLevels[i] is var level && level >= 0 && level < _levels.Count)
                 {
-                    Battle[i].Level = floor;
+                    Battle[i].Level = level;
                 }
             }
         }
@@ -1052,19 +1052,19 @@ public sealed partial class TacticalBattle : IBattleEndActions
     // orig: level-change R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (the .flr/.atv files are BattlefieldStore.FloorFiles / ActivationFiles, which only the battle
     // file reads): a level left without DS:D4E4 gets its file's image back (SaveLevelOrLoseUnsaved), as the original's reload loses what
-    // changed, but its activations (.atv) stay as they are in memory; the hidden wall lists of unopened doors are applied by AfterLevelChange.
-    public void SwitchLevel(int floor)
+    // changed, but its activations (.atv) stay as they are in memory; the hidden wall lists of unopened doors are applied by AfterSwitchLevel.
+    public void SwitchLevel(int level)
     {
-        if (floor < 0 || floor >= _levels.Count)
+        if (level < 0 || level >= _levels.Count)
         {
             return;
         }
         LevelSwitches++;
         SaveLevelOrLoseUnsaved();
-        Battle.LevelShown = floor;
-        Map.Level = _levels[floor];
+        Battle.LevelShown = level;
+        Map.Level = _levels[level];
         Battle.ExitCards = Map.Level.ExitCards;
-        AfterLevelChange();
+        AfterSwitchLevel();
         // C: DS:D6EE is the varying furniture's buffer, which battle-tileset-load allocates when the terrain's +0xB4 is not 0
         if (Field.Terrain[0xB4] != 0)
         {

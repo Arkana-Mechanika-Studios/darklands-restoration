@@ -298,12 +298,12 @@ public sealed class HandbillThugs_Polit01 : Card
     // orig: R057+0x1F22 (1A02:0282) matched (checked against asm)
     private void Fight(CardContext c)
     {
-        int Brawl(int group)
+        int Brawl(int battlefieldType)
         {
             // C: the arguments are evaluated right to left, so the second number of thugs is drawn before the first.
             var second = c.Random(4) + c.PartyLoreLevel() / 3 + 1;
             var first = c.Random(2) + c.PartyLoreLevel() / 4 + 1;
-            return c.RunBattle(group, -1, 0x0C, first, second, 0x16, c.PartyLoreLevel() % 3 + 1, 1, -1, 0, 0);
+            return c.RunBattle(battlefieldType, -1, 0x0C, first, second, 0x16, c.PartyLoreLevel() % 3 + 1, 1, -1, 0, 0);
         }
 
         var previous = c.State.PreviousCard;

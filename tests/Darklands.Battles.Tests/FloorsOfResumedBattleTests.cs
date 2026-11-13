@@ -29,7 +29,7 @@ public sealed class FloorsOfResumedBattleTests
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             kept[i] = (t.Battle[i].Position, t.Battle[i].Facing, t.Battle[i].SpriteFacing);
-            store.PartyFloors[i] = t.Battle[i].Level;
+            store.PartyLevels[i] = t.Battle[i].Level;
         }
         // the next start: everybody on the level shown, then mode 1's places
         for (var i = 0; i < Combatant.PartySlots; i++)

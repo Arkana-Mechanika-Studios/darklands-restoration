@@ -93,7 +93,7 @@ public sealed class Battle
     /// <summary>party-floor-level (DS:C623).</summary>
     public int PartyLevel { get; set; }
 
-    /// <summary>DS:C651: the enemies' floor as the end-of-battle test (or the surrender) last found it.</summary>
+    /// <summary>DS:C651: the enemies' level as the end-of-battle test (or the surrender) last found it.</summary>
     public int EnemyLevel { get; set; }
 
     /// <summary>leader (DS:907B) and the active member DS:17B0 the keys move.</summary>

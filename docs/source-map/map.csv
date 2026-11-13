@@ -1916,7 +1916,7 @@ Darklands.Core.Battles.Tactics.TacticalBattle.MissileTrap(),trap-shot;R023+0x0E3
 Darklands.Core.Battles.Tactics.TacticalBattle.PickLock(),lock-picking;R023+0x12C0,R023+0x12C0,draft,DungeonTests,checked against asm
 Darklands.Core.Battles.Tactics.TacticalBattle.OpenChest(),chest-opening;R023+0x13D0,R023+0x13D0,draft,DungeonTests,checked against asm
 Darklands.Core.Battles.Tactics.TacticalBattle.DisarmTrap(),chest-disarm-trap;R023+0x153E,R023+0x153E,matched,,checked against asm
-Darklands.Core.Battles.Tactics.TacticalBattle.TakeExit(),use-exit;R023+0x1618,R023+0x1618,draft,DungeonTests,
+Darklands.Core.Battles.Tactics.TacticalBattle.TakeStairs(),use-exit;R023+0x1618,R023+0x1618,draft,DungeonTests,
 Darklands.Core.Battles.Tactics.TacticalBattle.LeaveLevel(),level-exit;R023+0x17D2,R023+0x17D2,draft,,divergence: typ[4] read uninitialised: -1
 Darklands.Core.Battles.Tactics.TacticalBattle.DoPlaceAction(),fighter-goto-action;R014+0x2170,R014+0x2170,matched,DungeonTests,
 Darklands.Core.Battles.Tactics.TacticalBattle.UseKey(),R016+0x1182,R016+0x1182,matched,DungeonTests,

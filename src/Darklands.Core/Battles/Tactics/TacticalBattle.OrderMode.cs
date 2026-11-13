@@ -201,7 +201,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>The letters and the Attack menu entries choose an order: walk / flee (1), a stance, missile (0x80).</summary>
     // orig: R016+0x156E (1EF8:156E), R016+0x1332, R016+0x133E matched
-    // C: each ends in R016+0x15BE: the order letter drawn alone in the selected member's row (OrderLetterDrawn), then the flee bit
+    // C: each ends in R016+0x15BE: the order letter drawn alone in the selected member's row (OrderLetterDrawn), then the Following bit
     //   (0x1000 of the member's flags, the byte DS:A697 + 2 x DS:A6B2 and 0xEF) cleared. R016+0x133E (Flee) sets the bit before it and again
     //   after it; R016+0x1332 (Walk) does not, so W after F draws the letter F and leaves the bit cleared (hooked in the original, vis10
     //   session visleads-order-letter: the flags 0x7000 at W's letter draw, 0x6000 at the next order's)
@@ -838,7 +838,7 @@ public sealed partial class TacticalBattle
         else if (!Battle.Behaviour.FixEscapeWithoutSelectionPauseByte)
         {
             // BUG: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on
-            // flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the flee bit before order mode), so a pause byte
+            // flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the Following bit before order mode), so a pause byte
             // of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
             PauseByte = (byte)((PauseByte & ~FollowingBitInPauseByte) | (_followingBefore ? FollowingBitInPauseByte : 0));
         }

@@ -190,7 +190,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>After a level is shown: the twins of linked doors, and the cells of the wall groups not opened yet are hidden.</summary>
     // orig: level-change R024+0x059A (1EF8:059A) draft (after loading the files)
-    private void AfterLevelChange()
+    private void AfterSwitchLevel()
     {
         Array.Clear(_twinDoor);
         for (var i = 0; i < 40; i++)

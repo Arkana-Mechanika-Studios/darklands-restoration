@@ -78,7 +78,7 @@ public enum TacticalFlags : ushort
 {
     None = 0,
 
-    /// <summary>Stands on stairs (exit record in <see cref="Combatant.StairsToTake"/>).</summary>
+    /// <summary>Stands on stairs (its stairs record in <see cref="Combatant.StairsToTake"/>).</summary>
     OnStairs = 0x01,
 
     /// <summary>Stands in a doorway.</summary>
@@ -111,7 +111,7 @@ public enum TacticalFlags : ushort
     /// <summary>The enemy found no target or path: it waits for its turn in the rotation.</summary>
     NoTarget = 0x400,
 
-    /// <summary>The order letter F (bit 12); also keeps the AI from engaging on its own.</summary>
+    /// <summary>The order letter F (bit 12), set by the order Flee towards (<see cref="OrdersItem.Flee"/>); also keeps the AI from engaging on its own.</summary>
     Following = 0x1000,
 
     /// <summary>In the fight (R018 0FC2): the bigger combat box applies...</summary>

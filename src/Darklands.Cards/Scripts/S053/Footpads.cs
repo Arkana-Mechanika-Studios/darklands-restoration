@@ -259,7 +259,7 @@ public sealed class Footpads : Card
     private static void AdjustStanding(CardContext c, int place, int a, int b) => c.AdjustReputation(place, a, b);
 
     /// <summary>
-    /// The fight (an ambush or the party's own attack): the robbers depend on the street the
+    /// The fight (an ambush or the party's own attack): the battlefield type depends on the street the
     /// party came from (or the road); their number on the party's lore and size. A win raises
     /// the standing; fled, the members away rejoin; downed or surrendered, the party is robbed
     /// (left a rope).
@@ -269,7 +269,7 @@ public sealed class Footpads : Card
     {
         var onTheRoad = c.MapLeaveMode == FromTheRoad;
         var place = onTheRoad ? c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y) : c.Here;
-        var robbers = c.State.PreviousCard switch
+        var battlefieldType = c.State.PreviousCard switch
         {
             6 or 8 => ambushed ? 0x13 : 0x14,
             9 or 10 => ambushed ? 0x11 : 0x12,
@@ -278,13 +278,13 @@ public sealed class Footpads : Card
         };
         if (onTheRoad)
         {
-            robbers = ambushed ? 0x2E : 0x2F;
+            battlefieldType = ambushed ? 0x2E : 0x2F;
         }
         // C: arguments right to left: the lore level, the draw roll-below(lore), the party's size, then the lore again.
         var draw = c.Random(c.PartyLoreLevel());
         var count = Math.Clamp(draw, c.PresentCount(), 8);
         var groups = c.PartyLoreLevel() / 4 + 1;
-        switch (c.RunBattle(robbers, -1, 7, groups, count, -1, 0, 0, -1, 0, 0))
+        switch (c.RunBattle(battlefieldType, -1, 7, groups, count, -1, 0, 0, -1, 0, 0))
         {
             case 0:
                 // BUG: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text

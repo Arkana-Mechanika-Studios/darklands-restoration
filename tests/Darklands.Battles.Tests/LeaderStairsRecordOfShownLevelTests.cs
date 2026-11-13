@@ -20,7 +20,7 @@ public sealed class LeaderStairsRecordOfShownLevelTests
 
     /// <summary>Member 1 alone through record 0 of the party's level, the view moved to his level, the battle running; the leader's
     /// stairs-back record number 0 (record 0 of the party's level leads to the lone member's level).</summary>
-    private static (TacticalBattle T, int Leader, int PartyFloor, int HisFloor) Split(OriginalBehaviour behaviour)
+    private static (TacticalBattle T, int Leader, int PartyLevel, int HisLevel) Split(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
         var party = t.Battle.LevelShown;

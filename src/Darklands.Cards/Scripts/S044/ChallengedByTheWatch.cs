@@ -306,7 +306,7 @@ public sealed class ChallengedByTheWatch : Card
     }
 
     /// <summary>
-    /// The fight with the watch: the kind of guards depends on where the party came from,
+    /// The fight with the watch: the battlefield type depends on where the party came from,
     /// their number on the party's size. The standing falls, the watch stays alerted for
     /// longer in small cities, and the city bans the party for 5 or 10 days.
     /// </summary>
@@ -314,7 +314,7 @@ public sealed class ChallengedByTheWatch : Card
     private static void FightTheWatch(CardContext c)
     {
         var from = c.State.PreviousCard;
-        var guards = from switch
+        var battlefieldType = from switch
         {
             MainStreet or MainStreetAtNight => 0x13,
             SideStreet or SideStreetAtNight => 0x11,
@@ -322,7 +322,7 @@ public sealed class ChallengedByTheWatch : Card
             _ => 0x56,
         };
         var count = Math.Clamp(c.Random(7) + 2, c.PresentCount(), 7);
-        var result = c.RunBattle(guards, from + c.Here, 3, 1, count, 0, 2, 1, -1, 0, 0);
+        var result = c.RunBattle(battlefieldType, from + c.Here, 3, 1, count, 0, 2, 1, -1, 0, 0);
         c.AdjustReputation(c.Here, -15, -25);
         var alerted = 2000 / c.HereQuery(2);
         switch (result)

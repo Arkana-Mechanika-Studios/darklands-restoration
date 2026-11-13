@@ -58,7 +58,7 @@ public sealed class CraftsQuarter : Card
             // orig: R050+0x1AAC (1982:060C) + R050+0x1A56 (1982:05B6) R050 seg 1982 matched
             Visit(c, () => c.IsDaylight ? Clothmaker : ClothmakerAtNight, roused: true),
             // orig: R050+0x1B3C (1982:069C) + R050+0x1B2A (1982:068A) R050 seg 1982 matched
-            // DORMANT: card-option-flag-5 is 0 (it would lead to card 0x62, "no go").
+            // DORMANT: card-option-flag-5 is 0 (it would lead to card 0x62, EndOfCards: the main loop stops).
             new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, OptionHint.Saying(SuccessAssured)),
             // orig: R050+0x1B86 (1982:06E6) + R050+0x1B74 (1982:06D4) R050 seg 1982 matched
             // DORMANT: card-option-flag-6 is 0 (card 0x62 as well).

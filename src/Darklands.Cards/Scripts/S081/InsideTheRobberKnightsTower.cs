@@ -62,13 +62,13 @@ public sealed class InsideTheRobberKnightsTower : Card
     }
 
     // orig: R081+0x01B8 (1838:01B8) matched; tests: CardSmokeTests
-    private static void Fight(CardContext c, int kind)
+    private static void Fight(CardContext c, int battlefieldType)
     {
         var here = c.Here;
         // C: arguments are evaluated right to left: roll-below(2) (last) before roll-below(3).
         var last = c.Random(2) + 2;
         var eighth = c.Random(3) + 1;
-        var result = c.RunBattle(kind, -2, here % 4 != 0 ? 0x23 : 0x26, 3, 1, 0x12, here % 3 + 2, eighth, 3, here % 3 + 1, last);
+        var result = c.RunBattle(battlefieldType, -2, here % 4 != 0 ? 0x23 : 0x26, 3, 1, 0x12, here % 3 + 2, eighth, 3, here % 3 + 1, last);
         switch (result)
         {
             case 0:
@@ -92,9 +92,9 @@ public sealed class InsideTheRobberKnightsTower : Card
                 break;
             default:
                 // Fled (1, 2) or anything else: the knight is dead only if he fell, or in the
-                // lieutenant's fight (kind 3).
+                // lieutenant's fight (battlefield type 3).
                 c.ReportAway();
-                if (!c.BattleTargetSlain && kind != 3)
+                if (!c.BattleTargetSlain && battlefieldType != 3)
                 {
                     ShowPicture(c, 57);
                     c.Screen.Text(8);

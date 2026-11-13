@@ -94,7 +94,7 @@ public sealed class OrderModeLeadsTests
         Assert.True(t.InOrderMode);
     }
 
-    /// <summary>R016+0x0A7D: choosing a member stores its flee bit in DS:D6EA, which Esc (R016+0x13D4) gives back.</summary>
+    /// <summary>R016+0x0A7D: choosing a member stores its Following bit in DS:D6EA, which Esc (R016+0x13D4) gives back.</summary>
     [Fact]
     public void SelectingAMemberKeepsItsFleeBit()
     {
@@ -105,9 +105,9 @@ public sealed class OrderModeLeadsTests
         var t = Start();
         var i = Enumerable.Range(0, Combatant.PartySlots).First(k => t.Battle[k].IsAble && t.Battle[k].Level == t.Battle.LevelShown);
         t.Battle[i].Flags |= TacticalFlags.Following;
-        typeof(TacticalBattle).GetField("_fleeBefore", Any)!.SetValue(t, false);
+        typeof(TacticalBattle).GetField("_followingBefore", Any)!.SetValue(t, false);
         t.SelectMember(i);
-        Assert.True(Get<bool>(t, "_fleeBefore"));
+        Assert.True(Get<bool>(t, "_followingBefore"));
     }
 
     /// <summary>R016+0x13D4 leaves DS:D7FE (the cursor keys) as it was.</summary>

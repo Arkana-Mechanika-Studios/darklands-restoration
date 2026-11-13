@@ -11,7 +11,7 @@ namespace Darklands.Battles.Tests.BattleCalls;
 internal static class OrderOverlay
 {
     public const int Selected = 0xA6B2, OrderMode = 0xA6B3, OrderAction = 0xA6B0, PlaceOrder = 0xA6D1, CursorTarget = 0xD845, CursorX = 0xE1B4, CursorY = 0xE1B6, Cursor = 0xE1BC;
-    public const int TargetChosen = 0xC7CC, Adjacent = 0xC762, SpotX = 0xC652, SpotY = 0xC67D, FleeBefore = 0xD6EA, OrderClock = 0xC867;
+    public const int TargetChosen = 0xC7CC, Adjacent = 0xC762, SpotX = 0xC652, SpotY = 0xC67D, FollowingBefore = 0xD6EA, OrderClock = 0xC867;
     public const int ThrowPotion = 0xC1CE, ThrowQuality = 0xC1F2, ThrowAtTargetOnly = 0xE1C8, CursorKeys = 0xD7FE, MoveMode = 0xC102, FollowsActive = 0x11B1;
     public const int SelectedFlags = 0x9064;
 
@@ -54,7 +54,7 @@ internal static class OrderOverlay
         TacticsOverlay.Set(t, "_targetChosen", ds[TargetChosen] != 0);
         TacticsOverlay.Set(t, "_adjacent", ds[Adjacent] != 0);
         TacticsOverlay.Set(t, "OrderSpot", new MapPoint((short)Word(ds, SpotX), (short)Word(ds, SpotY)));
-        TacticsOverlay.Set(t, "_fleeBefore", ds[FleeBefore] != 0);
+        TacticsOverlay.Set(t, "_followingBefore", ds[FollowingBefore] != 0);
         TacticsOverlay.Set(t, "_orderClock", (ushort)Word(ds, OrderClock));
         TacticsOverlay.Set(t, "ActionBeforeRecords", (int)(short)Word(ds, ActionBeforeRecords));
         TacticsOverlay.Set(t, "_throwPotion", (int)ds[ThrowPotion]);
@@ -100,7 +100,7 @@ internal static class OrderOverlay
         var spot = TacticsOverlay.Get<MapPoint>(t, "OrderSpot");
         PutWord(ds, SpotX, spot.X);
         PutWord(ds, SpotY, spot.Y);
-        ds[FleeBefore] = (byte)(TacticsOverlay.Get<bool>(t, "_fleeBefore") ? 1 : 0);
+        ds[FollowingBefore] = (byte)(TacticsOverlay.Get<bool>(t, "_followingBefore") ? 1 : 0);
         PutWord(ds, OrderClock, TacticsOverlay.Get<ushort>(t, "_orderClock"));
         PutWord(ds, ActionBeforeRecords, TacticsOverlay.Get<int>(t, "ActionBeforeRecords"));
         ds[ThrowPotion] = (byte)TacticsOverlay.Get<int>(t, "_throwPotion");
@@ -146,7 +146,7 @@ internal static class OrderOverlay
         {
             ("selected member", Selected, 1), ("order mode", OrderMode, 1), ("order action", OrderAction, 2), ("place order", PlaceOrder, 2), ("cursor target", CursorTarget, 1),
             ("cursor x", CursorX, 2), ("cursor y", CursorY, 2), ("cursor sprite", Cursor, 2), ("target chosen", TargetChosen, 1), ("adjacent", Adjacent, 1),
-            ("order spot x", SpotX, 2), ("order spot y", SpotY, 2), ("flee before", FleeBefore, 1), ("order clock", OrderClock, 2), ("throw potion", ThrowPotion, 1),
+            ("order spot x", SpotX, 2), ("order spot y", SpotY, 2), ("following before", FollowingBefore, 1), ("order clock", OrderClock, 2), ("throw potion", ThrowPotion, 1),
             ("throw quality", ThrowQuality, 1), ("throw at target only", ThrowAtTargetOnly, 1), ("cursor keys", CursorKeys, 1), ("move mode", MoveMode, 1),
             ("follows active", FollowsActive, 1), ("key moved", KeyMoved, 1), ("pending order flag", PendingFlag, 1), ("marching order length", MarchingOrderLength, 1),
         })

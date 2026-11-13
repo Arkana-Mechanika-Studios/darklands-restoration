@@ -1026,8 +1026,8 @@ public sealed class BattleUiTests
 
     /// <summary>
     /// An order key in order mode draws the chosen order's letter alone in the member's row: the patch DS:A6C2, then the letter in colour
-    /// 0xFF (R016+0x15BE); it stays until the panel rows are drawn again (Enter ends order mode). W after F draws F (the flee bit is still
-    /// set when the letter is drawn) and leaves the flee bit cleared (vis10 session visleads-order-letter, the original hooked).
+    /// 0xFF (R016+0x15BE); it stays until the panel rows are drawn again (Enter ends order mode). W after F draws F (the Following bit is still
+    /// set when the letter is drawn) and leaves the Following bit cleared (vis10 session visleads-order-letter, the original hooked).
     /// </summary>
     [Fact]
     public void AnOrderKeyDrawsItsLetterWhiteUntilTheRowIsDrawnAgain()
