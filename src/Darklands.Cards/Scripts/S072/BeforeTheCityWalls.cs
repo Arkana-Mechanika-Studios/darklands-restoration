@@ -103,8 +103,8 @@ public sealed class BeforeTheCityWalls : Card
     private static OptionHint ClimbChance(CardContext c)
     {
         var chance = c.PartyMinSkill((int)Skill.Stealth);
-        c.Variables.Chosen[0] = c.BestMember;
-        return new OptionHint(chance, "", c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return new OptionHint(chance, "", c.LastQueryMember);
     }
 
     /// <summary>Climb the wall in the dark (waiting for 3 o'clock by day); seen, the guard attacks.</summary>

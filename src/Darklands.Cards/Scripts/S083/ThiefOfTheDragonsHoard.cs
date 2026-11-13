@@ -86,8 +86,8 @@ public sealed class ThiefOfTheDragonsHoard : Card
 
     private static OptionHint Best(CardContext c, int chance)
     {
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     private static OptionHint PerceptionChance(CardContext c) => Best(c, c.PartyMaxAttribute(3));

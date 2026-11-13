@@ -271,7 +271,7 @@ public sealed class RevolutionHouseByDay : Card
         // the member shown is the best at Streetwise.
         var artifice = c.PartyMaxSkill(0x0E);
         var streetwise = c.PartyMaxSkill(0x10);
-        return OptionHint.ChanceOf(Math.Clamp((artifice + streetwise) / 2 - lacking, 0, 99), c.BestMember);
+        return OptionHint.ChanceOf(Math.Clamp((artifice + streetwise) / 2 - lacking, 0, 99), c.LastQueryMember);
     }
 
     // orig: R048+0x07E0 (1838:07E0) matched
@@ -279,7 +279,7 @@ public sealed class RevolutionHouseByDay : Card
     {
         c.PassHours(1);
         c.PartyMaxSkill(0x0E);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.Random(100) <= chance)
         {
             c.PracticeSkill(c.Variables.Chosen[0], 0x0E, 1, 0x0A, 0);
@@ -322,7 +322,7 @@ public sealed class RevolutionHouseByDay : Card
         {
             // DORMANT: reached only with a chance of 0 or more, which the pop-up never gives.
             c.PartyMinSkill(0x0F);
-            c.PracticeSkill(c.BestMember, 0x0F, 1, 0x0A, -1);
+            c.PracticeSkill(c.LastQueryMember, 0x0F, 1, 0x0A, -1);
             c.Screen.Text(9);
             c.Next = Fight;
             return;

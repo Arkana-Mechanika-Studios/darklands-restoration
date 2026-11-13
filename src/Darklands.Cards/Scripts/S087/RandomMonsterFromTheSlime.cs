@@ -46,17 +46,17 @@ public sealed class RandomMonsterFromTheSlime : Card
 
         return menu.Run(
             // orig: R087+0x029A (1838:029A) matched; R087+0x02A8 (1838:02A8) matched; tests: CardSmokeTests
-            new MenuLine(() => LeaveTheMap(c, hours: false), OptionHint.Saying(SuccessAssured)),
+            new MenuLine(() => GoToTheMap(c, passZeroHours: false), OptionHint.Saying(SuccessAssured)),
             // orig: R087+0x02E4 (1838:02E4) matched; R087+0x02FC (1838:02FC) matched; tests: CardSmokeTests
-            new MenuLine(() => LeaveTheMap(c, hours: true), OptionHint.Saying(SuccessAssured)),
+            new MenuLine(() => GoToTheMap(c, passZeroHours: true), OptionHint.Saying(SuccessAssured)),
             // orig: R087+0x0334 (1838:0334) matched; R087+0x034C (1838:034C) matched; tests: CardSmokeTests
-            new MenuLine(() => LeaveTheMap(c, hours: true), OptionHint.Saying(SuccessAssured)),
+            new MenuLine(() => GoToTheMap(c, passZeroHours: true), OptionHint.Saying(SuccessAssured)),
             // orig: R087+0x0384 (1838:0384) matched; R087+0x0428 (1838:0428) matched; tests: CardSmokeTests
             // DORMANT: line 3 ("Start up the Wild Hunt Quest?") is never offered (flag 0); the quest is started on arrival.
             new MenuLine(() =>
             {
                 StartTheWildHuntQuest(c);
-                LeaveTheMap(c, hours: true);
+                GoToTheMap(c, passZeroHours: true);
             }, OptionHint.Saying(SuccessAssured)),
             // orig: R087+0x0460 (1838:0460) matched; R087+0x0472 (1838:0472) matched; tests: CardSmokeTests
             // DORMANT: lines 4..9 are not offered (flags 0); they would go to the encounter card.
@@ -91,9 +91,9 @@ public sealed class RandomMonsterFromTheSlime : Card
         c.Events.Create(-2, c.Here, 0x5F, 0x1C, 5, 0, 0, EventLog.UntilEndOf1499, 0, 7);
     }
 
-    private static void LeaveTheMap(CardContext c, bool hours)
+    private static void GoToTheMap(CardContext c, bool passZeroHours)
     {
-        if (hours)
+        if (passZeroHours)
         {
             c.PassHours(0);
         }

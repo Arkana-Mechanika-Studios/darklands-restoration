@@ -31,7 +31,7 @@ public sealed class TemplarWritingDesk : Card
             new MenuLine(_ => TakeTheSilver(c), Unknown),
             // orig: R118+0x21DC (1A2B:02AC) matched; hint R118+0x2384
             new MenuLine(p => CopyTheSymbol(c, menu, p),
-                () => OptionHint.ChanceOf(c.PartyMaxSkillSum((int)Skill.ReadWrite, (int)Skill.SpeakLatin), c.BestMember)),
+                () => OptionHint.ChanceOf(c.PartyMaxSkillSum((int)Skill.ReadWrite, (int)Skill.SpeakLatin), c.LastQueryMember)),
             // orig: R118+0x23A4 (1A2B:0474) matched; hint R118+0x23C2
             new MenuLine(_ => DestroyTheDesk(c), Unknown),
             // orig: R118+0x23FA (1A2B:04CA) matched; hint R118+0x2434
@@ -82,7 +82,7 @@ public sealed class TemplarWritingDesk : Card
         if (c.Random(100) <= chance)
         {
             c.Screen.Text(3);
-            var scholar = c.State.Party.Slot(c.BestMember);
+            var scholar = c.State.Party.Slot(c.LastQueryMember);
             LearnAFormula(c, scholar);
             LearnAFormula(c, scholar);
             LearnAFormula(c, scholar);

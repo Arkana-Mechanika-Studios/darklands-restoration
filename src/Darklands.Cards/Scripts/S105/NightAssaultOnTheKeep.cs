@@ -374,7 +374,7 @@ public sealed class NightAssaultOnTheKeep : Card
                     c.LoseItems(Who.Everybody);
                     c.Injure(Who.Everybody, 1, 0x27, 5);
                     c.PartyMaxAttributeSum(1, 0);
-                    c.Variables.Chosen[0] = c.BestMember;
+                    c.Variables.Chosen[0] = c.LastQueryMember;
                     c.PassHours(c.HoursUntil(5));
                     ShowPicture(c, 59);
                     c.Screen.Text(16);

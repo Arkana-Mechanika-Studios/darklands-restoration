@@ -96,7 +96,7 @@ public sealed class SmallCaveUnderTheLedge : Card
         if (guardian == Tatzelwurm)
         {
             c.PartyMaxAttribute((int)Attribute.Perception);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             c.PassHours(1);
             c.FinishQuest10(c.Here);
             c.Screen.Text(2);

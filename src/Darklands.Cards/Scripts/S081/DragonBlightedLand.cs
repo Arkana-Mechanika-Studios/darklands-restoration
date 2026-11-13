@@ -107,7 +107,7 @@ public sealed class DragonBlightedLand : Card
                 break;
             case 8:
                 c.PartyMaxSkill(8);
-                c.Variables.Chosen[0] = (byte)c.BestMember;
+                c.Variables.Chosen[0] = (byte)c.LastQueryMember;
                 ShowPicture(c, WastePicture);
                 c.Screen.Text(8);
                 c.Next = 0x0C;

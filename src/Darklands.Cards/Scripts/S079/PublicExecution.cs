@@ -197,7 +197,7 @@ public sealed class PublicExecution : Card
                 continue;
             }
             c.BestWeaponSkill(i);
-            switch (c.BestSkillFound)
+            switch (c.LastQuerySkill)
             {
                 case 0:
                 case 5:
@@ -256,9 +256,9 @@ public sealed class PublicExecution : Card
     }
 
     // orig: R079+0x11F4 (18D8:07F4) asm; tests: CardSmokeTests
-    // C: the member is DS:9A44 (the attribute queries' member), read as BestMember.
+    // C: the member is DS:9A44 (the attribute queries' member), read as LastQueryMember.
     private static OptionHint StrengthChance(CardContext c) =>
-        OptionHint.ChanceOf(c.PartyMaxAttribute(1), (byte)c.BestMember);
+        OptionHint.ChanceOf(c.PartyMaxAttribute(1), (byte)c.LastQueryMember);
 
     // orig: R079+0x111C (18D8:071C) asm; tests: CardSmokeTests
     private static void BreakTheRopes(CardContext c, int chance, ref int standing)

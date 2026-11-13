@@ -33,7 +33,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
         menu.Enable(0, 1, 2, 4, 7);
         c.RandomName(c.City.Ordinal + 0x0C, c.LocationQuery(c.Here, 0x21) % 5 == 0 ? 1 : 0, 0);
         c.PartyMaxSkill((int)Skill.Stealth);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         var price = Money.From(c.HereQuery(2) + c.SidePercent(1) / 18, 0, 0);
         c.Variables.Money[0] = price;
         if (c.State.Party.Purse < price)
@@ -131,7 +131,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
     private static int InspireChance(CardContext c)
     {
         c.PartyMaxAttribute((int)Attribute.Charisma);
-        var speaker = c.Variables.Chosen[0] = (byte)c.BestMember;
+        var speaker = c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         var chance = (c.SideStrength(-1) + c.ReputationHere + c.Attribute(speaker, (int)Attribute.Charisma) * 2
             + c.Skill(speaker, (int)Skill.SpeakCommon)) / 4;
         if (c.HereQuery(0x29) != 2)
@@ -196,7 +196,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
     private static void BreakInAtNight(CardContext c, int chance, CardMenu menu)
     {
         var artifice = c.PartyMaxSkill((int)Skill.Artifice);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         var stealth = c.PartyAverageSkill((int)Skill.Stealth);
         c.PassHours(c.IsDaylight ? 22 : 1);
         if (Succeeds(c, chance))
@@ -225,7 +225,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
             c.Next = 0xBB;
         }
         c.PartyMaxSkill((int)Skill.Stealth);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
     }
 
     /// <summary>The potion chosen in the pop-up always works; chosen any other way it fails and burns its carrier.</summary>

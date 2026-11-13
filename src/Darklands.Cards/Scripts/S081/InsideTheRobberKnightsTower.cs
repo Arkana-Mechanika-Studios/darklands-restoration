@@ -156,8 +156,8 @@ public sealed class InsideTheRobberKnightsTower : Card
     private static OptionHint FireChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(0x0E);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     // orig: R081+0x05D0 (1838:05D0) matched; tests: CardSmokeTests

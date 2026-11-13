@@ -81,7 +81,7 @@ listed in `OriginalBehaviour` (each with a fix flag where cheap); do not "fix" t
 | `party-lowest/max/avg_skill`, `party-lowest/max_skill2`, `party-lowest/max_skill_sum` | `c.PartyMinSkill`, `c.PartyMaxSkill`, `c.PartyAverageSkill` (one or two skills), `c.PartyMinSkillSum`, `c.PartyMaxSkillSum` |
 | `party-lowest/max/avg_attr`, `party-stat-top-sum` | `c.PartyMinAttribute`, `c.PartyMaxAttribute`, `c.PartyAverageAttribute`, `c.PartyMaxAttributeSum` |
 | `member-effective-stat-two`, `party-effective-stat-two-mean/lowest/highest(-bonus)` | `c.EffectiveAgility`, `c.PartyAverage/Min/MaxEffectiveAgility`, `c.PartyMax/MinMountedAgility` |
-| `top-scoring-member`, `top-value-so-far`, `top-skill-so-far` | `c.BestMember`, `c.BestValue`, `c.BestSkillFound` (`c.BestAttributeValue` for attribute queries) |
+| `top-scoring-member`, `top-value-so-far`, `top-skill-so-far` | `c.LastQueryMember`, `c.LastQueryValue`, `c.LastQuerySkill` (`c.LastQueryAttributeValue` for attribute queries) |
 | `party-able-total` (able **women**), `party-here-total`, `party-all-fit` | `c.AbleWomen()`, `c.PresentCount()`, `c.PartyAllWell()` |
 | `party-read`, `party-write` (4 fame, 5 all mounted, 6 stone) | `c.PartyGet`, `c.PartySet` |
 | `exercise-skill`, `improvement-roll`, `injure`, `award-prize` (fame) | `c.PracticeSkill`, `c.ImproveRoll`, `c.Injure`, `c.GiveReward` |

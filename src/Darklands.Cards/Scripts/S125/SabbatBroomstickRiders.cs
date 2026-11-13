@@ -93,7 +93,7 @@ public sealed class SabbatBroomstickRiders : Card
     {
         c.Screen.Text(3);
         Add(c, SightsVisited, -1);
-        c.AddSkill(c.BestMember, (int)Skill.Virtue, -1);
+        c.AddSkill(c.LastQueryMember, (int)Skill.Virtue, -1);
         c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, -5);
         Note(c, FlyingOintment, 72);
         c.Next = 0x142;
@@ -105,9 +105,9 @@ public sealed class SabbatBroomstickRiders : Card
     //   before party-stat-top(5) sets it; the hint then names the best Charisma.
     private static OptionHint PreachingChance(CardContext c)
     {
-        var chance = c.Skill(c.BestMember, (int)Skill.SpeakCommon);
+        var chance = c.Skill(c.LastQueryMember, (int)Skill.SpeakCommon);
         chance += c.PartyMaxAttribute((int)Attribute.Charisma) / 2;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R125+0x1192 matched
@@ -119,7 +119,7 @@ public sealed class SabbatBroomstickRiders : Card
             c.Screen.Text(4);
             c.PracticeSkill(Who.Everybody, (int)Skill.SpeakCommon, 1, 10, 0);
             c.PartyMaxSkill((int)Skill.Virtue);
-            c.AddSkill(c.BestMember, (int)Skill.Virtue, 1);
+            c.AddSkill(c.LastQueryMember, (int)Skill.Virtue, 1);
             c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, 5);
             BackToTheField(c, 1, 1);
             return;

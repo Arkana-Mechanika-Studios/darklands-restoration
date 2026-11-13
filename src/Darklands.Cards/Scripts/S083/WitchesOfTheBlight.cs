@@ -171,8 +171,8 @@ public sealed class WitchesOfTheBlight : Card
     private static OptionHint RunningChance(CardContext c)
     {
         var chance = c.PartyMinMountedAgility();
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     // orig: R083+0x0518 (1838:0518) matched; tests: CardSmokeTests

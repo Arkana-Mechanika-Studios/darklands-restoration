@@ -175,7 +175,7 @@ public sealed class JewelersGuildAtNight : Card
         {
             c.PracticeSkill(Who.Everybody, (int)Skill.Stealth, 1, 10, 0);
             c.PartyMaxSkill((int)Skill.Artifice);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
         }
         else
         {
@@ -195,7 +195,7 @@ public sealed class JewelersGuildAtNight : Card
             c.Events.Update(-2, c.Here, FactKind, 0xB, Guild, PoliticsQuest, EventUpdate.Or);
             c.PracticeSkill(Who.Everybody, (int)Skill.Stealth, 1, 10, 0);
             c.PartyMaxSkill((int)Skill.Artifice);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             c.PassHours(4);
         }
         else
@@ -212,8 +212,8 @@ public sealed class JewelersGuildAtNight : Card
         var stealth = c.PartyAverageSkill((int)Skill.Stealth);
         if (c.PartyMaxSkill((int)Skill.Artifice) < stealth)
         {
-            c.Variables.Chosen[0] = c.BestMember;
-            c.PracticeSkill(c.BestMember, (int)Skill.Artifice, 0, 10, 0);
+            c.Variables.Chosen[0] = c.LastQueryMember;
+            c.PracticeSkill(c.LastQueryMember, (int)Skill.Artifice, 0, 10, 0);
             c.Screen.Text(7);
         }
         else

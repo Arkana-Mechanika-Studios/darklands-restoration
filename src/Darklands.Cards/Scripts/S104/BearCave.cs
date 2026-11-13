@@ -39,9 +39,9 @@ public sealed class BearCave : Card
         }
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
         c.PartyMaxSkill((int)Skill.Woodwise);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         c.PartyMaxSkill((int)Skill.Stealth);
-        c.Variables.Chosen[1] = c.BestMember;
+        c.Variables.Chosen[1] = c.LastQueryMember;
 
         // C: the registration installs the standard pop-up handlers, which name the member picked in the box: the item box's say
         // C: "Success is assured." beside the member (R104+0x0A4A..), the saint box's tell the prayer's chance for the party (R104+0x0B3A..).
@@ -51,10 +51,10 @@ public sealed class BearCave : Card
         return menu.Run(
             // orig: R104+0x0318 (line 0); hint R104+0x0342 (1838:0342) matched
             new MenuLine(p => SearchForTracks(c, menu, p),
-                () => OptionHint.ChanceOf(Math.Clamp(c.PartyMaxSkill((int)Skill.Woodwise) + 15, 0, 99), c.BestMember)),
+                () => OptionHint.ChanceOf(Math.Clamp(c.PartyMaxSkill((int)Skill.Woodwise) + 15, 0, 99), c.LastQueryMember)),
             // orig: R104+0x0370 (line 1); hint R104+0x0434 (1838:0434) matched
             new MenuLine(p => SneakIntoTheCave(c, menu, p),
-                () => OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.Stealth), c.BestMember)),
+                () => OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.Stealth), c.LastQueryMember)),
             // orig: R104+0x0452 (line 2); hint R104+0x04A6 (1838:04A6) matched
             new MenuLine(_ => FaceTheBear(c, menu, TunnelBlock), Unknown),
             // orig: R104+0x04DE (line 3); hint R104+0x0576 (1838:0576) matched
@@ -152,7 +152,7 @@ public sealed class BearCave : Card
             ShowPicture(c, BattlePicture);
             FightTheBear(c, 15);
             c.PartyMaxSkill((int)Skill.Woodwise);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
         }
         else
         {
@@ -188,7 +188,7 @@ public sealed class BearCave : Card
             var chance = c.PartyMaxAttribute((int)Attribute.Agility);
             if (c.Random(100) < chance)
             {
-                c.Variables.Chosen[0] = c.BestMember;
+                c.Variables.Chosen[0] = c.LastQueryMember;
                 c.Screen.Text(12);
             }
             else

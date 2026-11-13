@@ -25,7 +25,7 @@ public sealed class WitchesSummoningTheDragon : Card
         Show(c, 323);
         c.Next = CardNumber;
         c.PartyMaxSkill(0x0F);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         c.SetCardItems();
         c.SetCardSaints(0x0F, 0x2B, 0x6F);
         var menu = Menu(c);

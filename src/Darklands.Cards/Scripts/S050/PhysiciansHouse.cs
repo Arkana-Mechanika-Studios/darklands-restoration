@@ -45,7 +45,7 @@ public sealed class PhysiciansHouse : Card
             OptionState.Hidden, OptionState.Enabled, OptionState.Hidden };
         c.RandomName(c.HereQuery(0x21) + 0x320, 0, 0);
         c.PartyMaxSkill(0x0D);
-        var healer = (byte)c.BestMember;
+        var healer = (byte)c.LastQueryMember;
         c.Variables.Chosen[0] = healer;
         c.Variables.Chosen[1] = healer;
         if (!c.IsDaylight)

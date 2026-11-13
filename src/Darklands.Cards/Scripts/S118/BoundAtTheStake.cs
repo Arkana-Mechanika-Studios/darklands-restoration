@@ -67,7 +67,7 @@ public sealed class BoundAtTheStake : Card
     private static OptionHint StrengthHint(CardContext c)
     {
         var chance = (c.PartyMaxAttribute((int)Attribute.Strength) - 35) * 5;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R118+0x02BC (1838:02BC) matched; tests: CardSmokeTests

@@ -85,7 +85,7 @@ public sealed class SabbatMockBaptism : Card
 
     // orig: R125+0x0444 matched
     private static OptionHint OverhearingChance(CardContext c) =>
-        OptionHint.ChanceOf(c.PartyMaxAttribute((int)Attribute.Perception), c.BestMember);
+        OptionHint.ChanceOf(c.PartyMaxAttribute((int)Attribute.Perception), c.LastQueryMember);
 
     /// <summary>In the line the party may overhear where the next sabbat is (text 4) or not (text 5).</summary>
     // orig: R125+0x03F8 matched
@@ -103,9 +103,9 @@ public sealed class SabbatMockBaptism : Card
     //   i.e. the member some earlier query left there (stale global); the hint then names the best Charisma.
     private static OptionHint PreachingChance(CardContext c)
     {
-        var chance = c.Skill(c.BestMember, (int)Skill.SpeakCommon);
+        var chance = c.Skill(c.LastQueryMember, (int)Skill.SpeakCommon);
         chance += c.PartyMaxAttribute((int)Attribute.Charisma) / 2;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R125+0x0462 matched
@@ -117,7 +117,7 @@ public sealed class SabbatMockBaptism : Card
             c.Screen.Text(6);
             c.PracticeSkill(Who.Everybody, (int)Skill.SpeakCommon, 1, 10, 0);
             c.PartyMaxSkill((int)Skill.Virtue);
-            c.AddSkill(c.BestMember, (int)Skill.Virtue, 1);
+            c.AddSkill(c.LastQueryMember, (int)Skill.Virtue, 1);
             c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, 5);
             BackToTheField(c, 1, 1);
             return;

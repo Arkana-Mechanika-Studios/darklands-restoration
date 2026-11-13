@@ -226,7 +226,7 @@ public sealed class ArrivalByBoat : Card
         if (c.Succeeds(chance))
         {
             c.PartyMaxAttribute((int)Attribute.Agility);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             ShowPicture(c, ChasePicture);
             c.Screen.Text(7);
             c.PracticeSkill(Who.Everybody, (int)Skill.Stealth, 7, 10, 0);

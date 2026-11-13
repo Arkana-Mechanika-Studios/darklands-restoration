@@ -270,16 +270,16 @@ public sealed class SwordsmithsGuildAtNight : Card
         if (c.PartyMaxSkill((int)Skill.Artifice) < stealth)
         {
             // The lock defeats the best picker.
-            c.Variables.Chosen[0] = c.BestMember;
-            c.PracticeSkill(c.BestMember, (int)Skill.Artifice, 0, 10, 0);
+            c.Variables.Chosen[0] = c.LastQueryMember;
+            c.PracticeSkill(c.LastQueryMember, (int)Skill.Artifice, 0, 10, 0);
             c.Screen.Text(5);
         }
         else
         {
             // The clumsiest sneak gives the party away.
             c.PartyMinSkill((int)Skill.Stealth);
-            c.Variables.Chosen[0] = c.BestMember;
-            c.PracticeSkill(c.BestMember, (int)Skill.Stealth, 0, 10, 0);
+            c.Variables.Chosen[0] = c.LastQueryMember;
+            c.PracticeSkill(c.LastQueryMember, (int)Skill.Stealth, 0, 10, 0);
             c.Screen.Text(4, TextFrame.BlankPage);
         }
         c.PassHours(2);

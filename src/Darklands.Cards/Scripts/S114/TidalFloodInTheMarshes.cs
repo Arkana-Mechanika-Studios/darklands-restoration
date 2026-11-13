@@ -22,7 +22,7 @@ public sealed class TidalFloodInTheMarshes : Card
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2);
         c.PartyMaxSkill((int)Skill.Woodwise);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.CountItems(Who.Everybody, 0x3B) == 0)
         {
             menu[1] = OptionState.Shown;

@@ -50,7 +50,7 @@ public sealed class DragonsMaidenContest : Card
         else
         {
             c.PartyMaxAttributeOfWomen(5);
-            c.Variables.Chosen[0] = (byte)c.BestMember;
+            c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         }
         // C: name kind 6 (the dragons' names) is read from the EXE's table (PersonalNames, NameToSlot).
         c.NameToSlot(6, c.DragonDetail(), 0);
@@ -104,7 +104,7 @@ public sealed class DragonsMaidenContest : Card
         {
             case 0:
                 c.PartyMaxAttribute(4);
-                c.Variables.Chosen[0] = (byte)c.BestMember;
+                c.Variables.Chosen[0] = (byte)c.LastQueryMember;
                 c.PassHours(1);
                 ShowPicture(c, 21);
                 c.Screen.Text(4);

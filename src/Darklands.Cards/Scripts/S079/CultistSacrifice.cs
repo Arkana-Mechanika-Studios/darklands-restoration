@@ -183,8 +183,8 @@ public sealed class CultistSacrifice : Card
     private static OptionHint StrengthChance(CardContext c)
     {
         var chance = c.PartyMaxAttribute(1);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     // orig: R079+0x282A (1A6E:04CA) matched; tests: CardSmokeTests
@@ -207,8 +207,8 @@ public sealed class CultistSacrifice : Card
     private static OptionHint NimblenessChance(CardContext c)
     {
         var chance = c.PartyMaxAttributeAtSkillOne();
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     // orig: R079+0x2886 (1A6E:0526) matched; tests: CardSmokeTests

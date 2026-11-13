@@ -181,7 +181,7 @@ public sealed class CityDungeon : Card
     private OptionHint LockChance(CardContext c)
     {
         c.PartyMaxSkill(0x0E);
-        var member = c.BestMember;
+        var member = c.LastQueryMember;
         c.Variables.Chosen[0] = member;
         var skill = _state switch
         {
@@ -196,7 +196,7 @@ public sealed class CityDungeon : Card
     private void PickTheLock(CardContext c, int chance)
     {
         c.PartyMaxSkill(0x0E);
-        var member = c.BestMember;
+        var member = c.LastQueryMember;
         c.Variables.Chosen[0] = member;
         if (c.Random(100) > chance)
         {
@@ -225,10 +225,10 @@ public sealed class CityDungeon : Card
     private static OptionHint ClimbChance(CardContext c)
     {
         c.PartyMaxAttributeSum(2, 1);
-        var member = c.BestMember;
+        var member = c.LastQueryMember;
         c.Variables.Chosen[0] = member;
         // C: (unsigned char)(top-value-so-far / 3).
-        return OptionHint.ChanceOf(Math.Clamp((int)(byte)(c.BestValue / 3), 0, 100), member);
+        return OptionHint.ChanceOf(Math.Clamp((int)(byte)(c.LastQueryValue / 3), 0, 100), member);
     }
 
     private void ClimbOut(CardContext c, int chance)
@@ -308,13 +308,13 @@ public sealed class CityDungeon : Card
     private static OptionHint CharmChance(CardContext c)
     {
         var chance = c.PartyMaxAttributeOfWomen(5);
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     private void CharmTheJailer(CardContext c, int chance)
     {
         c.PartyMaxAttributeOfWomen(5);
-        var member = c.BestMember;
+        var member = c.LastQueryMember;
         c.Variables.Chosen[0] = member;
         if (c.Random(100) <= chance)
         {

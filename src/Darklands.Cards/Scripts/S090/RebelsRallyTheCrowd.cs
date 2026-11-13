@@ -67,7 +67,7 @@ public sealed class RebelsRallyTheCrowd : Card
     private static int InspireChance(CardContext c)
     {
         c.PartyMaxAttribute((int)Attribute.Charisma);
-        var speaker = c.Variables.Chosen[0] = (byte)c.BestMember;
+        var speaker = c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         var chance = (c.Attribute(speaker, (int)Attribute.Charisma) + c.ReputationHere + c.SidePercent(-1)
             + c.Skill(speaker, (int)Skill.SpeakCommon)) / 5;
         if (c.HereQuery(0x29) != 2)

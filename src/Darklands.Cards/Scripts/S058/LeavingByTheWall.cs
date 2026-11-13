@@ -267,7 +267,7 @@ public sealed class LeavingByTheWall : Card
     private static OptionHint StealthChance(CardContext c)
     {
         var chance = c.PartyMinSkill(Stealth);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         if (c.EventAtHere(Unrest))
         {
             chance /= 2;

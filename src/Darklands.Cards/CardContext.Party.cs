@@ -159,23 +159,23 @@ public sealed partial class CardContext
 
     /// <summary>The member found by the last party query (<c>top-scoring-member</c>).</summary>
     // orig: top-scoring-member DS:991D
-    public int BestMember => State.Party.Last.Member;
+    public int LastQueryMember => State.Party.Last.Member;
 
     /// <summary>The value found by the last skill query (<c>top-value-so-far</c>).</summary>
     // orig: top-value-so-far DS:99E6
-    public int BestValue => State.Party.Last.Value;
+    public int LastQueryValue => State.Party.Last.Value;
 
     /// <summary>The skill found by the last best-skill query (<c>top-skill-so-far</c>).</summary>
     // orig: top-skill-so-far DS:99EB
-    public int BestSkillFound => State.Party.Last.Skill;
+    public int LastQuerySkill => State.Party.Last.Skill;
 
     /// <summary>The value found by the last attribute query.</summary>
     // orig: attribute_value DS:9C1D
-    public int BestAttributeValue => State.Party.Last.AttributeValue;
+    public int LastQueryAttributeValue => State.Party.Last.AttributeValue;
 
     /// <summary>The member found by the last min/max attribute query (DS:9A44).</summary>
     // orig: DS:9A44; tests: Oracle:rules.json (attribute queries); FidelityFixTests
-    public int AttributeMember => State.Party.Last.AttributeMember;
+    public int LastQueryAttributeMember => State.Party.Last.AttributeMember;
 
     /// <summary><c>party-ability-low</c>.</summary>
     // orig: party-ability-low R029+0x1396 (0E76:1396) matched

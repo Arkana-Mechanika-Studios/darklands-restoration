@@ -221,7 +221,7 @@ public sealed class Monastery_CityM00 : Card
         var byCharm = c.PartyMaxSkill((int)Skill.Virtue) + c.PartyMaxAttribute(5);
         var chance = Math.Clamp(Math.Max(byStanding, byCharm), 1, 99);
         // The member shown is the best one of the last query, unless the standing side is at least as good.
-        return OptionHint.ChanceOf(chance, byStanding >= byCharm ? OptionHint.WholeParty : c.BestMember);
+        return OptionHint.ChanceOf(chance, byStanding >= byCharm ? OptionHint.WholeParty : c.LastQueryMember);
     }
 
     // orig: R057+0x1446 (192F:04D6) matched
@@ -265,7 +265,7 @@ public sealed class Monastery_CityM00 : Card
     private static OptionHint LibraryChance(CardContext c)
     {
         var chance = MaxOfRecordBytes(c, 0x0B, 0x0C);
-        var member = c.BestMember;
+        var member = c.LastQueryMember;
         if (c.StandingSeen < 0)
         {
             chance += c.StandingSeen / 2;

@@ -34,7 +34,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
         // C: roll-below(4) + 1 << 1: the shift binds looser than +, so 2, 4, 6 or 8 days.
         c.Variables.Numbers[0] = (c.Random(4) + 1) * 2;
         c.PartyMaxAttribute((int)Attribute.Perception);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.Events.Started(0x57))
         {
             TalkingWithTheMerchants(c, menu);
@@ -314,7 +314,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
     {
         c.LoseItems(Who.Everybody);
         c.PartyMinAttribute((int)Attribute.Strength);
-        var dead = c.BestMember;
+        var dead = c.LastQueryMember;
         c.Variables.Chosen[0] = dead;
         c.SetStatus(dead, CharacterStatus.Empty);
         c.DeleteMember(dead);

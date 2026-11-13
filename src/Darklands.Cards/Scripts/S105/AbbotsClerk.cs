@@ -111,7 +111,7 @@ public sealed class AbbotsClerk : Card
     private static OptionHint LibraryHint(CardContext c)
     {
         c.PartyMaxSkillSum((int)Skill.ReadWrite, (int)Skill.SpeakLatin);
-        var scholar = c.BestMember;
+        var scholar = c.LastQueryMember;
         var chance = c.Skill(scholar, (int)Skill.ReadWrite) + c.Skill(scholar, (int)Skill.SpeakLatin) + c.Attribute(scholar, (int)Attribute.Intelligence);
         if (Devout(c))
         {

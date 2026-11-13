@@ -118,7 +118,7 @@ public sealed class DragonsLair : Card
         if (c.AbleWomen() != 0)
         {
             c.PartyMaxSkillOfWomen(9);
-            victim = (byte)c.BestMember;
+            victim = (byte)c.LastQueryMember;
             text = 0x0C;
         }
         else

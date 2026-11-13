@@ -138,9 +138,9 @@ public sealed class FriendlyDwarf_MineH00 : Card
     private static void GiveAWeapon(CardContext c)
     {
         c.PartyBestHandWeaponSkill();
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         // C: the skill index is read as an unsigned byte.
-        var (kind, weapon) = (byte)c.BestSkillFound switch
+        var (kind, weapon) = (byte)c.LastQuerySkill switch
         {
             0 => (1u, 0x08),
             1 => (2u, 0x0A),

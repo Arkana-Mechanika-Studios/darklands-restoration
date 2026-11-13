@@ -84,8 +84,8 @@ public sealed class LancersOfWar : Card
     private static OptionHint ChampionsChance(CardContext c)
     {
         var chance = c.PartyBestHandWeaponSkill() / 2;
-        c.Variables.Chosen[0] = c.BestMember;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     /// <summary>Half the party's average Edged Weapons plus half its best hand-weapon skill.</summary>

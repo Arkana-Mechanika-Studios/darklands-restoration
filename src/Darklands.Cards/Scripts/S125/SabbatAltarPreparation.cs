@@ -130,7 +130,7 @@ public sealed class SabbatAltarPreparation : Card
     // orig: R125+0x1F46 matched
     // C: party-ability-top-sum sets top-scoring-member, which the hint reads (as unsigned char).
     private static OptionHint TalkingChance(CardContext c) =>
-        OptionHint.ChanceOf(c.PartyMaxSkillSum((int)Skill.SpeakCommon, (int)Skill.Streetwise), c.BestMember);
+        OptionHint.ChanceOf(c.PartyMaxSkillSum((int)Skill.SpeakCommon, (int)Skill.Streetwise), c.LastQueryMember);
 
     /// <summary>With the initiator's cap a member plays the master (texts 7 and 11); else the party talks (text 8).</summary>
     // orig: R125+0x1E70 matched
@@ -168,7 +168,7 @@ public sealed class SabbatAltarPreparation : Card
         ShowPicture(c, Picture);
         c.Screen.Text(12);
         Add(c, Suspicion, -1);
-        c.AddSkill(c.BestMember, (int)Skill.Virtue, -3);
+        c.AddSkill(c.LastQueryMember, (int)Skill.Virtue, -3);
         c.AddAttribute(Who.Everybody, (int)Attribute.DivineFavor, -10);
         c.Screen.Text(4);
         Add(c, SightsVisited, 1);

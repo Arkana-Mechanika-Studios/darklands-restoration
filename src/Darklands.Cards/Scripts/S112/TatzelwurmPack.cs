@@ -27,7 +27,7 @@ public sealed class TatzelwurmPack : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         c.PartyMaxAttributePlusSkill((int)Attribute.Perception, (int)Skill.Woodwise);
-        var scout = c.BestMember;
+        var scout = c.LastQueryMember;
         c.Variables.Chosen[0] = scout;
         var watchfulness = c.Attribute(scout, (int)Attribute.Perception) + c.Random(10) + c.Skill(scout, (int)Skill.Woodwise) / 2;
         // C: the roll is made before the event test, every time.
@@ -35,7 +35,7 @@ public sealed class TatzelwurmPack : Card
         {
             menu.Set(OptionState.Enabled, 2, 3, 6, 8);
             c.PartyMinMountedAgility();
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             Reload(c, AttackPicture);
             menu.Block = 1;
         }
@@ -115,7 +115,7 @@ public sealed class TatzelwurmPack : Card
         c.SetCardSaints(0x4A, 0x67, 0x6B, 0x79);
         menu[3] = c.SaintsUsable();
         c.PartyMinMountedAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         Reload(c, AttackPicture);
         menu.Block = 1;
     }
@@ -201,7 +201,7 @@ public sealed class TatzelwurmPack : Card
         {
             c.PracticeSkill(Who.Everybody, (int)Skill.Woodwise, 7, 10, 0);
             c.PartyMaxSkill((int)Skill.Woodwise);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             Reload(c, WurmPicture);
             menu.Block = 2;
             menu.Set(OptionState.Enabled, 2, 3, 5, 6, 8);
@@ -237,7 +237,7 @@ public sealed class TatzelwurmPack : Card
         else
         {
             c.PartyMinSkill((int)Skill.Riding);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             c.AddAttribute(c.Variables.Chosen[0], (int)Attribute.Endurance, -4);
             c.AddAttribute(c.Variables.Chosen[0], (int)Attribute.Strength, -2);
             if (roll <= 50)
@@ -283,7 +283,7 @@ public sealed class TatzelwurmPack : Card
             case 3:
             case 4:
                 c.PartyMinAttribute((int)Attribute.Strength);
-                var victim = c.BestMember;
+                var victim = c.LastQueryMember;
                 c.Variables.Chosen[0] = victim;
                 Reload(c, AttackPicture);
                 c.Screen.Text(10);

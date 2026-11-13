@@ -28,7 +28,7 @@ public sealed class RebelMarch : Card
         menu.Enable(0, 2, 3);
         c.Variables.Money[0] = Money.From(c.SidePercent(1) / 20, 0, 0);
         c.PartyMaxAttribute((int)Attribute.Charisma);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         // C: DS:9C30[0..9] are the conditional passages of the texts (memset to 0, then [0] for no mercenaries).
         Array.Clear(c.Variables.Conditions);
         if (c.HereQuery(0x29) != 2)

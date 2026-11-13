@@ -178,7 +178,7 @@ public sealed class Marketplace : Card
             {
                 // The herbalist pays in herbs, to the party's best alchemist.
                 c.PartyMaxSkill(7);
-                var alchemist = (byte)c.BestMember;
+                var alchemist = (byte)c.LastQueryMember;
                 foreach (var herb in new[] { 0x49, 0x4A, 0x4F, 0x50, 0x4B })
                 {
                     c.AddItems(alchemist, herb, c.Random(5) + 5);

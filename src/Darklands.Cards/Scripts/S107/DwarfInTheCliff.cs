@@ -42,7 +42,7 @@ public sealed class DwarfInTheCliff : Card
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 9);
         c.NameToSlot(0, c.EventDetail(c.Events.Find(8, -1, c.Here, -1, 10, -1)), 1);
         c.PartyMaxEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.CountItems(Who.Everybody, 0x3B) == 0)
         {
             menu[1] = OptionState.Shown;
@@ -51,7 +51,7 @@ public sealed class DwarfInTheCliff : Card
         if (c.EventAtHere(0x53))
         {
             c.PartyMaxAttribute((int)Attribute.Charisma);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             menu.Set(OptionState.Hidden, 0, 1, 2, 3, 7, 8);
             menu.Set(OptionState.Enabled, 4, 5, 6, 9);
             menu.Block = 15;
@@ -203,8 +203,8 @@ public sealed class DwarfInTheCliff : Card
     private static OptionHint WorstClimberHint(CardContext c)
     {
         c.PartyMinEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
-        return OptionHint.ChanceOf(Math.Clamp(c.EffectiveAgility(c.BestMember) * 2, 1, 99), OptionHint.WholeParty);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return OptionHint.ChanceOf(Math.Clamp(c.EffectiveAgility(c.LastQueryMember) * 2, 1, 99), OptionHint.WholeParty);
     }
 
     /// <summary>All climb at once; every member whose Agility (doubled) is under the roll falls.</summary>
@@ -251,7 +251,7 @@ public sealed class DwarfInTheCliff : Card
         if (answer == -1)
         {
             c.PartyMaxEffectiveAgility();
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             return;
         }
         if (answer != 0)
@@ -275,7 +275,7 @@ public sealed class DwarfInTheCliff : Card
         }
         c.Next = 252;
         c.PartyMaxEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
     }
 
     /// <summary>The price is paid and the item taken; then the party climbs down.</summary>
@@ -298,7 +298,7 @@ public sealed class DwarfInTheCliff : Card
             case PricePotions:
                 // DORMANT: never the price (see SetThePrice).
                 c.PartyMaxSkill((int)Skill.Alchemy);
-                c.RemoveItemStack(c.BestMember, c.State.SavedCard2);
+                c.RemoveItemStack(c.LastQueryMember, c.State.SavedCard2);
                 c.FinishQuest10(c.Here);
                 c.Screen.Text(12);
                 break;
@@ -311,7 +311,7 @@ public sealed class DwarfInTheCliff : Card
                 c.FinishQuest10(c.Here);
                 c.Screen.Text(19);
                 c.PartyMaxAttribute((int)Attribute.Charisma);
-                var victim = c.BestMember;
+                var victim = c.LastQueryMember;
                 c.Variables.Chosen[0] = victim;
                 c.SetAttributeMaximum(victim, (int)Attribute.Charisma, c.Random(4) + 4);
                 c.SetAttribute(victim, (int)Attribute.Charisma, c.AttributeMaximum(victim, (int)Attribute.Charisma));

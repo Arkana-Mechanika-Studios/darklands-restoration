@@ -84,8 +84,8 @@ public sealed class DevilsBridgeCrossing : Card
     private static OptionHint LawChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(0x0B);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     /// <summary>

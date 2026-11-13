@@ -37,7 +37,7 @@ public sealed class AlchemistsShop : Card
         menu.Enable(0, 1, 2, 3, 4, 9);
         var quality = ShopQuality(c, withCapitalBonus: true);
         c.PartyMaxSkill((int)Skill.Alchemy);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         c.RandomName(c.HereQuery(0x21) + 0x49, 0, 0);
         c.Variables.Texts[3] = quality >= 25 ? "Potions" : "Alchemical Components";
         if (quality < 25)

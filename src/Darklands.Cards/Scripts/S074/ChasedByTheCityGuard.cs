@@ -47,7 +47,7 @@ public sealed class ChasedByTheCityGuard : Card
     private static OptionHint RunningChance(CardContext c)
     {
         var chance = c.PartyMinEffectiveAgility() * 3;
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         return OptionHint.ChanceOf(chance, OptionHint.WholeParty);
     }
 

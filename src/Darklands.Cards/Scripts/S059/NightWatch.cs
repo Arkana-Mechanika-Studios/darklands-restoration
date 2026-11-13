@@ -117,7 +117,7 @@ public sealed class NightWatch : Card
         ShowPicture(c, ChasePicture);
         menu.Block = 4;
         c.PartyMinEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         menu[1] = OptionState.Shown;
         c.Next = Number;
     }
@@ -138,7 +138,7 @@ public sealed class NightWatch : Card
         ShowPicture(c, ChasePicture);
         menu.Block = 12;
         c.PartyMinEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         menu[2] = OptionState.Shown;
         c.Next = Number;
     }

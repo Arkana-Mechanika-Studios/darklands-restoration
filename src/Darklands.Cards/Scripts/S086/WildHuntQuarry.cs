@@ -225,13 +225,13 @@ public sealed class WildHuntQuarry : Card
     private static OptionHint LeadChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(0x12);
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     private static void LeadThemOff(CardContext c, int chance)
     {
         c.PartyMaxSkill(0x12);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         if (c.Random(100) <= chance)
         {
             c.WaitUntilHour(5);
@@ -252,8 +252,8 @@ public sealed class WildHuntQuarry : Card
     private static OptionHint HideChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(0x0F);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     private static void HideTheQuarry(CardContext c, int chance)

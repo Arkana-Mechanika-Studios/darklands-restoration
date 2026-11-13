@@ -82,7 +82,7 @@ public sealed class SavedGameStateCardTests
         var state = CardHarness.NewGame();
         var probe = new CardContext(state, CardHarness.World!, new ScriptedScreen(0));
         probe.PartyMaxAttribute((int)Core.Characters.Attribute.Intelligence);
-        var wisest = probe.BestMember;
+        var wisest = probe.LastQueryMember;
         var screen = new LineScreen(2) { Member = (wisest + 1) % probe.PartySize };
         var c = new CardContext(state, CardHarness.World!, screen) { PersonalNames = CardHarness.PersonalNames, SaintPrayer = (_, _) => -1 };
         screen.Context = c;

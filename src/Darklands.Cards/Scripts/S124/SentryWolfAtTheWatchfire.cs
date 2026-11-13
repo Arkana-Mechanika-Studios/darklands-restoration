@@ -81,7 +81,7 @@ public sealed class SentryWolfAtTheWatchfire : Card
     private static OptionHint VirtueChance(CardContext c)
     {
         var chance = c.PartyMaxSkill((int)Skill.Virtue) - 25;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R124+0x02C4 matched

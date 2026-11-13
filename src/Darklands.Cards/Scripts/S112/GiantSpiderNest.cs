@@ -27,14 +27,14 @@ public sealed class GiantSpiderNest : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         c.PartyMaxAttributePlusSkill((int)Attribute.Perception, (int)Skill.Woodwise);
-        c.Variables.Chosen[0] = c.BestMember;
-        var watchfulness = c.Attribute(c.BestMember, (int)Attribute.Perception) + c.Random(10) + c.Skill(c.BestMember, (int)Skill.Woodwise) / 2;
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        var watchfulness = c.Attribute(c.LastQueryMember, (int)Attribute.Perception) + c.Random(10) + c.Skill(c.LastQueryMember, (int)Skill.Woodwise) / 2;
         // C: the roll is made before the event test, every time.
         if (c.Random(100) > watchfulness && !c.Events.Started(0x4F))
         {
             menu.Set(OptionState.Enabled, 2, 3, 6, 8);
             c.PartyMinMountedAgility();
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             _cardPicture = SpidersPicture;
             Show(c, SpidersPicture);
             menu.Block = 1;
@@ -108,7 +108,7 @@ public sealed class GiantSpiderNest : Card
         menu[2] = potionLine;
         menu.Set(OptionState.Enabled, 3, 6, 8);
         c.PartyMinMountedAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         ShowPicture(c, SpidersPicture);
         menu.Block = 1;
         c.SetCardSaints(0x4A, 0x67, 0x6B, 0x79);
@@ -190,7 +190,7 @@ public sealed class GiantSpiderNest : Card
         {
             c.PracticeSkill(Who.Everybody, (int)Skill.Woodwise, 7, 10, 0);
             c.PartyMaxSkill((int)Skill.Woodwise);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             ShowPicture(c, 145);
             menu.Block = 2;
             menu.Set(OptionState.Hidden, 0, 1, 4, 7, 9);
@@ -259,7 +259,7 @@ public sealed class GiantSpiderNest : Card
             case 4:
                 c.LoseItems(Who.Everybody);
                 c.PartyMinAttribute((int)Attribute.Strength);
-                var victim = c.BestMember;
+                var victim = c.LastQueryMember;
                 c.SetStatus(victim, CharacterStatus.Empty);
                 c.Variables.Chosen[0] = victim;
                 c.DeleteMember(victim);

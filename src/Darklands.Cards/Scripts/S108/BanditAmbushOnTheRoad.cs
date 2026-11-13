@@ -30,7 +30,7 @@ public sealed class BanditAmbushOnTheRoad : Card
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4, 5);
         c.PartyMaxAttributePlusSkill((int)Attribute.Perception, (int)Skill.Woodwise);
-        var scout = c.BestMember;
+        var scout = c.LastQueryMember;
         c.Variables.Chosen[0] = scout;
         var watchfulness = c.Attribute(scout, (int)Attribute.Perception) + c.Random(10) + c.Skill(scout, (int)Skill.Woodwise) / 2;
         // C: `roll-below(100) > v && !event-begun-flag(0x4F)`: the roll is made first, every time.
@@ -113,8 +113,8 @@ public sealed class BanditAmbushOnTheRoad : Card
     private static OptionHint TalkHint(CardContext c, CardMenu menu)
     {
         var talk = c.PartyMaxAttribute((int)Attribute.Charisma) * 4;
-        c.Variables.Chosen[0] = c.BestMember;
-        talk += c.Skill(c.BestMember, (int)Skill.SpeakCommon);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        talk += c.Skill(c.LastQueryMember, (int)Skill.SpeakCommon);
         if (menu.Block == 14)
         {
             talk *= 2;
@@ -126,7 +126,7 @@ public sealed class BanditAmbushOnTheRoad : Card
     private static void TalkYourWayPast(CardContext c, int chance)
     {
         c.PartyMaxAttribute((int)Attribute.Charisma);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.Random(100) <= chance)
         {
             ShowPicture(c, RoadPicture);

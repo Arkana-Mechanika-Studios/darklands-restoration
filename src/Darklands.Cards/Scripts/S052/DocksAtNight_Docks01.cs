@@ -87,7 +87,7 @@ public sealed class DocksAtNight_Docks01 : Card
         var weakest = c.PartyMinAttribute(1);
         return weakest > 10
             ? OptionHint.ChanceOf(99, OptionHint.WholeParty)
-            : OptionHint.ChanceOf(weakest * 10, c.BestMember);
+            : OptionHint.ChanceOf(weakest * 10, c.LastQueryMember);
     }
 
     /// <summary>

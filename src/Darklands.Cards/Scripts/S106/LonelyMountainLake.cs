@@ -80,7 +80,7 @@ public sealed class LonelyMountainLake : Card
         {
             case Vulcans:
                 var alchemy = c.PartyMaxSkill((int)Skill.Alchemy);
-                c.Variables.Chosen[0] = c.BestMember;
+                c.Variables.Chosen[0] = c.LastQueryMember;
                 ShowPicture(c, LakePicture);
                 c.Screen.Text(alchemy >= 10 ? 20 : 6);
                 break;

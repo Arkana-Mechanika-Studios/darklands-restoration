@@ -97,7 +97,7 @@ public sealed class WildHunt : Card
             return OptionHint.Say(DeathForThePrey);
         }
         var chance = (c.PartyMaxSkill((int)Skill.Woodwise) << 1) / 3;
-        return new OptionHint(chance, "", c.BestMember);
+        return new OptionHint(chance, "", c.LastQueryMember);
     }
 
     /// <summary>
@@ -119,12 +119,12 @@ public sealed class WildHunt : Card
         if (c.PartyGet(5) != 0)
         {
             var chance = c.PartyMinSkill((int)Skill.Riding);
-            var rider = c.BestMember;
+            var rider = c.LastQueryMember;
             chance += c.ItemQualityByFlags(rider, ItemFlags.Mount);
             return new OptionHint(Math.Clamp(chance, 0, 99), "", rider);
         }
         var agility = c.PartyMinEffectiveAgility();
-        return new OptionHint(c.RatingTheChoice ? PointerHideWord : agility, "", c.BestMember);
+        return new OptionHint(c.RatingTheChoice ? PointerHideWord : agility, "", c.LastQueryMember);
     }
 
     /// <summary>The word the display driver's pointer hide leaves where an unset handler result lies when the loop rates the choice.</summary>
@@ -136,7 +136,7 @@ public sealed class WildHunt : Card
         // C: local-in-si = roll-below(100) is drawn first, then party-ability-top(Woodwise) is called for top-scoring-member only.
         var roll = c.Random(100);
         c.PartyMaxSkill((int)Skill.Woodwise);
-        var hunter = c.BestMember;
+        var hunter = c.LastQueryMember;
         c.Variables.Chosen[0] = hunter;
         // C: item-tally-by-flags(-2, 0x30, 0x800) = ItemFlags.MissileWeapon (0x0800_0030).
         if (c.CountItemsWithFlags(Who.Everybody, ItemFlags.MissileWeapon) == 0)
@@ -182,14 +182,14 @@ public sealed class WildHunt : Card
             if (c.PartyGet(5) != 0)
             {
                 c.PartyMinSkill((int)Skill.Riding);
-                c.Variables.Chosen[0] = c.BestMember;
+                c.Variables.Chosen[0] = c.LastQueryMember;
                 ShowPicture(c, RunningPicture);
                 c.Screen.Text(6);
             }
             else
             {
                 c.PartyMinEffectiveAgility();
-                c.Variables.Chosen[0] = c.BestMember;
+                c.Variables.Chosen[0] = c.LastQueryMember;
                 ShowPicture(c, 287);
                 // C: raise-attribute-by(-2, 0, roll-below(10) + 5) comes between the picture and the text.
                 c.AddAttribute(Who.Everybody, (int)Attribute.Endurance, c.Random(10) + 5);

@@ -110,7 +110,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
     {
         var speech = c.PartyMaxSkill((int)Skill.SpeakCommon);
         var charisma = c.PartyMaxAttribute((int)Attribute.Charisma);
-        return OptionHint.ChanceOf((charisma + speech) / 2, c.BestMember);
+        return OptionHint.ChanceOf((charisma + speech) / 2, c.LastQueryMember);
     }
 
     /// <summary>The party denounces the witches: they repent (text 6), or they attack (text 7).</summary>

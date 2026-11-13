@@ -106,7 +106,7 @@ public sealed class ImprisonedMonk : Card
     {
         // C: party-ability-top sets top-scoring-member, which the handler then reads (truncated to unsigned char).
         var chance = c.PartyMaxSkill((int)Core.Characters.Skill.Religion);
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R119+0x04F6 (1838:04F6) matched

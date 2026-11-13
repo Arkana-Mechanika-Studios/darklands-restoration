@@ -26,7 +26,7 @@ public sealed class EscortingTheRebelLeaders : Card
         // C: DS:8E06 is a module global, reset here: the number of crowds dispersed so far.
         var crowdsPassed = 0;
         c.PartyMaxAttribute((int)Attribute.Charisma);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         c.SetCardItems(0x5F, 0x65, 0x62, 0x66);
         c.SetCardSaints(0x23, 0x0C, 0x3D, 0x36);
         menu[2] = c.ItemsUsable();

@@ -63,11 +63,11 @@ public sealed class AmbushOnThePilgrimPath : Card
     private static OptionHint ConcealmentChance(CardContext c)
     {
         var woodwise = c.PartyMaxSkill((int)Skill.Woodwise);
-        var woodsman = c.BestMember;
+        var woodsman = c.LastQueryMember;
         var stealth = c.PartyMinSkill((int)Skill.Stealth);
         return stealth < woodwise
             ? OptionHint.ChanceOf(woodwise, woodsman)
-            : OptionHint.ChanceOf(stealth, c.BestMember);
+            : OptionHint.ChanceOf(stealth, c.LastQueryMember);
     }
 
     // orig: R123+0x22EA matched

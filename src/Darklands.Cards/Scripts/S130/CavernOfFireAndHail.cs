@@ -71,7 +71,7 @@ public sealed class CavernOfFireAndHail : Card
         c.Screen.Text(1);
         var roll = c.Random(100);
         c.PartyMinEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         int harm;
         if (chance >= roll)
         {

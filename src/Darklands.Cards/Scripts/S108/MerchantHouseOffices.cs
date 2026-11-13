@@ -53,7 +53,7 @@ public sealed class MerchantHouseOffices : Card
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
         }
         c.PartyMaxSkill((int)Skill.Artifice);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
 
         menu.Popup = () => c.MemberPopupHint();
 

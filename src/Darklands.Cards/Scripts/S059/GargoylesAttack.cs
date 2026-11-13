@@ -53,8 +53,8 @@ public sealed class GargoylesAttack : Card
     {
         // C: party-ability-low / party-stat-low run first (they set top-scoring-member), then text-slot-chosen-one = (unsigned char)top-scoring-member.
         var value = c.PartyGet(5) != 0 ? c.PartyMinSkill((int)Skill.Riding) : c.PartyMinAttribute((int)Attribute.Agility);
-        c.Variables.Chosen[0] = c.BestMember;
-        return new OptionHint(Math.Clamp(value, 1, 99), "", c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return new OptionHint(Math.Clamp(value, 1, 99), "", c.LastQueryMember);
     }
 
     // orig: R059+0x128E (1929:037E); a roll of at most the chance succeeds

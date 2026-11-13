@@ -42,9 +42,9 @@ public sealed class MaidenAtTheStake : Card
             c.State.Locations[lair].ArrivalCard = 0x9F;
         }
         c.PartyMaxSkill(0x0F);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         c.PartyMaxAttribute(2);
-        c.Variables.Chosen[1] = (byte)c.BestMember;
+        c.Variables.Chosen[1] = (byte)c.LastQueryMember;
         var menu = Menu(c);
         menu.Enable(1, 2, 3, 4, 5);
         menu[0] = c.Events.FactAnywhere(DragonQuest, 0x0B) ? OptionState.Shown : OptionState.Enabled;
@@ -163,8 +163,8 @@ public sealed class MaidenAtTheStake : Card
     private static OptionHint StealthChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(0x0F);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     private static void SneakHerAway(CardContext c, int chance)
@@ -190,8 +190,8 @@ public sealed class MaidenAtTheStake : Card
     private static OptionHint SpeedChance(CardContext c)
     {
         var chance = c.PartyMaxAttribute(2);
-        c.Variables.Chosen[1] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[1] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     private static void CutHerLoose(CardContext c, int chance)

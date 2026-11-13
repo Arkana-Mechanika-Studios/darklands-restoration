@@ -181,7 +181,7 @@ public sealed class NoblemansRoadToll : Card
     //   top-scoring-member (unsigned char) is read for the Riding skill; the halving truncates toward zero.
     private static OptionHint RideChance(CardContext c)
     {
-        var sum = c.PartyMinMountedAgility() + c.Skill(c.BestMember, Riding) / 2;
+        var sum = c.PartyMinMountedAgility() + c.Skill(c.LastQueryMember, Riding) / 2;
         if (c.PartyGet(5) == 0)
         {
             sum = 0;

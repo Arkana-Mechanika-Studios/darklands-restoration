@@ -27,7 +27,7 @@ public sealed class WolfPackOnTheTrail : Card
         menu.Enable(0, 4);
         menu[1] = c.PartyGet(5) == 0 ? OptionState.Hidden : OptionState.Enabled;
         c.PartyMaxSkill(0x12);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         c.SetCardItems(0x5F);
         c.SetCardSaints(3, 0x45, 0x6B, 0x79);
         menu[3] = c.ItemsUsable();
@@ -153,7 +153,7 @@ public sealed class WolfPackOnTheTrail : Card
     private static OptionHint RidingChance(CardContext c)
     {
         var worst = c.PartyMinSkill(0x11);
-        var rider = (byte)c.BestMember;
+        var rider = (byte)c.LastQueryMember;
         return OptionHint.ChanceOf(Math.Clamp(c.ItemQualityByFlags(rider, 0x02000000) + worst, 1, 99), rider);
     }
 

@@ -25,9 +25,9 @@ public sealed class KnightOnTheRoad : Card
         var menu = Menu(c);
         menu.Enable(1, 2, 4);
         c.PartyMaxMountedAgility();
-        c.Variables.Chosen[1] = (byte)c.BestMember;
+        c.Variables.Chosen[1] = (byte)c.LastQueryMember;
         c.PartyMaxAttribute((int)Attribute.Strength);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         if (c.CountItemsWithFlags(Who.Everybody, Mount) == 0)
         {
             menu[1] = OptionState.Shown;

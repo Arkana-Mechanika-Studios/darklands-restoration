@@ -46,9 +46,9 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
             menu[0] = OptionState.Shown;
         }
         c.PartyMaxAttribute((int)Attribute.Intelligence);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         c.PartyMaxMountedAgility();
-        c.Variables.Chosen[1] = (byte)c.BestMember;
+        c.Variables.Chosen[1] = (byte)c.LastQueryMember;
         c.OptionsBlock = 0;
         // orig: R101+0x1050 (18BD:0800) matched
         c.SetCardItems();
@@ -80,7 +80,7 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
     private static int ShootChance(CardContext c)
     {
         var chance = c.PartyBestMissileSkill() / 3;
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         if (c.OptionsBlock == Cowed)
         {
             chance += 0x28;
@@ -93,7 +93,7 @@ public sealed class DwarfKingsRedCap_MineB03 : Card
     private static int LeapChance(CardContext c)
     {
         var chance = c.PartyMaxMountedAgility() / 2;
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         if (c.OptionsBlock == Cowed)
         {
             chance += 0x14;

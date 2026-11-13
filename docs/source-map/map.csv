@@ -560,11 +560,11 @@ CardContext.PracticeSkill(),R039+0x0132,R039+0x0132,matched,,
 CardContext.ImproveRoll(),R029+0x18A8,R029+0x18A8,matched,,
 CardContext.GiveReward(),R039+0x1E06,R039+0x1E06,matched,,
 CardContext.ChargeFame(),R039+0x1E90,R039+0x1E90,matched,,
-CardContext.BestMember(),top-scoring-member,DS:991D,data,,
-CardContext.BestValue(),top-value-so-far,DS:99E6,data,,
-CardContext.BestSkillFound(),top-skill-so-far,DS:99EB,data,,
-CardContext.BestAttributeValue(),attribute_value,DS:9C1D,data,,
-CardContext.AttributeMember(),DS:9A44,DS:9A44,data,Oracle:rules.json (attribute queries); FidelityFixTests,
+CardContext.LastQueryMember(),top-scoring-member,DS:991D,data,,
+CardContext.LastQueryValue(),top-value-so-far,DS:99E6,data,,
+CardContext.LastQuerySkill(),top-skill-so-far,DS:99EB,data,,
+CardContext.LastQueryAttributeValue(),attribute_value,DS:9C1D,data,,
+CardContext.LastQueryAttributeMember(),DS:9A44,DS:9A44,data,Oracle:rules.json (attribute queries); FidelityFixTests,
 CardContext.PartyMinSkill(),R029+0x1396,R029+0x1396,matched,,
 CardContext.PartyMinSkill(),R029+0x13DE,R029+0x13DE,matched,,
 CardContext.PartyMinSkillSum(),R029+0x1446,R029+0x1446,draft,,
@@ -1343,7 +1343,7 @@ PublicExecution,R079+0x1462;R079+0x14EC;R079+0x1576;R079+0x1600,R079+0x1462;R079
 PublicExecution,R079+0x10DA;R079+0x10E4,R079+0x10DA;R079+0x10E4,asm,CardSmokeTests;GroupCTests,
 PublicExecution.Verdict(),R079+0x0CF6,R079+0x0CF6,asm,CardSmokeTests;GroupCTests,"uncertain: the abbot's score starts uninitialised when fact (2, 0) holds here; taken as 0. | divergence: with nobody left the original searches the empty party for ever; here the game ends. | dormant: no skill number above 6."
 PublicExecution.FightTheGuards(),R079+0x0B64,R079+0x0B64,asm,CardSmokeTests;GroupCTests,dormant: other battle results go straight to the guard's watch below.
-PublicExecution.StrengthChance(),R079+0x11F4,R079+0x11F4,asm,CardSmokeTests;GroupCTests,"uncertain: the member is DS:9A44 (the attribute queries' member), read as BestMember."
+PublicExecution.StrengthChance(),R079+0x11F4,R079+0x11F4,asm,CardSmokeTests;GroupCTests,"uncertain: the member is DS:9A44 (the attribute queries' member), read as LastQueryMember."
 PublicExecution.BreakTheRopes(),R079+0x111C,R079+0x111C,asm,CardSmokeTests;GroupCTests,divergence: an empty party (the original would search for ever) names slot 0.
 PublicExecution.PrayForDeliverance(),R079+0x1212;R079+0x1386,R079+0x1212;R079+0x1386,asm,CardSmokeTests;GroupCTests,dormant: no slot outside 0..3.
 RobberKnightTaskOffered,R080+0x0000,R080+0x0000,matched,CardSmokeTests,

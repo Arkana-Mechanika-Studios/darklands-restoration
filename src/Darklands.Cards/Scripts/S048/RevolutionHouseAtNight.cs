@@ -209,7 +209,7 @@ public sealed class RevolutionHouseAtNight : Card
         // the member shown is the best at Streetwise.
         var artifice = c.PartyMaxSkill(0x0E);
         var streetwise = c.PartyMaxSkill(0x10);
-        return OptionHint.ChanceOf(Math.Clamp((streetwise + artifice) / 2 - lacking, 0, 99), c.BestMember);
+        return OptionHint.ChanceOf(Math.Clamp((streetwise + artifice) / 2 - lacking, 0, 99), c.LastQueryMember);
     }
 
     // orig: R048+0x1320 (190E:05C0) matched
@@ -217,7 +217,7 @@ public sealed class RevolutionHouseAtNight : Card
     {
         c.PassHours(1);
         c.PartyMaxSkill(0x0E);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.Random(100) <= chance)
         {
             c.PracticeSkill(c.Variables.Chosen[0], 0x0E, 1, 0x0A, 0);

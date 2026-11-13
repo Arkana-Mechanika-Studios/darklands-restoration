@@ -133,7 +133,7 @@ public sealed class SabbatFeastKitchen : Card
     {
         var charisma = c.PartyMaxAttribute((int)Attribute.Charisma);
         var chance = charisma + c.PartyMaxSkill((int)Skill.SpeakCommon) / 2;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R124+0x285A matched

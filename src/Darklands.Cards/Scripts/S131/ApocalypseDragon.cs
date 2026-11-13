@@ -37,7 +37,7 @@ public sealed class ApocalypseDragon : Card
         c.SetCardSaints();
         c.PartyMaxSkill(Virtue);
         // C: top-scoring-member read as unsigned char.
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
 
         var mostVirtuous = () => MostVirtuous(c);
         // C: every handler of this card redraws with card-run (the whole card, Show), not card-run-near.
@@ -63,8 +63,8 @@ public sealed class ApocalypseDragon : Card
     private static OptionHint MostVirtuous(CardContext c)
     {
         var chance = c.PartyMaxSkill(Virtue);
-        c.Variables.Chosen[0] = c.BestMember;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     /// <summary>The dragon gloats and asks for $ChosenOneName (text 1: refuse or agree).</summary>

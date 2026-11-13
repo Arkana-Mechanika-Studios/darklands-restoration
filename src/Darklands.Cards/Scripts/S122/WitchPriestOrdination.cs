@@ -63,7 +63,7 @@ public sealed class WitchPriestOrdination : Card
     private static OptionHint StealthChance(CardContext c)
     {
         var chance = c.PartyMinSkill((int)Skill.Stealth) << 1;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R122+0x0D60 matched

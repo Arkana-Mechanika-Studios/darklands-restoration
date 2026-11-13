@@ -209,7 +209,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
             if (saint == 0x2B)
             {
                 var agility = c.PartyMinEffectiveAgility();
-                c.Variables.Chosen[1] = c.BestMember;
+                c.Variables.Chosen[1] = c.LastQueryMember;
                 if (agility <= 10)
                 {
                     ShowPicture(c, 92);
@@ -217,7 +217,7 @@ public sealed class CryptUnderTheRuinedChurch : Card
                 }
                 else
                 {
-                    c.Injure(c.BestMember, 4, 8, 12);
+                    c.Injure(c.LastQueryMember, 4, 8, 12);
                     ShowPicture(c, 93);
                     c.Screen.Text(16);
                 }

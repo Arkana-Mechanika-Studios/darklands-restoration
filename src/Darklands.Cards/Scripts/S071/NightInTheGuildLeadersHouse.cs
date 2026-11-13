@@ -129,12 +129,12 @@ public sealed class NightInTheGuildLeadersHouse : Card
             if ((c.GuildCode & Fact(c, 8)) != 0)
             {
                 c.PartyMaxSkill((int)Skill.ReadWrite);
-                c.Variables.Chosen[0] = c.BestMember;
+                c.Variables.Chosen[0] = c.LastQueryMember;
                 // C: a negative remainder matches no case; case 3 does not exist and case 5 cannot happen.
                 switch ((c.City.Ordinal + c.GuildFact) % 5)
                 {
                     case 0:
-                        if (c.Random(50) > (byte)c.BestValue)
+                        if (c.Random(50) > (byte)c.LastQueryValue)
                         {
                             c.Screen.Text(3);
                         }
@@ -149,16 +149,16 @@ public sealed class NightInTheGuildLeadersHouse : Card
                         }
                         break;
                     case 1:
-                        if (c.Random(50) > (byte)c.BestValue)
+                        if (c.Random(50) > (byte)c.LastQueryValue)
                         {
                             c.Screen.Text(3);
                         }
                         else
                         {
                             c.PartyMaxSkill((int)Skill.Artifice);
-                            var picker = c.BestMember;
+                            var picker = c.LastQueryMember;
                             c.Variables.Chosen[0] = picker;
-                            if (c.Random(100) <= (byte)c.BestValue)
+                            if (c.Random(100) <= (byte)c.LastQueryValue)
                             {
                                 c.PracticeSkill(picker, (int)Skill.Artifice, 7, 10, 0);
                                 FoundTheEvidence(c);
@@ -172,7 +172,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
                         }
                         break;
                     case 2:
-                        if (c.Random(50) > (byte)c.BestValue)
+                        if (c.Random(50) > (byte)c.LastQueryValue)
                         {
                             c.Screen.Text(3);
                         }
@@ -201,7 +201,7 @@ public sealed class NightInTheGuildLeadersHouse : Card
                         break;
                     case 5:
                         // DORMANT: x % 5 is never 5. The original compares with top-scoring-member here.
-                        if (c.Random(50) > (byte)c.BestMember)
+                        if (c.Random(50) > (byte)c.LastQueryMember)
                         {
                             c.Screen.Text(3);
                         }

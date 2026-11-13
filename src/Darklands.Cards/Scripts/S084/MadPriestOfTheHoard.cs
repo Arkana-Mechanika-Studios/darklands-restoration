@@ -111,9 +111,9 @@ public sealed class MadPriestOfTheHoard : Card
     private static void BecomeHisAcolytes(CardContext c)
     {
         var latin = c.PartyMaxSkill(0x0B);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         var religion = c.PartyMaxSkill(8);
-        c.Variables.Chosen[1] = (byte)c.BestMember;
+        c.Variables.Chosen[1] = (byte)c.LastQueryMember;
         ShowPicture(c, 331);
         c.Screen.Text(2);
         if (latin < 60)

@@ -28,8 +28,8 @@ public sealed class MercenaryBanditAmbush : Card
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2, 3, 4, 5);
         c.PartyMaxAttributePlusSkill((int)Attribute.Perception, (int)Skill.Woodwise);
-        c.Variables.Chosen[0] = c.BestMember;
-        var watchfulness = c.Attribute(c.BestMember, (int)Attribute.Perception) + c.Random(10) + c.Skill(c.BestMember, (int)Skill.Woodwise) / 2;
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        var watchfulness = c.Attribute(c.LastQueryMember, (int)Attribute.Perception) + c.Random(10) + c.Skill(c.LastQueryMember, (int)Skill.Woodwise) / 2;
         // C: the roll is made before the event test, every time.
         if (c.Random(100) > watchfulness && !c.Events.Started(0x4F))
         {
@@ -92,8 +92,8 @@ public sealed class MercenaryBanditAmbush : Card
     private static OptionHint TalkHint(CardContext c)
     {
         var charm = c.PartyMaxAttribute((int)Attribute.Charisma) * 4;
-        c.Variables.Chosen[0] = c.BestMember;
-        var chance = Math.Clamp((charm + c.Skill(c.BestMember, (int)Skill.SpeakCommon)) / 4, 0, 99);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        var chance = Math.Clamp((charm + c.Skill(c.LastQueryMember, (int)Skill.SpeakCommon)) / 4, 0, 99);
         return OptionHint.ChanceOf(chance, c.Variables.Chosen[0]);
     }
 
@@ -101,7 +101,7 @@ public sealed class MercenaryBanditAmbush : Card
     private static void TalkYourWayPast(CardContext c, int chance)
     {
         c.PartyMaxAttribute((int)Attribute.Charisma);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         if (c.Random(100) <= chance)
         {
             ShowPicture(c, RoadPicture);

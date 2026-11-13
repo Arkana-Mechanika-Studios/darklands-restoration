@@ -27,7 +27,7 @@ public sealed class SchratsInTheForest : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         c.PartyMaxAttributePlusSkill((int)Attribute.Perception, (int)Skill.Woodwise);
-        var scout = c.BestMember;
+        var scout = c.LastQueryMember;
         c.Variables.Chosen[0] = scout;
         var watchfulness = c.Attribute(scout, (int)Attribute.Perception) + c.Random(20) + c.Skill(scout, (int)Skill.Woodwise) / 2;
         if (c.Random(100) <= watchfulness)
@@ -40,7 +40,7 @@ public sealed class SchratsInTheForest : Card
         {
             menu.Set(OptionState.Enabled, 1, 2, 3, 4, 6, 8);
             c.PartyMinMountedAgility();
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             Show(c, SchratsPicture);
             menu.Block = 1;
         }
@@ -108,12 +108,12 @@ public sealed class SchratsInTheForest : Card
         if (c.AbleWomen() != 0)
         {
             chance = c.PartyMaxAttributeOfWomen((int)Attribute.Charisma) * 4;
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
         }
         else
         {
             c.PartyMaxAttribute((int)Attribute.Charisma);
-            var m = c.BestMember;
+            var m = c.LastQueryMember;
             c.Variables.Chosen[0] = m;
             chance = (c.Attribute(m, (int)Attribute.Charisma) / 2 + c.Skill(m, (int)Skill.SpeakCommon)) / 3;
         }
@@ -131,7 +131,7 @@ public sealed class SchratsInTheForest : Card
         menu.Set(OptionState.Enabled, 4, 6, 8);
         menu.Set(OptionState.Hidden, 5, 7, 9);
         c.PartyMinMountedAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         Show(c, SchratsPicture);
         menu.Block = 1;
         c.Next = 275;
@@ -270,7 +270,7 @@ public sealed class SchratsInTheForest : Card
         if (c.Random(100) <= chance)
         {
             c.PartyMaxSkill((int)Skill.Woodwise);
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             c.PracticeSkill(Who.Everybody, (int)Skill.Woodwise, 7, 10, 0);
             Show(c, RoadPicture);
             menu.Block = 2;
@@ -376,7 +376,7 @@ public sealed class SchratsInTheForest : Card
                 if (c.AbleWomen() != 0)
                 {
                     c.PartyMaxAttributeOfWomen((int)Attribute.Charisma);
-                    c.Variables.Chosen[0] = c.BestMember;
+                    c.Variables.Chosen[0] = c.LastQueryMember;
                 }
                 else
                 {

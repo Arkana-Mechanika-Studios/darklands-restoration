@@ -42,7 +42,7 @@ public sealed class Footpads : Card
             OptionState.Enabled, OptionState.Enabled, OptionState.Enabled };
         c.PassHours(1);
         var perception = c.PartyMaxAttribute(3);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         if (!onTheRoad && c.State.SavedCard == NightEncounter)
         {
             return c.State.SavedCard;
@@ -171,7 +171,7 @@ public sealed class Footpads : Card
         if (c.Random(100) <= chance)
         {
             c.BestWeaponSkill(Who.Leader);
-            c.PracticeSkill(c.Variables.Chosen[0], (byte)c.BestSkillFound, 1, 10, -1);
+            c.PracticeSkill(c.Variables.Chosen[0], (byte)c.LastQuerySkill, 1, 10, -1);
             ShowPicture(c, StreetPictureFor(onTheRoad));
             c.Screen.Text(6);
             c.Next = c.State.SavedCard;

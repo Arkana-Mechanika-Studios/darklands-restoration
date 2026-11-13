@@ -125,7 +125,7 @@ public sealed class DwarfsPitTraps : Card
     private static void OneDies(CardContext c, int attribute)
     {
         c.PartyMinAttribute(attribute);
-        var victim = c.BestMember;
+        var victim = c.LastQueryMember;
         c.Variables.Chosen[0] = victim;
         c.SetStatus(victim, CharacterStatus.Empty);
         c.DeleteMember(victim);
@@ -280,8 +280,8 @@ public sealed class DwarfsPitTraps : Card
     private static OptionHint BlockChance(CardContext c)
     {
         var artifice = c.PartyMaxSkill((int)Skill.Artifice);
-        c.Variables.Chosen[0] = c.BestMember;
-        return new OptionHint(artifice, "", c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return new OptionHint(artifice, "", c.LastQueryMember);
     }
 
     /// <summary>The best tinkerer blocks the water or the walls; failing that, one dies.</summary>

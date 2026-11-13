@@ -119,7 +119,7 @@ public sealed class BanditsNearTheCamp : Card
         {
             c.PassHours(c.Random(5) + 1);
             c.PartyMinEffectiveAgility();
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             c.Screen.Text(4);
         }
         Fight(c, surprised: false);

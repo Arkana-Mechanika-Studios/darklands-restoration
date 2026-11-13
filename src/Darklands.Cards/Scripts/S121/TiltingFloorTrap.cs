@@ -69,9 +69,9 @@ public sealed class TiltingFloorTrap : Card
         return menu.Run(
             // orig: R121+0x1E9E / R121+0x1F00 matched — leap: the least agile member's effective agility.
             // C: party-effective-stat-two-low / party-ability-top set top-scoring-member, which the hints read (as unsigned char).
-            new MenuLine(chance => Leap(c, chance), () => OptionHint.ChanceOf(c.PartyMinEffectiveAgility(), c.BestMember)),
+            new MenuLine(chance => Leap(c, chance), () => OptionHint.ChanceOf(c.PartyMinEffectiveAgility(), c.LastQueryMember)),
             // orig: R121+0x1F1C / R121+0x1F7E matched — disarm: half the best Artifice (signed /2, never negative).
-            new MenuLine(chance => Disarm(c, chance), () => OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.Artifice) / 2, c.BestMember)),
+            new MenuLine(chance => Disarm(c, chance), () => OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.Artifice) / 2, c.LastQueryMember)),
             new MenuLine(_ => JamItWithAPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.EncounterTheUnknown)),
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             new MenuLine(_ => RepeatOpening(c), unknown),

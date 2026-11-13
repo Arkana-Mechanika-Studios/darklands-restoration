@@ -208,7 +208,7 @@ public sealed class HandbillThugs_Polit01 : Card
         {
             _ = c.PartyMinEffectiveAgility();
             // The slowest member is the one named in the text.
-            c.Variables.Chosen[0] = c.BestMember;
+            c.Variables.Chosen[0] = c.LastQueryMember;
             c.Screen.Text(0x0A);
             Fight(c);
         }

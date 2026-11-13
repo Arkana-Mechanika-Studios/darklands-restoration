@@ -23,7 +23,7 @@ public sealed class TemplarsBurningAFriar : Card
         var menu = Menu(c, 0);
         menu.Set(OptionState.Enabled, 0, 1, 2);
         c.PartyMaxSkill((int)Skill.Religion);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         // C: party-map-column is declared `extern long`, so the call pushes party-map-row and party-map-column (and 0x24): closest-place-of-kind gets (x, y, 0x24); nothing is undefined (checked against the asm).
         c.Variables.Location = c.NearestLocationOfType(c.State.MapPosition.X, c.State.MapPosition.Y, 0x24);
         c.Variables.Location2 = c.SabbatSite();

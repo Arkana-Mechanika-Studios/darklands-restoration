@@ -302,14 +302,14 @@ public sealed class ClothmakersStreetAtNight_Cloth01 : Card
         if (c.PartyMaxSkill(0x0E) < average)
         {
             // C: (unsigned char)top-scoring-member, from the party-ability-top call above.
-            c.Variables.Chosen[0] = (byte)c.BestMember;
+            c.Variables.Chosen[0] = (byte)c.LastQueryMember;
             c.PracticeSkill(c.Variables.Chosen[0], 0x0E, 0, 10, 0);
             c.Screen.Text(5);
         }
         else
         {
             _ = c.PartyMinSkill(0x0F); // C: only for top-scoring-member
-            c.Variables.Chosen[0] = (byte)c.BestMember;
+            c.Variables.Chosen[0] = (byte)c.LastQueryMember;
             c.PracticeSkill(c.Variables.Chosen[0], 0x0F, 0, 10, 0);
             c.Screen.Text(4, TextFrame.BlankPage);
         }

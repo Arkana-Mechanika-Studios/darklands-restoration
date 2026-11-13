@@ -44,7 +44,7 @@ public sealed class RebelsBeforeTheFortress : Card
         menu.Enable(0, 1, 4, 6, 7);
         c.RandomName(c.City.Ordinal + 0x0C, c.LocationQuery(c.Here, 0x21) % 5 == 0 ? 1 : 0, 0);
         c.PartyMaxSkill((int)Skill.Stealth);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         var price = Money.From(c.HereQuery(2) + c.SidePercent(1) / 17, 0, 0);
         c.Variables.Money[0] = price;
         if (c.State.Party.Purse < price)

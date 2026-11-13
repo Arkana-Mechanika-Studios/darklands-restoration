@@ -97,7 +97,7 @@ public sealed class PileOfBurnedBooks : Card
     private static void StudyTheBook(CardContext c)
     {
         c.PartyMaxSkill((int)Skill.SpeakLatin);
-        c.AddSkill(c.BestMember, (int)Skill.SpeakLatin, 15);
+        c.AddSkill(c.LastQueryMember, (int)Skill.SpeakLatin, 15);
         c.BattleMode = 1;
         c.Next = -3;
     }

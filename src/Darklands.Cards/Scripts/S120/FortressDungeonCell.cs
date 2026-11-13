@@ -99,7 +99,7 @@ public sealed class FortressDungeonCell : Card
         {
             chance <<= 1;
         }
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R120+0x0C88 matched
@@ -176,7 +176,7 @@ public sealed class FortressDungeonCell : Card
     /// <summary>The best Latin.</summary>
     // orig: R120+0x0F8E matched
     private static OptionHint PlaqueChance(CardContext c) =>
-        OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.SpeakLatin), c.BestMember);
+        OptionHint.ChanceOf(c.PartyMaxSkill((int)Skill.SpeakLatin), c.LastQueryMember);
 
     // orig: R120+0x0F2C matched
     // C: an int function: the success branch returns without a value, the failure returns settings-block (0); ignored.

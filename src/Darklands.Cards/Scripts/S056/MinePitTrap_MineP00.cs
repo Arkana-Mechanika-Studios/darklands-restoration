@@ -38,7 +38,7 @@ public sealed class MinePitTrap_MineP00 : Card
         var pyramid = c.PresentCount() < 3 ? OptionState.Shown : OptionState.Enabled;
         // C: party-effective-stat-two-top() sets top-scoring-member: the best climber (highest effective agility) is named in the texts.
         _ = c.PartyMaxEffectiveAgility();
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         c.SetCardItems(0x68, 0x66);
         c.SetCardSaints(0x23, 0x3F, 0x6C, 0x72);
         var potion = c.ItemsUsable();
@@ -77,7 +77,7 @@ public sealed class MinePitTrap_MineP00 : Card
                 if (c.Next == CardNumber)
                 {
                     _ = c.PartyMaxEffectiveAgility();
-                    c.Variables.Chosen[0] = c.BestMember;
+                    c.Variables.Chosen[0] = c.LastQueryMember;
                 }
             },
             hint);
@@ -90,7 +90,7 @@ public sealed class MinePitTrap_MineP00 : Card
                 if (c.Next == CardNumber)
                 {
                     _ = c.PartyMaxEffectiveAgility();
-                    c.Variables.Chosen[0] = c.BestMember;
+                    c.Variables.Chosen[0] = c.LastQueryMember;
                 }
             },
             hint, popup);
@@ -103,8 +103,8 @@ public sealed class MinePitTrap_MineP00 : Card
     {
         var chance = c.PartyMaxEffectiveAgility();
         // C: the handler leaves the best member in the text variable as well.
-        c.Variables.Chosen[0] = c.BestMember;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     // orig: R056+0x01EE (1838:01EE) matched

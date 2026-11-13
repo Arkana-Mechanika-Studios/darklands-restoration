@@ -93,7 +93,7 @@ public sealed class WildBoarsCharge : Card
     {
         c.PartyMaxSkill(0x11);
         // C: the member is the low byte of the best member.
-        return OptionHint.ChanceOf(CardContext.ClampRange(1, 0x63, 0), (byte)c.BestMember);
+        return OptionHint.ChanceOf(CardContext.ClampRange(1, 0x63, 0), (byte)c.LastQueryMember);
     }
 
     private static void OutrunThem(CardContext c, int chance)

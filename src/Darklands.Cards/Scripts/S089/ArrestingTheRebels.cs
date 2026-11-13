@@ -23,7 +23,7 @@ public sealed class ArrestingTheRebels : Card
         var menu = Menu(c);
         menu.Enable(0, 1, 2, 3, 5);
         c.PartyMaxSkill((int)Skill.SpeakCommon);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         // C: the block is the script's own global DS:8E1E, set to 0 on arrival.
         menu.Block = 0;
         // orig: R089+0x1B52 (197F:06E2) matched (resets the handlers and card-saint-lines, not card-item-lines)

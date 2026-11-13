@@ -183,9 +183,9 @@ public sealed class ProveYourWorthToTheLord : Card
     private static OptionHint WeaponChance(CardContext c)
     {
         var melee = c.PartyBestHandWeaponSkill();
-        var fighter = (byte)c.BestMember;
+        var fighter = (byte)c.LastQueryMember;
         var missile = c.PartyBestMissileSkill();
-        var archer = (byte)c.BestMember;
+        var archer = (byte)c.LastQueryMember;
         if (melee < missile)
         {
             c.Variables.Chosen[1] = archer;
@@ -200,9 +200,9 @@ public sealed class ProveYourWorthToTheLord : Card
     private static bool ShowWeaponSkill(CardContext c, int chance)
     {
         c.PartyBestHandWeaponSkill();
-        int fighter = (byte)c.BestMember;
+        int fighter = (byte)c.LastQueryMember;
         c.PartyBestMissileSkill();
-        var archer = (byte)c.BestMember;
+        var archer = (byte)c.LastQueryMember;
         c.Variables.Chosen[1] = archer;
         var archersWeapon = c.EquippedItem(archer, 0);
         c.NameToSlot(0, archersWeapon != -1 ? archersWeapon : 0x1C, 1);

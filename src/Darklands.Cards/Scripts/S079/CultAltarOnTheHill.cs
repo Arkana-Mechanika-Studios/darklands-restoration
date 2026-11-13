@@ -124,8 +124,8 @@ public sealed class CultAltarOnTheHill : Card
     private static OptionHint DefaceChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(8);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     /// <summary>The demon may rise for a famous party (fame above 200: a fame-in-1200 chance). Returns false when the altar stands.</summary>
@@ -259,8 +259,8 @@ public sealed class CultAltarOnTheHill : Card
     private static OptionHint RelicChance(CardContext c)
     {
         var chance = c.PartyMaxSkill(9);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     // orig: R079+0x1ED8 (19A0:0858) matched; tests: CardSmokeTests
@@ -286,8 +286,8 @@ public sealed class CultAltarOnTheHill : Card
     private static OptionHint DemonChance(CardContext c)
     {
         var chance = Math.Clamp(c.PartyMaxSkillSum(8, 9), 0, 99);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     /// <summary>Returns false when the demon does not come.</summary>

@@ -70,8 +70,8 @@ public sealed class LakeOfFire : Card
     private static OptionHint WeakestTimesThree(CardContext c, int attribute)
     {
         var chance = c.PartyMinAttribute(attribute) * 3;
-        c.Variables.Chosen[0] = c.BestMember;
-        return OptionHint.ChanceOf(chance, c.BestMember);
+        c.Variables.Chosen[0] = c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, c.LastQueryMember);
     }
 
     /// <summary>Within the chance all get across scorched (text 1); within three times it the weakest is burned badly too (text 2); else everyone is burned and turns back (text 3).</summary>
@@ -80,7 +80,7 @@ public sealed class LakeOfFire : Card
     private void WadeAcross(CardContext c, int chance)
     {
         c.PartyMinAttribute(Strength);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         var roll = c.Random(100);
         if (roll <= chance)
         {
@@ -112,7 +112,7 @@ public sealed class LakeOfFire : Card
     private void SwimUnderTheFlames(CardContext c, int chance)
     {
         c.PartyMinAttribute(Endurance);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         var roll = c.Random(100);
         if (roll <= chance)
         {

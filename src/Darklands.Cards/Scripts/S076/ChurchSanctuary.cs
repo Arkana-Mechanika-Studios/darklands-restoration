@@ -124,8 +124,8 @@ public sealed class ChurchSanctuary : Card
     {
         var chance = Math.Clamp(c.PartyMinSkillSum(0x0F, 0x10), 10, 99);
         // C: top-scoring-member is read as an unsigned char.
-        c.Variables.Chosen[0] = (byte)c.BestMember;
-        return OptionHint.ChanceOf(chance, (byte)c.BestMember);
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
+        return OptionHint.ChanceOf(chance, (byte)c.LastQueryMember);
     }
 
     // orig: R076+0x08AC (187B:047C) matched; tests: CardSmokeTests

@@ -33,7 +33,7 @@ public sealed class PeasantsDemandAMaiden : Card
         if (c.Random(2) != 0 && c.AbleWomen() != 0)
         {
             c.PartyMaxAttributeOfWomen(5);
-            c.Variables.Chosen[0] = (byte)c.BestMember;
+            c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         }
         else
         {

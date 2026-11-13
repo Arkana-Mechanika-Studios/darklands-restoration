@@ -28,7 +28,7 @@ public sealed class DwarfStoneBox_MineB01 : Card
         var menu = Menu(c);
         menu.Enable(0, 2, 3, 4);
         c.PartyMaxSkill((int)Skill.Artifice);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         // as the original has it, carrying item 0x40 greys out the lock picking.
         if (c.CountItems(Who.Everybody, Lockpicks) != 0)
         {

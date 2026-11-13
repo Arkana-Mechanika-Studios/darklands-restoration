@@ -109,7 +109,7 @@ public sealed class SourceOfTheHorrors_MineH01 : Card
     private static int BarricadeChance(CardContext c)
     {
         var chance = c.PartyMaxSkill((int)Skill.Artifice);
-        c.Variables.Chosen[0] = (byte)c.BestMember;
+        c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         return chance;
     }
 

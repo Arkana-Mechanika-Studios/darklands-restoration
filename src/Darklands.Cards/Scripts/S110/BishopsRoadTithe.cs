@@ -118,7 +118,7 @@ public sealed class BishopsRoadTithe : Card
     // so the Riding is that of the least nimble rider it found.
     private static OptionHint EscapeHint(CardContext c)
     {
-        var chance = c.PartyMinMountedAgility() + c.Skill(c.BestMember, (int)Skill.Riding) / 2;
+        var chance = c.PartyMinMountedAgility() + c.Skill(c.LastQueryMember, (int)Skill.Riding) / 2;
         if (c.PartyGet(5) == 0)
         {
             chance = 0;

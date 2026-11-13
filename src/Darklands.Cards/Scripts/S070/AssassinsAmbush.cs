@@ -22,7 +22,7 @@ public sealed class AssassinsAmbush : Card
         c.Next = Number;
         var menu = Menu(c, 0);
         var keenest = c.PartyMaxAttributePlusSkill((int)Attribute.Perception, (int)Skill.Woodwise);
-        c.Variables.Chosen[0] = c.BestMember;
+        c.Variables.Chosen[0] = c.LastQueryMember;
         // C: 3 * value / 4 with signed division.
         if (c.Random(100) <= ((keenest << 1) + keenest) / 4)
         {
