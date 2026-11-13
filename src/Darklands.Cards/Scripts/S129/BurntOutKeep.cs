@@ -49,7 +49,7 @@ public sealed class BurntOutKeep : Card
         {
             c.Screen.Text(0);
             c.PassHours(0);
-            c.Next = 0x62;
+            c.Next = CardContext.EndOfCards;
         };
         return menu.Run(
             // orig: R129+0x12BC / R129+0x12D4 matched — search: the card stays (following-card unchanged).

@@ -75,7 +75,7 @@ public sealed class SabbatWitchFeast : Card
         // orig: R126+0x34EC / R126+0x3546 (hints R126+0x350A / R126+0x3564) matched
         // DORMANT: lines 8 and 9 are never enabled in the card's own menu (only the ointment's box shows them, without
         //   these handlers); each shows text 0, passes 0 hours and goes to 0x62.
-        var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);
+        var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = CardContext.EndOfCards; }, assured);
         // DORMANT: in text block 2 the option line 0 is never offered (the first menu on this block never enables them); it can be offered in other blocks only.
         // DORMANT: in text block 12 the option lines 0, 2..4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(

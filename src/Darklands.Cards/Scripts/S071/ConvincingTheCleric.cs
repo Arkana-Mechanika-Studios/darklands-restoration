@@ -18,7 +18,6 @@ public sealed class ConvincingTheCleric : Card
     private const int ClergySide = 0x400;
     private const int PoliticsQuest = 2;
     private const int FactKind = 0x1C;
-    private const int WildernessCard = 0x62;
 
     public override int Number => 0x6F;
 
@@ -184,6 +183,6 @@ public sealed class ConvincingTheCleric : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = WildernessCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

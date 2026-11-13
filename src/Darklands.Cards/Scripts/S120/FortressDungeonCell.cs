@@ -45,8 +45,6 @@ public sealed class FortressDungeonCell : Card
     /// <summary>Lockpicks: they double the chance of picking the lock.</summary>
     private const int Lockpicks = 0x40;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         // The captors take weapons and potions (item kinds 0x04000040 and 0x3F).
@@ -198,6 +196,6 @@ public sealed class FortressDungeonCell : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

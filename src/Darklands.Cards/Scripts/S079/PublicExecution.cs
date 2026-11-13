@@ -171,7 +171,7 @@ public sealed class PublicExecution : Card
                 if (c.PresentCount() == 0)
                 {
                     // DIVERGENCE: with nobody left the original searches the empty party for ever; here the game ends.
-                    c.Next = 0x62;
+                    c.Next = CardContext.EndOfCards;
                     break;
                 }
                 var victim = SomeMember(c);

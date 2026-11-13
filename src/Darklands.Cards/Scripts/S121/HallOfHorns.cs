@@ -37,8 +37,6 @@ public sealed class HallOfHorns : Card
     /// <summary>The fact (tag 1) that the stag horns have disarmed the tilting floor.</summary>
     private const int TrapDisarmedFact = 0x1B;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -118,6 +116,6 @@ public sealed class HallOfHorns : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

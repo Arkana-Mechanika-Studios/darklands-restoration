@@ -65,7 +65,7 @@ public sealed class ModCardTests
     [InlineData(null)]
     [InlineData(366)]
     [InlineData(-1)]
-    [InlineData(CardDispatcher.EndOfGame)]
+    [InlineData(CardDispatcher.EndOfCards)]
     public void ANewCardNeedsAGameCardToBeSavedAs(int? savesAs)
     {
         var registry = new CardRegistry();
@@ -117,7 +117,7 @@ public sealed class ModCardTests
 
     [Theory]
     [InlineData(CardDispatcher.OverlandMap)]
-    [InlineData(CardDispatcher.EndOfGame)]
+    [InlineData(CardDispatcher.EndOfCards)]
     [InlineData(CardDispatcher.QuitGame)]
     [InlineData(-2)]
     [InlineData(CardRegistry.LastModCard + 1)]

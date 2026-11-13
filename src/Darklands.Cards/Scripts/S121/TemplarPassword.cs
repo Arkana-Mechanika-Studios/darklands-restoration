@@ -32,8 +32,6 @@ public sealed class TemplarPassword : Card
     private const int Picture = 168;
     private const int FoesPicture = 185;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -82,6 +80,6 @@ public sealed class TemplarPassword : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

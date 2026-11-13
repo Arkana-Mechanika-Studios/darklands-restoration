@@ -29,7 +29,7 @@ public sealed class UnfinishedCityGate_CityG07 : Card
         // orig: R093+0x0246 (1838:0246) and the nine handlers like it, matched
         // DORMANT: the item pop-up hints (06A4..0758) would also name the chooser as $ChosenOneName;
         // the text has no pop-up line, so they never run.
-        var end = new MenuLine(() => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; });
+        var end = new MenuLine(() => { c.Screen.Text(0); c.PassHours(0); c.Next = CardContext.EndOfCards; });
         return menu.Run(end, end, end, end, end, end, end, end, end, end);
     }
 }

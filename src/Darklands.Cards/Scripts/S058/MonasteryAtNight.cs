@@ -18,7 +18,7 @@ public sealed class MonasteryAtNight : Card
     private const int Picture = 64, TurnedAwayPicture = 313, PrayersPicture = 233, DoorPicture = 292,
         WelcomePicture = 293, SanctuaryPicture = 260;
 
-    private const int MonasteryByDay = 0x36, ChurchDistrict = 0x13, Sanctuary = 0xB4, NoGo = 0x62;
+    private const int MonasteryByDay = 0x36, ChurchDistrict = 0x13, Sanctuary = 0xB4;
 
     /// <summary>Events at a city: prayers bought, (never set here), the monks rebuffed the party.</summary>
     private const int PrayersBought = 0x30, Event31 = 0x31, Rebuffed = 0x35;
@@ -96,7 +96,7 @@ public sealed class MonasteryAtNight : Card
             // orig: R058+0x0834 (1838:0834) matched (option 8 action "go elsewhere": to the church district, no time passes); hint R058+0x083C (1838:083C) "success is assured"
             new MenuLine(() => c.Next = ChurchDistrict, OptionHint.Saying(SuccessAssured)),
             // DORMANT: line 9 is disabled (flag 0) and has no text. orig: R058+0x0874 (1838:0874) matched (action: show the first text block, go to the "no go" card 0x62); hint R058+0x0892 (1838:0892) "success is assured" (its member r.b = leader is overwritten by -2)
-            new MenuLine(() => { c.Screen.Text(0); c.PassHours(0); c.Next = NoGo; }, OptionHint.Saying(SuccessAssured)));
+            new MenuLine(() => { c.Screen.Text(0); c.PassHours(0); c.Next = CardContext.EndOfCards; }, OptionHint.Saying(SuccessAssured)));
     }
 
     /// <summary>The leader's Virtue and Charisma, plus half the standing.</summary>

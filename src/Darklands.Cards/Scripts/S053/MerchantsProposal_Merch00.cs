@@ -12,8 +12,6 @@ public sealed class MerchantsProposal_Merch00 : Card
 
     private const int Picture = 0;
 
-    private const int CannotEnter = 0x62;
-
     public override int Number => CardNumber;
 
     // orig: R053+0x2EE4 (1B26:0004) matched (entry: all ten option lines enabled, items and saints, the menu loop)
@@ -63,6 +61,6 @@ public sealed class MerchantsProposal_Merch00 : Card
         {
             c.Screen.Text(0);
             c.PassHours(0);
-            c.Next = CannotEnter;
+            c.Next = CardContext.EndOfCards;
         });
 }

@@ -12,7 +12,6 @@ public sealed class VillageGraveyard : Card
     public const int CardNumber = 0x2A;
 
     private const int Picture = 182;
-    private const int NoGo = 0x62;
 
     /// <summary>The quest event kind and the tag of the graveyard quest.</summary>
     private const int QuestKind = 8, GraveyardTag = 0x0A;
@@ -83,6 +82,6 @@ public sealed class VillageGraveyard : Card
     private static void TurnAway(CardContext c)
     {
         c.PassHours(0);
-        c.Next = NoGo;
+        c.Next = CardContext.EndOfCards;
     }
 }

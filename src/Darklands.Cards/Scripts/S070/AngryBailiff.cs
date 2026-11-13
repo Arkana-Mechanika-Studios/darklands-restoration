@@ -13,8 +13,6 @@ public sealed class AngryBailiff : Card
     /// <summary>The card's picture is named in the card itself ("smars2"); it has no picture number.</summary>
     private const string BailiffPicture = "smars2";
 
-    private const int NotWorkingYet = 0x62;
-
     public override int Number => 0x68;
 
     public override int Run(CardContext c)
@@ -37,6 +35,6 @@ public sealed class AngryBailiff : Card
     private static void Leave(CardContext c)
     {
         c.PassHours(0);
-        c.Next = NotWorkingYet;
+        c.Next = CardContext.EndOfCards;
     }
 }

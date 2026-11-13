@@ -83,7 +83,7 @@ public sealed class DemonPrinceAndTheSealedBook : Card
         if (c.HerePlace is { } here)
         {
             here.Icon = 4;
-            here.ArrivalCard = 0x62;
+            here.ArrivalCard = CardContext.EndOfCards;
         }
         if (LocationAt(c, c.Here + 1) is { Icon: 4 } next)
         {
@@ -108,7 +108,7 @@ public sealed class DemonPrinceAndTheSealedBook : Card
     {
         place.Icon = 0x16;
         place.ArrivalCard = 0x12A;
-        place.EncounterCard = 0x62;
+        place.EncounterCard = CardContext.EndOfCards;
     }
 
     // orig: R122+0x0322 (1838:0322) matched
@@ -149,6 +149,6 @@ public sealed class DemonPrinceAndTheSealedBook : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = 0x62;
+        c.Next = CardContext.EndOfCards;
     }
 }

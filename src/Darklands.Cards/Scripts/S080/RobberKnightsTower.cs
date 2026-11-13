@@ -125,7 +125,7 @@ public sealed class RobberKnightsTower : Card
         tower.Icon = 0x1A;
         tower.Flags |= Core.World.Location.DestroyedFlag;
         tower.ArrivalCard = 0x157;
-        tower.EncounterCard = 0x62;
+        tower.EncounterCard = CardContext.EndOfCards;
         tower.NoticeRange = 1;
         c.Next = 0x0C;
     }

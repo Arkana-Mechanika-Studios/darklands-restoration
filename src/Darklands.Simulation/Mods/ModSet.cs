@@ -124,7 +124,7 @@ public sealed class ModSet
                 {
                     foreach (var to in Links(definition.Pages))
                     {
-                        if (!probe.Contains(to) && to != CardDispatcher.OverlandMap && to != CardDispatcher.EndOfGame)
+                        if (!probe.Contains(to) && to != CardDispatcher.OverlandMap && to != CardDispatcher.EndOfCards)
                         {
                             Bad(mod, $"card {definition.Number} leads to card {to}, which no script of the game and no played mod defines");
                         }

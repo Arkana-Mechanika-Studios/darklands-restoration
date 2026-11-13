@@ -40,9 +40,6 @@ public sealed class EerieFountain : Card
     /// <summary>The fact (tag 1) that the fountain has been drained.</summary>
     private const int DrainedFact = 0x13;
 
-    /// <summary>Where the handlers of option lines the text does not have lead.</summary>
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -137,6 +134,6 @@ public sealed class EerieFountain : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

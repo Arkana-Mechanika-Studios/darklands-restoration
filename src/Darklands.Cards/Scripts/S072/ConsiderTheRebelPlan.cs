@@ -13,7 +13,6 @@ namespace Darklands.Cards.Scripts;
 public sealed class ConsiderTheRebelPlan : Card
 {
     private const int PlanPicture = 356;
-    private const int NotWorkingYet = 0x62;
 
     public override int Number => 0x70;
 
@@ -62,7 +61,7 @@ public sealed class ConsiderTheRebelPlan : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = NotWorkingYet;
+        c.Next = CardContext.EndOfCards;
     }
 
     private static void NotImplementThePlanYet(CardContext c)

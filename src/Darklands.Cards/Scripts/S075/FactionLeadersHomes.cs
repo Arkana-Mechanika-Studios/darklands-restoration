@@ -44,7 +44,7 @@ public sealed class FactionLeadersHomes : Card
 
         // orig: R075+0x03CA (1838:03CA) matched; R075+0x03DC (1838:03DC) matched; R075+0x0414 (1838:0414) matched; R075+0x0426 (1838:0426) matched; R075+0x045E (1838:045E) matched; R075+0x0470 (1838:0470) matched; R075+0x04A8 (1838:04A8) matched; R075+0x04BA (1838:04BA) matched; R075+0x04F2 (1838:04F2) matched; R075+0x0504 (1838:0504) matched; R075+0x053C (1838:053C) matched; R075+0x054E (1838:054E) matched; tests: CardSmokeTests
         // DORMANT: lines 2..7 are placeholders the game never offers; they would end the game.
-        var placeholder = new MenuLine(() => { c.PassHours(0); c.Next = 0x62; }, OptionHint.Saying(SuccessAssured));
+        var placeholder = new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, OptionHint.Saying(SuccessAssured));
         return menu.Run(
             // orig: R075+0x02D8 (1838:02D8) matched; R075+0x031C (1838:031C) matched; tests: CardSmokeTests
             new MenuLine(() => { c.PassHours(0); JoinSide(c, 0, -1); }, OptionHint.Saying(SuccessAssured)),

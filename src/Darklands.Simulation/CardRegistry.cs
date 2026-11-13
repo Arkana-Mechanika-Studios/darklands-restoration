@@ -103,7 +103,7 @@ public sealed class CardRegistry
 
     /// <summary>A number the dispatcher never runs as a card: the map, the end of the game, the negative codes.</summary>
     public static bool IsReserved(int number) =>
-        number is CardDispatcher.OverlandMap or CardDispatcher.EndOfGame || number < 0;
+        number is CardDispatcher.OverlandMap or CardDispatcher.EndOfCards || number < 0;
 
     /// <summary>
     /// Registers a mod's card. A number above <see cref="LastOriginalCard"/> adds a card (with <paramref name="savesAs"/>,
@@ -146,7 +146,7 @@ public sealed class CardRegistry
             {
                 return Refuse(number, source, $"{Show(number)} is a new card (above {LastOriginalCard}), not one of the game's: it cannot be an override");
             }
-            if (savesAs is not { } fallback || fallback > LastOriginalCard || fallback < 0 || fallback == CardDispatcher.EndOfGame
+            if (savesAs is not { } fallback || fallback > LastOriginalCard || fallback < 0 || fallback == CardDispatcher.EndOfCards
                 || (fallback != CardDispatcher.OverlandMap && !_original.ContainsKey(fallback)))
             {
                 return Refuse(number, source, $"a new card needs \"savesAs\": one of the game's cards (0..{LastOriginalCard}, the map 12 included) a saved game names in its place");

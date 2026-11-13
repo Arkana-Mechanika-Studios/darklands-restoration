@@ -107,6 +107,6 @@ public sealed class PileOfBurnedBooks : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = 0x62;
+        c.Next = CardContext.EndOfCards;
     }
 }

@@ -134,6 +134,6 @@ public sealed class TemplarWritingDesk : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = CardContext.ClosedCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

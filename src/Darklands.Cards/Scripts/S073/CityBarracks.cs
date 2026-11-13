@@ -13,7 +13,6 @@ namespace Darklands.Cards.Scripts;
 public sealed class CityBarracks : Card
 {
     private const int BarracksPicture = 96;
-    private const int NotWorkingYet = 0x62;
     private const int CitySquareByDay = 0x12;
     private const int CitySquareByNight = 0x19;
     private const int RecruitCard = 0xAA;
@@ -71,6 +70,6 @@ public sealed class CityBarracks : Card
     private static void LeaveForNotWorking(CardContext c)
     {
         c.PassHours(0);
-        c.Next = NotWorkingYet;
+        c.Next = CardContext.EndOfCards;
     }
 }

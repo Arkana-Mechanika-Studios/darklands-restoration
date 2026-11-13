@@ -14,7 +14,7 @@ public sealed class CardDispatcher
     /// <summary>Card numbers with special meaning.</summary>
     // orig: 0xC is the overland map (the main loop clears DS:A891 after every other card), the loop ends when a screen returns 0x62 or -0x63 (while (DS:A764 != 0x62 && DS:A764 != -0x63))
     public const int OverlandMap = 0x0C;
-    public const int EndOfGame = 0x62;
+    public const int EndOfCards = 0x62;
     public const int QuitGame = -0x63;
 
     private readonly CardRegistry _cards;

@@ -84,7 +84,7 @@ public sealed class DragonsLair : Card
                 // DIVERGENCE: without a dragon quest (lair -1) the original writes through index -1; skipped here.
                 if (lair >= 0 && lair < c.State.Locations.Count)
                 {
-                    c.State.Locations[lair].ArrivalCard = 0x62;
+                    c.State.Locations[lair].ArrivalCard = CardContext.EndOfCards;
                 }
                 c.ResolveQuest(4, c.Here);
                 // C: party-map-column, party-map-row are passed to closest-city.

@@ -21,7 +21,7 @@ public sealed class Monastery_CityM00 : Card
         MonkOfficePicture = 299, AbbotPicture = 243, DeniedPicture = 310, DeniedFriendlyPicture = 297,
         HealingDeniedPicture = 295;
 
-    private const int Church = 0x13, Learn = 0x39, Healer = 0xB4, Cleric = 0x6F, NoWay = 0x62;
+    private const int Church = 0x13, Learn = 0x39, Healer = 0xB4, Cleric = 0x6F;
     private const int MonasteryByDay = 0x36, MonasteryAtNight = 0x38;
 
     /// <summary>The monastery's events, per location: the visit of the day, the library, the prayers, the tutors asked, the healing asked, the tutors hired.</summary>
@@ -121,7 +121,7 @@ public sealed class Monastery_CityM00 : Card
                 {
                     c.Screen.Text(0);
                     c.PassHours(0);
-                    c.Next = NoWay;
+                    c.Next = CardContext.EndOfCards;
                 },
                 OptionHint.Saying(SuccessAssured)),
         };

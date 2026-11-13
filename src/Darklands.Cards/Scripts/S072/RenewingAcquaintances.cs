@@ -12,7 +12,6 @@ namespace Darklands.Cards.Scripts;
 public sealed class RenewingAcquaintances : Card
 {
     private const int CommonPicture = 0;
-    private const int NotWorkingYet = 0x62;
 
     public override int Number => 0x72;
 
@@ -50,6 +49,6 @@ public sealed class RenewingAcquaintances : Card
     private static MenuLine Line(CardContext c) => new(_ =>
     {
         c.PassHours(0);
-        c.Next = NotWorkingYet;
+        c.Next = CardContext.EndOfCards;
     }, OptionHint.Saying(SuccessAssured));
 }

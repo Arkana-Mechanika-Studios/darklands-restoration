@@ -52,7 +52,7 @@ public sealed class SabbatAltarPreparation : Card
         var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var assured = OptionHint.Saying(SuccessAssured);
         // orig: R125+0x2160 / R125+0x21BA matched — lines 8 and 9 (never enabled).
-        var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);
+        var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = CardContext.EndOfCards; }, assured);
         // DORMANT: in text block 1 the option lines 0, 1 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         // DORMANT: in text block 3 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         // DORMANT: in text block 10 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.

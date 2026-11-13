@@ -31,8 +31,9 @@ public sealed partial class CardContext
     public const int MapCard = 0x0C;
 
 
-    /// <summary>The arrival card of a place that cannot be entered (any more).</summary>
-    public const int ClosedCard = 0x62;
+    /// <summary>Card 0x62: the main loop stops when a card returns it (root 03A1:000A). Scripts also leave it as a place's arrival or
+    /// encounter card, so that place leads nowhere any more.</summary>
+    public const int EndOfCards = 0x62;
 
     /// <summary>The party leaves the place for the overland map (<c>location-now = -1</c>, card 0x0C).</summary>
     public void LeaveForTheMap()

@@ -16,9 +16,6 @@ public sealed class RandomMonsterFromTheSlime : Card
 
     private const int Picture = 0;
 
-    /// <summary>The encounter card the fight and talk lines lead to.</summary>
-    private const int EncounterCard = 0x62;
-
     public override int Number => CardNumber;
 
     public override int Run(CardContext c)
@@ -104,7 +101,7 @@ public sealed class RandomMonsterFromTheSlime : Card
     private static void GoToTheEncounter(CardContext c)
     {
         c.PassHours(0);
-        c.Next = EncounterCard;
+        c.Next = CardContext.EndOfCards;
     }
 
     private static OptionHint ItemLineHint(CardContext c, int member)

@@ -13,7 +13,7 @@ public sealed class GroveByDay_CityG05 : Card
     private const int Picture = 47, Music = 0x17;
 
     private const int GroveAtNight = 0x22, MainStreet = 0x06, MainStreetAtNight = 0x08,
-        SideStreet = 0x09, SideStreetAtNight = 0x0A, CannotEnter = 0x62;
+        SideStreet = 0x09, SideStreetAtNight = 0x0A;
 
     private const int Nightfall = 18;
 
@@ -63,11 +63,11 @@ public sealed class GroveByDay_CityG05 : Card
             // orig: R052+0x0E78 (18E4:03B8) matched (option 4); hint R052+0x0E84 (18E4:03C4) matched (success assured for the leader): the same.
             new MenuLine(() => c.PassHours(0), () => OptionHint.Say(SuccessAssured, c.Leader)),
             // orig: R052+0x0EBE (18E4:03FE) matched (option 5); hint R052+0x0ED0 (18E4:0410) matched: next card 0x62.
-            new MenuLine(() => { c.PassHours(0); c.Next = CannotEnter; }),
+            new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }),
             // orig: R052+0x0F08 (18E4:0448) matched (option 6); hint R052+0x0F1A (18E4:045A) matched (100% for the leader): next card 0x62.
-            new MenuLine(() => { c.PassHours(0); c.Next = CannotEnter; }, () => OptionHint.ChanceOf(100, c.Leader)),
+            new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, () => OptionHint.ChanceOf(100, c.Leader)),
             // orig: R052+0x0F54 (18E4:0494) matched (option 7); hint R052+0x0F66 (18E4:04A6) matched (100% for the leader): next card 0x62.
-            new MenuLine(() => { c.PassHours(0); c.Next = CannotEnter; }, () => OptionHint.ChanceOf(100, c.Leader)),
+            new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, () => OptionHint.ChanceOf(100, c.Leader)),
             // orig: R052+0x0FA0 (18E4:04E0) matched (option 8: leave down the main street); hint R052+0x0FBE (18E4:04FE) (success assured)
             new MenuLine(() =>
             {

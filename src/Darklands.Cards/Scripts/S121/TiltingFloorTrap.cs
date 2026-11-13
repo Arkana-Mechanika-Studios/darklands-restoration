@@ -41,8 +41,6 @@ public sealed class TiltingFloorTrap : Card
 
     private const int DungeonCell = 0x131;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -153,6 +151,6 @@ public sealed class TiltingFloorTrap : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

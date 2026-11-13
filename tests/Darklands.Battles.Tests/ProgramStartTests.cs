@@ -86,7 +86,7 @@ public sealed class ProgramStartTests
         try
         {
             var host = new RcPlayTests.RcHost(["w:5", "k:q", "w:40", "k:q", "w:40"]);
-            var game = Game(files, host, saves, card: CardDispatcher.EndOfGame);
+            var game = Game(files, host, saves, card: CardDispatcher.EndOfCards);
             var memories = new HashSet<object>(ReferenceEqualityComparer.Instance);
             var keys = new HashSet<object>(ReferenceEqualityComparer.Instance);
             host.EveryFrame = _ =>
@@ -123,7 +123,7 @@ public sealed class ProgramStartTests
         try
         {
             var host = new RcPlayTests.RcHost(["w:5", "k:q", "w:40", "k:q", "w:40"]);
-            var game = Game(files, host, saves, card: CardDispatcher.EndOfGame);
+            var game = Game(files, host, saves, card: CardDispatcher.EndOfCards);
             var ui = game.Ui;
             var firstRun = true;
             (bool Music, bool Sound, int Font, int Kept, int Listing, bool Selected, bool OrderMode, bool Cycling)? second = null;
@@ -179,7 +179,7 @@ public sealed class ProgramStartTests
         try
         {
             var host = new RcPlayTests.RcHost(["w:300", "k:q", "w:40", "k:q", "w:40"]);
-            var game = Game(files, host, saves, card: CardDispatcher.EndOfGame);
+            var game = Game(files, host, saves, card: CardDispatcher.EndOfCards);
             game.ShowStartUp = true;
             var drivers = new List<string?>();
             host.EveryFrame = _ =>

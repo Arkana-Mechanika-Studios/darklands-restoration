@@ -12,7 +12,6 @@ public sealed class ForeignMerchantOffer : Card
     public const int CardNumber = 0x28;
 
     private const int Picture = 0;
-    private const int NoGo = 0x62;
 
     public override int Number => CardNumber;
 
@@ -42,7 +41,7 @@ public sealed class ForeignMerchantOffer : Card
             {
                 c.Screen.Text(0);
                 c.PassHours(0);
-                c.Next = NoGo;
+                c.Next = CardContext.EndOfCards;
             },
             OptionHint.Saying(SuccessAssured));
 }

@@ -109,6 +109,6 @@ public sealed class TemplarFortressGate : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = CardContext.ClosedCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

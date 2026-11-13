@@ -15,7 +15,6 @@ public sealed class AlchemistFormulaSeller : Card
     private const int AlchemistPicture = 74;
     private const int ListedFormulas = 4;
     private const int FormulaGroups = 22;
-    private const int CityEntryAfterTalk = 0x62;
 
     public override int Number => 0x53;
 
@@ -114,6 +113,6 @@ public sealed class AlchemistFormulaSeller : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = CityEntryAfterTalk;
+        c.Next = CardContext.EndOfCards;
     }
 }

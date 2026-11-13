@@ -99,8 +99,8 @@ public sealed class PaganAltarOnTheHill : Card
     {
         if (c.State.Here is { } place)
         {
-            place.ArrivalCard = CardContext.ClosedCard;
-            place.EncounterCard = CardContext.ClosedCard;
+            place.ArrivalCard = CardContext.EndOfCards;
+            place.EncounterCard = CardContext.EndOfCards;
         }
     }
 

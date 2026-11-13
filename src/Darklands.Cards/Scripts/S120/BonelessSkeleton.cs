@@ -37,8 +37,6 @@ public sealed class BonelessSkeleton : Card
     /// <summary>The bone item the skeleton wants.</summary>
     private const int Bone = 0x94;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -84,6 +82,6 @@ public sealed class BonelessSkeleton : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

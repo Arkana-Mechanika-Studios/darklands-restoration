@@ -360,7 +360,7 @@ public sealed class NightAssaultOnTheKeep : Card
                     var castle = c.State.Locations[c.Here];
                     castle.Icon = 8;
                     castle.ArrivalCard = 0x85;
-                    castle.EncounterCard = CardContext.ClosedCard;
+                    castle.EncounterCard = CardContext.EndOfCards;
                     break;
                 case 1:
                 case 2:

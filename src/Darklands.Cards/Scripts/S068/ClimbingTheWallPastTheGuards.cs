@@ -95,7 +95,7 @@ public sealed class ClimbingTheWallPastTheGuards : Card
     private static void LeaveForTheWilderness(CardContext c)
     {
         c.PassHours(0);
-        c.Next = 0x62;
+        c.Next = CardContext.EndOfCards;
     }
 
     /// <summary>The best climber (of this and earlier visits) goes up the wall with the rope.</summary>

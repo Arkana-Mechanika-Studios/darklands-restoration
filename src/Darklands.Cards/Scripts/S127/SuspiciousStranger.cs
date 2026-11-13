@@ -55,7 +55,7 @@ public sealed class SuspiciousStranger : Card
         {
             c.Screen.Text(0);
             c.PassHours(0);
-            c.Next = 0x62;
+            c.Next = CardContext.EndOfCards;
         };
         return menu.Run(
             // orig: R127+0x23EE / R127+0x2402 matched

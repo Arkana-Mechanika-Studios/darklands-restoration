@@ -45,7 +45,6 @@ public sealed class BaphometsPlagues : Card
 
     /// <summary>The last castle's arrival card ($LastC00) and the "nothing here" card ($NoGo00).</summary>
     private const int LastCastleArrival = 0x158;
-    private const int NothingHere = 0x62;
 
     /// <summary>Where the party goes when no city is found near it.</summary>
     private const int FallbackCity = 0x22;
@@ -97,7 +96,7 @@ public sealed class BaphometsPlagues : Card
         c.State.Party.Purse = c.State.Party.Purse.Add(50, 0, 0);
         if (Place(c, c.Here) is { } here)
         {
-            here.ArrivalCard = NothingHere;
+            here.ArrivalCard = CardContext.EndOfCards;
         }
         // C: the original also calls closest-city here and ignores the answer (no side effect).
         // DIVERGENCE: the loops over the cities and the location writes are bounded by the location list here; the C
@@ -167,7 +166,7 @@ public sealed class BaphometsPlagues : Card
     {
         if (Place(c, c.Here) is { } here)
         {
-            here.ArrivalCard = NothingHere;
+            here.ArrivalCard = CardContext.EndOfCards;
             here.Icon = EmptySiteIcon;
         }
         var site = Place(c, c.Here + 1) is { Icon: EmptySiteIcon } next ? next
@@ -177,7 +176,7 @@ public sealed class BaphometsPlagues : Card
         {
             site.Icon = LastCastleIcon;
             site.ArrivalCard = LastCastleArrival;
-            site.EncounterCard = NothingHere;
+            site.EncounterCard = CardContext.EndOfCards;
         }
     }
 

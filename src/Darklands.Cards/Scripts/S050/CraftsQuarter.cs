@@ -17,7 +17,7 @@ public sealed class CraftsQuarter : Card
 
     private const int MainStreet = 0x06, MainStreetAtNight = 0x08, SideStreet = 0x09, SideStreetAtNight = 0x0A,
         MilitaryCrafts = 0x17, Physician = 0x18, Clothmaker = 0x25, ClothmakerAtNight = 0x26, Artificer = 0x57,
-        ArtificerAtNight = 0x58, Apothecary = 0x59, Jeweller = 0x5D, JewellerAtNight = 0x5E, NightEncounter = 0x3C, NoGo = 0x62;
+        ArtificerAtNight = 0x58, Apothecary = 0x59, Jeweller = 0x5D, JewellerAtNight = 0x5E, NightEncounter = 0x3C;
 
     public override int Number => CardNumber;
 
@@ -59,10 +59,10 @@ public sealed class CraftsQuarter : Card
             Visit(c, () => c.IsDaylight ? Clothmaker : ClothmakerAtNight, roused: true),
             // orig: R050+0x1B3C (1982:069C) + R050+0x1B2A (1982:068A) R050 seg 1982 matched
             // DORMANT: card-option-flag-5 is 0 (it would lead to card 0x62, "no go").
-            new MenuLine(() => { c.PassHours(0); c.Next = NoGo; }, OptionHint.Saying(SuccessAssured)),
+            new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, OptionHint.Saying(SuccessAssured)),
             // orig: R050+0x1B86 (1982:06E6) + R050+0x1B74 (1982:06D4) R050 seg 1982 matched
             // DORMANT: card-option-flag-6 is 0 (card 0x62 as well).
-            new MenuLine(() => { c.PassHours(0); c.Next = NoGo; }, OptionHint.Saying(SuccessAssured)),
+            new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, OptionHint.Saying(SuccessAssured)),
             // orig: R050+0x1BD0 (1982:0730) + R050+0x1BBE (1982:071E) R050 seg 1982 matched
             new MenuLine(() => { c.PassHours(1); c.Next = MilitaryCrafts; }, OptionHint.Saying(SuccessAssured)),
             // orig: R050+0x1C26 (1982:0786) + R050+0x1C08 (1982:0768) R050 seg 1982 matched

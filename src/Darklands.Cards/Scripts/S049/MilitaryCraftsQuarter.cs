@@ -14,7 +14,7 @@ public sealed class MilitaryCraftsQuarter : Card
     private const int Picture = 36;
 
     private const int OtherQuarters = 0x7C, Crafts = 0x1A, SideStreet = 0x09, SideStreetAtNight = 0x0A, MainStreet = 0x06,
-        MainStreetAtNight = 0x08, Specific = 0x62;
+        MainStreetAtNight = 0x08;
 
     private const int Politics = 2;
 
@@ -90,7 +90,7 @@ public sealed class MilitaryCraftsQuarter : Card
             // DORMANT: option 5 (it has no text line) is never enabled.
             // orig: R049+0x352A (1B1A:070A) matched
             // orig: R049+0x353C (1B1A:071C) matched
-            Walk(c, () => Specific),
+            Walk(c, () => CardContext.EndOfCards),
             // orig: R049+0x3574 (1B1A:0754) matched
             // orig: R049+0x3586 (1B1A:0766) matched
             Walk(c, () => OtherQuarters),

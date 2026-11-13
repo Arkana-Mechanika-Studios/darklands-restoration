@@ -13,9 +13,6 @@ public sealed class MerchantsSpecialReward : Card
 
     private const int Picture = 347;
 
-    /// <summary>The card every line leads to.</summary>
-    private const int NextCard = 0x62;
-
     public override int Number => CardNumber;
 
     public override int Run(CardContext c)
@@ -65,7 +62,7 @@ public sealed class MerchantsSpecialReward : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = NextCard;
+        c.Next = CardContext.EndOfCards;
     }
 
     private static OptionHint ItemLineHint(CardContext c, int member)

@@ -41,8 +41,6 @@ public sealed class FortressGuardpost : Card
     /// <summary>The fact (tag 1) that the guards know the party.</summary>
     private const int KnownFact = 0x14;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -245,6 +243,6 @@ public sealed class FortressGuardpost : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

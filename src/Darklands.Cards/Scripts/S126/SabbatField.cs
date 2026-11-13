@@ -73,7 +73,7 @@ public sealed class SabbatField : Card
             new MenuLine(_ => HelpTheCook(c), assured),
             // orig: R126+0x06FC / R126+0x071A matched
             // DORMANT: line 9 is never enabled; its handler shows text 0, passes 0 hours and goes to 0x62.
-            new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured));
+            new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = CardContext.EndOfCards; }, assured));
 
         c.State.SavedCard = c.Next;
         c.Next = FoundOut(c) ? 0x14F : Value(c, Suspicion) < 10 ? c.Next : 0x150;

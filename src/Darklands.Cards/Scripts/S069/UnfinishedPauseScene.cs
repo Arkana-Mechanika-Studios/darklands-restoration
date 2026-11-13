@@ -10,7 +10,6 @@ namespace Darklands.Cards.Scripts;
 public abstract class UnfinishedPauseScene : Card
 {
     private const int CommonPicture = 0;
-    private const int NotWorkingYet = 0x62;
 
     public override int Run(CardContext c)
     {
@@ -40,6 +39,6 @@ public abstract class UnfinishedPauseScene : Card
     private static MenuLine Line(CardContext c, Func<OptionHint> hint) => new(_ =>
     {
         c.PassHours(0);
-        c.Next = NotWorkingYet;
+        c.Next = CardContext.EndOfCards;
     }, hint);
 }

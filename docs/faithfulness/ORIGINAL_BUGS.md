@@ -437,7 +437,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-77a46d** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S058/LeavingByTheWall.cs:74` `LeavingByTheWall.Run`  
   original: `R058+0x2ED4` (1A1F:1064, matched)  
   why: the line that is closed for lack of money is 1 ("abandon the horses and crawl out through a sewer"), not the bribe line 2; kept as in the original.
-- **B-10641a** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S064/AlchemistFormulaSeller.cs:74` `AlchemistFormulaSeller.FormulaOnOffer`  
+- **B-10641a** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S064/AlchemistFormulaSeller.cs:73` `AlchemistFormulaSeller.FormulaOnOffer`  
   original: `R064+0x2D38` (1B0B:0008, matched)  
   why: only formulas 0..21 are ever for sale: the offer is taken modulo 22 (the number of potions) but used as a formula number (potion = n / 3, grade = n % 3), so only the first seven potions and the first grade of the eighth are offered (unsigned div by 0x16, 1B0B:008E and the three after it).
 - **B-dac2b0** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S065/BowyersGuildAtNight.cs:85` `BowyersGuildAtNight.KnockToBuy`  
@@ -458,7 +458,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:75` `AffairsElsewhere.Run`  
   original: `R071+0x15A4` (1992:0004, matched)  
   why: outside a city the news test misses a negation: unlike the branch above, this one tests the mine quest without it, so the "nothing of interest" text appears here only while the mine quest runs (and not the robber knight's).
-- **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:95` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
+- **B-31b0d3** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/NightInTheGuildLeadersHouse.cs:92` `NightInTheGuildLeadersHouse.RaiseTheHouse`  
   original: `R071+0x02A8` (1838:02A8, matched)  
   why: the original makes $ChosenOneName the least agile member's Agility value (party-stat-low's result), not the member; a value past the party names whatever lies there (from 25 on a piece of this card's .MSG file: TextVariables.OutsideName).
 - **B-37826f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S072/BeforeTheCityWalls.cs:29` `BeforeTheCityWalls.Run`  

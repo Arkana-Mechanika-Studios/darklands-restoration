@@ -17,9 +17,6 @@ public sealed class ThugsAtTheGuildhouse : Card
     private const int PoliticsQuest = 2;
     private const int FactKind = 0x1C;
 
-    /// <summary>The main loop stops at card 0x62.</summary>
-    private const int EndOfTheGameLoop = 0x62;
-
     public override int Number => 0x6B;
 
     public override int Run(CardContext c)
@@ -56,7 +53,7 @@ public sealed class ThugsAtTheGuildhouse : Card
     private static void LeaveThemBe(CardContext c)
     {
         c.PassHours(0);
-        c.Next = EndOfTheGameLoop;
+        c.Next = CardContext.EndOfCards;
     }
 
     private static int Fact(CardContext c, int type) => c.Events.FactValue(PoliticsQuest, type, c.Here);

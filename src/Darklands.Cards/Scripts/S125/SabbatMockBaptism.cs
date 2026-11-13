@@ -63,7 +63,7 @@ public sealed class SabbatMockBaptism : Card
             // orig: R125+0x088E / R125+0x0904 matched (the same as R125+0x05F6)
             new MenuLine(_ => TakeTheSoaking(c), assured),
             // orig: R125+0x093C / R125+0x095A matched
-            new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured));
+            new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = CardContext.EndOfCards; }, assured));
     }
 
     /// <summary>The surprised line scatters; the black-robed man's cap is taken.</summary>

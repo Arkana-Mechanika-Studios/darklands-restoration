@@ -78,7 +78,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
         {
             c.Screen.Text(0);
             c.PassHours(0);
-            c.Next = 0x62;
+            c.Next = CardContext.EndOfCards;
         };
         // The pop-up box of the saint line runs the item handler (as the original does).
         // DORMANT: in text block 2 the option lines 0, 1 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.

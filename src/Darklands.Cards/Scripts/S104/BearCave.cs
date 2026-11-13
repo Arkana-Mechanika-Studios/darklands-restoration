@@ -28,7 +28,7 @@ public sealed class BearCave : Card
         // C: locations[location-now] + 0x0C (the arrival card) only when not in the wilderness.
         if (c.State.Here is { } place)
         {
-            place.ArrivalCard = CardContext.ClosedCard;
+            place.ArrivalCard = CardContext.EndOfCards;
         }
         c.Next = Number;
         var menu = Menu(c, 0);

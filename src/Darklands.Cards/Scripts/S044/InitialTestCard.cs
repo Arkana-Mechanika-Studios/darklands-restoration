@@ -22,7 +22,7 @@ public sealed class InitialTestCard : Card
     public const int CardNumber = 0x00;
 
     private const int Picture = 2;   // image-file-names+0x0A4F
-    private const int CityEntry = 0x04, CityPreparingForWar = 0x73, OverlandMap = 0x0C, EndOfGame = 0x62;
+    private const int CityEntry = 0x04, CityPreparingForWar = 0x73, OverlandMap = 0x0C;
 
     public override int Number => CardNumber;
 
@@ -71,7 +71,7 @@ public sealed class InitialTestCard : Card
             new MenuLine(() => SetStanding(c, 0), OptionHint.Saying(SuccessAssured)),
             // orig: R044+0x050C (reputation-now = 0x63, text-slot-number-one = 0x63, place-assign(location-now, 0, 0x63)), hint R044+0x0526
             new MenuLine(() => SetStanding(c, 0x63), OptionHint.Saying(SuccessAssured)),
-            new MenuLine(() => { c.PassHours(0); c.Next = EndOfGame; }, OptionHint.Saying(SuccessAssured)));
+            new MenuLine(() => { c.PassHours(0); c.Next = CardContext.EndOfCards; }, OptionHint.Saying(SuccessAssured)));
     }
 
     /// <summary>The standing here as the card sees it ($Number1) and as the location keeps it; the card stays.</summary>

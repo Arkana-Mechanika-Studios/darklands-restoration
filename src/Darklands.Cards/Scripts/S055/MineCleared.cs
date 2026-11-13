@@ -13,7 +13,7 @@ public sealed class MineCleared : Card
 
     private const int RewardPicture = 132, DefeatPicture = 209;
 
-    private const int MineQuest = 0x0C, MineFact = 0x59, OverlandMap = 0x0C, CannotEnter = 0x62;
+    private const int MineQuest = 0x0C, MineFact = 0x59, OverlandMap = 0x0C;
 
     /// <summary>The ten minerals, in the order they are handed over.</summary>
     private static readonly int[] Minerals = [0x48, 0x4F, 0x49, 0x4D, 0x4E, 0x50, 0x57, 0x58, 0x59, 0x5A];
@@ -47,7 +47,7 @@ public sealed class MineCleared : Card
         // The mine is closed for good. DIVERGENCE: guard for a party that is not at a location.
         if (c.Here >= 0 && c.Here < c.State.Locations.Count)
         {
-            c.State.Locations[c.Here].ArrivalCard = CannotEnter;
+            c.State.Locations[c.Here].ArrivalCard = CardContext.EndOfCards;
         }
         return OverlandMap;
     }

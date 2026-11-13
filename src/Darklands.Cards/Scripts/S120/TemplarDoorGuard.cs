@@ -34,8 +34,6 @@ public sealed class TemplarDoorGuard : Card
 
     private const int Password = 0x134;
 
-    private const int UnusedLineCard = 0x62;
-
     public override int Run(CardContext c)
     {
         Show(c, Picture);
@@ -96,6 +94,6 @@ public sealed class TemplarDoorGuard : Card
     {
         c.Screen.Text(0);
         c.PassHours(0);
-        c.Next = UnusedLineCard;
+        c.Next = CardContext.EndOfCards;
     }
 }

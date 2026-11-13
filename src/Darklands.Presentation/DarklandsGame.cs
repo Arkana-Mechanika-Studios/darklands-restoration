@@ -639,7 +639,7 @@ public sealed class DarklandsGame
         if (state.Party.Members.All(m => m.Status == Core.Characters.CharacterStatus.Empty) || orders.Result == 5)
         {
             Cinematics.Death();
-            return CardDispatcher.EndOfGame;
+            return CardDispatcher.EndOfCards;
         }
         state.Party.EnsureAbleLeader();
         // C: cards-setup (thunk of R043+0x078E): the clock reseed, then world-read's city record and events (CardContext.RunBattle has the details).
@@ -774,7 +774,7 @@ public sealed class DarklandsGame
             while (true)
             {
                 var card = state.CurrentCard;
-                if (card is CardDispatcher.EndOfGame or CardDispatcher.QuitGame)
+                if (card is CardDispatcher.EndOfCards or CardDispatcher.QuitGame)
                 {
                     return;
                 }
