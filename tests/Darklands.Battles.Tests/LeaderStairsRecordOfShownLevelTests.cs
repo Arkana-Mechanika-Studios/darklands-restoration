@@ -25,7 +25,7 @@ public sealed class LeaderStairsRecordOfShownLevelTests
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
         var party = t.Battle.FloorShown;
         Assert.True(t.LevelCount >= 3);
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, Who]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Who]);
         var his = t.Battle[Who].Floor;
         Assert.NotEqual(party, his);
         var leader = t.Battle.Leader;

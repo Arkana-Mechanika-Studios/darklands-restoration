@@ -514,7 +514,7 @@ public sealed partial class TacticalBattle
             var (x, y, w, h) = Box(StairsAt + 14 * k);
             if (Inside(c.Position, x, y, w, h))
             {
-                c.StairsExit = k;
+                c.StairsToTake = k;
                 c.Flags |= TacticalFlags.OnStairs;
                 break;
             }
@@ -525,7 +525,7 @@ public sealed partial class TacticalBattle
             if (Battle.PartyFloor != Battle.FloorShown)
             {
                 Menus.Set(OrdersItem.UseStairs, 1);
-                c.StairsExit = c.StairsBack;
+                c.StairsToTake = c.StairsBack;
                 return;
             }
             Menus.Set(OrdersItem.UseStairs, (byte)((c.Flags & TacticalFlags.OnStairs) != 0 ? 1 : 2));

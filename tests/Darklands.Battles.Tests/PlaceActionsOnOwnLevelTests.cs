@@ -21,7 +21,7 @@ public sealed class PlaceActionsOnOwnLevelTests
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
         var party = t.Battle.FloorShown;
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, Lone]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
         var his = t.Battle[Lone].Floor;
         Assert.NotEqual(party, his);
         Assert.True(t.LevelAt(party).GetByte(DoorCountAt) > 0 && t.LevelAt(his).GetByte(DoorCountAt) > 0);

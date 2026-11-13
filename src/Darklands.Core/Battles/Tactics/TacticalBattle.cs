@@ -474,7 +474,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
             Battle[i].Door = Table(BattleVariables.MemberDoor);
             Battle[i].DoorOpens = Table(BattleVariables.MemberDoorOpens) != 0;
             Battle[i].DoorSide = Table(BattleVariables.MemberDoorSide);
-            Battle[i].StairsExit = Table(BattleVariables.MemberStairs);
+            Battle[i].StairsToTake = Table(BattleVariables.MemberStairs);
             Battle[i].Chest = Table(BattleVariables.MemberChest);
             Battle[i].DissolveSlot = Table(BattleVariables.MemberDissolveSlot);
             Battle[i].ExitZone = Table(BattleVariables.MemberExitZone);

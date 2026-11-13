@@ -366,7 +366,7 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>DS:C77D: the byte before the members' stairs-exit table (DS:C77E, <see cref="Combatant.StairsExit"/>); nothing reads it, only the original's out-of-range index (−1) reaches it, kept for faithfulness.</summary>
+    /// <summary>DS:C77D: the byte before the members' stairs-exit table (DS:C77E, <see cref="Combatant.StairsToTake"/>); nothing reads it, only the original's out-of-range index (−1) reaches it, kept for faithfulness.</summary>
     public byte StairsExitBeforeTable { get; set; }
 
     /// <summary>DS:C8B1: the byte before the members' stairs-back table (DS:C8B2, <see cref="Combatant.StairsBack"/>).</summary>
@@ -391,7 +391,7 @@ public sealed partial class TacticalBattle
                 {
                     if (selected >= 0)
                     {
-                        Battle[selected].StairsExit = Battle[selected].StairsBack;
+                        Battle[selected].StairsToTake = Battle[selected].StairsBack;
                     }
                     else if (!Battle.Behaviour.FixStairsKeyWithoutSelection)
                     {
@@ -420,7 +420,7 @@ public sealed partial class TacticalBattle
                 //   on another, the leader leaves through a record of a floor he is not on (GitHub issue 3: from Rotenburg level 3 to
                 //   level 1; past the count, whatever the generator left there) and the lone member stays. Only paused, with the member
                 //   selected, does U or Orders > Use Stairs bring the member back (the menu's Use Stairs is greyed while the battle runs).
-                TakeExit(leader.StairsBack, Battle.Leader);
+                TakeStairs(leader.StairsBack, Battle.Leader);
                 ShowAgainAfterFix(shownBefore, Battle.Leader);
             }
             return;
@@ -451,7 +451,7 @@ public sealed partial class TacticalBattle
         {
             if (MoveMode == 0)
             {
-                TakeExit(Battle[l].StairsExit, l);
+                TakeStairs(Battle[l].StairsToTake, l);
             }
             else
             {
@@ -463,7 +463,7 @@ public sealed partial class TacticalBattle
                     if (Battle[i].IsAble && !(Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[i].Floor != from))
                     {
                         // C: every member takes the LEADER's stairs record.
-                        TakeExit(Battle[l].StairsExit, i);
+                        TakeStairs(Battle[l].StairsToTake, i);
                     }
                 }
             }
@@ -611,7 +611,7 @@ public sealed partial class TacticalBattle
     private void TakeStairsOrder(int i)
     {
         var c = Battle[i];
-        if (StaleStairsRecord(i, c.StairsExit))
+        if (StaleStairsRecord(i, c.StairsToTake))
         {
             return;
         }
@@ -627,7 +627,7 @@ public sealed partial class TacticalBattle
         //   after Use Stairs, then Space: GitHub issue 3) takes that level's record n, past its count as a rule, whatever the generator
         //   left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the
         //   Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
-        TakeExit(c.StairsExit, i);
+        TakeStairs(c.StairsToTake, i);
         ShowAgainAfterFix(shownBefore, i);
     }
 
@@ -706,7 +706,7 @@ public sealed partial class TacticalBattle
     // DIVERGENCE: a record past the level image (n > 77, 0x2FB8 + 14 n beyond its 0x33FC bytes) would read what follows the image in
     //   segment 20A5; not reproduced (no caller gives such an n: the tables hold record numbers of up to the six slots, and 0xFF is tested
     //   before, R016+0x014E).
-    private void TakeExit(int stairsRecord, int who)
+    private void TakeStairs(int stairsRecord, int who)
     {
         if (stairsRecord < 0 || StairsAt + 14 * (stairsRecord + 1) > Level.Image.Length)
         {

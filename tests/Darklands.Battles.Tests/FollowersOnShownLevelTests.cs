@@ -22,7 +22,7 @@ public sealed class FollowersOnShownLevelTests
         var party = t.Battle.FloorShown;
         var enemy = Combatant.PartySlots;
         t.Battle[enemy].Status = Darklands.Core.Characters.CharacterStatus.Able;
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, Lone]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
         var other = t.Battle[Lone].Floor;
         Assert.NotEqual(party, other);
         // the arrival spot: the party's leader's place on the party's level

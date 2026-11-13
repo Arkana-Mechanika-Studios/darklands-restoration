@@ -78,7 +78,7 @@ public enum TacticalFlags : ushort
 {
     None = 0,
 
-    /// <summary>Stands on stairs (exit record in <see cref="Combatant.StairsExit"/>).</summary>
+    /// <summary>Stands on stairs (exit record in <see cref="Combatant.StairsToTake"/>).</summary>
     OnStairs = 0x01,
 
     /// <summary>Stands in a doorway.</summary>
@@ -261,7 +261,7 @@ public sealed partial class Combatant
     public int SpellPower { get; set; }
 
     /// <summary>DS:C77E / DS:C8B2: the stairs record it stands on / takes; DS:C64C door; DS:C784 chest; DS:C7FE exit zone; DS:C81C loot pile.</summary>
-    public int StairsExit { get; set; } = -1;
+    public int StairsToTake { get; set; } = -1;
 
     public int Door { get; set; } = -1;
 

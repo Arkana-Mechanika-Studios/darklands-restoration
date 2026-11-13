@@ -20,7 +20,7 @@ public sealed class LeaderKeysOnOtherLevelTests
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
         var party = t.Battle.FloorShown;
         var leader = t.Battle.Leader;
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, leader]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, leader]);
         var his = t.Battle[leader].Floor;
         Assert.NotEqual(party, his);
         Assert.Equal(party, t.Battle.FloorShown);
@@ -30,7 +30,7 @@ public sealed class LeaderKeysOnOtherLevelTests
         c.Position = new MapPoint(c.Position.X + 200, c.Position.Y + 100);
         var before = c.Position;
         t.PauseByte = 0;
-        c.StairsExit = 0;
+        c.StairsToTake = 0;
         t.Menus.Set(OrdersItem.UseStairs, 1);
         typeof(TacticalBattle).GetProperty("MoveMode", Any)!.SetValue(t, 0);
         t.UseKey(-1);

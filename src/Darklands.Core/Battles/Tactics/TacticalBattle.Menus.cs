@@ -79,7 +79,7 @@ public sealed partial class TacticalBattle
             m.Set(OrdersItem.Walk, 2);
             m.Set(OrdersItem.Flee, 2);
             m.Set(OrdersItem.Halt, 2);
-            c.StairsExit = c.StairsBack;
+            c.StairsToTake = c.StairsBack;
             return;
         }
         m.Set(OrdersItem.Walk, 1);

@@ -24,11 +24,11 @@ public sealed class StairsRecordOfShownLevelTests
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
         var party = t.Battle.FloorShown;
         Assert.True(t.Level.GetByte(StairsAt - 2) >= 1);
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, Who]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Who]);
         var c = t.Battle[Who];
         Assert.NotEqual(party, c.Floor);
         Assert.Equal(party, t.Battle.FloorShown);
-        c.StairsExit = c.StairsBack;
+        c.StairsToTake = c.StairsBack;
         c.Place = PlaceAction.Stairs;
         return (t, party, c.Floor, c.StairsBack);
     }

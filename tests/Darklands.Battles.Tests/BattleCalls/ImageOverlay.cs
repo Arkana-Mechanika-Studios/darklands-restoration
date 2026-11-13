@@ -98,7 +98,7 @@ internal static class ImageOverlay
         new("member door", 0xC64C, 1, 5, c => c.Door, (c, v) => c.Door = (sbyte)v),
         new("member door opens", 0xC678, 1, 5, c => c.DoorOpens ? 1 : 0, (c, v) => c.DoorOpens = v != 0),
         new("member door side", 0xC6EF, 1, 5, c => c.DoorSide, (c, v) => c.DoorSide = (sbyte)v),
-        new("member stairs", 0xC77E, 1, 5, c => c.StairsExit, (c, v) => c.StairsExit = (sbyte)v),
+        new("member stairs", 0xC77E, 1, 5, c => c.StairsToTake, (c, v) => c.StairsToTake = (sbyte)v),
         new("member chest", 0xC784, 1, 5, c => c.Chest, (c, v) => c.Chest = (sbyte)v),
         new("member dissolve", 0xC7CD, 1, 5, c => c.DissolveSlot, (c, v) => c.DissolveSlot = (sbyte)v),
         new("member exit zone", 0xC7FE, 1, 5, c => c.ExitZone, (c, v) => c.ExitZone = (sbyte)v),

@@ -102,7 +102,7 @@ public sealed partial class TacticalBattle
             v[BattleVariables.MemberDoor + i] = (byte)c.Door;
             v[BattleVariables.MemberDoorOpens + i] = Flag(c.DoorOpens);
             v[BattleVariables.MemberDoorSide + i] = (byte)c.DoorSide;
-            v[BattleVariables.MemberStairs + i] = (byte)c.StairsExit;
+            v[BattleVariables.MemberStairs + i] = (byte)c.StairsToTake;
             v[BattleVariables.MemberChest + i] = (byte)c.Chest;
             v[BattleVariables.MemberDissolveSlot + i] = (byte)c.DissolveSlot;
             v[BattleVariables.MemberExitZone + i] = (byte)c.ExitZone;
@@ -367,7 +367,7 @@ public sealed partial class TacticalBattle
             c.Door = (sbyte)v[BattleVariables.MemberDoor + i];
             c.DoorOpens = v[BattleVariables.MemberDoorOpens + i] != 0;
             c.DoorSide = (sbyte)v[BattleVariables.MemberDoorSide + i];
-            c.StairsExit = (sbyte)v[BattleVariables.MemberStairs + i];
+            c.StairsToTake = (sbyte)v[BattleVariables.MemberStairs + i];
             c.Chest = (sbyte)v[BattleVariables.MemberChest + i];
             c.DissolveSlot = (sbyte)v[BattleVariables.MemberDissolveSlot + i];
             c.ExitZone = (sbyte)v[BattleVariables.MemberExitZone + i];

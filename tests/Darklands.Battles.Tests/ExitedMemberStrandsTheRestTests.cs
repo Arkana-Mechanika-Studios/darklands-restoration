@@ -30,7 +30,7 @@ public sealed class ExitedMemberStrandsTheRestTests
         var others = able.Skip(1).ToArray();
         foreach (var i in others)
         {
-            typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, i]);
+            typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, i]);
         }
         var below = t.Battle[others[0]].Floor;
         Assert.NotEqual(party, below);
@@ -82,7 +82,7 @@ public sealed class ExitedMemberStrandsTheRestTests
         enemy.Floor = party;
         var able = Enumerable.Range(0, Combatant.PartySlots).Where(i => t.Battle[i].IsAble).ToArray();
         var lone = able[^1];
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, lone]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, lone]);
         Assert.NotEqual(party, t.Battle[lone].Floor);
         foreach (var i in able[..^1])
         {

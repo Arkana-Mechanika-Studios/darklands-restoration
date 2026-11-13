@@ -20,7 +20,7 @@ public sealed class StairsArrivalWithoutPlaceTests
     private static TacticalBattle UpAgain(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x0F, 4885, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var exit = typeof(TacticalBattle).GetMethod("TakeExit", Any)!;
+        var exit = typeof(TacticalBattle).GetMethod("TakeStairs", Any)!;
         exit.Invoke(t, [0, Who]);
         Assert.Equal(1, t.Battle[Who].Floor);
         Assert.Equal(new MapPoint(336, 280), t.Battle[Who].Position);

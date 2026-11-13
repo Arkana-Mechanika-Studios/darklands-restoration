@@ -35,7 +35,7 @@ public sealed class StairsRecordPastCountTests
         var to = (sbyte)level.GetByte(StairsAt + 6);
         var who = t.Battle.Leader;
         Assert.NotEqual(to, t.Battle[who].Floor);
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [count, who]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [count, who]);
         Assert.Equal(to, t.Battle[who].Floor);
     }
 }

@@ -186,7 +186,7 @@ public sealed class OriginalBugsOfTheKeysTests
     {
         t.LevelChanged = changed;
         var who = t.Battle.Leader;
-        typeof(TacticalBattle).GetMethod("TakeExit", Any)!.Invoke(t, [0, who]);
+        typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, who]);
     }
 
     /// <summary>R023+0x1618: the 0xFF written to the stairs record's +0x07 is saved by the level switch only when DS:D4E4 is set.</summary>
