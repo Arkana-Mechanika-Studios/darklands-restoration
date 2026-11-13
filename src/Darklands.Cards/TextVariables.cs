@@ -144,7 +144,7 @@ public static class TextVariables
             "His" => female ? "Her" : "His",
             "him" => female ? "her" : "him",
             "himself" => female ? "herself" : "himself",
-            "LeaderName" => party.Members.Count > 0 ? party.Leader.ShortName : "",   // DIVERGENCE: no party gives "" (the original reads party[leader])
+            "LeaderName" => party.Slots.Count > 0 ? party.Leader.ShortName : "",   // DIVERGENCE: no party gives "" (the original reads party[leader])
             "PlaceAttitude" => Standing(c),
             "Number1" => c.Variables.Numbers[0].ToString(System.Globalization.CultureInfo.InvariantCulture),
             "Number2" => c.Variables.Numbers[1].ToString(System.Globalization.CultureInfo.InvariantCulture),

@@ -207,18 +207,18 @@ public sealed class OriginalSaveTests
         // it; a slot of status 0 writes nothing and reads nothing, so the bench entry after it gets the record charactr.tmp holds for
         // member 3 (as it was written there) and the file says five records where four follow.
         var state = SampleGame();
-        var bench = DefaultParty.Create(seed: 78).Members[0];
+        var bench = DefaultParty.Create(seed: 78).Slots[0];
         state.Roster.Characters.Add(bench);
-        var stored = CharacterRecords.Write(state.Party.Members[3]);
-        state.Party.Members[3].Attributes[0]++;
-        state.Party.Members[1].Status = CharacterStatus.Empty;
+        var stored = CharacterRecords.Write(state.Party.Slots[3]);
+        state.Party.Slots[3].Attributes[0]++;
+        state.Party.Slots[1].Status = CharacterStatus.Empty;
         var sav = OriginalSaves.Write(state).Sav;
         byte[] Record(int k) => sav[(0x189 + k * SaveFile.CharacterSize)..(0x189 + (k + 1) * SaveFile.CharacterSize)];
         Assert.Equal(4, BitConverter.ToInt16(sav, 0xEF));
         Assert.Equal(5, BitConverter.ToInt16(sav, 0xF1));
-        Assert.Equal(CharacterRecords.Write(state.Party.Members[0]), Record(0));
-        Assert.Equal(CharacterRecords.Write(state.Party.Members[2]), Record(1));
-        Assert.Equal(CharacterRecords.Write(state.Party.Members[3]), Record(2));
+        Assert.Equal(CharacterRecords.Write(state.Party.Slots[0]), Record(0));
+        Assert.Equal(CharacterRecords.Write(state.Party.Slots[2]), Record(1));
+        Assert.Equal(CharacterRecords.Write(state.Party.Slots[3]), Record(2));
         Assert.Equal(stored, Record(3));
         // then the events: their count word follows the fourth record
         Assert.Equal(state.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 4 * SaveFile.CharacterSize));
@@ -231,11 +231,11 @@ public sealed class OriginalSaveTests
         // record is left out like any status-0 slot's (B-1cec30).
         var state = SampleGame();
         state.Behaviour = OriginalBehaviour.DataSafe;
-        state.Party.Members[3].Status = CharacterStatus.Empty;
+        state.Party.Slots[3].Status = CharacterStatus.Empty;
         var full = OriginalSaves.Write(state).Sav;
         Assert.Equal(4, BitConverter.ToInt16(full, 0xF1));
         var loaded = OriginalSaves.Read(full, OriginalSaves.Write(state).Bsv, "DKSAVE1.SAV", NoGameData.Instance).State;
-        Assert.Equal(3, loaded.Party.Members.Count);
+        Assert.Equal(3, loaded.Party.Slots.Count);
         var sav = OriginalSaves.Write(loaded).Sav;
         Assert.Equal(3, BitConverter.ToInt16(sav, 0xF3 + 3 * 2));
         Assert.Equal(4, BitConverter.ToInt16(sav, 0xF1));
@@ -248,13 +248,13 @@ public sealed class OriginalSaveTests
         // FixSaveWriterSkipsEmptySlots: every roster record is written, so the count is true and the loader's layout holds.
         var state = SampleGame();
         state.Behaviour = OriginalBehaviour.DataSafe;
-        var bench = DefaultParty.Create(seed: 78).Members[0];
+        var bench = DefaultParty.Create(seed: 78).Slots[0];
         state.Roster.Characters.Add(bench);
-        state.Party.Members[1].Status = CharacterStatus.Empty;
+        state.Party.Slots[1].Status = CharacterStatus.Empty;
         var sav = OriginalSaves.Write(state).Sav;
         byte[] Record(int k) => sav[(0x189 + k * SaveFile.CharacterSize)..(0x189 + (k + 1) * SaveFile.CharacterSize)];
         Assert.Equal(5, BitConverter.ToInt16(sav, 0xF1));
-        Assert.Equal(CharacterRecords.Write(state.Party.Members[1]), Record(1));
+        Assert.Equal(CharacterRecords.Write(state.Party.Slots[1]), Record(1));
         Assert.Equal(CharacterRecords.Write(bench), Record(4));
         Assert.Equal(state.Events.All().Count(), BitConverter.ToInt16(sav, 0x189 + 5 * SaveFile.CharacterSize));
 
@@ -265,7 +265,7 @@ public sealed class OriginalSaveTests
         Assert.Equal(state.Events.All().Count(), file.Events.Count);
         var loaded = OriginalSaves.Read(sav, OriginalSaves.Write(state).Bsv, "DKSAVE1.SAV", NoGameData.Instance).State;
         Assert.Equal(5, loaded.Roster.Characters.Count);
-        Assert.Equal(CharacterStatus.Empty, loaded.Party.Members[1].Status);
+        Assert.Equal(CharacterStatus.Empty, loaded.Party.Slots[1].Status);
     }
 
     [Fact]
@@ -310,9 +310,9 @@ public sealed class OriginalSaveTests
         var state = loaded.State;
         // the slot the load screen asks "picsshield.pic" for (OriginalBehaviour.FixLoadTwoSlotsOneRecord)
         Assert.Equal([1], loaded.SlotsWithoutRecord);
-        Assert.Equal(CharacterStatus.Empty, state.Party.Members[1].Status);
-        Assert.Equal(CharacterStatus.Able, state.Party.Members[0].Status);
-        state.Party.Members[0].Age = 70;
+        Assert.Equal(CharacterStatus.Empty, state.Party.Slots[1].Status);
+        Assert.Equal(CharacterStatus.Able, state.Party.Slots[0].Status);
+        state.Party.Slots[0].Age = 70;
 
         var bytes = OriginalSaves.Write(state).Sav;
         var written = SaveFile.Parse(bytes);
@@ -321,8 +321,8 @@ public sealed class OriginalSaveTests
         Assert.Equal(written.PartyIds[0], written.PartyIds[1]);
         Assert.Equal(count, written.Characters.Count);
         var again = OriginalSaves.Read(bytes, [], name, NoGameData.Instance).State;
-        Assert.Equal(70, again.Party.Members[0].Age);
-        Assert.Equal(CharacterStatus.Empty, again.Party.Members[1].Status);
+        Assert.Equal(70, again.Party.Slots[0].Age);
+        Assert.Equal(CharacterStatus.Empty, again.Party.Slots[1].Status);
     }
 
     private static int FirstDifference(byte[] a, byte[] b)
@@ -371,11 +371,11 @@ public sealed class OriginalSaveTests
         Assert.Equal(53, s.Events.All().Count());
         Assert.Equal(8, s.Roster.Characters.Count);
         Assert.Equal([4, 5, 6, 7, -1], s.Roster.PartySlots);
-        Assert.Equal(4, s.Party.Members.Count);
+        Assert.Equal(4, s.Party.Slots.Count);
         // The party's members are the roster's records of their slots.
         for (var slot = 0; slot < 4; slot++)
         {
-            Assert.Same(s.Roster.Characters[s.Roster.PartySlots[slot]], s.Party.Members[slot]);
+            Assert.Same(s.Roster.Characters[s.Roster.PartySlots[slot]], s.Party.Slots[slot]);
         }
         Assert.Equal(116, s.Battlefield.LastLocation);
         Assert.Equal(13, s.Battlefield.ClearedLevels);
@@ -505,10 +505,10 @@ public sealed class OriginalSaveTests
         Assert.Equal(state.Date, s.Date);
         Assert.Equal(state.Party.Purse, s.Party.Purse);
         Assert.Equal(state.Party.BankNotes, s.Party.BankNotes);
-        Assert.Equal(state.Party.Members.Select(m => m.Name), s.Party.Members.Select(m => m.Name));
-        Assert.Equal(state.Party.Members[2].Pack, s.Party.Members[2].Pack);
-        Assert.Equal(state.Party.Members[3].Saints.Order(), s.Party.Members[3].Saints.Order());
-        Assert.Equal(state.Party.Members[2].Formulas.Order(), s.Party.Members[2].Formulas.Order());
+        Assert.Equal(state.Party.Slots.Select(m => m.Name), s.Party.Slots.Select(m => m.Name));
+        Assert.Equal(state.Party.Slots[2].Pack, s.Party.Slots[2].Pack);
+        Assert.Equal(state.Party.Slots[3].Saints.Order(), s.Party.Slots[3].Saints.Order());
+        Assert.Equal(state.Party.Slots[2].Formulas.Order(), s.Party.Slots[2].Formulas.Order());
         Assert.Equal(17, s.Events[0]!.Value);
         Assert.Equal(5, s.Locations[0].Reputation);
         Assert.Equal(40, s.Locations[0].LocalValues[1]);
@@ -521,7 +521,7 @@ public sealed class OriginalSaveTests
     public void ARosterCharacterLeftAtAnInnStaysInTheFile()
     {
         var state = SampleGame();
-        var gunther = state.Party.Members[1];
+        var gunther = state.Party.Slots[1];
         gunther.Status = CharacterStatus.Empty;
         gunther.RosterLocation = 12;
         state.Roster.LeaveParty(1);
@@ -532,7 +532,7 @@ public sealed class OriginalSaveTests
         Assert.Equal(0, file.Characters[1][0x14]);
 
         var back = OriginalSaves.Read(file.ToBytes(), [], "x.sav", NoGameData.Instance).State;
-        Assert.Equal(CharacterStatus.Empty, back.Party.Members[1].Status);
+        Assert.Equal(CharacterStatus.Empty, back.Party.Slots[1].Status);
         Assert.Equal("Gunther Langer", back.Roster.Characters[1].Name);
     }
 
@@ -540,8 +540,8 @@ public sealed class OriginalSaveTests
     public void ALoadedSlotWithoutARecordStaysOffTheRosterAndAHirelingThereKeepsItsZeroQualities()
     {
         var state = SampleGame();
-        state.Party.Members[1].Status = CharacterStatus.Empty;
-        state.Party.Members[1].Image = "C00";
+        state.Party.Slots[1].Status = CharacterStatus.Empty;
+        state.Party.Slots[1].Image = "C00";
         state.Roster.LeaveParty(1);
         var sav = OriginalSaves.Write(state).Sav;
 
@@ -574,7 +574,7 @@ public sealed class OriginalSaveTests
         var back = OriginalSaves.Read(sav, [], "x.sav", NoGameData.Instance).State;
         Assert.Equal(order, back.MarchingOrder);
         // charactr.tmp's record of a member is the one read, not the member as he changes
-        var member = back.Party.Members[0];
+        var member = back.Party.Slots[0];
         Assert.Same(member, back.Roster.Characters[0]);
         member.Skills[0] = 99;
         Assert.NotEqual(99, back.Roster.StoredRecord(0).Skills[0]);

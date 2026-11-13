@@ -81,13 +81,13 @@ public sealed class BattleScreenTests
             Assert.Equal(4, Core.Rules.PartyRules.AddMember(s, "Wolf Bauer", "Wolf", "F01", 100, 1));
         });
         var b = tactics.Battle;
-        var member = state!.Party.Members[4];
+        var member = state!.Party.Slots[4];
         Assert.Equal(CharacterStatus.Able, b[4].Status);
         Assert.Equal(member.Attributes.Select(v => (sbyte)v), b[4].Attributes);
         Assert.NotEqual(new MapPoint(0, 0), b[4].Position);
         BattleSaveTests.Run(tactics, 120);
         var (sav, bsv) = BattleSaveTests.SaveInBattle(state, tactics);
-        var loaded = Persistence.OriginalSaves.Read(sav, bsv, "dksave1.sav", WorldData.Load(files)).State.Party.Members[4];
+        var loaded = Persistence.OriginalSaves.Read(sav, bsv, "dksave1.sav", WorldData.Load(files)).State.Party.Slots[4];
         var record = loaded.OriginalRecord!;
         // C: the record is the combatant record: where the hireling stands, and join-party-member's +0x1C (the slot) the battle keeps
         Assert.Equal(b[4].Position, new MapPoint((short)(record[4] | record[5] << 8), (short)(record[6] | record[7] << 8)));

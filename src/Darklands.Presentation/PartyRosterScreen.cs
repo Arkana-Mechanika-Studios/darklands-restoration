@@ -446,7 +446,7 @@ public sealed class PartyRosterScreen
         Screen.Draw(_back.Screen.Pixels, Canvas.Width, Canvas.Height, 0, 0);
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            if (_state.Party.Slot(i).IsPresent)
+            if (_state.Party.Slot(i).OccupiesSlot)
             {
                 PartyPanel.DrawFrame(Screen, _ui.Assets.CommonSprites, i, lit: _ui.PanelSelection[i]);
                 _panel.DrawRow(Screen, _state.Party, i);
@@ -515,7 +515,7 @@ public sealed class PartyRosterScreen
             CopyBack(0x0C, 0xA4, width, height);
             _preview = null;
         }
-        if (_state.Party.Slot(Party.MaxMembers - 1).IsPresent || InnRoster.PreviewSlotOfRow(_state, Menu) is var slot && slot < 0)
+        if (_state.Party.Slot(Party.MaxMembers - 1).OccupiesSlot || InnRoster.PreviewSlotOfRow(_state, Menu) is var slot && slot < 0)
         {
             return;
         }

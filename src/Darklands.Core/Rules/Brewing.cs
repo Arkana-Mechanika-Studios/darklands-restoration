@@ -126,10 +126,10 @@ public sealed class BrewingBench
     /// </summary>
     private void TakeFromParty(int code, int count)
     {
-        for (var k = 0; k < _s.Party.Members.Count; k++)
+        for (var k = 0; k < _s.Party.Slots.Count; k++)
         {
             var m = k == 0 ? Alchemist : k > Alchemist ? k : k - 1;
-            if (_s.Party.PresentMember(m) is not { } member)
+            if (_s.Party.OccupiedSlot(m) is not { } member)
             {
                 continue;
             }
@@ -208,7 +208,7 @@ public static class Brewing
         var stock = new int[256];
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            if (s.Party.PresentMember(i) is { } m)
+            if (s.Party.OccupiedSlot(i) is { } m)
             {
                 foreach (var st in m.Pack.Where(st => st.Code is >= BrewingBench.FirstIngredient and <= BrewingBench.LastIngredient))
                 {
@@ -229,9 +229,9 @@ public static class Brewing
     public static int[] IngredientsOnTheFormulaPage(GameState s)
     {
         var stock = new int[256];
-        for (var i = 0; i < s.Party.Members.Count; i++)
+        for (var i = 0; i < s.Party.Slots.Count; i++)
         {
-            foreach (var st in s.Party.Members[i].Pack.Where(st => st.Code is >= BrewingBench.FirstIngredient and <= BrewingBench.LastIngredient + 1))
+            foreach (var st in s.Party.Slots[i].Pack.Where(st => st.Code is >= BrewingBench.FirstIngredient and <= BrewingBench.LastIngredient + 1))
             {
                 stock[st.Code] += st.Count;
             }

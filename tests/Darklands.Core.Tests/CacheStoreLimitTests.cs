@@ -54,7 +54,7 @@ public sealed class CacheStoreLimitTests
         Assert.Equal(62, before[1]);
 
         var table = new StoreTable();
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         var stacks = pack.Stacks;
         Assert.False(Storing.CanPut(s, places[62], table, 0, 0));            // a 63rd store
         Assert.Equal(stacks, pack.Stacks);                                   // the item stays in the pack

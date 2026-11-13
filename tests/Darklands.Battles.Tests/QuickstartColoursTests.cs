@@ -12,7 +12,7 @@ public sealed class QuickstartColoursTests
         var party = DefaultParty.Create(1);
         for (var i = 0; i < 4; i++)
         {
-            Assert.Same(party.Members[i].ImagePalette, BattleScreen.PartyColours(party.Members[i].ImagePalette, i));
+            Assert.Same(party.Slots[i].ImagePalette, BattleScreen.PartyColours(party.Slots[i].ImagePalette, i));
         }
         var own = Enumerable.Repeat((byte)0x21, 24).ToArray();
         Assert.Same(own, BattleScreen.PartyColours(own, 2));

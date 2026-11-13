@@ -22,7 +22,7 @@ public sealed class TradingAndLootTests
         data.CityBytes[0x40] = (byte)citySize;
         data.CityBytes[0x56] = 17;
         data.CityBytes[0x62 + 1] = 25;
-        s.Party.Members[0][Attribute.Charisma] = 25;
+        s.Party.Slots[0][Attribute.Charisma] = 25;
         data.Items[10] = data.Items[10] with { Type = 10, Flags = 2, Value = 100, Quality = 25, Rarity = 3 };
         data.Items[11] = data.Items[11] with { Type = 11, Flags = 2, Value = 100, Quality = 25, TradeFlags = 0x80 };
         return s;
@@ -167,7 +167,7 @@ public sealed class TradingAndLootTests
     {
         var s = Make(location: -1);
         Assert.Equal(200, Trading.BuyPrice(s, Goods(s), 10));    // just 100 * 25 * 2 / 25
-        s.Party.Members[0][Attribute.Charisma] = 15;
+        s.Party.Slots[0][Attribute.Charisma] = 15;
         // + 200 * (25 - 15) / 100 = + 20
         Assert.Equal(220, Trading.BuyPrice(s, Goods(s), 10));
     }
@@ -179,7 +179,7 @@ public sealed class TradingAndLootTests
     public void BuyPriceDependsOnTheLeadersCharisma(int charisma, int expected)
     {
         var s = Make();
-        s.Party.Members[0][Attribute.Charisma] = charisma;
+        s.Party.Slots[0][Attribute.Charisma] = charisma;
         Assert.Equal(expected, Trading.BuyPrice(s, Goods(s), 10));
     }
 
@@ -188,7 +188,7 @@ public sealed class TradingAndLootTests
     {
         var s = Make();
         s.Party.LeaderIndex = 1;
-        s.Party.Members[1][Attribute.Charisma] = 15;
+        s.Party.Slots[1][Attribute.Charisma] = 15;
         Assert.Equal(202, Trading.BuyPrice(s, Goods(s), 10));
     }
 
@@ -278,9 +278,9 @@ public sealed class TradingAndLootTests
     public void SellPriceCharismaAndStandingAndWilderness()
     {
         var s = Make();
-        s.Party.Members[0][Attribute.Charisma] = 15;
+        s.Party.Slots[0][Attribute.Charisma] = 15;
         Assert.Equal(42, Trading.SellPrice(s, 10, 25));    // 46 + 46 * 10 / -100 = 46 - 4
-        s.Party.Members[0][Attribute.Charisma] = 25;
+        s.Party.Slots[0][Attribute.Charisma] = 25;
         s.Locations[5].Reputation = 50;                     // clamped to 75 / 100 = 0
         Assert.Equal(46, Trading.SellPrice(s, 10, 25));
         s.Locations[5].Reputation = -20;                    // -999 / 100 = -9; 46 * -9 / 100 = -4
@@ -485,10 +485,10 @@ public sealed class TradingAndLootTests
     {
         var s = Make();
         s.Party.Purse = Money.FromPfennigs(183);   // price is 184
-        var packBefore = s.Party.Members[0].Pack.ToList();
+        var packBefore = s.Party.Slots[0].Pack.ToList();
         Assert.Equal(-1, Trading.Buy(s, Goods(s), 0, 10));
         Assert.Equal(Money.FromPfennigs(183), s.Party.Purse);
-        Assert.Equal(packBefore, s.Party.Members[0].Pack);
+        Assert.Equal(packBefore, s.Party.Slots[0].Pack);
     }
 
     [Fact]
@@ -504,10 +504,10 @@ public sealed class TradingAndLootTests
 
         Assert.Equal(4, count);   // Gretchen carried 3 stacks
         Assert.Equal(1000 - 236, s.Party.Purse.TotalPfennigs);
-        Assert.Equal(new ItemStack(10, 10, 32, 1, 1), s.Party.Members[0].Pack[3]);
+        Assert.Equal(new ItemStack(10, 10, 32, 1, 1), s.Party.Slots[0].Pack[3]);
 
         Assert.Equal(4, Trading.Buy(s, shop, 0, 10));   // joins the stack
-        Assert.Equal(2, s.Party.Members[0].Pack[3].Count);
+        Assert.Equal(2, s.Party.Slots[0].Pack[3].Count);
         Assert.Equal(1000 - 2 * 236, s.Party.Purse.TotalPfennigs);
     }
 
@@ -524,7 +524,7 @@ public sealed class TradingAndLootTests
     public void SellRemovesOneItemAndPays()
     {
         var s = Make();
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         pack.Add(new ItemStack(10, 10, 25, 2, 1));
 
         Assert.Equal(4, Trading.Sell(s, 0, 3));
@@ -540,7 +540,7 @@ public sealed class TradingAndLootTests
     public void SellRefusesUntradableItemsAndSellsAStaleEntryPastTheEnd()
     {
         var s = Make();
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         pack.Add(new ItemStack(11, 11, 25, 1, 1));
         Assert.Equal(-1, Trading.Sell(s, 0, 3));
         Assert.Equal(4, pack.Count);
@@ -620,7 +620,7 @@ public sealed class TradingAndLootTests
         var store = new StoreTable();
         Assert.Equal(2, Storing.Put(s, store, 0, 0));      // Gretchen's item 5, quality 25, was a stack of one
         Assert.Equal([new StoredItem(5, 25, 1)], store);
-        Assert.Equal(2, s.Party.Members[0].Pack.Count);
+        Assert.Equal(2, s.Party.Slots[0].Pack.Count);
     }
 
     [Fact]
@@ -628,7 +628,7 @@ public sealed class TradingAndLootTests
     {
         var s = Make();
         var store = new StoreTable();
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         var stale = pack[3];                               // past Gretchen's three stacks: never written, the zero entry
         Assert.Equal(3, Storing.Put(s, store, 0, 3));      // item 0, quality 0 goes into the store
         Assert.Equal([new StoredItem(stale.Code & 0xFFF, stale.Quality, 1)], store);
@@ -642,11 +642,11 @@ public sealed class TradingAndLootTests
         var s = Make();
         var store = StoreTable.Of([new(7, 30, 2)]);
         Assert.Equal(4, Storing.Get(s, store, 0, 0));
-        Assert.Equal(new ItemStack(7, 7, 30, 1, 1), s.Party.Members[0].Pack[3]);
+        Assert.Equal(new ItemStack(7, 7, 30, 1, 1), s.Party.Slots[0].Pack[3]);
         Assert.Equal([new StoredItem(7, 30, 1)], store);
 
         Assert.Equal(4, Storing.Get(s, store, 0, 0));      // joins the stack
-        Assert.Equal(2, s.Party.Members[0].Pack[3].Count);
+        Assert.Equal(2, s.Party.Slots[0].Pack[3].Count);
         Assert.Empty(store);
     }
 
@@ -664,7 +664,7 @@ public sealed class TradingAndLootTests
         Assert.Equal([new StoredItem(9, 25, 1)], table);
         Assert.Equal(new StoredItem(8, 20, 1), table[1]);  // left by the first store
         Assert.Equal(4, Storing.Get(s, table, 0, 1));      // row 1 past the end: item 8 for Gretchen
-        Assert.Equal(8, s.Party.Members[0].Pack[3].Code);
+        Assert.Equal(8, s.Party.Slots[0].Pack[3].Code);
         Assert.Empty(table);                               // its count reached 0: stash-take shifts nothing and drops the count to 0
         Assert.Equal(new StoredItem(9, 25, 1), table[0]);  // item 9 is still in its entry, but the store now looks empty
     }
@@ -903,7 +903,7 @@ public sealed class TradingAndLootTests
 
         Inventory.AddWithQuality(s, 0, 5, 25);
         Inventory.AddWithQuality(s, 0, 5, 30);
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         LootSharing.Put(s, pile, 0, pack.FindIndex(i => i.Code == 5 && i.Quality == 25));
         Assert.Equal(2, pile[0].Count);
         LootSharing.Put(s, pile, 0, pack.FindIndex(i => i.Code == 5 && i.Quality == 30));
@@ -920,11 +920,11 @@ public sealed class TradingAndLootTests
     {
         var s = Make();
         var pile = Enumerable.Range(100, 45).Select(c => new ItemStack(c, c, 25, 1, 1)).ToList();
-        var before = s.Party.Members[0].Pack.Count;
+        var before = s.Party.Slots[0].Pack.Count;
         Assert.Equal(before - 1, LootSharing.Put(s, pile, 0, 0));
         Assert.Equal(45, pile.Count);
         Assert.DoesNotContain(pile, i => i.Code == 5);
-        Assert.Equal(before - 1, s.Party.Members[0].Pack.Count);
+        Assert.Equal(before - 1, s.Party.Slots[0].Pack.Count);
     }
 
     [Fact]
@@ -942,12 +942,12 @@ public sealed class TradingAndLootTests
         var s = Make();
         var pile = new List<ItemStack> { new(7, 7, 30, 2, 1) };
         Assert.Equal(4, LootSharing.Get(s, pile, 0, 0));
-        Assert.Equal(new ItemStack(7, 7, 30, 1, 1), s.Party.Members[0].Pack[3]);
+        Assert.Equal(new ItemStack(7, 7, 30, 1, 1), s.Party.Slots[0].Pack[3]);
         Assert.Equal(1, pile[0].Count);
 
         Assert.Equal(4, LootSharing.Get(s, pile, 0, 0));
         Assert.Empty(pile);
-        Assert.Equal(2, s.Party.Members[0].Pack[3].Count);
+        Assert.Equal(2, s.Party.Slots[0].Pack[3].Count);
 
         Assert.Equal(-1, LootSharing.Get(s, pile, 0, 0));
         Assert.Equal(-1, LootSharing.Get(s, [new ItemStack(7, 7, 30, 1, 1)], 0, -1));
@@ -957,13 +957,13 @@ public sealed class TradingAndLootTests
     public void DeadLeaderIsReplacedByTheFirstMemberNotDead()
     {
         var s = Make();
-        s.Party.Members[0].Status = CharacterStatus.Dead;
+        s.Party.Slots[0].Status = CharacterStatus.Dead;
         LootSharing.ReplaceFallenLeader(s);
         Assert.Equal(1, s.Party.LeaderIndex);
 
         var t = Make();
-        t.Party.Members[0].Status = CharacterStatus.Dead;
-        t.Party.Members[1].Status = CharacterStatus.Dead;
+        t.Party.Slots[0].Status = CharacterStatus.Dead;
+        t.Party.Slots[1].Status = CharacterStatus.Dead;
         LootSharing.ReplaceFallenLeader(t);
         Assert.Equal(2, t.Party.LeaderIndex);
     }
@@ -975,7 +975,7 @@ public sealed class TradingAndLootTests
         s.Party.LeaderIndex = 2;
         LootSharing.ReplaceFallenLeader(s);
         Assert.Equal(2, s.Party.LeaderIndex);
-        s.Party.Members[2].Status = CharacterStatus.Unconscious;
+        s.Party.Slots[2].Status = CharacterStatus.Unconscious;
         LootSharing.ReplaceFallenLeader(s);
         Assert.Equal(2, s.Party.LeaderIndex);
     }
@@ -985,7 +985,7 @@ public sealed class TradingAndLootTests
     {
         // the original tests the leader's slot instead of the candidate's
         var s = Make();
-        s.Party.Members[0].Status = CharacterStatus.Empty;
+        s.Party.Slots[0].Status = CharacterStatus.Empty;
         LootSharing.ReplaceFallenLeader(s);
         Assert.Equal(0, s.Party.LeaderIndex);
     }

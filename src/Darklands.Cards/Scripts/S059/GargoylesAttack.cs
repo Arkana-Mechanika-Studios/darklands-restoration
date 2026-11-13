@@ -159,7 +159,7 @@ public sealed class GargoylesAttack : Card
             if (c.Status(i) != CharacterStatus.Empty)
             {
                 // C: party[i]+0x60 (Virtue) -= roll-below(6), then raised to 0 if it is <= 0.
-                var skills = c.State.Party.Members[i].Skills;
+                var skills = c.State.Party.Slots[i].Skills;
                 skills[(int)Skill.Virtue] = Math.Max(0, skills[(int)Skill.Virtue] - c.Random(6));
             }
         }

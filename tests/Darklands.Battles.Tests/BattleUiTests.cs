@@ -119,7 +119,7 @@ public sealed class BattleUiTests
             first = first < 0 ? session!.Frames.Count : first;
             screens.Loot(items, money);
         });
-        session.State.Party.Members[3].Status = Darklands.Core.Characters.CharacterStatus.Dead;
+        session.State.Party.Slots[3].Status = Darklands.Core.Characters.CharacterStatus.Dead;
         Assert.Equal(0, session.Fight(steps));
         Assert.NotNull(column);
         var shown = session.Frames[first].Pixels;
@@ -886,8 +886,8 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.State.Party.Members[1].Status = Darklands.Core.Characters.CharacterStatus.Away;
-        run.State.Party.Members[2].Status = Darklands.Core.Characters.CharacterStatus.Dead;
+        run.State.Party.Slots[1].Status = Darklands.Core.Characters.CharacterStatus.Away;
+        run.State.Party.Slots[2].Status = Darklands.Core.Characters.CharacterStatus.Dead;
         run.Play("wait:10");
         var frame = run.LastFrame!;
         var text = new Darklands.Presentation.Graphics.TextPainter(run.Ui.Assets.Font(1));
@@ -898,7 +898,7 @@ public sealed class BattleUiTests
             draw(new Darklands.Presentation.Graphics.Canvas(shown));
             return shown.Pixels.AsSpan().SequenceEqual(frame);
         }
-        var name = run.State.Party.Members[0].ShortName;
+        var name = run.State.Party.Slots[0].ShortName;
         Assert.Contains(new byte[] { 0x0E, 0x0F, 7 }, c => Unchanged(canvas => text.Draw(canvas, 4, 2, name, c)));
         Assert.True(Unchanged(canvas => PartyPanel.DrawUnknownBars(canvas, text, 1)), "the away member's row has no question marks");
         // no letter for the away member: its row background at (6, 0x28 + 0x1F) is not overdrawn by a '-'
@@ -919,7 +919,7 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.State.Party.Members[2].Status = Darklands.Core.Characters.CharacterStatus.Dead;
+        run.State.Party.Slots[2].Status = Darklands.Core.Characters.CharacterStatus.Dead;
         run.Play("wait:10");
         var y = 2 * PartyPanel.RowHeight + 1;
         bool Unchanged(byte[] frame, Action<Darklands.Presentation.Graphics.Canvas> draw)
@@ -954,8 +954,8 @@ public sealed class BattleUiTests
             return;
         }
         using var run = new Session(files, Corridor);
-        run.State.Party.Members[2].Status = CharacterStatus.Dead;
-        run.State.Party.Members[3].Status = CharacterStatus.Away;
+        run.State.Party.Slots[2].Status = CharacterStatus.Dead;
+        run.State.Party.Slots[3].Status = CharacterStatus.Away;
         run.Play("wait:10");
         var frame = run.LastFrame!;
         var text = new Darklands.Presentation.Graphics.TextPainter(run.Ui.Assets.Font(1));
@@ -972,7 +972,7 @@ public sealed class BattleUiTests
         {
             var letter = run.Ui.BattleStatusLetter?.Invoke(i);
             Assert.NotNull(letter);
-            var name = run.State.Party.Members[i].ShortName;
+            var name = run.State.Party.Slots[i].ShortName;
             // the name's colour: yellow for the leader, grey for a member who is not the selected one, else white
             var own = colours.Where(c => Unchanged(canvas => text.Draw(canvas, 4, i * PartyPanel.RowHeight + 2, name, c))).ToList();
             Assert.Single(own);
@@ -987,7 +987,7 @@ public sealed class BattleUiTests
         Assert.Equal((byte)0x0E, seen[run.Screen.Tactics!.Battle.Leader]);
         Assert.Null(run.Ui.BattleStatusLetter?.Invoke(3));
         // the dead member (row 2) has a grey name
-        Assert.True(Unchanged(canvas => text.Draw(canvas, 4, 2 * PartyPanel.RowHeight + 2, run.State.Party.Members[2].ShortName, 7)), "the dead member's name is not grey");
+        Assert.True(Unchanged(canvas => text.Draw(canvas, 4, 2 * PartyPanel.RowHeight + 2, run.State.Party.Slots[2].ShortName, 7)), "the dead member's name is not grey");
     }
 
     /// <summary>

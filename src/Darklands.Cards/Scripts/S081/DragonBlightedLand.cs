@@ -174,7 +174,7 @@ public sealed class DragonBlightedLand : Card
             {
                 continue;
             }
-            var pack = c.State.Party.Members[m].Pack;
+            var pack = c.State.Party.Slots[m].Pack;
             for (var i = 0; i < pack.Count; i++)
             {
                 if (affected(pack[i].Type))
@@ -199,7 +199,7 @@ public sealed class DragonBlightedLand : Card
             {
                 continue;
             }
-            var pack = c.State.Party.Members[m].Pack;
+            var pack = c.State.Party.Slots[m].Pack;
             for (var i = 0; i < pack.Count; i++)
             {
                 if (pack[i].Type is > 0x99 or < 0x6D or >= 0x84)
@@ -306,7 +306,7 @@ public sealed class DragonBlightedLand : Card
                 {
                     continue;
                 }
-                var pack = c.State.Party.Members[m].Pack;
+                var pack = c.State.Party.Slots[m].Pack;
                 for (var i = 0; i < pack.Count; i++)
                 {
                     if (pack[i].Type == 0x6C)

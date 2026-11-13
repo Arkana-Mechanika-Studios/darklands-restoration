@@ -69,7 +69,7 @@ public sealed class CampStay
         ListTeachers();
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            if (s.Party.Slot(i).IsPresent)
+            if (s.Party.Slot(i).OccupiesSlot)
             {
                 Gain[i] = s.Party.Slot(i)[Skill.Healing] / 15;
             }
@@ -338,7 +338,7 @@ public sealed class CampStay
             _s.SavedCard = -1;
             for (var i = Party.MaxMembers - 1; i >= 0; i--)
             {
-                if (Member(i).IsPresent && Activity[i] == CampActivity.GuardCamp)
+                if (Member(i).OccupiesSlot && Activity[i] == CampActivity.GuardCamp)
                 {
                     _s.SavedCard = i;
                 }

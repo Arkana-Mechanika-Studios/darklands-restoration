@@ -560,7 +560,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     {
         var member = y / PartyPanel.RowHeight;
         var party = context().State.Party;
-        if (member < party.Members.Count && party.Members[member].IsPresent)
+        if (member < party.Slots.Count && party.Slots[member].OccupiesSlot)
         {
             context().Screens.CharacterSheet(member);
             if (refresh)

@@ -553,7 +553,7 @@ public sealed class CardOracleTests
         }
         // the original runs on that saved game as loaded: its character records keep the bytes the model does not
         // (the item records past the count, which item-keep-percent reads), as a loaded game's do
-        foreach (var character in state.Party.Members.Concat(state.Roster.Characters))
+        foreach (var character in state.Party.Slots.Concat(state.Roster.Characters))
         {
             character.OriginalRecord ??= Persistence.CharacterRecords.Write(character);
         }
@@ -822,8 +822,8 @@ public sealed class CardOracleTests
             && (d.End is null || (originalEnd ?? "").StartsWith(d.End, StringComparison.Ordinal))
             && (d.OriginalEnd is null || (originalEnd ?? "").Contains(d.OriginalEnd, StringComparison.Ordinal))
             && (!d.GuardNotAMember || CardOracleStates.FromKey(run.Split(' ')[1]).SavedCard is < -1 or > 4)
-            && (!d.LeaderAbsent || CardOracleStates.FromKey(run.Split(' ')[1]).Party is var party && !party.Leader.IsPresent)
+            && (!d.LeaderAbsent || CardOracleStates.FromKey(run.Split(' ')[1]).Party is var party && !party.Leader.OccupiesSlot)
             // a start with a party slot of status 0 is written short (R037+0x2ACE keeps the count, leaves the record out) and the original runs
             // on it as its loader reads it, out of step; the C# runs on the state itself: the two start states differ, not the cards
-            && (!d.ShortStart || CardOracleStates.FromKey(run.Split(' ')[1]).Party.Members.Any(m => m.Status == Core.Characters.CharacterStatus.Empty)));
+            && (!d.ShortStart || CardOracleStates.FromKey(run.Split(' ')[1]).Party.Slots.Any(m => m.Status == Core.Characters.CharacterStatus.Empty)));
 }

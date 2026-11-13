@@ -30,20 +30,20 @@ public sealed class DeleteMemberTests
         }
         var state = CardHarness.NewGame(seed: 5, location: 3);
         var party = state.Party;
-        while (party.Members.Count < Party.MaxMembers)
+        while (party.Slots.Count < Party.MaxMembers)
         {
-            party.Members.Add(new Character());
+            party.Slots.Add(new Character());
         }
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            party.Members[i].Status = (CharacterStatus)statuses[i];
+            party.Slots[i].Status = (CharacterStatus)statuses[i];
         }
         party.TrimToSize();
         party.LeaderIndex = leader;
         var c = new CardContext(state, CardHarness.World!, new ScriptedScreen(0));
         c.DeleteMember(who);
         Assert.Equal(leaderAfter, party.LeaderIndex);
-        Assert.Equal(sizeAfter, party.Members.Count);
+        Assert.Equal(sizeAfter, party.Slots.Count);
         Assert.Equal(CharacterStatus.Empty, party.Slot(who).Status);
     }
 }

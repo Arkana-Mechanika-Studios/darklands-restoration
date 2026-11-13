@@ -78,9 +78,9 @@ public static class TimePassage
         party.EnsureAbleLeader();
         // C: hour-now + hours >= 24 with the hour before the clock moves (pass-days has already moved the day).
         var newDay = state.Date.Hour + hours >= GameDate.HoursPerDay;
-        for (var i = 0; i < party.Members.Count; i++)
+        for (var i = 0; i < party.Slots.Count; i++)
         {
-            var member = party.Members[i];
+            var member = party.Slots[i];
             if (member.Status == CharacterStatus.Empty)
             {
                 continue;
@@ -100,13 +100,13 @@ public static class TimePassage
                 member[a] = Math.Min(member[a], MemberRules.AttributeCap(state, i, (int)a));
             }
         }
-        if (!party.Members.Any(m => m.IsPresent))
+        if (!party.Slots.Any(m => m.OccupiesSlot))
         {
             PartyPerished?.Invoke(state);
         }
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            if (!party.Slot(i).IsPresent && state.Events.Find(EventKinds.MemberTerm, i, -1, -1, -1, -1) is var term and not -1)
+            if (!party.Slot(i).OccupiesSlot && state.Events.Find(EventKinds.MemberTerm, i, -1, -1, -1, -1) is var term and not -1)
             {
                 state.Events.Free(term);
             }

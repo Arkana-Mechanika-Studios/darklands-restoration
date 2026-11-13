@@ -83,13 +83,13 @@ public sealed class CharacterRoster
         _offRoster.Clear();
         _secondSlots.Clear();
         Array.Fill(PartySlots, -1);
-        for (var slot = 0; slot < party.Members.Count && slot < PartySlots.Length; slot++)
+        for (var slot = 0; slot < party.Slots.Count && slot < PartySlots.Length; slot++)
         {
-            if (party.Members[slot].IsPresent)
+            if (party.Slots[slot].OccupiesSlot)
             {
                 PartySlots[slot] = Characters.Count;
-                Characters.Add(party.Members[slot]);
-                KeepStored(party.Members[slot], party.Members[slot].Copy());
+                Characters.Add(party.Slots[slot]);
+                KeepStored(party.Slots[slot], party.Slots[slot].Copy());
             }
         }
     }
@@ -108,14 +108,14 @@ public sealed class CharacterRoster
         {
             // C: ids[] is the five slots' whatever party-headcount is: a slot past it keeps its entry while it still holds that entry's record
             //   (a loaded slot of status 0 after the last occupied one).
-            var member = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
+            var member = slot < party.Slots.Count ? party.Slots[slot] : party.SpareRecord(slot);
             var entry = PartySlots[slot];
             if (member is not null && entry >= 0 && entry < Characters.Count
                 && (ReferenceEquals(Characters[entry], member) || (_secondSlots.TryGetValue(member, out var named) && named == entry)))
             {
                 continue;
             }
-            if (member is null || !member.IsPresent || _offRoster.Contains(member))
+            if (member is null || !member.OccupiesSlot || _offRoster.Contains(member))
             {
                 PartySlots[slot] = -1;
                 continue;

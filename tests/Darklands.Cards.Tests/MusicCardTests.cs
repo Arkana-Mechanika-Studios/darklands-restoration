@@ -86,7 +86,7 @@ public sealed class MusicCardTests
         context.Battle = (_, _, _) =>
         {
             requests.Add("battle");
-            foreach (var m in state.Party.Members)
+            foreach (var m in state.Party.Slots)
             {
                 m.Status = Core.Characters.CharacterStatus.Dead;
             }

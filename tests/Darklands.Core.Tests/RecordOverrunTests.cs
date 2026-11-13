@@ -14,7 +14,7 @@ public sealed class RecordOverrunTests
     private static GameState Game()
     {
         var s = TestGame.Create(seed: 0x13);
-        s.Party.Members[0].Image = "F01";
+        s.Party.Slots[0].Image = "F01";
         return s;
     }
 
@@ -36,7 +36,7 @@ public sealed class RecordOverrunTests
     public void RecordTwentyIsLeftAloneWithoutAFigureImageInSlotZero()
     {
         var s = Game();
-        s.Party.Members[0].Image = "";
+        s.Party.Slots[0].Image = "";
         Practice.PracticeSkill(s, RecordOverrun.PlaceRecord, (int)Skill.Stealth, 0, 10, 0);
         Assert.Null(s.BattleFile);
     }

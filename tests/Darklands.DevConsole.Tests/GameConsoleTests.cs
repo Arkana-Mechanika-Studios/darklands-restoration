@@ -155,11 +155,11 @@ public sealed class GameConsoleTests
     public void CharacterSetsAttributesRaisingTheMaximumAndSkills()
     {
         var (console, state) = Playing();
-        var m = state.Party.Members[0];
+        var m = state.Party.Slots[0];
         console.Execute($"character 1 str {m.Maximum(CharacterAttribute.Strength) + 5}");
         Assert.Equal(m.Maximum(CharacterAttribute.Strength), m[CharacterAttribute.Strength]);
         console.Execute("character all streetwise 40");
-        Assert.All(state.Party.Present, c => Assert.Equal(40, c[Skill.Streetwise]));
+        Assert.All(state.Party.Occupied, c => Assert.Equal(40, c[Skill.Streetwise]));
         console.Execute("character 1 edge 33");
         Assert.Equal(33, m[Skill.EdgedWeapons]);
         Assert.True(console.Execute("character 1 luck 3").IsError);
@@ -170,7 +170,7 @@ public sealed class GameConsoleTests
     public void HealRestoresEnduranceAndStrength()
     {
         var (console, state) = Playing();
-        var m = state.Party.Members[1];
+        var m = state.Party.Slots[1];
         m.Attributes[(int)CharacterAttribute.Endurance] = 1;
         console.Execute("heal 2");
         Assert.Equal(m.Maximum(CharacterAttribute.Endurance), m[CharacterAttribute.Endurance]);
@@ -181,9 +181,9 @@ public sealed class GameConsoleTests
     {
         var (console, state) = Playing();
         console.Execute("saint grant all 17");
-        Assert.All(state.Party.Present, c => Assert.Contains(17, c.Saints));
+        Assert.All(state.Party.Occupied, c => Assert.Contains(17, c.Saints));
         console.Execute("saint remove 1 17");
-        Assert.DoesNotContain(17, state.Party.Members[0].Saints);
+        Assert.DoesNotContain(17, state.Party.Slots[0].Saints);
     }
 
     [Fact]
@@ -191,9 +191,9 @@ public sealed class GameConsoleTests
     {
         var (console, state) = Playing();
         Assert.Contains(console.Execute("item find sword").Lines, l => l.Contains("Longsword", StringComparison.Ordinal));
-        var before = state.Party.Members[0].Pack.Count;
+        var before = state.Party.Slots[0].Pack.Count;
         console.Execute("item grant 1 3 30 2");
-        var stack = state.Party.Members[0].Pack[before];
+        var stack = state.Party.Slots[0].Pack[before];
         Assert.Equal((3, 30, 2, 2), (stack.Code, stack.Quality, stack.Count, stack.Weight));
     }
 

@@ -136,7 +136,7 @@ public sealed class CharacterCreationScreen
     // images and colours come from it either way (the same as the file's, see DefaultParty).
     private (List<Character> Characters, string[] SlotImages) ReadyMade(int partySeed)
     {
-        var stand = DefaultParty.Create(partySeed).Members;
+        var stand = DefaultParty.Create(partySeed).Slots;
         if (!_ui.Assets.Files.Exists("SAVES/DEFAULT"))
         {
             return ([.. stand], [.. stand.Select(m => m.Image), ""]);
@@ -553,7 +553,7 @@ public sealed class CharacterCreationScreen
         var party = new Party { LeaderIndex = _leader };
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            party.Members.Add(_roster.Member(i) ?? new Character { Status = CharacterStatus.Empty });
+            party.Slots.Add(_roster.Member(i) ?? new Character { Status = CharacterStatus.Empty });
         }
         return party;
     }

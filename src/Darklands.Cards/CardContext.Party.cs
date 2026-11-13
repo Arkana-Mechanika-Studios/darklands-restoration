@@ -17,7 +17,7 @@ public sealed partial class CardContext
     /// <summary>The number of slots in use (<c>party-headcount</c>).</summary>
     // orig: party-headcount DS:A67E
     // C: join-party-member sets party-headcount to the highest occupied slot + 1; here the length of the slot list.
-    public int PartySize => State.Party.Members.Count;
+    public int PartySize => State.Party.Slots.Count;
 
     /// <summary>A member's status (<c>party[who][0]</c>).</summary>
     public CharacterStatus Status(int who) => State.Party.Slot(who).Status;
@@ -434,7 +434,7 @@ public sealed partial class CardContext
         var battleSeed = PartyRules.BattleSeed(State, seed);
         var result = Battle?.Invoke(side, battleSeed, parameters) ?? 0;
         PartyRules.AfterBattle(State, DeleteMember);
-        if (!State.Party.Members.Any(m => m.IsPresent))
+        if (!State.Party.Slots.Any(m => m.OccupiesSlot))
         {
             AllDead?.Invoke();
         }

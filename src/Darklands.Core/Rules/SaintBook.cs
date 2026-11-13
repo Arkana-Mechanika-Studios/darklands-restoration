@@ -303,7 +303,7 @@ public static class SaintBook
     // orig: for (i = 0; i < 5; i++) if (party[i].status) { f41 = (f41 & 0xf) - 0x50; f10 = 0x5a; }
     private static readonly Boon FirewallForAll = (s, _, _) =>
     {
-        foreach (var m in s.Party.Present)
+        foreach (var m in s.Party.Occupied)
         {
             m.BattleCharms = (byte)(m.BattleCharms & 0x0F | 0xB0);
             m.CharmStrength = 90;
@@ -317,7 +317,7 @@ public static class SaintBook
     // C: St.Crispin's row has the BUG marker.
     private static readonly Boon MendArmor = (s, _, _) =>
     {
-        foreach (var m in s.Party.Present)
+        foreach (var m in s.Party.Occupied)
         {
             m.VitalArmor = m.VitalArmor with { Quality = (sbyte)(m.VitalArmor.Quality + 10) };
             m.LimbArmor = m.LimbArmor with { Quality = (sbyte)(m.LimbArmor.Quality + 10) };
@@ -357,9 +357,9 @@ public static class SaintBook
     private static readonly Boon VirtueForAllAtAPrice = (s, _, _) =>
     {
         var anyone = false;
-        for (var i = 0; i < s.Party.Members.Count; i++)
+        for (var i = 0; i < s.Party.Slots.Count; i++)
         {
-            if (s.Party.Members[i].IsPresent)
+            if (s.Party.Slots[i].OccupiesSlot)
             {
                 if (MemberRules.Skill(s, i, (int)Virtue) < 20)
                 {

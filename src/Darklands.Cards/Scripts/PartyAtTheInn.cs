@@ -51,7 +51,7 @@ public sealed class PartyAtTheInn : Card
         c.SetCardSaints();
 
         int menuBlock;
-        if (state.Party.Members.Count == 1)
+        if (state.Party.Slots.Count == 1)
         {
             ShowPicture(c, AlonePicture);
             menuBlock = 1;   // C: local-in-di = 1 is both the text block and (card-option-flag-1 = local-in-di) the option state "enabled"
@@ -129,7 +129,7 @@ public sealed class PartyAtTheInn : Card
     // C: party-here-total() is called twice (>= 3, then >= 4); no text in between changes the party, so one count serves.
     private static void TellThePact(CardContext c)
     {
-        var present = c.State.Party.Present.Count();
+        var present = c.State.Party.Occupied.Count();
         ShowPicture(c, 342);
         c.Screen.Text(2);
         ShowPicture(c, 343);

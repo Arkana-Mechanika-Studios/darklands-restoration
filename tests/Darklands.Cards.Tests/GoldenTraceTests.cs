@@ -427,9 +427,9 @@ public sealed class TracingScreen(int option, bool probe) : ICardScreen
     private static (int Member, int Slot)? PopupChoice(CardContext c, bool saints)
     {
         var list = saints ? c.CardSaints : c.CardItems;
-        for (var i = c.State.Party.Members.Count - 1; i >= 0; i--)
+        for (var i = c.State.Party.Slots.Count - 1; i >= 0; i--)
         {
-            if (c.State.Party.Members[i].Status is Core.Characters.CharacterStatus.Empty or Core.Characters.CharacterStatus.Away)
+            if (c.State.Party.Slots[i].Status is Core.Characters.CharacterStatus.Empty or Core.Characters.CharacterStatus.Away)
             {
                 continue;
             }

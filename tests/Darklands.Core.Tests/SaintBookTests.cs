@@ -60,7 +60,7 @@ public sealed class SaintBookTests
     public void StAgnesHelpsOnlyWithAnAbleWoman()
     {
         var s = TestGame.Create();
-        s.Party.Members[0].Status = CharacterStatus.Unconscious;
+        s.Party.Slots[0].Status = CharacterStatus.Unconscious;
         var before = ((Randomness.MscRandom)s.Random).State;
         SaintBook.Help(s, 1, Agnes);
         Assert.Empty(s.Events.All());
@@ -100,7 +100,7 @@ public sealed class SaintBookTests
     {
         const int giles = 58;
         var s = TestGame.Create();
-        var m = s.Party.Members[s.Party.Resolve(Who.Leader)];
+        var m = s.Party.Slots[s.Party.Resolve(Who.Leader)];
         m.Pack.Clear();
         m.Pack.Add(new ItemStack(3, 3, 30, 1, 4));            // a hand weapon (item 3, flags 1: edged), equipped
         m.Weapon = new EquippedItem(3, 30);
@@ -125,32 +125,32 @@ public sealed class SaintBookTests
         var s = TestGame.Create();
         SaintBook.Help(s, 1, Cosmas);
         SaintBook.Help(s, 2, Damian);
-        Assert.Contains(Damian, s.Party.Members[1].Saints);
-        Assert.Contains(Cosmas, s.Party.Members[2].Saints);
+        Assert.Contains(Damian, s.Party.Slots[1].Saints);
+        Assert.Contains(Cosmas, s.Party.Slots[2].Saints);
     }
 
     [Fact]
     public void StCrispinMendsEveryonesArmourInASignedByte()
     {
         var s = TestGame.Create();
-        s.Party.Members[0].VitalArmor = new EquippedItem(74, 120);
-        s.Party.Members[2].Status = CharacterStatus.Empty;
-        var limb = s.Party.Members[2].LimbArmor.Quality;
+        s.Party.Slots[0].VitalArmor = new EquippedItem(74, 120);
+        s.Party.Slots[2].Status = CharacterStatus.Empty;
+        var limb = s.Party.Slots[2].LimbArmor.Quality;
         SaintBook.Help(s, 0, Crispin);
-        Assert.Equal(-126, s.Party.Members[0].VitalArmor.Quality);
-        Assert.Equal(limb, s.Party.Members[2].LimbArmor.Quality);
-        Assert.Equal(35, s.Party.Members[3].LimbArmor.Quality);
+        Assert.Equal(-126, s.Party.Slots[0].VitalArmor.Quality);
+        Assert.Equal(limb, s.Party.Slots[2].LimbArmor.Quality);
+        Assert.Equal(35, s.Party.Slots[3].LimbArmor.Quality);
     }
 
     [Fact]
     public void StEdwardRaisesVirtueAndTakesAQuarterOfTheLow16BitsOfThePurse()
     {
         var s = TestGame.Create();
-        s.Party.Members[1][Skill.Virtue] = 3;
+        s.Party.Slots[1][Skill.Virtue] = 3;
         s.Party.Purse = new Money(300, 0, 0);   // 72000 pfennigs: 6464 in 16 bits, a quarter 1616
         SaintBook.Help(s, 0, Edward);
-        Assert.Equal(20, s.Party.Members[1][Skill.Virtue]);
-        Assert.Equal(52, s.Party.Members[3][Skill.Virtue]);
+        Assert.Equal(20, s.Party.Slots[1][Skill.Virtue]);
+        Assert.Equal(52, s.Party.Slots[3][Skill.Virtue]);
         Assert.Equal(72000 - 1616, s.Party.Purse.TotalPfennigs);
     }
 
@@ -158,7 +158,7 @@ public sealed class SaintBookTests
     public void StGilesOfPortugalCostsStrengthAndVirtueForGood()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[3];
+        var m = s.Party.Slots[3];
         var (strength, virtue) = (m[Attribute.Strength], m[Skill.Virtue]);
         SaintBook.Help(s, 3, GilesOfPortugal);
         Assert.Equal(strength - 1, m[Attribute.Strength]);
@@ -172,10 +172,10 @@ public sealed class SaintBookTests
         SaintBook.Help(s, 0, Matthew);
         Assert.InRange(s.FuggerStanding, 20, 39);
         Assert.InRange(s.MediciStanding, 20, 39);
-        s.Party.Members[1].BattleCharms = 0x13;
+        s.Party.Slots[1].BattleCharms = 0x13;
         SaintBook.Help(s, 0, Polycarp);
-        Assert.Equal(0xB3, s.Party.Members[1].BattleCharms);
-        Assert.Equal(90, s.Party.Members[1].CharmStrength);
+        Assert.Equal(0xB3, s.Party.Slots[1].BattleCharms);
+        Assert.Equal(90, s.Party.Slots[1].CharmStrength);
     }
 
     [Fact]

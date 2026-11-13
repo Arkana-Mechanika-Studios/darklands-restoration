@@ -92,7 +92,7 @@ public sealed class PanelSelectionTests
         }
         var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
         var state = Simulation.NewGame.Quickstart(WorldData.Load(files), 7);
-        Assert.True(state.Party.Members.Count >= 3);
+        Assert.True(state.Party.Slots.Count >= 3);
         var leader = state.Party.LeaderIndex;
         var chosen = leader == 1 ? 2 : 1;
         var other = Enumerable.Range(0, 3).First(i => i != leader && i != chosen);

@@ -30,9 +30,9 @@ public static class Practice
         if (who == Who.Everybody)
         {
             var limit = (mode == 1 ? percent * 15 : percent * 5) / 10;
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.Members[i].Status == CharacterStatus.Able && s.Random.Below(100) <= limit)
+                if (s.Party.Slots[i].Status == CharacterStatus.Able && s.Random.Below(100) <= limit)
                 {
                     MemberRules.AddSkill(s, i, skill, Gain(s, i, skill, level));
                 }

@@ -75,7 +75,7 @@ public sealed class CardFuzzTests
         {
             CardOracleStates.InMemorySaves[Id] = canonical;
             var state = CardOracleStates.FromKey($"S{Id}-O2");
-            Assert.Equal(CardOracleStates.FromBytes(canonical, 2).Party.Members.Count, state.Party.Members.Count);
+            Assert.Equal(CardOracleStates.FromBytes(canonical, 2).Party.Slots.Count, state.Party.Slots.Count);
             Assert.Equal(canonical, CardOracleStates.Export(state).Sav);
             // the run key's state atoms apply after the load as for any S key
             Assert.Equal(7u, ((MscRandom)CardOracleStates.FromKey($"S{Id}-Vrn7-O2").Random).State);

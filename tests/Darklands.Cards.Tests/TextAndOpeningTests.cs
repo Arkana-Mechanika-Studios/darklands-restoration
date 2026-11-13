@@ -233,7 +233,7 @@ public sealed class TextAndOpeningTests
             Assert.True(state.CurrentLocation is >= 0 and < NewGame.StartingCities);
             Assert.Equal(0x29, state.CurrentCard);
             Assert.Equal(414, state.Locations.Count);
-            Assert.Equal(4, state.Party.Members.Count);
+            Assert.Equal(4, state.Party.Slots.Count);
         }
     }
 }

@@ -193,7 +193,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     private int? MemberOf(int key)
     {
         var member = (key - Keys.F1) >> 8;
-        return member < state.Party.Members.Count && state.Party.Members[member].IsPresent ? member : null;
+        return member < state.Party.Slots.Count && state.Party.Slots[member].OccupiesSlot ? member : null;
     }
 
     // orig: root 0000:1080 draft - sound-start(2), the box, sound-start(3)
@@ -210,7 +210,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     private int? AbleMemberOf(int key)
     {
         var member = (key - Keys.CtrlF1) >> 8;
-        return member < state.Party.Members.Count && state.Party.Members[member].Status == CharacterStatus.Able ? member : null;
+        return member < state.Party.Slots.Count && state.Party.Slots[member].Status == CharacterStatus.Able ? member : null;
     }
 
     private void MakeLeader(int member)

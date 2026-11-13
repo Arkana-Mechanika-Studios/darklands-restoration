@@ -216,7 +216,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 // orig: R036+0x059F: the wait (R036+0x05AB), the member of the release's row; an empty slot returns at once
                 ui.WaitForButtonRelease();
                 var member = ry / PartyPanel.RowHeight;
-                if (!_state.Party.Slot(member).IsPresent)
+                if (!_state.Party.Slot(member).OccupiesSlot)
                 {
                     return false;
                 }
@@ -282,7 +282,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 return row < MenuLines.Length ? Keys.ForCharacter(MenuLines[row][0]) : Keys.None;
             case 3:
                 var member = (y - 0x2D) / 0x12;
-                return member < Party.MaxMembers && _state.Party.Slot(member).IsPresent ? Keys.ForCharacter((char)('1' + member)) : Keys.None;
+                return member < Party.MaxMembers && _state.Party.Slot(member).OccupiesSlot ? Keys.ForCharacter((char)('1' + member)) : Keys.None;
         }
         return Keys.None;
     }
@@ -305,7 +305,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         if (key is >= CtrlF1 and <= CtrlF1 + 0x400 && (key & 0xFF) == 0)
         {
             var m = (key >> 8) - (CtrlF1 >> 8);
-            if (m < _state.Party.Members.Count && _state.Party.Members[m].IsAble)
+            if (m < _state.Party.Slots.Count && _state.Party.Slots[m].IsAble)
             {
                 _state.Party.LeaderIndex = m;
                 panel.Draw(ui.Canvas, _state.Party);
@@ -395,7 +395,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                     _chosenMember = Party.MaxMembers;
                 }
             }
-            while (!_state.Party.Slot(_chosenMember).IsPresent);
+            while (!_state.Party.Slot(_chosenMember).OccupiesSlot);
         }
         else if (key == Keys.Down)
         {
@@ -403,7 +403,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             {
                 _chosenMember++;
             }
-            while (!_state.Party.Slot(_chosenMember % Party.MaxMembers).IsPresent);
+            while (!_state.Party.Slot(_chosenMember % Party.MaxMembers).OccupiesSlot);
             _chosenMember %= Party.MaxMembers;
         }
         else

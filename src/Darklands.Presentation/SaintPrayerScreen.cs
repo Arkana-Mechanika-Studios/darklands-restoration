@@ -170,7 +170,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 //   and the slots disagree, as in the original.
                 ui.WaitForButtonRelease();
                 var slot = Math.Clamp((ui.Mouse.Y - 142) / BoxRow, 0, 4);
-                if (slot < party.Members.Count && party.Members[slot].IsPresent)
+                if (slot < party.Slots.Count && party.Slots[slot].OccupiesSlot)
                 {
                     CloseMemberList();
                     return slot;
@@ -412,7 +412,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
 
     /// <summary>The member list's text: the present members' short names in slot order, one per line.</summary>
     // orig: R034+0x0E04 (the short name +0x3E of each record whose status byte DS:9C69 + 0x80 * slot is not 0; the last newline cut off)
-    public static string MemberListText(Party party) => string.Join('\n', party.Members.Where(m => m.IsPresent).Select(m => m.ShortName));
+    public static string MemberListText(Party party) => string.Join('\n', party.Slots.Where(m => m.OccupiesSlot).Select(m => m.ShortName));
 
     private void CloseMemberList()
     {

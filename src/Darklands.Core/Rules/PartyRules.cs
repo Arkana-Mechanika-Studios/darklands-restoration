@@ -19,14 +19,14 @@ public static class PartyRules
     public static int AddMember(GameState s, string name, string shortName, string image, int hours, int term)
     {
         var party = s.Party;
-        var slot = Enumerable.Range(0, Party.MaxMembers).FirstOrDefault(i => !party.Slot(i).IsPresent, -1);
+        var slot = Enumerable.Range(0, Party.MaxMembers).FirstOrDefault(i => !party.Slot(i).OccupiesSlot, -1);
         if (slot == -1)
         {
             return -1;
         }
         // C: the new member is written over the slot's record (a departed member's, a loaded slot's zeros): what join-party-member does not store
         // C: stays. A slot past the party keeps the record of the member who left it (party-leave / party-member-erase clear the status byte).
-        var before = slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot);
+        var before = slot < party.Slots.Count ? party.Slots[slot] : party.SpareRecord(slot);
         var m = new Character { Name = name, ShortName = shortName, Status = CharacterStatus.Able, Age = 25, Image = image };
         // C: R029+0x48B1 copies the argument at [bp+0xC] into member-shield-picture[slot] (DS:A668 + slot * 4, written back to charactr.tmp);
         // C: member-colours[slot] (R136+0x33FC) is not written: the member is drawn with, and the saved game (R037+0x2ACE) writes, the
@@ -59,12 +59,12 @@ public static class PartyRules
         record[0x4D] = 5;
         record[0x4E] = 4;
         m.OriginalRecord = record;
-        while (party.Members.Count <= slot)
+        while (party.Slots.Count <= slot)
         {
             // C: a slot between keeps its memory (a slot past the party that a card gave a status is not free)
-            party.Members.Add(party.Slot(party.Members.Count));
+            party.Slots.Add(party.Slot(party.Slots.Count));
         }
-        party.Members[slot] = m;
+        party.Slots[slot] = m;
         Inventory.AddWithQuality(s, slot, 0x2C, 10);
         Inventory.AddWithQuality(s, slot, 0x33, 15);
         Inventory.AddWithQuality(s, slot, 3, 15);
@@ -98,7 +98,7 @@ public static class PartyRules
     }
 
     private static IEnumerable<int> Away(GameState s) =>
-        Enumerable.Range(0, s.Party.Members.Count).Where(i => s.Party.Members[i].Status == CharacterStatus.Away).ToList();
+        Enumerable.Range(0, s.Party.Slots.Count).Where(i => s.Party.Slots[i].Status == CharacterStatus.Away).ToList();
 
     /// <summary>
     /// Members who went away are told of and leave (<c>party-report-absent</c>): a
@@ -156,9 +156,9 @@ public static class PartyRules
         slot = party.Resolve(slot);
         if (party.LeaderIndex == slot)
         {
-            for (var i = 0; i < party.Members.Count; i++)
+            for (var i = 0; i < party.Slots.Count; i++)
             {
-                if (party.Members[i].Status == CharacterStatus.Able && i != slot)
+                if (party.Slots[i].Status == CharacterStatus.Able && i != slot)
                 {
                     party.LeaderIndex = i;
                     break;
@@ -170,9 +170,9 @@ public static class PartyRules
         var entry = slot >= 0 && slot < s.Roster.PartySlots.Length ? s.Roster.PartySlots[slot] : -1;
         var stored = entry >= 0 && entry < s.Roster.Characters.Count ? s.Roster.StoredRecord(entry) : null;
         s.Roster.LeaveParty(slot);
-        if (slot >= 0 && slot < party.Members.Count)
+        if (slot >= 0 && slot < party.Slots.Count)
         {
-            var record = party.Members[slot];
+            var record = party.Slots[slot];
             if (record.Status != CharacterStatus.Away)
             {
                 record.Status = CharacterStatus.Empty;
@@ -181,7 +181,7 @@ public static class PartyRules
             // C: the slot's memory keeps the record's bytes (name, pack, formulas, saints) with status 0: a copy, apart from the roster's record.
             var residue = record.Copy();
             residue.Status = CharacterStatus.Empty;
-            party.Members[slot] = residue;
+            party.Slots[slot] = residue;
             s.Roster.MarkOffRoster(residue);
             // BUG: OriginalBehaviour.FixLeavingMemberRecordTail - the write-back is the 0x80-byte member record (combatants + p * 0x80 at
             //   the record's start, item count +0x7E included): the file's saints (+0x80), formulas (+0x94) and pack entries (+0xAA) stay
@@ -214,7 +214,7 @@ public static class PartyRules
         }
         s.Roster.PartySlots[slot] = character;
         var member = s.Roster.Characters[character];
-        if (party.Members.Any(m => ReferenceEquals(m, member)))
+        if (party.Slots.Any(m => ReferenceEquals(m, member)))
         {
             // C: a character already in the party is read into this slot too: the slot has its own copy of the record (from the file)
             member = s.Roster.StoredRecord(character).Copy();
@@ -226,7 +226,7 @@ public static class PartyRules
         // C: R037+0x3D91..0x3E16 read the record, saints, formulas and pack into the slot, R037+0x3E19 the status; member-shield-picture[slot]
         // C: (DS:A668, read back from the file's header) and member-colours[slot] (R136+0x33FC) are not written: the member takes the
         // C: figure the slot held.
-        if ((slot < party.Members.Count ? party.Members[slot] : party.SpareRecord(slot)) is { } figure)
+        if ((slot < party.Slots.Count ? party.Slots[slot] : party.SpareRecord(slot)) is { } figure)
         {
             member.Image = figure.Image;
             member.ImagePalette = [.. figure.ImagePalette];
@@ -240,12 +240,12 @@ public static class PartyRules
             member.Image = "";
             member.ImagePalette = new byte[member.ImagePalette.Length];
         }
-        while (party.Members.Count <= slot)
+        while (party.Slots.Count <= slot)
         {
             // C: a slot between keeps its memory (none in practice: every slot before the first free id holds a member)
-            party.Members.Add(party.Slot(party.Members.Count));
+            party.Slots.Add(party.Slot(party.Slots.Count));
         }
-        party.Members[slot] = member;
+        party.Slots[slot] = member;
         party.TrimToSize();
         return slot;
     }
@@ -257,7 +257,7 @@ public static class PartyRules
         var n = 0;
         foreach (var i in Away(s))
         {
-            s.Party.Members[i].Status = CharacterStatus.Able;
+            s.Party.Slots[i].Status = CharacterStatus.Able;
             Inventory.Lose(s, i);
             n++;
         }
@@ -293,13 +293,13 @@ public static class PartyRules
     {
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            if (i < s.Party.Members.Count && s.Party.Members[i].Status == CharacterStatus.Dead)
+            if (i < s.Party.Slots.Count && s.Party.Slots[i].Status == CharacterStatus.Dead)
             {
-                s.Party.Members[i].Status = CharacterStatus.Empty;
+                s.Party.Slots[i].Status = CharacterStatus.Empty;
                 delete(i);
             }
         }
-        foreach (var m in s.Party.Members)
+        foreach (var m in s.Party.Slots)
         {
             if (m.Status is not CharacterStatus.Empty and not CharacterStatus.Away)
             {

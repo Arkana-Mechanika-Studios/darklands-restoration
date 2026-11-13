@@ -49,15 +49,15 @@ public static class MemberRules
         who = s.Party.Resolve(who);
         if (who == Who.Everybody)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is not null)
+                if (s.Party.OccupiedSlot(i) is not null)
                 {
                     ChangeSkill(s, i, skill, change);
                 }
             }
         }
-        else if (s.Party.PresentMember(who) is not null)
+        else if (s.Party.OccupiedSlot(who) is not null)
         {
             ChangeSkill(s, who, skill, change);
         }
@@ -76,7 +76,7 @@ public static class MemberRules
 
     private static void ChangeSkill(GameState s, int member, int skill, int change)
     {
-        var m = s.Party.Members[member];
+        var m = s.Party.Slots[member];
         var before = m.Skills[skill];
         m.Skills[skill] = Math.Clamp(before + change, 0, 99);
         if (s.ReportSkillChanges)
@@ -144,7 +144,7 @@ public static class MemberRules
     {
         foreach (var i in Targets(s, who, presentOnly: false))
         {
-            var m = s.Party.Members[i];
+            var m = s.Party.Slots[i];
             m.Attributes[attribute] = Math.Min(Math.Clamp(value, 0, 99), AttributeCap(s, i, attribute));
         }
     }
@@ -155,7 +155,7 @@ public static class MemberRules
     {
         foreach (var i in Targets(s, who, presentOnly: true))
         {
-            var m = s.Party.Members[i];
+            var m = s.Party.Slots[i];
             var v = Math.Clamp(m.Attributes[attribute] + change, 1, 99);
             m.Attributes[attribute] = Math.Min(v, AttributeCap(s, i, attribute));
         }
@@ -176,7 +176,7 @@ public static class MemberRules
     {
         foreach (var i in Targets(s, who, presentOnly: true))
         {
-            var max = s.Party.Members[i].AttributeMaximums;
+            var max = s.Party.Slots[i].AttributeMaximums;
             max[attribute] = Math.Clamp(max[attribute] + change, 1, 99);
         }
     }
@@ -191,7 +191,7 @@ public static class MemberRules
     {
         foreach (var i in Targets(s, who, presentOnly: false))
         {
-            var m = s.Party.Members[i];
+            var m = s.Party.Slots[i];
             var a = m.Attributes[attribute];
             // BUG: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought
             // most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
@@ -208,15 +208,15 @@ public static class MemberRules
         who = s.Party.Resolve(who);
         if (who == Who.Everybody)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is not null)
+                if (s.Party.OccupiedSlot(i) is not null)
                 {
                     yield return i;
                 }
             }
         }
-        else if (who >= 0 && who < s.Party.Members.Count && (!presentOnly || s.Party.PresentMember(who) is not null))
+        else if (who >= 0 && who < s.Party.Slots.Count && (!presentOnly || s.Party.OccupiedSlot(who) is not null))
         {
             yield return who;
         }
@@ -292,9 +292,9 @@ public static class MemberRules
         who = s.Party.Resolve(who);
         if (who == Who.Everybody && s.Behaviour.FixWholePartyBoosts)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is not null)
+                if (s.Party.OccupiedSlot(i) is not null)
                 {
                     RaiseAttributeTemporarily(s, i, attribute, points, hours);
                 }
@@ -303,9 +303,9 @@ public static class MemberRules
         }
         if (who == Who.Everybody)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is null)
+                if (s.Party.OccupiedSlot(i) is null)
                 {
                     continue;
                 }
@@ -359,9 +359,9 @@ public static class MemberRules
         who = s.Party.Resolve(who);
         if (who == Who.Everybody && s.Behaviour.FixWholePartyBoosts)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is not null)
+                if (s.Party.OccupiedSlot(i) is not null)
                 {
                     RaiseSkillTemporarily(s, i, skill, points, hours);
                 }
@@ -369,9 +369,9 @@ public static class MemberRules
         }
         else if (who == Who.Everybody)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is null)
+                if (s.Party.OccupiedSlot(i) is null)
                 {
                     continue;
                 }
@@ -401,7 +401,7 @@ public static class MemberRules
     public static void RecordPotionBonus(GameState s, int who, int type, int value, int hours)
     {
         who = s.Party.Resolve(who);
-        var count = who == Who.Everybody ? s.Party.Present.Count() : 1;
+        var count = who == Who.Everybody ? s.Party.Occupied.Count() : 1;
         for (var k = 0; k < count; k++)
         {
             RecordBoost(s, who, EventKinds.PotionBonus, type, value, hours);
@@ -466,9 +466,9 @@ public static class MemberRules
     {
         if (who == Who.Everybody)
         {
-            for (var i = 0; i < s.Party.Members.Count; i++)
+            for (var i = 0; i < s.Party.Slots.Count; i++)
             {
-                if (s.Party.PresentMember(i) is not null)
+                if (s.Party.OccupiedSlot(i) is not null)
                 {
                     InjureOne(s, i, minStrength, minEndurance, multiplier);
                 }

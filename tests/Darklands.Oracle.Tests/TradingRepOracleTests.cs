@@ -69,7 +69,7 @@ public sealed class TradingRepOracleTests
         {
             var member = new Character { Status = CharacterStatus.Able };
             member[Core.Characters.Attribute.Charisma] = m == Int(i, "leader") ? Int(i, "charisma") : 0;
-            s.Party.Members.Add(member);
+            s.Party.Slots.Add(member);
         }
         s.Party.LeaderIndex = Int(i, "leader");
         s.Party.Fame = Int(i, "fame");

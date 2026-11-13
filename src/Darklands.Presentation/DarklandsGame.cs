@@ -469,7 +469,7 @@ public sealed class DarklandsGame
         }
         if (!state.Behaviour.FixLoadScreenEscape)
         {
-            foreach (var member in state.Party.Members)
+            foreach (var member in state.Party.Slots)
             {
                 member.Status = Core.Characters.CharacterStatus.Empty;
             }
@@ -617,7 +617,7 @@ public sealed class DarklandsGame
             state.ResumeBattle = false;
             orders.Flags &= 0xFE10;
         }
-        var members = state.Party.Members;
+        var members = state.Party.Slots;
         // orig: root 03A1:000A (matched per the byte match): party-member-erase-overlay-entry for each slot of status 3, before cards-setup
         // C: the dead are deleted first (slot by slot, highest first here because DeleteMember trims empty slots at the end).
         // BUG: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and
@@ -629,14 +629,14 @@ public sealed class DarklandsGame
                 context.DeleteMember(i);
             }
         }
-        foreach (var m in state.Party.Members)
+        foreach (var m in state.Party.Slots)
         {
             if (m.Status is not Core.Characters.CharacterStatus.Empty and not Core.Characters.CharacterStatus.Away)
             {
                 m.Status = Core.Characters.CharacterStatus.Able;
             }
         }
-        if (state.Party.Members.All(m => m.Status == Core.Characters.CharacterStatus.Empty) || orders.Result == 5)
+        if (state.Party.Slots.All(m => m.Status == Core.Characters.CharacterStatus.Empty) || orders.Result == 5)
         {
             Cinematics.Death();
             return CardDispatcher.EndOfCards;

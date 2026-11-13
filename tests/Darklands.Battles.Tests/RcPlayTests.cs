@@ -317,13 +317,13 @@ public sealed class RcPlayTests
             {
                 problems.Add($"{where}: purse {purse}");
             }
-            if (state.Party.Members.Count > Darklands.Core.Characters.Party.MaxMembers)
+            if (state.Party.Slots.Count > Darklands.Core.Characters.Party.MaxMembers)
             {
-                problems.Add($"{where}: {state.Party.Members.Count} members");
+                problems.Add($"{where}: {state.Party.Slots.Count} members");
             }
-            if (state.Party.Members.Count > 0 && state.Party.LeaderIndex >= state.Party.Members.Count)
+            if (state.Party.Slots.Count > 0 && state.Party.LeaderIndex >= state.Party.Slots.Count)
             {
-                problems.Add($"{where}: leader {state.Party.LeaderIndex} of {state.Party.Members.Count}");
+                problems.Add($"{where}: leader {state.Party.LeaderIndex} of {state.Party.Slots.Count}");
             }
             var date = state.Date;
             if (date.Hour is < 0 or >= 24 || date.Day is < 0 or > 31 || date.Month is < 0 or > 11)
@@ -468,12 +468,12 @@ public sealed class RcPlayTests
         var played = new SaveFolder(saves).Load("DKSAVE0.SAV", world).State;
         var expected = Darklands.Simulation.NewGame.Quickstart(world, 27, () => 27, 27);
         Assert.Equal(expected.CurrentLocation, played.CurrentLocation);
-        Assert.Equal(expected.Party.Members.Count, played.Party.Members.Count);
-        for (var i = 0; i < expected.Party.Members.Count; i++)
+        Assert.Equal(expected.Party.Slots.Count, played.Party.Slots.Count);
+        for (var i = 0; i < expected.Party.Slots.Count; i++)
         {
-            Assert.Equal(expected.Party.Members[i].Name, played.Party.Members[i].Name);
-            Assert.Equal(expected.Party.Members[i].Attributes, played.Party.Members[i].Attributes);
-            Assert.Equal(expected.Party.Members[i].Pack.Select(p => (p.Code, p.Count)), played.Party.Members[i].Pack.Select(p => (p.Code, p.Count)));
+            Assert.Equal(expected.Party.Slots[i].Name, played.Party.Slots[i].Name);
+            Assert.Equal(expected.Party.Slots[i].Attributes, played.Party.Slots[i].Attributes);
+            Assert.Equal(expected.Party.Slots[i].Pack.Select(p => (p.Code, p.Count)), played.Party.Slots[i].Pack.Select(p => (p.Code, p.Count)));
         }
     }
 

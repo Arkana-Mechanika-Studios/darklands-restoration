@@ -236,7 +236,7 @@ public sealed class RulesOracleTests
             {
                 m.Skills[k] = r[0x57 + k];
             }
-            s.Party.Members.Add(m);
+            s.Party.Slots.Add(m);
         }
         s.Party.LeaderIndex = Int(i, "leader");
         return (s, records);
@@ -246,7 +246,7 @@ public sealed class RulesOracleTests
     {
         for (var m = 0; m < records.Length; m++)
         {
-            var actual = values(s.Party.Members[m]);
+            var actual = values(s.Party.Slots[m]);
             for (var k = 0; k < actual.Length; k++)
             {
                 var linear = DataSegment * 16 + PartyRecords + 0x80 * m + offset + k;

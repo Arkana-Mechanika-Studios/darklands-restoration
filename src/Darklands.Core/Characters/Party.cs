@@ -7,9 +7,11 @@ public sealed class Party
 {
     public const int MaxMembers = 5;
 
-    public List<Character> Members { get; } = [];
+    /// <summary>The party slots in order (at most <see cref="MaxMembers"/>): a slot may hold an empty, dead or away record (see
+    /// <see cref="Character.OccupiesSlot"/>).</summary>
+    public List<Character> Slots { get; } = [];
 
-    /// <summary>Index of the leader in <see cref="Members"/>.</summary>
+    /// <summary>Index of the leader in <see cref="Slots"/>.</summary>
     public int LeaderIndex { get; set; }
 
     public Money Purse { get; set; }
@@ -21,26 +23,27 @@ public sealed class Party
     public int Seed { get; set; }
 
     /// <summary>
-    /// The leader's slot. The leader byte may name a slot past <see cref="Members"/>: a leader removed from the last slot while no
+    /// The leader's slot. The leader byte may name a slot past <see cref="Slots"/>: a leader removed from the last slot while no
     /// other member is able keeps the index (party-leave / party-member-erase); that slot's record is then the emptied one (<see cref="Slot"/>).
     /// </summary>
     // C: party[leader] reads the fixed five-slot table (DS:9C69), whatever party-headcount is.
-    public Character Leader => LeaderIndex >= 0 && LeaderIndex < Members.Count ? Members[LeaderIndex] : Slot(LeaderIndex);
+    public Character Leader => LeaderIndex >= 0 && LeaderIndex < Slots.Count ? Slots[LeaderIndex] : Slot(LeaderIndex);
 
-    public IEnumerable<Character> Able => Members.Where(m => m.IsAble);
+    public IEnumerable<Character> Able => Slots.Where(m => m.IsAble);
 
-    public IEnumerable<Character> Present => Members.Where(m => m.IsPresent);
+    /// <summary>The occupied slots: every member whose status is not empty (able, unconscious, dead or away alike).</summary>
+    public IEnumerable<Character> Occupied => Slots.Where(m => m.OccupiesSlot);
 
     /// <summary>Makes the first able member the leader if the current leader cannot lead.</summary>
     // orig: hours-elapse R029+0x255A (0E76:255A) matched; tests: EventLogTests
     // C: `if (party[leader][0] != 1)` takes the first status-1 slot of five; with none the leader stays.
     public void EnsureAbleLeader()
     {
-        if (Members.Count == 0 || Leader.IsAble)
+        if (Slots.Count == 0 || Leader.IsAble)
         {
             return;
         }
-        var able = Members.FindIndex(m => m.IsAble);
+        var able = Slots.FindIndex(m => m.IsAble);
         if (able >= 0)
         {
             LeaderIndex = able;
@@ -70,8 +73,8 @@ public sealed class Party
     public int Resolve(int who) => who == Who.Leader ? LeaderIndex : who;
 
     /// <summary>The member in slot <paramref name="index"/> when that slot is occupied (status not empty).</summary>
-    public Character? PresentMember(int index) =>
-        index >= 0 && index < Members.Count && Members[index].IsPresent ? Members[index] : null;
+    public Character? OccupiedSlot(int index) =>
+        index >= 0 && index < Slots.Count && Slots[index].OccupiesSlot ? Slots[index] : null;
 
     /// <summary>
     /// The member in slot <paramref name="index"/> (−1: the leader). A slot past the list is an
@@ -82,9 +85,9 @@ public sealed class Party
     {
         index = Resolve(index);
         Character m;
-        if (index >= 0 && index < Members.Count)
+        if (index >= 0 && index < Slots.Count)
         {
-            m = Members[index];
+            m = Slots[index];
         }
         else if (index >= 0 && index < MaxMembers)
         {
@@ -101,11 +104,11 @@ public sealed class Party
     private readonly Character?[] _spare = new Character?[MaxMembers];
 
     /// <summary>
-    /// The record a slot past <see cref="Members"/> still holds (a departed member's, or a loaded slot's), null if none was left there:
+    /// The record a slot past <see cref="Slots"/> still holds (a departed member's, or a loaded slot's), null if none was left there:
     /// party-leave and party-member-erase clear only the status byte, so the name, sex, figure and record bytes stay until a member takes the slot.
     /// </summary>
     // C: party DS:9C69 (the 0x80-byte records from DS:9C55, the status byte at +0x14); party-member-erase R037+0x3F30 writes the status byte and nothing else of the record
-    public Character? SpareRecord(int index) => index >= Members.Count && index < MaxMembers && _departed[index] ? _spare[index] : null;
+    public Character? SpareRecord(int index) => index >= Slots.Count && index < MaxMembers && _departed[index] ? _spare[index] : null;
 
     // the slots a member left (TrimToSize), as opposed to a slot only read past the party (Slot)
     private readonly bool[] _departed = new bool[MaxMembers];
@@ -118,11 +121,11 @@ public sealed class Party
     // C: party-leave / party-member-erase clear party[p][0] and recount party-headcount; the 0x80-byte record and the slot's tables stay.
     public void TrimToSize()
     {
-        while (Members.Count > 0 && !Members[^1].IsPresent)
+        while (Slots.Count > 0 && !Slots[^1].OccupiesSlot)
         {
-            _spare[Members.Count - 1] = Members[^1];
-            _departed[Members.Count - 1] = true;
-            Members.RemoveAt(Members.Count - 1);
+            _spare[Slots.Count - 1] = Slots[^1];
+            _departed[Slots.Count - 1] = true;
+            Slots.RemoveAt(Slots.Count - 1);
         }
     }
 

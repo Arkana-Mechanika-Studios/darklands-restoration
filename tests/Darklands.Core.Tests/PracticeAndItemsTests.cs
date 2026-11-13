@@ -16,7 +16,7 @@ public sealed class PracticeAndItemsTests
     {
         var s = TestGame.Create(seed: 12345);
         var twin = TestGame.Twin(s);
-        var before = s.Party.Members[2][Skill.Alchemy];   // Hans: 48
+        var before = s.Party.Slots[2][Skill.Alchemy];   // Hans: 48
 
         Practice.PracticeSkill(s, 2, Alchemy, 1, 10, 2);
 
@@ -27,7 +27,7 @@ public sealed class PracticeAndItemsTests
             var gain = 52 >= twin.Below(100) ? twin.Below(5) + 3 : 3;
             expected += gain;
         }
-        Assert.Equal(expected, s.Party.Members[2][Skill.Alchemy]);
+        Assert.Equal(expected, s.Party.Slots[2][Skill.Alchemy]);
         Assert.Equal(twin.State, ((Randomness.MscRandom)s.Random).State);
     }
 
@@ -42,9 +42,9 @@ public sealed class PracticeAndItemsTests
         const int trials = 4000;
         for (var k = 0; k < trials; k++)
         {
-            s.Party.Members[0].Skills[Alchemy] = 50;
+            s.Party.Slots[0].Skills[Alchemy] = 50;
             Practice.PracticeSkill(s, 0, Alchemy, mode, percent, 0);
-            if (s.Party.Members[0].Skills[Alchemy] > 50)
+            if (s.Party.Slots[0].Skills[Alchemy] > 50)
             {
                 improved++;
             }
@@ -57,9 +57,9 @@ public sealed class PracticeAndItemsTests
     public void WholePartyPracticeRollsForEachAbleMember()
     {
         var s = TestGame.Create(seed: 5);
-        s.Party.Members[1].Status = CharacterStatus.Unconscious;
+        s.Party.Slots[1].Status = CharacterStatus.Unconscious;
         var twin = TestGame.Twin(s);
-        var before = s.Party.Members.Select(m => m[Skill.Alchemy]).ToArray();
+        var before = s.Party.Slots.Select(m => m[Skill.Alchemy]).ToArray();
 
         Practice.PracticeSkill(s, Who.Everybody, Alchemy, 0, 20, 0);   // 20 x 0.5 = 10 %
 
@@ -70,16 +70,16 @@ public sealed class PracticeAndItemsTests
             {
                 expected += Math.Abs(100 - before[i]) >= twin.Below(100) ? twin.Below(3) + 1 : 1;
             }
-            Assert.Equal(expected, s.Party.Members[i][Skill.Alchemy]);
+            Assert.Equal(expected, s.Party.Slots[i][Skill.Alchemy]);
         }
-        Assert.Equal(before[1], s.Party.Members[1][Skill.Alchemy]);
+        Assert.Equal(before[1], s.Party.Slots[1][Skill.Alchemy]);
     }
 
     [Fact]
     public void ItemsStackUpToTwoHundredFiftyFive()
     {
         var s = TestGame.Create();
-        var hans = s.Party.Members[2];
+        var hans = s.Party.Slots[2];
         var stacks = hans.Pack.Count;
         Inventory.AddMany(s, 2, 50, 200);
         Inventory.AddMany(s, 2, 50, 55);
@@ -109,20 +109,20 @@ public sealed class PracticeAndItemsTests
     {
         var s = TestGame.Create();
         Inventory.Add(s, Who.Everybody, 60);
-        Assert.All(s.Party.Members, m => Assert.Single(m.Pack, st => st.Code == 60));
+        Assert.All(s.Party.Slots, m => Assert.Single(m.Pack, st => st.Code == 60));
         Inventory.Add(s, Who.Everybody, 60);
-        Assert.All(s.Party.Members, m => Assert.Equal(3, m.Pack.Where(st => st.Code == 60).Sum(st => st.Count)));
+        Assert.All(s.Party.Slots, m => Assert.Equal(3, m.Pack.Where(st => st.Code == 60).Sum(st => st.Count)));
 
         s.Behaviour.FixPartyItemsAddedTwice = true;
         Inventory.Add(s, Who.Everybody, 60);
-        Assert.All(s.Party.Members, m => Assert.Equal(4, m.Pack.Where(st => st.Code == 60).Sum(st => st.Count)));
+        Assert.All(s.Party.Slots, m => Assert.Equal(4, m.Pack.Where(st => st.Code == 60).Sum(st => st.Count)));
     }
 
     [Fact]
     public void KeepingItemsStartsOnePastTheLastStack()
     {
         var s = TestGame.Create(seed: 1);
-        var gretchen = s.Party.Members[0];
+        var gretchen = s.Party.Slots[0];
         var codes = gretchen.Pack.Select(st => st.Code).ToList();   // three stacks
         var twin = TestGame.Twin(s);
 
@@ -144,7 +144,7 @@ public sealed class PracticeAndItemsTests
     public void TakingTheLastEquippedItemUnequipsIt()
     {
         var s = TestGame.Create();
-        var gretchen = s.Party.Members[0];
+        var gretchen = s.Party.Slots[0];
         gretchen.Pack.Clear();
         gretchen.Pack.Add(new ItemStack(3, 3, 25, 1, 4));
         gretchen.Weapon = new EquippedItem(3, 25);
@@ -159,7 +159,7 @@ public sealed class PracticeAndItemsTests
     public void HasItemAlsoMeansKnowingTheFormula()
     {
         var s = TestGame.Create();
-        s.Party.Members[0].Formulas.Add(31);           // Gretchen: potion group 10
+        s.Party.Slots[0].Formulas.Add(31);           // Gretchen: potion group 10
         Assert.Equal(2, Inventory.Has(s, 0, Potions.FirstPotion + 10));
         Assert.Equal(0, Inventory.Has(s, 0, Potions.FirstPotion + 11));
         // a lower code reads the previous member's table: member 1, code 0x5F - 22 + 10 -> Gretchen's group 10
@@ -184,7 +184,7 @@ public sealed class PracticeAndItemsTests
     public void SaintChancesFollowTheTable()
     {
         var s = TestGame.Create();
-        var ebhard = s.Party.Members[3];            // Virtue 52, Divine Favor 99
+        var ebhard = s.Party.Slots[3];            // Virtue 52, Divine Favor 99
         var t = SaintTable.Of(0);                   // 335, 2, 15, 99, 43, 25
         Assert.Equal((52 - 43) / 2 + 25, Saints.ChanceLow(s, 3, 0));
         Assert.Equal((52 - 43) / 2 - t.MinFavor + 25 + 99, Saints.ChanceHigh(s, 3, 0));
@@ -201,7 +201,7 @@ public sealed class PracticeAndItemsTests
     {
         var s = TestGame.Create();
         Assert.True(Saints.ChanceLow(s, 3, SaintTable.NeedsAWoman) > 0);
-        s.Party.Members[0].Status = CharacterStatus.Unconscious;
+        s.Party.Slots[0].Status = CharacterStatus.Unconscious;
         Assert.Equal(0, Saints.ChanceLow(s, 3, SaintTable.NeedsAWoman));
     }
 
@@ -218,7 +218,7 @@ public sealed class PracticeAndItemsTests
         TimePassage.Advance(s, 5);
 
         Assert.Contains("Alchemy Success", messages.Lines);
-        var potion = Assert.Single(s.Party.Members[2].Pack, st => st.Code == TestGame.Potion);
+        var potion = Assert.Single(s.Party.Slots[2].Pack, st => st.Code == TestGame.Potion);
         Assert.Equal((0x90, 25, 3, 1), (potion.Type, potion.Quality, potion.Count, potion.Weight));
 
         s.Events.Create(2, 5, 3, 0x50, formula, -1, (int)ExpiryHandler.AlchemyResult, 5, 1, 0);
@@ -232,7 +232,7 @@ public sealed class PracticeAndItemsTests
         var s = TestGame.Create();
         var slot = PartyRules.AddMember(s, "Wolf Bauer", "Wolf", "F01", 10, 3);
         Assert.Equal(4, slot);
-        Assert.Equal(3, s.Party.Members[4].Pack.Count);
+        Assert.Equal(3, s.Party.Slots[4].Pack.Count);
         Assert.Equal(1, s.Events.Count(EventKinds.MemberTerm));
 
         TimePassage.Advance(s, 10);
@@ -261,14 +261,14 @@ public sealed class PracticeAndItemsTests
         var s = TestGame.Create();
         s.Date = new GameDate(12, 30, 5, 1402);          // 30 June; the next day is 1 July (month 6)
         var birthday = (7 + 6) % 12;                      // seed 7: member (seed + month) mod 12
-        var ages = s.Party.Members.Select(m => m.Age).ToArray();
+        var ages = s.Party.Slots.Select(m => m.Age).ToArray();
         s.Locations[300].Icon = Icons.WitchSabbat;
 
         TimePassage.Advance(s, 24);
 
         Assert.Equal(6, s.Date.Month);
         ages[birthday]++;                                 // Gunther
-        Assert.Equal(ages, s.Party.Members.Select(m => m.Age));
+        Assert.Equal(ages, s.Party.Slots.Select(m => m.Age));
         Assert.True(s.Events.QuestExists(Quests.Sabbat));
         Assert.Equal(300, Quests.SabbatSite(s));
     }
@@ -279,8 +279,8 @@ public sealed class PracticeAndItemsTests
         var s = TestGame.Create();
         s.Party.Seed = 2;                                  // month 0 (January as 12): (2 + 12) mod 12 = 2
         MonthlyUpdate.Run(s, 12);
-        Assert.Equal(41, s.Party.Members[2].Age);
-        Assert.Equal(35, s.Party.Members[0].Age);
+        Assert.Equal(41, s.Party.Slots[2].Age);
+        Assert.Equal(35, s.Party.Slots[0].Age);
     }
 
     [Fact]

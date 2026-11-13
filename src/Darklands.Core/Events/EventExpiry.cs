@@ -62,7 +62,7 @@ public static class EventExpiry
                 break;
             // orig: event-expiry-notice R029+0x4442: party[type0][0] != 0 (any status but empty).
             case ExpiryHandler.MemberTermEnds:
-                if (s.Party.PresentMember(e.Type) is not null)
+                if (s.Party.OccupiedSlot(e.Type) is not null)
                 {
                     s.Events.Create(-2, s.CurrentLocation, 0, EventKinds.MemberLeft, e.Type, e.Type, 0, EventLog.UntilEndOf1499, 0, 0);
                 }
@@ -148,7 +148,7 @@ public static class EventExpiry
     public static void UndoBoost(GameState s, TimedEvent e)
     {
         s.ReportSkillChanges = true;
-        if (e.Owner == Who.Everybody ? !s.Behaviour.FixEverybodyBoostsUndone : s.Party.PresentMember(e.Owner) is null)
+        if (e.Owner == Who.Everybody ? !s.Behaviour.FixEverybodyBoostsUndone : s.Party.OccupiedSlot(e.Owner) is null)
         {
             return;
         }

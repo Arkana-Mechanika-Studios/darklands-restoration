@@ -299,7 +299,7 @@ public sealed class Monastery_CityM00 : Card
         last.Value = 0;
         for (var slot = 0; slot < c.PartySize; slot++)
         {
-            var m = c.State.Party.Members[slot];
+            var m = c.State.Party.Slots[slot];
             if (m.Status == CharacterStatus.Empty)
             {
                 continue;

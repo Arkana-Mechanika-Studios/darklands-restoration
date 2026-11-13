@@ -219,7 +219,7 @@ public sealed class CardOracleStates
 
     private static void Apply(Core.GameState state, string variant, int option)
     {
-        var members = state.Party.Members;
+        var members = state.Party.Slots;
         if (variant.Length > 1 && variant[0] == 's' && variant[1..].All(char.IsAsciiDigit))
         {
             // a sweep seed (DARKLANDS_CARD_ORACLE_SEEDS): the random generator starts from another state than option + 7

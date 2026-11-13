@@ -209,7 +209,7 @@ internal static class Adapters
     /// </summary>
     private static int? CampWatch(WorldCallsTests.Context c)
     {
-        var members = c.State.Party.Members.Count;
+        var members = c.State.Party.Slots.Count;
         var buffer = new Simulation.Overland.CellBuffer(c.Map);
         if (!c.Job.Ds.ContainsKey(0x2866.ToString()) || !c.Job.Ds.ContainsKey(0x286A.ToString()))
         {

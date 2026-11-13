@@ -71,7 +71,7 @@ public sealed class DamagedSaveTests
     {
         var state = OriginalSaveTests.SampleGame();
         Assert.False(SaveFile.RunsPastTheEnd(OriginalSaves.Write(state).Sav));
-        state.Party.Members[1].Status = CharacterStatus.Empty;
+        state.Party.Slots[1].Status = CharacterStatus.Empty;
         state.Behaviour = Core.OriginalBehaviour.DataSafe;
         Assert.False(SaveFile.RunsPastTheEnd(OriginalSaves.Write(state).Sav));
     }

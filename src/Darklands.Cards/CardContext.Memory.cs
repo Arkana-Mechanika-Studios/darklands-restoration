@@ -160,16 +160,16 @@ public sealed partial class CardContext
         {
             return;
         }
-        var member = who < party.Members.Count;
+        var member = who < party.Slots.Count;
         if (member)
         {
-            party.Members[who].Status = Core.Characters.CharacterStatus.Empty;
+            party.Slots[who].Status = Core.Characters.CharacterStatus.Empty;
             // C: R037+0x4048(ids[p]) removes the character's record from charactr.tmp.
-            State.Roster.Forget(party.Members[who]);
+            State.Roster.Forget(party.Slots[who]);
         }
         if (party.LeaderIndex == who)
         {
-            var able = party.Members.FindIndex(m => m.Status == Core.Characters.CharacterStatus.Able);
+            var able = party.Slots.FindIndex(m => m.Status == Core.Characters.CharacterStatus.Able);
             if (able >= 0)
             {
                 party.LeaderIndex = able;

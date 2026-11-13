@@ -19,8 +19,8 @@ public sealed class MemberRulesTests
         MemberRules.AddSkill(s, 0, Religion, 200);
         MemberRules.AddSkill(s, 1, Religion, -200);
 
-        Assert.Equal(99, s.Party.Members[0][Skill.Religion]);
-        Assert.Equal(0, s.Party.Members[1][Skill.Religion]);
+        Assert.Equal(99, s.Party.Slots[0][Skill.Religion]);
+        Assert.Equal(0, s.Party.Slots[1][Skill.Religion]);
         Assert.Equal(["0: Religion changed from 13 to 99", "1: Religion changed from 9 to 0"], messages.Lines);
     }
 
@@ -28,10 +28,10 @@ public sealed class MemberRulesTests
     public void EverybodyMeansEveryPresentMember()
     {
         var s = TestGame.Create();
-        s.Party.Members[2].Status = CharacterStatus.Empty;
+        s.Party.Slots[2].Status = CharacterStatus.Empty;
         MemberRules.AddSkill(s, Who.Everybody, Religion, 5);
 
-        Assert.Equal([18, 14, 10, 45], s.Party.Members.Select(m => m[Skill.Religion]));
+        Assert.Equal([18, 14, 10, 45], s.Party.Slots.Select(m => m[Skill.Religion]));
     }
 
     [Fact]
@@ -39,17 +39,17 @@ public sealed class MemberRulesTests
     {
         var s = TestGame.Create();
         MemberRules.AddAttribute(s, 0, Str, 20);
-        Assert.Equal(30, s.Party.Members[0][Attribute.Strength]);   // the maximum
+        Assert.Equal(30, s.Party.Slots[0][Attribute.Strength]);   // the maximum
 
         s.Events.Create(0, 5, 0x63, EventKinds.AttributeBoost, Str, 6, 6, 24, 1, 0);
         s.Events.Create(0, 5, 0x63, EventKinds.AttributeBoost, Str, 4, 6, 24, 1, 0);
         MemberRules.AddAttribute(s, 0, Str, 20);
-        Assert.Equal(36, s.Party.Members[0][Attribute.Strength]);   // + the largest boost
+        Assert.Equal(36, s.Party.Slots[0][Attribute.Strength]);   // + the largest boost
 
         MemberRules.AddAttribute(s, 0, Str, -100);
-        Assert.Equal(1, s.Party.Members[0][Attribute.Strength]);
+        Assert.Equal(1, s.Party.Slots[0][Attribute.Strength]);
         MemberRules.SetAttribute(s, 0, Str, 0);
-        Assert.Equal(0, s.Party.Members[0][Attribute.Strength]);    // stat-assign allows 0
+        Assert.Equal(0, s.Party.Slots[0][Attribute.Strength]);    // stat-assign allows 0
     }
 
     [Fact]
@@ -57,11 +57,11 @@ public sealed class MemberRulesTests
     {
         var s = TestGame.Create();
         MemberRules.SetAttributeMaximum(s, 0, Str, 120);
-        Assert.Equal(120, s.Party.Members[0].Maximum(Attribute.Strength));
+        Assert.Equal(120, s.Party.Slots[0].Maximum(Attribute.Strength));
 
         s.Behaviour.FixSetAttributeMaximumLimit = true;
         MemberRules.SetAttributeMaximum(s, 0, Str, 120);
-        Assert.Equal(99, s.Party.Members[0].Maximum(Attribute.Strength));
+        Assert.Equal(99, s.Party.Slots[0].Maximum(Attribute.Strength));
     }
 
     [Fact]
@@ -69,12 +69,12 @@ public sealed class MemberRulesTests
     {
         var s = TestGame.Create();
         MemberRules.RaiseAttributeTemporarily(s, 0, Str, 5, 24);
-        Assert.Equal(35, s.Party.Members[0][Attribute.Strength]);
+        Assert.Equal(35, s.Party.Slots[0][Attribute.Strength]);
         var e = s.Events[s.Events.Last]!;
         Assert.Equal((EventKinds.AttributeBoost, 0, 5, ExpiryHandler.UndoTemporaryBoost), (e.Kind, e.Owner, e.Value, e.ExpiryHandler));
 
         TimePassage.Advance(s, 23);   // 6 + rnd 3 + 24 - 5 = 19..21 hours
-        Assert.Equal(30, s.Party.Members[0][Attribute.Strength]);
+        Assert.Equal(30, s.Party.Slots[0][Attribute.Strength]);
         Assert.Equal(0, s.Events.Count(EventKinds.AttributeBoost));
     }
 
@@ -82,11 +82,11 @@ public sealed class MemberRulesTests
     public void AWholePartyAttributeBoostStopsAtAMemberAboveTheBoost()
     {
         var s = TestGame.Create();
-        s.Party.Members[1][Attribute.Strength] = 50;   // 10 above the maximum of 40
+        s.Party.Slots[1][Attribute.Strength] = 50;   // 10 above the maximum of 40
         MemberRules.RaiseAttributeTemporarily(s, Who.Everybody, Str, 5, 24);
 
-        Assert.Equal(35, s.Party.Members[0][Attribute.Strength]);
-        Assert.Equal(25, s.Party.Members[2][Attribute.Strength]);   // never reached
+        Assert.Equal(35, s.Party.Slots[0][Attribute.Strength]);
+        Assert.Equal(25, s.Party.Slots[2][Attribute.Strength]);   // never reached
         Assert.Equal(1, s.Events.Count(EventKinds.AttributeBoost));
     }
 
@@ -97,14 +97,14 @@ public sealed class MemberRulesTests
         MemberRules.RaiseSkillTemporarily(s, Who.Everybody, Religion, 2, 24);
 
         // four present members: everybody gains 4 x 2, recorded as four events owned by -2
-        Assert.Equal([21, 17, 18, 48], s.Party.Members.Select(m => m[Skill.Religion]));
+        Assert.Equal([21, 17, 18, 48], s.Party.Slots.Select(m => m[Skill.Religion]));
         Assert.Equal(4, s.Events.Count(EventKinds.SkillBoost));
         Assert.All(s.Events.All(), x => Assert.Equal(Who.Everybody, x.Event.Owner));
 
         // the expiry's presence test reads party[-2][0] (DS:9B69, 0): the boosts are never taken back
         TimePassage.Advance(s, 25);
         Assert.Equal(0, s.Events.Count(EventKinds.SkillBoost));
-        Assert.Equal([21, 17, 18, 48], s.Party.Members.Select(m => m[Skill.Religion]));
+        Assert.Equal([21, 17, 18, 48], s.Party.Slots.Select(m => m[Skill.Religion]));
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public sealed class MemberRulesTests
         s.Behaviour.FixEverybodyBoostsUndone = true;
         MemberRules.RaiseSkillTemporarily(s, Who.Everybody, Religion, 2, 24);
         TimePassage.Advance(s, 25);
-        Assert.Equal([13, 9, 10, 40], s.Party.Members.Select(m => m[Skill.Religion]));
+        Assert.Equal([13, 9, 10, 40], s.Party.Slots.Select(m => m[Skill.Religion]));
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public sealed class MemberRulesTests
         var s = TestGame.Create();
         s.Behaviour.FixWholePartyBoosts = true;
         MemberRules.RaiseSkillTemporarily(s, Who.Everybody, Religion, 2, 24);
-        Assert.Equal([15, 11, 12, 42], s.Party.Members.Select(m => m[Skill.Religion]));
+        Assert.Equal([15, 11, 12, 42], s.Party.Slots.Select(m => m[Skill.Religion]));
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public sealed class MemberRulesTests
     public void PartyQueriesUseAbleMembersAndRememberWho()
     {
         var s = TestGame.Create();
-        s.Party.Members[3].Status = CharacterStatus.Unconscious;
+        s.Party.Slots[3].Status = CharacterStatus.Unconscious;
         Assert.Equal(13, PartyQueries.MaxSkill(s, Religion));   // Ebhard (40) is not able
         Assert.Equal(0, s.Party.Last.Member);
         Assert.Equal(9, PartyQueries.MinSkill(s, Religion));
@@ -164,8 +164,8 @@ public sealed class MemberRulesTests
     {
         var s = TestGame.Create(seed: 3);
         MemberRules.Injure(s, 0, 50, 50, 1);
-        Assert.Equal(1, s.Party.Members[0][Attribute.Strength]);
-        Assert.Equal(1, s.Party.Members[0][Attribute.Endurance]);
+        Assert.Equal(1, s.Party.Slots[0][Attribute.Strength]);
+        Assert.Equal(1, s.Party.Slots[0][Attribute.Endurance]);
     }
 
     [Fact]

@@ -248,7 +248,7 @@ public sealed class LootScreen
         for (var tries = 0; tries < Party.MaxMembers; tries++)
         {
             _member = (_member + 1) % Party.MaxMembers;
-            if (_member >= Party.Members.Count || CannotView?.Invoke(_member) == true)
+            if (_member >= Party.Slots.Count || CannotView?.Invoke(_member) == true)
             {
                 continue;
             }

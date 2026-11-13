@@ -484,7 +484,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         if (key is >= CtrlF1 and <= CtrlF1 + 0x400 && (key & 0xFF) == 0)
         {
             var m = (key >> 8) - (CtrlF1 >> 8);
-            if (m >= (PartySize?.Invoke() ?? _state.Party.Members.Count) || _state.Party.Members[m].Status != CharacterStatus.Able)
+            if (m >= (PartySize?.Invoke() ?? _state.Party.Slots.Count) || _state.Party.Slots[m].Status != CharacterStatus.Able)
             {
                 return;
             }

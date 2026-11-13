@@ -219,7 +219,7 @@ public static class OriginalSaves
             }
             member.Image = Text(file.Images, slot * SaveFile.ImageSize, SaveFile.ImageSize);
             member.ImagePalette = file.Palettes[(slot * SaveFile.PaletteSize)..((slot + 1) * SaveFile.PaletteSize)];
-            party.Members.Add(member);
+            party.Slots.Add(member);
         }
         // C: saved-game-read recounts party-headcount as the last slot whose status is not 0, plus one; the empty slots after it are not part of the
         // C: party but keep what was read into them (Party.TrimToSize).
@@ -408,7 +408,7 @@ public static class OriginalSaves
         for (var slot = 0; slot < SaveFile.PartySlots; slot++)
         {
             // C: member-shield-picture / member-colours keep a departed member's figure (party-member-erase clears only the status byte)
-            var member = slot < state.Party.Members.Count ? state.Party.Members[slot] : state.Party.SpareRecord(slot);
+            var member = slot < state.Party.Slots.Count ? state.Party.Slots[slot] : state.Party.SpareRecord(slot);
             if (member is null)
             {
                 continue;
@@ -422,9 +422,9 @@ public static class OriginalSaves
         for (var i = 0; i < state.Roster.Characters.Count; i++)
         {
             var slot = Array.IndexOf(state.Roster.PartySlots, i);
-            if (slot >= 0 && slot < state.Party.Members.Count)
+            if (slot >= 0 && slot < state.Party.Slots.Count)
             {
-                var member = state.Party.Members[slot];
+                var member = state.Party.Slots[slot];
                 var fighting = inBattle is not null && slot < Core.Battles.Combatant.PartySlots && inBattle[slot].Member == member;
                 // C: `if (party[je][0])`: the status byte of the slot's record in memory (its combatant record in a battle).
                 // BUG: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.

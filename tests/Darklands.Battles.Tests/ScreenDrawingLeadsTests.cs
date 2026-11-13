@@ -84,9 +84,9 @@ public sealed class ScreenDrawingLeadsTests
     public void ThePrayerMemberListHoldsTheShortNamesOfThePresentMembersInSlotOrder()
     {
         var party = new Party();
-        party.Members.Add(new Character { Name = "Heidi Baldur", ShortName = "Heidi", Status = CharacterStatus.Able });
-        party.Members.Add(new Character { Name = "Nobody", ShortName = "Nobody", Status = CharacterStatus.Empty });
-        party.Members.Add(new Character { Name = "Wilhelm Kreisler", ShortName = "Wilhelm", Status = CharacterStatus.Unconscious });
+        party.Slots.Add(new Character { Name = "Heidi Baldur", ShortName = "Heidi", Status = CharacterStatus.Able });
+        party.Slots.Add(new Character { Name = "Nobody", ShortName = "Nobody", Status = CharacterStatus.Empty });
+        party.Slots.Add(new Character { Name = "Wilhelm Kreisler", ShortName = "Wilhelm", Status = CharacterStatus.Unconscious });
         Assert.Equal("Heidi\nWilhelm", SaintPrayerScreen.MemberListText(party));
     }
 
@@ -483,7 +483,7 @@ public sealed class ScreenDrawingLeadsTests
         var host = new ShotHost();
         var ui = new GameUi(host, new GameAssets(files));
         var state = NewGame.Quickstart(WorldData.Load(files), 7);
-        state.Party.Members[0].Status = CharacterStatus.Dead;
+        state.Party.Slots[0].Status = CharacterStatus.Dead;
         var panel = new PartyPanel(ui);
         var text = new Darklands.Presentation.Graphics.TextPainter(ui.Assets.Font(1));
         byte[] Drawn()
@@ -495,7 +495,7 @@ public sealed class ScreenDrawingLeadsTests
         var outside = Drawn();
         ui.BattleStatusLetter = _ => '-';
         var inBattle = Drawn();
-        for (var i = 1; i < state.Party.Members.Count; i++)
+        for (var i = 1; i < state.Party.Slots.Count; i++)
         {
             var color = state.Party.LeaderIndex == i ? (byte)0x0E : (byte)0x0F;
             var shown = new Screen();

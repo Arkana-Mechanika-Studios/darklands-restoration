@@ -21,7 +21,7 @@ public sealed class LeavingMemberRecordTests
     {
         var s = WithRoster();
         s.Behaviour = behaviour;
-        var member = s.Party.Members[2];
+        var member = s.Party.Slots[2];
         var items = member.Pack.Stacks;
         member.Saints.Add(17);
         member.Formulas.Add(4);
@@ -62,18 +62,18 @@ public sealed class LeavingMemberRecordTests
     public void AMemberJoiningASlotNobodyHeldTakesNoFigure()
     {
         var s = WithRoster();
-        s.Party.Members[0].Image = "F60";
-        s.Party.Members[0].ImagePalette = Enumerable.Range(1, 24).Select(i => (byte)i).ToArray();
-        var count = s.Party.Members.Count;
+        s.Party.Slots[0].Image = "F60";
+        s.Party.Slots[0].ImagePalette = Enumerable.Range(1, 24).Select(i => (byte)i).ToArray();
+        var count = s.Party.Slots.Count;
         Assert.True(count < Party.MaxMembers);
 
         // the character of slot 0 is read into the free slot too: its own copy, the same roster entry, the figure the slot had (none)
         Assert.Equal(count, PartyRules.AddFromRoster(s, 0));
-        var copy = s.Party.Members[count];
-        Assert.NotSame(s.Party.Members[0], copy);
+        var copy = s.Party.Slots[count];
+        Assert.NotSame(s.Party.Slots[0], copy);
         Assert.Equal("", copy.Image);
         Assert.All(copy.ImagePalette, b => Assert.Equal(0, b));
-        Assert.Equal("F60", s.Party.Members[0].Image);
+        Assert.Equal("F60", s.Party.Slots[0].Image);
         s.Roster.Reconcile(s.Party);
         Assert.Equal(0, s.Roster.PartySlots[0]);
         Assert.Equal(0, s.Roster.PartySlots[count]);

@@ -804,12 +804,12 @@ public sealed class ScreenInputTests
         }
         var sheet = CharacterCreationScreen.SheetState(ui, world, new Darklands.Core.Randomness.MscRandom(3), 5);
         sheet.Party = game.Party;
-        var before = sheet.Party.Members[0].Skills[(int)Darklands.Core.Characters.Skill.Streetwise];
+        var before = sheet.Party.Slots[0].Skills[(int)Darklands.Core.Characters.Skill.Streetwise];
 
         Darklands.Core.Rules.SaintBook.Help(sheet, 0, 50);   // St.Finnian
 
         Assert.IsType<SideWindowMessages>(sheet.Messages);
-        Assert.True(sheet.Party.Members[0].Skills[(int)Darklands.Core.Characters.Skill.Streetwise] > before);
+        Assert.True(sheet.Party.Slots[0].Skills[(int)Darklands.Core.Characters.Skill.Streetwise] > before);
         Assert.Contains(sheet.Events.All(), e => e.Event.Kind == Darklands.Core.Events.EventKinds.TravelBlessing);
         Assert.Equal(d, ui.WaitForAction().Key);
     }

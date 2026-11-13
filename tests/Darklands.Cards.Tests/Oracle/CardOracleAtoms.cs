@@ -42,7 +42,7 @@ public static class CardOracleAtoms
         {
             return false;
         }
-        var members = state.Party.Members;
+        var members = state.Party.Slots;
         switch (prefix)
         {
             case "hr":

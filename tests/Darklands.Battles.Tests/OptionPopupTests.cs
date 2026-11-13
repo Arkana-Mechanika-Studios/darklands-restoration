@@ -33,7 +33,7 @@ public sealed class OptionPopupTests
 
     /// <summary>An item carried by member <paramref name="who"/> and not by the leader.</summary>
     private static int ItemOnlyFor(CardContext c, int who) =>
-        c.State.Party.Members[who].Pack.Select(p => p.Code).First(code => Inventory.Has(c.State, 0, code) == 0 && code < 0x5F);
+        c.State.Party.Slots[who].Pack.Select(p => p.Code).First(code => Inventory.Has(c.State, 0, code) == 0 && code < 0x5F);
 
     [Fact]
     public void TheCardEngineKeepsTheBoxsStatesAsTheBoxShowsThem()
@@ -43,7 +43,7 @@ public sealed class OptionPopupTests
         {
             return;
         }
-        var items = c.State.Party.Members.SelectMany(m => m.Pack.Select(p => p.Code)).Distinct().Take(3).Append(0x65).ToArray();
+        var items = c.State.Party.Slots.SelectMany(m => m.Pack.Select(p => p.Code)).Distinct().Take(3).Append(0x65).ToArray();
         foreach (var difficulty in new[] { Difficulty.Basic, Difficulty.Standard, Difficulty.Expert })
         {
             foreach (var all in new[] { false, true })
@@ -75,10 +75,10 @@ public sealed class OptionPopupTests
         Assert.Equal(OptionState.Hidden, box.States[0]);
         Assert.All(Enumerable.Range(0, 20).Where(k => k != 8), k => Assert.Equal(OptionState.Hidden, box.States[k]));
         var text = System.Text.Encoding.Latin1.GetString(box.Text);
-        var hans = c.State.Party.Members[2];
+        var hans = c.State.Party.Slots[2];
         Assert.Contains("\x81" + hans.ShortName + "\xff\n", text);
         Assert.Contains("\x15 \x80" + c.World.ItemName(item) + $" ({c.CountItems(2, item)})\n", text);
-        Assert.DoesNotContain(c.State.Party.Members[0].ShortName, text);
+        Assert.DoesNotContain(c.State.Party.Slots[0].ShortName, text);
         Assert.True(box.Width > painter.Measure(c.World.ItemName(item)));
     }
 
@@ -99,7 +99,7 @@ public sealed class OptionPopupTests
         c.SetCardItems(item);
         var box = OptionPopupText.Build(c, saints: false, cardFont, darkPicture: false);
         var line = TextPainter.Encode(" " + c.World.ItemName(item) + $" ({c.CountItems(2, item)})");
-        Assert.Equal(Math.Max(cardFont.Measure(line), cardFont.Measure(c.State.Party.Members[2].ShortName)) + 6, box.Width);
+        Assert.Equal(Math.Max(cardFont.Measure(line), cardFont.Measure(c.State.Party.Slots[2].ShortName)) + 6, box.Width);
         Assert.Equal(0x43 - 6, cardFont.Measure(TextPainter.Encode(" Stone-tar (1)")));
     }
 
@@ -132,7 +132,7 @@ public sealed class OptionPopupTests
         c.SetCardSaints(1, 2, 3, 4);
         c.PopupListsAll = true;
         var box = OptionPopupText.Build(c, saints: true, painter, darkPicture: false);
-        for (var i = 0; i < c.State.Party.Members.Count; i++)
+        for (var i = 0; i < c.State.Party.Slots.Count; i++)
         {
             Assert.All(Enumerable.Range(i * 4, 4), k => Assert.Equal(OptionState.Enabled, box.States[k]));
         }
@@ -148,8 +148,8 @@ public sealed class OptionPopupTests
             return;
         }
         c.State.Difficulty = Difficulty.Standard;
-        var saint = Enumerable.Range(0, 136).First(s => c.State.Party.Members.All(m => !m.Saints.Contains(s)));
-        c.State.Party.Members[1].Saints.Add(saint);
+        var saint = Enumerable.Range(0, 136).First(s => c.State.Party.Slots.All(m => !m.Saints.Contains(s)));
+        c.State.Party.Slots[1].Saints.Add(saint);
         c.SetCardSaints(-1, saint);
         var box = OptionPopupText.Build(c, saints: true, painter, darkPicture: false);
         Assert.Equal(OptionState.Enabled, box.States[1 * 4 + 1]);
@@ -168,9 +168,9 @@ public sealed class OptionPopupTests
             return;
         }
         c.State.Difficulty = Difficulty.Standard;
-        var last = c.State.Party.Members.Count - 1;
-        var saint = Enumerable.Range(0, 136).First(s => c.State.Party.Members.All(m => !m.Saints.Contains(s)));
-        c.State.Party.Members[last].Saints.Add(saint);
+        var last = c.State.Party.Slots.Count - 1;
+        var saint = Enumerable.Range(0, 136).First(s => c.State.Party.Slots.All(m => !m.Saints.Contains(s)));
+        c.State.Party.Slots[last].Saints.Add(saint);
         c.SetCardSaints(saint);
         var box = OptionPopupText.Build(c, saints: true, painter, darkPicture: false);
         Assert.Equal(OptionState.Enabled, box.States[last * 4]);

@@ -196,7 +196,8 @@ public sealed class Character
 
     public int Maximum(Attribute a) => AttributeMaximums[(int)a];
 
-    public bool IsPresent => Status != CharacterStatus.Empty;
+    /// <summary>The record holds a member (status not empty): true for dead and away members as well, unlike <see cref="IsAble"/>.</summary>
+    public bool OccupiesSlot => Status != CharacterStatus.Empty;
 
     /// <summary>A separate copy (the party slot's record read from the roster).</summary>
     public Character Copy()

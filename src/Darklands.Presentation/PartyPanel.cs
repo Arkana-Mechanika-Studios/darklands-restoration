@@ -95,11 +95,11 @@ public sealed class PartyPanel(GameAssets assets)
     {
         var y = i * RowHeight + 1;
         SpriteDrawing.Draw(canvas, assets.CommonSprites.RowBackground, 3, y);
-        if (i >= party.Members.Count || !party.Members[i].IsPresent)
+        if (i >= party.Slots.Count || !party.Slots[i].OccupiesSlot)
         {
             return;
         }
-        var member = party.Members[i];
+        var member = party.Slots[i];
         DrawShield(canvas, member, y, i);
         // C: order mode (GameUi.PanelOrderMode) dims every row but the chosen member's, outside a battle too (a game loaded from a battle in order mode)
         var dim = _ui?.CurrentOrderMode is { On: true } order && order.Member != i;

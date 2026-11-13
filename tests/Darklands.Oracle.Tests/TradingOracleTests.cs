@@ -102,7 +102,7 @@ public sealed class TradingOracleTests
         {
             var member = new Character { Status = CharacterStatus.Able };
             member[Core.Characters.Attribute.Charisma] = Int(i, "charisma");
-            s.Party.Members.Add(member);
+            s.Party.Slots.Add(member);
         }
         s.Party.Fame = Int(i, "fame");
         s.Party.Seed = Int(i, "partySeed");
@@ -155,7 +155,7 @@ public sealed class TradingOracleTests
         {
             var member = new Character { Status = CharacterStatus.Able };
             member[Core.Characters.Attribute.Charisma] = m == Int(i, "leader") ? Int(i, "charisma") : 0;
-            s.Party.Members.Add(member);
+            s.Party.Slots.Add(member);
         }
         s.Party.LeaderIndex = Int(i, "leader");
         s.Party.Fame = Int(i, "fame");

@@ -64,10 +64,10 @@ public static class GameCommands
     private static List<string> PartyLines(GameState s)
     {
         var lines = new List<string>();
-        for (var i = 0; i < s.Party.Members.Count; i++)
+        for (var i = 0; i < s.Party.Slots.Count; i++)
         {
-            var m = s.Party.Members[i];
-            if (!m.IsPresent)
+            var m = s.Party.Slots[i];
+            if (!m.OccupiesSlot)
             {
                 continue;
             }
@@ -314,14 +314,14 @@ public static class GameCommands
     {
         if (slot.Equals("all", StringComparison.OrdinalIgnoreCase))
         {
-            return s.Party.Present.ToList();
+            return s.Party.Occupied.ToList();
         }
-        if (!int.TryParse(slot, NumberStyles.None, CultureInfo.InvariantCulture, out var n) || n < 1 || n > s.Party.Members.Count
-            || !s.Party.Members[n - 1].IsPresent)
+        if (!int.TryParse(slot, NumberStyles.None, CultureInfo.InvariantCulture, out var n) || n < 1 || n > s.Party.Slots.Count
+            || !s.Party.Slots[n - 1].OccupiesSlot)
         {
             throw new ArgumentException($"no party member in slot \"{slot}\"");
         }
-        return [s.Party.Members[n - 1]];
+        return [s.Party.Slots[n - 1]];
     }
 
     private static string AttributeCode(CharacterAttribute a) => a switch

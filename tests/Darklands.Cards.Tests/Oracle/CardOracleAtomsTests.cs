@@ -13,15 +13,15 @@ public sealed class CardOracleAtomsTests
             return;
         }
         var state = CardOracleStates.New(3, 0);
-        var before = state.Party.Members.Count;
+        var before = state.Party.Slots.Count;
         Assert.True(CardOracleAtoms.Apply(state, "ad5"));
-        Assert.Equal(Party.MaxMembers, state.Party.Members.Count);
-        Assert.Equal(state.Party.Members[before - 1].Name, state.Party.Members[^1].Name);
-        Assert.NotSame(state.Party.Members[before - 1], state.Party.Members[^1]);
+        Assert.Equal(Party.MaxMembers, state.Party.Slots.Count);
+        Assert.Equal(state.Party.Slots[before - 1].Name, state.Party.Slots[^1].Name);
+        Assert.NotSame(state.Party.Slots[before - 1], state.Party.Slots[^1]);
         Assert.True(CardOracleAtoms.Apply(state, "ad9"));
-        Assert.Equal(Party.MaxMembers, state.Party.Members.Count);
+        Assert.Equal(Party.MaxMembers, state.Party.Slots.Count);
         var cut = CardOracleStates.FromKey("L3-Vsz2+ad3-O0");
-        Assert.Equal(3, cut.Party.Members.Count);
+        Assert.Equal(3, cut.Party.Slots.Count);
     }
 
     [Fact]

@@ -12,9 +12,9 @@ public sealed class DefaultPartyTests
         Assert.Equal(5, DefaultParty.Colours.Count);
         for (var i = 0; i < 4; i++)
         {
-            Assert.Equal(DefaultParty.Colours[i], party.Members[i].ImagePalette);
-            Assert.NotSame(DefaultParty.Colours[i], party.Members[i].ImagePalette);
-            Assert.Contains(party.Members[i].ImagePalette, b => b != 0);
+            Assert.Equal(DefaultParty.Colours[i], party.Slots[i].ImagePalette);
+            Assert.NotSame(DefaultParty.Colours[i], party.Slots[i].ImagePalette);
+            Assert.Contains(party.Slots[i].ImagePalette, b => b != 0);
         }
         Assert.All(DefaultParty.Colours[4], b => Assert.Equal(0, b));
     }
@@ -32,7 +32,7 @@ public sealed class DefaultPartyTests
     [Fact]
     public void AChangeToAMembersColoursLeavesTheNextPartyAlone()
     {
-        DefaultParty.Create(1).Members[0].ImagePalette[0] = 0;
-        Assert.Equal(0x3F, DefaultParty.Create(1).Members[0].ImagePalette[0]);
+        DefaultParty.Create(1).Slots[0].ImagePalette[0] = 0;
+        Assert.Equal(0x3F, DefaultParty.Create(1).Slots[0].ImagePalette[0]);
     }
 }

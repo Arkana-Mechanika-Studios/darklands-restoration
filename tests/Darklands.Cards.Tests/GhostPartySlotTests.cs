@@ -22,13 +22,13 @@ public sealed class GhostPartySlotTests
         var state = CardHarness.NewGame(seed: 5, location: 3);
         state.Behaviour = new OriginalBehaviour { FixGhostPartySlot = fix };
         var party = state.Party;
-        while (party.Members.Count < 4)
+        while (party.Slots.Count < 4)
         {
-            party.Members.Add(new Character());
+            party.Slots.Add(new Character());
         }
         for (var i = 0; i < 4; i++)
         {
-            party.Members[i].Status = CharacterStatus.Able;
+            party.Slots[i].Status = CharacterStatus.Able;
         }
         state.Roster.Reconcile(party);
         var c = new CardContext(state, CardHarness.World!, new ScriptedScreen(0));
@@ -49,12 +49,12 @@ public sealed class GhostPartySlotTests
         var state = CardHarness.NewGame(seed: 5, location: 3);
         state.Behaviour = OriginalBehaviour.DataSafe;
         var party = state.Party;
-        while (party.Members.Count < 2)
+        while (party.Slots.Count < 2)
         {
-            party.Members.Add(new Character());
+            party.Slots.Add(new Character());
         }
-        party.Members[0].Status = CharacterStatus.Able;
-        party.Members[1].Status = CharacterStatus.Away;
+        party.Slots[0].Status = CharacterStatus.Able;
+        party.Slots[1].Status = CharacterStatus.Away;
         var c = new CardContext(state, CardHarness.World!, new ScriptedScreen(0));
         c.SetStatusAbleStale(1);
         Assert.Equal(CharacterStatus.Able, party.Slot(1).Status);

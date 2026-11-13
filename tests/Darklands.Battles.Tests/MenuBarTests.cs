@@ -197,11 +197,11 @@ public sealed class MenuBarTests
         {
             return;
         }
-        for (var i = 0; i < state.Party.Members.Count; i++)
+        for (var i = 0; i < state.Party.Slots.Count; i++)
         {
             for (var k = 4; k < 7; k++)
             {
-                state.Party.Members[i].Skills[k] = i == 1 && k == 5 ? 60 : 10;
+                state.Party.Slots[i].Skills[k] = i == 1 && k == 5 ? 60 : 10;
             }
         }
         state.Party.Last.Member = 0;

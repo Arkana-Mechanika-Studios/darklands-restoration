@@ -33,10 +33,10 @@ public static class Inventory
 
     /// <summary>The members −2 means: present members with something in their pack.</summary>
     private static IEnumerable<int> Carriers(GameState s) =>
-        Enumerable.Range(0, s.Party.Members.Count).Where(i => s.Party.PresentMember(i) is not null && s.Party.Members[i].Pack.Stacks > 0);
+        Enumerable.Range(0, s.Party.Slots.Count).Where(i => s.Party.OccupiedSlot(i) is not null && s.Party.Slots[i].Pack.Stacks > 0);
 
     private static IEnumerable<int> PresentMembers(GameState s) =>
-        Enumerable.Range(0, s.Party.Members.Count).Where(i => s.Party.PresentMember(i) is not null);
+        Enumerable.Range(0, s.Party.Slots.Count).Where(i => s.Party.OccupiedSlot(i) is not null);
 
     // ---- counting -------------------------------------------------------------------
 

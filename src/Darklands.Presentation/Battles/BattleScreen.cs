@@ -645,7 +645,7 @@ public sealed class BattleScreen : ITacticalView
             store.FloorShown = held.Variables[BattleVariables.FloorShown];
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
-                if (i < _state.Party.Members.Count && _state.Party.Members[i] is { IsPresent: true, OriginalRecord: { Length: >= Persistence.CombatantRecords.Size } r })
+                if (i < _state.Party.Slots.Count && _state.Party.Slots[i] is { OccupiesSlot: true, OriginalRecord: { Length: >= Persistence.CombatantRecords.Size } r })
                 {
                     var probe = new Combatant(i);
                     Persistence.CombatantRecords.Read(r, probe);
@@ -700,9 +700,9 @@ public sealed class BattleScreen : ITacticalView
         {
             var c = battle[i];
             c.AnimationSlot = i;
-            if (i < _state.Party.Members.Count && _state.Party.Members[i].IsPresent)
+            if (i < _state.Party.Slots.Count && _state.Party.Slots[i].OccupiesSlot)
             {
-                var member = _state.Party.Members[i];
+                var member = _state.Party.Slots[i];
                 CombatantSetup.FromMember(c, member);
                 _battle.SlotCodes[i] = member.Image.Length > 0 ? member.Image : "F01";
             }
@@ -767,9 +767,9 @@ public sealed class BattleScreen : ITacticalView
         {
             var c = battle[i];
             c.AnimationSlot = i;
-            if (i < _state.Party.Members.Count && _state.Party.Members[i].IsPresent)
+            if (i < _state.Party.Slots.Count && _state.Party.Slots[i].OccupiesSlot)
             {
-                var member = _state.Party.Members[i];
+                var member = _state.Party.Slots[i];
                 CombatantSetup.FromMember(c, member);
                 if (member.OriginalRecord is { Length: >= Persistence.CombatantRecords.Size } record)
                 {
@@ -814,7 +814,7 @@ public sealed class BattleScreen : ITacticalView
         var party = new byte[120];
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            var colours = i < _state.Party.Members.Count ? PartyColours(_state.Party.Members[i].ImagePalette, i)
+            var colours = i < _state.Party.Slots.Count ? PartyColours(_state.Party.Slots[i].ImagePalette, i)
                 : _state.Party.SpareRecord(i)?.ImagePalette ?? [];
             colours.AsSpan(0, Math.Min(24, colours.Length)).CopyTo(party.AsSpan(24 * i));
         }

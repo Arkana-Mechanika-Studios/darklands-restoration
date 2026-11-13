@@ -23,7 +23,7 @@ public sealed class OriginalSaveGameTests
         var loaded = folder.Load(name, CardHarness.World!);
         var state = loaded.State;
         var card = state.CurrentCard;
-        Assert.True(state.Party.Members.Count > 0);
+        Assert.True(state.Party.Slots.Count > 0);
         Assert.Equal(state.CurrentLocation is >= 0 and < 92 ? state.CurrentLocation : state.City.City, state.City.City);
 
         var screen = new ScriptedScreen(0);
@@ -43,7 +43,7 @@ public sealed class OriginalSaveGameTests
         Assert.Equal(state.Date, reloaded.Date);
         Assert.Equal(state.Party.Purse, reloaded.Party.Purse);
         Assert.Equal(state.Events.All().Count(), reloaded.Events.All().Count());
-        Assert.Equal(state.Party.Members.Select(m => m.Name), reloaded.Party.Members.Select(m => m.Name));
+        Assert.Equal(state.Party.Slots.Select(m => m.Name), reloaded.Party.Slots.Select(m => m.Name));
     }
 
     private static SaveFolder? CopyOfSaves()

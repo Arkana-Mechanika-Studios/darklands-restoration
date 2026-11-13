@@ -13,7 +13,7 @@ public sealed class FidelityFixTests
     {
         // hours-elapse asks party-ability-top(13), which sets top-value-so-far/top-scoring-member as a side effect.
         var s = TestGame.Create();
-        var able = s.Party.Members.Select((m, i) => (m, i)).Where(x => x.m.IsAble).ToList();
+        var able = s.Party.Slots.Select((m, i) => (m, i)).Where(x => x.m.IsAble).ToList();
         var best = able.Max(x => x.m[Skill.Healing]);
         var healer = able.First(x => x.m[Skill.Healing] == best).i;
         s.Party.Last.Value = 123;
@@ -67,7 +67,7 @@ public sealed class FidelityFixTests
         var s = TestGame.Create();
         PartyQueries.MaxAttributeOfWomen(s, (int)Attribute.Charisma);
         var woman = s.Party.Last.Member;
-        Assert.True(s.Party.Members[woman].IsFemale);
+        Assert.True(s.Party.Slots[woman].IsFemale);
         Assert.Equal(woman, s.Party.Last.AttributeMember);
         PartyQueries.MinSkill(s, (int)Skill.Healing);
         PartyQueries.MaxAttributeSum(s, 0, 1);       // party-stat-top-sum does not write DS:9A44
@@ -79,7 +79,7 @@ public sealed class FidelityFixTests
     {
         var s = TestGame.Create();
         s.Behaviour = new OriginalBehaviour { FixBestWeaponSkillNumber = true };
-        Array.Clear(s.Party.Members[0].Skills, 0, 7);
+        Array.Clear(s.Party.Slots[0].Skills, 0, 7);
         s.Party.Last.Skill = 5;
         Assert.Equal(0, MemberRules.BestWeaponSkill(s, 0));
         Assert.Equal(0, s.Party.Last.Skill);
@@ -90,9 +90,9 @@ public sealed class FidelityFixTests
     {
         var s = TestGame.Create();
         var (bench, page) = (Brewing.IngredientsCarried(s)[0x50], Brewing.IngredientsOnTheFormulaPage(s)[0x50]);
-        s.Party.Members[1].Pack.Add(new ItemStack(0x50, 0, 25, 3, 1));
-        s.Party.Members[1].Status = CharacterStatus.Empty;   // left the party: the slot keeps its pack
-        s.Party.Members[2].Pack.Add(new ItemStack(0x50, 0, 25, 2, 1));
+        s.Party.Slots[1].Pack.Add(new ItemStack(0x50, 0, 25, 3, 1));
+        s.Party.Slots[1].Status = CharacterStatus.Empty;   // left the party: the slot keeps its pack
+        s.Party.Slots[2].Pack.Add(new ItemStack(0x50, 0, 25, 2, 1));
         Assert.Equal(bench + 2, Brewing.IngredientsCarried(s)[0x50]);
         Assert.Equal(page + 5, Brewing.IngredientsOnTheFormulaPage(s)[0x50]);
     }
@@ -107,7 +107,7 @@ public sealed class FidelityFixTests
         {
             s.Roster.PartySlots[slot]++;
         }
-        var hans = s.Party.Members[2];
+        var hans = s.Party.Slots[2];
         hans.Status = CharacterStatus.Away;
         Assert.Equal(1, PartyRules.ReportAway(s));
         var note = s.Events.All().Single(x => x.Event.Kind == EventKinds.MemberAway).Event;
@@ -122,9 +122,9 @@ public sealed class FidelityFixTests
     public void ASlotLeftEmptyKeepsItsLastOccupantsBytes()
     {
         var s = TestGame.Create();
-        var ebhard = s.Party.Members[3];
+        var ebhard = s.Party.Slots[3];
         PartyRules.RemoveFromParty(s, 3);
-        Assert.Equal(3, s.Party.Members.Count);
+        Assert.Equal(3, s.Party.Slots.Count);
         Assert.Equal(ebhard.Name, s.Party.Slot(3).Name);  // party-leave clears the slot's status byte only
         Assert.Equal(ebhard.Pack.Entries, s.Party.Slot(3).Pack.Entries);
         Assert.Equal(CharacterStatus.Empty, s.Party.Slot(3).Status);

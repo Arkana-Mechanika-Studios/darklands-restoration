@@ -82,7 +82,7 @@ back byte for byte, and each of the 18 .BSV files with its .SAV.
 | 0x0F3 | 10 | party slots | `Roster.PartySlots` | named |
 | 0x0FD | 20 | `member-shield-picture` (figure image per slot) | `Character.Image` of the slot | named; empty slots raw |
 | 0x111 | 0x78 | `member-colours` per slot | `Character.ImagePalette` of the slot | named; empty slots raw |
-| 0x189 | n × 0x22A | the roster's records | `Roster.Characters` (party slots: the same objects as `Party.Members`) | see below |
+| 0x189 | n × 0x22A | the roster's records | `Roster.Characters` (party slots: the same objects as `Party.Slots`) | see below |
 | … | 2 + m × 0x30 | the events in slot order | `Events` (loaded into slots 0..m−1) | all 24 words named |
 | … | 2 + 414 × 0x3A | the places | `Locations` | see below |
 | … | rest | CACHE.TMP | `ItemStores` | the file's bytes, read and written as the original's stash-load / stash-store do |

@@ -7,7 +7,7 @@ namespace Darklands.Core.Tests;
 public sealed class CreationRosterTests
 {
     private static CreationRoster New() =>
-        new(DefaultParty.Create(1).Members, [.. Enumerable.Range(0, 5).Select(i => Enumerable.Repeat((byte)i, 24).ToArray())]);
+        new(DefaultParty.Create(1).Slots, [.. Enumerable.Range(0, 5).Select(i => Enumerable.Repeat((byte)i, 24).ToArray())]);
 
     [Fact]
     public void OnlyFourSlotsAreFilledAndACharacterJoinsOnce()
@@ -54,7 +54,7 @@ public sealed class CreationRosterTests
         Assert.Equal(0, r.Member(0)!.Encumbrance);
         Assert.Equal(0x0A, r.Characters[4].Encumbrance);
 
-        var weighed = new CreationRoster(DefaultParty.Create(1).Members, [.. Enumerable.Range(0, 5).Select(i => new byte[24])],
+        var weighed = new CreationRoster(DefaultParty.Create(1).Slots, [.. Enumerable.Range(0, 5).Select(i => new byte[24])],
             item: code => new Items.ItemDefinition(code, "", "", 0, 0, 7, 0, 0));
         weighed.Characters[0].Encumbrance = 0;
         weighed.AddToParty(0, "F01");
@@ -84,8 +84,8 @@ public sealed class CreationRosterTests
         r.AddToParty(1, "F01");
         r.DropFromParty(0);
         var party = r.ToParty(5)!;
-        Assert.Equal(2, party.Members.Count);
-        Assert.False(party.Members[0].IsPresent);
+        Assert.Equal(2, party.Slots.Count);
+        Assert.False(party.Slots[0].OccupiesSlot);
         Assert.Equal(0, party.LeaderIndex);              // the leader variable stays 0, on the empty slot
         Assert.Equal(1, r.ToParty(5, leader: 1)!.LeaderIndex);
         Assert.Equal(5, party.Seed);

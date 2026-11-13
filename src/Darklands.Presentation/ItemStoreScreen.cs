@@ -263,13 +263,13 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private void ShowTheNextMember()
     {
         page.DrawParty(Party);
-        var size = Math.Max(1, Party.Members.Count);
+        var size = Math.Max(1, Party.Slots.Count);
         do
         {
             _member = (_member + 1) % size;
         }
         // C: (DS:89F2 + 1) % party-headcount (not % 5 as on the barter screen).
-        while (Party.PresentMember(_member) is null);
+        while (Party.OccupiedSlot(_member) is null);
         Redraw();
         // C: copied from the barter screen: the highlight lands on the Leave line (0x33), not on "Cache another person's items" (0x2B).
         page.Recolor(0x50, 0x33, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);

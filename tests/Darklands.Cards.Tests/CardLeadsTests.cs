@@ -67,7 +67,7 @@ public sealed class CardLeadsTests
         {
             return;
         }
-        foreach (var m in c.State.Party.Members)
+        foreach (var m in c.State.Party.Slots)
         {
             m.Skills[(int)Core.Characters.Skill.Stealth] = 0;
             m.Attributes[(int)Core.Characters.Attribute.Agility] = m.AttributeMaximums[(int)Core.Characters.Attribute.Agility] = 1;

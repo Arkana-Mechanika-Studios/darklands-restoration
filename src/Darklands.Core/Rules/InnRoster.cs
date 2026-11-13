@@ -202,11 +202,11 @@ public static class InnRoster
         var member = s.Roster.Characters[entry];
         s.Roster.KeepStored(member, member.Copy());
         var party = s.Party;
-        while (party.Members.Count <= slot)
+        while (party.Slots.Count <= slot)
         {
-            party.Members.Add(party.Slot(party.Members.Count));
+            party.Slots.Add(party.Slot(party.Slots.Count));
         }
-        party.Members[slot] = member;
+        party.Slots[slot] = member;
         member.Image = images.Count > 0 ? images[0] : member.Image;
         member.ImagePalette = [.. PortraitColours.InnStartPalette];
         for (var k = 0; k < menu.Colours.Palette.Length; k++)

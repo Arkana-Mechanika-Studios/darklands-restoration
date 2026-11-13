@@ -13,16 +13,16 @@ public sealed class LeaderPastThePartyTests
     {
         var s = TestGame.Create(location: 7);
         s.Roster.Reset(s.Party);
-        var last = s.Party.Members.Count - 1;
-        foreach (var m in s.Party.Members)
+        var last = s.Party.Slots.Count - 1;
+        foreach (var m in s.Party.Slots)
         {
             m.Status = CharacterStatus.Unconscious;
         }
-        s.Party.Members[last].Status = CharacterStatus.Able;
+        s.Party.Slots[last].Status = CharacterStatus.Able;
         s.Party.LeaderIndex = last;
         PartyRules.RemoveFromParty(s, last);
         Assert.Equal(last, s.Party.LeaderIndex);                // nobody else able: the leader byte stays
-        Assert.Equal(last, s.Party.Members.Count);              // ... past the party
+        Assert.Equal(last, s.Party.Slots.Count);              // ... past the party
         return s;
     }
 
@@ -37,7 +37,7 @@ public sealed class LeaderPastThePartyTests
     public void TimePassingMakesTheFirstAbleMemberTheLeader()
     {
         var s = LeaderLeftFromTheLastSlot();
-        s.Party.Members[1].Status = CharacterStatus.Able;
+        s.Party.Slots[1].Status = CharacterStatus.Able;
         TimePassage.Recover(s, 1);
         Assert.Equal(1, s.Party.LeaderIndex);
     }

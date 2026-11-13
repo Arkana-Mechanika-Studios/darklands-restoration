@@ -102,9 +102,9 @@ public sealed partial class CardContext
         {
             return OptionState.Enabled;
         }
-        for (var i = 0; i < State.Party.Members.Count; i++)
+        for (var i = 0; i < State.Party.Slots.Count; i++)
         {
-            if (State.Party.Members[i].Status == CharacterStatus.Able && list.Any(x => x != -1 && has(i, x)))
+            if (State.Party.Slots[i].Status == CharacterStatus.Able && list.Any(x => x != -1 && has(i, x)))
             {
                 return OptionState.Enabled;
             }
@@ -191,7 +191,7 @@ public sealed partial class CardContext
         var states = new OptionState[CardMenu.MaxLines];
         var list = saints ? CardSaints : CardItems;
         var basic = State.Difficulty == Difficulty.Basic;
-        var members = State.Party.Members;
+        var members = State.Party.Slots;
         for (var i = 0; i < members.Count && i < 5; i++)
         {
             if (members[i].Status is CharacterStatus.Empty or CharacterStatus.Away)

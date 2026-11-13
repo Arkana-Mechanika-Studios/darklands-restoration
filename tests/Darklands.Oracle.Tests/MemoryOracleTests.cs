@@ -106,7 +106,7 @@ public sealed class MemoryOracleTests
         var s = new GameState(new MscRandom());
         for (var k = 0; k < 5; k++)
         {
-            s.Party.Members.Add(new Character { Status = CharacterStatus.Empty });
+            s.Party.Slots.Add(new Character { Status = CharacterStatus.Empty });
         }
         return s;
     }

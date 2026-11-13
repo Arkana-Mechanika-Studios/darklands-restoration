@@ -66,7 +66,7 @@ public sealed class InnRosterTests
     public void ACharacterJoinsUnequippedWithAnEmptyPackAndLeavesAgainWithTheRecordAsRead()
     {
         var s = WithRoster();
-        var member = s.Party.Members[1];
+        var member = s.Party.Slots[1];
         PartyRules.RemoveFromParty(s, 1);
         var record = s.Roster.Characters[1];
         var stacks = record.Pack.Stacks;
@@ -76,7 +76,7 @@ public sealed class InnRosterTests
         menu.Selected = 1;
 
         Assert.Equal(new InnRosterResult(InnRosterChange.Joined, 1), InnRoster.AddOrRemove(s, menu, Images));
-        Assert.Same(record, s.Party.Members[1]);
+        Assert.Same(record, s.Party.Slots[1]);
         Assert.Equal(1, s.Roster.PartySlots[1]);
         Assert.Equal(CharacterStatus.Able, record.Status);
         Assert.Equal(new EquippedItem(-1, 0), record.Weapon);
@@ -93,8 +93,8 @@ public sealed class InnRosterTests
         record.Skills[0] = 99;                                  // a week in the party ...
         Assert.Equal(new InnRosterResult(InnRosterChange.Left, 1), InnRoster.AddOrRemove(s, menu, Images));
         Assert.Equal(-1, s.Roster.PartySlots[1]);
-        Assert.Equal(CharacterStatus.Empty, s.Party.Members[1].Status);
-        Assert.Equal(4, s.Party.Members.Count);                 // the party size is not lowered
+        Assert.Equal(CharacterStatus.Empty, s.Party.Slots[1].Status);
+        Assert.Equal(4, s.Party.Slots.Count);                 // the party size is not lowered
         Assert.NotSame(record, s.Roster.Characters[1]);         // ... is not written back
         Assert.Equal(stacks, s.Roster.Characters[1].Pack.Stacks);
         Assert.NotEqual(99, s.Roster.Characters[1].Skills[0]);
@@ -122,11 +122,11 @@ public sealed class InnRosterTests
     {
         var s = WithRoster();
         var menu = new PartyMenuState();
-        s.Party.Members[2].ShieldLetter = 'O';
+        s.Party.Slots[2].ShieldLetter = 'O';
         InnRoster.List(s, menu, 0);
         menu.Selected = 2;
         Assert.Equal(2, InnRoster.NextShield(s, menu));
-        Assert.Equal('A', s.Party.Members[2].ShieldLetter);
+        Assert.Equal('A', s.Party.Slots[2].ShieldLetter);
 
         PartyRules.RemoveFromParty(s, 1);
         s.CurrentLocation = 8;

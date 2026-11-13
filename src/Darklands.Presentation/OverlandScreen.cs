@@ -322,7 +322,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 
     private void OpenSheet(GameState state, int member)
     {
-        if (member < state.Party.Members.Count && state.Party.Members[member].IsPresent)
+        if (member < state.Party.Slots.Count && state.Party.Slots[member].OccupiesSlot)
         {
             // orig: world-map-loop R030+0x0318..0x0337: the cell buffer freed (05BA:00C2(7E3E:1FFC, "S")) before the sheet
             FreeBuffer(state, "S");
@@ -387,7 +387,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         // C: 25be reads the cell buffer 20d2 filled for the view (Draw), under the marker as the view's registers place it: at the west / north
         //   border the block starts one cell east / south (WorldMap.BufferOffset), and it is read flat (CellBuffer.CampWatch)
         var (row, column) = CellBuffer.MarkerCell(_markerX - _originX, _markerY - _originY, _viewTop, _viewRows);
-        Camp?.Invoke(map.Buffer.CampWatch(state.Party.Members.Count, row, column));
+        Camp?.Invoke(map.Buffer.CampWatch(state.Party.Slots.Count, row, column));
         UseMapPalette(state);
         return travel.AmbushInCamp() is { } card and > 0 ? card : null;
     }

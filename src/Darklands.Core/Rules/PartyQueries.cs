@@ -12,10 +12,10 @@ namespace Darklands.Core.Rules;
 public static class PartyQueries
 {
     private static IEnumerable<(int Index, Character Member)> Able(GameState s) =>
-        s.Party.Members.Select((m, i) => (i, m)).Where(x => x.m.Status == CharacterStatus.Able);
+        s.Party.Slots.Select((m, i) => (i, m)).Where(x => x.m.Status == CharacterStatus.Able);
 
-    private static IEnumerable<(int Index, Character Member)> Present(GameState s) =>
-        s.Party.Members.Select((m, i) => (i, m)).Where(x => x.m.IsPresent);
+    private static IEnumerable<(int Index, Character Member)> Occupied(GameState s) =>
+        s.Party.Slots.Select((m, i) => (i, m)).Where(x => x.m.OccupiesSlot);
 
     // ---- skills ---------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ public static class PartyQueries
     {
         var last = s.Party.Last;
         last.Value = 0;
-        foreach (var (i, m) in Present(s))
+        foreach (var (i, m) in Occupied(s))
         {
             for (var k = from; k < to; k++)
             {
@@ -153,7 +153,7 @@ public static class PartyQueries
     // orig: R029+0x174A (0E76:174A) matched; tests: Oracle:rules.json party_max_attr_women; FidelityFixTests
     // C: present members (status != 0) with record byte +3 == 1, unlike the skill variant (able).
     public static int MaxAttributeOfWomen(GameState s, int attribute) =>
-        HighestAttribute(s, Present(s).Where(x => x.Member.IsFemale), m => m.Attributes[attribute]);
+        HighestAttribute(s, Occupied(s).Where(x => x.Member.IsFemale), m => m.Attributes[attribute]);
 
     /// <summary>
     /// The highest attribute sum a + b among present members (<c>party-stat-top-sum</c>).
@@ -165,7 +165,7 @@ public static class PartyQueries
     {
         var last = s.Party.Last;
         last.Value = 0;
-        foreach (var (i, m) in Present(s))
+        foreach (var (i, m) in Occupied(s))
         {
             if (m.Attributes[a] + m.Attributes[b] > last.Value)
             {
@@ -179,12 +179,12 @@ public static class PartyQueries
     /// <summary>The average attribute of the present members (<c>party-stat-mean</c>).</summary>
     // orig: party-stat-mean R029+0x1800 (0E76:1800) matched; tests: Oracle:rules.json R029+0x1800
     public static int AverageAttribute(GameState s, int attribute) =>
-        s.Party.Last.AttributeValue = (byte)Average(Present(s).Select(x => x.Member.Attributes[attribute]));
+        s.Party.Last.AttributeValue = (byte)Average(Occupied(s).Select(x => x.Member.Attributes[attribute]));
 
     /// <summary>The highest attribute a + skill b among present members.</summary>
     // orig: R029+0x184A (0E76:184A) matched; tests: Oracle:rules.json party_max_attr_skill
     public static int MaxAttributePlusSkill(GameState s, int attribute, int skill) =>
-        Highest(s, Present(s), m => m.Skills[skill] + m.Attributes[attribute]);
+        Highest(s, Occupied(s), m => m.Skills[skill] + m.Attributes[attribute]);
 
     // ---- agility under burden ---------------------------------------------------------
 
@@ -224,12 +224,12 @@ public static class PartyQueries
 
     /// <summary>Present members (<c>party-here-total</c>).</summary>
     // orig: party-here-total-inner R039+0x1DE6 (1462:1DE6) matched
-    public static int PresentCount(GameState s) => Present(s).Count();
+    public static int PresentCount(GameState s) => Occupied(s).Count();
 
     /// <summary>False if any member is unconscious or dead (<c>party-all-fit</c>).</summary>
     // orig: party-all-fit R029+0x1972 (0E76:1972) matched
     public static bool AllWell(GameState s) =>
-        !s.Party.Members.Any(m => m.Status is CharacterStatus.Dead or CharacterStatus.Unconscious);
+        !s.Party.Slots.Any(m => m.Status is CharacterStatus.Dead or CharacterStatus.Unconscious);
 
     /// <summary>
     /// A party value (<c>party-read</c>): 4 fame, 5 whether every present member is able and has
@@ -239,7 +239,7 @@ public static class PartyQueries
     public static int Get(GameState s, int what) => what switch
     {
         4 => s.Party.Fame,
-        5 => Present(s).All(x => x.Member.Status == CharacterStatus.Able && Inventory.CountWithFlags(s, x.Index, ItemFlags.Mount) != 0) ? 1 : 0,
+        5 => Occupied(s).All(x => x.Member.Status == CharacterStatus.Able && Inventory.CountWithFlags(s, x.Index, ItemFlags.Mount) != 0) ? 1 : 0,
         6 => s.Party.PhilosophersStone,
         _ => 0,
     };
@@ -276,7 +276,7 @@ public static class PartyQueries
     {
         var sum = 0;
         var n = 0;
-        foreach (var (i, _) in Present(s))
+        foreach (var (i, _) in Occupied(s))
         {
             sum += MemberRules.BestWeaponSkill(s, i);
             n++;

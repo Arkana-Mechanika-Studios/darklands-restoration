@@ -152,7 +152,7 @@ public sealed class SaintsOracleTests
         var label = $"saint {saint}";
         for (var m = 0; m < records.Length; m++)
         {
-            var member = s.Party.Members[m];
+            var member = s.Party.Slots[m];
             var at = PartyRecords + 0x80 * m;
             byte Final(int offset) => c.FinalByte(at + offset, records[m][offset]);
             for (var k = 0; k < Character.AttributeCount; k++)
@@ -224,7 +224,7 @@ public sealed class SaintsOracleTests
             {
                 if ((known[bit >> 3] & 0x80 >> (bit & 7)) != 0)
                 {
-                    s.Party.Members[m].Saints.Add(bit);
+                    s.Party.Slots[m].Saints.Add(bit);
                 }
             }
         }
@@ -269,7 +269,7 @@ public sealed class SaintsOracleTests
             {
                 m.Skills[k] = r[0x57 + k];
             }
-            s.Party.Members.Add(m);
+            s.Party.Slots.Add(m);
         }
         return (s, records);
     }

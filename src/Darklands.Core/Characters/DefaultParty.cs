@@ -32,7 +32,7 @@ public static class DefaultParty
         gretchen.Pack.Add(new ItemStack(5, 3, 25, 1, 0));
         gretchen.Pack.Add(new ItemStack(43, 74, 25, 1, 0));
         gretchen.Pack.Add(new ItemStack(51, 82, 25, 1, 0));
-        party.Members.Add(gretchen);
+        party.Slots.Add(gretchen);
 
         var gunther = new Character
         {
@@ -46,7 +46,7 @@ public static class DefaultParty
         gunther.Pack.Add(new ItemStack(15, 15, 25, 1, 0));
         gunther.Pack.Add(new ItemStack(43, 74, 25, 1, 0));
         gunther.Pack.Add(new ItemStack(49, 80, 25, 1, 0));
-        party.Members.Add(gunther);
+        party.Slots.Add(gunther);
 
         var hans = new Character
         {
@@ -66,7 +66,7 @@ public static class DefaultParty
         hans.Pack.Add(new ItemStack(42, 73, 25, 1, 0));
         hans.Pack.Add(new ItemStack(34, 65, 25, 30, 0));
         hans.Formulas.UnionWith([1, 21, 28, 61]);
-        party.Members.Add(hans);
+        party.Slots.Add(hans);
 
         var ebhard = new Character
         {
@@ -81,7 +81,7 @@ public static class DefaultParty
         ebhard.Pack.Add(new ItemStack(43, 74, 25, 1, 0));
         ebhard.Pack.Add(new ItemStack(51, 82, 25, 1, 0));
         ebhard.Saints.UnionWith([3, 23, 46, 50, 113]);
-        party.Members.Add(ebhard);
+        party.Slots.Add(ebhard);
         return party;
     }
 

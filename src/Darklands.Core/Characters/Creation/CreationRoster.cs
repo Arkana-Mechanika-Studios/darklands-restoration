@@ -201,7 +201,7 @@ public sealed class CreationRoster
         for (var i = 0; i < Party.MaxMembers; i++)
         {
             // C: an empty slot keeps the figure the slot held (member-shield-picture / member-colours), which the saved game writes
-            party.Members.Add(_members[i] ?? new Character { Status = CharacterStatus.Empty, Image = SlotImages[i], ImagePalette = SlotPalettes[i] });
+            party.Slots.Add(_members[i] ?? new Character { Status = CharacterStatus.Empty, Image = SlotImages[i], ImagePalette = SlotPalettes[i] });
         }
         party.TrimToSize();
         party.LeaderIndex = leader;
@@ -220,11 +220,11 @@ public sealed class CreationRoster
         for (var slot = 0; slot < Party.MaxMembers; slot++)
         {
             roster.PartySlots[slot] = _slots[slot];
-            if (_slots[slot] >= 0 && slot < party.Members.Count && party.Members[slot].IsPresent)
+            if (_slots[slot] >= 0 && slot < party.Slots.Count && party.Slots[slot].OccupiesSlot)
             {
                 // C: the file's record stays the one the menu wrote (CharacterRoster.StoredRecord).
-                roster.KeepStored(party.Members[slot], roster.Characters[_slots[slot]]);
-                roster.Characters[_slots[slot]] = party.Members[slot];
+                roster.KeepStored(party.Slots[slot], roster.Characters[_slots[slot]]);
+                roster.Characters[_slots[slot]] = party.Slots[slot];
             }
         }
     }

@@ -278,9 +278,9 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
             }
             var saints = markers[k] == 0x16;
             var list = saints ? c.CardSaints : c.CardItems;
-            for (var i = 0; i < c.State.Party.Members.Count; i++)
+            for (var i = 0; i < c.State.Party.Slots.Count; i++)
             {
-                if (c.State.Party.Members[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
+                if (c.State.Party.Slots[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
                 {
                     continue;
                 }
@@ -305,8 +305,8 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
     private static int PopupMember(CardContext c, bool saints, int slot)
     {
         var list = saints ? c.CardSaints : c.CardItems;
-        var present = Enumerable.Range(0, c.State.Party.Members.Count).Reverse()
-            .Where(i => c.State.Party.Members[i].Status is not (CharacterStatus.Empty or CharacterStatus.Away)).ToList();
+        var present = Enumerable.Range(0, c.State.Party.Slots.Count).Reverse()
+            .Where(i => c.State.Party.Slots[i].Status is not (CharacterStatus.Empty or CharacterStatus.Away)).ToList();
         if (list[slot] != -1)
         {
             foreach (var i in present)
@@ -335,9 +335,9 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
     private static (int Member, int Slot)? PopupChoice(CardContext c, bool saints)
     {
         var list = saints ? c.CardSaints : c.CardItems;
-        for (var i = c.State.Party.Members.Count - 1; i >= 0; i--)
+        for (var i = c.State.Party.Slots.Count - 1; i >= 0; i--)
         {
-            if (c.State.Party.Members[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
+            if (c.State.Party.Slots[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
             {
                 continue;
             }

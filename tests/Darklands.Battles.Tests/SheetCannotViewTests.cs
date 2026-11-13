@@ -69,7 +69,7 @@ public sealed class SheetCannotViewTests
         var state = NewGame.Quickstart(world, 1, () => 1);
         state.Data = world;
         state.Party.LeaderIndex = 0;
-        Assert.True(state.Party.Members.Count >= 3);
+        Assert.True(state.Party.Slots.Count >= 3);
         var asked = new List<int>();
         var page = new BuySellPage(ui, new PartyPanel(ui.Assets));
         new LootScreen(page, state, new List<ItemStack>()) { CannotView = m => { asked.Add(m); return m == 1; } }.Run(Money.From(0, 0, 0));

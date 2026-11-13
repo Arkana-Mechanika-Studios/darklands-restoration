@@ -223,7 +223,7 @@ if (battleStep is not null)
     {
         var g = give[5..].Split(',').Select(v => int.Parse(v, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
         var item = state.Item(g[0]);
-        foreach (var m in state.Party.Members)
+        foreach (var m in state.Party.Slots)
         {
             m.Pack.Add(new Darklands.Core.Characters.ItemStack(g[0], (byte)item.Type, g[1], g[2], (byte)item.Weight));
         }
@@ -289,7 +289,7 @@ if (steps.Remove("chargen"))
         var started = new CharacterCreationScreen(ui, WorldData.Load(files), () => seed).Run();
         Console.WriteLine(started is null
             ? "returned to the start screen"
-            : $"city {started.CurrentLocation}, card 0x{started.CurrentCard:X2}: " + string.Join("; ", started.Party.Members.Select(m =>
+            : $"city {started.CurrentLocation}, card 0x{started.CurrentCard:X2}: " + string.Join("; ", started.Party.Slots.Select(m =>
                 $"{m.Name} ({m.ShortName}) {(m.IsFemale ? "F" : "M")} {m.Age} attrs {string.Join(",", m.Attributes)} skills {string.Join(",", m.Skills)} " +
                 $"items {string.Join(",", m.Pack.Select(p => $"{p.Code}x{p.Count}"))} saints {string.Join(",", m.Saints)} formulas {string.Join(",", m.Formulas)}")));
     }

@@ -23,7 +23,7 @@ public sealed class SaintPrayerTests
     {
         var s = TestGame.Create();
         Assert.Equal(15, new SaintPrayer(s, 3, Aidan, PrayerMode.ForParty).Favor);
-        s.Party.Members[3][Attribute.DivineFavor] = 10;
+        s.Party.Slots[3][Attribute.DivineFavor] = 10;
         var poor = new SaintPrayer(s, 3, Aidan, PrayerMode.ForParty);
         Assert.Equal(0, poor.Favor);
         Assert.False(poor.CanPray);
@@ -33,7 +33,7 @@ public sealed class SaintPrayerTests
     public void MoreStopsAtTheDivineFavorOrAtAChanceOf99AndLessAtZero()
     {
         var s = TestGame.Create();
-        s.Party.Members[3][Attribute.DivineFavor] = 40;
+        s.Party.Slots[3][Attribute.DivineFavor] = 40;
         var p = new SaintPrayer(s, 3, Aidan, PrayerMode.ForParty);
         // Ebhard: Virtue 52 → (52 − 23) / 2 − 15 + 25 + favor.
         Assert.Equal(14 - 15 + 25 + 15, p.Chance);
@@ -45,7 +45,7 @@ public sealed class SaintPrayerTests
         Assert.Equal(0, p.FavorRemaining);
         Assert.Equal(64, p.Chance);
 
-        s.Party.Members[3][Attribute.DivineFavor] = 99;
+        s.Party.Slots[3][Attribute.DivineFavor] = 99;
         var rich = new SaintPrayer(s, 3, Aidan, PrayerMode.ForParty);
         while (rich.OfferMore())
         {
@@ -91,7 +91,7 @@ public sealed class SaintPrayerTests
         var expected = twin.Below(100) <= chance;
         Assert.Equal(expected, success);
         var lost = favor + (!expected && twin.Below(99) < chance - 66 ? favor / 2 : 0);
-        Assert.Equal(Math.Max(1, 99 - lost), s.Party.Members[3][Attribute.DivineFavor]);
+        Assert.Equal(Math.Max(1, 99 - lost), s.Party.Slots[3][Attribute.DivineFavor]);
         Assert.Equal(expected ? [(Who.Leader, Aidan, favor)] : [], effects.Calls);
         Assert.Equal(expected ? PrayerOutcome.Succeeded : PrayerOutcome.Failed, p.Outcome(success));
         Assert.Equal(PrayerOutcome.Failed, new SaintPrayer(s, 3, Aidan, PrayerMode.ForMember).Outcome(true));
@@ -113,7 +113,7 @@ public sealed class SaintPrayerTests
         var favor = p.Favor;
         var events = new List<string>();
         var effects = new OrderRecorder(events);
-        var success = p.Pray(Who.Leader, effects, ok => events.Add($"message {ok} favor {s.Party.Members[3][Attribute.DivineFavor]}"));
+        var success = p.Pray(Who.Leader, effects, ok => events.Add($"message {ok} favor {s.Party.Slots[3][Attribute.DivineFavor]}"));
         Assert.Equal(success ? 2 : 1, events.Count);
         // the offer is spent after the message: it still shows the favor before (less the extra loss on a failure)
         Assert.StartsWith($"message {success}", events[0]);
@@ -124,7 +124,7 @@ public sealed class SaintPrayerTests
             Assert.Equal("message True favor 99", events[0]);
             Assert.Equal("help", events[1]);
         }
-        Assert.Equal(Math.Max(1, shown - favor), s.Party.Members[3][Attribute.DivineFavor]);
+        Assert.Equal(Math.Max(1, shown - favor), s.Party.Slots[3][Attribute.DivineFavor]);
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public sealed class SaintPrayerTests
         Assert.True(p.CanPray);
         Assert.False(p.PraysByMouse);
         Assert.Equal(99, p.ShownChance);
-        var df = s.Party.Members[0][Attribute.DivineFavor];
+        var df = s.Party.Slots[0][Attribute.DivineFavor];
         p.OfferMore();
         p.OfferMore();
         Assert.Equal(Math.Min(2, df), p.Favor);
@@ -165,7 +165,7 @@ public sealed class SaintPrayerTests
         }
         Assert.Equal(twin.State, ((MscRandom)s.Random).State);
         Assert.Empty(effects.Calls);
-        Assert.Equal(Math.Max(1, df - favor), s.Party.Members[0][Attribute.DivineFavor]);
+        Assert.Equal(Math.Max(1, df - favor), s.Party.Slots[0][Attribute.DivineFavor]);
         Assert.Equal(expected && terrain is 1 or 2 ? 1 : 0, s.Events.Count(EventKinds.TravelBlessing));
     }
 

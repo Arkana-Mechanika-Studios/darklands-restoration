@@ -38,7 +38,7 @@ public static class Saints
     {
         if (who == Who.Everybody)
         {
-            return s.Party.Members.Any(m => m.IsPresent && m.Saints.Contains(saint));
+            return s.Party.Slots.Any(m => m.OccupiesSlot && m.Saints.Contains(saint));
         }
         return s.Party.Slot(who).Saints.Contains(saint);
     }

@@ -23,11 +23,11 @@ public static class MonthlyUpdate
     {
         s.ReportSkillChanges = true;
         var party = s.Party;
-        for (var i = 0; i < party.Members.Count; i++)
+        for (var i = 0; i < party.Slots.Count; i++)
         {
-            if (party.Members[i].IsPresent && (ushort)(party.Seed + month) % 12 == i)
+            if (party.Slots[i].OccupiesSlot && (ushort)(party.Seed + month) % 12 == i)
             {
-                party.Members[i].Age++;
+                party.Slots[i].Age++;
             }
         }
         if (month % 3 == 0)

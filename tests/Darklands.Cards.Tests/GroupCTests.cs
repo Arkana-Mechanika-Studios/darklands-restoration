@@ -46,7 +46,7 @@ public sealed class GroupCTests
         }
         var state = CardHarness.NewGame(seed: 5, location: 3);
         var c = new CardContext(state, CardHarness.World!, new ScriptedScreen(0));
-        if (state.Party.Members.Count < 2)
+        if (state.Party.Slots.Count < 2)
         {
             return;
         }

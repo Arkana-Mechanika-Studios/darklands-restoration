@@ -52,7 +52,7 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
         var text = new List<byte>();
         byte[] name = [];
         var widest = -1;
-        var members = state.Party.Members;
+        var members = state.Party.Slots;
         for (var i = 0; i < members.Count; i++)
         {
             var member = members[i];

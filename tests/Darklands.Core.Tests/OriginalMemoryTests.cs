@@ -64,7 +64,7 @@ public sealed class OriginalMemoryTests
     public void LearningForMinusOneSetsABitOfMember4sFormulaBytes()
     {
         var s = TestGame.Create();
-        Assert.Equal(4, s.Party.Members.Count);              // slot 4 is empty: its bytes still exist
+        Assert.Equal(4, s.Party.Slots.Count);              // slot 4 is empty: its bytes still exist
         Saints.Learn(s, Who.Leader, Cosmas);                  // byte 3, mask 0x80 >> 3
         Assert.DoesNotContain(Cosmas, s.Party.Leader.Saints);
         Assert.Equal(0x10, s.Party.Slot(4).Formulas.Bytes[2 + 3]);
@@ -95,7 +95,7 @@ public sealed class OriginalMemoryTests
         s.Party.Slot(4).Pack[60] = new ItemStack(9, 0, 0, 0, 0);
         Assert.Equal(2, Inventory.Has(s, 0, 0x47));
         // above the formula table: member 4, code 0x75 + k reads saint byte k of member 0
-        s.Party.Members[0].Saints.Add(8);
+        s.Party.Slots[0].Saints.Add(8);
         Assert.Equal(2, Inventory.Has(s, 4, Potions.FirstPotion + 22 + 1));
     }
 
@@ -103,16 +103,16 @@ public sealed class OriginalMemoryTests
     public void KeepingItemsOfAnEmptyPackLeavesMinusOneAndTheNextItemIsLost()
     {
         var s = TestGame.Create();
-        var gunther = s.Party.Members[1];
+        var gunther = s.Party.Slots[1];
         gunther.Pack.Clear();
         Inventory.KeepEach(s, 1, -1);                         // every roll fails: i = 0 removes "stack 0"
         Assert.Equal(-1, gunther.Pack.Stacks);
         Assert.Empty(gunther.Pack);
         Assert.Equal(0, Inventory.Add(s, 1, 60));             // written to entry -1 = Gretchen's entry 63
         Assert.Empty(gunther.Pack);
-        Assert.Equal(60, s.Party.Members[0].Pack[63].Code);
+        Assert.Equal(60, s.Party.Slots[0].Pack[63].Code);
         // member 0's entry -1 is the six bytes before the packs
-        var gretchen = s.Party.Members[0];
+        var gretchen = s.Party.Slots[0];
         gretchen.Pack.Clear();
         Inventory.KeepEach(s, 0, -1);
         Inventory.Add(s, 0, 61);
@@ -124,7 +124,7 @@ public sealed class OriginalMemoryTests
     public void RemovingTheStackPastTheEndUnequipsByTheStaleEntryAndKeepsTheLastStack()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         m.Pack.Clear();
         m.Pack.Add(new ItemStack(5, 3, 25, 1, 0));
         m.Pack.Add(new ItemStack(3, 3, 30, 1, 4));            // a hand weapon (item 3), equipped

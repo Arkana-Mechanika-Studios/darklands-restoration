@@ -17,7 +17,7 @@ public sealed class CampAndSheetRulesTests
     {
         var d = s.Item(code);
         Inventory.AddStack(s, member, new ItemStack(code, d.Type, quality, count, d.Weight));
-        return s.Party.Members[member].Pack.FindIndex(st => st.Code == code && st.Quality == quality);
+        return s.Party.Slots[member].Pack.FindIndex(st => st.Code == code && st.Quality == quality);
     }
 
     // ---- the pack -------------------------------------------------------------------
@@ -26,7 +26,7 @@ public sealed class CampAndSheetRulesTests
     public void ReadyingAHandWeaponTakesTheStacksTypeAndQualityAndItsWeight()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         m.Pack.Clear();
         var index = Give(s, 0, 3, 30);
         PackRules.Equip(s, 0, index);
@@ -41,7 +41,7 @@ public sealed class CampAndSheetRulesTests
     public void ArmourAndShieldsGoByItemType(int code, EquipmentSlot slot)
     {
         var s = TestGame.Create();
-        s.Party.Members[0].Pack.Clear();
+        s.Party.Slots[0].Pack.Clear();
         PackRules.Equip(s, 0, Give(s, 0, code, 25));
         Assert.Equal(code, Inventory.EquippedType(s, 0, slot));
     }
@@ -51,16 +51,16 @@ public sealed class CampAndSheetRulesTests
     {
         var s = TestGame.Create();
         Data(s).Items[20] = Data(s).Items[20] with { Flags = 0x20 };
-        s.Party.Members[0].Pack.Clear();
+        s.Party.Slots[0].Pack.Clear();
         PackRules.Equip(s, 0, Give(s, 0, 20, 25));
-        Assert.Equal(20, s.Party.Members[0].MissileWeapon.Type);
+        Assert.Equal(20, s.Party.Slots[0].MissileWeapon.Type);
     }
 
     [Fact]
     public void AnythingElseIsNotReadied()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         m.Pack.Clear();
         var before = (m.Weapon, m.VitalArmor, m.LimbArmor, m.Shield, m.MissileWeapon);
         PackRules.Equip(s, 0, Give(s, 0, 0x30, 25));
@@ -71,47 +71,47 @@ public sealed class CampAndSheetRulesTests
     public void GivingOneMovesASingleItem()
     {
         var s = TestGame.Create();
-        s.Party.Members[0].Pack.Clear();
-        s.Party.Members[1].Pack.Clear();
+        s.Party.Slots[0].Pack.Clear();
+        s.Party.Slots[1].Pack.Clear();
         PackRules.GiveOne(s, 0, 1, Give(s, 0, 50, 25, 3));
-        Assert.Equal(2, s.Party.Members[0].Pack[0].Count);
-        Assert.Equal(1, s.Party.Members[1].Pack.Single().Count);
+        Assert.Equal(2, s.Party.Slots[0].Pack[0].Count);
+        Assert.Equal(1, s.Party.Slots[1].Pack.Single().Count);
     }
 
     [Fact]
     public void GivingTheStackMovesItAll()
     {
         var s = TestGame.Create();
-        s.Party.Members[0].Pack.Clear();
-        s.Party.Members[1].Pack.Clear();
+        s.Party.Slots[0].Pack.Clear();
+        s.Party.Slots[1].Pack.Clear();
         PackRules.GiveStack(s, 0, 1, Give(s, 0, 50, 25, 3));
-        Assert.Empty(s.Party.Members[0].Pack);
-        Assert.Equal(3, s.Party.Members[1].Pack.Single().Count);
+        Assert.Empty(s.Party.Slots[0].Pack);
+        Assert.Equal(3, s.Party.Slots[1].Pack.Single().Count);
     }
 
     [Fact]
     public void NobodyGivesToThemselvesOrToAFullPack()
     {
         var s = TestGame.Create();
-        s.Party.Members[0].Pack.Clear();
+        s.Party.Slots[0].Pack.Clear();
         var index = Give(s, 0, 50, 25, 3);
         PackRules.GiveOne(s, 0, 0, index);
-        Assert.Equal(3, s.Party.Members[0].Pack[index].Count);
-        var full = s.Party.Members[1].Pack;
+        Assert.Equal(3, s.Party.Slots[0].Pack[index].Count);
+        var full = s.Party.Slots[1].Pack;
         full.Clear();
         for (var i = 0; i < Inventory.MaxStacks; i++)
         {
             full.Add(new ItemStack(60, 60, i, 1, 1));
         }
         PackRules.GiveStack(s, 0, 1, index);
-        Assert.Equal(3, s.Party.Members[0].Pack[index].Count);
+        Assert.Equal(3, s.Party.Slots[0].Pack[index].Count);
     }
 
     [Fact]
     public void MovingAStackShiftsTheOthers()
     {
         var s = TestGame.Create();
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         pack.Clear();
         Give(s, 0, 50, 25);
         Give(s, 0, 51, 25);
@@ -131,7 +131,7 @@ public sealed class CampAndSheetRulesTests
         {
             Data(s).Items[code] = Data(s).Items[code] with { Flags = 0x800 };
         }
-        s.Party.Members[0].Pack.Clear();
+        s.Party.Slots[0].Pack.Clear();
         return s;
     }
 
@@ -155,7 +155,7 @@ public sealed class CampAndSheetRulesTests
     {
         var s = WithPotions();
         Drink(s, 0x69, quality);
-        Assert.Equal(expected, s.Party.Members[0].WeaponPotions);
+        Assert.Equal(expected, s.Party.Slots[0].WeaponPotions);
         Assert.Contains(s.Events.All(), e => e.Event.Kind == EventKinds.PotionBonus && e.Event.Type == 0x69);
     }
 
@@ -163,18 +163,18 @@ public sealed class CampAndSheetRulesTests
     public void StrongedgeCarriesIntoTheDamageNibble()
     {
         var s = WithPotions();
-        s.Party.Members[0].WeaponPotions = 0x0E;
+        s.Party.Slots[0].WeaponPotions = 0x0E;
         Drink(s, 0x6A, 20);
-        Assert.Equal(0x11, s.Party.Members[0].WeaponPotions);
+        Assert.Equal(0x11, s.Party.Slots[0].WeaponPotions);
     }
 
     [Fact]
     public void GreatPowerAddsToTheWholeByteAndWraps()
     {
         var s = WithPotions();
-        s.Party.Members[0].WeaponPotions = 0xF0;
+        s.Party.Slots[0].WeaponPotions = 0xF0;
         Drink(s, 0x6B, 30);
-        Assert.Equal((0xF0 + 22) & 0xFF, s.Party.Members[0].WeaponPotions);
+        Assert.Equal((0xF0 + 22) & 0xFF, s.Party.Slots[0].WeaponPotions);
     }
 
     [Theory]
@@ -185,16 +185,16 @@ public sealed class CampAndSheetRulesTests
     {
         var s = WithPotions();
         Drink(s, 0x6D, quality);
-        Assert.Equal(bonus, s.Party.Members[0].ArmourPotions & 0xF);
+        Assert.Equal(bonus, s.Party.Slots[0].ArmourPotions & 0xF);
     }
 
     [Fact]
     public void TruefightAboveFortyFiveIsTheWeakest()
     {
         var s = WithPotions();
-        var bows = s.Party.Members[0][Skill.Bows];
+        var bows = s.Party.Slots[0][Skill.Bows];
         Drink(s, 0x6C, 50);
-        Assert.Equal(Math.Min(99, bows + 5), s.Party.Members[0][Skill.Bows]);
+        Assert.Equal(Math.Min(99, bows + 5), s.Party.Slots[0][Skill.Bows]);
     }
 
     [Fact]
@@ -210,10 +210,10 @@ public sealed class CampAndSheetRulesTests
     public void FirewallCountsAFirewallAndSetsItsStrength()
     {
         var s = WithPotions();
-        s.Party.Members[0].ArmourPotions = 0x12;
+        s.Party.Slots[0].ArmourPotions = 0x12;
         Drink(s, 0x74, 36);
-        Assert.Equal(0x22, s.Party.Members[0].ArmourPotions);
-        Assert.Equal(90, s.Party.Members[0].FirewallStrength);
+        Assert.Equal(0x22, s.Party.Slots[0].ArmourPotions);
+        Assert.Equal(90, s.Party.Slots[0].FirewallStrength);
     }
 
     [Fact]
@@ -234,10 +234,10 @@ public sealed class CampAndSheetRulesTests
         var s = WithPotions();
         var index = Give(s, 0, 0x6E, 25, 2);
         PotionEffects.DrinkFromPack(s, 0, index);
-        Assert.Equal(1, s.Party.Members[0].Pack[index].Count);
+        Assert.Equal(1, s.Party.Slots[0].Pack[index].Count);
         var other = Give(s, 0, 50, 25);
         PotionEffects.DrinkFromPack(s, 0, other);
-        Assert.Equal(1, s.Party.Members[0].Pack[other].Count);
+        Assert.Equal(1, s.Party.Slots[0].Pack[other].Count);
     }
 
     // ---- brewing --------------------------------------------------------------------
@@ -272,12 +272,12 @@ public sealed class CampAndSheetRulesTests
     {
         var s = TestGame.Create();
         s.ClockSeed = null;
-        foreach (var m in s.Party.Members)
+        foreach (var m in s.Party.Slots)
         {
             m.Pack.Clear();
             m.Formulas.Clear();
         }
-        s.Party.Members[0].Formulas.UnionWith([10, 4]);
+        s.Party.Slots[0].Formulas.UnionWith([10, 4]);
         return s;
     }
 
@@ -311,12 +311,12 @@ public sealed class CampAndSheetRulesTests
         var batch = bench.Batches[0];
         batch.Count = 2;
         bench.Brew(batch, 1, 0x1F73);
-        Assert.Empty(s.Party.Members[0].Pack);
-        Assert.Equal(1, s.Party.Members[1].Pack.Single().Count);
+        Assert.Empty(s.Party.Slots[0].Pack);
+        Assert.Equal(1, s.Party.Slots[1].Pack.Single().Count);
         var brew = s.Events.All().Single(e => e.Event.Kind == EventKinds.Brew).Event;
         Assert.Equal((0, 4, 2, 1, 1), (brew.Owner, brew.Type, brew.Extra, brew.Data1, brew.Data2));
         Assert.Equal(0x1F73, brew.Tag);
-        Assert.Equal(Brewing.SuccessChance(s.Party.Members[0][Attribute.Intelligence], s.Party.Members[0][Skill.Alchemy], 0, 0, 2), brew.Value);
+        Assert.Equal(Brewing.SuccessChance(s.Party.Slots[0][Attribute.Intelligence], s.Party.Slots[0][Skill.Alchemy], 0, 0, 2), brew.Value);
         Assert.Equal(2, Brewing.BatchesBrewing(s, 0));
     }
 
@@ -333,7 +333,7 @@ public sealed class CampAndSheetRulesTests
         Assert.Equal(2, again.Batches[0].Count);
         Assert.Equal(4, again.Stock(0x48));
         Assert.Equal(0, Brewing.BatchesBrewing(s, 0));
-        Assert.All(s.Party.Members[0].Pack, st => Assert.Equal(25, st.Quality));
+        Assert.All(s.Party.Slots[0].Pack, st => Assert.Equal(25, st.Quality));
     }
 
     [Fact]
@@ -346,7 +346,7 @@ public sealed class CampAndSheetRulesTests
         bench.Brew(bench.Batches[1], 0, 0x1F73);
         var roll = TestGame.Twin(s).Below(100);
         TimePassage.Advance(s, 1);
-        var potions = s.Party.Members[0].Pack.Where(st => st.Code == Potions.FirstPotion + 10 / 3).ToList();
+        var potions = s.Party.Slots[0].Pack.Where(st => st.Code == Potions.FirstPotion + 10 / 3).ToList();
         var chance = bench.Chance(bench.Batches[1]);
         if (chance <= roll)
         {
@@ -366,13 +366,13 @@ public sealed class CampAndSheetRulesTests
         var s = Alchemists();
         s.Behaviour.FixCallOffScansEveryEvent = true;
         Give(s, 0, 0x4A, 25, 3);
-        s.Party.Members[0].Formulas.Add(7);
+        s.Party.Slots[0].Formulas.Add(7);
         var bench = new BrewingBench(s, Book, 0);
         var batch = bench.Batches.Single(b => b.Formula.Index == 7);
         batch.Count = 3;
         bench.Brew(batch, 1, 0x1F73);
         Brewing.CallOff(s, Book, 0);
-        var pack = s.Party.Members[0].Pack;
+        var pack = s.Party.Slots[0].Pack;
         Assert.Equal(3, pack.Where(st => st.Code == 0x4A).Sum(st => st.Count));
         Assert.Contains(pack, st => st.Code == 0 && st.Count == 0);
         Assert.Equal(0, Brewing.BatchesBrewing(s, 0));
@@ -384,14 +384,14 @@ public sealed class CampAndSheetRulesTests
     {
         var s = Alchemists();
         Give(s, 0, 0x4A, 25, 3);
-        s.Party.Members[0].Formulas.Add(7);
+        s.Party.Slots[0].Formulas.Add(7);
         var bench = new BrewingBench(s, Book, 0);
         var batch = bench.Batches.Single(b => b.Formula.Index == 7);
         batch.Count = 3;
         bench.Brew(batch, 1, 0x1F73);
         Brewing.CallOff(s, Book, 0);
         Assert.NotEqual(0, Brewing.BatchesBrewing(s, 0));
-        Assert.Equal(0, s.Party.Members[0].Pack.Where(st => st.Code == 0x4A).Sum(st => st.Count));
+        Assert.Equal(0, s.Party.Slots[0].Pack.Where(st => st.Code == 0x4A).Sum(st => st.Count));
     }
 
     [Fact]
@@ -401,13 +401,13 @@ public sealed class CampAndSheetRulesTests
         s.Behaviour.FixUnbrewEmptyIngredientSlots = true;
         s.Behaviour.FixCallOffScansEveryEvent = true;
         Give(s, 0, 0x4A, 25, 1);
-        s.Party.Members[0].Formulas.Add(7);
+        s.Party.Slots[0].Formulas.Add(7);
         var bench = new BrewingBench(s, Book, 0);
         var batch = bench.Batches.Single(b => b.Formula.Index == 7);
         batch.Count = 1;
         bench.Brew(batch, 1, 0x1F73);
         Brewing.CallOff(s, Book, 0);
-        Assert.DoesNotContain(s.Party.Members[0].Pack, st => st.Code == 0);
+        Assert.DoesNotContain(s.Party.Slots[0].Pack, st => st.Code == 0);
     }
 
     [Fact]
@@ -444,7 +444,7 @@ public sealed class CampAndSheetRulesTests
     public void AlchemyIsOfferedForAnyBitOfAFormulaByte(int value, bool offered)
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         Array.Clear(m.Formulas.Bytes);
         m.Formulas.Bytes[5] = (byte)value;
         Assert.Equal(offered, new CampStay(s, CampPlace.Inn).CanDoAlchemy(0));
@@ -467,7 +467,7 @@ public sealed class CampAndSheetRulesTests
         var s = TestGame.Create();
         s.ClockSeed = null;
         s.Party.Purse = Money.From(1, 0, 0);
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         m[Attribute.Endurance] = 3;
         new CampStay(s, CampPlace.Inn).PassTheDay();
         Assert.Equal(m.Maximum(Attribute.Endurance), m[Attribute.Endurance]);
@@ -505,7 +505,7 @@ public sealed class CampAndSheetRulesTests
         var s = TestGame.Create();
         s.ClockSeed = null;
         s.Party.Purse = Money.From(1, 0, 0);
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         m[Attribute.Strength] = m.Maximum(Attribute.Strength) - 10;
         var stay = new CampStay(s, CampPlace.Inn);
         var gain = stay.StrengthGain;
@@ -523,7 +523,7 @@ public sealed class CampAndSheetRulesTests
         s.ClockSeed = null;
         s.Date = s.Date with { Hour = 1 };   // four hours to 05:00 is too short: the next 05:00 but one
         s.Party.Purse = Money.From(1, 0, 0);
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         m[Attribute.DivineFavor] = 1;
         var stay = new CampStay(s, CampPlace.Inn);
         stay.Pray(0, Book);
@@ -548,7 +548,7 @@ public sealed class CampAndSheetRulesTests
     public void GuardsLowerTheDailyRisk()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         Array.Fill(m.Skills, 0);
         m[Skill.Woodwise] = 80;
         m[Skill.Stealth] = 40;
@@ -563,7 +563,7 @@ public sealed class CampAndSheetRulesTests
     public void AGuardsImpactWeaponSkillIsNotCounted()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         Array.Fill(m.Skills, 0);
         m[Skill.ImpactWeapons] = 50;
         var stay = new CampStay(s, CampPlace.Wilderness) { DailyRisk = 10 };
@@ -624,7 +624,7 @@ public sealed class CampAndSheetRulesTests
     public void WithoutAnyGiftsAMemberIsADayLaborer()
     {
         var s = TestGame.Create();
-        var m = s.Party.Members[0];
+        var m = s.Party.Slots[0];
         Array.Fill(m.Skills, 0);
         Array.Fill(m.Attributes, 0);
         Assert.Equal((2, "Day Laborer"), DayJobs.Best(s, 0));

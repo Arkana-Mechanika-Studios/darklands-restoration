@@ -284,7 +284,7 @@ public sealed class BarterScreen
             _member = (_member + 1) % 5;
         }
         // C: (DS:884E + 1) % 5 until party[].present: loops forever if nobody is present (impossible while the party exists).
-        while (Party.PresentMember(_member) is null);
+        while (Party.OccupiedSlot(_member) is null);
         Redraw();
         _page.Recolor(0x50, 0x33, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);
     }
@@ -380,7 +380,7 @@ public sealed class BarterScreen
     // orig: trade-screen-keys R032+0x0F60 draft, cases 0x5E00..0x6200 (falls through into the list switch); prices on screen are not recomputed
     private void ChooseLeader(int member)
     {
-        if (Party.PresentMember(member) is null)
+        if (Party.OccupiedSlot(member) is null)
         {
             return;
         }

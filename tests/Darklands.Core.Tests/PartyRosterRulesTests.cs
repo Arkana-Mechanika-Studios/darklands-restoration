@@ -24,7 +24,7 @@ public sealed class PartyRosterRulesTests
         // The roster's entries in another order than the slots: slot 1 holds entry 3.
         (s.Roster.PartySlots[1], s.Roster.PartySlots[3]) = (3, 1);
         (s.Roster.Characters[1], s.Roster.Characters[3]) = (s.Roster.Characters[3], s.Roster.Characters[1]);
-        var away = s.Party.Members[1];
+        var away = s.Party.Slots[1];
         away.Status = CharacterStatus.Away;
         s.Party.LeaderIndex = 1;
 
@@ -33,7 +33,7 @@ public sealed class PartyRosterRulesTests
         var note = s.Events.Find(EventKinds.MemberAway, -1, 7, -1, -1, -1);
         Assert.Equal(3, s.Events[note]!.Type);                 // character-in-slot(1) = ids[1] = 3
         Assert.Equal(-1, s.Roster.PartySlots[1]);
-        Assert.False(s.Party.Slot(1).IsPresent);
+        Assert.False(s.Party.Slot(1).OccupiesSlot);
         Assert.Same(away, s.Roster.Characters[3]);              // the record stays on the roster ...
         Assert.Equal(CharacterStatus.Away, away.Status);        // ... with status 5 (party-leave keeps 5)
         Assert.Equal(7, away.RosterLocation);                   // and the record's first word = location-now
@@ -44,13 +44,13 @@ public sealed class PartyRosterRulesTests
     public void ACharacterOfTheRosterJoinsInTheFirstFreeSlot()
     {
         var s = WithRoster();
-        var left = s.Party.Members[2];
+        var left = s.Party.Slots[2];
         PartyRules.RemoveFromParty(s, 2);
         Assert.Equal(CharacterStatus.Empty, left.Status);
         Assert.Equal(-1, PartyRules.SlotOfCharacter(s, 2));
 
         Assert.Equal(2, PartyRules.AddFromRoster(s, 2));
-        Assert.Same(left, s.Party.Members[2]);
+        Assert.Same(left, s.Party.Slots[2]);
         Assert.Equal(CharacterStatus.Able, left.Status);
         Assert.Equal(2, PartyRules.CharacterInSlot(s, 2));
         Assert.Equal(2, PartyRules.SlotOfCharacter(s, 2));
@@ -75,20 +75,20 @@ public sealed class PartyRosterRulesTests
     {
         // join-party-member (R029+0x4650): member-shield-picture[slot] = the [bp+0xC] argument (R029+0x48B1), member-colours stays the slot's.
         var s = WithRoster();
-        var last = s.Party.Members.Count - 1;
-        s.Party.Members[1].Image = "C00";
-        s.Party.Members[1].ImagePalette = Enumerable.Range(1, 24).Select(i => (byte)i).ToArray();
-        s.Party.Members[last].Image = "A00";
-        s.Party.Members[last].ImagePalette = Enumerable.Range(30, 24).Select(i => (byte)i).ToArray();
+        var last = s.Party.Slots.Count - 1;
+        s.Party.Slots[1].Image = "C00";
+        s.Party.Slots[1].ImagePalette = Enumerable.Range(1, 24).Select(i => (byte)i).ToArray();
+        s.Party.Slots[last].Image = "A00";
+        s.Party.Slots[last].ImagePalette = Enumerable.Range(30, 24).Select(i => (byte)i).ToArray();
         PartyRules.RemoveFromParty(s, last);
         PartyRules.RemoveFromParty(s, 1);
 
         Assert.Equal(1, PartyRules.AddMember(s, "Wolf Bauer", "Wolf", "F01", 100, 1));
-        Assert.Equal("F01", s.Party.Members[1].Image);
-        Assert.Equal(Enumerable.Range(1, 24).Select(i => (byte)i), s.Party.Members[1].ImagePalette);
+        Assert.Equal("F01", s.Party.Slots[1].Image);
+        Assert.Equal(Enumerable.Range(1, 24).Select(i => (byte)i), s.Party.Slots[1].ImagePalette);
         Assert.Equal(last, PartyRules.AddMember(s, "Hans Bauer", "Hans", "F01", 100, 1));
-        Assert.Equal("F01", s.Party.Members[last].Image);
-        Assert.Equal(Enumerable.Range(30, 24).Select(i => (byte)i), s.Party.Members[last].ImagePalette);
+        Assert.Equal("F01", s.Party.Slots[last].Image);
+        Assert.Equal(Enumerable.Range(30, 24).Select(i => (byte)i), s.Party.Slots[last].ImagePalette);
         Assert.True(PartyRules.CharacterInSlot(s, 1) >= 0);   // a hireling is a roster entry (idx[slot] = cnt++)
     }
 
@@ -97,18 +97,18 @@ public sealed class PartyRosterRulesTests
     {
         // party-leave clears the status byte only: join-party-member there leaves +0x58/+0x5A and the unnamed record bytes as they were.
         var s = WithRoster();
-        var last = s.Party.Members.Count - 1;
-        var leaving = s.Party.Members[last];
+        var last = s.Party.Slots.Count - 1;
+        var leaving = s.Party.Slots[last];
         leaving.Weapon = new EquippedItem(3, 31);
         leaving.MissileWeapon = new EquippedItem(-1, 17);
         var bytes = new byte[Character.MemberRecordSize];
         bytes[0x60] = 0x5A;
         leaving.OriginalRecord = bytes;
         PartyRules.RemoveFromParty(s, last);
-        Assert.Equal(last, s.Party.Members.Count);
+        Assert.Equal(last, s.Party.Slots.Count);
 
         Assert.Equal(last, PartyRules.AddMember(s, "Wolf Bauer", "Wolf", "F01", 100, 1));
-        var m = s.Party.Members[last];
+        var m = s.Party.Slots[last];
         Assert.Equal(new EquippedItem(-1, 31), m.Weapon);
         Assert.Equal(new EquippedItem(-1, 17), m.MissileWeapon);
         Assert.Equal(0x5A, m.OriginalRecord![0x60]);
@@ -120,8 +120,8 @@ public sealed class PartyRosterRulesTests
     {
         // party-join (R037+0x3CD6) reads record, saints, formulas and pack into the slot, not member-shield-picture / member-colours.
         var s = WithRoster();
-        var a = s.Party.Members[1];
-        var b = s.Party.Members[2];
+        var a = s.Party.Slots[1];
+        var b = s.Party.Slots[2];
         a.Image = "C00";
         a.ImagePalette = Enumerable.Range(1, 24).Select(i => (byte)i).ToArray();
         b.Image = "A00";
@@ -132,7 +132,7 @@ public sealed class PartyRosterRulesTests
         PartyRules.RemoveFromParty(s, 2);
 
         Assert.Equal(1, PartyRules.AddFromRoster(s, entryB));
-        Assert.Same(b, s.Party.Members[1]);
+        Assert.Same(b, s.Party.Slots[1]);
         Assert.Equal("C00", b.Image);
         Assert.Equal(Enumerable.Range(1, 24).Select(i => (byte)i), b.ImagePalette);
         Assert.Equal(2, PartyRules.AddFromRoster(s, entryA));
@@ -145,9 +145,9 @@ public sealed class PartyRosterRulesTests
     {
         var s = WithRoster();
         Assert.Equal(-1, PartyRules.AddFromRoster(s, s.Roster.Characters.Count));
-        while (s.Party.Members.Count < Party.MaxMembers)
+        while (s.Party.Slots.Count < Party.MaxMembers)
         {
-            s.Party.Members.Add(new Character { Status = CharacterStatus.Able });
+            s.Party.Slots.Add(new Character { Status = CharacterStatus.Able });
         }
         Assert.Equal(-1, PartyRules.AddFromRoster(s, 0));
     }

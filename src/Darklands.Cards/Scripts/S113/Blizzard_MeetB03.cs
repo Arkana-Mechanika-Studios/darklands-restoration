@@ -69,7 +69,7 @@ public sealed class Blizzard_MeetB03 : Card
             {
                 c.SetAttribute(i, (int)Attribute.Strength, 1);
             }
-            var pack = c.State.Party.Members[i].Pack;
+            var pack = c.State.Party.Slots[i].Pack;
             for (var j = 0; j < pack.Count; j++)
             {
                 var flags = c.State.Item(pack[j].Code).Flags;
