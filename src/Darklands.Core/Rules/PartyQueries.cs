@@ -216,7 +216,7 @@ public static class PartyQueries
     // ---- counts and the party values --------------------------------------------------
 
     /// <summary>
-    /// Able women in the party (the reference calls it <c>party-able-total</c>: it counts members with
+    /// Able women in the party (named <c>party-able-total</c>, but it counts members with
     /// status 1 and the female flag).
     /// </summary>
     // orig: party-able-total R029+0x007C (0E76:007C) matched; tests: PracticeAndItemsTests

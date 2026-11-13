@@ -129,7 +129,7 @@ public sealed class EventLog
 
     /// <summary>
     /// A new event from now for <paramref name="hours"/> (<c>event-create</c>; the arguments in
-    /// the reference's order: owner, loc, c, kind, type, value, handler, hours, flags, tag).
+    /// the original's order: owner, loc, c, kind, type, value, handler, hours, flags, tag).
     /// Returns its slot, or −1 when all 300 slots are in use ("EVENT Failure").
     /// </summary>
     // orig: event-create R029+0x2C4E (0E76:2C4E) draft; R029+0x3034 (0E76:3034) matched; tests: EventLogTests

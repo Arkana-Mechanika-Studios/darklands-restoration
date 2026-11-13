@@ -26,7 +26,7 @@ public sealed partial class TacticalBattle
     // orig: column-order-recompute R016+0x0DA6 (1EF8:0DA6) draft; R016+0x0E2E (1EF8:0E2E) draft
     // C: R016+0x0E54..0x0E73: a rebuilt order with the argument 1 copies the far string 286B:0231 to a buffer and shows it for 60 ticks
     // C: (notice-display root 0000:24BC: the battle waits, the timer runs; the clock too unless DS:07D3 holds it).
-    // C: (checked with the draft of R016+0x0DA6) kept when the length is not 0, every entry's combatant has status 1 and every able member
+    // C: (R016+0x0DA6) kept when the length is not 0, every entry's combatant has status 1 and every able member
     // C: is in it: an order that names a member twice (Change Marching Order's F keys) is kept.
     // DIVERGENCE: an entry past the thirteen combatant records (a saved game's bytes) reads past the records; here it makes the order rebuilt.
     public void RebuildMarchingOrder(bool message = false)

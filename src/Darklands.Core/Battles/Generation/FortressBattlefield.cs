@@ -155,7 +155,7 @@ public static class FortressBattlefield
 
     /// <summary>The fortress's tile sets: all "fortmons", seven kinds of tiles.</summary>
     // orig: R011+0x029E (1432:029E) draft (byte-matched per the draft notes); checked against asm; tests: Oracle:special.json
-    // C: the draft stores the north wall's tile 7 (4) twice; the second store changes nothing.
+    // C: the original stores the north wall's tile 7 (4) twice; the second store changes nothing.
     private static void WriteFortressTileDescription(TerrainDescription d)
     {
         d.BackgroundPalette = 6;
@@ -782,7 +782,7 @@ public static class FortressBattlefield
 
         /// <summary>One of the 22 random items (0x96..0xAB).</summary>
         // orig: R011+0x16D2 (1432:16D2) draft ("close"); the 22-way table checked against asm
-        // DORMANT: the draft's switch falls off the end for a roll outside 1..22, which cannot happen.
+        // DORMANT: the original's switch falls off the end for a roll outside 1..22, which cannot happen.
         private int RandomItem() => FirstRandomItem - 1 + g.Roll(22);
 
         private static int LootGroupAt(int group) => LootGroupsAt + LootGroupStride * group;

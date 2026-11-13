@@ -9,7 +9,7 @@ using Darklands.Presentation.Graphics;
 
 namespace Darklands.Presentation;
 
-// orig: R036+0x0082 (1462:0082) draft (unmatched: register allocation), with R036+0x082C on leaving the reference; tests: CampAndSheetRulesTests (the stay), visual
+// orig: R036+0x0082 (1462:0082) draft (unmatched: register allocation), with R036+0x082C on leaving; tests: CampAndSheetRulesTests (the stay), visual
 // orig: the music: DS:9C3D = thunk 09C0:18F1(5), then thunk 09C0:18F1(0x15) in the wild (mode 1), else roll-below(2) ? 9 : 10 (a draw of the
 //   game's generator before anything else of the stay); R036+0x082C plays DS:9C3D back on leaving; tests: MusicTests
 // C: the menu bar (menu-bar-loop) comes with every GameUi.Poll (MenuBar).

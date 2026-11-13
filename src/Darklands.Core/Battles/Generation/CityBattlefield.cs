@@ -373,7 +373,7 @@ public static class CityBattlefield
     };
 
     /// <summary>Random variation of a street map's floors, walls and furniture.</summary>
-    // orig: R010+0x11AA (1432:11AA) draft ("close"; agrees with the old engine for type 6)
+    // orig: R010+0x11AA (1432:11AA) draft ("close"; agrees with an earlier port for type 6)
     private static void VaryStreetCells(GenerationState g, BattlefieldLevel level, int type)
     {
         var percent = type == 4 ? 15 : type is 1 or 5 or 6 ? 5 : 10;
@@ -886,7 +886,7 @@ public static class CityBattlefield
     }
 
     /// <summary>The object of the <paramref name="rank"/>-th group marker with an id (rank drawn when several); object 0 when there is none.</summary>
-    // orig: R010+0x2A2C (1432:2A2C) draft ("close"; agrees with the old engine)
+    // orig: R010+0x2A2C (1432:2A2C) draft ("close"; agrees with an earlier port)
     // orig: R008+0x28A0 (1432:28A0) draft (the wilderness generator's copy, "close", asm re-read;
     // used by WildBattlefield; the original counts the objects as a signed byte, which makes no difference for maps of at most a few dozen)
     public static int PickMarker(GenerationState g, BattlefieldLevel level, int id, out int rank)

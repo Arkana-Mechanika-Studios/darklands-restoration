@@ -7,7 +7,7 @@ internal sealed partial class CastleGenerator
     /// <summary>Builds the outer wall around the keep on the top level.</summary>
     // orig: R006+0x132A (16E1:000A) draft
     // C: adj holds, for the sides 0..3 of the keep, 0 = no wall yet / 1 = done, and for the corners 4..7 the tower room there or −1.
-    // C: the draft's side value 8 (a tower that is at no corner) would write past adj in the original; the array has room for it here.
+    // C: a side value of 8 (a tower that is at no corner) would write past adj in the original; the array has room for it here.
     private void BuildOuterWall()
     {
         var tries = 0;
@@ -349,7 +349,7 @@ internal sealed partial class CastleGenerator
     /// of the side, one cell for both when they agree and two close cells otherwise; −1 for both when there is no place.
     /// </summary>
     // orig: R006+0x1D48 (16E1:0A28) draft
-    // C: the draft's gotos (try 8 random cells, then every cell of the strip, up to 25 tries) are the loop below.
+    // C: the original's jumps (try 8 random cells, then every cell of the strip, up to 25 tries) are the loop below.
     // C: b1 and b2 are local arrays of 40 ints.
     // DIVERGENCE: the search reads them up to two cells outside [0, 40), which the original reads from the neighbouring locals (stack memory);
     //   those read as 0 here. It matters only if a room or strip bound lies within two cells of the map's edge (writes at -1 or 40 would stop the

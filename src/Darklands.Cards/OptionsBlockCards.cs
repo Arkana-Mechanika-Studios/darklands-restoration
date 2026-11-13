@@ -4,7 +4,7 @@ namespace Darklands.Cards;
 /// The cards whose loop shows its menu on the block <c>settings-block</c> holds (<c>card-option-lines(settings-block)</c>):
 /// their <see cref="CardMenu.Block"/> is the game's one <see cref="CardContext.OptionsBlock"/>, which later cards may read.
 /// </summary>
-// orig: settings-block DS:EE53; the card functions below (reference C: `card-option-lines(settings-block)` in the loop; R081: push [DS:EE53] at R081+0x21D9)
+// orig: settings-block DS:EE53; the card functions below (the card loop calls `card-option-lines(settings-block)`; R081: push [DS:EE53] at R081+0x21D9)
 internal static class OptionsBlockCards
 {
     private static readonly HashSet<string> Cards = new(StringComparer.Ordinal)

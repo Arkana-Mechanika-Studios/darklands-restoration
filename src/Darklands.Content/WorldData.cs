@@ -82,7 +82,7 @@ public sealed class WorldData : IGameData
         d.Weight, d.Quality, d.Value, d.Rarity, d.Flags.Count > 4 ? d.Flags[4] : 0);
 
     // orig: struct location, 0x3A bytes, as the C reads it: icon +0x00, x +0x04, y +0x06, unk08 +0x08, unk0a +0x0A, menu +0x0C, unk0e +0x0E, local reputation +0x12 (Party02 stores 9), flags +0x14, unk17 +0x17, name +0x26 (struct location, struct loc); status draft; tests: none directly (CardSmokeTests; OriginalSaveTests round-trip the records)
-    // orig: the other fields follow the reference's format notes (DARKLAND.LOC, confidence "doc"): cache handle +0x18 (inn_cache_idx), mark +0x1A, three recorded words from +0x1C
+    // orig: the other fields follow the documented DARKLAND.LOC format (confidence "doc"): cache handle +0x18 (inn_cache_idx), mark +0x1A, three recorded words from +0x1C
     // C: names. NoticeRange (unk08: how far the place is noticed while travelling, R030+0x1300 compares it with the distance) and Danger (unk0a: added to the encounter weight, R030+0x2D44) are read from how the travel code uses them; ArrivalCard (menu) and EncounterCard (unk0e) from the card numbers the map returns; LocalValues, Mark, Recorded and CacheHandle are the rules' names (place-query/place-assign), their meaning is a guess.
     // C: the +0x15..+0x17 bytes are signed here (the rules read them with a signed char) and the name is cut at 20 bytes: a name that fills all 20 would run on into the next record in the original (_fstrcpy up to the first zero).
     // C: the shipped DARKLAND.LOC puts record 373 (icon 5, arrival card 250) at map row 931, one row below the last of the map's

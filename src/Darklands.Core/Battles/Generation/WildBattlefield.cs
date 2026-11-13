@@ -929,7 +929,7 @@ public static class WildBattlefield
             case 0x77:
                 return 0x30;
             default:
-                // Includes battlefield types no wilderness battle uses (0x56..0x60 ...): the draft's explicit arms all return bf.
+                // Includes battlefield types no wilderness battle uses (0x56..0x60 ...): the original's explicit arms all return bf.
                 return bf;
         }
     }

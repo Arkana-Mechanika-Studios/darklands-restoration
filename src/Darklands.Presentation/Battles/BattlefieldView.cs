@@ -14,7 +14,7 @@ namespace Darklands.Presentation.Battles;
 // orig: floor-view-paint R017+0x0000 (1EF8:0000) draft; tests: BattlefieldViewTests
 // orig: R000+0x0114 (0E76:0114) draft (the slot screen-position tables, R136+0x415E..4b4a)
 // The wall-hiding and corner-variant conditions were checked against the asm (R017+0x01FD..0x029E)
-// and agree with the old engine's CleanCombatTerrain.
+// and agree with an earlier port.
 public sealed class BattlefieldView
 {
     /// <summary>Left edge of the view on the screen (the party panel is left of it).</summary>

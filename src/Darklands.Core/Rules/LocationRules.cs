@@ -65,7 +65,7 @@ public static class LocationRules
     // ---- place-query / place-assign --------------------------------------------------------
 
     /// <summary>
-    /// A location value (<c>place-query</c>; the reference's numbering). 0 standing, 1 its band, 2 city
+    /// A location value (<c>place-query</c>; the original's numbering). 0 standing, 1 its band, 2 city
     /// size (1 in the wilderness, 2 outside cities), 3..11 shop qualities, 12..14 the
     /// location's three local values, 15..31 city buildings, 32 the location flags, 33 the
     /// local random seed, 34 the city's exit x, 35 within 14 days of the city's festival,

@@ -11,7 +11,7 @@ namespace Darklands.Persistence;
 /// </summary>
 // orig: written by R037+0x2ACE (1462:2ACE) draft (unmatched: a loop-test operand order),
 // read by R037+0x8ED4 (1C7D:0D24) matched and (header skipped, party block and records only)
-// saved-game-read R037+0x4184 (1462:4184) matched; the draft's write order (2ace) checked
+// saved-game-read R037+0x4184 (1462:4184) matched; the write order of 2ace (R037+0x2ACE) checked
 // against the 19 saved games and SAVES\DEFAULT of the player's folder, which all split and join back byte for byte; tests: OriginalSaveTests
 // C: the loader reads the location table as one block of 0x5DCE bytes (2 + 414 x 0x3A) whatever its count says, and takes the rest of
 // the file as CACHE.TMP; every file the game writes has 414 records, so the count decides here (SAVES\DEFAULT, which the game only

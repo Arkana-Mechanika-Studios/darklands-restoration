@@ -96,7 +96,7 @@ public static class SaintBook
         MemberRules.RaiseAttributeTemporarily(s, who, (int)a, s.Random.Below(most - least + 1) + least, 24);
 
     /// <summary>A skill raised by <paramref name="least"/>..<paramref name="most"/> points for <paramref name="hours"/> (24; St.Barbara 5 and 10).</summary>
-    // orig: skill-temporary-drop(who, k, roll-below(n) + m, h) R029+0x4B08 (the reference's name; it raises)
+    // orig: skill-temporary-drop(who, k, roll-below(n) + m, h) R029+0x4B08 (a misnomer; it raises)
     private static Boon Boost(Skill k, int least, int most, int hours = 24) => (s, who, _) =>
         MemberRules.RaiseSkillTemporarily(s, who, (int)k, s.Random.Below(most - least + 1) + least, hours);
 

@@ -30,7 +30,7 @@ internal sealed class PcMachine : IPortBus
 
     /// <summary>
     /// How fast the emulated processor is taken to run, for the time the drivers' work takes:
-    /// 3000 instructions per millisecond, DOSBox's default speed, at which the reference capture of
+    /// 3000 instructions per millisecond, DOSBox's default speed, at which the comparison capture of
     /// the original was made (a sample's DMA transfer started about 44 ms into the Roland driver's
     /// tick there, after its 131 700 instructions).
     /// </summary>

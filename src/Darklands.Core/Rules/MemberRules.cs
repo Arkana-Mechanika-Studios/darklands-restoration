@@ -343,7 +343,7 @@ public static class MemberRules
 
     /// <summary>
     /// Raises a skill for about <paramref name="hours"/>, at most to 99, recorded as a
-    /// <see cref="EventKinds.SkillBoost"/> event (the reference's misnamed <c>skill-temporary-drop</c>).
+    /// <see cref="EventKinds.SkillBoost"/> event (<c>skill-temporary-drop</c>, a misnomer: it raises).
     /// Reports only with the "saintly changes" option. Original bug (−2): for each present
     /// member it adds the boost to <em>everybody</em> and records an event owned by −2, so each
     /// member gains the boost once per present member; the 99 limit is taken from an undefined

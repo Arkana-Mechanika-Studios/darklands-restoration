@@ -124,7 +124,7 @@ public sealed partial class CardContext
     public void RaiseAttributeTemporarily(int who, int attribute, int points, int hours) =>
         MemberRules.RaiseAttributeTemporarily(State, who, attribute, points, hours);
 
-    /// <summary>the reference's misnamed <c>skill-temporary-drop</c>: raises a skill for a while.</summary>
+    /// <summary><c>skill-temporary-drop</c>, a misnomer: it raises a skill for a while.</summary>
     // orig: skill-temporary-drop R029+0x4B08 (0E76:4B08) draft
     public void RaiseSkillTemporarily(int who, int skill, int points, int hours) =>
         MemberRules.RaiseSkillTemporarily(State, who, skill, points, hours);
@@ -269,7 +269,7 @@ public sealed partial class CardContext
     // orig: party-effective-stat-two-low-bonus R029+0x088E (0E76:088E) matched
     public int PartyMinMountedAgility() => PartyQueries.MinMountedAgility(State);
 
-    /// <summary>the reference's <c>party-able-total</c>: able <em>women</em>.</summary>
+    /// <summary><c>party-able-total</c>: able <em>women</em>.</summary>
     // orig: party-able-total R029+0x007C (0E76:007C) matched
     public int AbleWomen() => PartyQueries.AbleWomen(State);
 

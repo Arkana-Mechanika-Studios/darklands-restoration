@@ -54,7 +54,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private const byte ListSelected = 9;
     private const int CtrlF1 = 0x5E00;
 
-    // orig: R136+0xBBE7 far 290E:3559 (the box table, read from the EXE's data section) the reference
+    // orig: R136+0xBBE7 far 290E:3559 (the box table, read from the EXE's data section)
     private static readonly Box[] Boxes =
     [
         new(64, 1, 193, 10, 190, 12, 0, 1, 193, 10, 0, 0, 0, 3, 12, 1),
@@ -84,7 +84,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     /// <summary>The brush pictures of the boxes that open (index <see cref="Box.Picture"/>).</summary>
     private static readonly string[] Brushes = ["armbrs13", "armbrsh1", "armbrsh2", "armbrsh3", "armbrsh4", "armbrsh5"];
 
-    // orig: R136+0xA4F7 (attribute and skill labels of the open boxes) the reference
+    // orig: R136+0xA4F7 (attribute and skill labels of the open boxes)
     private static readonly string[] FullLabels =
     [
         "Endurance", "Strength", "Agility", "Perception", "Intelligence", "Charisma", "Divine Favor", "Edged Wpns", "Impact Wpns",

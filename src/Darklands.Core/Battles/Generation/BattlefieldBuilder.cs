@@ -312,7 +312,7 @@ public sealed class GenerationState
 /// enemy kinds and groups.
 /// </summary>
 // orig: battlefield-builder-entry R004+0x0000 (0E76:0000) draft (dispatch table checked
-// against the old engine's BattlefieldGenerationDispatcher, which pinned the original 138-word table)
+// against an earlier port, which pinned the original 138-word table)
 public static class BattlefieldBuilder
 {
     public static GeneratedBattlefield Build(BattlefieldContext context, int battlefield, int seed, IReadOnlyList<(int Type, int Quality, int Count)> groups)

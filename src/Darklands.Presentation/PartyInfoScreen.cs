@@ -8,7 +8,7 @@ using Darklands.Presentation.Graphics;
 
 namespace Darklands.Presentation;
 
-// orig: R034+0x0EE6 (party-info-screen) R034+0x0EE6 (1550:0006) matched the reference; tests: none (visual, headless)
+// orig: R034+0x0EE6 (party-info-screen) R034+0x0EE6 (1550:0006) matched; tests: none (visual, headless)
 // DIVERGENCE: party-info-screen-close (R034+0x119C) marks the party icons for redrawing; here GameScreens2 puts the earlier screen back.
 /// <summary>
 /// The party information screen (F6): fame, the time and date, where the party is, its

@@ -94,8 +94,8 @@ public sealed partial class CardContext
     // orig: party-map-column DS:E3D0; tests: CardSmokeTests
     // C: the cards' reuse of the map X while in a city.
     /// <summary>
-    /// A mark city cards keep while the party is in a city, in the map position's X (the reference's
-    /// <c>party-map-column</c>), which the travel map sets again when the party leaves: the side taken
+    /// A mark city cards keep while the party is in a city, in the map position's X
+    /// (<c>party-map-column</c>), which the travel map sets again when the party leaves: the side taken
     /// in a political struggle (0 the rebels, 1 the government), a failed jail escape (2) ...
     /// </summary>
     public int CityMark

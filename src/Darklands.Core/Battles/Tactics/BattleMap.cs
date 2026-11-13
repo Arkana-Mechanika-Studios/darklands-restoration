@@ -160,7 +160,7 @@ public sealed class BattleMap
             || (Blocks(west.SouthWall) && x - cR16 + 32 < w + 16 && cB15 - y < h + 2 && (cellLeft - 1 > left || cM8 + 6 < bottom))
             || (Blocks(west.NorthWall) && x - cR16 + 32 < w + 16 && y - cellTop < h + 2 && (cellLeft - 1 > left || cM8 - 6 > top));
 
-        // Clauses 4..12 come from the draft (spec D §4.2 checked 1..3 against the asm); all twelve agree with the original on Oracle:tactics.json.
+        // Clauses 1..3 were checked against the asm (spec D §4.2), 4..12 through the oracle; all twelve agree with the original on Oracle:tactics.json.
         // orig: R014+0x63CC (1462:050C) unmatched (walls, DS:E0A2 = 1: plain box test)
         bool WallsStrict() =>
             (Blocks(centre.NorthWall) && y - cellTop < h + 2)

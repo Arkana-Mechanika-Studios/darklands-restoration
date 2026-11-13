@@ -10,7 +10,7 @@ namespace Darklands.Cards.Scripts;
 /// buy potions or components, ask about alchemical knowledge (card 0x53), offer a formula in
 /// exchange for one of his, or ask about a task he would pay for.
 /// </summary>
-// orig: R066+0x0D48 (190C:0008) asm (the reference has no C for R066 seg 190C); tests: CardSmokeTests
+// orig: R066+0x0D48 (190C:0008) asm (no C exists for R066 seg 190C); tests: CardSmokeTests
 // orig: handler setup R066+0x178C (all twenty lines on, unused-line handler 0aee "screwed up.",
 // item pop-ups 0b26/0b56/0b86/0bb6, saint pop-ups 0be6/0c70/0cfa/0d84; card-item-lines and card-saint-lines cleared)
 public sealed class AlchemistsShop : Card

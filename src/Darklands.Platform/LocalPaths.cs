@@ -15,7 +15,7 @@ namespace Darklands.Platform;
 /// </summary>
 public static class LocalPaths
 {
-    /// <summary>The environment variable naming the project root (the folder that holds the repository, the reference, the game copy …).</summary>
+    /// <summary>The environment variable naming the project root (the folder that holds the repository, the game copy, the local tools …).</summary>
     public const string RootVariable = "DARKLANDS_ROOT";
 
     public static string? Get(string key, string variable)

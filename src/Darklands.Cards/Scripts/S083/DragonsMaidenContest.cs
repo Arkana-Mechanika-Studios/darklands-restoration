@@ -42,7 +42,7 @@ public sealed class DragonsMaidenContest : Card
         {
             c.Events.Create(-2, c.Here, 0, 0x1C, 5, 0, 0, 26280, 0, DragonQuest);
         }
-        // C: the reference's party-able-total counts able women; one alone is not offered either.
+        // C: party-able-total counts able women; one alone is not offered either.
         if (c.AbleWomen() <= 1)
         {
             menu[1] = OptionState.Hidden;

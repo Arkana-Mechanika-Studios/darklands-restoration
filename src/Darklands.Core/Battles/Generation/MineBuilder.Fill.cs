@@ -314,7 +314,7 @@ internal sealed partial class MineBuilder
     /// </summary>
     // orig: R009+0x1DA4 (1432:1DA4) draft (unmatched draft, far off per the draft notes); checked
     // against asm (the tail: only a pile with loot is kept; a locked door is not); tests: Oracle:mine.json
-    // C: the draft's `d->x0a = 5; d->x0a = 0x25;` is a double store of byte 0x0A (the first value is lost).
+    // C: the original stores byte 0x0A twice (5, then 0x25); the first value is lost.
     private void MakePiles(int t, int section)
     {
         var level = LevelOf(section);

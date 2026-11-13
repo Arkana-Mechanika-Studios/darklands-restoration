@@ -109,7 +109,7 @@ internal sealed partial class CastleGenerator
     /// <summary>Puts gate houses (kind 4) against the walls of the keep, along the free strips.</summary>
     // orig: R006+0x10A2 (168E:02B2) draft
     // C: the strip count is re-read each time round (cutting a room can add a strip); the strip a house is cut from is the one at index
-    // "side", while the house is placed from strip i (the draft reads it so: t = strips + side).
+    // "side", while the house is placed from strip i (the original's code computes t = strips + side).
     private void PlaceGateHouses()
     {
         var l = _level;
