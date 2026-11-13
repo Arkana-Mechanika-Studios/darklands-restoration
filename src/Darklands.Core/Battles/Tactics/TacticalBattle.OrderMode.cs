@@ -406,7 +406,7 @@ public sealed partial class TacticalBattle
         }
         CursorTarget = -1;
         Cursor = OrderCursor.None;
-        if (Battle.PartyFloor != Battle.FloorShown)
+        if (Battle.PartyLevel != Battle.LevelShown)
         {
             // BUG: with the party split every click on the view gives USE STAIRS (R014+0xC33C), and the walk refusal of
             //   command-mode-end (R014+0xBCA8, real combat only) cannot be reached with Walk greyed. Kept as the original (party-split
@@ -578,7 +578,7 @@ public sealed partial class TacticalBattle
                 }
                 if (OrderAction != 0x100)
                 {
-                    if (Battle.RealCombat && Battle.PartyFloor != Battle.FloorShown)
+                    if (Battle.RealCombat && Battle.PartyLevel != Battle.LevelShown)
                     {
                         _view.Message(UseStairsText, 0x96);
                         return;
@@ -804,7 +804,7 @@ public sealed partial class TacticalBattle
             last.Exchange = (Exchange)ActionState.Ready;
             return;
         }
-        if (Battle.RealCombat && Battle.PartyFloor != Battle.FloorShown)
+        if (Battle.RealCombat && Battle.PartyLevel != Battle.LevelShown)
         {
             // R014+0xBF76..0xBF91
             _view.Message(UseStairsText, 0x96);

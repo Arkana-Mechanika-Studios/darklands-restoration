@@ -21,7 +21,7 @@ public sealed class CloudDrawingTests
 
     private static EffectField Field()
     {
-        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(77)) { Clock = 100, FloorShown = 0 };
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(77)) { Clock = 100, LevelShown = 0 };
         var level = new BattlefieldLevel();
         for (var x = 0; x < BattlefieldLevel.Size; x++)
         {

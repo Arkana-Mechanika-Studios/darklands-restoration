@@ -22,15 +22,15 @@ public sealed class StairsRecordOfShownLevelTests
     private static (TacticalBattle T, int PartyFloor, int HisFloor, int Back) Split(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
-        Assert.True(t.Level.GetByte(StairsAt - 2) >= 1);
+        var party = t.Battle.LevelShown;
+        Assert.True(t.LevelShown.GetByte(StairsAt - 2) >= 1);
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Who]);
         var c = t.Battle[Who];
-        Assert.NotEqual(party, c.Floor);
-        Assert.Equal(party, t.Battle.FloorShown);
+        Assert.NotEqual(party, c.Level);
+        Assert.Equal(party, t.Battle.LevelShown);
         c.StairsToTake = c.StairsBack;
         c.Place = PlaceAction.Stairs;
-        return (t, party, c.Floor, c.StairsBack);
+        return (t, party, c.Level, c.StairsBack);
     }
 
     /// <summary>Plants a record at slot n of the party's level: record 0's bytes with the given level number.</summary>
@@ -55,9 +55,9 @@ public sealed class StairsRecordOfShownLevelTests
         }
         var (t, _, his, back) = Split(OriginalBehaviour.Faithful);
         // the shown (party's) level's slot of his record number leads to his own level: he goes nowhere else
-        Plant(t, t.Battle.FloorShown, back, his);
+        Plant(t, t.Battle.LevelShown, back, his);
         Order(t);
-        Assert.Equal(his, t.Battle[Who].Floor);
+        Assert.Equal(his, t.Battle[Who].Level);
     }
 
     [Fact]
@@ -68,13 +68,13 @@ public sealed class StairsRecordOfShownLevelTests
             return;
         }
         var (t, party, his, back) = Split(OriginalBehaviour.DataSafe);
-        Plant(t, t.Battle.FloorShown, back, his);
+        Plant(t, t.Battle.LevelShown, back, his);
         var expected = (sbyte)t.LevelAt(his).GetByte(StairsAt + 14 * back + 6);
         Order(t);
-        Assert.Equal(expected, t.Battle[Who].Floor);
-        Assert.NotEqual(his, t.Battle[Who].Floor);
+        Assert.Equal(expected, t.Battle[Who].Level);
+        Assert.NotEqual(his, t.Battle[Who].Level);
         // the view: the party's level again (shown before the order), not his old, empty level
-        Assert.Equal(party, t.Battle.FloorShown);
+        Assert.Equal(party, t.Battle.LevelShown);
     }
 
     [Theory]
@@ -87,8 +87,8 @@ public sealed class StairsRecordOfShownLevelTests
             return;
         }
         var (t, _, his, back) = Split(OriginalBehaviour.Faithful);
-        Plant(t, t.Battle.FloorShown, back, level);
+        Plant(t, t.Battle.LevelShown, back, level);
         Order(t);
-        Assert.Equal(his, t.Battle[Who].Floor);
+        Assert.Equal(his, t.Battle[Who].Level);
     }
 }

@@ -153,7 +153,7 @@ public static class CombatantSetup
         var c = battle[index];
         c.Member = null;
         c.Action = CombatAction.None;
-        c.Floor = floor;
+        c.Level = floor;
         c.Facing = c.SpriteFacing = facing;
         c.AnimationSlot = slot;
         c.Target = -1;

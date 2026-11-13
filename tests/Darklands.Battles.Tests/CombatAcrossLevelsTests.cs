@@ -20,15 +20,15 @@ public sealed class CombatAcrossLevelsTests
     private static (TacticalBattle T, int Party, int His, int Enemy, int Target) Split(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         Assert.NotEqual(party, his);
         var target = Enumerable.Range(0, Combatant.PartySlots).First(i => i != Lone && t.Battle[i].IsAble);
         var enemy = Combatant.PartySlots;
         var en = t.Battle[enemy];
         en.Status = CharacterStatus.Able;
-        en.Floor = party;
+        en.Level = party;
         en.Position = new MapPoint(t.Battle[target].Position.X + 24, t.Battle[target].Position.Y);
         en.Target = (sbyte)target;
         t.SwitchLevel(his);
@@ -67,6 +67,6 @@ public sealed class CombatAcrossLevelsTests
         }
         var (t, party, his, enemy, target) = Split(fix ? OriginalBehaviour.DataSafe : OriginalBehaviour.Faithful);
         t.LaunchMissile(enemy, target, 0);
-        Assert.Equal(fix ? party : his, t.Missiles[^1].Floor);
+        Assert.Equal(fix ? party : his, t.Missiles[^1].Level);
     }
 }

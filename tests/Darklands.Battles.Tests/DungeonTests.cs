@@ -57,7 +57,7 @@ public sealed class DungeonTests
             return;
         }
         var (_, tactics) = Start(0x0A, 777);
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         Assert.True(level.GetByte(0x2488) > 0);
         for (var k = 0; k < level.GetByte(0x2488); k++)
         {
@@ -78,7 +78,7 @@ public sealed class DungeonTests
         }
         var (screen, tactics) = Start(0x00, 1234);
         var b = tactics.Battle;
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var k = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => level.GetWord(DoorsAt + 14 * d) > 0 && level.GetByte(DoorsAt + 14 * d + 7) == 0);
         var leader = b.Leader;
         b[leader].Position = Centre(level, DoorsAt + 14 * k);
@@ -105,11 +105,11 @@ public sealed class DungeonTests
             return;
         }
         var (_, tactics) = Start(0x5E, 4545);
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => (sbyte)level.GetByte(DoorsAt + 14 * d + 6) >= 0);
         var wall = (sbyte)level.GetByte(DoorsAt + 14 * door + 6);
         typeof(TacticalBattle).GetProperty(nameof(TacticalBattle.ActivationsEnabled))!.SetValue(tactics, true);
-        var list = tactics.Activations[tactics.Battle.FloorShown];
+        var list = tactics.Activations[tactics.Battle.LevelShown];
         list.RemoveAll(g => g.Room == wall);
         var disabled = new EnemyGroup { X = -528, Y = 200, Spread = 16, Room = wall };
         list.Add(disabled);
@@ -132,7 +132,7 @@ public sealed class DungeonTests
             return;
         }
         var (_, tactics) = Start(0x5E, 4545);
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => (short)level.GetWord(DoorsAt + 14 * d) > 0
             && level.GetByte(DoorsAt + 14 * d + 4) > 0 && level.GetByte(DoorsAt + 14 * d + 5) > 0);
         var at = DoorsAt + 14 * door;
@@ -155,7 +155,7 @@ public sealed class DungeonTests
             return;
         }
         var (_, tactics) = Start(0x00, 1234);
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         const System.Reflection.BindingFlags any = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
         var twins = (bool[])typeof(TacticalBattle).GetField("_twinDoor", any)!.GetValue(tactics)!;
         var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => !twins[d] && level.GetWord(DoorsAt + 14 * d) > 0 && level.GetByte(DoorsAt + 14 * d + 7) == 0);
@@ -164,7 +164,7 @@ public sealed class DungeonTests
         var b = tactics.Battle;
         var enemy = b[Combatant.PartySlots];
         enemy.Status = CharacterStatus.Able;
-        enemy.Floor = b.FloorShown;
+        enemy.Level = b.LevelShown;
         enemy.Target = -1;
         enemy.Position = new MapPoint(b[b.Leader].Position.X + 40, b[b.Leader].Position.Y);
         enemy.Destination = b[b.Leader].Position;
@@ -183,7 +183,7 @@ public sealed class DungeonTests
         }
         var (screen, tactics) = Start(0x0A, 777);
         var b = tactics.Battle;
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var t = Enumerable.Range(0, level.GetByte(0x2184)).First(k => level.GetWord(TriggersAt + 14 * k + 6) == 0 && level.GetWord(TriggersAt + 14 * k) > 0);
         var leader = b.Leader;
         b[leader].Attributes[3] = 99;
@@ -206,7 +206,7 @@ public sealed class DungeonTests
         }
         var (screen, tactics) = Start(0x0A, 777);
         var b = tactics.Battle;
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var r = Enumerable.Range(0, level.GetByte(0x300C)).First(k => (level.GetByte(RegionsAt + 0x2C * k + 8) & 0x7F) != 0);
         var leader = b.Leader;
         b[leader].Skills[14] = 99;
@@ -236,7 +236,7 @@ public sealed class DungeonTests
         }
         var (_, tactics) = Start(0x0A, 777);
         var b = tactics.Battle;
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var r = Enumerable.Range(0, level.GetByte(0x300C)).First(k => (level.GetByte(RegionsAt + 0x2C * k + 8) & 0x7F) != 0);
         var locked = level.GetByte(RegionsAt + 0x2C * r + 8);
         var leader = b.Leader;
@@ -266,7 +266,7 @@ public sealed class DungeonTests
         }
         var (screen, tactics) = Start(0x0B, 4242);
         var b = tactics.Battle;
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         Assert.True(level.GetByte(0x2FB6) > 0, "level 0 has stairs");
         var to = (sbyte)level.GetByte(StairsAt + 6);
         var spot = Centre(level, StairsAt);
@@ -288,9 +288,9 @@ public sealed class DungeonTests
         tactics.UseKey(-1);
         Run(tactics, 4);
         Shot(screen, "stairs-taken");
-        Assert.Equal(to, b.FloorShown);
-        Assert.Equal(to, b.PartyFloor);
-        Assert.All(Enumerable.Range(0, Combatant.PartySlots).Where(i => b[i].IsAble), i => Assert.Equal(to, b[i].Floor));
+        Assert.Equal(to, b.LevelShown);
+        Assert.Equal(to, b.PartyLevel);
+        Assert.All(Enumerable.Range(0, Combatant.PartySlots).Where(i => b[i].IsAble), i => Assert.Equal(to, b[i].Level));
     }
 
     /// <summary>
@@ -307,7 +307,7 @@ public sealed class DungeonTests
         }
         var (screen, tactics) = Start(0x0B, 4242);
         var b = tactics.Battle;
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var spot = Centre(level, StairsAt);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -407,7 +407,7 @@ public sealed class DungeonTests
             return;
         }
         var (screen, tactics) = Start(0x5E, 4545);
-        var level = tactics.Level;
+        var level = tactics.LevelShown;
         var door = Enumerable.Range(0, level.GetByte(0x1F52)).First(d => (short)level.GetWord(DoorsAt + 14 * d) > 0
             && level.GetByte(DoorsAt + 14 * d + 4) > 0 && level.GetByte(DoorsAt + 14 * d + 5) > 0);
         var at = DoorsAt + 14 * door;

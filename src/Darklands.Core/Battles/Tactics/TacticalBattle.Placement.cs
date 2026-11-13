@@ -140,8 +140,8 @@ public sealed partial class TacticalBattle
             for (var oy = -1; oy <= 1; oy++)
             {
                 // byte 0 &= 0x0F: the furniture nibble.
-                var cell = Level[cx + ox, cy + oy];
-                Level[cx + ox, cy + oy] = cell.WithFurniture(0, cell.FurnitureOrientation);
+                var cell = LevelShown[cx + ox, cy + oy];
+                LevelShown[cx + ox, cy + oy] = cell.WithFurniture(0, cell.FurnitureOrientation);
             }
         }
         _redraw = true;
@@ -243,10 +243,10 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a
         //   member left on the old level they appear there, and the end test turns him Away (split audit row 9)
         int? shownBefore = null;
-        if (Battle.Behaviour.FixFollowersOnShownLevel && Battle.PartyFloor != Battle.FloorShown && Battle.PartyFloor >= 0 && Battle.PartyFloor < _levels.Count)
+        if (Battle.Behaviour.FixFollowersOnShownLevel && Battle.PartyLevel != Battle.LevelShown && Battle.PartyLevel >= 0 && Battle.PartyLevel < _levels.Count)
         {
-            shownBefore = Battle.FloorShown;
-            SwitchLevel(Battle.PartyFloor);
+            shownBefore = Battle.LevelShown;
+            SwitchLevel(Battle.PartyLevel);
         }
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {
@@ -255,7 +255,7 @@ public sealed partial class TacticalBattle
             {
                 continue;
             }
-            c.Floor = Battle.FloorShown;
+            c.Level = Battle.LevelShown;
             if (!PlaceAround(i, InitialEnemySpot.Position, InitialEnemySpot.Direction))
             {
                 c.Status = CharacterStatus.Empty;
@@ -285,15 +285,15 @@ public sealed partial class TacticalBattle
         // BUG: the encounters of the party's level are checked at the places of every member (trigger-check R014+0x4442, only while
         //   DS:11CA == DS:C623): a lone member on another level, at the coordinates of an encounter's sight on the party's level,
         //   finds it. Kept as the original (party-split audit row 23). Decision: later, an optional fixed rule after 1.0.
-        var list = Activations[Battle.FloorShown];
-        if (Battle.PartyFloor == Battle.FloorShown && ActivationsEnabled && Running && list.Count != 0)
+        var list = Activations[Battle.LevelShown];
+        if (Battle.PartyLevel == Battle.LevelShown && ActivationsEnabled && Running && list.Count != 0)
         {
             var k = 0;
             while (k < list.Count)
             {
                 var rec = list[k];
                 var found = -1;
-                if (rec.X >= 0 && !Level[rec.X >> 5, rec.Y >> 4].IsVoid)
+                if (rec.X >= 0 && !LevelShown[rec.X >> 5, rec.Y >> 4].IsVoid)
                 {
                     var spot = new MapPoint(rec.X, rec.Y);
                     for (var i = 0; i < Combatant.PartySlots && found < 0; i++)
@@ -368,7 +368,7 @@ public sealed partial class TacticalBattle
             return false;
         }
         var placed = false;
-        var kinds = Field.Forces.Kinds[Battle.FloorShown];
+        var kinds = Field.Forces.Kinds[Battle.LevelShown];
         for (var g = 0; g < types.Length; g++)
         {
             if (types[g] == -1 || types[g] >= kinds.Count)
@@ -411,7 +411,7 @@ public sealed partial class TacticalBattle
                 // DS:C28D[slot] = the kind on this level; DS:C23E[slot] = its level mask (the levels it follows the party to).
                 _slotKind[slot] = types[g];
                 _slotFollows[slot] = kind.LevelMask;
-                CombatantSetup.FromEnemy(Battle, si, kind, Battle.FloorShown, facing, slot, mode == 0);
+                CombatantSetup.FromEnemy(Battle, si, kind, Battle.LevelShown, facing, slot, mode == 0);
                 var c = Battle[si];
                 // C: DS:C1C1 of the slot = the kind's base load (only the battle file reads it).
                 c.PlacedBaseLoad = kind.BaseLoad;
@@ -529,7 +529,7 @@ public sealed partial class TacticalBattle
         }
         _redraw = true;
         Menus.Set(OrdersItem.EnemyInfo, 1);
-        EncounteredLevels |= 1 << Battle.FloorShown;
+        EncounteredLevels |= 1 << Battle.LevelShown;
         LevelChanged = true;
         if (mode == 0 && encounter is not null)
         {
@@ -572,12 +572,12 @@ public sealed partial class TacticalBattle
         var c = Battle[i];
         // BUG: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to
         //   any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
-        var own = Battle.Behaviour.FixWokenOnOtherLevel && c.Floor >= 0 && c.Floor < _levels.Count;
+        var own = Battle.Behaviour.FixWokenOnOtherLevel && c.Level >= 0 && c.Level < _levels.Count;
         int? shownBefore = null;
-        if (own && c.Floor != Battle.FloorShown)
+        if (own && c.Level != Battle.LevelShown)
         {
-            shownBefore = Battle.FloorShown;
-            SwitchLevel(c.Floor);
+            shownBefore = Battle.LevelShown;
+            SwitchLevel(c.Level);
         }
         var first = true;
         var any = false;
@@ -616,7 +616,7 @@ public sealed partial class TacticalBattle
                 r = 30;
                 any = true;
             }
-            else if (Battle[anchor].IsAble && !(own && Battle[anchor].Floor != c.Floor))
+            else if (Battle[anchor].IsAble && !(own && Battle[anchor].Level != c.Level))
             {
                 from = Battle[anchor].Position;
                 anchor++;

@@ -34,7 +34,7 @@ public sealed class Missile
     public int Speed { get; set; }
 
     /// <summary>+18: the level it flies on.</summary>
-    public int Floor { get; init; }
+    public int Level { get; init; }
 
     public bool Arrived => (Done & 0x80) != 0;
 }
@@ -114,7 +114,7 @@ public sealed partial class TacticalBattle
             Position = c.Position, Goal = goal, Facing = c.SpriteFacing, Shooter = who, Target = target,
             // BUG: OriginalBehaviour.FixCombatAcrossLevels - the missile is made on the level SHOWN at its launch: between combatants on a hidden
             //   level it never hits, and from the party's level it reaches a lone member through the floors (split audit row 7)
-            Sprite = sprite, Speed = speed, Floor = Battle.Behaviour.FixCombatAcrossLevels && c.Floor >= 0 ? c.Floor : Battle.FloorShown,
+            Sprite = sprite, Speed = speed, Level = Battle.Behaviour.FixCombatAcrossLevels && c.Level >= 0 ? c.Level : Battle.LevelShown,
             Spell = type >= 6 ? spell : 0, Power = type >= 6 ? power : 0,
         };
         Missiles.Add(missile);
@@ -170,7 +170,7 @@ public sealed partial class TacticalBattle
         Missiles.Add(new Missile
         {
             Position = from, Goal = target != -1 ? Battle[target].Position : to, Facing = facing, Shooter = -1, Target = target,
-            Sprite = sprite, Speed = speed, Floor = Battle.FloorShown, Done = (byte)(who == -1 ? 0 : 1),
+            Sprite = sprite, Speed = speed, Level = Battle.LevelShown, Done = (byte)(who == -1 ? 0 : 1),
         });
     }
 
@@ -259,7 +259,7 @@ public sealed partial class TacticalBattle
         {
             var sh = m.Shooter & 15;
             var t = m.Target;
-            if (t != -1 && (m.Done & 0x7F) == 0 && !m.Arrived && m.Floor == Battle[t].Floor)
+            if (t != -1 && (m.Done & 0x7F) == 0 && !m.Arrived && m.Level == Battle[t].Level)
             {
                 m.Goal = Battle[t].Position;
             }
@@ -271,7 +271,7 @@ public sealed partial class TacticalBattle
             if ((m.Sprite & 0x7F) < 6)
             {
                 // C: a spot target (−1) reads fighter-floor-level[−1] (DS:A6B3); a spot shot never hits here.
-                if (m.Done == 0 && t >= 0 && m.Floor == Battle[t].Floor)
+                if (m.Done == 0 && t >= 0 && m.Level == Battle[t].Level)
                 {
                     var target = Battle[t];
                     target.WasHit = true;
@@ -303,7 +303,7 @@ public sealed partial class TacticalBattle
             {
                 // The spell or potion lands (thunk 09C0:1DC9: effect-cast with the shooter, type, quality, target and level).
                 // C: the type and quality bytes are pushed zero-extended, the target and level sign-extended.
-                Effects.Lands(m.Goal.X, m.Goal.Y, sh, (byte)m.Spell, (byte)m.Power, (sbyte)m.Target, (sbyte)m.Floor);
+                Effects.Lands(m.Goal.X, m.Goal.Y, sh, (byte)m.Spell, (byte)m.Power, (sbyte)m.Target, (sbyte)m.Level);
             }
             m.Done |= 0x80;
         }

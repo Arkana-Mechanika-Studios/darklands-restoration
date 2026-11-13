@@ -105,7 +105,7 @@ public sealed class BattleScreens
     public bool CannotViewMember(int member)
     {
         if (!Fighting || Current?.Tactics is not { } tb || member is < 0 or >= Core.Battles.Combatant.PartySlots
-            || tb.Battle[member].Floor != Core.Battles.BattleEnd.LeftThroughExit)
+            || tb.Battle[member].Level != Core.Battles.BattleEnd.LeftThroughExit)
         {
             return false;
         }

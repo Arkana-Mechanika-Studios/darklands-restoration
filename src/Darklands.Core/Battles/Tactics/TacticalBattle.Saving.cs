@@ -72,7 +72,7 @@ public sealed partial class TacticalBattle
             v[BattleVariables.DamageShown + i] = (byte)c.DamageShown;
             v[BattleVariables.DamageNumber + i] = (byte)c.DamageNumber;
             v[BattleVariables.WasHit + i] = Flag(c.WasHit);
-            v[BattleVariables.Floor + i] = (byte)c.Floor;
+            v[BattleVariables.Floor + i] = (byte)c.Level;
             v[BattleVariables.GaveUp + i] = Flag(c.GaveUp);
             v[BattleVariables.EngagedByAi + i] = Flag(c.EngagedByAi);
             PutWord(v, BattleVariables.BlockedBy + 2 * i, c.BlockedBy);
@@ -153,9 +153,9 @@ public sealed partial class TacticalBattle
         }
         v[BattleVariables.RealCombat] = Flag(Battle.RealCombat);
         v[BattleVariables.EnemySaw] = Flag(EnemySawMember);
-        v[BattleVariables.FloorShown] = (byte)Battle.FloorShown;
-        v[BattleVariables.PartyFloor] = (byte)Battle.PartyFloor;
-        v[BattleVariables.EnemyFloor] = (byte)Battle.EnemyFloor;
+        v[BattleVariables.LevelShown] = (byte)Battle.LevelShown;
+        v[BattleVariables.PartyLevel] = (byte)Battle.PartyLevel;
+        v[BattleVariables.EnemyLevel] = (byte)Battle.EnemyLevel;
         var alarm = AlarmTrigger;
         PutWord(v, BattleVariables.AlarmTrigger, alarm.X);
         PutWord(v, BattleVariables.AlarmTrigger + 2, alarm.Y);
@@ -337,7 +337,7 @@ public sealed partial class TacticalBattle
             c.DamageShown = (sbyte)v[BattleVariables.DamageShown + i];
             c.DamageNumber = (sbyte)v[BattleVariables.DamageNumber + i];
             c.WasHit = v[BattleVariables.WasHit + i] != 0;
-            c.Floor = (sbyte)v[BattleVariables.Floor + i];
+            c.Level = (sbyte)v[BattleVariables.Floor + i];
             c.GaveUp = v[BattleVariables.GaveUp + i] != 0;
             c.EngagedByAi = v[BattleVariables.EngagedByAi + i] != 0;
             c.BlockedBy = Word(v, BattleVariables.BlockedBy + 2 * i);
@@ -393,9 +393,9 @@ public sealed partial class TacticalBattle
         Battle.Alarm = v[BattleVariables.Alarm];
         Battle.RealCombat = v[BattleVariables.RealCombat] != 0;
         EnemySawMember = v[BattleVariables.EnemySaw] != 0;
-        Battle.FloorShown = v[BattleVariables.FloorShown];
-        Battle.PartyFloor = v[BattleVariables.PartyFloor];
-        Battle.EnemyFloor = (sbyte)v[BattleVariables.EnemyFloor];
+        Battle.LevelShown = v[BattleVariables.LevelShown];
+        Battle.PartyLevel = v[BattleVariables.PartyLevel];
+        Battle.EnemyLevel = (sbyte)v[BattleVariables.EnemyLevel];
         AlarmTrigger = (Word(v, BattleVariables.AlarmTrigger), Word(v, BattleVariables.AlarmTrigger + 2),
             v[BattleVariables.AlarmTrigger + 4], v[BattleVariables.AlarmTrigger + 5]);
         _stopped = v[BattleVariables.Stopped] != 0;
@@ -454,7 +454,7 @@ public sealed partial class TacticalBattle
         Ticks = 0;
         InitMenus();
         RebuildMarchingOrder();
-        SwitchLevel(Battle.FloorShown);
+        SwitchLevel(Battle.LevelShown);
         AlarmTrigger = (-1, 0, 0, 0);
         CheckActivations();
         for (var i = 0; i < Combatant.Count; i++)

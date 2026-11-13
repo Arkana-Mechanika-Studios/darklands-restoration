@@ -19,9 +19,9 @@ public sealed class FloorsOfResumedBattleTests
     private static (TacticalBattle T, int Shown, int His) Resume(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var shown = t.Battle.FloorShown;
+        var shown = t.Battle.LevelShown;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         Assert.NotEqual(shown, his);
         // the end, as BattleScreen keeps it for the battlefield
         var store = t.Field.Store;
@@ -29,12 +29,12 @@ public sealed class FloorsOfResumedBattleTests
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             kept[i] = (t.Battle[i].Position, t.Battle[i].Facing, t.Battle[i].SpriteFacing);
-            store.PartyFloors[i] = t.Battle[i].Floor;
+            store.PartyFloors[i] = t.Battle[i].Level;
         }
         // the next start: everybody on the level shown, then mode 1's places
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
-            t.Battle[i].Floor = t.Battle.FloorShown;
+            t.Battle[i].Level = t.Battle.LevelShown;
         }
         typeof(TacticalBattle).GetMethod("KeepPlaces", Any)!.Invoke(t, [kept]);
         return (t, shown, his);
@@ -48,7 +48,7 @@ public sealed class FloorsOfResumedBattleTests
             return;
         }
         var (t, shown, _) = Resume(OriginalBehaviour.Faithful);
-        Assert.Equal(shown, t.Battle[Lone].Floor);
+        Assert.Equal(shown, t.Battle[Lone].Level);
     }
 
     [Fact]
@@ -59,6 +59,6 @@ public sealed class FloorsOfResumedBattleTests
             return;
         }
         var (t, _, his) = Resume(OriginalBehaviour.DataSafe);
-        Assert.Equal(his, t.Battle[Lone].Floor);
+        Assert.Equal(his, t.Battle[Lone].Level);
     }
 }

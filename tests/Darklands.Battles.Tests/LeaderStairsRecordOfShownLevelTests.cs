@@ -23,14 +23,14 @@ public sealed class LeaderStairsRecordOfShownLevelTests
     private static (TacticalBattle T, int Leader, int PartyFloor, int HisFloor) Split(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         Assert.True(t.LevelCount >= 3);
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Who]);
-        var his = t.Battle[Who].Floor;
+        var his = t.Battle[Who].Level;
         Assert.NotEqual(party, his);
         var leader = t.Battle.Leader;
         Assert.NotEqual(Who, leader);
-        Assert.Equal(party, t.Battle[leader].Floor);
+        Assert.Equal(party, t.Battle[leader].Level);
         t.SwitchLevel(his);
         t.PauseByte = 0;
         t.Battle[leader].StairsBack = 0;
@@ -50,9 +50,9 @@ public sealed class LeaderStairsRecordOfShownLevelTests
         var (t, leader, party, his) = Split(OriginalBehaviour.Faithful);
         t.UseKey(-1);
         // the leader leaves by record 0 of the lone member's level: the third level, a floor nobody went to
-        Assert.NotEqual(party, t.Battle[leader].Floor);
-        Assert.NotEqual(his, t.Battle[leader].Floor);
-        Assert.Equal(his, t.Battle[Who].Floor);
+        Assert.NotEqual(party, t.Battle[leader].Level);
+        Assert.NotEqual(his, t.Battle[leader].Level);
+        Assert.Equal(his, t.Battle[Who].Level);
     }
 
     [Fact]
@@ -67,10 +67,10 @@ public sealed class LeaderStairsRecordOfShownLevelTests
         Assert.Equal(his, expected);
         t.UseKey(-1);
         // record 0 of his own level: the stairs the lone member took, so the leader joins him
-        Assert.Equal(expected, t.Battle[leader].Floor);
-        Assert.Equal(his, t.Battle[Who].Floor);
+        Assert.Equal(expected, t.Battle[leader].Level);
+        Assert.Equal(his, t.Battle[Who].Level);
         // the view: the level shown before U (the lone member's), not the leader's old level
-        Assert.Equal(his, t.Battle.FloorShown);
+        Assert.Equal(his, t.Battle.LevelShown);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public sealed class LeaderStairsRecordOfShownLevelTests
             t.Battle.Leader = Who;
             t.Battle[Who].StairsBack = 0;
             t.UseKey(-1);
-            floors.Add(t.Battle[Who].Floor);
+            floors.Add(t.Battle[Who].Level);
         }
         Assert.Equal(floors[0], floors[1]);
     }

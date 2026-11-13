@@ -24,7 +24,7 @@ public sealed class StairsRecordPastCountTests
             return;
         }
         var (_, t) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]));
-        var level = t.Level;
+        var level = t.LevelShown;
         var count = level.GetByte(StairsCountAt);
         Assert.True(count >= 1);
         // the slot just past the count gets a copy of record 0 (to another level)
@@ -34,8 +34,8 @@ public sealed class StairsRecordPastCountTests
         }
         var to = (sbyte)level.GetByte(StairsAt + 6);
         var who = t.Battle.Leader;
-        Assert.NotEqual(to, t.Battle[who].Floor);
+        Assert.NotEqual(to, t.Battle[who].Level);
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [count, who]);
-        Assert.Equal(to, t.Battle[who].Floor);
+        Assert.Equal(to, t.Battle[who].Level);
     }
 }

@@ -46,7 +46,7 @@ public sealed class PathOracleTests
                 cb.Status = (CharacterStatus)rec[0x14];
                 cb.Facing = rec[0x19];
                 cb.Target = (sbyte)rec[0x4A];
-                cb.Floor = (sbyte)floors[k];
+                cb.Level = (sbyte)floors[k];
                 cb.HalfWidth = (sbyte)halfW[k];
                 cb.HalfHeight = (sbyte)halfH[k];
                 cb.Moving = moving[k] != 0;

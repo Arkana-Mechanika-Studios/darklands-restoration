@@ -158,7 +158,7 @@ public sealed partial class TacticalBattle
         {
             return true;
         }
-        if (j == -1 || Battle[i].Floor != Battle[j].Floor)
+        if (j == -1 || Battle[i].Level != Battle[j].Level)
         {
             return false;
         }

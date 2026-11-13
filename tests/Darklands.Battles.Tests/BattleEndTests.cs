@@ -149,7 +149,7 @@ public sealed class BattleEndTests
     public void LeavingThroughAnExitIsFleeingInRealCombat()
     {
         var battle = NewBattle(CharacterStatus.Able);
-        battle[0].Floor = BattleEnd.LeftThroughExit;
+        battle[0].Level = BattleEnd.LeftThroughExit;
         battle[1].Status = CharacterStatus.Unconscious;
         Assert.True(BattleEnd.IsOver(battle, new Actions()));
         Assert.Equal(BattleResult.Fled, battle.Result);
@@ -169,9 +169,9 @@ public sealed class BattleEndTests
         {
             var battle = NewBattle(CharacterStatus.Able);
             battle[0].Status = CharacterStatus.Unconscious;
-            battle[1].Floor = 1;
+            battle[1].Level = 1;
             battle[2].Status = CharacterStatus.Able;
-            battle[2].Floor = 1;
+            battle[2].Level = 1;
             battle.Leader = leader;
             var actions = new Actions();
             Assert.False(BattleEnd.IsOver(battle, actions));
@@ -205,11 +205,11 @@ public sealed class BattleEndTests
     public void TheLootScreensExitTestReadsTheFloorBytesAsWords()
     {
         var b = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1));
-        b[1].Floor = BattleEnd.LeftThroughExit;
+        b[1].Level = BattleEnd.LeftThroughExit;
         Assert.False(BattleEnd.LootSkips(b, 1));
-        b[1].Floor = 0;
-        b[2].Floor = BattleEnd.LeftThroughExit;
-        b[3].Floor = -1;
+        b[1].Level = 0;
+        b[2].Level = BattleEnd.LeftThroughExit;
+        b[3].Level = -1;
         Assert.True(BattleEnd.LootSkips(b, 1));
         Assert.False(BattleEnd.LootSkips(b, 2));
         b.Behaviour = new Darklands.Core.OriginalBehaviour { FixLootExitTestReadsWords = true };

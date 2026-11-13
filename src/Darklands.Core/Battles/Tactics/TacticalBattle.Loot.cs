@@ -25,8 +25,8 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixPileOfOtherLevel - the pile goes to the level SHOWN whatever level he fell on (merged with a pile of that
         //   level near his place, nudged by its screen tiles): a member dying alone on a level not shown leaves his pack on another level
         //   (split audit row 29)
-        var own = Battle.Behaviour.FixPileOfOtherLevel && c.Floor >= 0 && c.Floor < _levels.Count && c.Floor != Battle.FloorShown;
-        var level = own ? c.Floor : Battle.FloorShown;
+        var own = Battle.Behaviour.FixPileOfOtherLevel && c.Level >= 0 && c.Level < _levels.Count && c.Level != Battle.LevelShown;
+        var level = own ? c.Level : Battle.LevelShown;
         var pile = new LootPile { Level = level };
         if (slot.DropsLoot)
         {

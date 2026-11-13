@@ -20,9 +20,9 @@ public sealed class PlaceActionsOnOwnLevelTests
     private static (TacticalBattle T, int Party, int His, int B) Split(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         Assert.NotEqual(party, his);
         Assert.True(t.LevelAt(party).GetByte(DoorCountAt) > 0 && t.LevelAt(his).GetByte(DoorCountAt) > 0);
         var b = Enumerable.Range(0, Combatant.PartySlots).First(i => i != Lone && t.Battle[i].IsAble);
@@ -59,6 +59,6 @@ public sealed class PlaceActionsOnOwnLevelTests
         var (t, party, his, _) = Split(OriginalBehaviour.DataSafe);
         Assert.Equal(0, t.LevelAt(his).GetByte(DoorOpenAt));
         Assert.Equal(1, t.LevelAt(party).GetByte(DoorOpenAt));
-        Assert.Equal(his, t.Battle.FloorShown);
+        Assert.Equal(his, t.Battle.LevelShown);
     }
 }

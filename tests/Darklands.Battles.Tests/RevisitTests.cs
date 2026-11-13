@@ -32,7 +32,7 @@ public sealed class RevisitTests
         var field = screens.LastField!;
         var start = Enumerable.Range(0, Combatant.PartySlots).Select(i => first.Tactics!.Battle[i].Position).ToArray();
         // the last battle ended with everybody moved 24 pixels east, facing 3
-        field.Store.FloorShown = field.StartLevel;
+        field.Store.LevelShown = field.StartLevel;
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var c = first.Tactics!.Battle[i];

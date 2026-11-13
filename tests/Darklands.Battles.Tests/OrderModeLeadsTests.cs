@@ -88,7 +88,7 @@ public sealed class OrderModeLeadsTests
         Assert.False(t.OrderClick(-1, -1, ground));
         Assert.Equal(-1, t.CursorTarget);
         Assert.True(t.InOrderMode);
-        var member = Enumerable.Range(0, Combatant.PartySlots).First(k => t.Battle[k].IsAble && t.Battle[k].Floor == t.Battle.FloorShown);
+        var member = Enumerable.Range(0, Combatant.PartySlots).First(k => t.Battle[k].IsAble && t.Battle[k].Level == t.Battle.LevelShown);
         Assert.False(t.OrderClick(member, -1, ground));
         Assert.Equal(member, t.PendingOrderMember);
         Assert.True(t.InOrderMode);
@@ -103,7 +103,7 @@ public sealed class OrderModeLeadsTests
             return;
         }
         var t = Start();
-        var i = Enumerable.Range(0, Combatant.PartySlots).First(k => t.Battle[k].IsAble && t.Battle[k].Floor == t.Battle.FloorShown);
+        var i = Enumerable.Range(0, Combatant.PartySlots).First(k => t.Battle[k].IsAble && t.Battle[k].Level == t.Battle.LevelShown);
         t.Battle[i].Flags |= TacticalFlags.Following;
         typeof(TacticalBattle).GetField("_fleeBefore", Any)!.SetValue(t, false);
         t.SelectMember(i);
@@ -249,7 +249,7 @@ public sealed class OrderModeLeadsTests
             var e = -1;
             for (var i = 0; i < Combatant.Count; i++)
             {
-                if (i != l && t.Battle[i].Status == CharacterStatus.Able && t.Battle[i].Floor == t.Battle.FloorShown && t.Battle[i].Position != t.Battle[l].Position)
+                if (i != l && t.Battle[i].Status == CharacterStatus.Able && t.Battle[i].Level == t.Battle.LevelShown && t.Battle[i].Position != t.Battle[l].Position)
                 {
                     e = i;
                     break;
@@ -282,7 +282,7 @@ public sealed class OrderModeLeadsTests
         }
         var t = Start();
         var p = t.Battle[t.Battle.Leader].Position;
-        var m = new Missile { Position = p, Goal = p, Target = -1, Shooter = 0, Done = 0x81, Sprite = 0, Speed = 4, Floor = t.Battle.FloorShown };
+        var m = new Missile { Position = p, Goal = p, Target = -1, Shooter = 0, Done = 0x81, Sprite = 0, Speed = 4, Level = t.Battle.LevelShown };
         t.Missiles.Add(m);
         t.Battle.Clock = t.NextTickAt;
         Assert.True(t.Tick());
@@ -324,7 +324,7 @@ public sealed class OrderModeLeadsTests
             Set(t, "CursorTarget", -2);
             Set(t, "OrderSpot", new MapPoint(300, 200));
             Set(t, "_orderClock", (ushort)1234);
-            t.Battle.PartyFloor = t.Battle.FloorShown;
+            t.Battle.PartyLevel = t.Battle.LevelShown;
             t.LeaveOrderMode();
             Assert.Equal(new MapPoint(300, 200), t.CursorPoint);
             Assert.Equal(fix ? Exchange.Placed : Exchange.None, last.Exchange);
@@ -355,7 +355,7 @@ public sealed class OrderModeLeadsTests
         t.EnterOrderMode(member);
         Set(t, "OrderAction", 1);
         Set(t, "CursorTarget", -2);
-        t.Battle.PartyFloor = t.Battle.FloorShown;
+        t.Battle.PartyLevel = t.Battle.LevelShown;
         t.LeaveOrderMode();
         Assert.Equal(CombatAction.Walk, t.Battle[member].Action);
         Assert.Equal(new MapPoint(0, 200), t.Battle[member].Destination);

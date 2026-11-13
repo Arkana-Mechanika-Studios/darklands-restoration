@@ -88,13 +88,13 @@ public sealed class Battle
     public ushort TimedExitTime { get; set; }
 
     /// <summary>floor-displayed (DS:11CA): the level on screen.</summary>
-    public int FloorShown { get; set; }
+    public int LevelShown { get; set; }
 
     /// <summary>party-floor-level (DS:C623).</summary>
-    public int PartyFloor { get; set; }
+    public int PartyLevel { get; set; }
 
     /// <summary>DS:C651: the enemies' floor as the end-of-battle test (or the surrender) last found it.</summary>
-    public int EnemyFloor { get; set; }
+    public int EnemyLevel { get; set; }
 
     /// <summary>leader (DS:907B) and the active member DS:17B0 the keys move.</summary>
     // C: DS:907B is the game's one leader byte: the battle's writers (member-make-active R016+0x09BC, the new leader of fight-finished

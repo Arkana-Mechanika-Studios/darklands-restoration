@@ -84,7 +84,7 @@ public sealed class OrderModeTests
         (_, tactics) = Start();
         b = tactics.Battle;
         b.RealCombat = true;
-        b[0].Floor = BattleEnd.LeftThroughExit;
+        b[0].Level = BattleEnd.LeftThroughExit;
         tactics.Surrender();
         Assert.Equal(BattleResult.Fled, b.Result);
         Assert.Equal(CharacterStatus.Able, b[0].Status);

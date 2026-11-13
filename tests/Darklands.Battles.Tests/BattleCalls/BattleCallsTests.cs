@@ -221,9 +221,9 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 throw new SkipJob("a member of the party leaves");
             }
             var at = job.Args[1];
-            var before = c.Tactics.Activations[c.Battle.FloorShown].Count;
+            var before = c.Tactics.Activations[c.Battle.LevelShown].Count;
             Call(c.Tactics, "LeaveLevel", job.Args[0], c.Input.Ds.AsSpan(at, 14).ToArray());
-            AdoptUnsetBytesOfTheNewRecord(c, job, c.Battle.FloorShown, before);
+            AdoptUnsetBytesOfTheNewRecord(c, job, c.Battle.LevelShown, before);
             return null;
         },
         ["R022+0x03E4"] = (c, job) =>
@@ -361,7 +361,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         ["R023+0x04AC"] = (c, job) =>
         {
             CheckDoor(c, job.Args[0]);
-            var record = c.Tactics.Level.Image.AsSpan(0x1F54 + 14 * job.Args[0], 14);
+            var record = c.Tactics.LevelShown.Image.AsSpan(0x1F54 + 14 * job.Args[0], 14);
             if (SideFlags(record) != 1)
             {
                 throw new SkipJob("a door record without exactly one side flag");
@@ -495,7 +495,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             }
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
-                Console.WriteLine($"key {key:X4}: shown {c.Battle.FloorShown} levels {c.Tactics.LevelCount} party floor {c.Battle.PartyFloor} floors {string.Join(",", Enumerable.Range(0, 5).Select(k => c.Battle[k].Floor))} selected {c.Tactics.Selected} paused {c.Tactics.Paused}");
+                Console.WriteLine($"key {key:X4}: shown {c.Battle.LevelShown} levels {c.Tactics.LevelCount} party floor {c.Battle.PartyLevel} floors {string.Join(",", Enumerable.Range(0, 5).Select(k => c.Battle[k].Level))} selected {c.Tactics.Selected} paused {c.Tactics.Paused}");
             }
             if (char.ToUpperInvariant((char)(key & 0xFF)) == 'U' && c.Input.Ds[0xA695] == 0)
             {
@@ -526,8 +526,8 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
                 var levels = TacticsOverlay.Get<IReadOnlyList<BattlefieldLevel>>(c.Tactics, "_levels");
-                Console.WriteLine("levels: " + string.Join(" ", levels.Select(l => $"{l.Image[0x300C]}/{l.Image.GetHashCode()}")) + $" current {c.Tactics.Level.Image.GetHashCode()}");
-                Console.WriteLine($"after: shown {c.Battle.FloorShown} selected {c.Tactics.Selected}");
+                Console.WriteLine("levels: " + string.Join(" ", levels.Select(l => $"{l.Image[0x300C]}/{l.Image.GetHashCode()}")) + $" current {c.Tactics.LevelShown.Image.GetHashCode()}");
+                Console.WriteLine($"after: shown {c.Battle.LevelShown} selected {c.Tactics.Selected}");
             }
             return null;
         },
@@ -555,7 +555,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 // empty member agree and stay judged; the dissolve one uses up a slot of its pack (the original's count 0 wraps to 0xFF), which the rewrite does not
                 throw new SkipJob("the dissolve action for an empty member: fight-action-table passes over status 0 (R014+0x11B0), the only caller");
             }
-            var floor = c.Battle.FloorShown;
+            var floor = c.Battle.LevelShown;
             var records = c.Tactics.Activations[floor].Count;
             Call(c.Tactics, "DoPlaceAction", job.Args[0]);
             // the stairs make level-exit's record (R014+0x2170 case 2 -> R023+0x17D2): its unset bytes are the original's
@@ -663,7 +663,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             EnemyGroup? group = null;
             if (mode == 0)
             {
-                var list = c.Tactics.Activations[c.Battle.FloorShown];
+                var list = c.Tactics.Activations[c.Battle.LevelShown];
                 var k = (job.Args[1] - TacticsOverlay.ActivationsAt) / TacticsOverlay.ActivationSize;
                 if ((job.Args[1] - TacticsOverlay.ActivationsAt) % TacticsOverlay.ActivationSize != 0 || k < 0 || k >= list.Count)
                 {
@@ -689,7 +689,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
                 var d = c.Battle[a];
-                Console.WriteLine($"menu for {a}: real {c.Battle.RealCombat} held {d.Held} party floor {c.Battle.PartyFloor} shown {c.Battle.FloorShown} flags {d.Flags} attack {string.Join(",", c.Tactics.Menus.Attack)}");
+                Console.WriteLine($"menu for {a}: real {c.Battle.RealCombat} held {d.Held} party floor {c.Battle.PartyLevel} shown {c.Battle.LevelShown} flags {d.Flags} attack {string.Join(",", c.Tactics.Menus.Attack)}");
             }
             Call(c.Tactics, "BuildOrderMenu", (int)a);
             var menus = c.Tactics.Menus;
@@ -1031,7 +1031,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
 
     private static void CheckDoors(TacticalBattle t)
     {
-        var image = t.Level.Image;
+        var image = t.LevelShown.Image;
         for (var k = 0; k < Math.Min((int)image[0x1F52], 40); k++)
         {
             var at = 0x1F54 + 14 * k;
@@ -1047,7 +1047,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
 
     private static void CheckDoor(Context c, int n)
     {
-        if (n >= c.Tactics.Level.Image[0x1F52])
+        if (n >= c.Tactics.LevelShown.Image[0x1F52])
         {
             throw new SkipJob("a door past the level's door count");
         }
@@ -1176,7 +1176,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 TacticsOverlay.Apply(tactics, input);
                 if (only is not null)
                 {
-                    output.WriteLine($"{job.Id}: far doors {input.Far[0x1F52]}, level doors {tactics.Level.Image[0x1F52]}, same array {ReferenceEquals(tactics.Level, tactics.Map.Level)}, ops {job.Ops.Count}");
+                    output.WriteLine($"{job.Id}: far doors {input.Far[0x1F52]}, level doors {tactics.LevelShown.Image[0x1F52]}, same array {ReferenceEquals(tactics.LevelShown, tactics.Map.Level)}, ops {job.Ops.Count}");
                 }
                 CheckDoors(tactics);
                 CheckReachable(job, input, state.Ds);
@@ -1229,7 +1229,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                     actual.Far[at] = b;
                 }
                 var expected = input.Expected(job.Orig);
-                if (tactics.Battle.FloorShown != (sbyte)input.Ds[0x11CA])
+                if (tactics.Battle.LevelShown != (sbyte)input.Ds[0x11CA])
                 {
                     // another level is shown now: the original loaded its image from its own copies, the rewrite from its battlefield's (the levels not shown are not carried)
                     Array.Copy(expected.Far, 0, actual.Far, 0, TacticsOverlay.FloorSize);

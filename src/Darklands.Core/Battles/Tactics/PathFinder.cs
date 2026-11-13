@@ -97,7 +97,7 @@ public sealed class PathFinder
         _stepY = stepY;
         PathLength = 9999;
         _target = c.Target;
-        if (_target != -1 && battle[_target].Floor != c.Floor)
+        if (_target != -1 && battle[_target].Level != c.Level)
         {
             return false;
         }

@@ -23,9 +23,9 @@ public sealed class WalkingOnOwnLevelTests
     private static (bool Battle, bool Own, bool Found) Test(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         var walker = Enumerable.Range(0, Combatant.PartySlots).First(i => i != Lone && t.Battle[i].IsAble);
         t.SwitchLevel(his);
         var resolver = t.Map.OwnLevel;

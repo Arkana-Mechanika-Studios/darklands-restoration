@@ -22,10 +22,10 @@ public sealed class DrawListTests
     private static (EffectField Field, Battle Battle, MscRandom Random) Scene(BattlefieldLevel? level = null, TerrainDescription? terrain = null)
     {
         var random = new MscRandom(1234);
-        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), random) { Clock = 100, FloorShown = 0 };
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), random) { Clock = 100, LevelShown = 0 };
         var c = battle[0];
         c.Status = CharacterStatus.Able;
-        c.Floor = 0;
+        c.Level = 0;
         c.Flash[0] = 0x50;
         c.Flash[1] = 0x51;
         c.Flash[2] = 0x52;

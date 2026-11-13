@@ -18,13 +18,13 @@ public sealed class LeaderKeysOnOtherLevelTests
     private static (TacticalBattle T, int Party, int His, int Leader, MapPoint Before) Press(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         var leader = t.Battle.Leader;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, leader]);
-        var his = t.Battle[leader].Floor;
+        var his = t.Battle[leader].Level;
         Assert.NotEqual(party, his);
-        Assert.Equal(party, t.Battle.FloorShown);
-        Assert.Equal(party, t.Battle.PartyFloor);
+        Assert.Equal(party, t.Battle.LevelShown);
+        Assert.Equal(party, t.Battle.PartyLevel);
         // he walks off the arrival spot on his level
         var c = t.Battle[leader];
         c.Position = new MapPoint(c.Position.X + 200, c.Position.Y + 100);
@@ -46,7 +46,7 @@ public sealed class LeaderKeysOnOtherLevelTests
         }
         var (t, _, his, leader, before) = Press(OriginalBehaviour.Faithful);
         // record 0 of the party's level leads to his level: he is placed again at its arrival spot, from wherever he stood
-        Assert.Equal(his, t.Battle[leader].Floor);
+        Assert.Equal(his, t.Battle[leader].Level);
         Assert.NotEqual(before, t.Battle[leader].Position);
     }
 
@@ -58,8 +58,8 @@ public sealed class LeaderKeysOnOtherLevelTests
             return;
         }
         var (t, party, his, leader, before) = Press(OriginalBehaviour.DataSafe);
-        Assert.Equal(his, t.Battle[leader].Floor);
+        Assert.Equal(his, t.Battle[leader].Level);
         Assert.Equal(before, t.Battle[leader].Position);
-        Assert.Equal(party, t.Battle.FloorShown);
+        Assert.Equal(party, t.Battle.LevelShown);
     }
 }

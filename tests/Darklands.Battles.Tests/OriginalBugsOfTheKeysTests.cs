@@ -43,8 +43,8 @@ public sealed class OriginalBugsOfTheKeysTests
         }
         var t = Start(new OriginalBehaviour { FixStairsKeyWithoutSelection = fix });
         // the party split over two levels: the second record's floor differs from the level shown
-        var other = t.Battle.FloorShown == 0 ? 1 : 0;
-        t.Battle.PartyFloor = other;
+        var other = t.Battle.LevelShown == 0 ? 1 : 0;
+        t.Battle.PartyLevel = other;
         t.TogglePause();
         Assert.True(t.Paused);
         t.Menus.Set(OrdersItem.UseStairs, 1);
@@ -165,7 +165,7 @@ public sealed class OriginalBugsOfTheKeysTests
     private static (TacticalBattle Tactics, int Record, int To, int Wall) Prepare(OriginalBehaviour behaviour)
     {
         var t = Start(behaviour, 0x0B, 4242);
-        var level = t.Level;
+        var level = t.LevelShown;
         var to = (sbyte)level.GetByte(StairsAt + 6);
         const int wall = 1;
         level.SetByte(StairsAt + 7, wall);
@@ -201,13 +201,13 @@ public sealed class OriginalBugsOfTheKeysTests
             return;
         }
         var (t, _, to, wall) = Prepare(new OriginalBehaviour { FixStairsWallMarkLost = fix });
-        Assert.Equal(wall, t.Level.GetByte(StairsAt + 7));
-        var from = t.Battle.FloorShown;
+        Assert.Equal(wall, t.LevelShown.GetByte(StairsAt + 7));
+        var from = t.Battle.LevelShown;
         TakeFirstStairs(t, changed);
         // one member alone takes the stairs: the party stays, the level shown is the one left again (its switch back saved the new level)
-        Assert.Equal(from, t.Battle.FloorShown);
-        Assert.NotEqual(to, t.Battle.FloorShown);
-        Assert.Equal(to, t.Battle[t.Battle.Leader].Floor);
+        Assert.Equal(from, t.Battle.LevelShown);
+        Assert.NotEqual(to, t.Battle.LevelShown);
+        Assert.Equal(to, t.Battle[t.Battle.Leader].Level);
         Assert.Equal(expected, t.LevelAt(from).GetByte(StairsAt + 7));
     }
     /// <summary>R024+0x059A reloads a level from its file at each switch to it; R024+0x05B4 saves the level left only when DS:D4E4 is set:
@@ -223,14 +223,14 @@ public sealed class OriginalBugsOfTheKeysTests
         }
         var t = Start(OriginalBehaviour.Faithful, 0x0B, 4242);
         Assert.True(t.LevelCount >= 2);
-        var from = t.Battle.FloorShown;
+        var from = t.Battle.LevelShown;
         const int at = 0x33F0;
-        t.Level.SetByte(at, 0x5A);
+        t.LevelShown.SetByte(at, 0x5A);
         typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
-        t.Level.SetByte(at, 0xA5);
+        t.LevelShown.SetByte(at, 0xA5);
         t.LevelChanged = changed;
         t.SwitchLevel((from + 1) % t.LevelCount);
         t.SwitchLevel(from);
-        Assert.Equal(expected, t.Level.GetByte(at));
+        Assert.Equal(expected, t.LevelShown.GetByte(at));
     }
 }

@@ -19,11 +19,11 @@ public sealed class FollowersOnShownLevelTests
     private static (TacticalBattle T, int Party, int Other, int Enemy) Place(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 2), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         var enemy = Combatant.PartySlots;
         t.Battle[enemy].Status = Darklands.Core.Characters.CharacterStatus.Able;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var other = t.Battle[Lone].Floor;
+        var other = t.Battle[Lone].Level;
         Assert.NotEqual(party, other);
         // the arrival spot: the party's leader's place on the party's level
         t.InitialEnemySpot = (t.Battle[t.Battle.Leader].Position, 4);
@@ -40,7 +40,7 @@ public sealed class FollowersOnShownLevelTests
             return;
         }
         var (t, _, other, enemy) = Place(OriginalBehaviour.Faithful);
-        Assert.Equal(other, t.Battle[enemy].Floor);
+        Assert.Equal(other, t.Battle[enemy].Level);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class FollowersOnShownLevelTests
             return;
         }
         var (t, party, other, enemy) = Place(OriginalBehaviour.DataSafe);
-        Assert.Equal(party, t.Battle[enemy].Floor);
-        Assert.Equal(other, t.Battle.FloorShown);
+        Assert.Equal(party, t.Battle[enemy].Level);
+        Assert.Equal(other, t.Battle.LevelShown);
     }
 }

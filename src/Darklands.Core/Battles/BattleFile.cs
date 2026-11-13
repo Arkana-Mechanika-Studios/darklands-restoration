@@ -32,7 +32,7 @@ public sealed class BattleFile
     public static byte[] ProgramStartVariables()
     {
         var v = new byte[VariablesSize];
-        v[BattleVariables.FloorShown] = 0xFF;
+        v[BattleVariables.LevelShown] = 0xFF;
         v[BattleVariables.TimerRate] = 1;
         return v;
     }
@@ -197,12 +197,12 @@ public static class BattleVariables
     public const int EnemySaw = 0x16D0;
 
     /// <summary>DS:11CA: the level shown (floor-displayed; 0xFF in a program that has had no battle).</summary>
-    public const int FloorShown = 0x16D1;
+    public const int LevelShown = 0x16D1;
 
-    public const int PartyFloor = 0x16D2;
+    public const int PartyLevel = 0x16D2;
 
     /// <summary>DS:C651: the enemies' floor as the end-of-battle test last found it.</summary>
-    public const int EnemyFloor = 0x16D3;
+    public const int EnemyLevel = 0x16D3;
 
     /// <summary>DS:C925, DS:C978 (words), DS:C989, DS:CA1B (bytes): the alarm trigger.</summary>
     public const int AlarmTrigger = 0x16D4;

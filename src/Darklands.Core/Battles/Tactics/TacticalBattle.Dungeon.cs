@@ -101,7 +101,7 @@ public sealed partial class TacticalBattle
 
     private static bool Inside(MapPoint p, int x, int y, int w, int h) => x <= p.X && p.X < x + w && y <= p.Y && p.Y < y + h;
 
-    private (int X, int Y, int W, int H) Box(int at) => (Level.GetWord(at), Level.GetWord(at + 2), Level.GetByte(at + 4), Level.GetByte(at + 5));
+    private (int X, int Y, int W, int H) Box(int at) => (LevelShown.GetWord(at), LevelShown.GetWord(at + 2), LevelShown.GetByte(at + 4), LevelShown.GetByte(at + 5));
 
     // ---- the level files ----------------------------------------------------------------
 
@@ -142,7 +142,7 @@ public sealed partial class TacticalBattle
             {
                 level.SetWord(ListsAt + 2 * i, level.GetWord(ListsAt + 2 * i) + ListBase);
             }
-            if (level.LevelNumber == Battle.FloorShown && (sbyte)level.Image[0x1F51] >= 0)
+            if (level.LevelNumber == Battle.LevelShown && (sbyte)level.Image[0x1F51] >= 0)
             {
                 OpenGroupBit(level.LevelNumber, (sbyte)level.Image[0x1F51]);
             }
@@ -165,10 +165,10 @@ public sealed partial class TacticalBattle
         {
             yield break;
         }
-        var at = (ushort)Level.GetWord(ListsAt + 2 * n);
+        var at = (ushort)LevelShown.GetWord(ListsAt + 2 * n);
         for (var j = 0; at + j + 1 < BattlefieldLevel.ImageSize; j += 2)
         {
-            var w = (ushort)Level.GetWord(at + j);
+            var w = (ushort)LevelShown.GetWord(at + j);
             if (w == 0xFFFF)
             {
                 yield break;
@@ -181,34 +181,34 @@ public sealed partial class TacticalBattle
     // orig: the REVEAL block inlined in R023 0000, 00B8, 04AC, 0812, 0B6E (draft)
     private void RevealGroup(int n)
     {
-        OpenGroupBit(Battle.FloorShown, n);
+        OpenGroupBit(Battle.LevelShown, n);
         foreach (var (x, y) in WallGroup(n))
         {
-            Level.SetCellByte(x, y, 3, Level.CellByte(x, y, 3) & 0x7F);
+            LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) & 0x7F);
         }
     }
 
     /// <summary>After a level is shown: the twins of linked doors, and the cells of the wall groups not opened yet are hidden.</summary>
     // orig: level-change R024+0x059A (1EF8:059A) draft (after loading the files)
-    private void LevelShown()
+    private void AfterLevelChange()
     {
         Array.Clear(_twinDoor);
         for (var i = 0; i < 40; i++)
         {
-            var link = (sbyte)Level.GetByte(DoorsAt + 14 * i + 0x0C);
+            var link = (sbyte)LevelShown.GetByte(DoorsAt + 14 * i + 0x0C);
             if (!_twinDoor[i] && link != -1 && link is >= 0 and < 40)
             {
                 _twinDoor[link] = true;
             }
         }
-        var mask = Battle.FloorShown is >= 0 and < 16 ? Store.DoorsOpened[Battle.FloorShown] : 0;
-        for (var k = 0; k < Level.GetByte(ListCountAt); k++)
+        var mask = Battle.LevelShown is >= 0 and < 16 ? Store.DoorsOpened[Battle.LevelShown] : 0;
+        for (var k = 0; k < LevelShown.GetByte(ListCountAt); k++)
         {
             if ((mask & 1) == 0)
             {
                 foreach (var (x, y) in WallGroup(k))
                 {
-                    Level.SetCellByte(x, y, 3, Level.CellByte(x, y, 3) | 0x80);
+                    LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) | 0x80);
                 }
             }
             mask >>= 1;
@@ -235,7 +235,7 @@ public sealed partial class TacticalBattle
             }
             // BUG: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level
             //   standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
-            if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Floor != Battle.FloorShown)
+            if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Level != Battle.LevelShown)
             {
                 continue;
             }
@@ -288,13 +288,13 @@ public sealed partial class TacticalBattle
                 Triggers(i);
             }
         }
-        for (var k = 0; k < Level.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
         {
             // BUG: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table
             //   R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an
             //   optional fixed rule after 1.0.
             var at = DoorsAt + 14 * k;
-            if (Level.GetByte(DoorOpenAt + k) != 0 || Level.GetByte(at + 7) != 0 || Level.GetWord(at) <= 0)
+            if (LevelShown.GetByte(DoorOpenAt + k) != 0 || LevelShown.GetByte(at + 7) != 0 || LevelShown.GetWord(at) <= 0)
             {
                 continue;
             }
@@ -330,7 +330,7 @@ public sealed partial class TacticalBattle
     {
         var c = Battle[i];
         var v = 0;
-        for (var k = 0; k < Level.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
         {
             var at = DoorsAt + 14 * k;
             var (x0, y0, w, h) = Box(at);
@@ -340,8 +340,8 @@ public sealed partial class TacticalBattle
             }
             if (Inside(c.Position, x0, y0, w, h))
             {
-                int b8 = Level.GetByte(at + 8), b9 = Level.GetByte(at + 9);
-                var cell = Level[b8 & 0x3F, b9 & 0x3F].Bits;
+                int b8 = LevelShown.GetByte(at + 8), b9 = LevelShown.GetByte(at + 9);
+                var cell = LevelShown[b8 & 0x3F, b9 & 0x3F].Bits;
                 if ((b8 & 0x80) != 0)
                 {
                     c.DoorSide = 0;
@@ -379,7 +379,7 @@ public sealed partial class TacticalBattle
         }
         if ((c.Flags & TacticalFlags.InDoorway) != 0)
         {
-            var locked = (sbyte)Level.GetByte(DoorsAt + 14 * c.Door + 7);
+            var locked = (sbyte)LevelShown.GetByte(DoorsAt + 14 * c.Door + 7);
             if (locked != 0 && !Battle.RealCombat)
             {
                 Menus.Set(OrdersItem.UseDoor, 2);
@@ -509,7 +509,7 @@ public sealed partial class TacticalBattle
     private void OnStairsAt(int i)
     {
         var c = Battle[i];
-        for (var k = 0; k < Level.GetByte(StairsCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(StairsCountAt); k++)
         {
             var (x, y, w, h) = Box(StairsAt + 14 * k);
             if (Inside(c.Position, x, y, w, h))
@@ -522,7 +522,7 @@ public sealed partial class TacticalBattle
         }
         if (Battle.Leader == i && Running)
         {
-            if (Battle.PartyFloor != Battle.FloorShown)
+            if (Battle.PartyLevel != Battle.LevelShown)
             {
                 Menus.Set(OrdersItem.UseStairs, 1);
                 c.StairsToTake = c.StairsBack;
@@ -538,7 +538,7 @@ public sealed partial class TacticalBattle
     private void RegionAt(int i)
     {
         var c = Battle[i];
-        for (var k = 0; k < Level.GetByte(RegionCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(RegionCountAt); k++)
         {
             var at = RegionsAt + RegionSize * k;
             var (x, y, w, h) = Box(at);
@@ -565,7 +565,7 @@ public sealed partial class TacticalBattle
             Menus.Set(OrdersItem.DissolveLock, 2);
             Menus.Set(OrdersItem.DisarmTrap, 2);
             var at = RegionsAt + RegionSize * c.Chest;
-            int locked = Level.GetByte(at + 8), trap = Level.GetByte(at + 9);
+            int locked = LevelShown.GetByte(at + 8), trap = LevelShown.GetByte(at + 9);
             if ((locked & 0x7F) != 0 && !Battle.RealCombat)
             {
                 Menus.Set(OrdersItem.PickLock, 1);
@@ -614,15 +614,15 @@ public sealed partial class TacticalBattle
     private void ZoneAt(int i)
     {
         var c = Battle[i];
-        for (var k = 0; k < Level.GetByte(ZoneCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(ZoneCountAt); k++)
         {
             var at = ZonesAt + 10 * k;
-            int x0 = Level.GetWord(at), y0 = Level.GetWord(at + 2), w = Level.GetWord(at + 4), h = Level.GetWord(at + 6);
+            int x0 = LevelShown.GetWord(at), y0 = LevelShown.GetWord(at + 2), w = LevelShown.GetWord(at + 4), h = LevelShown.GetWord(at + 6);
             if (x0 <= 0)
             {
                 continue;
             }
-            if (c.Floor == Battle.FloorShown && Inside(c.Position, x0, y0, w, h))
+            if (c.Level == Battle.LevelShown && Inside(c.Position, x0, y0, w, h))
             {
                 c.ExitZone = k;
                 c.Flags |= TacticalFlags.InExitZone;
@@ -645,19 +645,19 @@ public sealed partial class TacticalBattle
         var c = Battle[i];
         // BUG: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level:
         //   an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
-        if (Battle.Behaviour.FixTriggersOfOtherLevels && c.Floor != Battle.FloorShown)
+        if (Battle.Behaviour.FixTriggersOfOtherLevels && c.Level != Battle.LevelShown)
         {
             return;
         }
-        for (var k = 0; k < Level.GetByte(TriggerCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(TriggerCountAt); k++)
         {
             var at = TriggersAt + 14 * k;
             var (x0, y0, w, h) = Box(at);
-            var handler = (TriggerHandler)Level.GetWord(at + 6);
+            var handler = (TriggerHandler)LevelShown.GetWord(at + 6);
             if (x0 > 0 && Inside(c.Position, x0, y0, w, h)
                 && (i < Combatant.PartySlots || handler is TriggerHandler.MissileTrap or TriggerHandler.SpellTrap))
             {
-                int a = Level.GetWord(at + 10), b = Level.GetWord(at + 12);
+                int a = LevelShown.GetWord(at + 10), b = LevelShown.GetWord(at + 12);
                 switch (handler)
                 {
                     case TriggerHandler.SecretDoor:
@@ -697,7 +697,7 @@ public sealed partial class TacticalBattle
             return;
         }
         var at = TriggersAt + 14 * h;
-        Level.SetWord(at, -Level.GetWord(at));
+        LevelShown.SetWord(at, -LevelShown.GetWord(at));
     }
 
     /// <summary>The loot pile next to member i (the selected member's, when order mode opens).</summary>
@@ -705,7 +705,7 @@ public sealed partial class TacticalBattle
     private void PileNextTo(int i)
     {
         var c = Battle[i];
-        c.LootPile = LootPiles.FindIndex(p => p.Level == Battle.FloorShown && p.Count != 0
+        c.LootPile = LootPiles.FindIndex(p => p.Level == Battle.LevelShown && p.Count != 0
             && c.Position.X - 16 <= p.Position.X && p.Position.X < c.Position.X + 16
             && c.Position.Y - 16 <= p.Position.Y && p.Position.Y < c.Position.Y + 16);
         NextToPile = c.LootPile != -1;
@@ -730,11 +730,11 @@ public sealed partial class TacticalBattle
                 return;
             }
         }
-        Level.SetWord(TriggersAt + 14 * k, -1);
+        LevelShown.SetWord(TriggersAt + 14 * k, -1);
         LevelChanged = true;
         var at = FurnitureRemovalAt + 10 * (n & 0xFF);
         // C: the direction byte is pushed zero-extended (checked against the asm).
-        PlaceParty(Level.GetWord(at + 6), Level.GetWord(at + 8), Level.GetByte(at + 5));
+        PlaceParty(LevelShown.GetWord(at + 6), LevelShown.GetWord(at + 8), LevelShown.GetByte(at + 5));
         _stopped = true;
         Battle.Result = BattleResult.FellIntoPit;
         Battle.ResultCard = card;
@@ -766,7 +766,7 @@ public sealed partial class TacticalBattle
         }
         Battle.ResultCard = card;
         var at = records + 10 * n;
-        if (Level.GetByte(at) == 1)
+        if (LevelShown.GetByte(at) == 1)
         {
             if (furniture)
             {
@@ -788,11 +788,11 @@ public sealed partial class TacticalBattle
         // (checked against the asm of both handlers).
         if (furniture)
         {
-            PlaceParty(Level.GetWord(at + 6), Level.GetWord(at + 8), Level.GetByte(at + 5));
+            PlaceParty(LevelShown.GetWord(at + 6), LevelShown.GetWord(at + 8), LevelShown.GetByte(at + 5));
         }
         else
         {
-            PlaceParty(Level.GetWord(at + 4), Level.GetWord(at + 6), Level.GetByte(at + 8));
+            PlaceParty(LevelShown.GetWord(at + 4), LevelShown.GetWord(at + 6), LevelShown.GetByte(at + 8));
         }
         var (x, y, w, h) = Box(TriggersAt + 14 * k);
         AlarmTrigger = (x, y, w, h);
@@ -811,21 +811,21 @@ public sealed partial class TacticalBattle
         var at = TrapPatchesAt + 12 * n;
         for (var m = 0; m < 4; m++)
         {
-            int v = Level.GetByte(at + m), row = Level.GetByte(at + 4 + m), f = Level.GetByte(at + 8 + m);
+            int v = LevelShown.GetByte(at + m), row = LevelShown.GetByte(at + 4 + m), f = LevelShown.GetByte(at + 8 + m);
             if (v == 0)
             {
                 continue;
             }
             if (f < 0x80)
             {
-                Level.SetFloorByte(v, row, (byte)(Level.FloorByte(v, row) | f));
+                LevelShown.SetFloorByte(v, row, (byte)(LevelShown.FloorByte(v, row) | f));
             }
             else
             {
                 // C: the shift is 12 (the furniture decoration nibble) or 20 (the north wall's) by bit 7 of the column.
                 var shift = (v & 0x80) == 0 ? 0x0C : 0x14;
                 var x = v & 0x3F;
-                Level[x, row] = new BattlefieldCell(Level[x, row].Bits | (uint)((f & 0x7F) << shift));
+                LevelShown[x, row] = new BattlefieldCell(LevelShown[x, row].Bits | (uint)((f & 0x7F) << shift));
             }
         }
         _view.Message(DiscoversTrapText, 150, c.Index);
@@ -867,7 +867,7 @@ public sealed partial class TacticalBattle
             ToggleTrigger(h2);
         }
         var at = DoorsAt + 14 * n;
-        int b8 = Level.GetByte(at + 8), b9 = Level.GetByte(at + 9);
+        int b8 = LevelShown.GetByte(at + 8), b9 = LevelShown.GetByte(at + 9);
         if ((b8 & 0x80) != 0)
         {
             c.DoorSide = 0;
@@ -888,25 +888,25 @@ public sealed partial class TacticalBattle
         switch (c.DoorSide)
         {
             case 0:
-                Level.SetCellByte(x, y, 2, Level.CellByte(x, y, 2) & 0xF0);
-                Level.SetCellByte(x, y - 1, 3, Level.CellByte(x, y - 1, 3) & 0xF0);
+                LevelShown.SetCellByte(x, y, 2, LevelShown.CellByte(x, y, 2) & 0xF0);
+                LevelShown.SetCellByte(x, y - 1, 3, LevelShown.CellByte(x, y - 1, 3) & 0xF0);
                 break;
             case 1:
-                Level.SetCellByte(x, y, 0, Level.CellByte(x, y, 0) & 0xF0);
-                Level.SetCellByte(x + 1, y, 1, Level.CellByte(x + 1, y, 1) & 0xF0);
+                LevelShown.SetCellByte(x, y, 0, LevelShown.CellByte(x, y, 0) & 0xF0);
+                LevelShown.SetCellByte(x + 1, y, 1, LevelShown.CellByte(x + 1, y, 1) & 0xF0);
                 break;
             case 2:
-                Level.SetCellByte(x, y, 3, Level.CellByte(x, y, 3) & 0xF0);
-                Level.SetCellByte(x, y + 1, 2, Level.CellByte(x, y + 1, 2) & 0xF0);
+                LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) & 0xF0);
+                LevelShown.SetCellByte(x, y + 1, 2, LevelShown.CellByte(x, y + 1, 2) & 0xF0);
                 break;
             case 3:
-                Level.SetCellByte(x, y, 1, Level.CellByte(x, y, 1) & 0xF0);
-                Level.SetCellByte(x - 1, y, 0, Level.CellByte(x - 1, y, 0) & 0xF0);
+                LevelShown.SetCellByte(x, y, 1, LevelShown.CellByte(x, y, 1) & 0xF0);
+                LevelShown.SetCellByte(x - 1, y, 0, LevelShown.CellByte(x - 1, y, 0) & 0xF0);
                 break;
         }
         _view.Message(FindsSecretDoorText, 150, who);
         LevelChanged = true;
-        var wall = (sbyte)Level.GetByte(at + 6);
+        var wall = (sbyte)LevelShown.GetByte(at + 6);
         if (wall >= 0)
         {
             RevealGroup(wall);
@@ -921,14 +921,14 @@ public sealed partial class TacticalBattle
         ToggleTrigger(h);
         LevelChanged = true;
         var at = FurnitureRemovalAt + 10 * n;
-        int x = Level.GetByte(at + 1), y = Level.GetByte(at + 2), x2 = Level.GetByte(at + 3), y2 = Level.GetByte(at + 4);
+        int x = LevelShown.GetByte(at + 1), y = LevelShown.GetByte(at + 2), x2 = LevelShown.GetByte(at + 3), y2 = LevelShown.GetByte(at + 4);
         if (x != 0)
         {
-            Level.SetCellByte(x, y, 0, Level.CellByte(x, y, 0) & 0x0F);
+            LevelShown.SetCellByte(x, y, 0, LevelShown.CellByte(x, y, 0) & 0x0F);
         }
         if (x2 != 0)
         {
-            Level.SetCellByte(x2, y2, 0, Level.CellByte(x2, y2, 0) & 0x0F);
+            LevelShown.SetCellByte(x2, y2, 0, LevelShown.CellByte(x2, y2, 0) & 0x0F);
         }
     }
 
@@ -940,12 +940,12 @@ public sealed partial class TacticalBattle
         ToggleTrigger(h);
         LevelChanged = true;
         var at = WallRemovalAt + 10 * n;
-        var wall = (sbyte)Level.GetByte(at + 3);
+        var wall = (sbyte)LevelShown.GetByte(at + 3);
         if (wall > 0)
         {
             RevealGroup(wall);
         }
-        int bx = Level.GetByte(at + 1), by = Level.GetByte(at + 2);
+        int bx = LevelShown.GetByte(at + 1), by = LevelShown.GetByte(at + 2);
         var dir = (bx & 0x80) != 0 ? 0 : (bx & 0x40) != 0 ? 1 : (by & 0x80) != 0 ? 2 : (by & 0x40) != 0 ? 3 : 0;
         int x = bx & 0x3F, y = by & 0x3F;
         switch (dir)
@@ -975,16 +975,16 @@ public sealed partial class TacticalBattle
         switch (dir)
         {
             case 0:
-                Level.SetCellByte(x, y, 2, 0);
+                LevelShown.SetCellByte(x, y, 2, 0);
                 break;
             case 1:
-                Level.SetCellByte(x, y, 0, Level.CellByte(x, y, 0) & 0xF0);
+                LevelShown.SetCellByte(x, y, 0, LevelShown.CellByte(x, y, 0) & 0xF0);
                 break;
             case 2:
-                Level.SetCellByte(x, y, 3, Level.CellByte(x, y, 3) & 0xF0);
+                LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) & 0xF0);
                 break;
             case 3:
-                Level.SetCellByte(x, y, 1, 0);
+                LevelShown.SetCellByte(x, y, 1, 0);
                 break;
         }
     }
@@ -996,10 +996,10 @@ public sealed partial class TacticalBattle
         _view.Message(OopsText, 60);
         var at = MissileTrapsAt + 10 * t;
         var c = Battle[who];
-        Effects.Lands(c.Position.X, c.Position.Y, who, Level.GetByte(at + 2), Level.GetByte(at + 3), who, Battle.FloorShown);
+        Effects.Lands(c.Position.X, c.Position.Y, who, LevelShown.GetByte(at + 2), LevelShown.GetByte(at + 3), who, Battle.LevelShown);
         ToggleTrigger(h);
-        var link = Level.GetWord(at);
-        if (link is >= 0 and < 50 && Level.GetWord(TriggersAt + 14 * link) >= 0)
+        var link = LevelShown.GetWord(at);
+        if (link is >= 0 and < 50 && LevelShown.GetWord(TriggersAt + 14 * link) >= 0)
         {
             ToggleTrigger(link);
         }
@@ -1017,8 +1017,8 @@ public sealed partial class TacticalBattle
         _view.Message(OopsText, 60);
         ToggleTrigger(h);
         var cur = t;
-        var link = Level.GetWord(MissileTrapsAt + 10 * cur);
-        if (link is >= 0 and < 50 && Level.GetWord(TriggersAt + 14 * link) >= 0)
+        var link = LevelShown.GetWord(MissileTrapsAt + 10 * cur);
+        if (link is >= 0 and < 50 && LevelShown.GetWord(TriggersAt + 14 * link) >= 0)
         {
             ToggleTrigger(link);
         }
@@ -1032,8 +1032,8 @@ public sealed partial class TacticalBattle
         while (true)
         {
             var at = MissileTrapsAt + 10 * cur;
-            int x = Level.GetWord(at + 2), y = Level.GetWord(at + 4), cnt = (sbyte)Level.GetByte(at + 6), dir = Level.GetByte(at + 7);
-            int weapon = Level.GetByte(at + 8), skill = Level.GetByte(at + 9);
+            int x = LevelShown.GetWord(at + 2), y = LevelShown.GetWord(at + 4), cnt = (sbyte)LevelShown.GetByte(at + 6), dir = LevelShown.GetByte(at + 7);
+            int weapon = LevelShown.GetByte(at + 8), skill = LevelShown.GetByte(at + 9);
             int cx = x >> 5, cy = y >> 4;
             for (var i = 0; i < cnt; i++)
             {
@@ -1046,7 +1046,7 @@ public sealed partial class TacticalBattle
                         to = new MapPoint(from.X, (cy << 4) - 0xEC);
                         for (k = 0; k < 16; k++)
                         {
-                            if ((Level.CellByte(cx, cy - k, 2) & 0x0F) != 0)
+                            if ((LevelShown.CellByte(cx, cy - k, 2) & 0x0F) != 0)
                             {
                                 to = new MapPoint(from.X, ((cy - k) << 4) + 4);
                                 break;
@@ -1058,7 +1058,7 @@ public sealed partial class TacticalBattle
                         to = new MapPoint((cx << 5) + 0x1FA, from.Y);
                         for (k = 0; k < 16; k++)
                         {
-                            if ((Level.CellByte(cx + k, cy, 0) & 0x0F) != 0)
+                            if ((LevelShown.CellByte(cx + k, cy, 0) & 0x0F) != 0)
                             {
                                 to = new MapPoint(((cx + k) << 5) + 0x1A, from.Y);
                                 break;
@@ -1071,7 +1071,7 @@ public sealed partial class TacticalBattle
                         for (k = 0; k < 16; k++)
                         {
                             // C: the word at byte 2 of the cell masked with 0xF00: the low nibble of byte 3 (the south wall).
-                            if ((Level.CellByte(cx, cy + k, 3) & 0x0F) != 0)
+                            if ((LevelShown.CellByte(cx, cy + k, 3) & 0x0F) != 0)
                             {
                                 to = new MapPoint(from.X, ((cy + k) << 4) + 0x0B);
                                 break;
@@ -1083,7 +1083,7 @@ public sealed partial class TacticalBattle
                         to = new MapPoint((cx << 5) - 0x1DA, from.Y);
                         for (k = 0; k < 16; k++)
                         {
-                            if ((Level.CellByte(cx - k, cy, 1) & 0x0F) != 0)
+                            if ((LevelShown.CellByte(cx - k, cy, 1) & 0x0F) != 0)
                             {
                                 to = new MapPoint(((cx - k) << 5) + 6, from.Y);
                                 break;

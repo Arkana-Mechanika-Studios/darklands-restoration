@@ -258,7 +258,7 @@ if (battleStep is not null)
                 var c = tb.Battle[i];
                 if (c.Status != Darklands.Core.Characters.CharacterStatus.Empty)
                 {
-                    Console.WriteLine($"cbt {i}: {c.Status} at ({c.Position.X},{c.Position.Y}) floor {c.Floor} action {(int)c.Action} target {c.Target} hot spot {screens.Current.HotSpot(i)}");
+                    Console.WriteLine($"cbt {i}: {c.Status} at ({c.Position.X},{c.Position.Y}) floor {c.Level} action {(int)c.Action} target {c.Target} hot spot {screens.Current.HotSpot(i)}");
                 }
             }
             Console.WriteLine($"selected {tb.Selected} order {tb.OrderAction} cursor {tb.Cursor} target {tb.CursorTarget} point ({tb.CursorPoint.X},{tb.CursorPoint.Y}) camera ({screens.Current.CameraX},{screens.Current.CameraY})");

@@ -69,7 +69,7 @@ public sealed class EffectTests
             {
                 tactics.TogglePause();
             }
-            enemy = Enumerable.Range(Combatant.PartySlots, 8).FirstOrDefault(i => b[i].IsAble && b[i].Floor == b.FloorShown, -1);
+            enemy = Enumerable.Range(Combatant.PartySlots, 8).FirstOrDefault(i => b[i].IsAble && b[i].Level == b.LevelShown, -1);
         }
         Assert.True(enemy >= 0, "an enemy came out");
         var member = Enumerable.Range(0, Combatant.PartySlots).First(i => b[i].IsAble);

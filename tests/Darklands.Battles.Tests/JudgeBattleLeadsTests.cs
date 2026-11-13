@@ -42,7 +42,7 @@ public sealed class JudgeBattleLeadsTests
         {
             for (var y = 17; y <= 24; y++)
             {
-                t.Level[x, y] = new BattlefieldCell(0x8000_0000);
+                t.LevelShown[x, y] = new BattlefieldCell(0x8000_0000);
             }
         }
         var random = (MscRandom)t.Battle.Random;
@@ -151,7 +151,7 @@ public sealed class JudgeBattleLeadsTests
     [Fact]
     public void AClipPointLeftInsideAWallBlocksOnlyTheRunThatLeftIt()
     {
-        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1)) { FloorShown = 0 };
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1)) { LevelShown = 0 };
         var level = new BattlefieldLevel(new byte[BattlefieldLevel.ImageSize]);
         level[21, 3] = new BattlefieldCell(0x0A);
         var map = new BattleMap(battle, level, [], 0);
@@ -190,7 +190,7 @@ public sealed class JudgeBattleLeadsTests
             c.Position = new MapPoint((short)(t.Battle[0].Position.X + 64 * (k + 1)), t.Battle[0].Position.Y);
         }
         t.Battle.RealCombat = false;
-        var groups = t.Activations[t.Battle.FloorShown];
+        var groups = t.Activations[t.Battle.LevelShown];
         var before = groups.Count;
         Call(t, "LeaveLevel", 0, new byte[14]);
         Assert.Equal(before + 1, groups.Count);
@@ -218,13 +218,13 @@ public sealed class JudgeBattleLeadsTests
         Assert.True(b[0].IsAble && b[1].IsAble);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
-            b[i].Floor = b.FloorShown;
+            b[i].Level = b.LevelShown;
         }
-        var level = b.FloorShown + 1;
-        b.EnemyFloor = level;
-        b[0].Floor = level;
+        var level = b.LevelShown + 1;
+        b.EnemyLevel = level;
+        b[0].Level = level;
         t.Surrender();
-        Assert.Equal(level, b.EnemyFloor);
+        Assert.Equal(level, b.EnemyLevel);
         Assert.Equal(CharacterStatus.Away, b[0].Status);
         Assert.Equal(CharacterStatus.Able, b[1].Status);
     }

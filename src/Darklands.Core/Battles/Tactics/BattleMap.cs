@@ -210,7 +210,7 @@ public sealed class BattleMap
             for (var i = 0; i < Combatant.Count; i++)
             {
                 var o = _battle[i];
-                if (i == who || !o.IsAble || o.Floor != me.Floor)
+                if (i == who || !o.IsAble || o.Level != me.Level)
                 {
                     continue;
                 }
@@ -292,7 +292,7 @@ public sealed class BattleMap
         for (var i = 0; i < Combatant.Count; i++)
         {
             var o = _battle[i];
-            if (!o.IsAble || o.Floor != _battle.FloorShown || i == a || i == b)
+            if (!o.IsAble || o.Level != _battle.LevelShown || i == a || i == b)
             {
                 continue;
             }

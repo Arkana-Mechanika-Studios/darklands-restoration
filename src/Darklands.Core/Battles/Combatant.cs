@@ -179,8 +179,8 @@ public sealed partial class Combatant
     /// <summary>fighter-damage-popup: endurance lost since the last display.</summary>
     public sbyte DamageShown { get; set; }
 
-    /// <summary>fighter-floor-level: the level it is on (−99 left through an exit).</summary>
-    public int Floor { get; set; }
+    /// <summary>fighter-floor-level: the battlefield level it is on; <see cref="BattleEnd.LeftThroughExit"/> (−99) once it has left the battlefield through an exit zone.</summary>
+    public int Level { get; set; }
 
     /// <summary>enemy-kind: 0 hand to hand, 1 missiles, 2 casts spells.</summary>
     public int EnemyClass { get; set; }

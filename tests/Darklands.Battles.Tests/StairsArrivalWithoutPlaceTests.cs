@@ -22,12 +22,12 @@ public sealed class StairsArrivalWithoutPlaceTests
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x0F, 4885, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), s => s.Behaviour = behaviour);
         var exit = typeof(TacticalBattle).GetMethod("TakeStairs", Any)!;
         exit.Invoke(t, [0, Who]);
-        Assert.Equal(1, t.Battle[Who].Floor);
+        Assert.Equal(1, t.Battle[Who].Level);
         Assert.Equal(new MapPoint(336, 280), t.Battle[Who].Position);
         t.SwitchLevel(1);
         exit.Invoke(t, [t.Battle[Who].StairsBack, Who]);
-        Assert.Equal(0, t.Battle[Who].Floor);
-        if (t.Battle.FloorShown != 0)
+        Assert.Equal(0, t.Battle[Who].Level);
+        if (t.Battle.LevelShown != 0)
         {
             t.SwitchLevel(0);
         }

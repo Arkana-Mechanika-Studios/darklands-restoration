@@ -213,7 +213,7 @@ public sealed partial class TacticalBattle
             for (var j = lo; j < hi; j++)
             {
                 var o = Battle[j];
-                if (Battle.Reaches[i, j] && o.Target != i && c.Target != j && o.Floor == c.Floor && (o.Action & CombatAction.Melee) == 0)
+                if (Battle.Reaches[i, j] && o.Target != i && c.Target != j && o.Level == c.Level && (o.Action & CombatAction.Melee) == 0)
                 {
                     StartFight(i, j, false);
                     break;
@@ -236,7 +236,7 @@ public sealed partial class TacticalBattle
             for (var j = 0; j < Combatant.Count; j++)
             {
                 var o = Battle[j];
-                if (Battle.Reaches[i, j] && o.IsAble && o.Target == i && o.Floor == c.Floor && (o.Action & CombatAction.Melee) != 0)
+                if (Battle.Reaches[i, j] && o.IsAble && o.Target == i && o.Level == c.Level && (o.Action & CombatAction.Melee) != 0)
                 {
                     // C: combatants[c.target] with a target of −1 reads the record before combatant 0; never reached since
                     // the melee bit implies a target.
@@ -382,7 +382,7 @@ public sealed partial class TacticalBattle
                 continue;
             }
             var c = Battle[v];
-            if (c.IsAble && c.Target != -1 && c.Floor == Battle.PartyFloor && (c.Action & CombatAction.Melee) != 0)
+            if (c.IsAble && c.Target != -1 && c.Level == Battle.PartyLevel && (c.Action & CombatAction.Melee) != 0)
             {
                 Rethink(v, c.Target);
             }
@@ -403,7 +403,7 @@ public sealed partial class TacticalBattle
         }
         var c = Battle[i];
         var target = Battle[t];
-        if (target.IsAble && !Battle.Reaches[i, t] && target.Exchange != Exchange.PushedBack && target.Floor == c.Floor
+        if (target.IsAble && !Battle.Reaches[i, t] && target.Exchange != Exchange.PushedBack && target.Level == c.Level
             && c.Exchange is not (Exchange.PusherFollowing or Exchange.PushedBack or Exchange.AfterPush))
         {
             c.Destination = target.Position;

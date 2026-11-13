@@ -284,7 +284,7 @@ VARS_FLOOR, VARS_MOVING, VARS_SHOWN, VARS_PARTY, VARS_ENEMY, VARS_PLACE, VARS_OP
 def battle_level(level: int, spots: list[tuple[int, int]], groups: tuple[int, ...]):
     """A game saved in a battle moved to another level of the same battlefield: the party's slots 0..3 stand at <spots> on level <level>
     (their records' position and destination, action 0, screen place 0, 0), and the battle file's floor shown, party floor, enemies' floor and the members'
-    floors (BattleVariables FloorShown / PartyFloor / EnemyFloor / Floor) name that level, their moving flags and place actions cleared, and
+    levels (BattleVariables LevelShown / PartyLevel / EnemyLevel, the combatants' Level) name that level, their moving flags and place actions cleared, and
     the wall groups <groups> of that level count as opened (BattleVariables DoorsOpened, 2E38:0BB6: the level's hidden areas, which the battle
     shows as void until a member walks in, R023 0000; the party's room must be one). The
     levels themselves are the file's (a persistent battlefield saves every level). The .BSV's variables block is written back with

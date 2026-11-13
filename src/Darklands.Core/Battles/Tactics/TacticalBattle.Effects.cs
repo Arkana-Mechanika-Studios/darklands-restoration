@@ -390,7 +390,7 @@ public sealed class EffectField : IEffectClouds
     /// <summary>The level an effect is made on: the level shown (R019+0x0000 / 0x0300), or with FixCombatAcrossLevels its missile's.</summary>
     // BUG: OriginalBehaviour.FixCombatAcrossLevels - a spell or potion effect lands on the level SHOWN, whatever level its missile flew on
     //   (split audit row 7)
-    private int EffectLevel(int floor) => Battle.Behaviour.FixCombatAcrossLevels && floor >= 0 ? floor : Battle.FloorShown;
+    private int EffectLevel(int floor) => Battle.Behaviour.FixCombatAcrossLevels && floor >= 0 ? floor : Battle.LevelShown;
 
     public void Lands(int x, int y, int thrower, int type, int quality, int target, int floor)
     {
@@ -485,7 +485,7 @@ public sealed class EffectField : IEffectClouds
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if (c.Status != CharacterStatus.Able || c.Floor != floor || !Inside(_clouds[n].X, _clouds[n].Y, _clouds[n].Size, i)
+            if (c.Status != CharacterStatus.Able || c.Level != floor || !Inside(_clouds[n].X, _clouds[n].Y, _clouds[n].Size, i)
                 || (c.EffectImmunity & (1 << kind)) != 0)
             {
                 continue;
@@ -569,7 +569,7 @@ public sealed class EffectField : IEffectClouds
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if (c.Status != CharacterStatus.Able || c.Floor != floor || (c.EffectImmunity & (1 << type)) != 0)
+            if (c.Status != CharacterStatus.Able || c.Level != floor || (c.EffectImmunity & (1 << type)) != 0)
             {
                 continue;
             }
@@ -1188,7 +1188,7 @@ public sealed class EffectField : IEffectClouds
             {
                 _areaSprite[k, j] = -1;
             }
-            if (_areas[k].Level != Battle.FloorShown || !AnyPuff(_areaPuffX, _areaPuffY, k, _areas[k].Size & 7))
+            if (_areas[k].Level != Battle.LevelShown || !AnyPuff(_areaPuffX, _areaPuffY, k, _areas[k].Size & 7))
             {
                 continue;
             }
@@ -1206,7 +1206,7 @@ public sealed class EffectField : IEffectClouds
         // 07EC's edges in the draw list: a south and an east edge for each cloud (see the UNCERTAIN note above)
         for (var k = 0; k < CloudCount; k++)
         {
-            if (_clouds[k].Level == Battle.FloorShown && AnyPuff(_cloudPuffX, _cloudPuffY, k, _clouds[k].Size & 7))
+            if (_clouds[k].Level == Battle.LevelShown && AnyPuff(_cloudPuffX, _cloudPuffY, k, _clouds[k].Size & 7))
             {
                 count = Math.Min(count + 2, Math.Max(count, DrawListLimit));
             }
@@ -1217,7 +1217,7 @@ public sealed class EffectField : IEffectClouds
             var c = Battle[i];
             _flashSprite[i] = -1;
             _bodyQueued[i] = _numberQueued[i] = false;
-            if (c.Status is not (CharacterStatus.Able or CharacterStatus.Dead or CharacterStatus.Unconscious) || c.Floor != Battle.FloorShown
+            if (c.Status is not (CharacterStatus.Able or CharacterStatus.Dead or CharacterStatus.Unconscious) || c.Level != Battle.LevelShown
                 || !viewport.CombatantInView(i))
             {
                 continue;
@@ -1339,7 +1339,7 @@ public sealed class EffectField : IEffectClouds
         {
             var n = _clouds[k].Size & 7;
             int minX = 9999, minY = 9999, maxX = -9999, maxY = -9999;
-            if (_clouds[k].Level == Battle.FloorShown)
+            if (_clouds[k].Level == Battle.LevelShown)
             {
                 for (var j = 0; j < n * n && j < 16; j++)
                 {
@@ -1620,7 +1620,7 @@ public sealed partial class TacticalBattle
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if (c.Status == CharacterStatus.Empty || c.Floor != Battle.FloorShown)
+            if (c.Status == CharacterStatus.Empty || c.Level != Battle.LevelShown)
             {
                 continue;
             }

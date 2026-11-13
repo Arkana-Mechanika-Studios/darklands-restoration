@@ -20,19 +20,19 @@ public sealed class ExitedMemberStrandsTheRestTests
     private static (TacticalBattle T, int Below, int[] Others) Run(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         var able = Enumerable.Range(0, Combatant.PartySlots).Where(i => t.Battle[i].IsAble).ToArray();
         Assert.True(able.Length >= 2);
         // the first one leaves through an exit (LeaveField's writes)
         var gone = t.Battle[able[0]];
-        gone.Floor = BattleEnd.LeftThroughExit;
+        gone.Level = BattleEnd.LeftThroughExit;
         gone.Flags |= TacticalFlags.LeftField;
         var others = able.Skip(1).ToArray();
         foreach (var i in others)
         {
             typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, i]);
         }
-        var below = t.Battle[others[0]].Floor;
+        var below = t.Battle[others[0]].Level;
         Assert.NotEqual(party, below);
         return (t, below, others);
     }
@@ -45,7 +45,7 @@ public sealed class ExitedMemberStrandsTheRestTests
             return;
         }
         var (t, below, others) = Run(OriginalBehaviour.Faithful);
-        Assert.NotEqual(below, t.Battle.PartyFloor);
+        Assert.NotEqual(below, t.Battle.PartyLevel);
         Assert.True(BattleEnd.IsOver(t.Battle, t));
         Assert.All(others, i => Assert.Equal(CharacterStatus.Away, t.Battle[i].Status));
     }
@@ -58,8 +58,8 @@ public sealed class ExitedMemberStrandsTheRestTests
             return;
         }
         var (t, below, others) = Run(OriginalBehaviour.DataSafe);
-        Assert.Equal(below, t.Battle.PartyFloor);
-        Assert.Equal(below, t.Battle.FloorShown);
+        Assert.Equal(below, t.Battle.PartyLevel);
+        Assert.Equal(below, t.Battle.LevelShown);
         Assert.False(BattleEnd.IsOver(t.Battle, t));
         Assert.All(others, i => Assert.Equal(CharacterStatus.Able, t.Battle[i].Status));
     }
@@ -76,17 +76,17 @@ public sealed class ExitedMemberStrandsTheRestTests
         }
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]),
             s => s.Behaviour = fix ? OriginalBehaviour.DataSafe : OriginalBehaviour.Faithful);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         var enemy = t.Battle[Combatant.PartySlots];
         enemy.Status = CharacterStatus.Able;
-        enemy.Floor = party;
+        enemy.Level = party;
         var able = Enumerable.Range(0, Combatant.PartySlots).Where(i => t.Battle[i].IsAble).ToArray();
         var lone = able[^1];
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, lone]);
-        Assert.NotEqual(party, t.Battle[lone].Floor);
+        Assert.NotEqual(party, t.Battle[lone].Level);
         foreach (var i in able[..^1])
         {
-            t.Battle[i].Floor = BattleEnd.LeftThroughExit;
+            t.Battle[i].Level = BattleEnd.LeftThroughExit;
             t.Battle[i].Flags |= TacticalFlags.LeftField;
         }
         var over = BattleEnd.IsOver(t.Battle, t);

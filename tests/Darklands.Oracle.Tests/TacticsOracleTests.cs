@@ -104,7 +104,7 @@ public sealed class TacticsOracleTests
             c.Status = (CharacterStatus)rec[0x14];
             c.ReadiedSkill = (sbyte)rec[0x59];
             c.Skills[4] = (sbyte)rec[0x6F];
-            c.Floor = (sbyte)floors[k];
+            c.Level = (sbyte)floors[k];
             c.HalfWidth = (sbyte)halfW[k];
             c.HalfHeight = (sbyte)halfH[k];
             c.Moving = moving[k] != 0;

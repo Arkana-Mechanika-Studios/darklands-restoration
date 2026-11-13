@@ -18,18 +18,18 @@ public sealed class WokenOnOtherLevelTests
     private static (TacticalBattle T, int Party, int His) Wake(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         Assert.NotEqual(party, his);
-        Assert.Equal(party, t.Battle.FloorShown);
+        Assert.Equal(party, t.Battle.LevelShown);
         typeof(TacticalBattle).GetMethod("PlaceWoken", Any)!.Invoke(t, [Lone]);
         return (t, party, his);
     }
 
     private static bool FreeOn(TacticalBattle t, int floor, int who)
     {
-        var shown = t.Battle.FloorShown;
+        var shown = t.Battle.LevelShown;
         t.SwitchLevel(floor);
         var p = t.Battle[who].Position;
         t.Map.StrictWalls = true;
@@ -59,7 +59,7 @@ public sealed class WokenOnOtherLevelTests
         }
         var (t, party, his) = Wake(OriginalBehaviour.DataSafe);
         Assert.True(FreeOn(t, his, Lone));
-        Assert.Equal(party, t.Battle.FloorShown);
-        Assert.Equal(his, t.Battle[Lone].Floor);
+        Assert.Equal(party, t.Battle.LevelShown);
+        Assert.Equal(his, t.Battle[Lone].Level);
     }
 }

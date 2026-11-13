@@ -26,22 +26,22 @@ public sealed partial class TacticalBattle
         {
             if (Battle[i].IsAble)
             {
-                Battle.EnemyFloor = Battle[i].Floor;
+                Battle.EnemyLevel = Battle[i].Level;
                 break;
             }
         }
-        var enemyFloor = Battle.EnemyFloor;
+        var enemyFloor = Battle.EnemyLevel;
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             var c = Battle[i];
             if (c.IsAble)
             {
-                if (c.Floor == BattleEnd.LeftThroughExit)
+                if (c.Level == BattleEnd.LeftThroughExit)
                 {
                     any = true;
                     Battle.Result = BattleResult.Fled;
                 }
-                if (c.Floor != enemyFloor)
+                if (c.Level != enemyFloor)
                 {
                     other = true;
                 }
@@ -53,7 +53,7 @@ public sealed partial class TacticalBattle
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
                 var c = Battle[i];
-                if (c.Floor != BattleEnd.LeftThroughExit && c.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
+                if (c.Level != BattleEnd.LeftThroughExit && c.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                 {
                     c.Status = CharacterStatus.Away;
                 }
@@ -66,7 +66,7 @@ public sealed partial class TacticalBattle
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
                 var c = Battle[i];
-                if (c.Floor == enemyFloor && c.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
+                if (c.Level == enemyFloor && c.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                 {
                     c.Status = CharacterStatus.Away;
                 }

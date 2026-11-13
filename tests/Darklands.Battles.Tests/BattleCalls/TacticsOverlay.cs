@@ -102,14 +102,14 @@ internal static class TacticsOverlay
     {
         var ds = image.Ds;
         var far = image.Far;
-        if (t.Battle.FloorShown < 0 || t.Battle.FloorShown >= t.LevelCount)
+        if (t.Battle.LevelShown < 0 || t.Battle.LevelShown >= t.LevelCount)
         {
             throw new BattleCallsTests.SkipJob("the floor shown is not a level of this battlefield");
         }
         // the level shown is the one DS:11CA names: the rewrite's own start may show another (a job that moves the shown floor)
-        t.Map.Level = Get<IReadOnlyList<BattlefieldLevel>>(t, "_levels")[t.Battle.FloorShown];
+        t.Map.Level = Get<IReadOnlyList<BattlefieldLevel>>(t, "_levels")[t.Battle.LevelShown];
         t.Battle.ExitCards = t.Map.Level.ExitCards;
-        far.AsSpan(0, FloorSize).CopyTo(t.Level.Image);
+        far.AsSpan(0, FloorSize).CopyTo(t.LevelShown.Image);
         var map = t.Map;
         foreach (var f in Flags)
         {
@@ -187,7 +187,7 @@ internal static class TacticsOverlay
             {
                 Position = new MapPoint((short)Word(ds, at + 8), (short)Word(ds, at + 0x0A)), Goal = new MapPoint((short)Word(ds, at + 0x0C), (short)Word(ds, at + 0x0E)),
                 Target = (sbyte)ds[at + 0x10], Done = ds[at + 0x11], Facing = (sbyte)ds[at + 0x12], Shooter = (sbyte)ds[at + 0x13], Sprite = (sbyte)ds[at + 0x14],
-                Spell = ds[at + 0x15], Power = ds[at + 0x16], Speed = ds[at + 0x17], Floor = (sbyte)ds[at + 0x18],
+                Spell = ds[at + 0x15], Power = ds[at + 0x16], Speed = ds[at + 0x17], Level = (sbyte)ds[at + 0x18],
             });
         }
         for (var n = 0; n < t.Menus.Orders.Length; n++)
@@ -327,7 +327,7 @@ internal static class TacticsOverlay
             map.LastParts[j] = Word(ds, LastParts + 2 * j);
         }
         Set(map, "LastMask", (int)(short)Word(ds, 0xD708));
-        var list = t.Activations[t.Battle.FloorShown];
+        var list = t.Activations[t.Battle.LevelShown];
         list.Clear();
         for (var k = 0; k < ds[ActivationCount] && ActivationsAt + ActivationSize * (k + 1) <= far.Length; k++)
         {
@@ -350,7 +350,7 @@ internal static class TacticsOverlay
     {
         var ds = image.Ds;
         var far = image.Far;
-        t.Level.Image.AsSpan().CopyTo(far);
+        t.LevelShown.Image.AsSpan().CopyTo(far);
         var map = t.Map;
         foreach (var f in Flags)
         {
@@ -565,9 +565,9 @@ internal static class TacticsOverlay
             ds[at + 0x15] = (byte)m.Spell;
             ds[at + 0x16] = (byte)m.Power;
             ds[at + 0x17] = (byte)m.Speed;
-            ds[at + 0x18] = (byte)m.Floor;
+            ds[at + 0x18] = (byte)m.Level;
         }
-        var list = t.Activations[t.Battle.FloorShown];
+        var list = t.Activations[t.Battle.LevelShown];
         ds[ActivationCount] = (byte)list.Count;
         for (var k = 0; k < list.Count && ActivationsAt + ActivationSize * (k + 1) <= far.Length; k++)
         {

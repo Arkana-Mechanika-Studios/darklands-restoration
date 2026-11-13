@@ -48,7 +48,7 @@ public sealed partial class TacticalBattle
                 var m = Battle[p];
                 // BUG: OriginalBehaviour.FixCombatAcrossLevels - the members on the level SHOWN are seen, by enemies on any level: with a lone member's
                 //   level shown, enemies on the party's level see him and go for him (split audit row 6)
-                if (seen[p] || !m.IsAble || m.Floor != (Battle.Behaviour.FixCombatAcrossLevels ? en.Floor : Battle.FloorShown))
+                if (seen[p] || !m.IsAble || m.Level != (Battle.Behaviour.FixCombatAcrossLevels ? en.Level : Battle.LevelShown))
                 {
                     continue;
                 }
@@ -134,7 +134,7 @@ public sealed partial class TacticalBattle
                 continue;
             }
             var t = Battle[en.Target];
-            if (!t.IsAble || t.Floor != (Battle.Behaviour.FixCombatAcrossLevels ? en.Floor : Battle.FloorShown))
+            if (!t.IsAble || t.Level != (Battle.Behaviour.FixCombatAcrossLevels ? en.Level : Battle.LevelShown))
             {
                 en.ClearOrders();
                 CancelAction(e);
@@ -572,7 +572,7 @@ public sealed partial class TacticalBattle
     /// <summary>The distances from enemy n to the members it sees (unless it already has a target), and the nearest.</summary>
     // orig: R018+0x13B2 (1F43:0F02) draft (asm-verified per spec D §6.4)
     /// <summary>FixCombatAcrossLevels: combatants a and b are on different levels (never with the switch off).</summary>
-    private bool OtherLevel(int a, int b) => Battle.Behaviour.FixCombatAcrossLevels && Battle[a].Floor != Battle[b].Floor;
+    private bool OtherLevel(int a, int b) => Battle.Behaviour.FixCombatAcrossLevels && Battle[a].Level != Battle[b].Level;
 
     private void DistanceRow(int n, bool[] seen)
     {

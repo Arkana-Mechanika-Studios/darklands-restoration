@@ -39,7 +39,7 @@ public sealed class PlacementOrderTests
             Assert.Equal((places[2 * i], places[2 * i + 1]), (battle[i].Position.X, battle[i].Position.Y));
         }
         // the start's group is hidden once the level is shown: the first spot is void now, as in the original's level at the first pass
-        Assert.True(screen.Tactics.Level[places[0] >> 5, places[1] >> 4].IsVoid);
+        Assert.True(screen.Tactics.LevelShown[places[0] >> 5, places[1] >> 4].IsVoid);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public sealed class PlacementOrderTests
     [Fact]
     public void ThePartysRandomSpotsAreOneRunOfClipTests()
     {
-        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1)) { FloorShown = 0 };
+        var battle = new Battle(new CombatTables(new byte[CombatTables.Length], new byte[16]), new MscRandom(1)) { LevelShown = 0 };
         var level = new BattlefieldLevel(new byte[BattlefieldLevel.ImageSize]);
         level[21, 10] = new BattlefieldCell(0x0A);
         var map = new BattleMap(battle, level, [], 0);

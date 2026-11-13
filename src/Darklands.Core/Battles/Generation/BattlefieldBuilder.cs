@@ -213,7 +213,7 @@ public sealed class BattlefieldStore
     public Tactics.LootStore Loot { get; } = new();
 
     /// <summary>floor-displayed (DS:11CA) when the last battle here ended (−1: none yet): modes 1 and 2 show it again.</summary>
-    public int FloorShown { get; set; } = -1;
+    public int LevelShown { get; set; } = -1;
 
     /// <summary>
     /// The party slots' places when the last battle here ended (x +4, y +6, path facing +0x19, sprite facing +0x1A of each record),

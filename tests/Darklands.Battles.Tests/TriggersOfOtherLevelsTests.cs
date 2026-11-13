@@ -21,10 +21,10 @@ public sealed class TriggersOfOtherLevelsTests
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         var b = Enumerable.Range(0, Combatant.PartySlots).First(i => i != Lone && t.Battle[i].IsAble);
         t.SwitchLevel(his);
-        var lv = t.Level;
+        var lv = t.LevelShown;
         var k = lv.GetByte(TriggerCountAt);
         var at = TriggersAt + 14 * k;
         var p = t.Battle[b].Position;

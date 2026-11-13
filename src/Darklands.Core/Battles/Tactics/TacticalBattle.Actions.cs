@@ -27,7 +27,7 @@ public sealed partial class TacticalBattle
                     continue;
                 }
                 var set = AnimationSet(i);
-                if (c.Place == PlaceAction.Stairs && Battle.FloorShown != Battle.PartyFloor)
+                if (c.Place == PlaceAction.Stairs && Battle.LevelShown != Battle.PartyLevel)
                 {
                     TakeStairsOrder(i);
                     CancelAction(i);
@@ -674,7 +674,7 @@ public sealed partial class TacticalBattle
         if ((c.Flags & TacticalFlags.DeathSounded) != 0)
         {
             c.Flags |= TacticalFlags.CorpseDone;
-            if (c.Floor != BattleEnd.LeftThroughExit)
+            if (c.Level != BattleEnd.LeftThroughExit)
             {
                 _redraw = true;
             }

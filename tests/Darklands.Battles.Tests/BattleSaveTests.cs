@@ -115,8 +115,8 @@ public sealed class BattleSaveTests
         // the fight taken up again shows "Battlefield save rules are in effect" (DS:1776) for 150 ticks after its set-up (R014+0x0000), the
         // clock running in notice-display's wait (root 0000:24BC)
         Assert.Equal((ushort)(b.Clock + 150), r.Clock);
-        Assert.Equal(b.FloorShown, r.FloorShown);
-        Assert.Equal(b.PartyFloor, r.PartyFloor);
+        Assert.Equal(b.LevelShown, r.LevelShown);
+        Assert.Equal(b.PartyLevel, r.PartyLevel);
         Assert.Equal(b.RealCombat, r.RealCombat);
         Assert.Equal(tactics.MarchingOrder, resumed.MarchingOrder);
         Assert.Equal(tactics.LevelCount, resumed.LevelCount);
@@ -136,7 +136,7 @@ public sealed class BattleSaveTests
             Assert.Equal(b[i].Position, r[i].Position);
             Assert.Equal(b[i].Destination, r[i].Destination);
             Assert.Equal(b[i].Facing, r[i].Facing);
-            Assert.Equal(b[i].Floor, r[i].Floor);
+            Assert.Equal(b[i].Level, r[i].Level);
             Assert.Equal(b[i].Attributes, r[i].Attributes);
             Assert.Equal(b[i].Skills, r[i].Skills);
             Assert.Equal(b[i].Path, r[i].Path);

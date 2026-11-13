@@ -34,7 +34,7 @@ public sealed class ProgramStartTests
     public void AFreshProgramsBattleVariablesAreZerosButTheLevelShownAndTheTimerRate()
     {
         var v = new BattleFile().Variables;
-        Assert.Equal(0xFF, v[BattleVariables.FloorShown]);
+        Assert.Equal(0xFF, v[BattleVariables.LevelShown]);
         Assert.Equal(1, v[BattleVariables.TimerRate] | v[BattleVariables.TimerRate + 1] << 8);
         Assert.Equal(2, v.Count(b => b != 0));
     }
@@ -60,7 +60,7 @@ public sealed class ProgramStartTests
         {
             Game(files, new RcPlayTests.RcHost(["k:q", "w:80", "c:1F00", "w:30", "k:enter", "w:60", "k:esc", "w:40"]), saves).Run();
             var bsv = BattleSaveFile.Parse(File.ReadAllBytes(Directory.GetFiles(saves, "DKSAVE0.BSV").Single()));
-            Assert.Equal(0xFF, bsv.Variables[BattleVariables.FloorShown]);
+            Assert.Equal(0xFF, bsv.Variables[BattleVariables.LevelShown]);
             Assert.Equal(1, bsv.Variables[BattleVariables.TimerRate]);
             Assert.Equal(terrain, bsv.TerrainFile);
             Assert.Equal(loot, bsv.LootFile);

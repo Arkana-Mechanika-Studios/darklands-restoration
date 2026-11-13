@@ -642,7 +642,7 @@ public sealed class BattleScreen : ITacticalView
             _owner.LastFieldLocation = _state.Battlefield.LastLocation;
             // C: the level shown is the variables' (DS:11CA) and each member's place its record's (+0x04, +0x06, facings +0x19, +0x1A).
             var store = _owner.LastField.Store;
-            store.FloorShown = held.Variables[BattleVariables.FloorShown];
+            store.LevelShown = held.Variables[BattleVariables.LevelShown];
             for (var i = 0; i < Combatant.PartySlots; i++)
             {
                 if (i < _state.Party.Slots.Count && _state.Party.Slots[i] is { OccupiesSlot: true, OriginalRecord: { Length: >= Persistence.CombatantRecords.Size } r })
@@ -669,10 +669,10 @@ public sealed class BattleScreen : ITacticalView
         _owner.LastFieldLocation = _state.CurrentLocation;
         var floor = !reuse ? field.StartLevel
             : request.Mode == 3 ? Math.Clamp(request.Battlefield, 0, field.Levels.Count - 1)
-            : field.Store.FloorShown >= 0 ? field.Store.FloorShown : field.StartLevel;
+            : field.Store.LevelShown >= 0 ? field.Store.LevelShown : field.StartLevel;
         var battle = new Battle(_assets.Tables, _state.Random)
         {
-            Persistent = field.Persistent || request.Persistent, DifficultyOf = _state, FloorShown = floor,
+            Persistent = field.Persistent || request.Persistent, DifficultyOf = _state, LevelShown = floor,
             LeaderOf = _state.Party, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
@@ -745,7 +745,7 @@ public sealed class BattleScreen : ITacticalView
         _owner.LastFieldLocation = _state.CurrentLocation;
         var battle = new Battle(_assets.Tables, _state.Random)
         {
-            Persistent = true, DifficultyOf = _state, FloorShown = file.Variables[BattleVariables.FloorShown],
+            Persistent = true, DifficultyOf = _state, LevelShown = file.Variables[BattleVariables.LevelShown],
             LeaderOf = _state.Party, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
@@ -927,7 +927,7 @@ public sealed class BattleScreen : ITacticalView
             file.Variables[BattleVariables.Result + 1] = 0;
         }
         // floor-picture keeps the level shown at the end for the next battle's empty battlefield.
-        _owner.GenerationMemory.FloorImage = (byte[])_battle.Level.Image.Clone();
+        _owner.GenerationMemory.FloorImage = (byte[])_battle.LevelShown.Image.Clone();
         // the party's collision sizes (DS:C80F / DS:C831) stay in the program's tables for the next battle's placement
         _owner.GenerationMemory.PartySizes = [.. Enumerable.Range(0, Combatant.PartySlots).Select(i => (b[i].HalfWidth, b[i].HalfHeight))];
         // and so do the party's animation slots' sizes (DS:1182 / DS:118E), which the next battle's start copies into them
@@ -959,11 +959,11 @@ public sealed class BattleScreen : ITacticalView
         _owner.Memory.ClearedLevels |= _battle.EncounteredLevels;
         // the battlefield remembers the level shown and where each member stands, for a revisit in mode 1 or 2
         var store = _battle.Field.Store;
-        store.FloorShown = b.FloorShown;
+        store.LevelShown = b.LevelShown;
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
             store.PartyPlaces[i] = b[i].Status == CharacterStatus.Empty ? null : (b[i].Position, b[i].Facing, b[i].SpriteFacing);
-            store.PartyFloors[i] = b[i].Status == CharacterStatus.Empty ? -1 : b[i].Floor;
+            store.PartyFloors[i] = b[i].Status == CharacterStatus.Empty ? -1 : b[i].Level;
         }
     }
 
@@ -1663,7 +1663,7 @@ public sealed class BattleScreen : ITacticalView
             {
                 restore();
             }
-            _battle.SwitchLevel(_battle.Battle.FloorShown);
+            _battle.SwitchLevel(_battle.Battle.LevelShown);
             // orig: R037+0x451A..0x453C: the comment box (text-prompt) is put back with colour 0 transparent and colour 5 turned into 0, so
             //   the screen keeps some of its pixels (TextInputBox); the battle's back page never had the box, and the save's level switch
             //   (R024+0x059A through thunk 09C0:1B3F at R003+0x0CD6) paints nothing: only a later frame's sprite boxes or a full paint
@@ -2018,7 +2018,7 @@ public sealed class BattleScreen : ITacticalView
         var ctrlFunction = (key & 0xFF) == 0 && key is >= Keys.CtrlF1 and <= Keys.CtrlF5;
         var digit = key is >= 0x0231 and <= 0x0635 && Keys.ForCharacter(Keys.CharacterOf(key)) == key;
         var letter = char.IsAsciiLetter(Keys.CharacterOf(key)) && Keys.ForCharacter(Keys.CharacterOf(key)) == key ? char.ToUpperInvariant(Keys.CharacterOf(key)) : ' ';
-        if (tb.Battle.PartyFloor != tb.Battle.FloorShown)
+        if (tb.Battle.PartyLevel != tb.Battle.LevelShown)
         {
             // The party is split over two levels (R016+0x00AC: DS:C623 != DS:11CA): every arrow word, the keypad's digits too and Shift or not,
             // gives the message (R016+0x00EA), U takes the stairs back (R016+0x014E), a few keys go on to the switch.
@@ -2413,7 +2413,7 @@ public sealed class BattleScreen : ITacticalView
         if (!_ui.CtrlHeld)
         {
             var c = tb.Battle[row];
-            if (c.Status == CharacterStatus.Able && c.Floor != BattleEnd.LeftThroughExit)
+            if (c.Status == CharacterStatus.Able && c.Level != BattleEnd.LeftThroughExit)
             {
                 CharacterSheet(row);
                 tb.ReReadyAbleMembers();
@@ -2534,7 +2534,7 @@ public sealed class BattleScreen : ITacticalView
     {
         var tb = _battle!;
         var c = tb.Battle[member];
-        if (c.Status == CharacterStatus.Able && c.Floor == BattleEnd.LeftThroughExit || c.Status == CharacterStatus.Unconscious)
+        if (c.Status == CharacterStatus.Able && c.Level == BattleEnd.LeftThroughExit || c.Status == CharacterStatus.Unconscious)
         {
             CannotView(member);
             return;
@@ -2685,7 +2685,7 @@ public sealed class BattleScreen : ITacticalView
             canvas.Draw(pic.Image, 0x0E, x, transparent: true);
         }
         var y = x + 0x20;
-        var name = tb.Field.Forces.Kinds[c.Floor < 0 ? 0 : c.Floor].ElementAtOrDefault(tb.EnemyKindIndex(c.AnimationSlot))?.Name ?? "";
+        var name = tb.Field.Forces.Kinds[c.Level < 0 ? 0 : c.Level].ElementAtOrDefault(tb.EnemyKindIndex(c.AnimationSlot))?.Name ?? "";
         while (name.Length > 0 && small.Measure(name) > 0x36)
         {
             name = name[..^1];
@@ -2885,7 +2885,7 @@ public sealed class BattleScreen : ITacticalView
         //   the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
         for (var i = 0; i < Combatant.Count; i++)
         {
-            if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Floor == tb.Battle.FloorShown && SpriteBox(i) is { } box)
+            if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Level == tb.Battle.LevelShown && SpriteBox(i) is { } box)
             {
                 tb.Battle[i].ScreenPlace = (box.Left - BattlefieldView.Left, box.Top);
                 if (tickDraw)
@@ -2955,11 +2955,11 @@ public sealed class BattleScreen : ITacticalView
         {
             RecordScreenPlaces(tb.TickToDraw);
         }
-        _view.Draw(canvas, tb.Level, _tiles!);
+        _view.Draw(canvas, tb.LevelShown, _tiles!);
         var clip = BattlefieldView.Area;
         foreach (var pile in tb.LootPiles)
         {
-            if (pile.Level == tb.Battle.FloorShown && pile.Visible)
+            if (pile.Level == tb.Battle.LevelShown && pile.Visible)
             {
                 // orig: R014+0x799E (14F7:118E) draft: x = −dx − ((y − sy0) − x) − sx0 + 0x88, y = (y − sy0) − dy + 0x69 (dx 10, dy 4).
                 var (px, py) = _view.ToScreen(pile.Position.X, pile.Position.Y);
@@ -2969,7 +2969,7 @@ public sealed class BattleScreen : ITacticalView
         DrawAreas(canvas);
         _hotSpots.Clear();
         var shown = Enumerable.Range(0, Combatant.Count)
-            .Where(i => tb.Battle[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious or CharacterStatus.Dead && tb.Battle[i].Floor == tb.Battle.FloorShown)
+            .Where(i => tb.Battle[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious or CharacterStatus.Dead && tb.Battle[i].Level == tb.Battle.LevelShown)
             .ToList();
         // list B: the fallen (and an able combatant out of view, which has no entry and draws nothing in the view)
         foreach (var i in shown.Where(i => !tb.Battle[i].IsAble || !CombatantInView(i)).OrderBy(i => tb.Battle[i].Position.Y).ThenBy(i => tb.Battle[i].Position.X))
@@ -3193,7 +3193,7 @@ public sealed class BattleScreen : ITacticalView
         var placed = new List<(int Image, int X, int Y, MapPoint Point)>();
         foreach (var m in tb.MissilesDrawn)
         {
-            if (m.Floor != tb.Battle.FloorShown || (m.Arrived && m.Sprite != 0))
+            if (m.Level != tb.Battle.LevelShown || (m.Arrived && m.Sprite != 0))
             {
                 continue;
             }
@@ -3280,7 +3280,7 @@ public sealed class BattleScreen : ITacticalView
         var tb = _battle!;
         for (var k = 0; k < tb.Effects.AreaCount; k++)
         {
-            if (tb.Effects.Areas[k].Level != tb.Battle.FloorShown)
+            if (tb.Effects.Areas[k].Level != tb.Battle.LevelShown)
             {
                 continue;
             }
@@ -3322,17 +3322,17 @@ public sealed class BattleScreen : ITacticalView
             for (var slot = 0; slot < BattlefieldDirtyBoxes.Slots; slot++)
             {
                 int row = slot / BattlefieldView.Columns, column = slot % BattlefieldView.Columns;
-                if (_view.SlotCell(tb.Level, row, column) is not var (x, y) || tb.Effects.PieceFrame(layer, x, y) is var frame && frame < 0)
+                if (_view.SlotCell(tb.LevelShown, row, column) is not var (x, y) || tb.Effects.PieceFrame(layer, x, y) is var frame && frame < 0)
                 {
                     continue;
                 }
-                var cell = tb.Level[x, y];
+                var cell = tb.LevelShown[x, y];
                 var (fx, fy) = BattlefieldView.SlotFloor(row, column);
                 var (decoration, px, py, w, h, key) = layer switch
                 {
                     0 => (tiles.NorthWallDecorations[cell.NorthWallDecoration], fx + 16, fy - 25, 0, 0, new DepthKey(x * 32 + 4, y * 16, y * 16)),
                     1 => (tiles.WestWallDecorations[cell.WestWallDecoration], fx, fy - 25, 0, 0, new DepthKey(x * 32 + 1, y * 16 + 8, y * 16 + 8)),
-                    _ => (tiles.FloorDecorations[tb.Level.FloorDecoration(x, y)], fx, fy, 0x30, 0x10, default),
+                    _ => (tiles.FloorDecorations[tb.LevelShown.FloorDecoration(x, y)], fx, fy, 0x30, 0x10, default),
                 };
                 if (layer != 2)
                 {
@@ -3470,7 +3470,7 @@ public sealed class BattleScreen : ITacticalView
             {
                 continue;
             }
-            foreach (var piece in _view.WallPieces(tb.Level, _tiles!, tb.Field.Terrain, slot / BattlefieldView.Columns, slot % BattlefieldView.Columns))
+            foreach (var piece in _view.WallPieces(tb.LevelShown, _tiles!, tb.Field.Terrain, slot / BattlefieldView.Columns, slot % BattlefieldView.Columns))
             {
                 if (_listCount >= EffectField.DrawListLimit)
                 {
@@ -3583,7 +3583,7 @@ public sealed class BattleScreen : ITacticalView
             var m = tb.Effects.Markers[k];
             // C: frame 4 reads DS:CEA4[4] (DS:CEAC, set to 0 by the loader): nothing is drawn.
             var frame = m.Frame & 7;
-            if (m.Level != tb.Battle.FloorShown || frame > 3)
+            if (m.Level != tb.Battle.LevelShown || frame > 3)
             {
                 continue;
             }
@@ -3671,7 +3671,7 @@ public sealed class BattleScreen : ITacticalView
             }
             // C: root 0000:1716 dims a row for `command-mode == 1 && chosen-member != i` (DS:A6B3 / DS:A6B2): the member chosen by the held
             //   button outside order mode dims nothing; order mode with nobody chosen (0xFF) dims every row
-            var gone = c.Floor == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.InOrderMode && tb.Selected != i);
+            var gone = c.Level == BattleEnd.LeftThroughExit || c.Status is CharacterStatus.Dead or CharacterStatus.Away || (tb.InOrderMode && tb.Selected != i);
             var color = gone ? Palette.Grey : tb.Battle.Leader == i ? (byte)0x0E : Palette.White;
             // orig: the panel's window DS:0156 (pointer DS:0168) has font slot 1 in a battle too (hooked at party-panel-row-set root 0000:1716 / member-gauge-bars root 0000:1A9C over the gate battle: font 1 at every call), so the name, the values, the place note and the order letter are in the map panel's font (PartyPanel); the window colour set for the name stays for the values
             // orig: the panel rows (root 0000:1716) draws the name at (4, y + 1) of the row's y = 1 + 0x28 * i (vis10 session tleads-battle-difficulty: the

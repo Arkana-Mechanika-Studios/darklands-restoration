@@ -58,7 +58,7 @@ public sealed partial class TacticalBattle
             return;
         }
         var c = Battle[i];
-        if (c.Status is CharacterStatus.Empty or CharacterStatus.Dead or CharacterStatus.Away || c.Floor == BattleEnd.LeftThroughExit)
+        if (c.Status is CharacterStatus.Empty or CharacterStatus.Dead or CharacterStatus.Away || c.Level == BattleEnd.LeftThroughExit)
         {
             return;
         }
@@ -70,9 +70,9 @@ public sealed partial class TacticalBattle
         Battle.ActiveMember = i;
         // R016+0x0A72..0x0A7D: DS:D6EA = the member's flee bit (flags 0x1000), after order mode was left
         _fleeBefore = (c.Flags & TacticalFlags.Following) != 0;
-        if (c.Floor != Battle.FloorShown)
+        if (c.Level != Battle.LevelShown)
         {
-            SwitchLevel(c.Floor);
+            SwitchLevel(c.Level);
             _view.Recentre(i);
         }
         ResetOrderMenu();
@@ -88,15 +88,15 @@ public sealed partial class TacticalBattle
             return;
         }
         var c = Battle[i];
-        if (c.Status is CharacterStatus.Empty or CharacterStatus.Dead or CharacterStatus.Away || c.Floor == BattleEnd.LeftThroughExit)
+        if (c.Status is CharacterStatus.Empty or CharacterStatus.Dead or CharacterStatus.Away || c.Level == BattleEnd.LeftThroughExit)
         {
             return;
         }
         FollowsActive = true;
         Battle.ActiveMember = Battle.Leader = i;
-        if (c.Floor != Battle.FloorShown)
+        if (c.Level != Battle.LevelShown)
         {
-            SwitchLevel(c.Floor);
+            SwitchLevel(c.Level);
         }
         _view.RowChanged(-1);
         ResetOrderMenu();
@@ -107,13 +107,13 @@ public sealed partial class TacticalBattle
     // orig: fight-keys R016+0x0000 (1EF8:0000) draft (spec D §7.1)
     public void StepKey(int direction)
     {
-        if (Battle.PartyFloor != Battle.FloorShown)
+        if (Battle.PartyLevel != Battle.LevelShown)
         {
             _view.Message(UseStairsText, 0x96);
             return;
         }
         var i = Battle.ActiveMember;
-        if (i is < 0 or >= Combatant.PartySlots || Battle[i].Floor != Battle.FloorShown || MoveMode == 1)
+        if (i is < 0 or >= Combatant.PartySlots || Battle[i].Level != Battle.LevelShown || MoveMode == 1)
         {
             return;
         }
@@ -328,7 +328,7 @@ public sealed partial class TacticalBattle
         // BUG: U has no status test of the leader (R016+0x014E, R016+0x1182): it moves a dead or unconscious leader's body through the
         //   stairs, or brings back a leader who left through the exit (an ordinary combatant again: nobody is stranded and the battle
         //   can still end). Kept as the original (party-split audit row 30). Decision: later, an optional fixed rule after 1.0.
-        c.Floor = BattleEnd.LeftThroughExit;
+        c.Level = BattleEnd.LeftThroughExit;
         c.Flags = (c.Flags & ~TacticalFlags.InExitZone) | TacticalFlags.LeftField;
         ForgetTarget(i);
         CancelAction(i);
@@ -526,7 +526,7 @@ public sealed partial class TacticalBattle
     private bool InAnyBox(MapPoint p)
     {
         bool In(int x, int y, int w, int h) => x <= p.X && p.X <= w + x && y <= p.Y && p.Y <= h + y;
-        for (var k = 0; k < Level.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
         {
             var (x, y, w, h) = Box(DoorsAt + 14 * k);
             if (In(x, y, w, h))
@@ -534,7 +534,7 @@ public sealed partial class TacticalBattle
                 return true;
             }
         }
-        for (var k = 0; k < Level.GetByte(StairsCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(StairsCountAt); k++)
         {
             var (x, y, w, h) = Box(StairsAt + 14 * k);
             if (In(x, y, w, h))
@@ -542,7 +542,7 @@ public sealed partial class TacticalBattle
                 return true;
             }
         }
-        for (var k = 0; k < Level.GetByte(RegionCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(RegionCountAt); k++)
         {
             var (x, y, w, h) = Box(RegionsAt + RegionSize * k);
             if (In(x, y, w, h))
@@ -550,10 +550,10 @@ public sealed partial class TacticalBattle
                 return true;
             }
         }
-        for (var k = 0; k < Level.GetByte(ZoneCountAt); k++)
+        for (var k = 0; k < LevelShown.GetByte(ZoneCountAt); k++)
         {
             var at = ZonesAt + 10 * k;
-            if (In(Level.GetWord(at), Level.GetWord(at + 2), Level.GetWord(at + 4), Level.GetWord(at + 6)))
+            if (In(LevelShown.GetWord(at), LevelShown.GetWord(at + 2), LevelShown.GetWord(at + 4), LevelShown.GetWord(at + 6)))
             {
                 return true;
             }

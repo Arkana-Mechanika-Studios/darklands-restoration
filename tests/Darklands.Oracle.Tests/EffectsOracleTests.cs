@@ -294,7 +294,7 @@ public sealed class EffectsOracleTests
     {
         var battle = new Battle(Tables.Value!, new MscRandom(i.GetProperty("state").GetUInt32()))
         {
-            RealCombat = true, Clock = (ushort)i.GetProperty("clock").GetInt32(), FloorShown = 0,
+            RealCombat = true, Clock = (ushort)i.GetProperty("clock").GetInt32(), LevelShown = 0,
         };
         var level = new BattlefieldLevel();
         foreach (var cell in i.GetProperty("cells").EnumerateArray())
@@ -309,7 +309,7 @@ public sealed class EffectsOracleTests
         {
             var c = battle[k];
             CombatantRecords.Read(Convert.FromHexString(i.GetProperty("combatants")[k].GetString()!), c);
-            c.Floor = (sbyte)floors[k];
+            c.Level = (sbyte)floors[k];
             c.HalfWidth = 5;
             c.HalfHeight = 2;
             c.EffectImmunity = (short)immune[k];

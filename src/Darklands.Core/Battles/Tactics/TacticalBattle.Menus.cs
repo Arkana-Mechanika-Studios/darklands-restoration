@@ -38,7 +38,7 @@ public sealed partial class TacticalBattle
         // BUG: with the party split Walk, Flee and Halt are greyed and Use Stairs is on anywhere (R014+0xDE12, R014+0xDF28): the way
         //   back of a member alone is his stairs-back record, by design. Kept as the original (party-split audit row 27). Decision:
         //   never, by design: Use Stairs is the way back of a member alone.
-        m.Set(OrdersItem.Walk, (byte)(Battle.PartyFloor != Battle.FloorShown ? 2 : 1));
+        m.Set(OrdersItem.Walk, (byte)(Battle.PartyLevel != Battle.LevelShown ? 2 : 1));
         m.DoorSuffix = BattleMenus.Leader;
         m.Set(OrdersItem.Flee, 2);
         m.Set(OrdersItem.UseDoor, 2);
@@ -73,7 +73,7 @@ public sealed partial class TacticalBattle
         m.Set(OrdersItem.Resume, 1);
         m.Set(OrdersItem.Cancel, 1);
         var c = Battle[a];
-        if (Battle.PartyFloor != Battle.FloorShown)
+        if (Battle.PartyLevel != Battle.LevelShown)
         {
             m.Set(OrdersItem.UseStairs, 1);
             m.Set(OrdersItem.Walk, 2);
@@ -118,7 +118,7 @@ public sealed partial class TacticalBattle
         var fl = c.Flags;
         if ((fl & TacticalFlags.InDoorway) != 0)
         {
-            int locked = Level.GetByte(DoorsAt + 14 * c.Door + 7);
+            int locked = LevelShown.GetByte(DoorsAt + 14 * c.Door + 7);
             if (locked == 0 || Battle.RealCombat)
             {
                 m.Set(OrdersItem.UseDoor, 1);
@@ -148,7 +148,7 @@ public sealed partial class TacticalBattle
         if ((fl & TacticalFlags.AtChest) != 0 && !Battle.RealCombat)
         {
             var at = RegionsAt + RegionSize * c.Chest;
-            int locked = Level.GetByte(at + 8), trap = Level.GetByte(at + 9);
+            int locked = LevelShown.GetByte(at + 8), trap = LevelShown.GetByte(at + 9);
             if ((locked & 0x7F) == 0)
             {
                 if (trap == 0)

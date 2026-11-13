@@ -52,8 +52,8 @@ public static class BattleEnd
             return false;
         }
         return b.Behaviour.FixLootExitTestReadsWords
-            ? b[slot].Floor == LeftThroughExit
-            : (sbyte)b[2 * slot].Floor == LeftThroughExit && (sbyte)b[2 * slot + 1].Floor == -1;
+            ? b[slot].Level == LeftThroughExit
+            : (sbyte)b[2 * slot].Level == LeftThroughExit && (sbyte)b[2 * slot + 1].Level == -1;
     }
 
     /// <summary>
@@ -77,26 +77,26 @@ public static class BattleEnd
         }
         // The floor where the enemies are: that of the first able enemy, else the one shown.
         // C: DS:C651 is a global (the battle file keeps the last value found).
-        b.EnemyFloor = b.FloorShown;
+        b.EnemyLevel = b.LevelShown;
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {
             if (b[i].IsAble)
             {
-                b.EnemyFloor = b[i].Floor;
+                b.EnemyLevel = b[i].Level;
                 break;
             }
         }
-        var enemyFloor = b.EnemyFloor;
+        var enemyFloor = b.EnemyLevel;
         // Everybody still standing there has left through an exit?
         var noAbleOnEnemyFloor = true;
         var gone = 0;
         foreach (var m in party)
         {
-            if (m.Floor == LeftThroughExit)
+            if (m.Level == LeftThroughExit)
             {
                 gone++;
             }
-            else if (m.IsAble && m.Floor == enemyFloor)
+            else if (m.IsAble && m.Level == enemyFloor)
             {
                 noAbleOnEnemyFloor = false;
             }
@@ -105,7 +105,7 @@ public static class BattleEnd
         //   (the stairs), nobody on the enemies' floor reads as the party's flight: the battle ends as fled or left and the members on the
         //   other level become Away (split audit row 10); the fix lets the tests below see them (the real-combat switch to their floor).
         if (noAbleOnEnemyFloor && gone != 0 && b.Behaviour.FixExitedMemberStrandsTheRest
-            && party.Any(m => m.IsAble && m.Floor != LeftThroughExit && m.Floor != enemyFloor))
+            && party.Any(m => m.IsAble && m.Level != LeftThroughExit && m.Level != enemyFloor))
         {
             noAbleOnEnemyFloor = false;
         }
@@ -123,7 +123,7 @@ public static class BattleEnd
             }
             foreach (var m in party)
             {
-                if (m.Floor != LeftThroughExit && m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
+                if (m.Level != LeftThroughExit && m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                 {
                     m.Status = CharacterStatus.Away;
                 }
@@ -137,11 +137,11 @@ public static class BattleEnd
             var elsewhere = 0;
             foreach (var m in party)
             {
-                if (m.Floor == enemyFloor && m.IsAble)
+                if (m.Level == enemyFloor && m.IsAble)
                 {
                     noAbleOnEnemyFloor = false;
                 }
-                else if (m.Floor != enemyFloor && m.IsAble)
+                else if (m.Level != enemyFloor && m.IsAble)
                 {
                     elsewhere++;
                 }
@@ -150,18 +150,18 @@ public static class BattleEnd
             {
                 foreach (var m in party)
                 {
-                    if (m.Floor == enemyFloor && m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
+                    if (m.Level == enemyFloor && m.Status is CharacterStatus.Able or CharacterStatus.Unconscious)
                     {
                         m.Status = CharacterStatus.Away;
                     }
                 }
                 actions.LootAfterFight();
                 // the fix: the floor of a member still on the battlefield, not -99
-                var first = Array.FindIndex(party, m => m.IsAble && !(b.Behaviour.FixExitedMemberStrandsTheRest && m.Floor == LeftThroughExit));
+                var first = Array.FindIndex(party, m => m.IsAble && !(b.Behaviour.FixExitedMemberStrandsTheRest && m.Level == LeftThroughExit));
                 if (first >= 0)
                 {
-                    b.PartyFloor = party[first].Floor;
-                    actions.SwitchLevel(b.PartyFloor);
+                    b.PartyLevel = party[first].Level;
+                    actions.SwitchLevel(b.PartyLevel);
                     for (var j = Combatant.PartySlots; j < Combatant.Count; j++)
                     {
                         b[j].Status = CharacterStatus.Empty;
@@ -181,7 +181,7 @@ public static class BattleEnd
             var noneConscious = true;
             foreach (var m in party)
             {
-                if (m.Status != CharacterStatus.Empty && m.Floor != LeftThroughExit && m.Floor == enemyFloor)
+                if (m.Status != CharacterStatus.Empty && m.Level != LeftThroughExit && m.Level == enemyFloor)
                 {
                     if (m.IsAble)
                     {
@@ -216,7 +216,7 @@ public static class BattleEnd
                     // was counted above); the test is kept as written.
                     foreach (var m in party)
                     {
-                        if (m.IsAble && m.Floor == LeftThroughExit)
+                        if (m.IsAble && m.Level == LeftThroughExit)
                         {
                             b.Result = BattleResult.Lost;
                         }

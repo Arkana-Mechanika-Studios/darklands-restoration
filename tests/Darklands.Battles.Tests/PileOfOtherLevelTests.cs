@@ -18,11 +18,11 @@ public sealed class PileOfOtherLevelTests
     private static (TacticalBattle T, int Party, int His, LootPile Pile) Fall(OriginalBehaviour behaviour)
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0)]), s => s.Behaviour = behaviour);
-        var party = t.Battle.FloorShown;
+        var party = t.Battle.LevelShown;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
-        var his = t.Battle[Lone].Floor;
+        var his = t.Battle[Lone].Level;
         Assert.NotEqual(party, his);
-        Assert.Equal(party, t.Battle.FloorShown);
+        Assert.Equal(party, t.Battle.LevelShown);
         var slot = (AnimationSlot)typeof(TacticalBattle).GetMethod("SetOf", Any)!.Invoke(t, [Lone])!;
         var before = t.LootPiles.Count;
         typeof(TacticalBattle).GetMethod("LeavePile", Any)!.Invoke(t, [t.Battle[Lone], slot]);
