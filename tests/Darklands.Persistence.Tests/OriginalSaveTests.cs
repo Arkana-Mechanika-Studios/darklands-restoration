@@ -443,7 +443,7 @@ public sealed class OriginalSaveTests
         {
             Kind = EventKinds.Quest, Type = 5, Owner = -2, Location = 48, Value = 17, Extra = 3,
             Flags = EventFlags.CallExpiryHandler, ExpiryHandler = (ExpiryHandler)3, Tag = 0x1D, Data1 = -4, Data2 = 6, Data3 = 0x7F,
-            Created = new GameDate(9, 3, 4, 1401), Start = new GameDate(10, 3, 4, 1401), End = EventLog.ForeverEnd,
+            Created = new GameDate(9, 3, 4, 1401), Start = new GameDate(10, 3, 4, 1401), End = EventLog.EndOf1499,
         };
         var r = EventRecords.Write(e);
         Assert.Equal(5, BitConverter.ToInt16(r, 0x00));
@@ -607,8 +607,8 @@ public sealed class OriginalSaveTests
         loaded41.MarchingOrder.CopyTo(rest, 0x1573);
         Assert.Equal(rest, fresh.Variables);
         Assert.Empty(fresh.Levels);
-        Assert.Null(fresh.File1162);
-        Assert.Null(fresh.File1164);
+        Assert.Null(fresh.LootFile);
+        Assert.Null(fresh.TerrainFile);
         Assert.Equal(0xFFFF, fresh.HeaderWords[17]);
         Assert.Equal(0xFFFF, fresh.HeaderWords[19]);
     }
@@ -658,7 +658,7 @@ public sealed class OriginalSaveTests
         state.CurrentLocation = 0;
         state.CurrentCard = 0x29;
         state.MapLeaveMode = 3;
-        state.Events.Put(12, new TimedEvent { Kind = EventKinds.Quest, Value = 17, End = EventLog.ForeverEnd });
+        state.Events.Put(12, new TimedEvent { Kind = EventKinds.Quest, Value = 17, End = EventLog.EndOf1499 });
         return state;
     }
 }

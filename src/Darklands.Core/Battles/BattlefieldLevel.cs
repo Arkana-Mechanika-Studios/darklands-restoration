@@ -109,7 +109,7 @@ public sealed class BattlefieldLevel
         set
         {
             PutWord(ExitCardsAt, value.Won);
-            PutWord(ExitCardsAt + 2, value.Unknown);
+            PutWord(ExitCardsAt + 2, value.Surrendered);
             PutWord(ExitCardsAt + 4, value.Fled);
             PutWord(ExitCardsAt + 6, value.Lost);
             PutWord(ExitCardsAt + 8, value.LeftBeforeFight);
@@ -272,7 +272,7 @@ public readonly record struct BattlefieldObject(int X, int Y, int Width, int Hei
 }
 
 /// <summary>The cards a level leads to (floor image +0x1F42 won, +0x1F44 surrender, +0x1F46 fled, +0x1F48 lost, +0x1F4A left without a fight).</summary>
-public readonly record struct LevelExitCards(int Won, int Unknown, int Fled, int Lost, int LeftBeforeFight);
+public readonly record struct LevelExitCards(int Won, int Surrendered, int Fled, int Lost, int LeftBeforeFight);
 
 /// <summary>A position in map pixels.</summary>
 public readonly record struct MapPoint(int X, int Y)

@@ -30,11 +30,11 @@ public sealed class KoboldEnvoy_MineR07 : Card
         menu.Enable(0, 1, 2, 3);
         return menu.Run(
             // orig: R102+0x135C (1958:015C) matched
-            new MenuLine(() => Answer(c, 1, 2, fact: 6, fight: -3), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => Answer(c, 1, 2, fact: 6, fight: -3), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R102+0x1400 (1958:0200) matched
-            new MenuLine(() => Answer(c, 3, 4, fact: 5, fight: -3), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => Answer(c, 3, 4, fact: 5, fight: -3), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R102+0x14A4 (1958:02A4) matched
-            new MenuLine(() => Answer(c, 5, 2, fact: null, fight: -4), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => Answer(c, 5, 2, fact: null, fight: -4), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R102+0x152A (1958:032A) matched
             new MenuLine(() => { c.BattleMode = 1; c.Next = -2; }, OptionHint.Saying(NoRisk)));
     }

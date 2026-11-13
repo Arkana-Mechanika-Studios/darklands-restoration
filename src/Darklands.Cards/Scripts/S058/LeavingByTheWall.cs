@@ -138,7 +138,7 @@ public sealed class LeavingByTheWall : Card
                         menu[2] = OptionState.Shown;
                     }
                 },
-                OptionHint.Saying(CardTexts.Unknown)),
+                OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R058+0x2618 (1A1F:07A8) matched (option 3 action, see ClimbDownARope); chance handler R058+0x2708 (see StealthChance)
             new MenuLine(chance =>
                 {

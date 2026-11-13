@@ -21,11 +21,11 @@ public sealed record FntFont(
     byte StartCharCode,
     byte EndCharCode,
     byte CharacterDataWidth,
-    byte Unknown05,
+    byte FixedWidth, // header +3: every character's width when not 0, else the width table
     byte CharacterHeight,
     byte CharacterSpacing,
     byte LineSpacing,
-    byte Unknown01,
+    byte HeaderByte7, // header +7: not read
     byte[] CharacterWidths,
     byte[] PixelData)
 {

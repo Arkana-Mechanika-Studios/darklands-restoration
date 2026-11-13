@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R130+0x183C, R130+0x1874
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class BurntShipOfLydwina : Card
 {
     public override int Number => 346;
@@ -36,8 +36,8 @@ public sealed class BurntShipOfLydwina : Card
             // C: the picture changes go through card-run (a full reload of the card), not card-run-near.
             ShowPicture(c, 322);
             c.Screen.Text(3);
-            c.Events.Create(-2, c.Here, 0, 0x1C, 0x17, 0, 0, Core.Events.EventLog.Forever, 0, 1);
-            c.Events.Create(-2, c.Here, 0, 0x1C, 0x16, 0, 0, Core.Events.EventLog.Forever, 0, 1);
+            c.Events.Create(-2, c.Here, 0, 0x1C, 0x17, 0, 0, Core.Events.EventLog.UntilEndOf1499, 0, 1);
+            c.Events.Create(-2, c.Here, 0, 0x1C, 0x16, 0, 0, Core.Events.EventLog.UntilEndOf1499, 0, 1);
         }
         else if (c.CountItems(-2, GlobeWithTheTrout) == 0)
         {

@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x2046 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 7, 8, 9 are never enabled (every assignment sets their flag to 0).
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class FortressGuardpost : Card
 {
     public override int Number => 302;
@@ -57,13 +57,13 @@ public sealed class FortressGuardpost : Card
         // DORMANT: R119+0x2046 ("screwed up.") is the handler of slots 10..19, never shown.
         // orig: R119+0x207E / _0bba / _0bf6 / _0c32 R119+0x207E..0x2132 matched — item pop-up ($ChosenOneName = member in the box).
         // orig: R119+0x216E / _0cf6 / _0d7e / _0e06 matched — saint pop-up chance text.
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // DORMANT: in text block 6 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => { menu.Offer(6, 4, 5, 6); ShowPicture(c, GuardsPicture); }, unknown),
             new MenuLine(_ => { c.CombatFlags |= 8; Leave(c, -3); }, unknown),
             new MenuLine(_ => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
-            new MenuLine(_ => ThrowPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.Unknown)),
+            new MenuLine(_ => ThrowPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => CheckTheirEfficiency(c, chance), () => EfficiencyChance(c)),
             new MenuLine(chance => TrickThem(c, menu, chance), () => TrickChance(c)),
             new MenuLine(chance => RelieveThem(c, chance), () => RelieveChance(c)),
@@ -77,7 +77,7 @@ public sealed class FortressGuardpost : Card
     private static bool GuardsKnowUs(CardContext c) => c.Events.FactAnywhere(1, KnownFact);
 
     private static void BecomeKnown(CardContext c) =>
-        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, KnownFact, 0, 0, EventLog.Forever, 0, 1);
+        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, KnownFact, 0, 0, EventLog.UntilEndOf1499, 0, 1);
 
     private static void Leave(CardContext c, int next)
     {

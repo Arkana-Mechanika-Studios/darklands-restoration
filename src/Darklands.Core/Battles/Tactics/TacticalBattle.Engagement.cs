@@ -162,12 +162,12 @@ public sealed partial class TacticalBattle
         {
             return false;
         }
-        Probe(i, 4);
+        FindCombatantsInReach(i, 4);
         if (_inReach[j])
         {
             return true;
         }
-        Probe(j, 4);
+        FindCombatantsInReach(j, 4);
         return _inReach[i];
     }
 

@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R121+0x18BE ("screwed up.") and are never shown.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class HallOfHorns : Card
 {
     public override int Number => 310;
@@ -49,7 +49,7 @@ public sealed class HallOfHorns : Card
         c.SetCardSaints(3, 0x45, 0x39, 0x35);
         menu[6] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         return menu.Run(
             // orig: R121+0x1480 matched — walk on.
             new MenuLine(_ => { c.BattleMode = 1; c.Next = -2; }, unknown),
@@ -75,7 +75,7 @@ public sealed class HallOfHorns : Card
     // orig: R121+0x156A matched
     private static void TwistTheStagHorns(CardContext c)
     {
-        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, TrapDisarmedFact, 0, 0, EventLog.Forever, 0, 1);
+        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, TrapDisarmedFact, 0, 0, EventLog.UntilEndOf1499, 0, 1);
         TwistTheHorns(c);
     }
 

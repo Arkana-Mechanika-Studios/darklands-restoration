@@ -51,7 +51,7 @@ public sealed class BeforeTheCityWalls : Card
         return menu.Run(
             new MenuLine(_ => GateByDay(c), () => OptionHint.Say(c.IsDaylight ? NoRisk : CardTexts.SleepUntilDawn)),
             new MenuLine(_ => GateByNight(c), () => OptionHint.Say(c.IsDaylight ? CardTexts.WaitForNight : NoRisk)),
-            new MenuLine(_ => ExamineTheWalls(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => ExamineTheWalls(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => ClimbTheWall(c, menu, chance), () => ClimbChance(c)),
             new MenuLine(_ => { c.PassHours(0); c.Next = 0x0C; }, OptionHint.Saying(NoRisk)));
     }

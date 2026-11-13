@@ -24,7 +24,7 @@ public sealed class EventLogTests
     public void ForeverMeansTheEndOf1499()
     {
         var s = TestGame.Create();
-        var i = s.Events.CreateHere(0x0B, EventLog.Forever);
+        var i = s.Events.CreateHere(0x0B, EventLog.UntilEndOf1499);
 
         Assert.Equal(new GameDate(23, 31, 12, 1499), s.Events[i]!.End);
         Assert.Equal(100, s.Events[i]!.Value);   // event-here-test's value
@@ -98,7 +98,7 @@ public sealed class EventLogTests
         Assert.Equal(i, s.Events.Renew(-2, -1, 0, 0x20, 1, 3, 0, 5, 0, 0));
         Assert.Equal(s.Date.AddHours(10).AddHours(5), s.Events[i]!.End);
 
-        var j = s.Events.Renew(-2, 6, 0, 0x20, 1, 3, 0, EventLog.Forever, 0, 0);
+        var j = s.Events.Renew(-2, 6, 0, 0x20, 1, 3, 0, EventLog.UntilEndOf1499, 0, 0);
         Assert.Equal(s.Date.AddHours(9999), s.Events[j]!.End);
     }
 
@@ -167,7 +167,7 @@ public sealed class EventLogTests
         // The session ev300-night (and its controls ev300-night-kept / -free): quest 7's night count on a full table (synth_saves.py q7night*).
         var s = TestGame.Create();
         s.Messages = new GameMessageLog();
-        var kept = s.Events.Create(-2, 168, 0, EventKinds.LocationFact, 5, 4, 0, EventLog.Forever, 0, 7);
+        var kept = s.Events.Create(-2, 168, 0, EventKinds.LocationFact, 5, 4, 0, EventLog.UntilEndOf1499, 0, 7);
         for (var k = 1; k < EventLog.Capacity; k++)
         {
             s.Events.Create(0x7FF0, 413, 0, EventKinds.LocationFact, 0x7F, 0, 0, 10, 0, 0);

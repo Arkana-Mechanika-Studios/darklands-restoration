@@ -30,7 +30,7 @@ namespace Darklands.Cards.Scripts;
 // C (generated): card-option-flag-4/5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class DemonPrinceAndTheSealedBook : Card
 {
     public override int Number => 312;
@@ -58,12 +58,12 @@ public sealed class DemonPrinceAndTheSealedBook : Card
         menu[1] = c.ItemsUsable();
         menu[0] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var showAgain = new MenuLine(_ => ShowTheDemonAgain(c), unknown);
         return menu.Run(
             new MenuLine(_ => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             new MenuLine(_ => ThrowAPotion(c), OptionHint.Saying(CardTexts.SelectPotion),
-                () => c.MemberPopupHint(CardTexts.Unknown)),
+                () => c.MemberPopupHint(CardTexts.EncounterTheUnknown)),
             new MenuLine(_ => Fight(c, 99), unknown),
             new MenuLine(_ => { c.BattleMode = 1; c.Next = -2; }, unknown),
             showAgain, showAgain, showAgain, showAgain, showAgain, showAgain);
@@ -76,7 +76,7 @@ public sealed class DemonPrinceAndTheSealedBook : Card
     // orig: R122+0x0000 (1838:0000) matched — the branch taken when fact 0x1D is known.
     private int BreakTheSeal(CardContext c)
     {
-        c.Events.Create(-2, c.Here, 0, 0x1C, 1, 0, 0, EventLog.Forever, 0, FactTag);
+        c.Events.Create(-2, c.Here, 0, 0x1C, 1, 0, 0, EventLog.UntilEndOf1499, 0, FactTag);
         c.GiveReward(4);
         // DIVERGENCE: the C writes locations[location-now], [location-now + 1] and [location-now - 4] without any check; the C#
         //   skips a place outside the location list (the wilderness, or the first/last records).
@@ -121,7 +121,7 @@ public sealed class DemonPrinceAndTheSealedBook : Card
         }
         c.Screen.Text(result != 0 ? 2 : 3);
         // C: the hours argument is DS:270F, i.e. the immediate 0x270F = 9999 (forever).
-        Fight(c, EventLog.Forever);
+        Fight(c, EventLog.UntilEndOf1499);
     }
 
     /// <summary>The potion is used up; the sneezing powder (slot 3) at least weakens him.</summary>

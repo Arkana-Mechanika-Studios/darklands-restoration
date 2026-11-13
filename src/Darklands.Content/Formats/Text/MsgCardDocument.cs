@@ -78,12 +78,12 @@ public readonly record struct MsgCardRawLowTextByte(
 
 public enum MsgCardRawLowTextByteKind
 {
-    UnknownBelow20,
-    Byte06,
-    Byte0A,
-    Byte10,
-    Byte14,
-    Byte15,
-    Byte16,
-    Byte1D
+    OtherControl,
+    BattleOption,
+    LineFeed,
+    ItemOption,
+    Paragraph,
+    PlainOption,
+    SaintOption,
+    Indent
 }

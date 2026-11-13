@@ -53,7 +53,7 @@ public sealed class RebelLeadersArrested : Card
         // orig: R091+0x0838 (1894:0278) matched (resets the handlers only)
         return menu.Run(
             // orig: R091+0x0776 (1894:01B6); hint R091+0x077E matched
-            new MenuLine(() => c.Next = 0x54, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Next = 0x54, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R091+0x07B6 (1894:01F6); hint R091+0x0810 matched
             new MenuLine(() => Betray(c), OptionHint.Saying("Easy")));
     }

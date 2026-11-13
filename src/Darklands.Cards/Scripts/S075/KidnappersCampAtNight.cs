@@ -47,7 +47,7 @@ public sealed class KidnappersCampAtNight : Card
             new MenuLine(() => c.Screen.Text(5), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint()),
             // orig: R075+0x13DC (193D:038C) matched; R075+0x13EA (193D:039A) matched; tests: CardSmokeTests
             // C: the hint leaves its member unset; the whole party is shown.
-            new MenuLine(() => c.Screen.Text(6), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Screen.Text(6), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R075+0x141C (193D:03CC) matched; R075+0x1424 (193D:03D4) matched; tests: CardSmokeTests
             new MenuLine(() => c.Next = 0x0C, OptionHint.Saying(NoRisk)),
             // orig: R075+0x145C (193D:040C) matched; R075+0x146A (193D:041A) matched; tests: CardSmokeTests

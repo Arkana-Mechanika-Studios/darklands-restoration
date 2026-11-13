@@ -22,10 +22,10 @@ public sealed class PanickedFlightFromTheCity : Card
         menu[2] = c.HereQuery(0x12) != 0 ? OptionState.Hidden : OptionState.Enabled;
         return menu.Run(
             // orig: R076+0x0B76 (18D7:0186) matched; R076+0x0B7E (18D7:018E) matched; tests: CardSmokeTests
-            new MenuLine(() => c.Next = 0x3A, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Next = 0x3A, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R076+0x0BB6 (18D7:01C6) matched; R076+0x0BBE (18D7:01CE) matched; tests: CardSmokeTests
-            new MenuLine(() => c.Next = 0x3B, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Next = 0x3B, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R076+0x0BF6 (18D7:0206) matched; R076+0x0C0A (18D7:021A) matched; tests: CardSmokeTests
-            new MenuLine(() => c.Next = c.IsDaylight ? 0x1F : 0x20, OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(() => c.Next = c.IsDaylight ? 0x1F : 0x20, OptionHint.Saying(CardTexts.EncounterTheUnknown)));
     }
 }

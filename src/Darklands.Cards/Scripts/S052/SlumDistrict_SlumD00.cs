@@ -69,7 +69,7 @@ public sealed class SlumDistrict_SlumD00 : Card
             // orig: R052+0x1B46 (19A2:04A6) matched (option 7 action); hint R052+0x1C62 (19A2:05C2) (see SneakChance)
             new MenuLine(chance => SneakThroughTheSlum(c, chance), () => SneakChance(c)),
             // orig: R052+0x1C7E (19A2:05DE) matched (option 8: live cheaply until morning, see LiveCheaply); hint R052+0x1D34 (19A2:0694) ("You can always encounter the unknown")
-            new MenuLine(() => LiveCheaply(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => LiveCheaply(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R052+0x1D6C (19A2:06CC) matched (option 9: leave via a side street); hint R052+0x1D80 (19A2:06E0) (success assured)
             new MenuLine(() => c.Next = c.IsDaylight ? SideStreet : SideStreetAtNight));
     }

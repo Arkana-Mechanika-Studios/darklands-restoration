@@ -62,14 +62,14 @@ public sealed class FortressDungeonCell : Card
         menu[4] = c.ItemsUsable();
         menu[3] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // DORMANT: in text block 1 the option lines 0..4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => menu.Offer(1, 5, 6, 7), unknown),
             new MenuLine(_ => c.Next = Jailers, unknown),
             new MenuLine(chance => PickTheLock(c, chance), () => LockChance(c)),
             new MenuLine(_ => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
-            new MenuLine(_ => UsePotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.Unknown)),
+            new MenuLine(_ => UsePotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => ReadThePlaque(c, menu, chance), () => PlaqueChance(c)),
             new MenuLine(_ => BackToTheCell(menu), unknown),
             new MenuLine(_ => c.Next = Jailers, unknown),

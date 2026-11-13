@@ -58,7 +58,7 @@ public sealed class ChallengedByTheWatch : Card
             // orig: R044+0x0C56 (18D1:02C6) asm (option 0 hint "enter combat"; action R044+0x0C50 (18D1:02C0) is a stub that calls R044+0x1810, see FightTheWatch)
             new MenuLine(() => FightTheWatch(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R044+0x0CA0 (18D1:0310) asm (option 1 hint (unknown text); action R044+0x0C8E (18D1:02FE): one hour passes, next card 0x7A (the chase))
-            new MenuLine(() => { c.PassHours(1); c.Next = Chase; }, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => { c.PassHours(1); c.Next = Chase; }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R044+0x0CD8 (18D1:0348) asm (option 2 action, see TalkYourWayOut; chance handler R044+0x0E18, see TalkChance)
             new MenuLine(chance => TalkYourWayOut(c, chance), () => TalkChance(c)),
             // orig: R044+0x0E80 (18D1:04F0) asm (option 3 action, see OfferABribe; chance handler R044+0x0F0C, see BribeChance)

@@ -38,7 +38,7 @@ public abstract class DwarfRiddleDoor : Card
         return menu.Run(answers);
     }
 
-    protected static OptionHint Unknown(CardContext c) => OptionHint.Say(CardTexts.Unknown, c.Leader);
+    protected static OptionHint Unknown(CardContext c) => OptionHint.Say(CardTexts.EncounterTheUnknown, c.Leader);
 
     /// <summary>A wrong answer: the curse (text <paramref name="text"/>) shrinks the leader's <paramref name="attribute"/>.</summary>
     protected MenuLine Wrong(CardContext c, int text, Attribute attribute, Func<OptionHint>? hint = null) =>

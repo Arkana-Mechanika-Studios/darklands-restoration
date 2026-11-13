@@ -49,7 +49,7 @@ public sealed class MadPriestOfTheHoard : Card
                 {
                     menu[0] = OptionState.Shown;
                 }
-            }, OptionHint.Saying(CardTexts.Unknown)),
+            }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R084+0x233C (1A35:036C) matched; R084+0x234A (1A35:037A) matched; tests: CardSmokeTests
             new MenuLine(() => { c.State.CurrentLocation = -1; c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)),
             // orig: R084+0x2382 (1A35:03B2) matched; R084+0x2510 (1A35:0540) matched; tests: CardSmokeTests

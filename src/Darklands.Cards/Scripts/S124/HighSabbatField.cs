@@ -88,7 +88,7 @@ public sealed class HighSabbatField : Card
 
         var assured = OptionHint.Saying(SuccessAssured);
         menu.Run(
-            new MenuLine(_ => WasteSomeTime(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => WasteSomeTime(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R124+0x1A2C / R124+0x1A34 matched — the water ritual.
             new MenuLine(_ => c.Next = 324, assured),
             // orig: R124+0x1A6C / R124+0x1A74 matched — the broom-riding.

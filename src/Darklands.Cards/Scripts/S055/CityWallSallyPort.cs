@@ -92,7 +92,7 @@ public sealed class CityWallSallyPort : Card
         {
             0 => OptionHint.ChanceOf(-(size - 0x2D) << 1, c.MenuMember),
             1 => OptionHint.ChanceOf(0x50 - size * 3, c.MenuMember),
-            2 => OptionHint.Say(CardTexts.Unknown, c.MenuMember),
+            2 => OptionHint.Say(CardTexts.EncounterTheUnknown, c.MenuMember),
             _ => OptionHint.Say(CardTexts.ScrewedUp),
         };
     }

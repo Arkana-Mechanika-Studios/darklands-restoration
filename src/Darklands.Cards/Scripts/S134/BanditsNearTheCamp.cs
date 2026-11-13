@@ -53,7 +53,7 @@ public sealed class BanditsNearTheCamp : Card
         c.SetCardSaints(0x36, 0x3D, 0x23);
         menu[2] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         return menu.Run([
             new MenuLine(_ =>
             {

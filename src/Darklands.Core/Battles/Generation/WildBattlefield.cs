@@ -1588,7 +1588,7 @@ public static class WildBattlefield
                 var r = level.Object(reinforcement);
                 group.HasReinforcements = 1;
                 group.ReinforcementKind = (sbyte)k2;
-                group.Byte15 = 16;
+                group.ReinforcementSpread = 16;
                 group.ReinforcementX = (short)(r.X + 16);
                 group.ReinforcementY = (short)(r.Y + 8);
                 group.ReinforcementBatch = (sbyte)batch;

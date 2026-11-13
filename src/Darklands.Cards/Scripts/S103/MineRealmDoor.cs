@@ -55,8 +55,8 @@ public abstract class MineRealmDoor : Card
         // c.Next is the card's own number, so the choice leaves it for a moment and it is put back below.
         menu.OnChoice = () => c.Next = 0;
         menu.Run(
-            new MenuLine(() => choice = 0, OptionHint.Saying(CardTexts.Unknown)),
-            new MenuLine(() => { }, OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(() => choice = 0, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
+            new MenuLine(() => { }, OptionHint.Saying(CardTexts.EncounterTheUnknown)));
         c.Next = Number;
         if (choice != 0)
         {

@@ -37,7 +37,7 @@ public sealed class SchratsMagicFruit : Card
         c.Variables.Chosen[1] = 1;
         c.Variables.Chosen[2] = 2;
         c.Variables.Chosen[3] = 3;
-        c.Events.Create(-2, c.Here, 0, 0x1C, 4, 0, 0, EventLog.Forever, 0, 7);
+        c.Events.Create(-2, c.Here, 0, 0x1C, 4, 0, 0, EventLog.UntilEndOf1499, 0, 7);
         // orig: R087+0x18E0 (1986:0400) matched; R087+0x1918 (1986:0438) matched; tests: CardSmokeTests
         // DORMANT: the "screwed up." default handler of the unlisted lines 5..19 (never offered).
         c.SetCardItems();

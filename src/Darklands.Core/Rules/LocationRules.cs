@@ -96,8 +96,8 @@ public static class LocationRules
             7 => city.Shop(CityShop.Armorer),
             8 => city.Shop(CityShop.Tinker),
             9 => city.Shop(CityShop.Clothier),
-            10 => city.Shop(CityShop.UnknownShop2),
-            11 => city.Shop(CityShop.UnknownShop),
+            10 => city.Shop(CityShop.Jeweler),
+            11 => city.Shop(CityShop.Gunsmith),
             12 or 13 or 14 => (sbyte)s.Locations[loc].LocalValues[what - 12],
             15 => Contents(CityContents.Fortress),
             16 => Contents(CityContents.Unknown0),
@@ -168,7 +168,7 @@ public static class LocationRules
                 s.City.SetShop(CityShop.Swordsmith, value);
                 break;
             case 6:
-                s.City.SetShop(s.Behaviour.FixShopSetSwap ? CityShop.Bowyer : CityShop.UnknownShop, value);
+                s.City.SetShop(s.Behaviour.FixShopSetSwap ? CityShop.Bowyer : CityShop.Gunsmith, value);
                 break;
             case 7:
                 s.City.SetShop(CityShop.Armorer, value);
@@ -177,7 +177,7 @@ public static class LocationRules
                 s.City.SetShop(CityShop.Tinker, value);
                 break;
             case 11:
-                s.City.SetShop(s.Behaviour.FixShopSetSwap ? CityShop.UnknownShop : CityShop.Bowyer, value);
+                s.City.SetShop(s.Behaviour.FixShopSetSwap ? CityShop.Gunsmith : CityShop.Bowyer, value);
                 break;
             case 12 or 13 or 14:
                 place.LocalValues[what - 12] = (sbyte)value;

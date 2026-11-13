@@ -49,13 +49,13 @@ public sealed class TemplarJailers : Card
         menu[3] = c.ItemsUsable();
         menu[2] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // DORMANT: in text block 0 the option line 4 is never offered (the first menu on this block never enables them); it can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => Submit(c), unknown),
             new MenuLine(_ => { c.CombatFlags |= 8; Escape(c); }, unknown),
             new MenuLine(_ => Pray(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
-            new MenuLine(_ => ThrowPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.Unknown)),
+            new MenuLine(_ => ThrowPotion(c), OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint(CardTexts.EncounterTheUnknown)),
             // orig: R120+0x19EC matched — through the secret door.
             new MenuLine(_ => { ShowPicture(c, SecretDoorPicture); c.Screen.Text(10); Escape(c); }, unknown),
             new MenuLine(_ => RepeatOpening(c), unknown),

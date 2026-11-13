@@ -61,7 +61,7 @@ public sealed class PreceptorOfTheTemplars : Card
         c.SetCardItems();
         c.SetCardSaints();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var showAgain = new MenuLine(_ => ShowTheRoomAgain(c), unknown);
         return menu.Run(
             new MenuLine(_ => LastWords(c, 2), unknown),

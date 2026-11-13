@@ -32,7 +32,7 @@ public sealed class DevilsBridgeVillage : Card
         menu.Enable(0, 1);
         return menu.Run(
             // orig: R088+0x0110 (1838:0110) matched; R088+0x0118 (1838:0118) matched; tests: CardSmokeTests
-            new MenuLine(() => c.Next = DevilOnTheBridge, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Next = DevilOnTheBridge, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R088+0x0150 (1838:0150) matched; R088+0x0168 (1838:0168) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {

@@ -47,10 +47,10 @@ public sealed class AssassinsAmbush : Card
         // DORMANT: in text block 6 the option lines 0, 9 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         // DORMANT: in text block 10 the option line 0 is never offered (the switch to this block hides them); it can be offered in other blocks only.
         return menu.Run(
-            new MenuLine(_ => TheyCharge(c, menu), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => TheyCharge(c, menu), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(_ => PrayForInsight(c), OptionHint.Saying(CardTexts.SelectSaint), () => SaintHint(c)),
             new MenuLine(_ => FlushThemOut(c, menu), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c, menu)),
-            new MenuLine(_ => TheyHaveSeenYou(c, menu, 5), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => TheyHaveSeenYou(c, menu, 5), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(_ => Fight(c, menu), OptionHint.Saying(CardTexts.EnterCombat)),
             new MenuLine(_ => PrayInTheFight(c, menu), OptionHint.Saying(CardTexts.SelectSaint), () => SaintHint(c)),
             new MenuLine(_ => Fight(c, menu), OptionHint.Saying(CardTexts.EnterCombat)),
@@ -121,7 +121,7 @@ public sealed class AssassinsAmbush : Card
     {
         if (menu.Block != 5 && menu.Block != 6)
         {
-            return new OptionHint(-1, CardTexts.Unknown, c.MenuMember);
+            return new OptionHint(-1, CardTexts.EncounterTheUnknown, c.MenuMember);
         }
         return new OptionHint(c.PartyGet(5) != 0 ? c.PartyMinMountedAgility() : 0, "", c.MenuMember);
     }

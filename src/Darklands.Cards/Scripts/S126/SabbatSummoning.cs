@@ -97,7 +97,7 @@ public sealed class SabbatSummoning : Card
             new MenuLine(_ => ChallengeTheThrong(c), assured),
             // orig: R126+0x23DE matched
             new MenuLine(_ => FightTheDemon(c, 16), assured),
-            new MenuLine(_ => LetTheRitualFinish(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => LetTheRitualFinish(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R126+0x25FA matched (the same as line 5 with text 15)
             new MenuLine(_ => FightTheDemon(c, 15), assured),
             noLine, noLine);

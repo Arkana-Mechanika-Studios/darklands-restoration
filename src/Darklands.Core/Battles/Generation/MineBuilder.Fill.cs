@@ -596,7 +596,7 @@ internal sealed partial class MineBuilder
         group.HasReinforcements = 1;
         group.ReinforcementKind = (sbyte)kind;
         // C: byte +0x15 of the group record is written from the group's own spread here; the city and wild generators write the default 16
-        group.Byte15 = (sbyte)group.Spread;
+        group.ReinforcementSpread = (sbyte)group.Spread;
         group.ReinforcementX = group.X;
         group.ReinforcementY = group.Y;
         group.ReinforcementBatch = (sbyte)(value % 10);

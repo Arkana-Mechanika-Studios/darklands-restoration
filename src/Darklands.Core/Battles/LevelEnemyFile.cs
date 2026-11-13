@@ -69,7 +69,7 @@ public static class LevelEnemyFile
         d[0x55] = k.Protection;
         d[0x5B] = (byte)k.ShieldQuality;
         d[0x5C] = (byte)k.ShieldType;
-        d[0x9B] = (byte)k.Byte27;
+        d[0x9B] = (byte)k.PlacementBoxBase;
         Word(d, 0xA4, k.LevelMask);
         d[0xA6] = (byte)k.BaseLoad;
         d[0xAA] = (byte)k.EndsBattleWhenKilled;
@@ -110,7 +110,7 @@ public static class LevelEnemyFile
             Image = TextOf(d, 0x80, 4), Name = TextOf(d, 0x84, 0x17), MissileType = (sbyte)d[0x22], MissileQuality = (sbyte)d[0x5A],
             MissileFlag = (short)WordOf(d, 0x9E), PiercingResistance = (sbyte)d[0x24], WeaponBonus = d[0x48], Load = d[0x49],
             Byte26 = (sbyte)d[0x9C], EffectImmunity = (short)WordOf(d, 0xAC), WeaponType = (sbyte)d[0x51], WeaponQuality = (sbyte)d[0x58],
-            Protection = d[0x55], ShieldQuality = (sbyte)d[0x5B], ShieldType = (sbyte)d[0x5C], Byte27 = (sbyte)d[0x9B],
+            Protection = d[0x55], ShieldQuality = (sbyte)d[0x5B], ShieldType = (sbyte)d[0x5C], PlacementBoxBase = (sbyte)d[0x9B],
             LevelMask = (ushort)WordOf(d, 0xA4), BaseLoad = (sbyte)d[0xA6], EndsBattleWhenKilled = (sbyte)d[0xAA], Class = d[0xAB],
             Appearance = (ushort)WordOf(d, 0xA2), Identity = (ushort)WordOf(d, 0xA0),
         };

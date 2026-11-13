@@ -26,7 +26,7 @@ namespace Darklands.Cards.Scripts;
 //     R127+0x047E
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class FirstSealBroken : Card
 {
     public override int Number => 332;
@@ -41,7 +41,7 @@ public sealed class FirstSealBroken : Card
         c.GiveReward(3);
         // C: closest-city(party-map-column) passes the long party-map-column, i.e. the two words party-map-column and party-map-row.
         c.AdjustReputation(c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y), 25, 50);
-        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, 1, 0, 0, EventLog.Forever, 0, 1);
+        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, 1, 0, 0, EventLog.UntilEndOf1499, 0, 1);
         // card-text-block(0, 2): frame mode 2 drawn like mode 0 (card-text-block R043+0x0E40 treats 0 and 2 alike).
         c.Screen.Text(0);
         SabbatAftermath.MarkTheSiteAbandoned(c);

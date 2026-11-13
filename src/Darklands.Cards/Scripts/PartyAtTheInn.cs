@@ -87,7 +87,7 @@ public sealed class PartyAtTheInn : Card
             // orig: three location facts (kind 0x1C, types 1, 0x18 and 0x16, tag 1) here, for 9999 hours, owner everybody
             foreach (var type in new[] { 1, 0x18, 0x16 })
             {
-                state.Events.Create(Who.Everybody, state.CurrentLocation, 0, EventKinds.LocationFact, type, 0, 0, EventLog.Forever, 0, 1);
+                state.Events.Create(Who.Everybody, state.CurrentLocation, 0, EventKinds.LocationFact, type, 0, 0, EventLog.UntilEndOf1499, 0, 1);
             }
             foreach (var item in new[] { 0x8C, 0x8F, 0x8C, 0x8E, 0x8D, 0x90, 0x91 })
             {

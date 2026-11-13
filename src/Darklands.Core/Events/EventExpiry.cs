@@ -64,7 +64,7 @@ public static class EventExpiry
             case ExpiryHandler.MemberTermEnds:
                 if (s.Party.PresentMember(e.Type) is not null)
                 {
-                    s.Events.Create(-2, s.CurrentLocation, 0, EventKinds.MemberLeft, e.Type, e.Type, 0, EventLog.Forever, 0, 0);
+                    s.Events.Create(-2, s.CurrentLocation, 0, EventKinds.MemberLeft, e.Type, e.Type, 0, EventLog.UntilEndOf1499, 0, 0);
                 }
                 break;
             case ExpiryHandler.UndoTemporaryBoost:

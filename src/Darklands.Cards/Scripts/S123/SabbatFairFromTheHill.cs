@@ -78,7 +78,7 @@ public sealed class SabbatFairFromTheHill : Card
             new MenuLine(_ => { c.Screen.Text(4); RaiseTheAlarm(c, 1); c.Next = 320; }, assured),
             // orig: R123+0x1A56 / R123+0x1A6A matched — they take the party along.
             new MenuLine(_ => { c.Screen.Text(5); c.Next = 320; }, assured),
-            new MenuLine(_ => AttackTheTravellers(c, menu), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => AttackTheTravellers(c, menu), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(_ => CallASaint(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint));
     }
 

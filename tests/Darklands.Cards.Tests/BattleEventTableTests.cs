@@ -17,7 +17,7 @@ public sealed class BattleEventTableTests
         }
         var state = CardHarness.NewGame();
         var context = new CardContext(state, CardHarness.World!, new ScriptedScreen(-1)) { PersonalNames = CardHarness.PersonalNames };
-        state.Events.Put(5, new TimedEvent { Kind = 0x0B, Owner = -2, End = EventLog.ForeverEnd });
+        state.Events.Put(5, new TimedEvent { Kind = 0x0B, Owner = -2, End = EventLog.EndOf1499 });
         var before = state.Events.All().Select(x => x.Event.Kind).ToList();
         var seen = -1;
         context.Battle = (_, _, _) =>

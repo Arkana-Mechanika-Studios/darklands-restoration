@@ -29,7 +29,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R134+0x082A, R134+0x08CC
 // DORMANT (generated): option slots 10..19 keep the default handler R134+0x08CC ("screwed up.") and are never shown.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 // C: limit-to-range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class SpiderWarehousePoster : Card
 {
@@ -134,7 +134,7 @@ public sealed class SpiderWarehousePoster : Card
     // orig: the start repeated inline in R134+0x0438 / _04c6 matched
     private static void TakeTheFee(CardContext c)
     {
-        c.EventHere(0x65, EventLog.Forever);
+        c.EventHere(0x65, EventLog.UntilEndOf1499);
         c.State.Party.Purse = c.State.Party.Purse.Add(c.Variables.Numbers[0], 0, 0);
     }
 

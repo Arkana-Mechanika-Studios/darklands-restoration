@@ -75,7 +75,7 @@ public sealed class ClothmakersStreetAtNight_Cloth01 : Card
             // orig: R053+0x2518 (1A4F:03A8) matched (option 1: wake the guild leader, see WakeTheLeader); hint R053+0x25E4 (1A4F:0474) (see LeaderChance)
             new MenuLine(chance => WakeTheLeader(c, chance), () => LeaderChance(c)),
             // orig: R053+0x26A0 (1A4F:0530) matched (option 2: hide and watch his home, see WatchTheHome); hint R053+0x2960 (1A4F:07F0) ("You can always encounter the unknown")
-            new MenuLine(() => WatchTheHome(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => WatchTheHome(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R053+0x2998 (1A4F:0828) matched (option 3: pick a lock and sneak in, see PickTheLock); hint R053+0x2ABA (1A4F:094A) (see LockChance)
             new MenuLine(chance => PickTheLock(c, menu, chance), () => LockChance(c)),
             // DORMANT: option 4 is switched off by the entry (the MSG has a line "guard the guild block from saboteurs" for it, and nothing else):

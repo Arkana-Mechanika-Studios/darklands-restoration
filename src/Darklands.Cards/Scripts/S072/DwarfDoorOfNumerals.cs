@@ -38,7 +38,7 @@ public sealed class DwarfDoorOfNumerals : Card
             new MenuLine(_ => WrongKnob(c), Unknown),
             new MenuLine(_ => TurnAndLeave(c), OptionHint.Saying(SuccessAssured)));
 
-        OptionHint Unknown() => new OptionHint(-1, CardTexts.Unknown, c.Leader);
+        OptionHint Unknown() => new OptionHint(-1, CardTexts.EncounterTheUnknown, c.Leader);
     }
 
     /// <summary>The trap: the leader loses a point of Intelligence, for good.</summary>

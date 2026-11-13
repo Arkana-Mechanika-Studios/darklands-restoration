@@ -43,7 +43,7 @@ public sealed class GateOfDarkness : Card
 
         return menu.Run(
             // orig: R130+0x1A46 / R130+0x1A68 matched
-            new MenuLine(_ => LastCastle.Fight(c, DarknessEnemy), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => LastCastle.Fight(c, DarknessEnemy), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R130+0x1AA0 / R130+0x1B4E matched; pop-up R130+0x1C70 / _045a / _04e4 / _056e matched
             new MenuLine(_ => PrayForLight(c, menu), OptionHint.Saying(CardTexts.SelectSaint), () => LastCastle.SaintHintForChosen(c)),
             // orig: R130+0x1B86 / R130+0x1B94 matched

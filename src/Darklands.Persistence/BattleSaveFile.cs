@@ -49,11 +49,11 @@ public sealed class BattleSaveFile
     /// <summary>The levels of the last battlefield.</summary>
     public List<SavedLevel> Levels { get; } = [];
 
-    /// <summary>The work file DS:1164 (terrain.fil), if it was saved.</summary>
-    public byte[]? File1164 { get; private set; }
+    /// <summary>The terrain work file (DS:1164, terrain.fil), if it was saved.</summary>
+    public byte[]? TerrainFile { get; private set; }
 
-    /// <summary>The work file DS:1162 (the loot file), if it was saved.</summary>
-    public byte[]? File1162 { get; private set; }
+    /// <summary>The loot work file (DS:1162), if it was saved.</summary>
+    public byte[]? LootFile { get; private set; }
 
     public bool SavedInBattle => Variables.Length > InBattleAt && Variables[InBattleAt] == 1;
 
@@ -111,11 +111,11 @@ public sealed class BattleSaveFile
         // C: a raw size of -1 or 0 removes the file; otherwise it is written back with the raw size the header gives.
         if (file.HeaderWords[TerrainSize] is not (0 or 0xFFFF))
         {
-            file.File1164 = ResizedTo(Block(data, ref at, file.HeaderWords[TerrainPacked], "terrf", "terrnf"), file.HeaderWords[TerrainSize]);
+            file.TerrainFile = ResizedTo(Block(data, ref at, file.HeaderWords[TerrainPacked], "terrf", "terrnf"), file.HeaderWords[TerrainSize]);
         }
         if (file.HeaderWords[LootSize] is not (0 or 0xFFFF))
         {
-            file.File1162 = ResizedTo(Block(data, ref at, file.HeaderWords[LootPacked], "cf", "cache"), file.HeaderWords[LootSize]);
+            file.LootFile = ResizedTo(Block(data, ref at, file.HeaderWords[LootPacked], "cf", "cache"), file.HeaderWords[LootSize]);
         }
         return file;
     }
@@ -131,8 +131,8 @@ public sealed class BattleSaveFile
         var file = new BattleFile
         {
             Variables = (byte[])Variables.Clone(),
-            Terrain = File1164 ?? (keepEmptyFiles && HeaderWords[TerrainSize] == 0 ? [] : null),
-            Loot = File1162 ?? (keepEmptyFiles && HeaderWords[LootSize] == 0 ? [] : null),
+            Terrain = TerrainFile ?? (keepEmptyFiles && HeaderWords[TerrainSize] == 0 ? [] : null),
+            Loot = LootFile ?? (keepEmptyFiles && HeaderWords[LootSize] == 0 ? [] : null),
         };
         for (var i = 0; i < HeaderWords.Length; i++)
         {

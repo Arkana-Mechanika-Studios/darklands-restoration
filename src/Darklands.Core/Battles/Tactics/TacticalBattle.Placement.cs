@@ -358,7 +358,7 @@ public sealed partial class TacticalBattle
         else if (WaveGroup is { } wave)
         {
             origin = new MapPoint(wave.ReinforcementX, wave.ReinforcementY);
-            spread = wave.Byte15;
+            spread = wave.ReinforcementSpread;
             types = [wave.ReinforcementKind];
             counts = [wave.ReinforcementBatch];
             facing = wave.ReinforcementFacing;
@@ -453,7 +453,7 @@ public sealed partial class TacticalBattle
                 {
                     SlotWeapons[slot] = "PT";
                 }
-                var p = kind.Byte27 + facing / 2 * 3;
+                var p = kind.PlacementBoxBase + facing / 2 * 3;
                 p = Math.Clamp(p, 0, BoxSideX.Length - 1);
                 int a = BoxSideX[p], b = BoxSideY[p];
                 var w2 = spread * 2;

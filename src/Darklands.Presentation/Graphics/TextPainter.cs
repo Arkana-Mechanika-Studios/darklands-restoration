@@ -32,7 +32,7 @@ public sealed class TextPainter(FntFont font)
     // orig: glyph-width drv+0x11A9: 0 for a byte with the top bit set or outside first..last; fixed width (header -5) when non-zero, else the width table; plus the spacing (header -3)
     public int Advance(byte c) =>
         c != 0 && c < 0x80 && font.Contains(c)
-            ? (font.Unknown05 != 0 ? font.Unknown05 : font.GetCharacterWidth(c)) + font.CharacterSpacing
+            ? (font.FixedWidth != 0 ? font.FixedWidth : font.GetCharacterWidth(c)) + font.CharacterSpacing
             : 0;
 
     public int Measure(ReadOnlySpan<byte> text)

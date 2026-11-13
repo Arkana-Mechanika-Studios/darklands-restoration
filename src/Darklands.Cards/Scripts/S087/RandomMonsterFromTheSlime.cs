@@ -79,7 +79,7 @@ public sealed class RandomMonsterFromTheSlime : Card
         // C: two separate statements: the item is drawn first, then the saint.
         var item = c.Random(0x20) + 0x8B;
         var saint = c.Random(0x88);
-        var slot = c.Events.Create(-2, c.Here, 0x5F, 8, 0, 0, 0, EventLog.Forever, 0, 7);
+        var slot = c.Events.Create(-2, c.Here, 0x5F, 8, 0, 0, 0, EventLog.UntilEndOf1499, 0, 7);
         // DIVERGENCE: with all 300 event slots in use the original writes through a stale slot; here nothing is written.
         if (c.Events[slot] is { } quest)
         {
@@ -88,7 +88,7 @@ public sealed class RandomMonsterFromTheSlime : Card
             quest.Data2 = item;
             quest.Data3 = 0;
         }
-        c.Events.Create(-2, c.Here, 0x5F, 0x1C, 5, 0, 0, EventLog.Forever, 0, 7);
+        c.Events.Create(-2, c.Here, 0x5F, 0x1C, 5, 0, 0, EventLog.UntilEndOf1499, 0, 7);
     }
 
     private static void LeaveTheMap(CardContext c, bool hours)

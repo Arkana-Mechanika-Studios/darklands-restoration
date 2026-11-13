@@ -41,7 +41,7 @@ public sealed class ThugsAtTheGuildhouse : Card
             // orig: R070+0x3082 (line 3); hint R070+0x30A0 (1AC1:0810) matched
             new MenuLine(chance => SurpriseAttack(c, ref standing, chance),
                 () => new OptionHint(Math.Clamp(c.PartyMinSkill((int)Skill.Stealth) + 10, 0, 99), "", OptionHint.WholeParty)),
-            new MenuLine(_ => Fight(c, ref standing), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => Fight(c, ref standing), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // C: lines 5..8 are enabled but their text lines are the placeholders "5".."8"; their hints
             // (088a, 08ca, 090a) leave the chance and member unset (stack leftovers; −1 here). They and
             // "ignore them" (line 9) go to card 0x62, which ends the original's main loop.

@@ -60,7 +60,7 @@ public sealed class WolvesAtTheWatchfireChain : Card
         return menu.Run(
             new MenuLine(chance => SneakPast(c, chance), () => SneakChance(c)),
             // orig: R124+0x0F34 / R124+0x0F46 matched — attack the wolves.
-            new MenuLine(_ => { c.Screen.Text(5); Fight(c); }, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => { c.Screen.Text(5); Fight(c); }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(_ => CallASaint(c, menu), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             // orig: R124+0x1042 / R124+0x106C matched — wear the cloaks.
             new MenuLine(_ => menu.Offer(6, 4, 5, 6, 7, 8), assured),

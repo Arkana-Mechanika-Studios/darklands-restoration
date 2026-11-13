@@ -76,13 +76,13 @@ public enum CityShop
     Swordsmith = 0x64,
     Armorer = 0x65,
 
-    /// <summary>A shop of unknown trade (<c>place-query</c> 11; <c>place-assign</c> 6 writes it).</summary>
-    UnknownShop = 0x66,
+    /// <summary>The gunsmith (the fifth of Trading.ShopNames; <c>place-query</c> 11; <c>place-assign</c> 6 writes it).</summary>
+    Gunsmith = 0x66,
     Bowyer = 0x67,
     Tinker = 0x68,
 
-    /// <summary>A second shop of unknown trade (<c>place-query</c> 10).</summary>
-    UnknownShop2 = 0x69,
+    /// <summary>The jeweler (the eighth of Trading.ShopNames; <c>place-query</c> 10).</summary>
+    Jeweler = 0x69,
     Clothier = 0x6A,
 }
 

@@ -44,7 +44,7 @@ public sealed partial class TacticalBattle
 
     /// <summary>Who is in reach of i: its box moved by one walk step (at least the minimum reach) times <paramref name="multiple"/> in each direction.</summary>
     // orig: R014+0xFE90 (1DB7:0A80) draft (asm-verified per spec D §5.2)
-    private void Probe(int i, int multiple)
+    private void FindCombatantsInReach(int i, int multiple)
     {
         var set = Slots[AnimationSet(i)];
         Array.Clear(_inReach);
@@ -87,7 +87,7 @@ public sealed partial class TacticalBattle
         {
             if (Battle[i].IsAble)
             {
-                Probe(i, 1);
+                FindCombatantsInReach(i, 1);
                 for (var j = 0; j < Combatant.Count; j++)
                 {
                     reach[i, j] = _inReach[j];

@@ -42,10 +42,11 @@ public sealed class EnemyKind
     /// <summary>+0x12: the enemy type's name.</summary>
     public string Name { get; set; } = "";
 
-    /// <summary>+0x26 / +0x27: from the template's +0x13 / +0x12 (+0x27 is 2 for missile users and casters; it is the base index into the placement box tables, TacticalBattle.Placement). UNCERTAIN.</summary>
+    /// <summary>+0x26: from the template's +0x13. Its meaning is not established.</summary>
     public sbyte Byte26 { get; set; }
 
-    public sbyte Byte27 { get; set; }
+    /// <summary>+0x27: from the template's +0x12, 2 for missile users and casters: the base index into the placement box tables (TacticalBattle.Placement).</summary>
+    public sbyte PlacementBoxBase { get; set; }
 
     /// <summary>+0x28 hand weapon type, +0x29 its quality.</summary>
     public sbyte WeaponType { get; set; } = -1;
@@ -112,7 +113,7 @@ public sealed class EnemyKind
         var copy = new EnemyKind
         {
             Identity = Identity, Appearance = Appearance, LevelMask = LevelMask, MissileFlag = MissileFlag, BaseLoad = BaseLoad,
-            EndsBattleWhenKilled = EndsBattleWhenKilled, Class = Class, Image = Image, Name = Name, Byte26 = Byte26, Byte27 = Byte27,
+            EndsBattleWhenKilled = EndsBattleWhenKilled, Class = Class, Image = Image, Name = Name, Byte26 = Byte26, PlacementBoxBase = PlacementBoxBase,
             WeaponType = WeaponType, WeaponQuality = WeaponQuality, MissileType = MissileType, MissileQuality = MissileQuality,
             PiercingResistance = PiercingResistance, WeaponBonus = WeaponBonus, Load = Load, Protection = Protection,
             ShieldQuality = ShieldQuality, ShieldType = ShieldType, Byte57 = Byte57, EffectImmunity = EffectImmunity,
@@ -167,12 +168,13 @@ public sealed class EnemyGroup
 
     public short Pfennigs { get; set; }
 
-    /// <summary>+0x14..+0x1C: the reinforcement record: the kind that arrives (−1 none), +0x15 (16), where (+0x16/+0x18), how many at a time
+    /// <summary>+0x14..+0x1C: the reinforcement record: the kind that arrives (−1 none), +0x15 its spread, where (+0x16/+0x18), how many at a time
     /// (+0x1A), how many in all (+0x1B), facing toward the party (+0x1C). Whenever a batch has fallen and the pool is not empty, a new batch arrives.</summary>
     public sbyte ReinforcementKind { get; set; } = -1;
 
-    /// <summary>+0x15: 16 when a reinforcement record is written. UNCERTAIN.</summary>
-    public sbyte Byte15 { get; set; }
+    /// <summary>+0x15: how far the arriving batch spreads around its entry point (the placement's spread, as an encounter's Spread); the city and
+    /// wilderness generators write 16, the mine its group's spread.</summary>
+    public sbyte ReinforcementSpread { get; set; }
 
     public short ReinforcementX { get; set; }
 
@@ -195,7 +197,7 @@ public sealed class EnemyGroup
         {
             X = Word(r, 0x00), Y = Word(r, 0x02), Spread = Word(r, 0x04), Room = (sbyte)r[0x06], HasReinforcements = (sbyte)r[0x07],
             Florins = Word(r, 0x0E), Groschen = Word(r, 0x10), Pfennigs = Word(r, 0x12), ReinforcementKind = (sbyte)r[0x14],
-            Byte15 = (sbyte)r[0x15], ReinforcementX = Word(r, 0x16), ReinforcementY = Word(r, 0x18), ReinforcementBatch = (sbyte)r[0x1A],
+            ReinforcementSpread = (sbyte)r[0x15], ReinforcementX = Word(r, 0x16), ReinforcementY = Word(r, 0x18), ReinforcementBatch = (sbyte)r[0x1A],
             ReinforcementPool = (sbyte)r[0x1B], ReinforcementFacing = (sbyte)r[0x1C], Byte1D = (sbyte)r[0x1D],
         };
         for (var i = 0; i < 3; i++)
@@ -229,7 +231,7 @@ public sealed class EnemyGroup
         Word(0x10, Groschen);
         Word(0x12, Pfennigs);
         r[0x14] = (byte)ReinforcementKind;
-        r[0x15] = (byte)Byte15;
+        r[0x15] = (byte)ReinforcementSpread;
         Word(0x16, ReinforcementX);
         Word(0x18, ReinforcementY);
         r[0x1A] = (byte)ReinforcementBatch;
@@ -244,7 +246,7 @@ public sealed class EnemyGroup
         var copy = new EnemyGroup
         {
             X = X, Y = Y, Spread = Spread, Room = Room, HasReinforcements = HasReinforcements, Florins = Florins, Groschen = Groschen,
-            Pfennigs = Pfennigs, ReinforcementKind = ReinforcementKind, Byte15 = Byte15, ReinforcementX = ReinforcementX, ReinforcementY = ReinforcementY, ReinforcementBatch = ReinforcementBatch,
+            Pfennigs = Pfennigs, ReinforcementKind = ReinforcementKind, ReinforcementSpread = ReinforcementSpread, ReinforcementX = ReinforcementX, ReinforcementY = ReinforcementY, ReinforcementBatch = ReinforcementBatch,
             ReinforcementPool = ReinforcementPool, ReinforcementFacing = ReinforcementFacing, Byte1D = Byte1D,
         };
         Kinds.CopyTo(copy.Kinds, 0);

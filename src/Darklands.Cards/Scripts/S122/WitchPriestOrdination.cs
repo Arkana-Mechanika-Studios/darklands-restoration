@@ -45,7 +45,7 @@ public sealed class WitchPriestOrdination : Card
         c.SetCardItems();
         c.SetCardSaints(0, 0x59, 0x61, 0x80);
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var showAgain = new MenuLine(_ => ShowTheAltarAgain(c), unknown);
         // DORMANT: in text block 2 the option lines 0..2 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(

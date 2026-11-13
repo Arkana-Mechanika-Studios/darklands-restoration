@@ -54,7 +54,7 @@ public sealed class RevolutionStarts : Card
         // C: a plain while: the menu is not shown when a text above already chose the next card.
         return menu.Run(
             // orig: R091+0x0A8C (18C1:01FC); hint R091+0x0A94 matched
-            new MenuLine(() => c.Next = 0xB9, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Next = 0xB9, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R091+0x0ACC (18C1:023C); hint R091+0x0B26 matched
             new MenuLine(() => HangBack(c), OptionHint.Saying("Easy")));
     }

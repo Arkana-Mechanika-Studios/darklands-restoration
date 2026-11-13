@@ -89,7 +89,7 @@ public sealed class Footpads : Card
         c.Next = Number;
         var next = menu.Run(
             // orig: R053+0x05A8 (1838:05A8) + R053+0x057E (1838:057E) R053 seg 1838 matched
-            new MenuLine(() => HandOverTheGoods(c), () => OptionHint.Say(CardTexts.Unknown, c.Leader)),
+            new MenuLine(() => HandOverTheGoods(c), () => OptionHint.Say(CardTexts.EncounterTheUnknown, c.Leader)),
             // orig: R053+0x06E2 (1838:06E2) + R053+0x05E2 (1838:05E2) R053 seg 1838 matched
             new MenuLine(chance => TalkYourWayOut(c, chance, onTheRoad), () => TalkChance(c, onTheRoad)),
             // orig: R053+0x0854 (1838:0854) + R053+0x074E (1838:074E) R053 seg 1838 matched

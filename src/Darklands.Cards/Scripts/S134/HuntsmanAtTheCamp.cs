@@ -67,7 +67,7 @@ public sealed class HuntsmanAtTheCamp : Card
         c.SetCardSaints(0x36, 0x3D, 0x45);
         menu[4] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         return menu.Run(
             new MenuLine(_ => IgnoreThem(c, menu), unknown),
             new MenuLine(_ => Leave(c), OptionHint.Saying(SuccessAssured)),

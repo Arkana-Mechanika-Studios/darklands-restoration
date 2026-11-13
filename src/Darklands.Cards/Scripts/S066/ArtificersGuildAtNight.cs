@@ -51,7 +51,7 @@ public sealed class ArtificersGuildAtNight : Card
         return menu.Run(
             new MenuLine(chance => KnockToBuy(c, ref standing, chance), () => KnockChance(c, standing)),
             new MenuLine(chance => KnockForTheMaster(c, chance), () => MasterChance(c, standing)),
-            new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => BreakIn(c, menu, chance), () => BreakInChance(c)),
             // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); their actions do nothing.
             // orig: R066+0x096C (1838:096C) (hint R066+0x096E (1838:096E) "Success is assured."), R066+0x09A6 (1838:09A6) and the

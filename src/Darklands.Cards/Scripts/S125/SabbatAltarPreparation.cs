@@ -49,7 +49,7 @@ public sealed class SabbatAltarPreparation : Card
         c.SetCardItems();
         c.SetCardSaints(0x0F, 0x2B, 0x3F, 0x6F);
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var assured = OptionHint.Saying(SuccessAssured);
         // orig: R125+0x2160 / R125+0x21BA matched — lines 8 and 9 (never enabled).
         var noLine = new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, assured);

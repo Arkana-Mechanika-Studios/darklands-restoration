@@ -55,7 +55,7 @@ public sealed class MineVillage : Card
                 },
                 OptionHint.Saying(SuccessAssured)),
             // orig: R055+0x0BA8 (18C7:02B8) matched (option 2 action, see EnterTheMine); hint handler R055+0x0C14 (18C7:0324)
-            new MenuLine(() => EnterTheMine(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => EnterTheMine(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R055+0x0C4C (18C7:035C) matched (option 3 action: the mine's gift shop, items of category 0x400); hint handler R055+0x0C60 (18C7:0370)
             new MenuLine(() => c.Barter(-1, 0x400L, "Mine Giftshop"), OptionHint.Saying(SuccessAssured)),
         };

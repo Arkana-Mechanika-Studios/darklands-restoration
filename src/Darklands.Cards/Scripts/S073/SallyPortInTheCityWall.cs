@@ -236,7 +236,7 @@ public sealed class SallyPortInTheCityWall : Card
             case 1:
                 return new OptionHint(0x50 - size * 3, "", c.MenuMember);
             default:
-                return new OptionHint(-1, CardTexts.Unknown, c.MenuMember);
+                return new OptionHint(-1, CardTexts.EncounterTheUnknown, c.MenuMember);
         }
     }
 

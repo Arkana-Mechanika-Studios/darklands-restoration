@@ -46,7 +46,7 @@ public sealed class SabbatMockBaptism : Card
         c.SetCardItems();
         c.SetCardSaints(0x1D, 0x2B, 0x3F);
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var assured = OptionHint.Saying(SuccessAssured);
         // DORMANT: in text block 4 the option lines 0..3 are never offered (the switch to this block hides them); they can be offered in other blocks only.
         // DORMANT: in text block 5 the option lines 0..3 are never offered (the switch to this block hides them); they can be offered in other blocks only.

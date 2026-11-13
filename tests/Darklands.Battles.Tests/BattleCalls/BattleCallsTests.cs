@@ -100,7 +100,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             if (group.HasReinforcements == 0)
             {
                 group.ReinforcementKind = (sbyte)Byte(0x14);
-                group.Byte15 = (sbyte)Byte(0x15);
+                group.ReinforcementSpread = (sbyte)Byte(0x15);
                 group.ReinforcementX = (short)(Byte(0x16) | Byte(0x17) << 8);
                 group.ReinforcementY = (short)(Byte(0x18) | Byte(0x19) << 8);
                 group.ReinforcementBatch = (sbyte)Byte(0x1A);

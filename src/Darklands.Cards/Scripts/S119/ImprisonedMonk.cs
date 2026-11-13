@@ -47,7 +47,7 @@ public sealed class ImprisonedMonk : Card
         c.SetCardSaints(0x5D, 0x3D, 0x6A, 0x43);
         menu[2] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // orig: R119+0x0760 / _07e8 / _0870 / _08f8 R119+0x0760..0x08F8 matched — saint pop-up chance text (c.SaintPopupChanceHint).
         // DORMANT: in text block 1 the option lines 0..4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         // DORMANT: in text block 7 the option lines 0..7 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
@@ -77,7 +77,7 @@ public sealed class ImprisonedMonk : Card
     /// <summary>The card's item pop-up handlers (all four slots alike): the member in the box becomes $ChosenOneName.</summary>
     // orig: R119+0x0670 (1838:0670) matched; also _06ac, _06e8, _0724 (identical)
     // DORMANT: no item is ever usable on this card (card-item-lines all −1).
-    private static Func<OptionHint> ItemPopup(CardContext c) => () => c.MemberPopupHint(CardTexts.Unknown);
+    private static Func<OptionHint> ItemPopup(CardContext c) => () => c.MemberPopupHint(CardTexts.EncounterTheUnknown);
 
     private static void Leave(CardContext c, int next)
     {

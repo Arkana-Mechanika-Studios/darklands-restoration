@@ -38,13 +38,13 @@ public sealed class ConsiderTheRebelPlan : Card
             {
                 c.Variables.Chosen[0] = c.Leader;
                 c.Next = c.SavedCard;
-            }, () => new OptionHint(-1, CardTexts.Unknown, c.Leader)),
+            }, () => new OptionHint(-1, CardTexts.EncounterTheUnknown, c.Leader)),
             new MenuLine(_ =>
             {
                 c.Variables.Chosen[0] = c.Leader;
                 c.Screen.Text(4);
                 c.Next = c.SavedCard;
-            }, () => new OptionHint(-1, CardTexts.Unknown, c.Leader)),
+            }, () => new OptionHint(-1, CardTexts.EncounterTheUnknown, c.Leader)),
             // DORMANT: lines 4 and 5 (flags 0): text 0, no time, the "option isn't working yet" card.
             // orig: R072+0x036C, 03c6 R072+0x03C6; hints 038a, 03e4
             // C: their hint handlers assign the leader to r.b and then overwrite it with the party.

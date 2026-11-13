@@ -141,7 +141,7 @@ public sealed class BattlefieldForces
         kind.Image = template.Image;
         kind.Name = enemyType.Name;
         kind.Byte26 = template.Byte13;
-        kind.Byte27 = template.Byte12;
+        kind.PlacementBoxBase = template.Byte12;
         // Which weapons the type may carry, preferring ones the same kind does not already use on this level.
         int weaponCount;
         byte allowed = 0, preferred = 0;
@@ -181,14 +181,14 @@ public sealed class BattlefieldForces
             kind.Identity |= 0x84;
             kind.Class = 2;
             kind.MissileFlag = 0x80;
-            kind.Byte27 = 2;
+            kind.PlacementBoxBase = 2;
         }
         else if (enemyType.UsesMissiles)
         {
             kind.Identity |= (byte)template.MissileType;
             kind.Class = 1;
             kind.MissileFlag = 0x80;
-            kind.Byte27 = 2;
+            kind.PlacementBoxBase = 2;
         }
         else
         {
@@ -450,7 +450,7 @@ public sealed class BattlefieldForces
     {
         kind.Class = 0;
         kind.MissileFlag = 0;
-        kind.Byte27 = _catalogue.Templates[template].Byte12;
+        kind.PlacementBoxBase = _catalogue.Templates[template].Byte12;
         kind.Identity = (ushort)((kind.Identity & 0xFF00) | (byte)kind.WeaponType);
     }
 

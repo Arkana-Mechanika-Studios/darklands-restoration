@@ -153,8 +153,8 @@ public sealed class OverlandTests
             var state = State(seed);
             state.Locations[7] = Place(7, 5, 5);
             state.CurrentLocation = 7;
-            state.Events.Create(Who.Everybody, 7, 0x5F, EventKinds.Quest, 9, 0, 0, EventLog.Forever, 0, 4);
-            state.Events.Create(Who.Everybody, 0, 0x5F, EventKinds.LocationFact, 1, 1, 0, EventLog.Forever, 0, 4);
+            state.Events.Create(Who.Everybody, 7, 0x5F, EventKinds.Quest, 9, 0, 0, EventLog.UntilEndOf1499, 0, 4);
+            state.Events.Create(Who.Everybody, 0, 0x5F, EventKinds.LocationFact, 1, 1, 0, EventLog.UntilEndOf1499, 0, 4);
             var map = MapOf(40, 40, (_, _) => Terrain.Road);
             state.MapPosition = new MapPosition(10, 10);
             var travel = new OverlandTravel(state, map, kind => false);
@@ -173,7 +173,7 @@ public sealed class OverlandTests
         Assert.Equal(3 + 2, travel.EncounterWeight(4, 5));      // marsh weighs 3, the place adds its own 2
         Assert.Equal(1 + 2, travel.EncounterWeight(0, 5));
         Assert.Equal(1, travel.EncounterWeight(0, -1));          // no place near: the terrain alone
-        state.Events.Create(Who.Everybody, 5, 0, 0x2A, 0, 7, 0, EventLog.Forever, 0, 0);
+        state.Events.Create(Who.Everybody, 5, 0, 0x2A, 0, 7, 0, EventLog.UntilEndOf1499, 0, 0);
         Assert.Equal(3 + 7, travel.EncounterWeight(4, 5));      // the event's 7 instead of the 2
     }
 
@@ -215,7 +215,7 @@ public sealed class OverlandTests
     {
         var state = State();
         state.Locations[9] = Place(9, 22, 21, notice: 3);
-        state.Events.Create(Who.Everybody, 9, 0, 0x2B, 0, 5, 0, EventLog.Forever, 0, 0);
+        state.Events.Create(Who.Everybody, 9, 0, 0x2B, 0, 5, 0, EventLog.UntilEndOf1499, 0, 0);
         var map = MapOf(60, 60, (_, _) => Terrain.Plains);
         state.MapPosition = new MapPosition(20, 20);
         var shown = new List<int>();

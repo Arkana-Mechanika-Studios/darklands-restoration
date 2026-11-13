@@ -25,7 +25,7 @@ namespace Darklands.Cards.Scripts;
 // C (generated): card-option-flag-6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class FamineHorseman : Card
 {
     public override int Number => 356;
@@ -49,7 +49,7 @@ public sealed class FamineHorseman : Card
         c.SetCardSaints(0x0A, 0x47);
         menu[1] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // C: every handler of this card redraws with card-run (the whole card, Show), not card-run-near.
         // DORMANT: in text block 0 the option lines 2..4 are never offered (the first menu on this block never enables them); they can be offered in other blocks only.
         // DORMANT: in text block 3 the option lines 0, 1 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
@@ -108,7 +108,7 @@ public sealed class FamineHorseman : Card
         if (result != 0)
         {
             c.Screen.Text(2);
-            c.Events.Create(-2, c.Here, 0, 0x1C, 0x19, 0, 0, EventLog.Forever, 0, 1);
+            c.Events.Create(-2, c.Here, 0, 0x1C, 0x19, 0, 0, EventLog.UntilEndOf1499, 0, 1);
         }
         else
         {
@@ -140,7 +140,7 @@ public sealed class FamineHorseman : Card
         }
         victim %= 5;
         c.Variables.Chosen[0] = victim;
-        return OptionHint.Say(CardTexts.Unknown, victim);
+        return OptionHint.Say(CardTexts.EncounterTheUnknown, victim);
     }
 
     /// <summary>A member dies while more than two are present; then the horseman gives up.</summary>

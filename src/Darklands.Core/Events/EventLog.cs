@@ -5,7 +5,7 @@ namespace Darklands.Core.Events;
 /// <summary>
 /// The 300 timed-event slots and every operation the rules and card scripts use on them
 /// (<c>event-*</c>, <c>open-quest-*</c>, <c>resolved-quest-*</c>, <c>place-flag*</c>). Durations are in hours;
-/// <see cref="Forever"/> hours means "until the end of 1499".
+/// <see cref="UntilEndOf1499"/> hours means "until the end of 1499".
 /// </summary>
 /// <remarks>
 /// Faithful details: queries (except <see cref="Count(int)"/>, <see cref="Exists"/>'s slot scan
@@ -20,17 +20,17 @@ public sealed class EventLog
 {
     public const int Capacity = 300;
 
-    /// <summary>Duration meaning "forever": the event ends 31.12.1499 23:00.</summary>
-    public const int Forever = 9999;
+    /// <summary>The duration the original uses for "forever": the event ends 31.12.1499 23:00 (and expires when 1500 begins).</summary>
+    public const int UntilEndOf1499 = 9999;
 
     /// <summary>A year in hours (the original's 0x2238 duration).</summary>
     public const int OneYear = 8760;
 
     /// <summary>
-    /// The end of a <see cref="Forever"/> event. The month is 12 as the original writes it
+    /// The end of a <see cref="UntilEndOf1499"/> event. The month is 12 as the original writes it
     /// (one past December), which only matters in comparisons.
     /// </summary>
-    public static readonly GameDate ForeverEnd = new(23, 31, 12, 1499);
+    public static readonly GameDate EndOf1499 = new(23, 31, 12, 1499);
 
     private readonly TimedEvent?[] _slots = new TimedEvent?[Capacity];
     private readonly GameState _state;
@@ -148,9 +148,9 @@ public sealed class EventLog
             return -1;
         }
         var e = Fill(slot, owner, location, extra, kind, type, value, handler, flags, tag);
-        if (hours == Forever)
+        if (hours == UntilEndOf1499)
         {
-            e.End = ForeverEnd;
+            e.End = EndOf1499;
         }
         else
         {
@@ -192,7 +192,7 @@ public sealed class EventLog
     /// <summary>
     /// Extends the matching event (type, owner, tag exact; location exact or −1 = any) by
     /// <paramref name="hours"/>, or creates it running from now (<c>event-refresh</c>). A new event
-    /// gets <paramref name="hours"/> literally: <see cref="Forever"/> is not special here.
+    /// gets <paramref name="hours"/> literally: <see cref="UntilEndOf1499"/> is not special here.
     /// </summary>
     // orig: event-refresh R029+0x2D5C (0E76:2D5C) draft; tests: EventLogTests
     public int Renew(int owner, int location, int extra, int kind, int type, int value, int handler, int hours,

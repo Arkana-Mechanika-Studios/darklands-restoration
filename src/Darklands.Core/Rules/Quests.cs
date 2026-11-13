@@ -70,7 +70,7 @@ public static class Quests
             var q = log[i]!;
             if (q.Location == expiring.Location)
             {
-                log.Create(q.Owner, q.Value, q.Extra, EventKinds.ResolvedQuest, q.Owner, q.Type, 0, EventLog.Forever, 0, q.Tag);
+                log.Create(q.Owner, q.Value, q.Extra, EventKinds.ResolvedQuest, q.Owner, q.Type, 0, EventLog.UntilEndOf1499, 0, q.Tag);
                 LocationRules.AdjustReputation(s, q.Value, q.Data1, q.Data1);
             }
         }
@@ -106,7 +106,7 @@ public static class Quests
             quest.Data3 = s.Random.Below(16);
         }
         log.Create(-2, lair, 0, 0x2A, 0, 10, 0, EventLog.OneYear, 0, 0);
-        log.Create(-2, lair, 0, 0x2B, 0, 2, 0, EventLog.Forever, 0, 0);
+        log.Create(-2, lair, 0, 0x2B, 0, 2, 0, EventLog.UntilEndOf1499, 0, 0);
         foreach (var type in new[] { 1, 3, 4, 7, 6 })
         {
             log.Create(-2, lair, 0, LocationFact, type, 0, 0, EventLog.OneYear, 0, Dragon);
@@ -175,7 +175,7 @@ public static class Quests
             return;
         }
         var log = s.Events;
-        var ev = log.Create(-2, 0, 0x5F, EventKinds.Quest, 0, 0x63, 0, EventLog.Forever, 0, Sabbat);
+        var ev = log.Create(-2, 0, 0x5F, EventKinds.Quest, 0, 0x63, 0, EventLog.UntilEndOf1499, 0, Sabbat);
         if (log[ev] is { } quest)
         {
             quest.Data1 = s.Random.Below(10) + 60;
@@ -185,7 +185,7 @@ public static class Quests
         var day = FeastDayNearThisMonth(s);
         var until = GameDate.Create(s.Date.Year, 0, day, 0);
         PlanSabbat(s, day, s.Date.DaysUntil(until));
-        log.Create(-2, 0, 0x5F, LocationFact, 2, 0, 0, EventLog.Forever, 0, Sabbat);
+        log.Create(-2, 0, 0x5F, LocationFact, 2, 0, 0, EventLog.UntilEndOf1499, 0, Sabbat);
     }
 
     /// <summary>The fact that ends on the sabbat's day and starts it at a random sabbat site.</summary>
@@ -388,7 +388,7 @@ public static class Quests
         }
         // C: no return statement: AX still holds the last event-create's result (checked against
         // the asm: nothing after the call touches AX), i.e. the 0x2B event's slot.
-        return log.Create(-2, factLocation, 0, 0x2B, 0, 1, 0, EventLog.Forever, 0, 0);
+        return log.Create(-2, factLocation, 0, 0x2B, 0, 1, 0, EventLog.UntilEndOf1499, 0, 0);
     }
 
     /// <summary>
@@ -406,13 +406,13 @@ public static class Quests
         var item = s.Random.Below(0x20) + 0x8B;
         var saint = s.Random.Below(0x88);
         var log = s.Events;
-        if (log[log.Create(-2, s.CurrentLocation, 0x5F, EventKinds.Quest, 0, 0, 0, EventLog.Forever, 0, 7)] is { } q)
+        if (log[log.Create(-2, s.CurrentLocation, 0x5F, EventKinds.Quest, 0, 0, 0, EventLog.UntilEndOf1499, 0, 7)] is { } q)
         {
             q.Data1 = saint;
             q.Data2 = 2;
             q.Data3 = item;
         }
-        log.Create(-2, s.CurrentLocation, 0x5F, LocationFact, 5, 0, 0, EventLog.Forever, 0, 7);
+        log.Create(-2, s.CurrentLocation, 0x5F, LocationFact, 5, 0, 0, EventLog.UntilEndOf1499, 0, 7);
     }
 
     /// <summary>
@@ -453,7 +453,7 @@ public static class Quests
         };
         var here = s.Here ?? new Location();
         site = LocationRules.FarOfType(s, here.X, here.Y, icon);
-        var ev = s.Events.Create(region, site, 0x5F, EventKinds.Quest, sort, s.CurrentLocation, 0, EventLog.Forever, 0, 10);
+        var ev = s.Events.Create(region, site, 0x5F, EventKinds.Quest, sort, s.CurrentLocation, 0, EventLog.UntilEndOf1499, 0, 10);
         if (s.Events[ev] is { } q)
         {
             q.Data1 = r.Below(10) + 10;

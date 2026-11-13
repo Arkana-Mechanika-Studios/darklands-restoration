@@ -44,7 +44,7 @@ public sealed class TemplarPassword : Card
         c.SetCardItems();
         c.SetCardSaints();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         return menu.Run(
             new MenuLine(_ => WrongPassword(c), unknown),
             // orig: R121+0x0296 matched — "Beelzebub forever".

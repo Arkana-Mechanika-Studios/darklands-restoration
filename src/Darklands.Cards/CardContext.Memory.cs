@@ -31,12 +31,12 @@ public sealed class BattleWords(Core.Battles.BattleOrders orders)
     /// <summary>DS:A76A <c>encounter-seed</c>.</summary>
     public int Seed { get => orders.Seed; set => orders.Seed = value; }
 
-    /// <summary>DS:A76C, DS:A76E, DS:A770: the fifth, eighth and eleventh arguments of the battle call.</summary>
-    public int Word76C { get => orders.EnemyTypes[0]; set => orders.EnemyTypes[0] = value; }
+    /// <summary>DS:A76C, DS:A76E, DS:A770: the enemy types of the three groups (the fifth, eighth and eleventh arguments of the battle call).</summary>
+    public int EnemyType0 { get => orders.EnemyTypes[0]; set => orders.EnemyTypes[0] = value; }
 
-    public int Word76E { get => orders.EnemyTypes[1]; set => orders.EnemyTypes[1] = value; }
+    public int EnemyType1 { get => orders.EnemyTypes[1]; set => orders.EnemyTypes[1] = value; }
 
-    public int Word770 { get => orders.EnemyTypes[2]; set => orders.EnemyTypes[2] = value; }
+    public int EnemyType2 { get => orders.EnemyTypes[2]; set => orders.EnemyTypes[2] = value; }
 }
 
 /// <summary>The personal-name tables of the game program (R029 <c>made-up-name</c> and <c>label-to-slot</c>).</summary>

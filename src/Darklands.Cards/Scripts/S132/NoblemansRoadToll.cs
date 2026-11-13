@@ -96,7 +96,7 @@ public sealed class NoblemansRoadToll : Card
             new MenuLine(chance => TalkThemOutOfIt(c, menu, chance), AsLeader(() => TalkChance(c))),
             // orig: R132+0x08DE / R132+0x0908 matched
             // C: declared int, falls off its end without a value (ignored).
-            new MenuLine(_ => menu.Offer(4, 6, 7), AsLeader(OptionHint.Saying(CardTexts.Unknown))),
+            new MenuLine(_ => menu.Offer(4, 6, 7), AsLeader(OptionHint.Saying(CardTexts.EncounterTheUnknown))),
             // orig: R132+0x0940 / R132+0x09D0 matched
             new MenuLine(chance => RideOff(c, menu, chance), AsLeader(() => RideChance(c))),
             // orig: R132+0x0A10 / R132+0x0A7C matched; pop-up R132+0x0C3E / _095e matched

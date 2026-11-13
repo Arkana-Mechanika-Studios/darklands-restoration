@@ -76,7 +76,7 @@ public sealed class BearCave : Card
             new MenuLine(_ => c.PassHours(0), Assured));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say(CardTexts.Unknown);
+    private static OptionHint Unknown() => OptionHint.Say(CardTexts.EncounterTheUnknown);
 
     private static OptionHint Assured() => OptionHint.Say(SuccessAssured);
 

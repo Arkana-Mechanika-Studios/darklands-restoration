@@ -27,7 +27,7 @@ public static class CardTexts
 
     public const string PotionWorks = "Of course the potion will work!";
 
-    public const string Unknown = "You can always encounter the unknown";
+    public const string EncounterTheUnknown = "You can always encounter the unknown";
 
     /// <summary>A hint when nothing can be promised (R136+0x8690+0x1E57).</summary>
     public const string HopeForTheBest = "You can hope for the best";
@@ -410,7 +410,7 @@ public sealed class CardMenu
     /// message. Cards keep it to preserve the original's dormant handlers.
     /// </summary>
     // C: the file's item pop-up handlers copy the message its line hints copy: DS:4F9A (e.g. R119+0x0670) or DS:4F48 (e.g. R125+0x2B58).
-    public static MenuLine[] FirstTextAndEndTable(CardContext c, string hint = CardTexts.Unknown, bool showFirstText = true)
+    public static MenuLine[] FirstTextAndEndTable(CardContext c, string hint = CardTexts.EncounterTheUnknown, bool showFirstText = true)
     {
         var lines = new MenuLine[10];
         for (var k = 0; k < lines.Length; k++)

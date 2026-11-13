@@ -54,7 +54,7 @@ public sealed class MinePitTrap_MineP00 : Card
             // orig: R056+0x01EE (1838:01EE) matched (option 0 action, see Climb); chance handler R056+0x0248 (see ClimberChance)
             Round(c, chance => Climb(c, chance), () => ClimberChance(c)),
             // orig: R056+0x0268 (1838:0268) matched (option 1 action: wait in the pit); hint R056+0x0282 "You can always encounter the unknown"
-            Round(c, () => WaitForYourDoom(c), OptionHint.Saying(CardTexts.Unknown)),
+            Round(c, () => WaitForYourDoom(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R056+0x02BA (1838:02BA) unmatched (option 2 action, see CallUponASaint; read with the asm); hint R056+0x0322 "select a saint"
             // C: the pop-up's handler runs before the action and names the member in the text.
             Round(c, _ => CallUponASaint(c), OptionHint.Saying(CardTexts.SelectSaint), () => SaintHint(c)),

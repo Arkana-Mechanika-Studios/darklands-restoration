@@ -55,8 +55,8 @@ public sealed class JewelersGuildAtNight : Card
         return menu.Run(
             new MenuLine(chance => KnockToBuy(c, ref standing, chance), () => KnockChance(c, standing)),
             new MenuLine(chance => KnockForTheMaster(c, chance), () => KnockChance(c, standing)),
-            new MenuLine(_ => WatchTheHouse(c), OptionHint.Saying(CardTexts.Unknown)),
-            new MenuLine(_ => WatchTheHouse(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => WatchTheHouse(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
+            new MenuLine(_ => WatchTheHouse(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => PickTheLock(c, chance), () => BreakInChance(c)),
             new MenuLine(chance => BreakInAndLeave(c, chance), () => BreakInChance(c)),
             new MenuLine(chance => BreakInAndNoteIt(c, chance), () => BreakInChance(c)),

@@ -62,7 +62,7 @@ public sealed class SoldiersClosingInAtTheWall : Card
         return menu.Run(
             new MenuLine(chance => ThrowAPotion(c, standing, chance), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             // orig: R073+0x1B62 (199E:0502) matched: pass-hours(0), following-card = 0x2F
-            new MenuLine(_ => { c.PassHours(0); c.Next = 0x2F; }, OptionHint.Saying(CardTexts.Unknown), () => PotionHint(c)),
+            new MenuLine(_ => { c.PassHours(0); c.Next = 0x2F; }, OptionHint.Saying(CardTexts.EncounterTheUnknown), () => PotionHint(c)),
             new MenuLine(_ => Pray(c, standing), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             new MenuLine(_ => Attack(c, standing), OptionHint.Saying(CardTexts.EnterCombat), c.SaintPopupHint),
             new MenuLine(_ => { c.PassHours(0); c.Next = Wilderness; }, OptionHint.Saying(SuccessAssured)));
@@ -81,7 +81,7 @@ public sealed class SoldiersClosingInAtTheWall : Card
             return new OptionHint(Math.Clamp((0x0F - size) * 6, 0, 100), "", c.MenuMember);
         }
         c.Variables.Chosen[0] = c.MenuMember;
-        return new OptionHint(-1, CardTexts.Unknown, c.MenuMember);
+        return new OptionHint(-1, CardTexts.EncounterTheUnknown, c.MenuMember);
     }
 
     /// <summary>Does any member carry a rope? (The scan stops at the first one.)</summary>

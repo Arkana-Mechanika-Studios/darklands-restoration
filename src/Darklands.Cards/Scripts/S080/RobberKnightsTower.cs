@@ -91,7 +91,7 @@ public sealed class RobberKnightsTower : Card
                 }
             }, OptionHint.Saying(CardTexts.SelectPotion), () => c.MemberPopupHint()),
             // orig: R080+0x199E (1929:0A8E) matched; R080+0x1ADE (1929:0BCE) matched; tests: CardSmokeTests
-            new MenuLine(() => AskToComeInside(c, Recognise), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => AskToComeInside(c, Recognise), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R080+0x1B16 (1929:0C06) matched; R080+0x1C46 (1929:0D36) matched; tests: CardSmokeTests
             new MenuLine(chance => { Recognise(); ChallengeTheKnight(c, chance); }, hint: () => ChallengeChance(c)),
             // orig: R080+0x1C86 (1929:0D76) matched; R080+0x1D70 (1929:0E60) matched; tests: CardSmokeTests

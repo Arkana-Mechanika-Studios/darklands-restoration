@@ -62,8 +62,8 @@ public sealed class ProgramStartTests
             var bsv = BattleSaveFile.Parse(File.ReadAllBytes(Directory.GetFiles(saves, "DKSAVE0.BSV").Single()));
             Assert.Equal(0xFF, bsv.Variables[BattleVariables.FloorShown]);
             Assert.Equal(1, bsv.Variables[BattleVariables.TimerRate]);
-            Assert.Equal(terrain, bsv.File1164);
-            Assert.Equal(loot, bsv.File1162);
+            Assert.Equal(terrain, bsv.TerrainFile);
+            Assert.Equal(loot, bsv.LootFile);
         }
         finally
         {

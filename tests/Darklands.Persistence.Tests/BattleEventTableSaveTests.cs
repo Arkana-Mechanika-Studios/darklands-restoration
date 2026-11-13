@@ -70,7 +70,7 @@ public sealed class BattleEventTableSaveTests
         Assert.Equal(inside[0x96], marked[0x96]);
     }
 
-    private static TimedEvent Event(int kind, int value) => new() { Kind = kind, Value = value, End = EventLog.ForeverEnd };
+    private static TimedEvent Event(int kind, int value) => new() { Kind = kind, Value = value, End = EventLog.EndOf1499 };
 
     private static GameState Game()
     {

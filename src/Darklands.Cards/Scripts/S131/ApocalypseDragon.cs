@@ -46,7 +46,7 @@ public sealed class ApocalypseDragon : Card
         // DORMANT: in text block 3 the option lines 3, 4 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             // orig: R131+0x0F40 / R131+0x0F88 matched
-            new MenuLine(_ => Kneel(c, menu), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => Kneel(c, menu), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R131+0x0FC0 / R131+0x1016 matched
             new MenuLine(_ => Attack(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R131+0x104E / R131+0x105C matched

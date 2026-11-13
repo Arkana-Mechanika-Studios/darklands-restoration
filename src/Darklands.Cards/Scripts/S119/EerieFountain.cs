@@ -30,7 +30,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // DIVERGENCE (generated): party-panel-row-set(0x100) (root 0000:1716, a party-panel redraw) is left out; the screen redraws itself.
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class EerieFountain : Card
 {
     public override int Number => 301;
@@ -65,7 +65,7 @@ public sealed class EerieFountain : Card
 
         // DORMANT: the item pop-up handlers (R119+0x11FC..0x12B0) are never used: card-item-lines stays all −1 and no line opens an item box.
         // DORMANT: R119+0x11C4 ("screwed up.") is the handler of unset slots 10..19, which are never shown.
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         return menu.Run(
             new MenuLine(_ => PrayOverTheFountain(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
             new MenuLine(_ => { c.BattleMode = 1; c.Next = -2; }, unknown),
@@ -104,7 +104,7 @@ public sealed class EerieFountain : Card
         {
             c.Screen.Text(2);
         }
-        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, DrainedFact, 0, 0, EventLog.Forever, 0, 1);
+        c.Events.Create(Who.Everybody, c.Here, 0, 0x1C, DrainedFact, 0, 0, EventLog.UntilEndOf1499, 0, 1);
         c.PracticeSkill(Who.Everybody, (int)Skill.Virtue, 1, 10, 0);
         // DIVERGENCE: the C then redraws the party panel (party-panel-row-set(0x100)), also after a failed prayer; our
         //   screen redraws itself. The handler falls off its end without a value (ignored).

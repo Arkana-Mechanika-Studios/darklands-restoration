@@ -18,7 +18,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R130+0x1462 ("screwed up.") and are never shown.
 // C (generated): card-option-flag-5/6/7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
-// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
+// C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.UntilEndOf1499), printed as a symbol.
 public sealed class CavernOfFireAndHail : Card
 {
     public override int Number => 345;
@@ -48,7 +48,7 @@ public sealed class CavernOfFireAndHail : Card
             // C: the hint's party-effective-stat-two-low also sets top-scoring-member (unused by the hint, r.b = −2).
             new MenuLine(chance => RunAcross(c, chance), () => OptionHint.ChanceOf(c.PartyMinEffectiveAgility(), OptionHint.WholeParty)),
             // orig: R130+0x107E / R130+0x1128 matched
-            new MenuLine(_ => CreepAcrossUnderArmour(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => CreepAcrossUnderArmour(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R130+0x1160 / R130+0x129A matched; pop-up R130+0x14D6 / _0820 / _08aa matched
             new MenuLine(_ => PrayForShelter(c, menu), OptionHint.Saying(CardTexts.SelectSaint), () => LastCastle.SaintHintForChosen(c)),
             // orig: R130+0x12D2 / R130+0x1372 matched; pop-up R130+0x149A matched
@@ -152,5 +152,5 @@ public sealed class CavernOfFireAndHail : Card
     /// <summary>Fact 1/0x18, kept for good: the Second Seal is broken and the gate of the burning lake opens.</summary>
     // orig: the event-create repeated inline in R130+0x107E / _0420 / _0592 matched
     private static void BreakTheSecondSeal(CardContext c) =>
-        c.Events.Create(-2, c.Here, 0, 0x1C, 0x18, 0, 0, Core.Events.EventLog.Forever, 0, 1);
+        c.Events.Create(-2, c.Here, 0, 0x1C, 0x18, 0, 0, Core.Events.EventLog.UntilEndOf1499, 0, 1);
 }

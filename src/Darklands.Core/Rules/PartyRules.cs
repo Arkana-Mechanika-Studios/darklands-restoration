@@ -91,7 +91,7 @@ public static class PartyRules
             var e = log[i]!;
             if (e.Value == term)
             {
-                log.Create(-2, s.CurrentLocation, 0, EventKinds.MemberLeft, e.Type, e.Type, 0, EventLog.Forever, 0, 0);
+                log.Create(-2, s.CurrentLocation, 0, EventKinds.MemberLeft, e.Type, e.Type, 0, EventLog.UntilEndOf1499, 0, 0);
                 log.Free(i);
             }
         }

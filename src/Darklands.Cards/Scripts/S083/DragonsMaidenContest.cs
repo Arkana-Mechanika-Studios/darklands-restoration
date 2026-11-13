@@ -71,7 +71,7 @@ public sealed class DragonsMaidenContest : Card
                 c.PassHours(3);
                 c.Next = TheSacrifice;
             }, OptionHint.Saying(SuccessAssured)),
-            new MenuLine(() => ChooseOurOwn(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => ChooseOurOwn(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R083+0x1136 (18FB:0506) matched; R083+0x11BA (18FB:058A) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -82,7 +82,7 @@ public sealed class DragonsMaidenContest : Card
                 c.Screen.Text(9);
                 c.PassHours(2);
                 c.Next = 0x0C;
-            }, OptionHint.Saying(CardTexts.Unknown)),
+            }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R083+0x11F2 (line 3); R083+0x135A (18FB:072A) matched; R083+0x13E4 (18FB:07B4) matched; tests: CardSmokeTests
             new MenuLine(() => PrayForHelp(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint));
     }

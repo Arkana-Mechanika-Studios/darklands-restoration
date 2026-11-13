@@ -25,9 +25,9 @@ public sealed class SurlyDwarf_MineR06 : Card
         menu.Enable(0, 1, 2, 3);
         return menu.Run(
             // orig: R102+0x0FB0 (191D:0160) matched
-            new MenuLine(() => Answer(c, 1, -3), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => Answer(c, 1, -3), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R102+0x102A (191D:01DA) matched
-            new MenuLine(() => { ShowPicture(c, DwarfPicture); c.Screen.Text(2); c.Next = 0xEA; }, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => { ShowPicture(c, DwarfPicture); c.Screen.Text(2); c.Next = 0xEA; }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R102+0x109E (191D:024E) matched
             new MenuLine(() => Answer(c, 3, -4), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R102+0x1118 (191D:02C8) matched

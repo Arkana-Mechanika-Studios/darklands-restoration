@@ -78,7 +78,7 @@ public sealed class BaphometsPlagues : Card
             // orig: R133+0x169E / R133+0x1834 matched
             new MenuLine(_ => AcceptTheGift(c), OptionHint.Saying(SuccessAssured)),
             // orig: R133+0x186C / R133+0x1BD2 matched
-            new MenuLine(_ => Refuse(c), OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(_ => Refuse(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)));
     }
 
     /// <summary>+5 to five attributes and their maxima, 50 florins, and better standing everywhere.</summary>

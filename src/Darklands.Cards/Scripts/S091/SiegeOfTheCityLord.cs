@@ -28,7 +28,7 @@ public sealed class SiegeOfTheCityLord : Card
         // orig: R091+0x056A (1838:056A) matched (resets the handlers only; the lists are left)
         return menu.Run(
             // orig: R091+0x0276 (1838:0276); hint R091+0x027E matched
-            new MenuLine(() => c.Next = c.CardBefore, OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => c.Next = c.CardBefore, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R091+0x02B6 (1838:02B6); hint R091+0x02F4 matched
             new MenuLine(() =>
                 {

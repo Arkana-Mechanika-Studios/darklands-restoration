@@ -137,14 +137,14 @@ public static class MsgCardDocumentParser
             value,
             value switch
             {
-                BattleOptionByte => MsgCardRawLowTextByteKind.Byte06,
-                Byte0A => MsgCardRawLowTextByteKind.Byte0A,
-                ItemOptionByte => MsgCardRawLowTextByteKind.Byte10,
-                ParagraphByte => MsgCardRawLowTextByteKind.Byte14,
-                PlainOptionByte => MsgCardRawLowTextByteKind.Byte15,
-                SaintOptionByte => MsgCardRawLowTextByteKind.Byte16,
-                IndentByte => MsgCardRawLowTextByteKind.Byte1D,
-                _ => MsgCardRawLowTextByteKind.UnknownBelow20
+                BattleOptionByte => MsgCardRawLowTextByteKind.BattleOption,
+                Byte0A => MsgCardRawLowTextByteKind.LineFeed,
+                ItemOptionByte => MsgCardRawLowTextByteKind.ItemOption,
+                ParagraphByte => MsgCardRawLowTextByteKind.Paragraph,
+                PlainOptionByte => MsgCardRawLowTextByteKind.PlainOption,
+                SaintOptionByte => MsgCardRawLowTextByteKind.SaintOption,
+                IndentByte => MsgCardRawLowTextByteKind.Indent,
+                _ => MsgCardRawLowTextByteKind.OtherControl
             }));
     }
 }

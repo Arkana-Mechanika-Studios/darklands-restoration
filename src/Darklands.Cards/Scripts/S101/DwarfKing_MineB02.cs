@@ -33,6 +33,6 @@ public sealed class DwarfKing_MineB02 : Card
                     c.BattleEnemy = 0x0B;
                     c.BattleSeed = c.Random(1000);
                     c.Next = -3;
-                }, OptionHint.Saying(CardTexts.Unknown)));
+                }, OptionHint.Saying(CardTexts.EncounterTheUnknown)));
     }
 }

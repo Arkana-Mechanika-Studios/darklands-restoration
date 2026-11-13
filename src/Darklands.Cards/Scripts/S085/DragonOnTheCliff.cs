@@ -53,12 +53,12 @@ public sealed class DragonOnTheCliff : Card
         }
         return menu.Run(
             // orig: R085+0x017E (1838:017E) matched; R085+0x01B0 (1838:01B0) matched; tests: CardSmokeTests
-            new MenuLine(() => ShowTheCup(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => ShowTheCup(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R085+0x01E8 (1838:01E8) matched; R085+0x0300 (1838:0300) matched; tests: CardSmokeTests
             // orig: R085+0x057C (1838:057C) matched; R085+0x0606 (1838:0606) matched; R085+0x0690 (1838:0690) matched; tests: CardSmokeTests
             new MenuLine(() => CallASaint(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
             // orig: R085+0x0338 (1838:0338) matched; R085+0x04AA (1838:04AA) matched; tests: CardSmokeTests
-            new MenuLine(() => ClimbDown(c), OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(() => ClimbDown(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)));
     }
 
     private static void ShowTheCup(CardContext c)

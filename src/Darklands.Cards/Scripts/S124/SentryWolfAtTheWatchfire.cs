@@ -49,7 +49,7 @@ public sealed class SentryWolfAtTheWatchfire : Card
         menu[3] = c.SaintsUsable();
 
         var assured = OptionHint.Saying(SuccessAssured);
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // DORMANT: in text block 4 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         // DORMANT: in text block 5 the option lines 0..5 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(

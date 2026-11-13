@@ -49,7 +49,7 @@ public sealed class BonelessSkeleton : Card
         c.SetCardItems();
         c.SetCardSaints();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         return menu.Run(
             new MenuLine(_ => { c.Screen.Text(2); Leave(c, -3); }, unknown),
             new MenuLine(_ => c.Screen.Text(3), unknown),

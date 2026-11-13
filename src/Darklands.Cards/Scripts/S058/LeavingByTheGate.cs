@@ -41,7 +41,7 @@ public sealed class LeavingByTheGate : Card
         c.Next = Number;
         return menu.Run(
             // orig: R058+0x1290 (191A:0470) matched (option 0 action, see WalkOut); hint R058+0x1306 (191A:04E6) "You can always encounter the unknown"
-            new MenuLine(() => WalkOut(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => WalkOut(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R058+0x133E (191A:051E) matched (option 1 action, see SneakOut); chance handler R058+0x141E (see SneakChance)
             new MenuLine(chance => SneakOut(c, chance), () => SneakChance(c)),
             // orig: R058+0x1496 (191A:0676) matched (option 2 action, see ThrowAPotion); hint R058+0x1666 (191A:0846) "select a potion", pop-up handlers 0d7e/0de8/0e50 (see PotionChance)

@@ -71,7 +71,7 @@ public sealed class RevolutionHouseAtNight : Card
                     c.Screen.Text(9);
                     c.Next = Fight;
                 },
-                OptionHint.Saying(CardTexts.Unknown)),
+                OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // DORMANT: options 5..8 have no text line and are never enabled; they would only let 0 hours pass.
             // orig: R048+0x15C0 (190E:0860) matched
             // orig: R048+0x15CC (190E:086C) matched

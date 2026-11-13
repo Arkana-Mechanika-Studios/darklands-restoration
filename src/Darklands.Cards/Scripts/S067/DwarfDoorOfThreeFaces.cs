@@ -30,9 +30,9 @@ public sealed class DwarfDoorOfThreeFaces : Card
 
         return menu.Run(
             // orig: R067+0x0148 (line 0); hint R067+0x01BA ("You can always encounter the unknown", the leader)
-            new MenuLine(_ => TouchTheGoldFace(c), () => new OptionHint(-1, CardTexts.Unknown, c.Leader)),
+            new MenuLine(_ => TouchTheGoldFace(c), () => new OptionHint(-1, CardTexts.EncounterTheUnknown, c.Leader)),
             // orig: R067+0x01F4 (line 1); hint R067+0x022E (same)
-            new MenuLine(_ => TouchTheSilverFace(c), () => new OptionHint(-1, CardTexts.Unknown, c.Leader)),
+            new MenuLine(_ => TouchTheSilverFace(c), () => new OptionHint(-1, CardTexts.EncounterTheUnknown, c.Leader)),
             new MenuLine(_ => TurnAndLeave(c), OptionHint.Saying(SuccessAssured)));
     }
 

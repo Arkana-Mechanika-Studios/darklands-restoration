@@ -66,11 +66,11 @@ public sealed class FriarSellingPardons : Card
                 c.SetCardSaints(0x3D, 0x4E, 0x73, 0x75);
                 menu[3] = c.SaintsUsable();
                 menu[4] = c.ItemsUsable();
-            }, OptionHint.Saying(CardTexts.Unknown)),
+            }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(() => PrayAgainstTheCurse(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupChanceHint),
-            new MenuLine(() => FrightenHim(c), OptionHint.Saying(CardTexts.Unknown), () => c.MemberPopupHint()),
+            new MenuLine(() => FrightenHim(c), OptionHint.Saying(CardTexts.EncounterTheUnknown), () => c.MemberPopupHint()),
             new MenuLine(() => Attack(c), OptionHint.Saying(SuccessAssured)),
-            new MenuLine(() => LeaveCursed(c), OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(() => LeaveCursed(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)));
     }
 
     private const int PrayerUnanswered = 0;

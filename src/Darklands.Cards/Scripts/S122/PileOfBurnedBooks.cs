@@ -46,7 +46,7 @@ public sealed class PileOfBurnedBooks : Card
         c.SetCardSaints(0x3F, 0x7D, 0x0F, 0x6F);
         menu[1] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         var leave = new MenuLine(_ => { c.BattleMode = 1; c.Next = -2; }, unknown);
         var showAgain = new MenuLine(_ => ShowTheRoomAgain(c), unknown);
         // DORMANT: in text block 1 the option lines 0..2 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.

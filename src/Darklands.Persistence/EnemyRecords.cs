@@ -32,7 +32,7 @@ public static class EnemyRecords
         PutTextOverZeros(r, 0x0E, 4, k.Image);
         PutTextOverZeros(r, 0x12, 0x14, k.Name);
         r[0x26] = (byte)k.Byte26;
-        r[0x27] = (byte)k.Byte27;
+        r[0x27] = (byte)k.PlacementBoxBase;
         r[0x28] = (byte)k.WeaponType;
         r[0x29] = (byte)k.WeaponQuality;
         r[0x2A] = (byte)k.MissileType;

@@ -46,7 +46,7 @@ public sealed class TemplarDoorGuard : Card
         c.SetCardSaints(0x6A, 0x2E, 0x35, 0x4E);
         menu[3] = c.SaintsUsable();
 
-        var unknown = OptionHint.Saying(CardTexts.Unknown);
+        var unknown = OptionHint.Saying(CardTexts.EncounterTheUnknown);
         // DORMANT: in text block 2 the option lines 0..3 are never offered (an Offer for this block lists other lines); they can be offered in other blocks only.
         return menu.Run(
             new MenuLine(_ => c.Next = Password, unknown),

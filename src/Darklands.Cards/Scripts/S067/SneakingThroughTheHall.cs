@@ -38,7 +38,7 @@ public sealed class SneakingThroughTheHall : Card
             // orig: R067+0x2470 (hint 05b2)
             new MenuLine(_ => { }, OptionHint.Saying(SuccessAssured)),
             // DORMANT: line 2 (card-option-flag-2 = 0): a fight with the guards. orig: R067+0x24AA (hint 05f0)
-            new MenuLine(_ => Fight(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => Fight(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // C: line 3 leads to card 0x62, the main loop's end-of-game code.
             // orig: R067+0x24E8 (hint 0646)
             new MenuLine(_ => { c.Screen.Text(0); c.PassHours(0); c.Next = 0x62; }, OptionHint.Saying(SuccessAssured)),

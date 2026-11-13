@@ -51,7 +51,7 @@ public sealed class ArmorersGuildAtNight : Card
         return menu.Run(
             new MenuLine(chance => KnockToBuy(c, ref standing, chance), () => KnockChance(c, standing)),
             new MenuLine(chance => KnockForTheMaster(c, chance), () => MasterChance(c, standing)),
-            new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => BreakIn(c, menu, chance), () => BreakInChance(c)),
             // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); their actions do nothing.
             // orig: R064+0x295C (1A37:096C) (hint R064+0x295E (1A37:096E) "Success is assured."), R064+0x2996 (1A37:09A6) and the

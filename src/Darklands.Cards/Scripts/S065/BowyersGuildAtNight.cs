@@ -51,7 +51,7 @@ public sealed class BowyersGuildAtNight : Card
         return menu.Run(
             new MenuLine(chance => KnockToBuy(c, ref standing, chance), () => KnockChance(c, standing)),
             new MenuLine(chance => KnockForTheMaster(c, chance), () => MasterChance(c, standing)),
-            new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => WatchTheGuildhouse(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             new MenuLine(chance => BreakIn(c, menu, chance), () => BreakInChance(c)),
             // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); their actions do nothing.
             // orig: R065+0x2888 (1A29:0978) (hint R065+0x288A (1A29:097A) "Success is assured."), R065+0x28C2 (1A29:09B2) and the

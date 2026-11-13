@@ -137,7 +137,7 @@ Darklands.Core.Battles.Tactics.TacticalBattle.PusherFollowStep(),fight-action-ta
 Darklands.Core.Battles.Tactics.TacticalBattle.Dying(),fighter-dying;R014+0x2324,R014+0x2324,draft,,
 Darklands.Core.Battles.Tactics.TacticalBattle.LeavePile(),fighter-dying;nudge_pile;R014+0x2324;R014+0x2802,R014+0x2324;R014+0x2802,draft,,divergence: the items stay in the pile's list (no EMS loot store and its -1/-2 offsets); the pile is not nudged
 Darklands.Core.Battles.Tactics.TacticalBattle.AiTick(),enemy-ai-step;R014+0xF418,R014+0xF418,draft,,
-Darklands.Core.Battles.Tactics.TacticalBattle.Probe(),R014+0xFE90,R014+0xFE90,draft,,
+Darklands.Core.Battles.Tactics.TacticalBattle.FindCombatantsInReach(),R014+0xFE90,R014+0xFE90,draft,,
 Darklands.Core.Battles.Tactics.TacticalBattle.BuildReachTable(),R014+0xFDBE,R014+0xFDBE,draft,,
 Darklands.Core.Battles.Tactics.TacticalBattle.FollowMovedTargets(),R014+0xF67A,R014+0xF67A,draft,,
 Darklands.Core.Battles.Tactics.TacticalBattle.AiPathHook(),R014+0xF568,R014+0xF568,draft,,

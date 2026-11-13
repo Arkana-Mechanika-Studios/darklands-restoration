@@ -142,7 +142,7 @@ public static class CardOracleAtoms
                 return true;
             case "ev":
                 state.Events.Create(n.Length > 4 ? n[4] : -2, n.Length > 5 ? n[5] : state.CurrentLocation, 0, n[0], n.Length > 1 ? n[1] : 0,
-                    n.Length > 3 ? (n[3] == 9999 ? state.CurrentLocation : n[3]) : 0, 0, EventLog.Forever, 0, n.Length > 2 ? n[2] : 0);
+                    n.Length > 3 ? (n[3] == 9999 ? state.CurrentLocation : n[3]) : 0, 0, EventLog.UntilEndOf1499, 0, n.Length > 2 ? n[2] : 0);
                 return true;
             case "ps":
                 state.Party.Seed = n[0];

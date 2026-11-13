@@ -73,7 +73,7 @@ public sealed class LancersOfWar : Card
             // orig: R133+0x0C70 / R133+0x0E48 matched
             new MenuLine(chance => AttackThemAll(c, chance, background), () => PartysChance(c)),
             // orig: R133+0x0E78 / R133+0x0F0C matched
-            new MenuLine(_ => GiveBlood(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(_ => GiveBlood(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R133+0x0F44 / R133+0x0F6C matched
             new MenuLine(_ => BackToTheCourtyard(c), OptionHint.Saying(SuccessAssured)));
     }

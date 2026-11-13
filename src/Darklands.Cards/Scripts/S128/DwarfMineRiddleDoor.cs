@@ -36,7 +36,7 @@ public abstract class DwarfMineRiddleDoor : Card
         c.SetCardSaints();
 
         // C: every answer's hint reads leader when it is asked, so the hint follows a change of leader.
-        var unknown = () => OptionHint.Say(CardTexts.Unknown, c.Leader);
+        var unknown = () => OptionHint.Say(CardTexts.EncounterTheUnknown, c.Leader);
         var choices = new MenuLine[LeaveLine + 1];
         for (var line = 0; line < LeaveLine; line++)
         {

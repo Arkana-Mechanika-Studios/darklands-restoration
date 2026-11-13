@@ -44,7 +44,7 @@ public sealed class VillageSchulz : Card
             // orig: R077+0x1A9C (line 2); R077+0x1F02 (1996:0922) matched; R077+0x1F8C (1996:09AC) matched; R077+0x2016 (1996:0A36) matched;
             // R077+0x20A0 (1996:0AC0) matched; tests: CardSmokeTests
             new MenuLine(() => Pray(c), OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
-            new MenuLine(() => AccuseTheHamlet(c), OptionHint.Saying(CardTexts.Unknown)),
+            new MenuLine(() => AccuseTheHamlet(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R077+0x1E14 (1996:0834) matched; R077+0x1E26 (1996:0846) matched; tests: CardSmokeTests
             new MenuLine(() => { c.PassHours(0); c.Next = 0x85; }, OptionHint.Saying(SuccessAssured)));
     }

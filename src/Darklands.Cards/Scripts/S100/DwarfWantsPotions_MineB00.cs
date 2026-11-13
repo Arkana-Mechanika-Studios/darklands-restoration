@@ -66,10 +66,10 @@ public sealed class DwarfWantsPotions_MineB00 : Card
                     c.BattleMode = 1;
                     c.BattleEnemy = 0x0B;
                     c.Next = -3;
-                }, OptionHint.Saying(CardTexts.Unknown)),
-            new MenuLine(() => TakeTheCuirass(c), OptionHint.Saying(CardTexts.Unknown)),
+                }, OptionHint.Saying(CardTexts.EncounterTheUnknown)),
+            new MenuLine(() => TakeTheCuirass(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)),
             // orig: R100+0x11F6 (18F6:0616) matched
-            new MenuLine(() => TheDwarfAttacks(c), OptionHint.Saying(CardTexts.Unknown)));
+            new MenuLine(() => TheDwarfAttacks(c), OptionHint.Saying(CardTexts.EncounterTheUnknown)));
     }
 
     // orig: R100+0x0E3A (18F6:025A) matched
