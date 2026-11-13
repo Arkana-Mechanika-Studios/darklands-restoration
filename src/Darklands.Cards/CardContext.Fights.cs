@@ -29,7 +29,7 @@ public sealed partial class CardContext
     public int BattleSeed { get => State.BattleOrders.Seed; set => State.BattleOrders.Seed = value; }
 
     /// <summary>Flags for the start of the next fight (<c>fight-flags</c>, DS:9080; bit 8: the foes expected the party).</summary>
-    // C: the meaning of the bits is not established; the cards set bit 8 before an ambush.
+    // C: bit 0 (persistent) and 0x100 (resume) are named in BattleRequest; the meaning of the other bits is not established; the cards OR in the value 8 before an ambush.
     public int CombatFlags { get => State.BattleOrders.Flags; set => State.BattleOrders.Flags = value; }
 
     /// <summary>

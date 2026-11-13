@@ -23,25 +23,26 @@ public enum StepOutcome
     Encounter,
 }
 
+/// <summary>What a step did; Card is the card to run for an arrival or an encounter, 0 otherwise.</summary>
 public readonly record struct StepResult(StepOutcome Outcome, int Card = 0);
 
 /// <summary>
 /// Travel on the world map: each step costs time by terrain, may reach a place, and may bring
 /// an encounter, as the travel screen of the game decides.
 /// </summary>
-// orig: Step = R030+0x1300 (1462:1300) draft (the draft of 1300 does not match the bytes: shape right, stack slots differ; checked against its disassembly - the forced arrival with party-map-column/party-map-row, the blocked test, the minutes, the arrival loop, the notice loop with its message and cue, the danger roll and the weight all agree with the C), read with the key handler R030+0x0C44 (draft, bytes differ; its clamps, the DS:290E toggle and the scroll block were checked against the disassembly too) and the sel == 1000 / 2000 branches of world-map-loop R030+0x02C0 (draft, bytes match); tests: OverlandTests
+// orig: Step = R030+0x1300 (1462:1300) draft (the draft of R030+0x1300 does not match the bytes: shape right, stack slots differ; checked against its disassembly - the forced arrival with party-map-column/party-map-row, the blocked test, the minutes, the arrival loop, the notice loop with its message and cue, the danger roll and the weight all agree with the C), read with the key handler R030+0x0C44 (draft, bytes differ; its clamps, the DS:290E toggle and the scroll block were checked against the disassembly too) and the sel == 1000 / 2000 branches of world-map-loop R030+0x02C0 (draft, bytes match); tests: OverlandTests
 // DIVERGENCE: the original keeps the party as three view-relative registers (DS:2866/DS:2868 the marker inside the 260x184 view, DS:286A/DS:286C/DS:286E the view's column and row offsets into the scrolling G[][] terrain buffer); this class works on absolute map pixels and cells (WorldMap.CellAt). The cell under the marker is the same one (the formulas of 1300: row = (y + 11) / 4, column from x + 16 or x + 24 by the row's parity, are those of CellAt); the terrain read through G is one cell off at the view's column 0 / row 0, as in the original (WorldMap.BufferOffset, View).
 public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool>? eventStarted = null)
 {
     /// <summary>Event kinds the travel rules look at.</summary>
-    // orig: event-begun-flag(0x5d) at the top of 1300 (the party is carried to the nearest city), event-begun-flag(0x4b) in its water test (a saint's travel blessing), event-begun-flag(0x5f) in world-map-loop (ambushed in camp)
+    // orig: event-begun-flag(0x5d) at the top of R030+0x1300 (the party is carried to the nearest city), event-begun-flag(0x4b) in its water test (a saint's travel blessing), event-begun-flag(0x5f) in world-map-loop (ambushed in camp)
     private const int ForcedArrival = 0x5D;
     private const int MayCrossWater = 0x4B;
     private const int AmbushedInCamp = 0x5F;
 
     /// <summary>An event of this kind at a place sets the encounter weight there (event-at-place / event-datum-at 0x2A); one of kind 0x2B holds a message shown when the place is first noticed.</summary>
-    // orig: event-at-place(0x2a, loc) / event-datum-at(0x2a, loc) in R030+0x2D44; event-datum-at(0x2b, i) / event-delete(0x2b, -1, i, -1, -1) / map-notice in 1300
-    // C: what scripts create the 0x2A and 0x2B events was not searched; their meaning (an encounter weight, a message number) is read from the use here.
+    // orig: event-at-place(0x2a, loc) / event-datum-at(0x2a, loc) in R030+0x2D44; event-datum-at(0x2b, i) / event-delete(0x2b, -1, i, -1, -1) / map-notice in R030+0x1300
+    // C: Quests.StartDragon (the lair: weight 10, message 2) and Quests.StartQuest3 create them; their meaning (an encounter weight, a message number) is read from the use here.
     private const int WeightEvent = 0x2A;
     private const int NoticeMessageEvent = 0x2B;
 
@@ -56,12 +57,12 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     private int _danger;
 
     // orig: DS:D843, a program global: the map's party drawing R030+0x16C6 and the step write it, no load touches it (a write watch over
-    //   gen-carry-07: 16c6's writes only, none by the Alt-L's load R037+0x8B76), so the wild battlefield generator (R008+0x009C) and the
+    //   gen-carry-07: R030+0x16C6's writes only, none by the Alt-L's load R037+0x8B76), so the wild battlefield generator (R008+0x009C) and the
     //   cards read the terrain the map last left, the same as GameState.PartyTerrain (kept by OriginalSaves.Read over a load)
     private int PartyTerrain { get => state.PartyTerrain; set => state.PartyTerrain = value; }
 
     /// <summary>Called for every game hour that passes while travelling.</summary>
-    // orig: pass-hours(1) in 1300 (when 60 minutes are full, and for a forced arrival), followed there by the clock picture and the season palette (R030+0x2DD6)
+    // orig: pass-hours(1) in R030+0x1300 (when 60 minutes are full, and for a forced arrival), followed there by the clock picture and the season palette (R030+0x2DD6)
     public Action? HourPassed { get; set; }
 
     /// <summary>Shows the map message of a place just noticed (<c>map-notice</c>) and waits for a key; the screen supplies it.</summary>
@@ -108,7 +109,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     public int CurrentTerrain => PartyTerrain;
 
     /// <summary>Starts a stretch of travel: minute and danger counters begin at zero.</summary>
-    // orig: DS:8672 = 0 (minutes) and DS:E488 = 0 (danger) in world-map-start R030+0x00A8 (1462:00A8) matched; DS:D843 (the terrain) is set by 16c6, which every idle pass of the loop calls through 0c44 before any step: the cell under the party at the start
+    // orig: DS:8672 = 0 (minutes) and DS:E488 = 0 (danger) in world-map-start R030+0x00A8 (1462:00A8) matched; DS:D843 (the terrain) is set by R030+0x16C6, which every idle pass of the loop calls through R030+0x0C44 before any step: the cell under the party at the start
     // C: DS:D843 is a global that keeps its value between visits to the map; the first pass of world-map-loop overwrites it before a step can read it.
     // DORMANT: orig: R030+0x00E6 (1462:00E6) in R030+0x00A8: DS:E3F2 = party query 5 (PartyQueries.Get: 1 when every present member is able and carries an item of flag 0x2000, a mount), computed at every map open and never read: no other instruction of the root or any overlay addresses DS:E3F1..E3F3 (capstone and IDA scans), a memory watch over map, camp, save and load sessions saw only this write, and the saved game does not hold it. The cluebook describes horses for the whole party as faster travel on the main map; a mounted, an unmounted and a one-horse-short party take the same minutes per step in the original, so the bonus was apparently planned and left unconnected. Not computed here: a known documentation discrepancy (docs/faithfulness/SUMMARY.md); an enhanced-mode rule option (rules.mounted_travel) is planned after 1.0, not implemented.
     public void Begin()
@@ -122,18 +123,18 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     /// <summary>The party moves onto the cell under map pixel (x, y).</summary>
     // orig: R030+0x1300 (1462:1300): returns -1 walked, 9999 blocked, a location index arrived, 1000 a road encounter, 2000 the place's own encounter - the four StepOutcomes
-    // C: whenever 1300 returns 0 or more, 0c44 puts the marker back (DS:2866 = oxo, DS:2868 = oyo, DS:8676 = 0); the cell (MapPosition) is the old one for Walked, Blocked and Arrived, the new one for Encounter (see OverlandScreen.MoveOnce).
+    // C: whenever R030+0x1300 returns 0 or more, R030+0x0C44 puts the marker back (DS:2866 = oxo, DS:2868 = oyo, DS:8676 = 0); the cell (MapPosition) is the old one for Walked, Blocked and Arrived, the new one for Encounter (see OverlandScreen.MoveOnce).
     public StepResult Step(int x, int y)
     {
         var (column, row) = WorldMap.CellAt(x, y);
         if (_eventStarted(ForcedArrival))
         {
-            // C: pass-hours(1); return location-now = closest-city-inner(party-map-column, party-map-row). party-map-column and party-map-row were set at the start of 0c44 from the cell the party stood on before this step, so the city nearest to the old position is chosen, not to the one stepped towards (the new MapPosition is only set below, and not for an arrival).
+            // C: pass-hours(1); return location-now = closest-city-inner(party-map-column, party-map-row). party-map-column and party-map-row were set at the start of R030+0x0C44 from the cell the party stood on before this step, so the city nearest to the old position is chosen, not to the one stepped towards (the new MapPosition is only set below, and not for an arrival).
             HourPassed?.Invoke();
             return new StepResult(StepOutcome.Arrived, ArriveAt(LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y)));
         }
 
-        // C: t = c >= 50 ? 28 : c — a place icon counts as a castle (16c6 uses c > 50 for the same test, so for the single code 50 it leaves DS:D843 at 50; place icon codes start at 0x1C and 0x33, so this is not reachable).
+        // C: t = c >= 50 ? 28 : c — a place icon counts as a castle (R030+0x16C6 uses c > 50 for the same test, so for the single code 50 it leaves DS:D843 at 50; place icon codes start at 0x1C and 0x33, so this is not reachable).
         var terrain = TerrainUnderMarker(column, row, x, y);
         // C: (t == 1 || t == 2) && !event-begun-flag(0x4b) && DS:D843 != 1 && DS:D843 != 2 -> 9999: deep water stops the party unless it already stands on deep water; a minor river (3) never stops it.
         if (Terrain.IsDeepWater(terrain) && !_eventStarted(MayCrossWater) && !Terrain.IsDeepWater(PartyTerrain))
@@ -141,12 +142,12 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
             return new StepResult(StepOutcome.Blocked);
         }
         PartyTerrain = terrain;
-        // orig: DS:8672 += R030+0x2AC8(t) = Terrain.MinutesPerStep (checked: all 18 terrain cases and the default 9 of 2ac8 agree with the table)
+        // orig: DS:8672 += R030+0x2AC8(t) = Terrain.MinutesPerStep (checked: all 18 terrain cases and the default 9 of R030+0x2AC8 agree with the table)
         PassMinutes(Terrain.MinutesPerStep(terrain));
 
         // C: t >= 25 && t != 27 && t != 25 (castle 28, city 29 and the other place icons); the reach is 4 around a city (29), 1 around anything else.
-        // C: an arrival returns with location-now set only (1462:158E): party-map-column / party-map-row keep the cell 0c44 took at the start of the pass, the one
-        //   stepped from (0c44 then puts the marker back); a walk is read from the marker by the next pass, an encounter sets them (1462:1672).
+        // C: an arrival returns with location-now set only (1462:158E): party-map-column / party-map-row keep the cell R030+0x0C44 took at the start of the pass, the one
+        //   stepped from (R030+0x0C44 then puts the marker back); a walk is read from the marker by the next pass, an encounter sets them (1462:1672).
         // BUG: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with
         // the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg,
         // four tiles off) and 297 Putten (127 Putten, two rows off).
@@ -154,9 +155,9 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         {
             return new StepResult(StepOutcome.Arrived, ArriveAt(place));
         }
-        // C: a walk (-1) does not write party-map-column / party-map-row either: they keep the cell 0c44 took at the start of this pass until the next pass
-        //   of 0c44 reads them from the marker (1462:0C44 +0x54/+0x63, OverlandScreen); a save from the menu bar in between (menu-bar-loop comes
-        //   before 0c44 in world-map-loop) holds the cell stepped from. Only an encounter sets them here (below).
+        // C: a walk (-1) does not write party-map-column / party-map-row either: they keep the cell R030+0x0C44 took at the start of this pass until the next pass
+        //   of R030+0x0C44 reads them from the marker (1462:0C44 +0x54/+0x63, OverlandScreen); a save from the menu bar in between (menu-bar-loop comes
+        //   before R030+0x0C44 in world-map-loop) holds the cell stepped from. Only an encounter sets them here (below).
 
         var near = NearestNoticedPlace(column, row);
         // C: after the notice scan (which may show a map message even over water) a step onto deep water ends here.
@@ -169,7 +170,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         {
             _danger++;
         }
-        // C: w = 2d44(t, found) is computed (no draw) before roll-below(1000) is drawn; "(DS:E488 + 1) * w < roll-below(1000)" is int arithmetic.
+        // C: w = R030+0x2D44(t, found) is computed (no draw) before roll-below(1000) is drawn; "(DS:E488 + 1) * w < roll-below(1000)" is int arithmetic.
         var weight = EncounterWeight(terrain, near);
         if ((_danger + 1) * weight < state.Random.Below(1000))
         {
@@ -178,7 +179,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         // C: party-map-column/party-map-row = the cell stepped to; location-now = found (-1 when no place is near).
         state.MapPosition = new MapPosition(column, row);
         state.CurrentLocation = near;
-        // C: found != -1 && unk0e != 0x62 && roll-below(100) <= 60 -> 2000: the place's own encounter card (short-circuit: no draw unless the place has one that is not 0x62).
+        // C: found != -1 && EncounterCard != 0x62 && roll-below(100) <= 60 -> 2000: the place's own encounter card (short-circuit: no draw unless the place has one that is not 0x62).
         if (near >= 0 && state.Locations[near].EncounterCard != 0x62 && state.Random.Below(100) <= 60)
         {
             return new StepResult(StepOutcome.Encounter, state.Locations[near].EncounterCard);
@@ -212,7 +213,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     }
 
     /// <summary>The first place (in table order) whose position is within reach of the cell.</summary>
-    // orig: the first loop of 1300 over locations 0..413: x in [col - r, col + r + 1], y in [row - r, row + r + 1] and menu != 0x62; returns location-now = i
+    // orig: the first loop of R030+0x1300 over locations 0..413: x in [col - r, col + r + 1], y in [row - r, row + r + 1] and menu != 0x62; returns location-now = i
     private int? PlaceAt(int column, int row, int reach)
     {
         for (var i = 0; i < state.Locations.Count; i++)
@@ -228,8 +229,8 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     }
 
     /// <summary>The closest place whose notice range covers the party, or -1.</summary>
-    // orig: the second loop of 1300 (range test, distance dy <= dx ? dy / 2 + dx : dx / 2 + dy, a place counts only when strictly closer than the best so far, which starts at 100)
-    // C: "(-1 - unk08) / 2 + a > x" and "(unk08 + 1) / 2 + a <= x", with a = DS:286A + col = column + 1, are the bounds below; int division truncates towards zero, the same for the non-negative ranges of the data.
+    // orig: the second loop of R030+0x1300 (range test, distance dy <= dx ? dy / 2 + dx : dx / 2 + dy, a place counts only when strictly closer than the best so far, which starts at 100)
+    // C: "(-1 - NoticeRange) / 2 + a > x" and "(NoticeRange + 1) / 2 + a <= x", with a = DS:286A + col = column + 1, are the bounds below; int division truncates towards zero, the same for the non-negative ranges of the data.
     // C: the map message fires inside the loop, every time a place closer than the best so far turns up that is not the one already found: a message can be shown for a place that a later, closer one then replaces.
     private int NearestNoticedPlace(int column, int row)
     {
@@ -267,7 +268,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
 
     /// <summary>The encounter weight of the terrain, plus the nearest noticed place's own.</summary>
     // orig: R030+0x2D44 (1462:2D44) draft (bytes match)
-    // C: "loc >= 0 && loc <= 0x19e" (0x19E = 414 is one past the table and never a found index); an event of kind 0x2A at the place replaces the place's own danger (unk0a) by the event's value; the terrain part, 1 to 3, is always kept.
+    // C: "loc >= 0 && loc <= 0x19e" (0x19E = 414 is one past the table and never a found index); an event of kind 0x2A at the place replaces the place's own danger (Danger) by the event's value; the terrain part, 1 to 3, is always kept.
     internal int EncounterWeight(int terrain, int near)
     {
         var weight = terrain switch

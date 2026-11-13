@@ -51,11 +51,11 @@ public sealed partial class CardContext
     // orig: R039+0x0102 (1462:0102) matched
     public int PriceEvents() => LocationRules.PriceEvents(State);
 
-    /// <summary>R039 0000: a local price between low and value.</summary>
+    /// <summary>R039 0000: a local price between <paramref name="low"/> and <paramref name="value"/> (the list price): raised by the location flags and the price events, then a random amount above low.</summary>
     // orig: R039+0x0000 (1462:0000) matched
     public int LocalPrice(int value, int low) => LocationRules.LocalPrice(State, value, low);
 
-    /// <summary>R039 1d2c: a service's price for the party.</summary>
+    /// <summary>R039 1d2c: a service's price for the party, from the party's standing (<paramref name="reputation"/>), the base price <paramref name="value"/>, the party size and the location flags.</summary>
     // orig: R039+0x1D2C (1462:1D2C) matched
     public int ServicePrice(int reputation, int value) => LocationRules.ServicePrice(State, reputation, value);
 

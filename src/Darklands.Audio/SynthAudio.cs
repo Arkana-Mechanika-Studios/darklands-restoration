@@ -129,7 +129,7 @@ public sealed class SynthAudio : IAudio, IPcmSource, IGameTimer
     /// <summary>The reason the drivers stopped, if one failed; silence follows.</summary>
     public string? Fault { get; private set; }
 
-    /// <summary>Frames rendered so far.</summary>
+    /// <summary>Output frames (stereo sample pairs) rendered so far; not video frames.</summary>
     public long RenderedFrames => Interlocked.Read(ref _renderedFrames);
 
     /// <summary>Ticks of the game timer rendered so far.</summary>

@@ -16,7 +16,7 @@ namespace Darklands.Cards.Scripts;
 // C (generated): card-option-flag-7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class MissingPatriarchDoor : DwarfMineRiddleDoor
 {
@@ -47,7 +47,7 @@ public sealed class MissingPatriarchDoor : DwarfMineRiddleDoor
 // C (generated): card-option-flag-7/8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class RealmThatBelongsNotDoor : DwarfMineRiddleDoor
 {
@@ -79,7 +79,7 @@ public sealed class RealmThatBelongsNotDoor : DwarfMineRiddleDoor
 // C (generated): card-option-flag-8/9 are never assigned or read here: the card's init zeroes card-option-enabled[0..19], so those lines stay hidden, as in the C#.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
 // DORMANT (generated): card-saint-lines stays all -1, so no line opens a saint pop-up.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class HocusPocusDoor : DwarfMineRiddleDoor
 {

@@ -10,7 +10,7 @@ public abstract record CardTarget
     /// <summary>Another page of the same card.</summary>
     public sealed record Page(string Id) : CardTarget;
 
-    /// <summary>A card (the game's or a mod's) by number; 12 is the map.</summary>
+    /// <summary>A card (the game's or a mod's) by number; CardDispatcher.OverlandMap (12) is the map.</summary>
     public sealed record Card(int Number) : CardTarget;
 
     /// <summary>The game's own card this card overrides, run as if the mod were not there.</summary>

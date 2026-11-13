@@ -50,8 +50,7 @@ public sealed class TatzelwurmPack : Card
         c.SetCardSaints(0x36, 0x3D, 0x83, 3);
         menu[3] = c.SaintsUsable();
         menu.Popup = () => c.SaintPopupChanceHint();
-        // C: item-handler-table slots 0/1 are the potion handlers R112+0x1398 / R112+0x13E8, slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the
-        // C: item box rates line 2 with slot 2's.
+        // C: item-handler-table slots 0/1 are the potion handlers R112+0x1398 / R112+0x13E8, slots 2/3 bare retf (R112+0x1438 / 0x143A): Enter in the item box rates line 2 with slot 2's.
         menu.ItemBox = () => c.MenuSlot < 2 ? PotionHint(c) : c.EmptyBoxHandler();
 
         // DORMANT: in text block 2 the option lines 0, 1, 4, 7 are never offered (the switch to this block hides them); they can be offered in other blocks only.

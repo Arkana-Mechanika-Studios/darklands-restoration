@@ -31,10 +31,10 @@ public sealed record LoadedGame(GameState State, bool Music, bool SoundEffects, 
 // matched; tests: OriginalSaveTests
 // C: the header, as both functions read and write it (offsets in the file):
 //   +00 place name (0x15 bytes: the current location's name, or "Wilderness"), +15 comment (0x4F bytes), +64 party-random-seed,
-//   +66 the word 7, +68 year, month, day, hour, +70 florins, groschen, pfennigs, +76 a zero long, +7A party-renown, +7C location-now,
+//   +66 the word 7, +68 year, month, day, hour, +70 florins, groschen, pfennigs, +76 a zero long, +7A party-renown (fame), +7C location-now,
 //   +7E party-map-column, +80 party-map-row, +82 DS:A772 (the card), +84 DS:E898 (the card's text state), +86 remembered-card, +88 remembered-card-second,
 //   +8A earlier-screen, +8C DS:9072/9074/9076 (bank notes), +92 DS:9078 (philosopher's stone), +94 DS:A67C (hirelings), +96 difficulty-setting
-//   (bit 7: saved in a battle), +97 DS:DB27, +99 DS:DA34, +9B column-order[6], +A1 leader, +A2 music-setting, +A3 sound-setting, +A4 DS:A891,
+//   (bit 7: saved in a battle), +97 battle-location (DS:DB27), +99 cleared-levels (DS:DA34), +9B column-order[6], +A1 leader, +A2 music-setting, +A3 sound-setting, +A4 map-leave-mode (DS:A891),
 //   +A6 a zero byte, +A7 36 zero words.
 public static class OriginalSaves
 {
@@ -184,6 +184,7 @@ public static class OriginalSaves
             Character member;
             if (id >= 0 && id < state.Roster.Characters.Count && !used.Add(id))
             {
+                // A second slot naming an already read record stays empty (the reasons follow).
                 // C: a second slot naming a record already read: saved-game-read R037+0x8ED4 reads each record into the FIRST slot naming it
                 // C: (R037+0x96BE..0x96D3 searches the slots from 0), so this slot gets nothing and keeps the slot memory (status 0 after the
                 // C: load's clear, zeros after start-up); ids[] keep naming the record (CharacterRoster.KeepSecondSlot), and the writer

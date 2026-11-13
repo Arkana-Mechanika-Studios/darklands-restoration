@@ -124,7 +124,7 @@ public sealed class TablePersonalNames(Darklands.Content.Formats.Characters.Pers
     public int Count(NameTable table) => Table(table).Count;
 }
 
-/// <summary>Helpers the card scripts of overlays R059..R073 share.</summary>
+/// <summary>Helpers the card scripts share: rolls, removing a member, sound and music, text input, made-up names, shops, remembered cards and data words.</summary>
 public sealed partial class CardContext
 {
     /// <summary>A roll against a chance as the scripts make it: <c>roll-below(100) &lt;= chance</c>.</summary>
@@ -281,8 +281,8 @@ public sealed partial class CardContext
     /// R030 27aa: the city nearest to a map position; a city standing exactly there is passed
     /// over while its third local value (record byte 0x17) is not 0.
     /// </summary>
-    // orig: R030+0x27AA thunk 09C0:1FC7) (1462:27AA) draft (function matched per file header)
-    // C: record byte 0x17 (unk17) is read as Location.LocalValues[2] (bytes 0x15..0x17 are the three local values).
+    // orig: R030+0x27AA (1462:27AA; thunk 09C0:1FC7) draft (function matched per file header)
+    // C: record byte 0x17 is read as Location.LocalValues[2], the third local value (bytes 0x15..0x17 are the three local values).
     public int NearestCityPassingOverOneHere(int x, int y)
     {
         var best = -1;
@@ -338,8 +338,6 @@ public sealed partial class CardContext
     // orig: text-slot-support-zero..text-slot-support-six R043+0x1316 case 59..65: R136+0xB1EB[var_support] with R136+0xB1EB = the middle entry of the three-string table at 290E:2B57, so −1 oppose, 0 are undecided about, 1 support
     public int[] Support => Variables.Support;
 
-    // ShopNames is shared: see CardContext.Services.cs.
-
     /// <summary>
     /// Opens a shop (R029 21aa): the barter screen for shop <paramref name="shop"/> under its
     /// name (or <paramref name="name"/>), with the item categories <paramref name="low"/> |
@@ -376,7 +374,7 @@ public sealed partial class CardContext
     /// keeps its value for later visits; 0 until written (the words used so far start as 0 in the
     /// program image). Not saved with the game, like the original.
     /// </summary>
-    // orig: DGROUP words such as DS:5DF8/DS:5DFA of
+    // orig: DGROUP words such as DS:5DF8/DS:5DFA of ClimbingTheWallPastTheGuards (BestClimberWord, BestScoreWord)
     public int DataWord(int address) => DataWordsOf.GetValue(State, _ => []).GetValueOrDefault(address);
 
     /// <summary>Writes a word read back by <see cref="DataWord"/>.</summary>

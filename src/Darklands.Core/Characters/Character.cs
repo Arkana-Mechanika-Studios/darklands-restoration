@@ -59,7 +59,7 @@ public sealed record ItemStack(int Code, int Type, int Quality, int Count, int W
 
 /// <summary>A party member.</summary>
 // orig: party DS:9C69
-// C: IsFemale is record byte +3 (the "women" queries test it == 1); Age is the word before the record (see MemberRules.Age notes in CardContext.MemberAge).
+// C: IsFemale is record byte +3 (the "women" queries test it == 1); Age is the word before the 0x80-byte record.
 public sealed class Character
 {
     public const int AttributeCount = 7;
@@ -114,7 +114,7 @@ public sealed class Character
     /// the high nibble by Firewall (+1) and by saints (0xA, 0xB); battle shows "+" on the armour
     /// names while bits 0..6 are set. The same byte as <see cref="ArmourPotions"/>.
     /// </summary>
-    // C: the nibbles' exact meaning in battle is not established.
+    // C: the writers of each nibble are listed above; what the nibbles do in battle is not established.
     public byte BattleCharms
     {
         get => (byte)ArmourPotions;

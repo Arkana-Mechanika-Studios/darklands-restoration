@@ -7,7 +7,7 @@ namespace Darklands.Cards.Scripts;
 /// </summary>
 // orig: R131+0x0B8C (18F0:000C) matched; tests: CardSmokeTests
 //   other: R131+0x0C1A, R131+0x0C52
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // DORMANT: the file's table set-up R131+0x0C1A and its "screwed up." default handler R131+0x0C52 are never called
 //   (the card runs no menu); they would only clear the option table and the item/saint lists.

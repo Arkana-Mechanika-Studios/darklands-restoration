@@ -18,7 +18,7 @@ namespace Darklands.Cards.Scripts;
 //     R119+0x2678, R119+0x26B4, R119+0x26D2,
 //     R119+0x270E, R119+0x272C, R119+0x2768,
 //     R119+0x280A
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class CapturedAfterDefeat : Card
 {

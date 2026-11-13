@@ -37,7 +37,7 @@ public static class Keys
     public const int F12 = 0x8600;
 
     /// <summary>Ctrl-F1..F5 (scan codes 0x5E..0x62): make that party member the leader.</summary>
-    // orig: cases 0x5e00 .. 0x6200 of card-hotkeys R043+0x33C6 and R030+0x0C44 (the C comments call them Shift-F keys; Shift-F1 is 0x5400)
+    // orig: cases 0x5e00 .. 0x6200 of card-hotkeys R043+0x33C6 and R030+0x0C44 (Shift-F1..F5 would be 0x5400..0x5800)
     public const int CtrlF1 = 0x5E00;
     public const int CtrlF5 = 0x6200;
 

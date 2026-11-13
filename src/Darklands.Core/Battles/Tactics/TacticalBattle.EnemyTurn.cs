@@ -8,7 +8,6 @@ public sealed partial class TacticalBattle
     private static readonly int[] SpotX = [-29, -29, -19, -19, 29, 29, 19, 19, -29, -29, -19, -19, 29, 29, 19, 19];
     private static readonly int[] SpotY = [-15, -9, -15, -9, -15, -9, -15, -9, 15, 9, 15, 9, 15, 9, 15, 9];
 
-    /// <summary>DS:21DC: the area size byte per spell type (size class in the high nibble).</summary>
     /// <summary>The distance of an unseen or unwanted target.</summary>
     private const int FarAway = 0x7D00;
 

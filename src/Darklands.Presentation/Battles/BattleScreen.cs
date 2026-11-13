@@ -28,8 +28,6 @@ public sealed class BattleScreen : ITacticalView
     // when the edge scroll last stepped (the host's clock)
     private long _edgeScrolledAt = long.MinValue / 2;
 
-    /// <summary>A debugging aid: exactly one timer callback of the 60 Hz clock a pass of the loop, whatever the time (DARKLANDS_BATTLE_TICK_PER_PASS),
-    /// as tools/oracle/lockstep.py runs the original's battle.</summary>
     /// <summary>A debugging aid: a line at the head of each pass, the combat clock and the random state (DARKLANDS_BATTLE_TRACE).</summary>
     public static Action<string>? PassTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TRACE") is null ? null : Console.WriteLine;
 
@@ -59,6 +57,8 @@ public sealed class BattleScreen : ITacticalView
         return $" cbt {Convert.ToHexString(records)} q {Convert.ToHexString(queued)} ar {Convert.ToHexString(rates)}";
     }
 
+    /// <summary>A debugging aid: exactly one timer callback of the 60 Hz clock a pass of the loop, whatever the time (DARKLANDS_BATTLE_TICK_PER_PASS),
+    /// as tools/oracle/lockstep.py runs the original's battle.</summary>
     public static bool OneTickPerPass { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_TICK_PER_PASS") is not null;
 
     /// <summary>A debugging aid: the clock ticks each battle's set-up takes (stages 1 to 4, see ITacticalView.SetUpTime), in place of
@@ -73,15 +73,15 @@ public sealed class BattleScreen : ITacticalView
             p.Length > 2 ? int.Parse(p[2], System.Globalization.CultureInfo.InvariantCulture) : 0,
             p.Length > 3 ? int.Parse(p[3], System.Globalization.CultureInfo.InvariantCulture) : 0)));
 
-    /// <summary>A debugging aid: timer callbacks that came within a pass beyond its one, by the combat clock at the pass's head ("1382,69;1452,67":
-    /// the clock was 1382 at the head, 69 more callbacks came during the pass), as tools/oracle/battle_oracle.py measures them in the original
-    /// (DARKLANDS_BATTLE_CLOCK_JUMPS): the original's emulated time passes during a pass that computes for long (R014+0x4BFA..0x66FE
-    /// in the wild fight), and the timer callbacks of that time count the clock on.</summary>
     /// <summary>A debugging aid: the timer callbacks of the original's loot screens, by the combat clock it was opened at ("2731,7"), as
     /// tools/oracle/lockstep.py takes them from the original's clock jumps (DARKLANDS_BATTLE_LOOT_TICKS): the end test R014+0x08FE runs
     /// fight-recovery R014+0x0DEE before the loot screen R040, during which the timer root 047C:000A counts the clock on.</summary>
     public static Dictionary<int, int>? LootTicks { get; set; } = ParseClockJumps(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_LOOT_TICKS"));
 
+    /// <summary>A debugging aid: timer callbacks that came within a pass beyond its one, by the combat clock at the pass's head ("1382,69;1452,67":
+    /// the clock was 1382 at the head, 69 more callbacks came during the pass), as tools/oracle/battle_oracle.py measures them in the original
+    /// (DARKLANDS_BATTLE_CLOCK_JUMPS): the original's emulated time passes during a pass that computes for long (R014+0x4BFA..0x66FE
+    /// in the wild fight), and the timer callbacks of that time count the clock on.</summary>
     public static Dictionary<int, int>? ClockJumps { get; set; } = ParseClockJumps(Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CLOCK_JUMPS"));
 
     private static Dictionary<int, int>? ParseClockJumps(string? text) => string.IsNullOrEmpty(text) ? null
@@ -545,10 +545,6 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The centre of combatant i's hot spot as last drawn (screen pixels), null when it has none (tests, the headless host).</summary>
     public (int X, int Y)? HotSpotCentre(int i) => HotSpot(i) is { } h ? ((h.Left + h.Right) / 2, (h.Top + h.Bottom) / 2) : null;
 
-    /// <summary>Combatant i's hot spot as last drawn (screen pixels, inclusive), null when it has none (tests, the headless host).</summary>
-    /// <summary>The battle's seen positions start as the program's (the last battle's, the one a load left) and are the program's from now.</summary>
-    // C: seenpos (20A5:79A9) is written only by R014+0xF568 (a path found) and read by the walkers' re-path test (R014+0xF418's 1DB7:0D36):
-    // no battle start, restore or load clears it
     /// <summary>The members' selection starts as the panel's selection bytes stand (GameUi.PanelSelection, never cleared at a battle's start).</summary>
     // orig: DS:9064 is the battle's fighter-selected table itself: no write between battles (see GameUi.PanelSelection)
     private void TakePanelSelection(Battle battle)
@@ -573,6 +569,9 @@ public sealed class BattleScreen : ITacticalView
         }
     }
 
+    /// <summary>The battle's seen positions start as the program's (the last battle's, the one a load left) and are the program's from now.</summary>
+    // C: seenpos (20A5:79A9) is written only by R014+0xF568 (a path found) and read by the walkers' re-path test (R014+0xF418's 1DB7:0D36):
+    // no battle start, restore or load clears it
     private void KeepSeenPositions(Battle battle)
     {
         if (_owner.SeenPositions is { } kept)
@@ -588,6 +587,7 @@ public sealed class BattleScreen : ITacticalView
     /// <summary>The view's centre cell (DS:C866 / DS:C886).</summary>
     public (int Column, int Row) ViewCentre => (_view.CentreColumn, _view.CentreRow);
 
+    /// <summary>Combatant i's hot spot as last drawn (screen pixels, inclusive), null when it has none (tests, the headless host).</summary>
     public (int Left, int Top, int Right, int Bottom)? HotSpot(int i)
     {
         foreach (var h in _hotSpots)

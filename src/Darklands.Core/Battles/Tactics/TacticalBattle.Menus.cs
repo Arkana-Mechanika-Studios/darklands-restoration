@@ -95,7 +95,7 @@ public sealed partial class TacticalBattle
             }
             m.ThrowLines.Clear();
             m.ThrowLines.AddRange(Effects.ThrowList(a));
-            // DS:97DD: 1 with lines, 2 without (R019 0C80 writes it).
+            // DS:97DD, the Throw entry's enable byte: 1 with lines, 2 without (R019 0C80 writes it).
             m.Attack[(int)AttackItem.Throw] = (byte)(m.ThrowLines.Count != 0 ? 1 : 2);
             if (c.Held)
             {

@@ -22,7 +22,7 @@ public static class MemberRules
 
     // ---- skills ---------------------------------------------------------------------
 
-    /// <summary><c>member-ability</c>.</summary>
+    /// <summary>The member's skill value (<c>member-ability</c>); a member past the records is read from the overrun.</summary>
     // orig: member-ability R029+0x01A0 (0E76:01A0) matched; tests: MemberRulesTests; RecordOverrunTests (a member past the records)
     public static int Skill(GameState s, int who, int skill) =>
         RecordOverrun.Outside(s.Party.Resolve(who)) ? RecordOverrun.Skill(s, s.Party.Resolve(who), skill) : s.Party.Slot(who).Skills[skill];
@@ -278,7 +278,7 @@ public static class MemberRules
     // ---- temporary boosts -----------------------------------------------------------
 
     /// <summary>
-    /// Raises an attribute for about <paramref name="hours"/> (6 + rnd 3 + hours − 5 hours),
+    /// Raises an attribute for about <paramref name="hours"/> (the event runs a roll of 0..2 + hours − 5 hours),
     /// recorded as an <see cref="EventKinds.AttributeBoost"/> event that undoes it
     /// (<c>stat-temporary-boost</c>). A member already above the maximum gets only the rest of the
     /// boost. Original bugs (−2): a member whose excess is larger than the boost ends the whole

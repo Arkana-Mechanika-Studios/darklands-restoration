@@ -115,6 +115,7 @@ public static class SettingsFile
         return null;
     }
 
+    /// <summary>Reads a number written as decimal, 0x220 or 220h (hexadecimal); null when the text is empty or not a number.</summary>
     public static int? ParseWord(string? text)
     {
         text = text?.Trim();

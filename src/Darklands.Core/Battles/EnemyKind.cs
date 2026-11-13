@@ -42,7 +42,7 @@ public sealed class EnemyKind
     /// <summary>+0x12: the enemy type's name.</summary>
     public string Name { get; set; } = "";
 
-    /// <summary>+0x26 / +0x27: from the template's +0x13 / +0x12 (+0x27 is 2 for missile users and casters). UNCERTAIN.</summary>
+    /// <summary>+0x26 / +0x27: from the template's +0x13 / +0x12 (+0x27 is 2 for missile users and casters; it is the base index into the placement box tables, TacticalBattle.Placement). UNCERTAIN.</summary>
     public sbyte Byte26 { get; set; }
 
     public sbyte Byte27 { get; set; }

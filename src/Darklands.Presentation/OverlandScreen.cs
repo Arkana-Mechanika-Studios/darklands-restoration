@@ -22,7 +22,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private const int AreaWidth = 260;
     private const int AreaHeight = 184;
 
-    /// <summary>The map buffer's corner left out of the view: 20d2 draws the cells from (0, 0) of its 260x184 buffer and copies it from (8, 8) to (60, 16).</summary>
+    /// <summary>The map buffer's corner left out of the view: R030+0x20D2 (map drawing) draws the cells from (0, 0) of its 260x184 buffer and copies it from (8, 8) to (60, 16).</summary>
     // orig: gfx-rect-copy(DS:284E, 8, 8, 0x104, 0xB8, screen, 0x3C, 0x10) at R030+0x2599..0x25AD; the view's first cell (column DS:286A, row DS:286E + DS:286C) is drawn at (0 or 8, 0) of the buffer
     private const int BufferCrop = 8;
 
@@ -42,7 +42,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     private OverlandTiles? _pictures;
     private readonly OverlandPage _page = new();
 
-    /// <summary>Whether 20d2 is due: the view moved, the background changed or the screen is drawn again after another one.</summary>
+    /// <summary>Whether R030+0x20D2 (map drawing) is due: the view moved, the background changed or the screen is drawn again after another one.</summary>
     // orig: `if (occ != DS:286C || DS:286A != oad) 20d2(...)` after the scroll block of R030+0x0C44, `if (m != DS:2860) 20d2(...)` after an hour in
     //   R030+0x1300, and the redraws of world-map-start, the `redraw` label of 0c44, the portrait click and the menu bar's party-icons-stale
     private bool _mapDirty = true;
@@ -78,7 +78,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // (1000), or the camp ambush
     public int Travel(GameState state, Func<int, bool>? eventStarted = null)
     {
-        ui.Redraw = () => UseMapPalette(state);   // orig: the `redraw` label of 0c44 after a character sheet or the party information: pictures reloaded, season palette, panel
+        ui.Redraw = () => UseMapPalette(state);   // orig: the `redraw` label of R030+0x0C44 (key handler) after a character sheet or the party information: pictures reloaded, season palette, panel
         try
         {
             var card = TravelLoop(state, eventStarted);
@@ -93,6 +93,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         }
     }
 
+    /// <summary>Sets up the map visit (travel tune, party place, rows, pictures, palette), then loops: draw, read key and mouse, choose a direction, take a step or rest or camp; returns the card of the place or encounter reached.</summary>
     private int TravelLoop(GameState state, Func<int, bool>? eventStarted)
     {
         // orig: world-map-start R030+0x00A8: DS:9C3D = thunk 09C0:18F1(5) (the piece playing, kept: nothing on the map plays it back), then

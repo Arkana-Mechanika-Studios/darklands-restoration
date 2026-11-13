@@ -5,7 +5,7 @@ namespace Darklands.Content.Formats.Graphics;
 
 /// <summary>A CAT directory and its stored resource bytes.</summary>
 /// <remarks>
-/// Original 05D9:002A catalog lookup uses a count word and 24-byte entries:
+/// Original root 05D9:002A catalog lookup uses a count word and 24-byte entries:
 /// name[12], opaque DWORD, stored length DWORD, absolute offset DWORD.
 /// This resource reader does not select an actor's catalog or sprite.
 /// Stored lengths describe compressed bytes, not decoded image capacities.

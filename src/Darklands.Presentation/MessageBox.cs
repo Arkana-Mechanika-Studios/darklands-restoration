@@ -132,8 +132,8 @@ public sealed class MessageBox(GameUi ui)
 
     /// <summary>"Game Paused / Press a key to resume".</summary>
     // orig: root 0000:1080: sound-start(2), two text boxes ("Game Paused" at row 0x32 and "Press a key to resume" at mid-screen), getch(), both put back, sound-start(3); the flag DS:07D3 keeps a pause inside a pause from restoring early
-    // C: sound-start(2) / sound-start(3) bracket the pause (2 stops and 3 resumes the music? the numbers are sound-driver commands; sound-start(1) is "stop the music")
-    // C: what sound-start(2) and (3) do; they are not played here.
+    // C: sound-start(2) / sound-start(3) bracket the pause: 2 is GameSounds.Pause and 3 is GameSounds.Resume, sound-driver commands (sound-start(1) is "stop the music")
+    // C: HotKeys.Pause plays them around this box, so the box itself plays no sound.
     // C: root 0000:10AE pointer-hide (root 047C:12C3) before the boxes, 0x10E7 pointer-show (root 047C:1293) before getch, 0x10F1 hide
     //   again before the boxes are put back, 0x113A show: the pointer as it was (no shape set) stands over the boxes while the pause
     //   waits (over a battle, the battle's shape: BattleScreen); tests: ScreenInputTests

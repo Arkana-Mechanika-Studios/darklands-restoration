@@ -7,7 +7,7 @@ namespace Darklands.Core.Battles.Generation;
 /// the four level slots) with the records the mine generator reads and writes given names. The image stays whole bytes, so
 /// quirks that depend on the byte layout (stale fields, copies of single fields) behave as in the original.
 /// </summary>
-// orig: struct level (draft draft; offsets checked against the asm of the functions that use them)
+// orig: struct level (draft; offsets checked against the asm of the functions that use them)
 internal sealed class MineLevel(BattlefieldLevel level)
 {
     private const int HeightsAt = 0x1900;
@@ -89,7 +89,7 @@ internal sealed class MineLevel(BattlefieldLevel level)
         set => PutWord(0x1F4E, value);
     }
 
-    /// <summary>+0x1F52: how many door records the map has (the draft calls them r14).</summary>
+    /// <summary>+0x1F52: how many door records the map has.</summary>
     public int DoorCount => Image[0x1F52];
 
     /// <summary>A door record (+0x1F54): word 0 a flag (negative = no door piece), +8 and +9 the cell with its side flags.</summary>

@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R119+0x1FA4, R119+0x2046
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x2046 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 7, 8, 9 are never enabled (every assignment sets their flag to 0).
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 public sealed class FortressGuardpost : Card
 {

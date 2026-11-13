@@ -93,13 +93,7 @@ public sealed partial class CardContext
         set => State.BattleOrders.Result = value;
     }
 
-    // ---- random personal names -------------------------------------------------------
-
-    // RandomName (made-up-name) is shared: see CardContext.Memory.cs (PersonalNames supplies the name lists).
-
     // ---- the party roster (charactr.tmp) ----------------------------------------------
-
-    // DeleteMember (R037 3f30) is shared: see CardContext.Memory.cs.
 
     /// <summary>Told when a member leaves for good, so the roster can forget the character.</summary>
     public Action<int>? RosterLeave { get; set; }

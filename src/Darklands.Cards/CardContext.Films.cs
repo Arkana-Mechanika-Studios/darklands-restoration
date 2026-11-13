@@ -23,7 +23,7 @@ public sealed partial class CardContext
     public Core.World.Location? HerePlace => State.Here;
 }
 
-// ---- films (from helper w6) -------------------------------------------------------------
+// ---- films -------------------------------------------------------------------------------
 
 /// <summary>
 /// The full-screen films the cards can play (the game's closing sequence after Baphomet's

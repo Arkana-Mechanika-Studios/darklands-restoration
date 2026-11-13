@@ -38,6 +38,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     private int _town;
 
     // orig: R034+0x0EE6 and R034+0x11BC (background, fonts 1)
+    /// <summary>The F6 party information screen: the pointer over the small map names the nearest town, Tab and Shift-Tab step through the towns, any other key or the left button leaves.</summary>
     public void Show(GameState state)
     {
         // orig: R034+0x0F2D: pointer-shape-set(0, 0, DS:9C42) before the screen is drawn (GameUi.PointerHotSpot: F6 on the map leaves the

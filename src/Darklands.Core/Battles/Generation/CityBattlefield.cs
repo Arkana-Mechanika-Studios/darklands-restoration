@@ -7,7 +7,7 @@ namespace Darklands.Core.Battles.Generation;
 /// battlefield type.
 /// </summary>
 // orig: R010 1432 (18 functions; 9 byte-matched per the draft notes, the others "close");
-// spec: scratchpad B_battlefield_city.md, which checked 2030, 2B42 and 26F8 against
+// 2030, 2B42 and 26F8 checked against the asm
 public static class CityBattlefield
 {
     /// <summary>Builds the battlefield; returns the number of levels and sets the start level.</summary>

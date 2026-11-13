@@ -538,7 +538,7 @@ public sealed partial class TacticalBattle
         return true;
     }
 
-    /// <summary>DS:C28D / DS:C23E per animation slot: the enemy kind (index on the level) it shows and the levels that kind follows the party to.</summary>
+    /// <summary>DS:C28D / DS:C23E per animation slot: the enemy kind (index on the level) it shows and the floors that kind follows the party to.</summary>
     private readonly int[] _slotKind = new int[7];
     private readonly int[] _slotFollows = new int[7];
 

@@ -67,7 +67,8 @@ public sealed record MsgCardScannerValues(
 /// </summary>
 /// <remarks>
 /// This is a data-only byte observation. It is not an option row, renderer
-/// action, navigation command, or original scanner output table.
+/// action, navigation command, or original scanner output table. Nothing outside the parser reads
+/// these observations yet (<c>MsgCard.RawLowTextBytes</c> is only filled).
 /// </remarks>
 public readonly record struct MsgCardRawLowTextByte(
     int CardRelativeOffset,

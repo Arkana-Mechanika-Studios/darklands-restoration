@@ -17,8 +17,7 @@ namespace Darklands.Presentation;
 /// 1..5 give (Shift: the stack); dragging moves, readies or gives an item. A click on another
 /// member in the panel shows that member; on the same member, or Esc, leaves.
 /// </summary>
-// orig: member-sheet-screen R031+0x0124 (1462:0124) draft (the byte match: 1 compare-order line; an earlier port's check matched the
-//   bytes with an alias of `who` for the equality guard, the logic unchanged); tests: none (visual, headless)
+// orig: member-sheet-screen R031+0x0124 (1462:0124) draft (the bytes match except one compare order); tests: none (visual, headless)
 // DORMANT: R031+0x0000 (pack-screen-exit) opens the sheet from a state without the world data loaded and writes LOCS.TMP/EVENTS.TMP afterwards; nothing in this game opens the sheet that way.
 // DIVERGENCE: the pointer does not change to the hand pictures (handicon, handicn2) over lists; the menu bar (menu-bar-loop) comes with GameUi.Poll (MenuBar), its Alt keys through MenuBarKey.
 // orig: the combat branch of R031+0x0124 (DS:907A == 1 and the member on floor 0x9D: thunk 09C0:1D51 = R022+0x04E4) for a portrait

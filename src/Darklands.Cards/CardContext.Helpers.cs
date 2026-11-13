@@ -44,14 +44,10 @@ public sealed partial class CardContext
     /// </summary>
     public void RemoveMember(int slot) => PartyRules.RemoveFromParty(State, slot);
 
-    // DeleteMember (party-member-erase) is shared: see CardContext.Memory.cs.
-
     // orig: DS:A67C; tests: CardSmokeTests
     // C: the cached count (GameState.HirelingCount): set when a hireling joins, by the default party and by a load.
     /// <summary>The number of hirelings (members with a term), as the game counted them when one last joined.</summary>
     public int HirelingCount => State.HirelingCount;
-
-    // SetReputation (R029 19b4) is shared: see CardContext.Services.cs.
 
     /// <summary>
     /// The inn's party roster (R038+0x0000, PartyRosterScreen), supplied by the presentation; its argument is the register word the
@@ -80,10 +76,10 @@ public sealed partial class CardContext
     public bool BattleTargetSlain { get; set; }
 
     // orig: DS:A891; tests: CardSmokeTests
-    // C: cleared by the main loop after any screen but the map; who sets 1 and 3 is not traced. The same word as MapLeaveMode (GameState.MapLeaveMode); the two names come from the cards' readings of it.
+    // C: cleared by the main loop after any card but the map; the map sets 3 when it starts and after every step (a rest's steps too), and 1 while a rest has made no step yet (OverlandScreen.Rest). The same word as MapLeaveMode (GameState.MapLeaveMode); the two names come from the cards' readings of it.
     /// <summary>
     /// How the party came upon the place of an encounter: set by the travel map, 0 after any
-    /// other screen (1: the party was on its guard / spotted it first; 3: night camp).
+    /// other screen (3: after a step on the map; 1: during a rest before its first step).
     /// </summary>
     public int EncounterApproach
     {

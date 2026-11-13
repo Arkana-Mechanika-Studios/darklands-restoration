@@ -5,8 +5,8 @@
 /// </summary>
 /// <remarks>
 /// The original file starts with `num_cities`, followed by fixed 0x26E-byte
-/// city records. City-navigation token arms index this table through the
-/// current location selector and city record pointer.
+/// city records. The card rules do not read this table directly: WorldData.LoadCity
+/// copies a record of it for the current city.
 /// </remarks>
 public sealed record DarklandCities(
     string AssetName,

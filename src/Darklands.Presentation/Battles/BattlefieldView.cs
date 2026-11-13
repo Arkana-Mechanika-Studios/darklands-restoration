@@ -13,8 +13,7 @@ namespace Darklands.Presentation.Battles;
 /// </summary>
 // orig: floor-view-paint R017+0x0000 (1EF8:0000) draft; tests: BattlefieldViewTests
 // orig: R000+0x0114 (0E76:0114) draft (the slot screen-position tables, R136+0x415E..4b4a)
-// The wall-hiding and corner-variant conditions were checked against the asm (R017+0x01FD..0x029E)
-// and agree with an earlier port.
+// The wall-hiding and corner-variant conditions were checked against the asm (R017+0x01FD..0x029E).
 public sealed class BattlefieldView
 {
     /// <summary>Left edge of the view on the screen (the party panel is left of it).</summary>
@@ -88,6 +87,12 @@ public sealed class BattlefieldView
         }
     }
 
+    /// <summary>The frame (0, 1; −1 none) the renderer drew of the animated piece of a layer (0 north wall, 1 west wall, 2 floor) at a cell.</summary>
+    public Func<int, int, int, int>? PieceFrame { get; set; }
+
+    private RowRunSprite? Frame(TileDecoration decoration, int layer, int x, int y) =>
+        PieceFrame?.Invoke(layer, x, y) == 1 ? decoration.SecondFrame : decoration.Sprite;
+
     /// <summary>Draws the tiles of one cell.</summary>
     // C: R017+0x0000 also redraws the party panel and draws the loot piles of the cell between the floor and the west wall: the battle
     // screen draws the panel (BattleScreen.DrawPanel) and the piles (tb.LootPiles) itself. A missing tile clears DS:E22F and then DS:E230,
@@ -95,12 +100,6 @@ public sealed class BattlefieldView
     // here with no other effect. The animated decorations (EffectField.AnimatedPieces) show the
     // frame R014+0x6818 drew by lot for them (R014+0x8286..: 20A5:6EEA / 6F2A / 3474[n × 2 + roll-n(2)], the second frame
     // possibly none).
-    /// <summary>The frame (0, 1; −1 none) the renderer drew of the animated piece of a layer (0 north wall, 1 west wall, 2 floor) at a cell.</summary>
-    public Func<int, int, int, int>? PieceFrame { get; set; }
-
-    private RowRunSprite? Frame(TileDecoration decoration, int layer, int x, int y) =>
-        PieceFrame?.Invoke(layer, x, y) == 1 ? decoration.SecondFrame : decoration.Sprite;
-
     public void DrawSlot(Canvas canvas, BattlefieldLevel level, BattlefieldTiles tiles, int row, int column)
     {
         var (dx, dy) = SlotOffset(row, column);

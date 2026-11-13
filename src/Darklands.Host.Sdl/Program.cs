@@ -9,11 +9,8 @@ using Darklands.Presentation;
 using Darklands.Rendering;
 
 // Darklands, on SDL3.
-//   DarklandsRP [game folder] [--settings file] [--write-settings file] [--sdl path\SDL3.dll] [--screenshots folder]
-//                      [--no-audio] [--sound adlib|sb|sbpro2|mt32|cm32l|speaker|none] [--mt32-roms folder] [--saves folder]
-//                      [--text-font file] [--no-banner] [--no-intro] [--scale N | --resolution WxH] [--fullscreen] [--no-console] [--log-window]
-//                      [--hd-pack folder] [--clean-drawing] [--audio-pack folder] [--soundfont file] [--mod folder-or-name ...] [--setup | --no-launcher] (or hold Shift as it starts for the launcher)
-//                      [--version] [--sound-test] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
+//   DarklandsRP [game folder] [options] [-- <the game's DOS command line: -Q, -O, -A<letter>>]
+// The options are listed by --help (CommandLineUsage.Text); hold Shift as the program starts for the launcher.
 // --sound-test checks the sound without the game window: SDL's audio driver and devices, beeps through each way of feeding SDL,
 // then a little of the game's
 // music on the card the settings choose, each with a plain verdict (SoundCheck). DARKLANDS_AUDIO_MODE=queue or native feeds the

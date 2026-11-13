@@ -5,10 +5,10 @@ namespace Darklands.Core.Battles;
 /// <summary>The to-hit result of one attack (<c>hit-roll</c>).</summary>
 public enum HitResult
 {
-    /// <summary>No blow this tick (the attack-rate roll failed), or a plain miss.</summary>
+    /// <summary>No blow this tick (the attack-rate roll failed), or a plain miss; the caller tells them apart (Attack: hasMissSequence).</summary>
     None = 0,
 
-    /// <summary>Parried or dodged.</summary>
+    /// <summary>Parried or dodged; also the result of a roll above the chance, a plain failed attack against the target's defence.</summary>
     Parried = 1,
 
     /// <summary>A clean hit.</summary>
@@ -428,6 +428,7 @@ public static class Attacks
     // orig: damage-resolve R014+0xAE1E (18BF:098E) draft (byte-matched per the draft notes); checked against asm; tests: Oracle:battle.json
     // C: the function ends with party-panel-row-set(0x100) (R014+0xAEC1..0xAEC4), skipped by the early return of a combatant that is not able
     // (R014+0xAE36 jumps past it): true tells the caller that the panel rows are drawn anew (the battle screen's RowChanged(-1)).
+    // Returns false when the combatant is not able (nothing is applied).
     public static bool ApplyDamage(Battle battle, int i)
     {
         var c = battle[i];

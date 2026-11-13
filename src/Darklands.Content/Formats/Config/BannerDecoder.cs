@@ -10,9 +10,6 @@ public sealed class BannerDecoder
     /// <summary>
     /// Decodes a BANNER.DAT stream into the current banner table model.
     /// </summary>
-    /// <remarks>
-    /// This is format provenance. Engine startup code records where BANNER.DAT is opened.
-    /// </remarks>
     public Banner Decode(Stream stream)
     {
         if (stream is null)
@@ -28,9 +25,6 @@ public sealed class BannerDecoder
     /// <summary>
     /// Decodes BANNER.DAT offset-table entries and inline attribute/text tokens.
     /// </summary>
-    /// <remarks>
-    /// This method models the file format contract; it is not itself an original engine routine.
-    /// </remarks>
     public Banner Decode(ReadOnlySpan<byte> bytes)
     {
         var entryCount = Banner.Current48307EntryCount;

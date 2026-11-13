@@ -4,9 +4,9 @@ using static Darklands.Persistence.RecordBytes;
 
 namespace Darklands.Persistence;
 
-/// <summary>An event's 0x30-byte record (EVENTS.TMP, a saved game) ↔ <see cref="TimedEvent"/>: all 24 words are named.</summary>
+/// <summary>An event's 0x30-byte record (EVENTS.TMP, a saved game) ↔ <see cref="TimedEvent"/>: every word is read into a TimedEvent field (Extra and Data1..Data3 are working names).</summary>
 // orig: struct event: type0 +00, created hour/day/month/year +02..+08, start +0A..+10, end +12..+18,
-// owner f1a, location f1c, value f1e, extra f20, kind +22, flags f24, handler f26, tag f28, data f2a/f2c/f2e, as
+// owner +1A, location +1C, value +1E, extra +20, kind +22, flags +24, handler +26, tag +28, data +2A/+2C/+2E, as
 // R029+0x3034 (0E76:3034) matched fills them; tests: OriginalSaveTests
 public static class EventRecords
 {

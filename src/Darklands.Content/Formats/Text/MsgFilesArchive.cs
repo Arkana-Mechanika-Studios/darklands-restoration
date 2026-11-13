@@ -4,10 +4,9 @@ namespace Darklands.Content.Formats.Text;
 /// Decoded catalog and retained payload bytes from the original <c>MSGFILES</c> archive.
 /// </summary>
 /// <remarks>
-/// The catalog shape comes from the file-format KB and is independently
-/// correlated with the original loader surface that reads selected payloads
-/// into <c>DS:A895</c>. This type is data only; it does not choose a card,
-/// publish rows, or route city navigation.
+/// The catalog shape is checked against the original loader that reads selected payloads
+/// (text-bank-read, R043+0x020E) into <c>DS:A895</c>. This type is data only; it does not choose
+/// a card, publish rows, or route city navigation.
 /// </remarks>
 public sealed class MsgFilesArchive
 {

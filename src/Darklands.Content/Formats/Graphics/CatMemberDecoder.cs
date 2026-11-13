@@ -4,7 +4,7 @@ namespace Darklands.Content.Formats.Graphics;
 
 /// <summary>Decodes a terminal CAT compression chunk into resource bytes.</summary>
 /// <remarks>
-/// Resource transformation from original 05D9:0070..0199. Control bits are read
+/// Resource transformation from original root 05D9:0070..0199. Control bits are read
 /// least significant first, with a word refill before consuming the last bit.
 /// Short and long matches copy forwards and can overlap. Extended length zero
 /// terminates; extended length one ends a chunk, and the next one follows it.

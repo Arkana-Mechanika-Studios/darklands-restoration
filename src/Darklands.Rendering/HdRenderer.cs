@@ -20,7 +20,7 @@ namespace Darklands.Rendering;
 /// <para>Palette effects: for an asset whose own colours are known (<see cref="ScreenOwners.OwnColorsOf"/>: pictures), each
 /// pixel's own colour is compared with the colour shown; where the palette (a fade) or a recolour changed it, the
 /// replacement goes through the same change (<see cref="PaletteEffect"/>). Assets without known colours (sprites:
-/// recoloured figures, markers) keep their replacement's colours; later work.</para>
+/// recoloured figures, markers) keep their replacement's colours (a known limit: they get no palette effect).</para>
 /// New code (replacement graphics, not part of the game). Deterministic: the same screen and pack give the same items.
 /// </remarks>
 public sealed class HdRenderer(HdPack pack)

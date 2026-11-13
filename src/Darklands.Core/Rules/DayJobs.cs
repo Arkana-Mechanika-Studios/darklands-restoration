@@ -58,7 +58,7 @@ public static class DayJobs
     ];
 
     // orig: R036+0x197E
-    // BUG: the second contents test is written `!cats2 & city.cats`, so a job with cats2 != 0 is never open.
+    // BUG: the second contents test is written `!otherContents & city.Contents`, so a job with OtherContents != 0 is never open.
     // C: val is not reset for a filtered job; the stale value cannot beat best (it was already compared), so skipping is equivalent.
     // C: city ordinal % 4 and standing / 20 are C int division (truncation toward zero, as in C#).
     /// <summary>
@@ -67,7 +67,7 @@ public static class DayJobs
     /// (attribute − minimum) / 3) × max(9, city size) × pay / 70, a skill term being 1 below 4
     /// over the minimum, else √(excess) in 1..9. Below 2 pfennigs the member is a "Day Laborer"
     /// for 2. Faithful quirk: a job needing <see cref="Job.OtherContents"/> is never open (the
-    /// original tests <c>!set &amp; contents</c>).
+    /// original tests <c>!otherContents &amp; city.Contents</c>).
     /// </summary>
     public static (int Pay, string Name) Best(GameState s, int member)
     {

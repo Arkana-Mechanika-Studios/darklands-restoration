@@ -43,13 +43,6 @@ public static class Storing
         }
     }
 
-    /// <summary>
-    /// Puts one item of the member's pack entry <paramref name="index"/> into the store; returns
-    /// the member's stack count. As in the original the entry may be past the last stack (a lit
-    /// row past the end): its stale code and quality go into the store and it loses an item.
-    /// </summary>
-    // orig: stash-screen-keys R035+0x0A46 (1462:0A46) matched, case P (0x1950/0x1970): stash-put then item-take-single-overlay-entry; tests: TradingAndLootTests
-    // C: the screen checks only that party[who].nitems is not 0 (a count of -1 passes); the entry is read whatever the count (Pack).
     /// <summary>The message of a refused Put (a place cannot hold more stores or entries).</summary>
     // DIVERGENCE: own text (the original has none, its Put never refuses): shown by the item store screen when OriginalBehaviour.FixCacheStoreLimit (data safety) refuses a Put; the item stays in the pack.
     public const string NoRoomMessage = "The innkeeper has no room for more.";
@@ -61,6 +54,13 @@ public static class Storing
         return s.ItemStores.CanPut(place, s.Locations, store, item.Code & 0xFFF, item.Quality, s.Behaviour);
     }
 
+    /// <summary>
+    /// Puts one item of the member's pack entry <paramref name="index"/> into the store; returns
+    /// the member's stack count. As in the original the entry may be past the last stack (a lit
+    /// row past the end): its stale code and quality go into the store and it loses an item.
+    /// </summary>
+    // orig: stash-screen-keys R035+0x0A46 (1462:0A46) matched, case P (0x1950/0x1970): stash-put then item-take-single-overlay-entry; tests: TradingAndLootTests
+    // C: the screen checks only that party[who].nitems is not 0 (a count of -1 passes); the entry is read whatever the count (Pack).
     public static int Put(GameState s, StoreTable store, int member, int index)
     {
         var pack = s.Party.Slot(member).Pack;

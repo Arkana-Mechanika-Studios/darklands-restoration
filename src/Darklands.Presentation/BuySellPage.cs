@@ -13,7 +13,7 @@ namespace Darklands.Presentation;
 /// part of the page the pointer is over. Coordinates are the original's.
 /// </summary>
 // orig: the page code the three overlays copy: barter (R032), item cache (R035) and loot (R040); the hit rectangles and the hover code are identical in trade-screen-entry R032+0x0000, stash-screen R035+0x0000 and R040+0x01C8
-// C: the C tests are strict (x > 0x50 && x < 0xE6 ...); rows are (y − top) / 8 or >> 3, as written.
+// C: the original's hit tests are strict (x > 0x50 && x < 0xE6 ...); rows are (y − top) / 8 or >> 3, as written.
 public sealed class BuySellPage(GameUi ui, PartyPanel panel)
 {
     /// <summary>Normal text (and the active menu line).</summary>

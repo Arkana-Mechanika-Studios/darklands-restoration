@@ -28,7 +28,7 @@ public readonly record struct SaintInfo(int FeastDay, int Background, int MinFav
 /// The 136 saints' table values, in saint order (the order of DARKLAND.LST and of the
 /// members' saint bits). Derived from the game's saint functions and its saint table.
 /// </summary>
-// orig: what 0..6 (t[0..6]) of the saint functions R039 seg 165C named per saint in SaintBook (R039, matched); tests: Oracle:saints.json (every value of all 136 functions and of the two unlisted ones)
+// orig: what 0..6 (t[0..6]: feast day, background, min favor, max favor, min virtue, base chance, use) of the saint functions R039 seg 165C named per saint in SaintBook (R039, matched); tests: Oracle:saints.json (every value of all 136 functions and of the two unlisted ones)
 // C: St.Charity (R039+0x31FA) is the only saint with t6 = 3; St.Paul the Simple's table values recur in the
 //   unlisted R039+0x9578.
 public static class SaintTable
@@ -40,6 +40,7 @@ public static class SaintTable
 
     public static SaintInfo Of(int saint) => Saints[saint];
 
+    // Columns of every row: the SaintInfo fields (FeastDay, Background, MinFavor, MaxFavor, MinVirtue, BaseChance, Use).
     private static readonly SaintInfo[] Saints =
     [
         new(335, 2, 15, 99, 43, 25, 1),   // 0

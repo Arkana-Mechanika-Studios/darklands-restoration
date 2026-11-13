@@ -16,7 +16,7 @@ public sealed class UnfinishedCityGate_CityG07 : Card
     {
         Show(c, Picture);
         c.Next = Number;
-        // the card sets the engine word DS:EE70 to 15 (other cards 0), meaning unknown; not modelled.
+        // the card sets the engine word DS:EE70 to 15 (other cards 0); the S119 cards describe DS:EE70 / DS:EE72 as the pop-up boxes' drawing flags, so this is presentation only, not modelled.
         // orig: R093+0x05CA (1838:05CA) matched (option and pop-up reset)
         c.SetCardSaints();
         c.SetCardItems();

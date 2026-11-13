@@ -7,7 +7,7 @@ namespace Darklands.Core.Battles.Tactics;
 /// path. A path is a list of step bytes (direction 0..9; after packing the high nibble is the
 /// facing), 0xFF terminated.
 /// </summary>
-// orig: R014 12F7 draft (the draft keeps raw names: "gamenames: off"); spec D §4.5..4.8, the tracker
+// orig: R014 12F7 draft; spec D §4.5..4.8, the tracker
 // rules and tables asm-verified there
 public sealed class PathFinder
 {
@@ -86,9 +86,9 @@ public sealed class PathFinder
     /// </summary>
     /// <param name="steps">The walking step tables of the combatant's animation set.</param>
     /// <param name="openDoors">For enemies: opens the unlocked closed doors for the search and restores them afterwards (spec D §4.5).</param>
+    /// <param name="tracked">Runs once the trackers found a path of at least one step (its straight waypoints dropped), before the shortcuts.</param>
     // orig: route-search R014+0x481A (12F7:000A) draft; tests: Oracle:path.json (60 searches)
     // DIVERGENCE: the busy cursor and the stopped clock (DS:07D3) during the search are the screen's.
-    /// <param name="tracked">Runs once the trackers found a path of at least one step (its straight waypoints dropped), before the shortcuts.</param>
     public bool Find(Battle battle, int who, sbyte[] stepX, sbyte[] stepY, Action<bool>? openDoors = null, Action? tracked = null)
     {
         var c = battle[who];

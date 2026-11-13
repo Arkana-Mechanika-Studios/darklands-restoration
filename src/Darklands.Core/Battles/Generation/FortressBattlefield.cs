@@ -13,7 +13,7 @@ public static class FortressBattlefield
     private const int Buffers = 4;
     private const int Size = BattlefieldLevel.Size;
 
-    // The level image's records, by offset (the draft's struct level). The names are the draft's, with a meaning where known.
+    // The level image's records, by offset (the draft's struct level).
     private const int FloorAt = 0x1900;
     private const int LevelNumberAt = 0x1F40;
     private const int ExitCardsAt = 0x1F42;

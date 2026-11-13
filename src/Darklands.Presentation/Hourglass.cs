@@ -10,7 +10,7 @@ namespace Darklands.Presentation;
 /// </summary>
 internal static class Hourglass
 {
-    // orig: hourglass-wait(hours) R043+0x3494 (150B:2A04) draft (bytes match): hours /= 3, nothing for 0; waits for the left button to be up; card-text-window->color = 14; gfx-rect-recolour(card-text-window, 0x3c, 0x32, 0x78, 0x66, 0, 5), the box area saved (gfx-rect-save), the dial DS:A62A (pics	imer01.pic) at window (0x3c, 0x32); one step per three hours from hour-now / 3, day-now, month-now: past the eighth band the day goes on (month-length-table, the month wraps after 11), then `if (!key-waiting-test() && !(mouse-button-state & 1))` the frame (hourglass-animation-frame(band % 8)), the bell, day and month, and thunk 09C0:1FEF(400, 0) = wait-ticks(400); after the steps the last frame and texts are drawn again and, unless a key or the button is down, wait-ticks(1000); a waiting key is eaten; the box is put back and gfx-rect-recolour(…, 5, 0)
+    // orig: hourglass-wait(hours) R043+0x3494 (150B:2A04) draft (bytes match): hours /= 3, nothing for 0; waits for the left button to be up; card-text-window->color = 14; gfx-rect-recolour(card-text-window, 0x3c, 0x32, 0x78, 0x66, 0, 5), the box area saved (gfx-rect-save), the dial DS:A62A (pics\timer01.pic) at window (0x3c, 0x32); one step per three hours from hour-now / 3, day-now, month-now: past the eighth band the day goes on (month-length-table, the month wraps after 11), then `if (!key-waiting-test() && !(mouse-button-state & 1))` the frame (hourglass-animation-frame(band % 8)), the bell, day and month, and thunk 09C0:1FEF(400, 0) = wait-ticks(400); after the steps the last frame and texts are drawn again and, unless a key or the button is down, wait-ticks(1000); a waiting key is eaten; the box is put back and gfx-rect-recolour(…, 5, 0)
     // C: key-waiting-test() only looks: once a key waits, every later step draws and waits nothing (the bands still count on, so the last frame shows the end of the time), and the key is eaten at the end. The delays themselves look at nothing.
     // C: the recolouring around the save (0 -> 5 before, 5 -> 0 after) turns the box area's colour-5 pixels into colour 0 when the box goes away.
     // C: while a card's picture waits on the off-screen page (GameUi.HoldScreen) the dial is drawn into the screen that is shown (GameUi.ShownCanvas), over the previous card's screen; the waits do not release it (they read nothing)
@@ -89,7 +89,7 @@ internal static class Hourglass
     // orig: hourglass-animation-frame(k) R043+0x37CA (150B:2D3A) draft (code identical, only the jump table's place differs):
     // root 047C:055F(card-text-window, 0x6c, 0x53, w, h, pic) with (w, h, pic) = (0x18, -0x14, DS:A62E) for 0,
     // (-0x18, -0x14, DS:A630), (-0x18, 0x14, DS:A632), (-0x18, 0x14, DS:A630), (0x18, 0x14, DS:A62E),
-    // (0x18, 0x14, DS:A630), (0x18, 0x14, DS:A632), (0x18, -0x14, DS:A630) for 7 (DS:A62E/DS:A630/DS:A632 = pics	imer03/04/05.pic);
+    // (0x18, 0x14, DS:A630), (0x18, 0x14, DS:A632), (0x18, -0x14, DS:A630) for 7 (DS:A62E/DS:A630/DS:A632 = pics\timer03/04/05.pic);
     // then hourglass-wait R043+0x3494 (150B:2A04) after each frame (0x35A5..0x3655, 0x3697..0x3746):
     // gfx-rect-fill colour 0 at (0x48, 0x82, 0x28, 8), (0x84, 0x82, 0xc, 8), (0xa0, 0x82, 0xc, 8) and text-paint-far-string
     // of bell-time-labels[time-of-day-band(k * 3)], itoa(day), itoa(month + 1) at x 0x48, 0x84, 0xa0, y 0x82, colour 14

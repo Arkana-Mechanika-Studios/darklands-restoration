@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R123+0x1C7C, R123+0x1D1E
 // DORMANT (generated): option slots 10..19 keep the default handler R123+0x1D1E ("screwed up.") and are never shown.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 public sealed class SabbatFairFromTheHill : Card
 {
     public override int Number => 318;

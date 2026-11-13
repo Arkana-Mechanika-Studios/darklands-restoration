@@ -36,7 +36,7 @@ public static class GameSounds
     public const int CurrentPiece = 5;
 
     /// <summary>Silence (the city menus).</summary>
-    // C: named after the music player's song notes ("6 silence"); called by the city cards
+    // C: number 6 is silence; called by the city cards
     //   ($CityG00, $MainS01, $citys01, $Raubi02 ...).
     public const int Silence = 6;
 

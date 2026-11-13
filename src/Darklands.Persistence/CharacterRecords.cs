@@ -13,7 +13,7 @@ namespace Darklands.Persistence;
 // (party[] = combatants + 0x14, DS:9C69) as the rules use them (Character, CombatantRecords); tests: OriginalSaveTests
 // C: party-relative offsets in the rules are record offsets − 0x14 (party[i][1] is the shield letter at record +0x15).
 // C: the short name field runs into the weapon potion byte (+0x48): a nickname of 10 letters ends on it, as the original's strcpy reads it.
-// C: the bytes this model does not name (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A,
+// C: the bytes this model does not name as Character fields, some of which CombatantRecords names as combatant fields (+0x02..+0x11 combat position and orders, +0x16, +0x18..+0x21, +0x23, +0x4A,
 // +0x4D/+0x4E, +0x52..+0x54, +0x56/+0x57, +0x59, +0x7F) are kept as read (Character.OriginalRecord): R037+0x2ACE writes the 0x80 + 0x14 +
 // 0x16 + 0x180 bytes raw; a character made by this program carries the bytes the generator's reset writes (CharacterCreation.ResetRecord,
 // R037+0x675A; tests CharacterCreationTests.TheMadeCharacterKeepsTheResetRecordsBytes, OriginalSaveTests.AMadeCharacterIsWrittenWithTheResetRecordsBytes).
@@ -69,7 +69,7 @@ public static class CharacterRecords
             Name = Text(r, NameAt, NameLength),
             ShortName = Text(r, ShortNameAt, ShortNameLength),
             WeaponPotions = r[WeaponPotionsAt],
-            // C: member-tiredness is a signed char (cbw).
+            // C: the byte the original calls member-tiredness (the rules call it Encumbrance) is a signed char (cbw).
             Encumbrance = (sbyte)r[EncumbranceAt],
             ArmourPotions = r[ArmourPotionsAt],
             FirewallStrength = r[FirewallAt],
@@ -88,7 +88,7 @@ public static class CharacterRecords
         {
             c.Skills[k] = r[SkillsAt + k];
         }
-        // C: the stack count is the signed char at +0x7E (party[].nitems); all 64 entries are read, the stale ones past the count too.
+        // C: the stack count (Pack.Stacks) is the signed char at +0x7E (party[].nitems); all 64 entries are read, the stale ones past the count too.
         for (var i = 0; i < Character.PackSize; i++)
         {
             var e = r.Slice(PackAt + ItemSize * i, ItemSize);

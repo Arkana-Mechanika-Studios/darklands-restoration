@@ -6,7 +6,7 @@ namespace Darklands.Cards;
 /// </summary>
 public interface IGameScreens
 {
-    /// <summary>A shop: <paramref name="shop"/> 0..8 city shop quality slot, −1 none, −2 pawnshop; <paramref name="categories"/> item category mask.</summary>
+    /// <summary>A shop: <paramref name="shop"/> 0..11 city shop quality slot (CardContext.ShopNames has 12 slots), −1 none, −2 pawnshop; <paramref name="categories"/> item category mask.</summary>
     void Barter(int shop, string name, long categories);
 
     /// <summary>Camping, an inn residence or sleeping rough (mode 0 inn, 1 wilderness, 2 other lodging, 3 rough).</summary>

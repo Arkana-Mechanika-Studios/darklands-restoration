@@ -21,7 +21,7 @@ public sealed partial class Combatant
         Index = index;
     }
 
-    /// <summary>Slot 0..12 (+0x1C for enemies).</summary>
+    /// <summary>Combatant number 0..12: 0..4 the party, 5..12 the enemies (+0x1C for enemies).</summary>
     public int Index { get; }
 
     public bool IsPartyMember => Index < PartySlots;
@@ -58,11 +58,11 @@ public sealed partial class Combatant
     /// <summary>
     /// +0x20: fighting value with the readied weapon (skill adjusted for strength and the
     /// weapon's minimum skill), used by the close-combat chance on both sides.
-    /// C: The name is not established (the draft calls it "def").
+    /// C: The name is not established.
     /// </summary>
     public byte FightingValue { get; set; }
 
-    /// <summary>+0x21: the lesser-penalised skill value, used by the missile chance. The name is not established (the draft's "atk").</summary>
+    /// <summary>+0x21: the aiming value with the readied weapon (skill less the strength and skill shortfalls), used by the missile chance. The name is not established.</summary>
     public byte AimingValue { get; set; }
 
     /// <summary>+0x22: the readied weapon's type (−1 none); for party members the missile weapon slot.</summary>
@@ -74,7 +74,7 @@ public sealed partial class Combatant
     /// <summary>+0x24: halved and added to the armour quality against armour-piercing blows. Meaning not established.</summary>
     public sbyte PiercingResistance { get; set; }
 
-    /// <summary>+0x0C: the readied weapon's last table value (missile range?). UNCERTAIN.</summary>
+    /// <summary>+0x0C: the readied weapon's last table value (CombatTables.WeaponRange; missile range?), read by the aiming delay (TacticalBattle.Actions). UNCERTAIN.</summary>
     public sbyte WeaponRange { get; set; }
 
     /// <summary>+0x0D: the quality the damage roll compares with armour quality (weapon or missile quality).</summary>

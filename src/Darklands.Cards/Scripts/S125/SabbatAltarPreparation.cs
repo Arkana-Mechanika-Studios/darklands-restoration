@@ -9,7 +9,7 @@ namespace Darklands.Cards.Scripts;
 /// Refusing, the party may slip away or pray to purify the place (a failed prayer brings an
 /// old man to ask what they are saying: attack him or talk, better with the initiator's cap);
 /// helping, they draw the pentagrams or sabotage the altar. Everything ends back on the field
-/// (0x142), or at 0x14E after a lost fight.
+/// (0x142, HighSabbatField), or at 0x14E (WokenAfterTheSabbat) after a lost fight.
 /// </summary>
 // orig: R125+0x18A8 (19C2:0008) matched; tests: CardSmokeTests
 //   option 0: action R125+0x1BB8; hint R125+0x1BE0
@@ -30,7 +30,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT (generated): option slots 10..19 keep the default handler R125+0x22B6 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 public sealed class SabbatAltarPreparation : Card
 {
     public override int Number => 326;

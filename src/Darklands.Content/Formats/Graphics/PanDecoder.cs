@@ -14,8 +14,8 @@ public sealed class PanDecoder
     /// Decodes a PAN stream into the solved logical animation model.
     /// </summary>
     /// <remarks>
-    /// This is format provenance, not a segment routine: 0DFC:0070-style expansion is represented
-    /// inside the private logical-stream decoder, while playback behavior belongs to Engine 0B2E.
+    /// The 0DFC:0070-style expansion is done inside the private logical-stream decoder; playback is
+    /// the presentation layer's.
     /// </remarks>
     public Pan Decode(string assetName, Stream stream)
     {
@@ -37,9 +37,6 @@ public sealed class PanDecoder
     /// <summary>
     /// Decodes PAN bytes into header, palette, frame records, and replayed indexed frames.
     /// </summary>
-    /// <remarks>
-    /// This method models the file format contract; it is not itself an original engine routine.
-    /// </remarks>
     public Pan Decode(string assetName, ReadOnlySpan<byte> bytes)
     {
         if (string.IsNullOrWhiteSpace(assetName))

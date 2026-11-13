@@ -95,6 +95,7 @@ public sealed class DarklandCitiesDecoder
                 ReadUInt16(data, offset + 0x10)
             },
             ReadUInt16(data, offset + 0x18),
+            // the contents word is the one word of the record stored big-endian; the others are little-endian
             ReadUInt16BigEndian(data, offset + 0x1E));
     }
 

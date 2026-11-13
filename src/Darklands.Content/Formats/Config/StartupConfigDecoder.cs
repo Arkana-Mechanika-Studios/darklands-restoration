@@ -11,9 +11,6 @@ public sealed class StartupConfigDecoder
     /// <summary>
     /// Decodes a CONFIG.DRK stream as the current 8-byte startup configuration record.
     /// </summary>
-    /// <remarks>
-    /// This is format provenance. Engine startup code records where CONFIG.DRK is opened.
-    /// </remarks>
     public StartupConfig Decode(Stream stream, string resourceName = DefaultResourceName)
     {
         if (stream is null)
@@ -52,9 +49,6 @@ public sealed class StartupConfigDecoder
     /// <summary>
     /// Decodes the four little-endian CONFIG.DRK words into the startup config model.
     /// </summary>
-    /// <remarks>
-    /// This method models the file format contract; it is not itself an original engine routine.
-    /// </remarks>
     public static StartupConfig DecodeBytes(ReadOnlySpan<byte> bytes, string resourceName = DefaultResourceName)
     {
         if (bytes.Length != ConfigByteLength)

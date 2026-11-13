@@ -72,7 +72,7 @@ public sealed partial class TacticalBattle
     private int _throwPotion, _throwQuality;
     private bool _throwAtTargetOnly;
 
-    /// <summary>DS:C600: the members do not block the ground cursor's collision test (set around the throw's test).</summary>
+    /// <summary>Order mode is on and a member is chosen.</summary>
     private bool OrderModeOn => Selected != -1 && _orderMode;
 
     private bool _orderMode;

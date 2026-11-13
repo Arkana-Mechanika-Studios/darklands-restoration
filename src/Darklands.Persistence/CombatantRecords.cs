@@ -118,7 +118,7 @@ public static class CombatantRecords
         }
     }
 
-    /// <summary>The animation bytes of the record the battle keeps running (+0x18 pose, +0x1B frame, +0x1E/+0x1F step and frame delays).</summary>
+    /// <summary>The animation bytes of the record the battle keeps running (+0x18 pose, +0x1B frame, +0x1E/+0x1F step and frame delays); writing also puts +0x0E, the near pointer to the info block of the pose, which reading does not take back.</summary>
     // orig: struct cbt +0x18, +0x1B, +0x1E, +0x1F (a party member's are saved with its character record in a battle)
     public static void WriteAnimation(Combatant c, Span<byte> r)
     {

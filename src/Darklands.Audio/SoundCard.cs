@@ -102,7 +102,7 @@ public sealed record SoundSetup(
     byte[] BattleDriver,
     RolandModule Module = RolandModule.Mt32)
 {
-    /// <summary>The towns-and-map and battle drivers' names and dates (offset 10h of their images).</summary>
+    /// <summary>The towns-and-map driver's name and date (offset 10h of its image; the battle driver's is not included).</summary>
     public string Signature => DriverImage.Signature(TownsDriver).TrimEnd();
 
     /// <summary>The game's choice: CONFIG.DRK's card (none: "n") and the driver files of its letter.</summary>

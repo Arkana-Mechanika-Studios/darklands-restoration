@@ -6,7 +6,7 @@ namespace Darklands.Launcher;
 /// <summary>
 /// The launcher's one screen, in the look of the original game's menus: the title and the release notes and the project's
 /// note on parchment at the left, the settings on a blue panel at the right, everything framed in rope. Laid out on a
-/// 1080x640 design and scaled to the surface.
+/// 1280x720 design (DesignWidth, DesignHeight) and scaled to the surface.
 /// </summary>
 internal sealed class LauncherScreen
 {

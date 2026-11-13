@@ -122,6 +122,7 @@ public sealed class Battle
     /// <summary>The party whose leader is the battle's (null: the battle keeps its own, as in tests).</summary>
     public Characters.Party? LeaderOf { get; init; }
 
+    /// <summary>The member the keys move, DS:17B0 (kept apart from Leader, the party's leader).</summary>
     public int ActiveMember { get; set; }
 
     /// <summary>
@@ -177,7 +178,7 @@ public sealed class Battle
 /// <summary>The clouds of spells and potions that block missiles and hamper shooters.</summary>
 public interface IEffectClouds
 {
-    /// <summary><c>cloud-on-line-test</c> (R014 1EC9:0142): the line from a to t crosses a cloud.</summary>
+    /// <summary><c>cloud-on-line-test</c> (R014 1EC9:0142): the line from the attacker to the target crosses a cloud.</summary>
     bool LineCrossesCloud(int attacker, int target);
 
     /// <summary>R014 0E76:469E per cloud: combatant i stands inside one of the clouds (counted in order; the original stops at the first).</summary>

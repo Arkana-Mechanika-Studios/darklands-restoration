@@ -112,7 +112,7 @@ public sealed class CampStay
 
     // orig: R036+0x1D24 (1462:1D24) draft (bytes match); the same scan repeated inline in R036+0x0082 and R036+0x147A
     // BUG: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
-    /// <summary>The names of the skills taught here, in list order (the teacher box).</summary>
+    /// <summary>The skills taught here (skill numbers), in list order (the teacher box); it also fills the row table the way the original does.</summary>
     public List<int> TeacherList()
     {
         var skills = new List<int>();

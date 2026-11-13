@@ -72,7 +72,7 @@ public static class BattleImages
 /// HITSEQ.DTA: per weapon animation code (56 codes, listed in the program at DS:1836) the attack
 /// sequence, the aim/parry sequence, three frames for the miss sequences, and their lengths.
 /// </summary>
-// orig: R002+0x1750 (0E76:1750) draft loads it; sprite-file-read R014+0x3D2C selects a row (spec E §1.6)
+// orig: R002+0x1750 (0E76:1750) draft loads it; sprite-file-read R014+0x3D2C selects a row
 public sealed class HitSequences
 {
     private readonly Dictionary<string, HitRow> _rows;
@@ -97,7 +97,7 @@ public sealed class HitSequences
 }
 
 /// <summary>ENEMYPAL.DAT: 71 enemy colour schemes, each 16 colours for one of the ranges 32, 48 or 64, and an optional colour cycle.</summary>
-// orig: enemy-placement-entry R025+0x0000 (1EF8:0000) draft applies them (spec E §1.8)
+// orig: enemy-placement-entry R025+0x0000 (1EF8:0000) draft applies them
 public sealed class EnemyPalettes
 {
     private readonly byte[] _data;

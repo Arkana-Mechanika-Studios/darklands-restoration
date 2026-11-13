@@ -9,7 +9,7 @@ namespace Darklands.Core.Battles.Generation;
 /// rectangles and the door tables all move with the map.
 /// </summary>
 // orig: map-step R004+0x21BA (1091:000A) draft (9 of 13 functions byte-matched per the draft
-// notes; 0604, 0800, 0CCA and 1126 re-read against the asm by the spec, scratchpad A_battlefield_wild.md §13)
+// notes; 0604, 0800, 0CCA and 1126 re-read against the asm)
 public static class MapTurn
 {
     private const int Span = 0x140;

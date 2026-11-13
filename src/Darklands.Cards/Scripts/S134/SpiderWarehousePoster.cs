@@ -28,7 +28,7 @@ namespace Darklands.Cards.Scripts;
 //     R134+0x0B92
 //   other: R134+0x082A, R134+0x08CC
 // DORMANT (generated): option slots 10..19 keep the default handler R134+0x08CC ("screwed up.") and are never shown.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C (generated): DS:270F as an argument is the immediate 0x270F = 9999 (forever, EventLog.Forever), printed as a symbol.
 // C: limit-to-range(lo, hi, v) is Math.Clamp(v, lo, hi) here; every call has lo <= hi.
 public sealed class SpiderWarehousePoster : Card

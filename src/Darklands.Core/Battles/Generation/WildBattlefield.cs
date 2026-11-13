@@ -7,7 +7,7 @@ namespace Darklands.Core.Battles.Generation;
 /// a reinforcement spot, at markers chosen by the battlefield type.
 /// </summary>
 // orig: R008 1432 (16 functions; 7 byte-matched per the draft notes, 4 differ only in jump-table layout,
-// 5 "close"); spec: scratchpad A_battlefield_wild.md, which re-read every function against
+// 5 "close"); every function re-read against the asm
 public static class WildBattlefield
 {
     private static readonly string[] FamilyNames = ["---", "gen", "mtn", "msh", "spc", "sab", "gat", "wal"];

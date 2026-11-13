@@ -271,7 +271,7 @@ public readonly record struct BattlefieldObject(int X, int Y, int Width, int Hei
     public MapPoint Centre => new(X + 16, Y + 8);
 }
 
-/// <summary>The cards a level leads to (floor image +0x1F42 won, +0x1F44 ?, +0x1F46 fled, +0x1F48 lost, +0x1F4A left without a fight).</summary>
+/// <summary>The cards a level leads to (floor image +0x1F42 won, +0x1F44 surrender, +0x1F46 fled, +0x1F48 lost, +0x1F4A left without a fight).</summary>
 public readonly record struct LevelExitCards(int Won, int Unknown, int Fled, int Lost, int LeftBeforeFight);
 
 /// <summary>A position in map pixels.</summary>

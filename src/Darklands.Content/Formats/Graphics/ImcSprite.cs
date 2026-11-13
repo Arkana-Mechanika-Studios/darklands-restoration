@@ -4,7 +4,7 @@ namespace Darklands.Content.Formats.Graphics;
 
 /// <summary>Decoded IMC metadata, frame offsets and row-run payload.</summary>
 /// <remarks>
-/// Resource layout consumed by original 0014:3D2C, particularly 3E17..4158.
+/// Resource layout consumed by original R014+0x3D2C (0E76:3D2C), particularly 3E17..4158.
 /// Metadata retains the original words, including high bytes the owner may
 /// ignore. Frame offsets are payload-relative byte offsets rather than DOS
 /// segments. Catalog selection, HITSEQ selection, actor metadata publication
@@ -68,7 +68,7 @@ public sealed class ImcSprite
 
     /// <summary>Applies a supplied color translation to the payload after its four-byte prefix.</summary>
     /// <remarks>
-    /// Original 0014:1060A transforms every supplied payload byte after offset 4,
+    /// Original R014+0x1060A transforms every supplied payload byte after offset 4,
     /// including encoded row data. The caller owns translation-table selection
     /// and its persistent state. This resource operation requires a nonempty
     /// suffix and does not represent the original zero-count wrapping path.

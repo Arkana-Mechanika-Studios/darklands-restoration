@@ -549,6 +549,7 @@ public sealed class MenuBar
     // for Game top-scoring-member's byte, for Party the last dropdown's right edge, so with top-scoring-member != 0 (F10, Right) or on Party the cursor goes into
     // a "sub-menu" of item -1 (DS:9C41 = 0) instead of to the next entry: the pointer it stands for is on the bar, shifted right by the dropdown's width.
     // DIVERGENCE: Down in that sub-menu of item -1 tests the text of its next entry at that word + 0x16 * (DS:9C41 + 1): whatever DGROUP holds there (data at DS:0100..0400, the stack for top-scoring-member 0xFF); here it does not move.
+    /// <summary>One key of the F10 menu mode: the arrows move between bars, items and sub-items, Enter chooses, Esc or F10 leaves.</summary>
     private void KeyboardStep(int key)
     {
         if (_ui.Mouse.Right)

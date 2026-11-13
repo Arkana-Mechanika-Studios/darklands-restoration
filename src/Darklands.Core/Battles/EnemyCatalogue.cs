@@ -34,7 +34,7 @@ public sealed class EnemyTemplate
     /// <summary>+0x11: first palette in ENEMYPAL.DAT.</summary>
     public sbyte FirstPalette { get; init; }
 
-    /// <summary>+0x12 / +0x13: copied to the kind's +0x27 and +0x26. Meaning not established (+0x12 becomes 2 for missile users and casters).</summary>
+    /// <summary>+0x12 / +0x13: copied to the kind's +0x27 and +0x26. +0x12 (kind +0x27) is the base index into the placement box tables (TacticalBattle.Placement), 2 for missile users and casters; the meaning of +0x13 is not established.</summary>
     public sbyte Byte12 { get; init; }
 
     public sbyte Byte13 { get; init; }

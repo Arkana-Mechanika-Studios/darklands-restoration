@@ -590,7 +590,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 
     private int _record, _recorded;
 
-    /// <summary>The rec step (and DARKLANDS_RECORD_FROM, a frame count after which every frame is saved): saves the next n frames presented.</summary>
+    /// <summary>The rec step: saves the next n frames presented.</summary>
     public void Record(int frames) => _record = frames;
 
     public void PresentText(TextScreen screen)

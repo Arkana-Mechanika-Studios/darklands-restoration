@@ -3,7 +3,7 @@ namespace Darklands.Core;
 /// <summary>
 /// The original game's bugs and quirks that the rules reproduce, in one place. Each flag is
 /// off (faithful) by default; setting it applies the obvious fix. Quirks without a flag are
-/// reproduced only (listed at the end).
+/// reproduced only (listed in the remarks below).
 /// </summary>
 /// <remarks>
 /// Reproduced without a fix flag:

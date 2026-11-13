@@ -18,7 +18,7 @@ public sealed partial class TacticalBattle
     /// <summary>DS:D6CE: the battle seed (the battle file keeps it).</summary>
     public int Seed { get; set; }
 
-    /// <summary>DS:C4FD: an enemy has seen a member (set by the enemies' sight test, read by nothing but the battle file).</summary>
+    /// <summary>DS:C4FD: an enemy has seen a member (sticky: true once any enemy saw any member; set by the enemies' sight test, read by nothing but the battle file).</summary>
     public bool EnemySawMember { get; private set; }
 
     /// <summary>

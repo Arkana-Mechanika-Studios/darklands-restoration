@@ -37,6 +37,7 @@ public sealed class EventLog
 
     public EventLog(GameState state) => _state = state;
 
+    /// <summary>The event in a slot; null for an empty slot or an index outside the table.</summary>
     public TimedEvent? this[int index] => index is >= 0 and < Capacity ? _slots[index] : null;
 
     /// <summary>The slot created, extended or visited last (<c>latest-event</c>).</summary>
@@ -66,6 +67,7 @@ public sealed class EventLog
     /// <summary>Puts an event into a slot (loading a saved game).</summary>
     public void Put(int slot, TimedEvent? e) => _slots[slot] = e;
 
+    /// <summary>Empties every slot.</summary>
     public void Clear() => Array.Clear(_slots);
 
     // ---- the work file around a battle (EVENTS.TMP) ---------------------------------
@@ -129,7 +131,7 @@ public sealed class EventLog
 
     /// <summary>
     /// A new event from now for <paramref name="hours"/> (<c>event-create</c>; the arguments in
-    /// the original's order: owner, loc, c, kind, type, value, handler, hours, flags, tag).
+    /// the original routine's order: owner, location, extra, kind, type, value, handler, hours, flags, tag).
     /// Returns its slot, or −1 when all 300 slots are in use ("EVENT Failure").
     /// </summary>
     // orig: event-create R029+0x2C4E (0E76:2C4E) draft; R029+0x3034 (0E76:3034) matched; tests: EventLogTests

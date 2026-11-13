@@ -332,8 +332,8 @@ public sealed class BattlefieldForces
     /// troops' training, and the levels each kind appears on.
     /// </summary>
     /// <param name="variantSeed">rand() after srand(location-now): the same location always gives the same colours.</param>
-    // orig: monsters-repair R004+0x122C (0E76:122C) draft (163 differences in the
-    // draft's byte comparison: jump-table addresses and register choice); tests: Oracle:enemies.json (120 chained scenarios)
+    // orig: monsters-repair R004+0x122C (0E76:122C) draft (byte comparison: 163 differences, only
+    // jump-table addresses and register choice); tests: Oracle:enemies.json (120 chained scenarios)
     public void FixKinds(int levels, int variantSeed)
     {
         for (var level = 0; level < levels; level++)

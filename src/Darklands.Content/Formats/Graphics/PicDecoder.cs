@@ -8,10 +8,6 @@ public sealed class PicDecoder
     /// <summary>
     /// Decodes a PIC stream into the solved chunked image model.
     /// </summary>
-    /// <remarks>
-    /// This is format provenance, not a segment routine; specific runtime consumers are anchored
-    /// where the engine loads or displays the image.
-    /// </remarks>
     public Pic Decode(string assetName, Stream stream, Palette256? fallbackPalette = null)
     {
         if (string.IsNullOrWhiteSpace(assetName))
@@ -32,9 +28,6 @@ public sealed class PicDecoder
     /// <summary>
     /// Decodes PIC bytes into chunk records, optional embedded palette, and indexed image pixels.
     /// </summary>
-    /// <remarks>
-    /// This method models the file format contract; it is not itself an original engine routine.
-    /// </remarks>
     public Pic Decode(string assetName, ReadOnlySpan<byte> data, Palette256? fallbackPalette = null)
     {
         if (string.IsNullOrWhiteSpace(assetName))

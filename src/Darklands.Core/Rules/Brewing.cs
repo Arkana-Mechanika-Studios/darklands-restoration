@@ -91,7 +91,7 @@ public sealed class BrewingBench
     }
 
     // orig: R033+0x1390 (1462:1390) draft (register-level diffs); tests: CampAndSheetRulesTests
-    // C: the original calls event-refresh with nine arguments; the tenth (the tag it matches on and stores) is the caller's saved SI (R033+0x060E): the key code that confirmed (0x1F73 for s, 0x1F53 for S).
+    // C: the original calls event-refresh with nine arguments; the tenth, the tag it matches on and stores, is the key code that confirmed the brew (0x1F73 for s, 0x1F53 for S; the caller's saved SI, R033+0x060E), so two brews started with different keys are different events.
     // C: event-refresh extends a matching brew (same formula, place, owner, key) by 0 hours and keeps its old chance and batches.
     /// <summary>
     /// Brews the batches of a row: records the brew (ending at once, so the next passage of

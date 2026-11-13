@@ -44,6 +44,7 @@ public readonly record struct Money(short Florins, short Groschen, short Pfennig
 
     // orig: purse-add-parts R029+0x5040 (1367:0130) matched; tests: CoreValuesOracleTests (Oracle:core.json R029+0x5040)
     // C: pf / 12 is a signed division, the groschen carry divides (unsigned)gr / 20.
+    /// <summary>Adds the three parts to the purse; the pfennig carry is signed and the groschen carry unsigned (see <see cref="Add(Money)"/>, where both are signed).</summary>
     public Money Add(int florins, int groschen, int pfennigs)
     {
         var pf = (short)(Pfennigs + pfennigs);

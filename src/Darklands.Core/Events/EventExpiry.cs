@@ -96,7 +96,7 @@ public static class EventExpiry
 
     /// <summary>
     /// A brew is done (Owner = the alchemist, Type = the formula, Value = the chance in %,
-    /// Extra = potions, Data1/Data2 the mishap's sort and the formula's difficulty). Failure
+    /// Extra = potions, Data1 = the camp mode, Data2 = the formula's risk, as in <see cref="EventKinds.Brew"/>). Failure
     /// ("Alchemy Failure"): outside the wilderness, half the time a mishap event follows for
     /// 30 days or 120 days; the Alchemy skill is practised as a failure. Success: the potions,
     /// of quality 10 × grade + the potion's own quality ("Alchemy Success").

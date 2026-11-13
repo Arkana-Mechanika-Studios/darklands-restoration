@@ -10,6 +10,7 @@ namespace Darklands.Persistence;
 // writes are ItemStores' (stash-load R035+0x1350, stash-store R035+0x1468); tests: OriginalSaveTests
 public static class CacheFile
 {
+    /// <summary>The item stores held by a CACHE.TMP image.</summary>
     public static ItemStores Read(ReadOnlySpan<byte> file)
     {
         var stores = new ItemStores();
@@ -17,5 +18,6 @@ public static class CacheFile
         return stores;
     }
 
+    /// <summary>The stores' file image, as <see cref="ItemStores.File"/> holds it.</summary>
     public static byte[] Write(ItemStores stores) => stores.File;
 }

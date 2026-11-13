@@ -43,22 +43,10 @@ public sealed partial class CardContext
 
     // The money deposited with the bankers (DS:9072 triple) is State.Party.BankNotes.
 
-    // HoursUntil (hours-remaining-until) is shared: see CardContext.Fights.cs.
-
     /// <summary>The battle a card sets up before it returns −2..−6.</summary>
     public CardBattle CardBattle => new(State.BattleOrders);
-
-    // party-member-erase is the shared DeleteMember (CardContext.Memory.cs); party-leave is RemoveMember (CardContext.Helpers.cs).
 
     /// <summary>A character of the game's roster joins the party (<c>party-join</c>). Returns the slot, or −1.</summary>
     // orig: party-join R037+0x3CD6 (1462:3CD6) draft (fn matched): PartyRules.AddFromRoster
     public int CharacterJoins(int character) => PartyRules.AddFromRoster(State, character);
-
-    // RandomName (made-up-name) is shared: see CardContext.Memory.cs.
-
-
-    // PlayMusic / Music (R043 09ae) are shared: see CardContext.Services.cs.
-
-
-    // OpenShop (R029 21aa) is shared: see CardContext.Memory.cs.
 }

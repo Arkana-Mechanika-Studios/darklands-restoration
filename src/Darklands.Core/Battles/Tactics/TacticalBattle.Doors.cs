@@ -164,7 +164,7 @@ public sealed partial class TacticalBattle
     // Here each battle starts with every flag 0.
     private readonly byte[] _doorsBeforeSearch = new byte[40];
 
-    /// <summary>The picker tries the lock at image offset <paramref name="lockAt"/> with his best… first lock picks (item 0x40): skill + quality − 25 + 1d10 against the lock.</summary>
+    /// <summary>The picker tries the lock at image offset <paramref name="lockAt"/> with his first lock picks (item 0x40): skill + quality − 25 + 1d10 against the lock.</summary>
     // orig: lock-picking R023+0x12C0 (1EF8:12C0) draft, checked against the asm
     // C: without lock picks the quality is read from the slot after the last item (or item 0 of an empty pack), but it is only used
     // when lock picks were found, so nothing depends on it.
@@ -366,7 +366,7 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>DS:C77D: the byte before the members' stairs-exit table (DS:C77E, <see cref="Combatant.StairsExit"/>), which nothing reads.</summary>
+    /// <summary>DS:C77D: the byte before the members' stairs-exit table (DS:C77E, <see cref="Combatant.StairsExit"/>); nothing reads it, only the original's out-of-range index (−1) reaches it, kept for faithfulness.</summary>
     public byte StairsExitBeforeTable { get; set; }
 
     /// <summary>DS:C8B1: the byte before the members' stairs-back table (DS:C8B2, <see cref="Combatant.StairsBack"/>).</summary>

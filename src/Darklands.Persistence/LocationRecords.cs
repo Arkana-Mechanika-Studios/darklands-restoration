@@ -8,6 +8,7 @@ namespace Darklands.Persistence;
 // size +0x11, reputation +0x12, flags +0x14, local values +0x15..+0x17, cache +0x18, mark +0x1A, recorded words +0x1C..+0x21,
 // name +0x26); a saved game holds the 414 records as R037+0x2ACE writes locations[i]; tests: OriginalSaveTests
 // C: +0x02, +0x10, +0x22..+0x25 and the bytes after the name's zero are not named; they are kept as read (Location.OriginalRecord).
+// C: WorldData.ToLocation (Darklands.Content) parses the same 0x3A layout from DARKLAND.LOC with its own copy of the offsets.
 public static class LocationRecords
 {
     public const int Size = 0x3A;

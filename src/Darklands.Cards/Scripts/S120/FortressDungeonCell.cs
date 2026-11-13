@@ -27,7 +27,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R120+0x1100, R120+0x11A2
 // DORMANT (generated): option slots 10..19 keep the default handler R120+0x11A2 ("screwed up.") and are never shown.
 // DORMANT (generated): option line(s) 8, 9 are never enabled (every assignment sets their flag to 0).
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 public sealed class FortressDungeonCell : Card
 {
     public override int Number => 305;

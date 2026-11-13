@@ -22,7 +22,7 @@ namespace Darklands.Cards.Scripts;
 //     R122+0x2316, R122+0x2352, R122+0x2370,
 //     R122+0x23AC, R122+0x23CA, R122+0x2406,
 //     R122+0x24A8
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 public sealed class OverheardPreceptor : Card
 {

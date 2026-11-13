@@ -13,5 +13,6 @@ public sealed class SideWindowMessages(GameUi ui) : IGameMessages
 {
     public void Show(string text, int ticks = 100) => new MessageBox(ui).Show(text, ticks * 1000 / 60);
 
+    /// <summary>A member's report in the side window, waiting for a key or the left button; <paramref name="good"/> is not used: the window draws every report the same.</summary>
     public void Report(int member, string text, bool good) => CardScreen.Tell(ui, text, member);
 }

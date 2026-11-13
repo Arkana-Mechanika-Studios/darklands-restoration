@@ -56,7 +56,11 @@ public static class BattleEnd
             : (sbyte)b[2 * slot].Floor == LeftThroughExit && (sbyte)b[2 * slot + 1].Floor == -1;
     }
 
-    /// <summary>The end test; true when the battle screen should close.</summary>
+    /// <summary>
+    /// The end test; true when the battle screen should close. The tests in order: surrender or a fall into a pit; a timed exit past its time;
+    /// the party gone through the exits or split between floors (flight, or the real-combat switch to the party's other floor); the
+    /// won, lost and all-down results; the delayed end once the end time has passed.
+    /// </summary>
     // orig: fight-finished R014+0x08FE (0E76:08FE) draft; checked against asm up to R014+0x0B1C (results 4/6/7, enemy floor, fled/left, the switch to the
     //   party's other floor); tests: BattleEndTests
     public static bool IsOver(Battle b, IBattleEndActions actions)

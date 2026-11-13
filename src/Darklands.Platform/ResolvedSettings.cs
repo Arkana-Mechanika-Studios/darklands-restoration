@@ -229,6 +229,7 @@ public sealed class ResolvedSettings
             Filter = filter,
             CrtCurvature = file.CrtCurvature ?? false,
             SoundChoice = sound is null or "config" or "none" ? null : sound,
+            // no audio device at all: from --no-audio, from --sound none, or from sound.card none in the settings file (unless --sound names a card)
             NoAudio = cli.NoAudio || (cli.Sound is null && sound == "none") || cli.Sound == "none",
             Mt32Roms = Pick(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
             AudioPack = Pick(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),

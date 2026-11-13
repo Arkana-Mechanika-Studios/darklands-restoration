@@ -105,7 +105,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         {
             return false;
         }
-        // C: F1..F5 / Ctrl-F1..F5 are not hotkey-table' (InHotKeyTable): the sheet they open (R043+0x33D9, R030+0x0CC5 call it themselves)
+        // C: F1..F5 / Ctrl-F1..F5 are not keys of hotkey-table (InHotKeyTable): the sheet they open (R043+0x33D9, R030+0x0CC5 call it themselves)
         //   runs menu-bar-loop with the hot keys as any screen, so they do not hold the hot keys off (Alt-Q in that sheet asks)
         var busy = _busy;
         _busy = InHotKeyTable(key);
@@ -124,7 +124,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         return true;
     }
 
-    /// <summary>True for the keys of hotkey-table' own table (Alt-Q/O/P/S/D/F/L/C/M, F6, F10): those run with the card window's font 1.</summary>
+    /// <summary>True for the keys of hotkey-table's own table (Alt-Q/O/P/S/D/F/L/C/M, F6, F10): those run with the card window's font 1.</summary>
     // orig: root 0000:0CAA's cases (root 0000:0CAF..0x0CFB): 0x1000 Alt-Q, 0x1800 Alt-O, 0x1900 Alt-P, 0x1F00 Alt-S, 0x2000 Alt-D,
     //   0x2100 Alt-F, 0x2600 Alt-L, 0x2E00 Alt-C, 0x3200 Alt-M, 0x4000 F6, 0x4400 F10; nothing else. F1..F5 / Ctrl-F1..F5 are each
     //   screen's own keys (R030+0x0CC5, R043+0x33D9, R016+0x08EC, R022+0x05FE), read after menu-bar-loop has put the font back
@@ -206,7 +206,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     }
 
     /// <summary>Ctrl-F1..F5: the member in that slot if he or she is able to act.</summary>
-    // orig: `key = (key >> 8) - 0x5e; if (key < party-headcount && party[key].status == 1) { leader = key; party-panel-row-set(0x100); }` (card-hotkeys and 0c44; the comment of the C calls these Shift-F keys, but the codes 0x5E00..0x6200 are Ctrl-F1..F5)
+    // orig: `key = (key >> 8) - 0x5e; if (key < party-headcount && party[key].status == 1) { leader = key; party-panel-row-set(0x100); }` (card-hotkeys and 0c44; the codes 0x5E00..0x6200 are Ctrl-F1..F5)
     private int? AbleMemberOf(int key)
     {
         var member = (key - Keys.CtrlF1) >> 8;

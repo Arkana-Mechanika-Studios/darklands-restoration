@@ -28,6 +28,7 @@ namespace Darklands.Presentation;
 // members walking after each other (thunk 09C0:1DE7, R016+0x0E7E) on the last battle's records; outside a battle that is not done here.
 public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, string> selectOrdinal)
 {
+    /// <summary>Asks for the first, the second ... member of the marching order with a box each; F1..F5 or a click on a party row picks; the frames go lit and unlit as in the original.</summary>
     public void Run(GameState state)
     {
         var canvas = ui.Canvas;

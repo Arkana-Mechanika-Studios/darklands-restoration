@@ -11,7 +11,7 @@ namespace Darklands.Persistence;
 public sealed record SaveSummary(string FileName, string Place, string Comment, int Year, int Month, int Day, int Hour);
 
 /// <summary>
-/// The SAVES folder: the saved games (*.sav) with their battle files (*.bsv), the next free name,
+/// The SAVES folder: the saved games (*.sav) with their battle files (*.bsv) and the companion files of modded games, the next free name,
 /// deleting one.
 /// </summary>
 // orig: the folder as the save dialog (R037+0x2ACE: the first free saves\dksaveN.sav), the load screen's list

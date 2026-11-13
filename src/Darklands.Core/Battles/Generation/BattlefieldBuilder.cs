@@ -311,8 +311,8 @@ public sealed class GenerationState
 /// battle seed, the generator chosen by the battlefield type, then the loader's fix-ups of the
 /// enemy kinds and groups.
 /// </summary>
-// orig: battlefield-builder-entry R004+0x0000 (0E76:0000) draft (dispatch table checked
-// against an earlier port, which pinned the original 138-word table)
+// orig: battlefield-builder-entry R004+0x0000 (0E76:0000) draft (the dispatch table is the
+// original's 138-word table)
 public static class BattlefieldBuilder
 {
     public static GeneratedBattlefield Build(BattlefieldContext context, int battlefield, int seed, IReadOnlyList<(int Type, int Quality, int Count)> groups)

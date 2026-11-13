@@ -20,7 +20,7 @@ namespace Darklands.Cards.Scripts;
 //     R128+0x1202, R128+0x1230, R128+0x1242,
 //     R128+0x1270, R128+0x1282, R128+0x12B0,
 //     R128+0x1352
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 // C: card-text-block(k, 2) (frame mode 2) is drawn like mode 0, on the picture (card-text-block R043+0x0E40 and R043+0x0F54 compare the mode only with 0, 2 and 1).
 // C (generated): some hints return r uninitialised (stale stack): read as their message for the whole party.
 public sealed class CollectorsCommission : Card

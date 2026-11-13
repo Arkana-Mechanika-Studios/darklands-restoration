@@ -110,6 +110,8 @@ public interface ITacticalView : IBattleViewport
 /// loop that runs one combat tick every 8 clock ticks, the per-combatant action state machine,
 /// movement, the AI, the enemies' turn, missiles and placement. The screen feeds the clock and
 /// the player's orders and draws the state; the rules here never look at the screen.
+/// Entry points: <see cref="Start"/> (or <see cref="Resume"/> from a saved battle), <see cref="Tick"/> (one clock tick),
+/// <see cref="Surrender"/> and <see cref="WriteBattleFile"/>.
 /// </summary>
 // orig: fight-main-loop R014+0x0000 (0E76:0000) draft (spec D §1.2, asm-verified)
 public sealed partial class TacticalBattle : IBattleEndActions
@@ -174,7 +176,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>The animation sets: 0..4 the party, 5/6 the two enemy kinds walking, 7/8 fighting, 9/10 dying.</summary>
     public AnimationSlot[] Slots { get; } = new AnimationSlot[11];
 
-    /// <summary>DS:1166[slot]: the picture code of the set ("F60", "E02"); animation-file-name[slot]: the weapon code ("SW", "PT" when casting).</summary>
+    /// <summary>DS:1166[slot]: the picture code of the set ("F60", "E02"); SlotCodes and SlotWeapons cover the slots 0..6 only (the enemy slots 5 and 6 serve their fighting and dying sets 7..10 too, see AnimationSet); animation-file-name[slot]: the weapon code ("SW", "PT" when casting).</summary>
     public string[] SlotCodes { get; } = [.. Enumerable.Repeat("", 7)];
 
     public string[] SlotWeapons { get; } = [.. Enumerable.Repeat("", 7)];
@@ -388,14 +390,14 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// </summary>
     /// <param name="arrivedThroughDoor">fight-flags 0x20.</param>
     /// <param name="delayedStart">fight-flags 0x40: the enemies wait 600 ticks.</param>
+    /// <param name="combatFlags">fight-flags from the card that ordered the battle: 8 re-enables the first disabled activation, 0x80
+    /// re-enables it after keeping a disabled copy at the end.</param>
+    /// <param name="keptPlaces">Battle mode 1: the party slots' places when the last battle on this battlefield ended (null: mode 0, 2 or 3).</param>
     // orig: fight-main-loop R014+0x0000 (0E76:0000) draft (spec D §1.2 steps 1..14, asm-verified)
     // C: step 2 (R014+0x0017, mode 0's fight-flags 0x10: the levels prepared, the party at the level's start) is PrepareLevels with the
     // placement below; steps 7 (R014+0x0110: the alarm trigger's furniture or wall removed) and 8 (R014+0x0153: an activation re-enabled)
     // act on the battlefield kept from the earlier visit (its levels stay in memory, GeneratedBattlefield.Store); the "battlefield save
     // rules" message (step 14) is the screen's.
-    /// <param name="combatFlags">fight-flags from the card that ordered the battle: 8 re-enables the first disabled activation, 0x80
-    /// re-enables it after keeping a disabled copy at the end.</param>
-    /// <param name="keptPlaces">Battle mode 1: the party slots' places when the last battle on this battlefield ended (null: mode 0, 2 or 3).</param>
     public void Start(bool arrivedThroughDoor = false, bool delayedStart = false, int combatFlags = 0,
         IReadOnlyList<(MapPoint Position, int Facing, int SpriteFacing)?>? keptPlaces = null)
     {

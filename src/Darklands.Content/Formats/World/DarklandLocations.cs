@@ -5,9 +5,8 @@
 /// </summary>
 /// <remarks>
 /// Original code at `1C85:4315..435B` materializes `LOCS.TMP` by walking
-/// resident pointers to these `0x3A`-byte records. Field names remain narrow
-/// until individual consumers are reconstructed; callers can still access
-/// bytes and little-endian words by original record offset.
+/// resident pointers to these `0x3A`-byte records. This is the raw table: WorldData names the
+/// fields of a place; callers here access bytes and little-endian words by original record offset.
 /// </remarks>
 public sealed record DarklandLocations(
     string AssetName,

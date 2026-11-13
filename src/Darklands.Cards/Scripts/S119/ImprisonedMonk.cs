@@ -24,7 +24,7 @@ namespace Darklands.Cards.Scripts;
 //   other: R119+0x0596, R119+0x0638
 // DORMANT (generated): option slots 10..19 keep the default handler R119+0x0638 ("screwed up.") and are never shown.
 // DORMANT (generated): card-item-lines stays all -1, so no line opens an item pop-up.
-// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see DIVERGENCE_REVIEW); presentation only, not modelled.
+// C: the card-engine globals DS:EE70 / DS:EE72 the C sets are the pop-up boxes' drawing flags (R043+0x2ACA, see docs/faithfulness/DIVERGENCE_REVIEW.md); presentation only, not modelled.
 public sealed class ImprisonedMonk : Card
 {
     public override int Number => 300;

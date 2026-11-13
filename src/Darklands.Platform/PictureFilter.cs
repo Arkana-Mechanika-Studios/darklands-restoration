@@ -32,7 +32,7 @@ public enum PictureFilter
 /// <summary>The names of <see cref="PictureFilter"/> in the settings file and on the command line.</summary>
 public static class PictureFilters
 {
-    /// <summary>The names, in the order a host cycles through them.</summary>
+    /// <summary>The names, in the order a host cycles through them; they must stay in the enum's order (Parse, Name and Next index by it).</summary>
     public static readonly IReadOnlyList<string> Names = ["sharp", "even", "soft", "softcrt", "hq", "crt", "crtplus"];
 
     /// <summary>The filter of a name (any case), or null when it names none. "smooth" (the name before 1.0's last round) is Even.</summary>

@@ -149,6 +149,7 @@ public sealed class DarklandsGame
     /// <summary>A debugging aid: the game starts with this saved game of the folder (as the start screen's load would), null: the start screen.</summary>
     public string? StartWithSave { get; set; }
 
+    /// <summary>Runs the program: the start-up, the opening, the start screen and the games it leads to, until the player quits.</summary>
     // DIVERGENCE: the original ends the program when the card loop ends (the 0x62 or -0x63 screen): it frees its buffers and exits to DOS; here the player comes back to the start screen, where Alt-Q leaves.
     public void Run()
     {
@@ -445,7 +446,7 @@ public sealed class DarklandsGame
     /// <summary>The notice of a saved game holding what no game has (OriginalBehaviour.FixImpossibleSavedGame).</summary>
     public static readonly IReadOnlyList<string> ImpossibleSavedGame = ["This saved game holds values no game can have", "and cannot be loaded.", "Press a key."];
 
-    /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?", then the load screen; the game goes on with what it gives.</summary>
+    /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?" (the original's own spelling), then the load screen; the game goes on with what it gives.</summary>
     // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: card-text-window->f10 = 3; the question;
     // the debug log 1905("load", "a"), not reproduced (see Card.ShowPicture); in a battle (DS:907A == 1) the battle's pictures, sounds and level buffers are freed and its
     // flags reset; the card picture freed; `party[i][0] = 0` for the five slots; with DS:A891 == 3 the map's buffers freed; the events
@@ -545,7 +546,6 @@ public sealed class DarklandsGame
         }
     }
 
-    // orig: the do/while of root 03A1:000A: a screen function returns the next screen number; 0x0C is the overland map (world-map-entry), -2..-6 start a battle, 0x62 ends the game, -0x63 quits
     private TablePersonalNames? _personalNames;
 
     /// <summary>The battle view's centre (DS:C866 / DS:C886), a program global: a game loaded keeps it.</summary>
@@ -674,6 +674,8 @@ public sealed class DarklandsGame
         keys.Read(v.AsSpan(Core.Battles.BattleVariables.CursorKeys, 6));
     }
 
+    /// <summary>Plays one game: wires its card context, screens, hot keys and menu bar together, then runs the card loop until the game ends.</summary>
+    // orig: the do/while of root 03A1:000A: a screen function returns the next screen number; 0x0C is the overland map (world-map-entry), -2..-6 start a battle, 0x62 ends the game, -0x63 quits
     private void Play(GameState state)
     {
         CardContext? context = null;

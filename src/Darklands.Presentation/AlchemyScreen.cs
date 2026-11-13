@@ -75,7 +75,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
                     Leave();
                     return;
                 }
-                // C: k = count - x4, where x4 (the batch record's third word) is never set in this screen, so it is 0: the batches are all given back.
+                // C: k = count - x4, the number of batches to give back; x4 (the batch record's third word, which Batch has no field for) is never set in this screen, so it is 0: all Count batches are given back.
                 // DORMANT: the k < 0 branch (x4 > count) that reserves -k batches again cannot happen while x4 stays 0.
                 for (var k = Selected.Count; k > 0; k--)
                 {

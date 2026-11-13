@@ -72,7 +72,7 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
         }
     }
 
-    /// <summary>Absolute day number (16-bit, as in the original).</summary>
+    /// <summary>Absolute day number (16-bit, as in the original), counted from 1 January 1400 (see DayNumberBias); it wraps in 16 bits.</summary>
     // orig: absolute-day-now R029+0x597C (1367:0A6C) matched
     // C: year * 365 + 0x33E8 wraps in 16 bits; the month loop index is unsigned.
     public short DayNumber
@@ -111,6 +111,7 @@ public readonly record struct GameDate(short Hour, short Day, short Month, short
         return (long)to - from > 32000 ? 32000 : (ushort)(to - from);
     }
 
+    /// <summary>Whether the hour is daylight (05:00 to 18:59; see <see cref="TimeOfDay.IsDaylight"/>).</summary>
     public bool IsDaylight => TimeOfDay.IsDaylight(Hour);
 
     // orig: date-assign R029+0x57BE (1367:08AE) matched; date-plus-hours R029+0x58FA (1367:09EA) matched

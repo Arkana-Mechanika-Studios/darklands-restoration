@@ -9,7 +9,10 @@ namespace Darklands.Cards;
 /// <summary>Card-engine helpers: item and saint pop-ups, chance texts, time.</summary>
 public sealed partial class CardContext
 {
-    /// <summary>The rules use the world's item list and city records and report through the card screen.</summary>
+    /// <summary>
+    /// The rules use the world's item list and city records and report through the card screen. Construction connects them:
+    /// a state without game data gets the world as its data, and a state with the plain message log gets messages shown on the card screen.
+    /// </summary>
     public bool RulesConnected => _rulesConnected;
 
     private static bool ConnectRules(GameState state, WorldData world, ICardScreen screen)

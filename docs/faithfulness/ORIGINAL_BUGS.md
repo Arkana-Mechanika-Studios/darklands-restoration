@@ -80,7 +80,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: the unrest (fact 0x15 or 0x16) lasts 0x1E0 = 480 hours (20 days); it is created again, as one more event, every seventh day its test holds, while an earlier one still runs; and it has no expiry handler (0): nothing settles it but a card the party meets in the city. Kept; never reached in the original's play (no politics season starts: SetUpCity).
 - **B-074e99** `bug`, no fix flag - `src/Darklands.Core/Rules/DayJobs.cs:61` `DayJobs.static`  
   original: `R036+0x197E` (1462:197E, draft)  
-  why: the second contents test is written `!cats2 & city.cats`, so a job with cats2 != 0 is never open.
+  why: the second contents test is written `!otherContents & city.Contents`, so a job with OtherContents != 0 is never open.
 - **B-1d4d7c** `bug`, flag `FixRosterStaleRow` - `src/Darklands.Core/Rules/InnRoster.cs:141` `InnRoster.SlotOfRow`  
   original: `R038+0x02F8` (1462:02F8, draft)  
   why: OriginalBehaviour.FixRosterStaleRow - the highlight reaches every row up to the number of records (DS:E7DC), listed or not, and a row the list did not fill keeps the entry an earlier listing left there (0 before any: the data segment's start value): H or S on such an empty row changes the shield or the figure of the member whose record that entry is (saved with the game). Measured: vis10 roster-stale (DKSAVE0: six records, five listed; Gretchen, record 0, joins, then H and S on the empty sixth row change her shield and figure in the original's member data). Fixed (data safety, DataSafe): nobody's on a row the list did not show.
@@ -575,16 +575,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dcf1be** `bug`, flag `FixEverybodyBoostsUndone` - `src/Darklands.Core/Events/EventExpiry.cs:145` `EventExpiry.UndoBoost`  
   original: `R029+0x448A` (0E76:448A, draft)  
   why: the recorded amount is taken off whatever the attribute is by then (raise-attribute-by(owner, type, -value)): a boost that a night's rest (Endurance back to its maximum) or wounds (Strength) have already used up is taken off again and leaves the attribute below where it was; a saint's lowering (a negative value) is given back the same way.
-- **B-e1b48f** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:97` `EventLog.Reload`  
+- **B-e1b48f** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:99` `EventLog.Reload`  
   original: `R043+0x0100` (1462:0100, matched)  
   why: the table comes back compacted, and what a battle put into the slots below the count is lost: a saint's boost (kind 0x48/0x49) or a price called in a battle is never undone, as its event, which would end it, is gone.
-- **B-8f44e7** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:136` `EventLog.Create`  
+- **B-8f44e7** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:138` `EventLog.Create`  
   original: `R029+0x2C4E` (0E76:2C4E, draft), `R029+0x3034` (0E76:3034, draft)  
   why: "forever" events end on 31 December 1499: 9999 hours is the fixed end 23:00 31.12.1499, not an open end, so on 1 January 1500 every such event expires (a quest clears its facts) and one created later expires at the next expiry pass; the witches' sabbat quest and its planned sabbat end for good.
-- **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:221` `EventLog.Update`  
+- **B-8d31a1** `bug`, flag `FixNewEventAddDoubles` - `src/Darklands.Core/Events/EventLog.cs:223` `EventLog.Update`  
   original: `R029+0x2E74` (0E76:2E74, draft)  
   why: the new event already holds the value before the op (FixNewEventAddDoubles).
-- **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:276` `EventLog.Next`  
+- **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:278` `EventLog.Next`  
   original: `R029+0x324C` (0E76:324C, draft)  
   why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (place-flag, place-flag-value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
 
@@ -596,7 +596,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:111` `CellBuffer.CampWatch`  
   original: `R030+0x25BE` (1462:25BE, draft)  
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
-- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:150` `OverlandTravel.Step`  
+- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:151` `OverlandTravel.Step`  
   original: `R030+0x2AC8` (1462:2AC8, draft)  
   why: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg, four tiles off) and 297 Putten (127 Putten, two rows off).
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
@@ -620,10 +620,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dd3d33** `bug`, flag `FixLootExitTestReadsWords` - `src/Darklands.Core/Battles/BattleEnd.cs:44` `BattleEnd.LootSkips`  
   original: `R040+0x0C22` (1462:0C22, draft)  
   why: OriginalBehaviour.FixLootExitTestReadsWords - the test reads fighter-floor-level (a byte table, DS:A6B4) as words at 2 x slot: it skips slot s only when combatant 2s's floor is -99 (0x9D) and combatant 2s + 1's is -1 (0xFF), so a member who left is not skipped (direct calls of R040+0x0C22 from the battle state street-p100 with key D and DS:8DC4 = 0: member 1's floor byte 0x9D gives DS:8DC4 = 1 without the message; floor bytes 2, 3 = 0x9D, 0xFF give DS:8DC4 = 2 after R022+0x04E4); tests: BattleEndTests
-- **B-9d748e** `bug`, flag `FixExitedMemberStrandsTheRest` - `src/Darklands.Core/Battles/BattleEnd.cs:100` `BattleEnd.IsOver`  
+- **B-9d748e** `bug`, flag `FixExitedMemberStrandsTheRest` - `src/Darklands.Core/Battles/BattleEnd.cs:104` `BattleEnd.IsOver`  
   original: `R014+0x08FE` (0E76:08FE, draft)  
   why: OriginalBehaviour.FixExitedMemberStrandsTheRest - with one member gone through an exit and the others alive on another level (the stairs), nobody on the enemies' floor reads as the party's flight: the battle ends as fled or left and the members on the other level become Away (split audit row 10); the fix lets the tests below see them (the real-combat switch to their floor).
-- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:389` `BattleEnd.ImproveSkills`  
+- **B-f19453** `bug`, no fix flag - `src/Darklands.Core/Battles/BattleEnd.cs:393` `BattleEnd.ImproveSkills`  
   original: `R014+0x0694` (0E76:0694, draft)  
   why: the missile skill is the readied weapon's at the battle's end: a member who threw his last javelin or axe has weapon -1 (spend-ammunition), whose category byte (R136+0x75AB, before the table) is 0, so Edged is practised instead of the thrown weapon's skill, beside the hand weapon's own (flail, spear ...).
 - **B-a044f7** `bug`, flag `FixEnemyGroupCompaction` - `src/Darklands.Core/Battles/BattlefieldForces.cs:666` `BattlefieldForces.FixGroups`  
@@ -744,10 +744,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:957` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
-- **B-de34f4** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:50` `TacticalBattle.EnemySees`  
+- **B-de34f4** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:49` `TacticalBattle.EnemySees`  
   original: `R018+0x04B6` (1F43:0006, draft)  
   why: OriginalBehaviour.FixCombatAcrossLevels - the members on the level SHOWN are seen, by enemies on any level: with a lone member's level shown, enemies on the party's level see him and go for him (split audit row 6)
-- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:371` `TacticalBattle.Cast`  
+- **B-a2387d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:370` `TacticalBattle.Cast`  
   original: `R018+0x0706` (1F43:0256, draft), `R014+0x469E` (0E76:469E, draft), `R014+0xF284` (1D69:0354, draft)  
   why: the loop sets only the line's end (DS:E0A9/E0A7, R018+0x09D5/0x09DC) and relies on its start (DS:E0A5/E0A3, set to the caster at R018+0x0851); the area test it calls for the enemies (R014+0x469E, 0E76:469E) writes the start itself, from its first instruction on (0E76:46E5/46EC: the centre = the member), so after a member's count the next member's line starts at the previous member, not at the caster. Kept (found by f2witch2f: a member behind a wall counted as seen, the target chosen differed).
 - **B-43d98d** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Engagement.cs:232` `TacticalBattle.Approach`  
@@ -800,24 +800,24 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
-- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:373` `TacticalBattle.KeepPlaces`  
+- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:375` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
-- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:859` `TacticalBattle.Tick`  
+- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:861` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row 28). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:889` `TacticalBattle.Tick`  
+- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:891` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21). Decision: never, display only: the view stops following him.
   decision: never: display only: the view stops following him
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:429` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:430` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:440` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:441` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
@@ -835,19 +835,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:72` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
-- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:388` `DarklandsGame.LoadSavedGame`  
+- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:389` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
-- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:400` `DarklandsGame.LoadSavedGame`  
+- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:401` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:453` `DarklandsGame.LoadInGame`  
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:454` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
 - **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:623` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:824` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:826` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  
@@ -856,10 +856,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
-- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:301` `OverlandScreen.FreeBuffer`  
+- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:302` `OverlandScreen.FreeBuffer`  
   original: `root 05BA:00C2` (05BA:00C2, matched), `root 0000:13A0` (0000:13A0, draft), `root 0000:0CAA` (0000:0CAA, draft) +2 more  
   why: OriginalBehaviour.FixMapQuitFreedBuffers - after the map's Alt-Q answered "no" the handles are 0, and the next free of one (a second Alt-Q "M", a portrait click or the camp "S", leaving the map "Map") fails root 05BA:00C2's check (root 044A:0164): root 0000:1354 (the drivers stopped, text mode), "<name> - Buffer dealloc error" by DOS function 9, exit(0) (session tk-map-altq-twice, local/batch/mapquit: the second Alt-Q). Fixed (DataSafe): the buffers are the map's as before.
-- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:521` `OverlandScreen.Scroll`  
+- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:522` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 - **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:234` `PartyRosterScreen.Arrow`  

@@ -96,7 +96,7 @@ public sealed class GameSettings
 /// </summary>
 public sealed record ConfigDrkSettings(int? Card, int? Port, int? Irq, int? Dma)
 {
-    /// <summary>Names accepted for the card, with the number the install program writes for it.</summary>
+    /// <summary>Names accepted for the card, with the number the install program writes for it. "mt32" and "cm32l" are aliases of "roland" (7): the Roland module is chosen by --sound, not by CONFIG.DRK.</summary>
     public static readonly IReadOnlyDictionary<string, int> CardNames = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
     {
         ["adlib"] = 0,
