@@ -51,6 +51,16 @@ public static class TextVariables
 
     // orig: the copy loop of text-substitute (R043+0x118E), see the C: notes
     // C: the original copies the block into buf[900] and collects a name in var[200], with no bounds check; here both grow as needed (a longer block or name overflows its buffer in the original).
+    // C: the frame (checked against the asm): R043+0x1191 `mov ax, 0x458` + the stack probe give 0x458 bytes of locals; the block is
+    //   strcpy'd to [bp-0x458] (R043+0x11A9..0x11AE), var[] is at [bp-0xD4], the counters at [bp-0xC]..[bp-1], then the saved BP and the
+    //   far return address. So buf holds 899 bytes and its zero; byte 900 on runs into var[], byte 1100 on into the counters (set after the
+    //   copy, so they overwrite the text), byte 1112 on into the saved BP and from 1114 the return address. The expanded text goes to
+    //   text-bank-buffer DS:9085 (both callers, R043+0x0F71 and R043+0x1F24, push 0x9085), which is also 900 bytes: the next global is the
+    //   menu bar's drawn flag DS:9409 (0x9409 - 0x9085 = 0x384). The safe limit for a block is therefore 899 bytes before and after the $names.
+    // DORMANT: no shipped block comes near either limit: the longest of the 3756 blocks of the 419 .MSG files of MSGFILES is 599 bytes
+    //   (twelve have 599, none more: the texts were written to a 600-byte limit), and with 32 bytes for each $name's value (80 for the
+    //   phrase ones: SabbatLocation, MonasteryLocation, LastCastleLocation, PlaceDesc, Direction2, Text1..4) the longest expansion is 878
+    //   ($Consi00 block 3). A longer block, possible only in a mod, is expanded and drawn whole here.
     // C: a '$' starts a name even inside one: the name collected so far is dropped without a trace ("$a$b" gives the value of b only), and a '$' outside a name is not copied.
     // C: a name ends at the first byte that is not an ASCII letter or digit; that byte is copied after the value. A name that runs to the end of the block is expanded there, with nothing after it.
     // C: a name the game does not know (and the five it has no case for: docks, poorhouse, whorehouse, warehouse, MapLocation) comes out as "$" + name, an empty name (a lone '$') as "$".

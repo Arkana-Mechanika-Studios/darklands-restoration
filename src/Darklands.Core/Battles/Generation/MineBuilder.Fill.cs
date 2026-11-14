@@ -342,6 +342,12 @@ internal sealed partial class MineBuilder
                 var result = FillPile(level, pile, t, section, kept);
                 if (result != 0)
                 {
+                    // BUG: a pile spot the set piece makes a locked door (result 2: section 14 of mines 0x0B / 0x82, door 0xE4; section 11 of
+                    //   the deep mines, door 0xE8) also gets the shut-chest piece (R009+0x1ECE `or es:[bx+si], 0x50` runs for any non-zero
+                    //   result of R009+0x1EA0; only result 1 keeps a record, R009+0x1F90 `cmp byte [bp-1], 1`), and no chest record: a chest is
+                    //   drawn beside the riddle door that the party cannot open (chest-opening R023+0x13D0 works from the records). The original's
+                    //   saved levels of the mine corpus have 32 such cells in 624 levels, all of this kind; no other chest picture lacks a record.
+                    //   The cell is a chest cell in every other way; only its record is missing. Tests: MineOracleTests.ALockedDoorSpotKeepsAChestPictureWithNoChest.
                     level.OrCell(pile.CellX, pile.CellY, 0x50);
                     var x0 = pile.X / 32;
                     var x1 = x0 + (pile.Width >> 5) - 1;
