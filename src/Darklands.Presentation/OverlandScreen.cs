@@ -460,6 +460,12 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     //   included, sets party-map-column/party-map-row from the cell under the marker (R030+0x0C44 +0x54/+0x63): (16 x + 2, 4 y) is cell (x, y + 1), so the
     //   party stands one row south of the exit point as soon as the map runs (the first pass comes before any step or save).
     // C: x - 8 <= 0 puts the marker at 0x82 - (x - 8) pixels, not 16 x + 2 (a column near the left edge reads another cell); kept.
+    // BUG: R030+0x01EB..0x0220: with x - 8 < 0 the marker x is 0x82 - (x - 8), one pixel per missing tile instead of 16, and the view column
+    //   is 0; the party that leaves a place whose column is below 8 stands 2 to 5 tiles east of it (a column of 3 gives 8, a column of 6 gives
+    //   8 as well: 0x82 + 5 and 0x82 + 2 pixels read as tile 8) once the map runs (each pass of R030+0x0C44 takes the party's cell from the marker). In the shipped
+    //   data the places are Nancy and Elberg (their exit points, DARKLAND.CTY, columns 6 and 6) and Valkenberg, Tongeren, Gemert, Helmond,
+    //   Limberg, Spa and Briey (DARKLAND.LOC columns 5, 5, 5, 3, 6, 3, 3); a column of exactly 8 (Moresnet) is exact. Reproduced as the original.
+    //   Decision: later, an optional fixed rule after 1.0.
     private void PlaceParty(GameState state)
     {
         var (column, row) = (state.MapPosition.X, state.MapPosition.Y);

@@ -573,6 +573,12 @@ public sealed class EventLog
 
     /// <summary>The first free slot; "EVENT Failure" and −1 when all are used.</summary>
     // orig: event-slot-vacant R029+0x3144 (0E76:3144) matched; tests: EventLogTests
+    // BUG: the table has 300 slots and only an event's end frees one; nothing limits how many notes a repeated action makes (the tower
+    //   notes of RobberKnightsTower, R029+0x2930), so a long game can fill the table. With no free slot R029+0x3144 shows the message
+    //   "EVENT Failure" and the creator is told -1: the new event is lost (a quest does not start, a fact is not recorded) and
+    //   the caller goes on as if it had been made (for a few callers it then writes through the -1 slot; see DIVERGENCE_REVIEW). A
+    //   full table is reproduced (the ev300 sessions). Decision: never, 300 live events is not a realistic state
+    //   without such a repeating source; the rows of the sources are the ones to fix.
     private int FreeSlot()
     {
         var i = Array.IndexOf(_slots, null);

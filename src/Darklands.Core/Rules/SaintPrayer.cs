@@ -160,6 +160,12 @@ public sealed class SaintPrayer
     // C: DS:887C / 2 is a signed division of a non-negative offer; raise-attribute-by keeps Divine Favor in 1..99.
     // orig: saint-prayer R034+0x0166..0x01ED: the message (root 0000:24BC) comes after the roll and before the help on success
     //   (0x0179, then the saint's function at 0x0195), after the extra loss on failure (0x01D0, then 0x01E8); the favor spent after both
+    // orig: saint-screen R034+0x022C (1462:022C) matched; R034+0x06E2 (1462:06E2) matched
+    // BUG: a prayer that does not choose a member (the saint's use bit for the screen's mode is clear, so the P line reads "for the entire
+    //   party", R034+0x022C / R034+0x06E2; the target DS:89EA is set to -1 at R034+0x06AC) is
+    //   helped for -1, which the saint routines read as the leader, while the divine favor is spent by the member who prayed, with his
+    //   chance: a member who is not the leader prays and the leader gets the help (a boosted weapon skill, for instance). Reproduced as
+    //   the original. Decision: later, an optional fixed rule after 1.0.
     public bool Pray(int target, ISaintEffects effects, Action<bool>? announce = null)
     {
         var chance = Listed ? Chance : UnlistedChance;

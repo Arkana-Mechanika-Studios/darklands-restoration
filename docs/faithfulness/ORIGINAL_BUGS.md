@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 103 | 24 | 79 |
-| cards | 74 | 3 | 71 |
-| events | 8 | 4 | 4 |
+| rules | 104 | 24 | 80 |
+| cards | 77 | 3 | 74 |
+| events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
-| battles | 65 | 32 | 33 |
+| battles | 67 | 32 | 35 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 14 | 8 | 6 |
-| total | 270 | 73 | 197 |
+| screens/presentation | 15 | 8 | 7 |
+| total | 278 | 73 | 205 |
 
-## Core logic (256)
+## Core logic (263)
 
-### rules (103)
+### rules (104)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -318,6 +318,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a186ab** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintPrayer.cs:69` `SaintPrayer.Listed`  
   original: `R029+0x4626` (0E76:4626, draft)  
   why: an unlisted slot gets a prayer screen: the last formula's name, a garbage feast day and picture (SaintPrayerScreen), "Success: 99", no Divine Favor offered, and P prays with the screen's font word as the chance (UnlistedChance).
+- **B-2ac4c7** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintPrayer.cs:164` `SaintPrayer.Pray`  
+  original: `R034+0x022C` (1462:022C, matched), `R034+0x06E2` (1462:06E2, matched)  
+  why: a prayer that does not choose a member (the saint's use bit for the screen's mode is clear, so the P line reads "for the entire party", R034+0x022C / R034+0x06E2; the target DS:89EA is set to -1 at R034+0x06AC) is helped for -1, which the saint routines read as the leader, while the divine favor is spent by the member who prayed, with his chance: a member who is not the leader prays and the leader gets the help (a boosted weapon skill, for instance). Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
 - **B-94efea** `bug`, flag `FixSaintLearnedByLeader` - `src/Darklands.Core/Rules/Saints.cs:55` `Saints.Learn`  
   original: `R029+0x1302` (0E76:1302, draft)  
   why: "learn the saint of this place" (R056 19c4) and the teaching saints pass -1 and teach nobody (FixSaintLearnedByLeader).
@@ -334,7 +338,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
-### cards (74)
+### cards (77)
 
 - **B-ad9d9e** `bug`, flag `FixGhostPartySlot` - `src/Darklands.Cards/CardContext.Party.cs:29` `CardContext.SetStatusAbleStale`  
   original: `R088+0x0440` (1859:0230, matched)  
@@ -452,7 +456,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-ce730c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S068/ClimbingTheWallPastTheGuards.cs:45` `ClimbingTheWallPastTheGuards.Run`  
   original: `R068+0x2422` (19F9:0812, matched), `R068+0x2424` (19F9:0814, matched)  
   why: the rope line is greyed unless the last member carries a rope, whoever else has one.
-- **B-8a4d61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S069/CityNews.cs:45` `CityNews.Run`  
+- **B-8a4d61** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S069/CityNews.cs:48` `CityNews.Run`  
   original: `R069+0x15A8` (195D:0358, matched)  
   why: this line (shown only with the politics quest here) sets following-card 0xAE like the gossip line (R069+0x15AE), the idle-news card; the politics talk of the city is card 0xBF.
 - **B-fa0f93** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S071/AffairsElsewhere.cs:75` `AffairsElsewhere.Run`  
@@ -479,6 +483,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-166488** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:59` `RobberKnightTaskRewarded.Run`  
   original: `R080+0x066C` (1870:02EC, matched), `R080+0x06A4` (1870:0324, matched)  
   why: text 1 says the Schulz departs from the party whether or not he joined it (RobberKnightTaskOffered); no member is removed here: one who joined stays until his 90 days are up.
+- **B-083b8c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightsTower.cs:74` `RobberKnightsTower.Run`  
+  original: `R029+0x2930` (0E76:2930, draft)  
+  why: each such approach makes a new 270-day note (the event creator R029+0x2930 takes the first free slot and looks for no earlier note of the kind, R029+0x3144) although the first already says the party is known: a party that tries again and again at one tower leaves one note per try, and enough of them fill the 300 slots of the event table, after which every new event fails with "EVENT Failure" (see EventLog.Create). Reproduced as the original; the card's own repeat (the tower card comes round again after a kill) is another row. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
 - **B-5e7a72** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S081/DragonBlightedLand.cs:148` `DragonBlightedLand.Run`  
   original: `R081+0x2278` (19BC:0A38, asm), `R081+0x2280` (19BC:0A40, asm)  
   why: the hint (R081+0x2280) shows a chance of (the leader's Charisma + Speak Latin) / 2, a pair no other check uses, and the action (R081+0x2278) never rolls it: hiding and following the dragon always succeeds, whatever the chance shown.
@@ -521,9 +529,17 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-4df3ba** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:89` `MerchantsOfTheCity.Trade`  
   original: `R092+0x0792` (188F:0222, matched)  
   why: $Raubi01 (RobberKnightTaskRewarded) takes remembered-card-second as the quest giver, but this is the castle's location: the reward (tag 3, owner 0, tested above) is not found, the card reads and frees events[-1], and the reward stays to be claimed again.
+- **B-7ec55a** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S098/RiddleDoor_MineT24.cs:12` `RiddleDoor_MineT24.override`  
+  original: `R098+0x0C96` (18E8:0196, matched), `R098+0x0F58` (18E8:0458, matched)  
+  why: this card and $MineT25 (0xDC, R099+0x0186) are two of the twelve riddles the mine builder can hang on the iron door of its section 8 (0xDB..0xE2, 0x153..0x156, MineBuilder.Contents), the door of the mine's own king; but the sort-0 answer of these two is 0xE5, the meeting every ordinary dwarf door of the other sections leads to ($MineB02, R101+0x0622), while the other ten lead to 0xE6, the king's own card ($MineB03, R101+0x0850). In one draw of the door in six (and with the mine's sort 0) the party that answers right therefore meets the wrong card; what this costs the quest (the king's treasure is only offered back from 0xE6) is not proved here. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
 - **B-a194c2** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S101/DwarfKingsRedCap_MineB03.cs:29` `DwarfKingsRedCap_MineB03.Run`  
   original: `R101+0x0850` (18BD:0000, matched)  
   why: text 0 ("It is $NamedOneName again, king of the dwarfs.") reads the named slot, which this card never fills (no name call, unlike 0xE5, 0xE3, 0xEA, 0xEB with the quest's dwarf name) and which the saved game does not keep: reached first (sort 0 doors 0xDD..0xE2 and 0x153..0x156 of the mine's section 8, or a failed force of the stone box), it prints what the slot still holds, as in the original: "It is again" with no name in a program run that has had no naming card and no character creation (a load leaves the slot), else the name the last naming card or made-up-name left there (after a new game: the creation screen's last made-up name, "It is Gregori Steutz again")
+- **B-95c21f** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S101/FriendlyDwarf_MineH00.cs:65` `FriendlyDwarf_MineH00.Run`  
+  original: `R101+0x11F4` (1957:0004, matched)  
+  why: text 7 has the dwarf say that enemies beyond the door guard a stolen relic the party should win back, but this branch (R101+0x11F4) hands the leader a magic item (flag 0x1000) at once, before any fight, and makes the fact 7 of the place last to 9999 hours; a later visit by that door then shows text 8 ("you have already despoiled their treasure, taken their relic"). The item is not tied to a fight or a relic. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
 - **B-805211** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S106/SmallCaveUnderTheLedge.cs:199` `SmallCaveUnderTheLedge.FightTheTatzelwurm`  
   original: `R106+0x1C28` (19BC:03E8, matched)  
   why: R029 2474 returns how many members were away, not who left: text-slot-chosen-one gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
@@ -561,7 +577,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R134+0x0550` (1838:0550, matched), `R134+0x0692` (1838:0692, matched)  
   why: the original adds rand(10) Endurance although text 9 says many were bitten; kept as it is (no OriginalBehaviour flag for it).
 
-### events (8)
+### events (9)
 
 - **B-ace31b** `bug`, no fix flag - `src/Darklands.Core/Events/EventExpiry.cs:112` `EventExpiry.AlchemyResult`  
   original: `R029+0x3FB2` (0E76:3FB2, draft)  
@@ -587,6 +603,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-d8f504** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:278` `EventLog.Next`  
   original: `R029+0x324C` (0E76:324C, draft)  
   why: asking for kind 0x1C (location facts) also returns the kind 8 events (R029+0x3279..0x3281: `cmp cx,0x1c`, `cmp ax,8`): every fact scan (place-flag, place-flag-value and the like) sees the quests. A city's politics quest (type 0, value = the city's number) answers "fact 0" of that city, which should be the leaning.
+- **B-65b0bf** `bug`, no fix flag - `src/Darklands.Core/Events/EventLog.cs:576` `EventLog.FreeSlot`  
+  original: `R029+0x3144` (0E76:3144, draft)  
+  why: the table has 300 slots and only an event's end frees one; nothing limits how many notes a repeated action makes (the tower notes of RobberKnightsTower, R029+0x2930), so a long game can fill the table. With no free slot R029+0x3144 shows the message "EVENT Failure" and the creator is told -1: the new event is lost (a quest does not start, a fact is not recorded) and the caller goes on as if it had been made (for a few callers it then writes through the -1 slot; see DIVERGENCE_REVIEW). A full table is reproduced (the ev300 sessions). Decision: never, 300 live events is not a realistic state without such a repeating source; the rows of the sources are the ones to fix.
+  decision: never: 300 live events is not a realistic state without such a repeating source; the rows of the sources are the ones to fix
 
 ### travel (4)
 
@@ -603,7 +623,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (65)
+### battles (67)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -641,6 +661,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-ab0e37** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:764` `FortressBattlefield.Fortress.SetUpRoom14`  
   original: `R011+0x096A` (1432:096A, draft)  
   why: the fortress relics are forced to quality 35: the three relics get quality 0x23 and type 0x9F whatever DARKLAND.LST gives them (the relic weapons have qualities 50..85 and weapon types).
+- **B-219beb** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Connections.cs:260` `MineBuilder.CarveGap`  
+  original: `R009+0x2C98` (1432:2C98, draft)  
+  why: R009+0x2C98 opens the gap even when neither of the two sections the connection names was built (no level slot): the exit then leads to its own level, its own exit number and its own arrival spot, a ladder that puts the party back where it stood. Which shipped mines and floors have such a passage is not established here (a report from play puts one on a floor of the mine of the king's iron door, an exit to its own floor with the arrival beside itself). Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
 - **B-f20e47** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:787` `MineBuilder.SetPiece`  
   original: `R009+0x4D56` (182C:0DB6, draft)  
   why: the relic of the deepest section of the dwarf, kobold and vulcan mines (R009+0x4E28..0x4E3B) is forced to quality 35: any relic 0x96..0xAB gets quality 0x23 and type 0x9F whatever DARKLAND.LST gives it, as the fortress relics (R011+0x096A).
@@ -675,40 +699,44 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R023+0x12C0` (1EF8:12C0, draft)  
   why: the picker DS:E1CA is whoever chose a place action last (R016+0x1590), so a Pick Lock order is rolled with the skill and lock picks of a member who chose another place action after it (R023+0x12C0). Kept as the original (party-split audit row 19c). Decision: never, rare and harmless: only the skill rolled is another member's.
   decision: never: rare and harmless: only the skill rolled is another member's
-- **B-25f2a4** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:273` `TacticalBattle.DoPlaceAction`  
+- **B-9bc071** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:186` `TacticalBattle.PickLock`  
+  original: `R023+0x12C0` (1EF8:12C0, draft)  
+  why: R023+0x12C0 (12F8..0309) takes the FIRST record of item 0x40 in the picker's pack and rolls with that record's quality, whatever the others hold: a better set of lock picks further down the pack is never used (chance = Pick Locks + quality - 25 + 1d10). Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
+- **B-25f2a4** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:276` `TacticalBattle.DoPlaceAction`  
   original: `R014+0x2170` (0E76:2170, draft)  
   why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the door or chest index of a member on another level is used on the level SHOWN (door-flip, lock-picking, chest-opening, R023+0x153E read the image of DS:11CA): another level's door or chest is toggled, picked, opened or disarmed, and his own is untouched (split audit row 1)
-- **B-afe397** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel`, `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:398` `TacticalBattle.UseKey`  
+- **B-afe397** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel`, `FixStairsKeyWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:401` `TacticalBattle.UseKey`  
   original: `R016+0x1182` (1EF8:1182, draft), `R016+0x0000` (1EF8:0000, draft)  
   why: OriginalBehaviour.FixStairsKeyWithoutSelection - R016+0x0165..0x0169 copies entry [DS:A6B2] of the two member tables without testing it: with nobody selected (0xFF) entry -1, DS:C77D = DS:C8B1 (the bytes before the tables).
-- **B-cbc59a** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:417` `TacticalBattle.UseKey`  
+- **B-cbc59a** `bug`, flag `FixLeaderKeysOnOtherLevel`, `FixLeaderStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:420` `TacticalBattle.UseKey`  
   original: `R016+0x1182` (1EF8:1182, draft), `R016+0x0000` (1EF8:0000, draft)  
   why: OriginalBehaviour.FixLeaderStairsRecordOfShownLevel - with the party split and the battle running, U (R016+0x014E, not paused) sends the LEADER through his stairs-back record number (DS:C8B2[leader]) read on the level SHOWN, not his own: with the view on the lone member's floor (he was selected, then deselected) and the leader with the party on another, the leader leaves through a record of a floor he is not on (GitHub issue 3: from Rotenburg level 3 to level 1; past the count, whatever the generator left there) and the lone member stays. Only paused, with the member selected, does U or Orders > Use Stairs bring the member back (the menu's Use Stairs is greyed while the battle runs).
-- **B-b02169** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:461` `TacticalBattle.UseKey`  
+- **B-b02169** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:464` `TacticalBattle.UseKey`  
   original: `R016+0x137A` (1EF8:137A, draft), `R016+0x1590` (1EF8:1590, draft)  
   why: OriginalBehaviour.FixLeaderKeysOnOtherLevel - travelling together U sends every able member, on whatever level, through the leader's stairs record (split audit row 3)
-- **B-d71b85** `bug`, flag `FixDissolveKeyMember` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:584` `TacticalBattle.DissolveKey`  
+- **B-d71b85** `bug`, flag `FixDissolveKeyMember` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:587` `TacticalBattle.DissolveKey`  
   original: `R016+0x0F76` (1EF8:0F76, draft), `R014+0xB434` (18BF:0FA4, draft)  
   why: OriginalBehaviour.FixDissolveKeyMember - R016+0x0FAF..0x0FBA: use-up-slot(DS:A6B2, DS:C7CD): the selected member (outside order mode the party member under the pointer, R014+0xB785, else −1, R014+0xB7F5) with member 0's slot byte (absolute, not indexed), no test of either: another member's stack, or the entries before the packs.
-- **B-bdd7dd** `bug`, flag `FixStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:625` `TacticalBattle.TakeStairsOrder`  
+- **B-bdd7dd** `bug`, flag `FixStairsRecordOfShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:628` `TacticalBattle.TakeStairsOrder`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test): a member alone on another level whose order is given with the view back on the party's level (another member selected after Use Stairs, then Space: GitHub issue 3) takes that level's record n, past its count as a rule, whatever the generator left there (zeros: level 0 at (0, 0); another level's record; stale bytes): the wrong place or level, or back by chance (the Rotenburg keep: slot 2 of level 3 holds level 2's record to level 3).
-- **B-2a15e1** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:637` `TacticalBattle.LeaderAway`  
+- **B-2a15e1** `bug`, flag `FixLeaderKeysOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:640` `TacticalBattle.LeaderAway`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixLeaderKeysOnOtherLevel - the leader's U, O, P and D use his stairs record, door or chest index from the place tests of the level SHOWN: alone on another level he acts on the party's level by remote (split audit row 3)
-- **B-5e9887** `bug`, flag `FixStaleStairsBackRecord` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:676` `TacticalBattle.StaleStairsRecord`  
+- **B-5e9887** `bug`, flag `FixStaleStairsBackRecord` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:679` `TacticalBattle.StaleStairsRecord`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0x116E` (0E76:116E, draft)  
   why: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch: the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
-- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:727` `TacticalBattle.TakeStairs`  
+- **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:730` `TacticalBattle.TakeStairs`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
-- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:746` `TacticalBattle.TakeStairs`  
+- **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:749` `TacticalBattle.TakeStairs`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another level: once anyone has left, the party never comes together by the stairs (split audit row 10)
-- **B-fcc034** `bug`, flag `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:773` `TacticalBattle.TakeStairs`  
+- **B-fcc034** `bug`, flag `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:776` `TacticalBattle.TakeStairs`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixStairsArrivalWithoutPlace - when no place around the arrival spot is free, place-nearby fails and he keeps the coordinates of his old level (some generated mines: an arrival spot away from its stairs, amid cells that are not ground; he stands in the void; lockstep of direct use-exit calls, split audit fuzz)
-- **B-4595d9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:809` `TacticalBattle.LeaveLevel`  
+- **B-4595d9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:812` `TacticalBattle.LeaveLevel`  
   original: `R023+0x17D2` (1EF8:17D2, draft)  
   why: when the last member's stairs bring the party together, the enemies fighting on the level he arrives on count as left behind with the level left (R023+0x17D2): those of a following kind freeze and come again at his arrival spot, the others vanish. Kept as the original (party-split audit row 12). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
@@ -824,9 +852,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (14)
+## Presentation and host (15)
 
-### screens/presentation (14)
+### screens/presentation (15)
 
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
@@ -862,7 +890,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:302` `OverlandScreen.FreeBuffer`  
   original: `root 05BA:00C2` (05BA:00C2, matched), `root 0000:13A0` (0000:13A0, draft), `root 0000:0CAA` (0000:0CAA, draft) +2 more  
   why: OriginalBehaviour.FixMapQuitFreedBuffers - after the map's Alt-Q answered "no" the handles are 0, and the next free of one (a second Alt-Q "M", a portrait click or the camp "S", leaving the map "Map") fails root 05BA:00C2's check (root 044A:0164): root 0000:1354 (the drivers stopped, text mode), "<name> - Buffer dealloc error" by DOS function 9, exit(0) (session tk-map-altq-twice, local/batch/mapquit: the second Alt-Q). Fixed (DataSafe): the buffers are the map's as before.
-- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:522` `OverlandScreen.Scroll`  
+- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:463` `OverlandScreen.PlaceParty`  
+  original: `R030+0x00A8` (1462:00A8, draft)  
+  why: R030+0x01EB..0x0220: with x - 8 < 0 the marker x is 0x82 - (x - 8), one pixel per missing tile instead of 16, and the view column is 0; the party that leaves a place whose column is below 8 stands 2 to 5 tiles east of it (a column of 3 gives 8, a column of 6 gives 8 as well: 0x82 + 5 and 0x82 + 2 pixels read as tile 8) once the map runs (each pass of R030+0x0C44 takes the party's cell from the marker). In the shipped data the places are Nancy and Elberg (their exit points, DARKLAND.CTY, columns 6 and 6) and Valkenberg, Tongeren, Gemert, Helmond, Limberg, Spa and Briey (DARKLAND.LOC columns 5, 5, 5, 3, 6, 3, 3); a column of exactly 8 (Moresnet) is exact. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
+- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:528` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 - **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:234` `PartyRosterScreen.Arrow`  

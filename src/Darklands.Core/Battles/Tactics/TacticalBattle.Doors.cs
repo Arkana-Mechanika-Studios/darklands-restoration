@@ -183,6 +183,9 @@ public sealed partial class TacticalBattle
         //   and lock picks of a member who chose another place action after it (R023+0x12C0). Kept as the original (party-split audit
         //   row 19c). Decision: never, rare and harmless: only the skill rolled is another member's.
         var c = Battle[_picker];
+        // BUG: R023+0x12C0 (12F8..0309) takes the FIRST record of item 0x40 in the picker's pack and rolls with that record's quality, whatever
+        //   the others hold: a better set of lock picks further down the pack is never used (chance = Pick Locks + quality - 25 + 1d10).
+        //   Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
         var k = c.Items.FindIndex(s => s.Code == 0x40);
         if (k < 0)
         {
