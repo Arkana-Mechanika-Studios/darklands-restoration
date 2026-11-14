@@ -1,20 +1,30 @@
 # Darklands Restoration Project
 
 *Darklands* — MicroProse's 1992 role-playing game of 15th-century Germany, its saints, alchemy,
-witches and robber knights — rebuilt to run on today's Windows, without DOSBox, and to play exactly
-like the original.
+witches and robber knights — rebuilt to run on today's Windows (and, experimentally, Linux and the Steam
+Deck), without DOSBox, and to play exactly like the original.
+
+**[Download the latest release](https://arkana-mechanika-labs.github.io/download/)** · [Website](https://arkana-mechanika-labs.github.io/) · [Discord](https://discord.gg/HjzWvmHhqZ)
 
 <p>
-<img src="docs/screenshots/0.9.0/start-screen.png" width="49%" alt="The start screen" />
-<img src="docs/screenshots/0.9.0/city.png" width="49%" alt="An evening in a Gasthaus, the party's oath" />
-<img src="docs/screenshots/0.9.0/world-map.png" width="49%" alt="The world map" />
-<img src="docs/screenshots/0.9.0/battle.png" width="49%" alt="A fight in real time with pause" />
-<img src="docs/screenshots/0.9.0/character-sheet.png" width="49%" alt="A character sheet" />
-<img src="docs/screenshots/0.9.0/camp.png" width="49%" alt="Camping in the wild, the hourglass of passing time" />
+<img src="docs/screenshots/game/start-screen.png" width="49%" alt="The start screen" />
+<img src="docs/screenshots/game/city.png" width="49%" alt="An evening in a Gasthaus, the party's oath" />
+<img src="docs/screenshots/game/world-map.png" width="49%" alt="The world map" />
+<img src="docs/screenshots/game/battle.png" width="49%" alt="A fight in real time with pause" />
+<img src="docs/screenshots/game/character-sheet.png" width="49%" alt="A character sheet" />
+<img src="docs/screenshots/game/camp.png" width="49%" alt="Camping in the wild, the hourglass of passing time" />
 </p>
 
-<sub>Screenshots of version 0.9.0 (`docs/screenshots/0.9.0`): the start screen, a Gasthaus in Strassburg, the
-world map, a battle, a character sheet, a night's camp. More: character creation and an inn's choices.</sub>
+<sub>The game as it plays (`docs/screenshots/game`): the start screen, a Gasthaus in Strassburg, the world map, a
+battle, a character sheet, a night's camp. More there: character creation and an inn's choices.</sub>
+
+<p>
+<img src="docs/screenshots/launcher.jpg" width="49%" alt="The launcher: game folder, display, picture filter, sound card and packs" />
+<img src="docs/screenshots/battle-crt-filter.jpg" width="49%" alt="A battle drawn with the CRT+ picture filter, slightly curved" />
+</p>
+
+<sub>Around the game: the launcher, a settings screen before you play, and a battle drawn with one of the picture
+filters (CRT+, curved like a tube). The game's own pictures are unchanged; only how they are drawn on a large window.</sub>
 
 This is not a remake and not an emulator. Every rule of the original — combat, prices, saints,
 alchemy, the cards of every city and encounter, the generators of castles, mines and battlefields —
@@ -29,13 +39,13 @@ the game is included here: the program reads your installation.
 
 1. Get a release (`DarklandsRP.exe` and `DarklandsRP Launcher.exe` with `SDL3.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md`
    and empty `MT32_ROMS` and `SOUNDFONT` folders) and unpack it into a folder of its own.
-2. Start `DarklandsRP.exe`. On the first run it opens the launcher, a settings screen before the game: it has found
-   your Darklands by itself (GOG, Steam, or a folder next to it), and you can check the game folder, the window, the
-   sound card and the Roland ROM folder, and try the sound, then press **Play**. The choices go into
-   `darklands.settings.json`, next to the program. Later starts of `DarklandsRP.exe` go straight to the game. To change
-   the settings, start **`DarklandsRP Launcher.exe`** (on Linux `DarklandsRP-Launcher`) instead: it opens the launcher,
-   and its **Play** starts the game. Holding **Shift** while `DarklandsRP.exe` starts (or starting it with `--setup`)
-   does the same. If the game can't be found or can't start, the launcher comes up by itself and says why.
+2. Start **`DarklandsRP Launcher.exe`** (on Linux `DarklandsRP-Launcher`), a settings screen before the game. It
+   finds your Darklands by itself (GOG, Steam, or a folder next to it); check the game folder, the window and picture
+   filter, the sound card and the Roland ROM folder, try the sound, then press **Play**. The choices go into
+   `darklands.settings.json`, next to the program.
+   Once set up, `DarklandsRP.exe` goes straight to the game (on its very first run it opens the launcher itself; hold
+   **Shift** while it starts, or start it with `--setup`, to get the launcher again). If the game can't be found or
+   can't start, the launcher comes up by itself and says why.
 3. Play. It starts like the original: the banner, the opening, then the start screen with Quickstart,
    a new world or a saved game.
 
@@ -47,13 +57,26 @@ another folder you can write to.
 
 ## Playing
 
-The keys and the mouse are the original's: the menu bar with the right button or F10, F1–F5 for the
-character sheets, F6 for the party, Ctrl-F1–F5 to choose the leader, Alt-S save, Alt-L load, Alt-P pause,
-Alt-O the marching order, Alt-D difficulty, Alt-M music, Alt-F sound effects, Alt-Q quit. Two keys are
-this program's own: **F12** saves a screenshot, and **F11** opens a developer console over the game
-(`help` lists its commands: time, money, attributes, saints, items...). **Ctrl-F12** makes a problem report (below), and
-**Ctrl-F11** changes how the picture is drawn on a large window: sharp or even pixels, a soft VGA-monitor look, smoothed pixel art, or CRT looks
-(`display.filter`, [SETTINGS.md](docs/SETTINGS.md)).
+The keys and the mouse are the original's:
+
+| Keys | What |
+|---|---|
+| right mouse button, F10 | the menu bar |
+| F1–F5, F6 | a character sheet; the party |
+| Ctrl-F1–F5 | choose the leader |
+| Alt-S, Alt-L | save, load |
+| Alt-P, Alt-O | pause; the marching order |
+| Alt-D, Alt-M, Alt-F | difficulty; music; sound effects |
+| Alt-Q | quit |
+
+And this program's own:
+
+| Keys | What |
+|---|---|
+| F12 | save a screenshot |
+| F11 | a developer console over the game (`help` lists its commands: time, money, attributes, saints, items...) |
+| Ctrl-F12 | make a problem report (below) |
+| Ctrl-F11 | change how the picture is drawn on a large window: sharp or even pixels, a soft VGA-monitor look, smoothed pixel art, or CRT looks (`display.filter`, [SETTINGS.md](docs/SETTINGS.md)) |
 
 ## Reporting a problem
 
@@ -96,6 +119,7 @@ want:
 |---|---|
 | `gameFolder`, `savesFolder` | where your Darklands is; where the saves go |
 | `display.scale`, `display.resolution`, `display.fullscreen` | a bigger window (`2` = 1440x800), any size (`"1600x1000"`), full screen |
+| `display.filter`, `display.crtCurvature` | how the picture is drawn on a large window: `sharp` (default), `even`, `soft`, `softcrt`, `hq`, `crt`, `crtplus`; a curved CRT picture |
 | `sound.card`, `sound.mt32Roms` | the sound card; where the MT-32 ROMs are |
 | `display.hdPack`, `sound.audioPack`, `sound.soundFont` | a picture pack, a sound pack, the SoundFont for its `.mid` files (`docs/PACKS.md`) |
 | `display.cleanDrawing` | false: drawn as the 1992 game, oddities included; true: the cleaner drawing of 0.9.5 |
@@ -109,11 +133,16 @@ Everything else is in `docs/SETTINGS.md`, which also lists the command-line form
 
 The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
 churches, the world map and its encounters, battles, camping, saints and alchemy, saving and loading.
-What is knowingly different from the original, and which of the original's bugs are kept (deliberately:
-they are part of Darklands), is listed in `docs/faithfulness`. Things not done yet are listed where they
-belong (battles: `docs/BATTLES.md`).
+The release candidates are the last checks before 1.0: play them, and report anything that differs from the
+original (above, "Reporting a problem").
 
-Version 1.0 will come when the remaining faithfulness checks are finished.
+The original's bugs are part of Darklands and are kept, with one exception: the few that damage a saved game or
+lose your items (the inn's item stores, a member leaving the party, a damaged saved file...) are fixed, and the
+saved games stay readable by the original. A handful of plain drawing glitches are fixed too. Every one of these,
+and everything else that is knowingly different from the original, is listed with its reason in `docs/faithfulness`
+(the bugs: [ORIGINAL_BUGS.md](docs/faithfulness/ORIGINAL_BUGS.md)). The tests still play the fully faithful game,
+every bug included, against the original. Things not done yet are listed where they belong (battles:
+`docs/BATTLES.md`).
 
 ## License
 
