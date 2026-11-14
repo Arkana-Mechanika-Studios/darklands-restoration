@@ -149,11 +149,12 @@ public sealed class MineOracleTests
         return (state, random);
     }
 
-    /// <summary>The bug of R009+0x1ECE kept: a pile spot the first-pile set piece turns into a locked door (fill result 2) gets the shut
-    /// chest piece (cell |= 0x50) but no chest record, so a chest is drawn there that cannot be opened. The original's saved levels in the
-    /// corpus have 32 such cells, all in a section with no chest record and one locked riddle door (0xE4 or 0xE8); ours the same.</summary>
+    /// <summary>R009+0x1ECE: a pile spot the first-pile set piece turns into its furniture alarm (fill result 2: card 0xE4, the dwarf king's
+    /// stone box, or 0xE8, the stone crucifix's chest) gets the shut-chest piece (cell |= 0x50) and no chest record: the box is drawn as a
+    /// chest and opened through the alarm's card. The original's saved levels in the corpus have 32 such cells, all in a section with no
+    /// chest record and the alarm object (type 7, 0xE4 or 0xE8); ours the same.</summary>
     [Fact]
-    public void ALockedDoorSpotKeepsAChestPictureWithNoChest()
+    public void TheSetPieceBoxIsAChestPictureOpenedByItsAlarm()
     {
         var folder = Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR") ?? "";
         if (!GameFiles.IsGameFolder(folder))
@@ -187,7 +188,7 @@ public sealed class MineOracleTests
                 Assert.Contains(Enumerable.Range(0, mine.ObjectCount).Select(mine.Object), o => o.Type == 7 && o.Room is 0xE4 or 0xE8);
             }
         }
-        Assert.True(orphans > 0, "no chest picture without a chest");
+        Assert.True(orphans > 0, "no set-piece box drawn as a chest");
         Assert.Equal(expectedOrphans, orphans);
     }
 

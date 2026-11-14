@@ -1018,7 +1018,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R009+0x50E6` (182C:1146, draft)  
   divergence: an item type outside the item list weighs 0 here (the original reads the bytes beyond the list).  
   deterministic: **n/a** (checked against the original); action: **document** - 182C:1146 reads battlefield-item-table[type].x25 for the item types put in a pile: constants 0x48..0x5A, 0x66, 0x6D, 0x70, 0x73, 0x74 and RandomSpecialKind 0x96..0xAB, all below the 200 item records (the stale stack word in FillPile cannot reach this call because the first pick is always one of the 10 valid kinds). So no type outside the item list is ever weighed.
-- **D-d7edad** `undefined-memory` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:500` `MineBuilder.PlaceGroup`  
+- **D-d7edad** `undefined-memory` - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:503` `MineBuilder.PlaceGroup`  
   original: `R009+0x23D6` (1432:23D6, draft)  
   divergence: the original writes the group into slot group-total of level lvno even past 10 (into the next level's slots); the list grows here.  
   deterministic: **n/a** (checked against the original); action: **document** - 23D6 writes slot lvno*10+group-total[lvno]; each section gets its own level number and the callers place at most the spots pos 0..5 (r3382[0..4] plus the 0x6C spot, loops bounded by off<50) per section; the C# mine generator over all mine types gave at most 6 groups on a level, so slot 10 is never reached.
