@@ -122,7 +122,11 @@ public sealed class MineOracleTests
         Assert.True(changed > 0, "no scenario's fill took a fed word");
     }
 
-    internal static uint BuildState(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps)
+    internal static uint BuildState(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items, CombatTables tables, PreparedMaps maps) =>
+        Generate(s, bf, catalogue, items, tables, maps).Random.State;
+
+    private static (GenerationState State, MscRandom Random) Generate(JsonElement s, int bf, EnemyCatalogue catalogue, IReadOnlyList<ItemDefinition> items,
+        CombatTables tables, PreparedMaps maps)
     {
         var random = new MscRandom((uint)s.GetProperty("seed").GetInt32());
         using var forcedDraws = ScenarioDraws.Begin(random, s);          // a scenario's forced draws (mutate_battle.py), none in the committed corpus
@@ -142,7 +146,71 @@ public sealed class MineOracleTests
         };
         var state = new GenerationState(context, new BattlefieldForces(catalogue, items, tables, random));
         MineBattlefield.Build(state, bf, s.GetProperty("specs").EnumerateArray().Select(e => (e[0].GetInt32(), e[1].GetInt32(), e[2].GetInt32())).ToArray());
-        return random.State;
+        return (state, random);
+    }
+
+    /// <summary>The bug of R009+0x1ECE kept: a pile spot the first-pile set piece turns into a locked door (fill result 2) gets the shut
+    /// chest piece (cell |= 0x50) but no chest record, so a chest is drawn there that cannot be opened. The original's saved levels in the
+    /// corpus have 32 such cells, all in a section with no chest record and one locked riddle door (0xE4 or 0xE8); ours the same.</summary>
+    [Fact]
+    public void ALockedDoorSpotKeepsAChestPictureWithNoChest()
+    {
+        var folder = Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR") ?? "";
+        if (!GameFiles.IsGameFolder(folder))
+        {
+            return;
+        }
+        var files = new GameFiles(folder);
+        var catalogue = EnemyCatalogueDecoder.Decode(files.Read("DARKLAND.ENM"));
+        var items = WorldData.Load(files).ItemDefinitions;
+        var tables = CombatTablesReader.Read(DarklandsExecutable.Load(files));
+        var maps = PreparedMaps.Load(files);
+        int orphans = 0, expectedOrphans = 0;
+        foreach (var c in Data.Value.Cases("R009+0x0000"))
+        {
+            var s = c.Inputs;
+            var state = Generate(s, s.GetProperty("bf").GetInt32(), catalogue, items, tables, maps).State;
+            foreach (var saved in s.GetProperty("saved").EnumerateObject())
+            {
+                expectedOrphans += ChestPicturesWithoutChest(Inflate(saved.Value.GetProperty("deflated").GetString()!));
+            }
+            foreach (var level in state.SavedLevels.Values)
+            {
+                var found = ChestPicturesWithoutChest(level.Image);
+                if (found == 0)
+                {
+                    continue;
+                }
+                orphans += found;
+                var mine = new MineLevel(level);
+                Assert.Equal(0, (sbyte)mine.PileCount);
+                Assert.Contains(Enumerable.Range(0, mine.ObjectCount).Select(mine.Object), o => o.Type == 7 && o.Room is 0xE4 or 0xE8);
+            }
+        }
+        Assert.True(orphans > 0, "no chest picture without a chest");
+        Assert.Equal(expectedOrphans, orphans);
+    }
+
+    /// <summary>Cells whose furniture is a chest (5 shut, 6 open) with no chest record (+0x300C count, 0x2C records at +0x300E, cell +6/+7).</summary>
+    private static int ChestPicturesWithoutChest(byte[] image)
+    {
+        var records = new HashSet<(int, int)>();
+        for (var i = 0; i < (sbyte)image[0x300C]; i++)
+        {
+            records.Add((image[0x300E + 0x2C * i + 6], image[0x300E + 0x2C * i + 7]));
+        }
+        var n = 0;
+        for (var x = 0; x < 40; x++)
+        {
+            for (var y = 0; y < 40; y++)
+            {
+                if ((image[4 * (40 * x + y)] >> 4) is 5 or 6 && !records.Contains((x, y)))
+                {
+                    n++;
+                }
+            }
+        }
+        return n;
     }
 
     internal static string Compact(JsonElement e) =>string.Join("/", e.EnumerateArray().Select(v => v.GetInt32()));

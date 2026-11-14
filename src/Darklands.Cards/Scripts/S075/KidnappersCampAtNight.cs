@@ -36,7 +36,7 @@ public sealed class KidnappersCampAtNight : Card
         // DORMANT: the card is never reached in play: the only writer of following-card (DS:E48A) = 0x7E outside this card is line 4 of
         //   $McGuf10 (R075+0x0DC8, CloakedKidnapperOnTheRoad.TrackTheKidnappers), which is never enabled. Forced through a saved game at card
         //   0x7E, the original's word is 0xA714 (vis10 run of uncert-kidnap, hooked at R075+0x111A): the text fetch R043+0x118E then copies from
-        //   DS:[DS:36CF] + 0xA895 into its 0x458-byte stack buffer, and the emulated original stopped soon after at a fetch from unmapped
+        //   DS:[DS:36CF] + 0xA895 into its 900-byte stack buffer (TextVariables.Expand), and the emulated original stopped soon after at a fetch from unmapped
         //   memory (not traced further). Block 0 is kept here.
         return menu.Run(
             // orig: R075+0x12E2 (193D:0292) matched; R075+0x12E4 (193D:0294) matched; tests: CardSmokeTests

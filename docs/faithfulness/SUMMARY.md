@@ -693,9 +693,9 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 234 original bugs registered
+markers in the code, each with its reason and original coordinate: 235 original bugs registered
 (53 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 367 registered divergences,
-873 dormant branches kept as the original has them, no uncertain reading left (they were
+874 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
 measured as host timing and registered, D-d22f94). Every core-logic divergence has a
 review row (`DIVERGENCE_REVIEW.md`: the not-modelled, deliberate-fix, undefined-memory and other classes in game logic; the host and
@@ -833,6 +833,8 @@ R039+0x10B6, whose adapter gave the C# a place that the original does not read (
 fixed, 42 jobs redone, all agree. One was an old two-argument job of R039+0x0000. 18 runs of R039+0x1712 (quest 10, the new event's
 location) differ: they are the registered divergence D-5b0725 (region kinds 1, 2, 9 and 11, which the game never passes: the original's sort and item are uninitialised, 2 draws against 3); a rerun of the function for regions 0..12 from six states (2026-11-12, scratch/prefinal-cov/w1712) confirms it: 102 of 102 runs of those regions differ that way, the regions the game passes agree in every city, and at location -1 they differ only in the event's site (D-634961); no change in the C#. The agreeing world-call runs now: 1,626 of R1 (the other corpora unchanged: 630 rules, 1,673 travel,
 2,448 map entry); the contents of the events a call creates are now compared in all of them.
+
+Round leads-mine (2026-11-14, branch leads-mine): two leads settled from the original's code, no game logic changed. (1) Mine chests drawn without a chest: the pile pass of the mine builder (R009+0x1DA4) sets the shut-chest piece (cell |= 0x50, R009+0x1ECE) for every non-zero result of the pile filler, and keeps a chest record only for result 1 (R009+0x1F90); result 2 is the first pile's set piece turned into a locked riddle door (section 14 of mines 0x0B / 0x82, door 0xE4; section 11 of the deep mines, door 0xE8), so a chest picture with no record stands beside that door and cannot be opened. The original's saved levels of the mine corpus hold 32 such cells in 624 levels, all of this kind, and no other chest picture without a record; the C# builds the same images byte for byte (MineOracleTests). Registered as an original bug, behaviour kept (B-ae5258; a picture-only fix is for the evident-visual-fix decision); test `MineOracleTests.ALockedDoorSpotKeepsAChestPictureWithNoChest`. (2) The card text limit: text-substitute (R043+0x118E) has 0x458 bytes of locals; the block is copied unchecked to [bp-0x458] and the name buffer starts at [bp-0xD4], so a block holds 899 bytes and its zero (from byte 1112 on it reaches the saved BP, from 1114 the return address); the expanded text goes to text-bank-buffer DS:9085, also 900 bytes (DS:9409 follows). No shipped block reaches it: the longest of the 3,756 blocks of MSGFILES is 599 bytes, and the longest expansion with generous value lengths is 878. Registered dormant (Z-fef9b5, TextVariables); the C# has no limit and draws a longer block whole. Registers: one original bug and one dormant row more (ORIGINAL_BUGS 270, dormant 874), divergences unchanged (367). Notes: local/leads-mine-2026-11-14.md.
 
 Round rosterhs (2026-11-07, branch rosterhs): two items of the inn roster and the SDL host. (1) Heraldry (R038+0x0EB7) and Select
 Character Image (R038+0x1083) on a row the list did not fill, proven on the original: the list (R038+0x23EC) writes DS:8D06 only for
