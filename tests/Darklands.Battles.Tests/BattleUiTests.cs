@@ -991,6 +991,36 @@ public sealed class BattleUiTests
     }
 
     /// <summary>
+    /// A row's order letter is the one drawn at the row's last drawing (party-panel-row-set root 0000:1716, the only caller of the letter
+    /// root 0000:18FA): walking by the arrow keys sets the action to walking (R016+0x02D6..0x02ED) without drawing the row, so the row keeps
+    /// its old letter; order mode's start draws every row (R014+0xBC31..0xBC34), and the row then shows W (vis10 run
+    /// scratch\leads-mine\panel-letter of synth/DKSAVE2-stonebox: '-' on both sides after the walk).
+    /// </summary>
+    [Fact]
+    public void AWalkByTheArrowKeysKeepsTheRowsLetterUntilTheRowIsDrawn()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        using var run = new Session(files, Corridor);
+        run.Play("wait:10", "key:space", "wait:5");
+        var tb = run.Screen.Tactics!;
+        Assert.False(tb.InOrderMode);
+        var i = tb.Battle.ActiveMember;
+        var before = run.Screen.RowLetterShown(i);
+        Assert.NotEqual('W', before);
+        run.Play("kdown:4D", "wait:10");
+        Assert.Equal(CombatAction.Walk, tb.Battle[i].Action);
+        Assert.Equal('W', run.Ui.BattleStatusLetter?.Invoke(i));
+        Assert.Equal(before, run.Screen.RowLetterShown(i));
+        run.Play("kup:4D", "key:1", "wait:3");
+        Assert.True(tb.InOrderMode);
+        Assert.Equal(run.Ui.BattleStatusLetter?.Invoke(i), run.Screen.RowLetterShown(i));
+        Assert.Equal('W', run.Screen.RowLetterShown(i));
+    }
+
+    /// <summary>
     /// The order letter's patch DS:A6C2 is the 10 x 7 block of the row background under the letter's place: the bytes of the block the
     /// emulated original made at start-up (root 0000:F01E..F026, vis10 session visleads-order-letter), row by row.
     /// </summary>
