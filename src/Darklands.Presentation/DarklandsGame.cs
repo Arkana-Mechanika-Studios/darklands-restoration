@@ -534,6 +534,9 @@ public sealed class DarklandsGame
 
     /// <summary>Alt-S: the save dialog; inside a battle the battle's own Alt-S (BattleScreens.Save) saves it with the battle.</summary>
     // orig: game-store-overlay-entry = game-store-entry R037+0x2A68 (hotkey-table key 0x1F00)
+    // C: a save from a card's menu leaves the card's text bank (text-bank-file DS:A895) as it was: a watch of DGROUP over R037+0x2A68..0x2ACC
+    //   (the inn card 0x1D of DKSAVE0, Alt-S, comment kept) shows no byte of DS:A895..+6000 changed, and the card's text and options are
+    //   drawn again after the save, 0 pixels apart from the C# (leads-cards, 2026-11-14).
     private void SaveGame(GameState state, BattleScreens battles, Core.Battles.Tactics.TacticalBattle? battle = null)
     {
         if (battle is not null)

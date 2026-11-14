@@ -171,6 +171,10 @@ public static class Inventory
     /// <summary><paramref name="count"/> items of default quality (<c>give-several-items</c>).</summary>
     // orig: give-several-items-inner R031+0x4930 (18E7:00E0) matched
     // C: the stack's type, quality and weight are the item record's signed chars stored in unsigned bytes.
+    // C: the original reads them through item-definition-table (2E38:0890, segment word DS:7E64): far pointers to the records world-read fills
+    //   from DARKLAND.LST. A battle reads the list again at another heap place, with the same bytes: watched in the original at the cards after a
+    //   battle (a mine's $MineE00 card 0x2E, a road card after the boars, the riddle doors 0xC9 / 0xEA inside a mine) and at each give, all 200
+    //   records equal those of the start screen (Pure Gold 0x48 keeps type 109). So the item data is right after a battle too (leads-cards, 2026-11-14).
     public static int AddMany(GameState s, int who, int code, int count)
     {
         var d = s.Item(code);

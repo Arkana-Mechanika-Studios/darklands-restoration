@@ -45,7 +45,7 @@ entries, mostly invisible: undefined memory, host timing) and [faithfulness/SUMM
   original draws a row background over the card from what the mouse handler left on the stack; the restoration shows "Success is
   assured." for the party (D-39eb3b, D-8ef30d). A chance hint can differ when a timer tick lands just before it (D-252ba1).
 * The city gate at night: four colours one palette step apart; the night gate fade length is fixed (D-dff56b).
-* The prison cell card (D-99119d) shows its text and waits; the original flashes it. Returning to the last battlefield
+* The prison cell card (vis10 session D-99119d) shows its text and waits for a key, then fades, in both. Returning to the last battlefield
   uses the same place or builds a new one (D-24e8b0).
 * The load screen lists saves in name order (DOS: directory order); the pointer stays visible on an empty list.
 * The party's random seed at character creation comes from the clock in both; do not compare dice there.
