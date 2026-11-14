@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 77 | 3 | 74 |
 | events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
-| battles | 67 | 32 | 35 |
+| battles | 66 | 32 | 34 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 15 | 8 | 7 |
-| total | 278 | 73 | 205 |
+| total | 277 | 73 | 204 |
 
-## Core logic (263)
+## Core logic (262)
 
 ### rules (104)
 
@@ -623,7 +623,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (67)
+### battles (66)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -668,9 +668,6 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f20e47** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Contents.cs:787` `MineBuilder.SetPiece`  
   original: `R009+0x4D56` (182C:0DB6, draft)  
   why: the relic of the deepest section of the dwarf, kobold and vulcan mines (R009+0x4E28..0x4E3B) is forced to quality 35: any relic 0x96..0xAB gets quality 0x23 and type 0x9F whatever DARKLAND.LST gives it, as the fortress relics (R011+0x096A).
-- **B-ae5258** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Fill.cs:345` `MineBuilder.MakePiles`  
-  original: `R009+0x1DA4` (1432:1DA4, draft)  
-  why: a pile spot the set piece makes a locked door (result 2: section 14 of mines 0x0B / 0x82, door 0xE4; section 11 of the deep mines, door 0xE8) also gets the shut-chest piece (R009+0x1ECE `or es:[bx+si], 0x50` runs for any non-zero result of R009+0x1EA0; only result 1 keeps a record, R009+0x1F90 `cmp byte [bp-1], 1`), and no chest record: a chest is drawn beside the riddle door that the party cannot open (chest-opening R023+0x13D0 works from the records). The original's saved levels of the mine corpus have 32 such cells in 624 levels, all of this kind; no other chest picture lacks a record. The cell is a chest cell in every other way; only its record is missing. Tests: MineOracleTests.ALockedDoorSpotKeepsAChestPictureWithNoChest.
 - **B-85e0a9** `bug`, flag `FixWalkingOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/BattleMap.cs:108` `BattleMap.Collides`  
   original: `R014+0x5ECA` (1462:000A, draft)  
   why: OriginalBehaviour.FixWalkingOnOwnLevel - the walls and furniture tested are those of the level SHOWN, for a combatant on any level (fighter-collision-pass R014+0x5ECA, the paths R014+0x481A): a member walking on a hidden level is stopped by the shown level's walls and walks through his own (party-split audit row 5)
@@ -859,7 +856,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
-- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.cs:2883` `BattleScreen.RecordScreenPlaces`  
+- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.cs:2935` `BattleScreen.RecordScreenPlaces`  
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
   why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
   decision: never: display only: his order mode opens when he is drawn again

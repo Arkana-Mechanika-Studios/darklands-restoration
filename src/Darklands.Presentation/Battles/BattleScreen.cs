@@ -681,6 +681,8 @@ public sealed class BattleScreen : ITacticalView
         Array.Clear(_placeNotes);
         Array.Clear(_tickPlaces);
         Array.Clear(_orderLetters);
+        Array.Clear(_rowLetters);
+        Array.Clear(_rowLetterDrawn);
         _orderCellRows = 0;
         _pageCellHoldsRows = false;
         _framesOverHatching = false;
@@ -753,6 +755,8 @@ public sealed class BattleScreen : ITacticalView
         Array.Clear(_placeNotes);
         Array.Clear(_tickPlaces);
         Array.Clear(_orderLetters);
+        Array.Clear(_rowLetters);
+        Array.Clear(_rowLetterDrawn);
         _orderCellRows = 0;
         _pageCellHoldsRows = false;
         _framesOverHatching = false;
@@ -1141,6 +1145,42 @@ public sealed class BattleScreen : ITacticalView
     /// </summary>
     private readonly char?[] _orderLetters = new char?[Combatant.PartySlots];
 
+    /// <summary>
+    /// The order letter each party row shows: member-status-glyph's letter as it was when the row was last drawn (null: none), kept until the
+    /// row is drawn again; <see cref="_rowLetterDrawn"/> false: not drawn since the battle began.
+    /// </summary>
+    // orig: member-status-glyph root 0000:18FA has one caller, party-panel-row-set root 0000:1716 (its call at 0000:1844), which draws only
+    //   the rows of the bits DS:01E4[which] (all five for 0x100); a member's order changed without it keeps the row's old letter on the
+    //   screen: the arrow keys of fight-keys (R016+0x02D6..0x02ED: DS:E079 = 1, the action word +0x10 = 1, DS:CA30[i] = the step) set
+    //   walking and return (R016+0x09B8) with no row drawn, so the letter stays '-' while the member walks (vis10 run
+    //   scratch\leads-mine\panel-letter of synth/DKSAVE2-stonebox). The rows are drawn where the engine says RowChanged, at floor-view-paint
+    //   (R017+0x002C..0x003A, FloorViewPanel), after the won battle's loot (R014+0x0D30..0x0D33), after the combat sheet
+    //   (R022+0x01D0..0x01D3), before the loot screen (R014+0xE5AF..0xE5B2) and after each skill-change message (R014+0x0694's calls
+    //   R014+0x07DC .. 0x08DE).
+    private readonly char?[] _rowLetters = new char?[Combatant.PartySlots];
+
+    private readonly bool[] _rowLetterDrawn = new bool[Combatant.PartySlots];
+
+    /// <summary>The order letter party row <paramref name="row"/> shows now (as of its last drawing), or null.</summary>
+    public char? RowLetterShown(int row) => _rowLetterDrawn[row] ? _rowLetters[row] : StatusLetter(row);
+
+    /// <summary>party-panel-row-set drew row <paramref name="row"/> (or all rows for -1): its letter is taken from the state now.</summary>
+    private void RowLetterDrawn(int row)
+    {
+        if (_battle is null)
+        {
+            return;
+        }
+        for (var i = 0; i < Combatant.PartySlots; i++)
+        {
+            if (row == -1 || row == i)
+            {
+                _rowLetters[i] = StatusLetter(i);
+                _rowLetterDrawn[i] = true;
+            }
+        }
+    }
+
     /// <summary>The order letter R016+0x15BE drew in a party row, still on the screen (null: none; '\0': the patch without a letter).</summary>
     public char? OrderLetterShown(int row) => _orderLetters[row];
 
@@ -1257,6 +1297,7 @@ public sealed class BattleScreen : ITacticalView
             ? _assets.Executable.String(System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(_assets.Executable.DataSegment(pointer, 2)))
             : null;
         _orderLetters[i] = null;
+        RowLetterDrawn(i);
         if (i == 0 && _orderCellRows > 1)
         {
             // C: the row is drawn from y = 1: the cell's top line stays (vis10 run uncert-order-letter-none, after Enter)
@@ -1376,6 +1417,7 @@ public sealed class BattleScreen : ITacticalView
         // orig: R014+0xE5AF..0xE5B2: the panel rows (root 0000:1716) with 0x100 before the loot screen, the frames not: each row's 0x26 lines are
         //   copied to the screen, its last line and the frames stay as the battle drew them (vis10 session D-56a675: the shields, the order letters
         //   and the battle's hatching on the frame line)
+        RowLetterDrawn(-1);
         new PartyPanel(_ui).DrawRowsAsCopied(_ui.Canvas, _state.Party);
         // orig: loot-view R014+0xE410..0xE42D: the menu titles and DS:9893 are 2 while the loot screen is up, put back at
         //   R014+0xE716..0xE72B (as around the combat sheet)
@@ -1443,6 +1485,8 @@ public sealed class BattleScreen : ITacticalView
         {
             return;
         }
+        // orig: R014+0x0D30..0x0D33: party-panel-row-set(0x100) after the frames: every row's letter as the state is now
+        RowLetterDrawn(-1);
         ErasePointer();
         DrawPanel(_ui.Canvas);
         DrawPointer(_ui.Canvas, _driverShape);
@@ -1500,6 +1544,12 @@ public sealed class BattleScreen : ITacticalView
         finally
         {
             restore();
+        }
+        // orig: R014+0x0694's skill notices (its calls R014+0x07DC .. 0x08DE): each message, then party-panel-row-set(member): the row's letter
+        //   as the state is now
+        if (member >= 0)
+        {
+            RowLetterDrawn(member);
         }
     }
 
@@ -2575,6 +2625,8 @@ public sealed class BattleScreen : ITacticalView
         _releases = 0;
         _ui.PointerVisible = false;
         tb.MembersBackToCombat();
+        // orig: R022+0x01D0..0x01D3: party-panel-row-set(0x100) after the sheet: every row's letter as the state is now
+        RowLetterDrawn(-1);
         _ui.Canvas.Restore(saved);
         SetPalette(tb.Field.Terrain.BackgroundPalette);
         _paletteApplied.Clear();
@@ -3702,7 +3754,7 @@ public sealed class BattleScreen : ITacticalView
                         [t.MaximumEndurance, t.MaximumStrength, t.Maximums[favour]], color);
                 }
             }
-            if (StatusLetter(i) is { } letter)
+            if (RowLetterShown(i) is { } letter)
             {
                 // orig: the order letter root 0000:18FA draws the letter as text in the window's colour, the name's (the leader's
                 //   letter yellow: vis10 session tleads-battle-difficulty)

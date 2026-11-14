@@ -342,12 +342,15 @@ internal sealed partial class MineBuilder
                 var result = FillPile(level, pile, t, section, kept);
                 if (result != 0)
                 {
-                    // BUG: a pile spot the set piece makes a locked door (result 2: section 14 of mines 0x0B / 0x82, door 0xE4; section 11 of
-                    //   the deep mines, door 0xE8) also gets the shut-chest piece (R009+0x1ECE `or es:[bx+si], 0x50` runs for any non-zero
-                    //   result of R009+0x1EA0; only result 1 keeps a record, R009+0x1F90 `cmp byte [bp-1], 1`), and no chest record: a chest is
-                    //   drawn beside the riddle door that the party cannot open (chest-opening R023+0x13D0 works from the records). The original's
-                    //   saved levels of the mine corpus have 32 such cells in 624 levels, all of this kind; no other chest picture lacks a record.
-                    //   The cell is a chest cell in every other way; only its record is missing. Tests: MineOracleTests.ALockedDoorSpotKeepsAChestPictureWithNoChest.
+                    // C: R009+0x1ECE (`or es:[bx+si], 0x50`) puts the shut-chest piece on the cell for any non-zero fill result (R009+0x1EA0);
+                    //   only result 1 keeps a chest record (R009+0x1F90 `cmp byte [bp-1], 1`). Result 2 is the first pile's set piece: the
+                    //   furniture alarm AddLockedDoor adds (object type 7, trigger handler 7, R014+0xD966) with card 0xE4 ($MineB01, the dwarf
+                    //   king's stone box; section 14 of mines 0x0B / 0x82) or 0xE8 ($MineC00, the chest of the stone crucifix; section 11 of the
+                    //   deep mines). So the chest drawn there without a record is that box, opened through its own card when the party walks
+                    //   into the alarm, not through chest-opening (R023+0x13D0). The original's saved levels of the mine corpus have 32 such
+                    //   cells in 624 levels, each with its alarm; ours the same. Seen in the original and here alike (vis10 of
+                    //   synth/DKSAVE2-stonebox, Rammelsburg level 6: the box in the room's east corner, pixel identical). Tests:
+                    //   MineOracleTests.TheSetPieceBoxIsAChestPictureOpenedByItsAlarm.
                     level.OrCell(pile.CellX, pile.CellY, 0x50);
                     var x0 = pile.X / 32;
                     var x1 = x0 + (pile.Width >> 5) - 1;
@@ -382,7 +385,7 @@ internal sealed partial class MineBuilder
         level.PileCount = kept;
     }
 
-    /// <summary>Adds a locked door at a loot pile's spot: a door object and a free door-spot record.</summary>
+    /// <summary>Adds the set piece's furniture alarm at a loot pile's spot (object type 7, the card in its last word: 0xE4 the stone box, 0xE8 the stone crucifix's chest) and a free record at +0x3350; the name is the draft's.</summary>
     // orig: R009+0x205E (1432:205E) draft (unmatched draft, far off per the draft notes); tests:
     // Oracle:mine.json
     // C: the draft types the pile as an exit record; the cell is the pile's bytes +6/+7 and its facing byte +0x0C.
