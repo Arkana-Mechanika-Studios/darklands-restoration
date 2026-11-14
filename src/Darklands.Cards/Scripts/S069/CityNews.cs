@@ -6,6 +6,9 @@ namespace Darklands.Cards.Scripts;
 /// politics quest runs here) discuss the political situation. The lines lead on to the cards that
 /// do the real work and come back here.
 /// </summary>
+// DORMANT: text blocks 1 ("Life here in $PlaceName has been dull and uninteresting ...") and 2 ("More than one person makes a passing reference to a
+//   powerful noblewoman whose well-guarded manor is said to be $Direction of here ...") of $CityN00 are in the file but R069+0x1250 shows only
+//   text 0 (its one text call, push 0 at R069+0x139A, is the menu; the menu lines go on to other cards): the two blocks are unused text.
 // orig: R069+0x1250 (195D:0000) matched; tests: CardSmokeTests
 // orig: handler setup R069+0x1720 is empty (the previous card's item/saint handlers stay: no line here uses them);
 // unused-line handler R069+0x1722 ("screwed up.")

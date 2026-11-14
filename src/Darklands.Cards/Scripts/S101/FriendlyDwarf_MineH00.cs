@@ -62,6 +62,10 @@ public sealed class FriendlyDwarf_MineH00 : Card
         }
         else if (door is 0xD8 or 0xD9 or 0xDA or 0xDB or 0xDC or 0xDD or 0xDE)
         {
+            // BUG: text 7 has the dwarf say that enemies beyond the door guard a stolen relic the party should win back, but this branch
+            //   (R101+0x11F4) hands the leader a magic item (flag 0x1000) at once, before any fight, and makes the fact 7 of the place last
+            //   to 9999 hours; a later visit by that door then shows text 8 ("you have already despoiled their treasure, taken their relic").
+            //   The item is not tied to a fight or a relic. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
             if (!c.Events.Fact(MineQuestTag, GiftGiven, c.Here))
             {
                 // Up to ten draws of a magic item (flag 0x1000) the party does not carry yet.

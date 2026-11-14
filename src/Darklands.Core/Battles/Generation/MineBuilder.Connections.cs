@@ -257,6 +257,11 @@ internal sealed partial class MineBuilder
         spot.Facing = dir;
         spot.X = arrivalX;
         _flags.OccupyAround(number, arrivalX / 32 + 1, arrivalY / 16 + 1);
+        // BUG: R009+0x2C98 opens the gap even when neither of the two sections the connection names was built (no level slot): the exit then
+        //   leads to its own level, its own exit number and its own arrival spot, a ladder that puts the party back where it stood. Which
+        //   shipped mines and floors have such a passage is not established here (a report from play puts one on a floor of the mine of the
+        //   king's iron door, an exit to its own floor with the arrival beside itself). Reproduced as the original.
+        //   Decision: later, an optional fixed rule after 1.0.
         if (slotB < 0)
         {
             exit.TargetLevel = level.Number;

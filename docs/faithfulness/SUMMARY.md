@@ -693,9 +693,9 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 234 original bugs registered
+markers in the code, each with its reason and original coordinate: 277 original bugs registered
 (53 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 367 registered divergences,
-873 dormant branches kept as the original has them, no uncertain reading left (they were
+874 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
 measured as host timing and registered, D-d22f94). Every core-logic divergence has a
 review row (`DIVERGENCE_REVIEW.md`: the not-modelled, deliberate-fix, undefined-memory and other classes in game logic; the host and

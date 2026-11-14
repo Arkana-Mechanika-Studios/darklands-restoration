@@ -10,6 +10,7 @@ public sealed class RiddleDoor_MineT25 : DwarfRiddleDoor
     public override int Number => 0xDC;
 
     // orig: sort R099+0x0186 (1838:0186); reset R099+0x043A (1838:043A) matched
+    // C: sort 0 leads to 0xE5 although this riddle can be the iron door of the mine's section 8: see $MineT24.
     protected override (int Sort0, int Sort1, int Sort2) Beyond => (0xE5, 0xE7, 0xEB);
 
     protected override MenuLine[] Answers(CardContext c) =>

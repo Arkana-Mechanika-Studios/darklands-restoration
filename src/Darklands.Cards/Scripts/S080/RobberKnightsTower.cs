@@ -70,6 +70,12 @@ public sealed class RobberKnightsTower : Card
         menu[5] = c.SaintsUsable();
 
         // Every approach but the alchemy line and leaving makes the party known at the tower.
+        // orig: event-here-test R029+0x2930 (0E76:2930) draft
+        // BUG: each such approach makes a new 270-day note (the event creator R029+0x2930 takes the first free slot and looks for no earlier note of
+        //   the kind, R029+0x3144) although the first already says the party is known: a party that tries again and again at one tower
+        //   leaves one note per try, and enough of them fill the 300 slots of the event table, after which every new event fails with
+        //   "EVENT Failure" (see EventLog.Create). Reproduced as the original; the card's own repeat (the tower card comes round again after
+        //   a kill) is another row. Decision: later, an optional fixed rule after 1.0.
         void Recognise()
         {
             c.EventHere(Recognised, 6480);

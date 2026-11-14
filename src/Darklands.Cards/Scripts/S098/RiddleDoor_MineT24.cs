@@ -9,6 +9,12 @@ public sealed class RiddleDoor_MineT24 : DwarfRiddleDoor
     public override int Number => 0xDB;
 
     // orig: sort R098+0x0C96 (18E8:0196); reset R098+0x0F58 (18E8:0458) matched
+    // BUG: this card and $MineT25 (0xDC, R099+0x0186) are two of the twelve riddles the mine builder can hang on the iron door of its section 8
+    //   (0xDB..0xE2, 0x153..0x156, MineBuilder.Contents), the door of the mine's own king; but the sort-0 answer of these two is 0xE5, the
+    //   meeting every ordinary dwarf door of the other sections leads to ($MineB02, R101+0x0622), while the other ten lead to 0xE6, the
+    //   king's own card ($MineB03, R101+0x0850). In one draw of the door in six (and with the mine's sort 0) the party that answers
+    //   right therefore meets the wrong card; what this costs the quest (the king's treasure is only offered back from 0xE6) is not proved here. Reproduced as the original.
+    //   Decision: later, an optional fixed rule after 1.0.
     protected override (int Sort0, int Sort1, int Sort2) Beyond => (0xE5, 0xE7, 0xEB);
 
     protected override MenuLine[] Answers(CardContext c) =>
