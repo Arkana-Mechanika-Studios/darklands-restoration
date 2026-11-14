@@ -185,7 +185,11 @@ public sealed class CryptUnderTheRuinedChurch : Card
         ShowPicture(c, SkeletonsPicture);
         c.Screen.Text(7);
         FightTheSkeletons(c, menu);
-        // BUG: a victory has already left for the map (location-now -1), so the errand's thing is given only after a defeat.
+        // BUG: a victory has already left for the map (location-now -1), so the errand's thing is given only after a defeat. A retreat
+        //   leaves the same way (R108+0x02B0: results 0, 1 and 2 set location-now to -1 before R039+0x1AB0 reads it), and a crypt cleared of
+        //   every skeleton can only end as a retreat: the tombs (battlefield 0x5F, R011+0x1FB2) are persistent and none of their kinds ends
+        //   the battle when killed (the original-byte corpus: combat flags 1 and byte +0x0C 0 in all 10 tomb cases), so the last skeleton's
+        //   fall goes back to exploring and the stairs return 8, which the battle reports as 2. The party gets the thing only by losing.
         c.FinishQuest10(c.Here);
     }
 

@@ -541,15 +541,15 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R031+0x60E4` (18E7:1894, draft)  
   divergence: roll-below(n) counts n < 2 as 2, so with 0 or 1 matching items k can pass the last one and the original falls off the loop (AX undefined); here -1.  
   deterministic: **n/a** (checked against the original); action: **document** - roll-below(n) uses n<2 as 2, so k in {0,1}; with 0 matches, or 1 match and k=1, the function falls off the end and the epilogue (mov ax,DGROUP (321A); mov ds,ax; retf) returns AX = the relocated DGROUP segment (load-address dependent, not fixed). The only direct caller is R101 seg 1957 with flags 0x1000, and DARKLAND.LST has 13 items among the first 172 with flags exactly 0x1000 (codes 150, 151, 161..), so the fall-off cannot occur in play. Keep -1.
-- **D-6531f6** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:197` `Inventory.AddStack`  
+- **D-6531f6** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:201` `Inventory.AddStack`  
   original: `R031+0x4A04` (18E7:01B4, draft)  
   divergence: (-2) the original returns party[5].nitems (a byte after the records); here the last member's count.  
   deterministic: **no** (checked against the original); action: **document** - give-item-record-form(-2) loops the five records and after the loop reads [bx-632Dh] with bx=5<<7, i.e. party[5].nitems = DS:9F53 = combatants[5]+0x7E (the first enemy's item count in the battle table; party records are combatants+0x14): battle leftovers, not modelled. No caller uses the result for -2 (give-one-item-form/give-several-items(-2,..) in R047/s053 discard AX), so it is unobservable; keep.
-- **D-4d44dd** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:301` `Inventory.RemoveStack`  
+- **D-4d44dd** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:305` `Inventory.RemoveStack`  
   original: `R031+0x4EB8` (18E7:0668, draft)  
   divergence: (-2) with nobody carrying the code the original returns the uninitialised r; here -1.  
   deterministic: **no** (checked against the original); action: **document** - r is assigned only when some present member carries the code; otherwise AX = the stale stack slot of the frame. The callers with who=-2 (R047 seg 1852 with 40h, R107 seg 1838 with [E896]) ignore the result, so it is unobservable. Keep -1.
-- **D-b8a875** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:454` `Inventory.Equipped`  
+- **D-b8a875** `undefined-memory` - `src/Darklands.Core/Rules/Inventory.cs:458` `Inventory.Equipped`  
   original: `R031+0x5D06` (18E7:14B6, draft)  
   divergence: slot-item does not resolve -1 (party[-1] is the bytes before the records); here -1 is the leader.  
   deterministic: **n/a** (checked against the original); action: **document** - slot-item (14b6, vector thunk 09C0:1E9B) reads party[who] fields directly (record base 9C69+who*0x80); with -1 it would read DS:9BE9.., a mix of 22-byte menu-item records (from DS:9BE5, stride 0x16) and combatants[-1], i.e. unmodelled UI/battle state. All callers found (R031 seg 1462 literal slots with a member in [bp+8], R029 loops over di, R044/s053/s077/s082/s101 si/ax member variables) pass concrete members; no literal -1 push (the ax-passing sites were not traced to the end). Keep the leader mapping.
@@ -732,7 +732,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R055+0x1316` (1932:0376, matched)  
   divergence: guard for a party that is not at a location (the original would write before the location table).  
   deterministic: **n/a** (checked against the original); action: **document** - The sally-port card is entered at a city wall (its battle seed adds location-now, the standing is read from location-now at arrival), so location-now is a valid location; the cited function 0376 does R029+0x19B4(location-now, v) + event-refresh. If location-now were -1 the write would go to the null/IVT page with no observable effect (place-standing setter has no random draw).
-- **D-6c0b4c** `undefined-memory` - `src/Darklands.Cards/Scripts/S055/MineCleared.cs:47` `MineCleared.Run`  
+- **D-6c0b4c** `undefined-memory` - `src/Darklands.Cards/Scripts/S055/MineCleared.cs:49` `MineCleared.Run`  
   original: `R055+0x0F30` (1908:0230, matched)  
   divergence: guard for a party that is not at a location.  
   deterministic: **n/a** (checked against the original); action: **document** - MineCleared is the arrival card of a mine location, so location-now is the mine (>= 0x5C); the unguarded locations[location-now]+0x0C write is in the card main, not in the cited init helper 0230. A -1 would only write into the null/IVT page.

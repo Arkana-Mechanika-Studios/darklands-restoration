@@ -90,13 +90,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-b28ef4** `bug`, flag `FixItemQualityByFlags` - `src/Darklands.Core/Rules/Inventory.cs:134` `Inventory.BestQualityByFlags`  
   original: `R031+0x5F6C` (18E7:171C, draft)  
   why: item-definition-table[0]->flags is tested for every stack (FixItemQualityByFlags).
-- **B-d5aab5** `bug`, flag `FixPartyItemsAddedTwice` - `src/Darklands.Core/Rules/Inventory.cs:196` `Inventory.AddStack`  
+- **B-d5aab5** `bug`, flag `FixPartyItemsAddedTwice` - `src/Darklands.Core/Rules/Inventory.cs:200` `Inventory.AddStack`  
   original: `R031+0x4A04` (18E7:01B4, draft)  
   why: (-2) the stack is joined and appended too (FixPartyItemsAddedTwice).
-- **B-d0865f** `bug`, no fix flag - `src/Darklands.Core/Rules/Inventory.cs:230` `Inventory.AddStack`  
+- **B-d0865f** `bug`, no fix flag - `src/Darklands.Core/Rules/Inventory.cs:234` `Inventory.AddStack`  
   original: `R031+0x4A04` (18E7:01B4, draft)  
   why: a 65th stack is dropped without a word (quest items too): nothing tries another member, and the callers do not test the pack.
-- **B-e458c5** `bug`, flag `FixKeepItemsOffByOne` - `src/Darklands.Core/Rules/Inventory.cs:411` `Inventory.KeepEach`  
+- **B-e458c5** `bug`, flag `FixKeepItemsOffByOne` - `src/Darklands.Core/Rules/Inventory.cs:415` `Inventory.KeepEach`  
   original: `R031+0x5308` (18E7:0AB8, draft)  
   why: i starts at nitems (FixKeepItemsOffByOne).
 - **B-42ba6c** `bug`, flag `FixRecordedListShift`, `FixShopSetSwap` - `src/Darklands.Core/Rules/LocationRules.cs:148` `LocationRules.Set`  
@@ -529,7 +529,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: R029 2474 returns how many members were away, not who left: text-slot-chosen-one gets that count, so the text names party member [count], and the test against -1 always holds: the loss text and the Virtue practice come even when nobody was away.
 - **B-c6aabd** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S108/CryptUnderTheRuinedChurch.cs:188` `CryptUnderTheRuinedChurch.TakeTheItem`  
   original: `R108+0x07CA` (1838:07CA, matched)  
-  why: a victory has already left for the map (location-now -1), so the errand's thing is given only after a defeat.
+  why: a victory has already left for the map (location-now -1), so the errand's thing is given only after a defeat. A retreat leaves the same way (R108+0x02B0: results 0, 1 and 2 set location-now to -1 before R039+0x1AB0 reads it), and a crypt cleared of every skeleton can only end as a retreat: the tombs (battlefield 0x5F, R011+0x1FB2) are persistent and none of their kinds ends the battle when killed (the original-byte corpus: combat flags 1 and byte +0x0C 0 in all 10 tomb cases), so the last skeleton's fall goes back to exploring and the stairs return 8, which the battle reports as 2. The party gets the thing only by losing.
 - **B-03246c** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S113/PeatBog.cs:26` `PeatBog.Run`  
   original: `R113+0x1428` (18F0:08A8, matched), `R113+0x1502` (18F0:0982, matched)  
   why: 0x64 (100) is the Rope's item type, passed where an item-flag mask belongs: the rope line is enabled by a polearm (0x04), a bow (0x20) or metal armour (0x40), and a Rope (flag 0x100) alone leaves it shown but disabled.
@@ -847,10 +847,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:454` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:623` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:626` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:826` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:829` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  

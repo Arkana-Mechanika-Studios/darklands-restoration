@@ -34,6 +34,8 @@ public sealed class EmptyPrisonCell : Card
         // orig: R134+0x1F26 card-option-lines(0) R043+0x0F2A and no card-choice-menu: the block is drawn as an option list, waited for
         //   (press-to-continue R043+0x32B6 at R043+0x10D0, mode 1) and the picture fades as before a choice; then the battle. vis10 session
         //   D-99119d: the original takes the Enter in that wait (key 1C0D read under R134+0x1EDA) and fades the picture before the battle
+        //   (D-99119d is the vis10 session tools/oracle/vis10-sessions/D-99119d-emptycell.steps, job D-99119d of its jobs.txt; it was a register
+        //   marker until the visfix round removed it, see review_notes.csv and DIVERGENCE_REVIEW.md, so it is no longer in divergences.csv)
         c.Screen.OptionLines(0);
         c.BattleMode = 1;
         return -2;

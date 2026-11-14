@@ -34,6 +34,8 @@ public sealed class MineCleared : Card
             c.ResolveQuest(MineQuest, c.Here);
             c.Screen.Text(0);
             c.AdjustReputation(c.NearestCity(c.State.MapPosition.X, c.State.MapPosition.Y), 0x19, 0x32);
+            // C: right after the mine's battle the original's item records are those of DARKLAND.LST too (watched at this card's call
+            //   after a mine battle, see Inventory.AddMany), so the minerals keep their own type, weight and quality.
             foreach (var mineral in Minerals)
             {
                 c.AddItems(c.Leader, mineral, c.Random(5) + 10);
