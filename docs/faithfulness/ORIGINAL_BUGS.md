@@ -737,26 +737,26 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R023+0x17D2` (1EF8:17D2, draft)  
   why: when the last member's stairs bring the party together, the enemies fighting on the level he arrives on count as left behind with the level left (R023+0x17D2): those of a following kind freeze and come again at his arrival spot, the others vanish. Kept as the original (party-split audit row 12). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
+- **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:25` `TacticalBattle.PartyLocations`  
+  original: `R014+0xDC14` (19CD:26A4, draft)  
+  why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
+- **B-9116a9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:82` `TacticalBattle.PartyLocations`  
+  original: `R014+0xDC14` (19CD:26A4, draft)  
+  why: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
+- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:250` `TacticalBattle.UseUpDissolveSlot`  
+  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
+  why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
+- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:271` `TacticalBattle.ConsumeSlotAsOriginal`  
+  original: `R014+0xB434` (18BF:0FA4, draft)  
+  why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
+- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Triggers.cs:16` `TacticalBattle.Triggers`  
+  original: `R014+0xD6DA` (19CD:216A, draft)  
+  why: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level: an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
 - **B-b2de46** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:62` `TacticalBattle.LockIsDoor`  
   original: `R024+0x0000` (1EF8:0000, draft)  
   why: DS:CA99 follows the leader's place tests, so a member's Dissolve Lock order dissolves a door or a chest by the leader's last place, not his own (fighter-goto-action R014+0x2170 case 7). Kept as the original (party-split audit row 20). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:236` `TacticalBattle.PartyLocations`  
-  original: `R014+0xDC14` (19CD:26A4, draft)  
-  why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
-- **B-9116a9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:293` `TacticalBattle.PartyLocations`  
-  original: `R014+0xDC14` (19CD:26A4, draft)  
-  why: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an optional fixed rule after 1.0.
-  decision: later: an optional fixed rule after 1.0
-- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:461` `TacticalBattle.UseUpDissolveSlot`  
-  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
-  why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
-- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:482` `TacticalBattle.ConsumeSlotAsOriginal`  
-  original: `R014+0xB434` (18BF:0FA4, draft)  
-  why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
-- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:646` `TacticalBattle.Triggers`  
-  original: `R014+0xD6DA` (19CD:216A, draft)  
-  why: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level: an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
 - **B-71d98a** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:391` `EffectField.EffectLevel`  
   original: `R019+0x0000` (1EF8:0000, matched)  
   why: OriginalBehaviour.FixCombatAcrossLevels - a spell or potion effect lands on the level SHOWN, whatever level its missile flew on (split audit row 7)
