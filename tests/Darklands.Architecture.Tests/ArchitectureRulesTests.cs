@@ -102,6 +102,31 @@ public sealed class ArchitectureRulesTests
     }
 
     /// <summary>
+    /// The game carries text ids, never resolved text (docs/LOCALISATION.md, "How text will be identified"): no assembly of the game
+    /// references Darklands.Localization or uses one of its types, so a language can never change an outcome; the localiser knows no
+    /// game type (it maps ids to text and nothing else); only the views and the hosts may resolve ids to text.
+    /// </summary>
+    [Fact]
+    public void TheGameResolvesNoText()
+    {
+        string[] mayResolve = [Presentation, Headless, Sdl];
+        foreach (var name in Dependencies.Products)
+        {
+            if (!mayResolve.Contains(name))
+            {
+                Assert.DoesNotContain(Localization, References(name));
+            }
+        }
+        foreach (var name in Game)
+        {
+            Assert.DoesNotContain(Dependencies.Uses(name), use => use.Target.Assembly.GetName().Name == Localization);
+        }
+        Assert.Empty(References(Localization));
+        Assert.DoesNotContain(Dependencies.Uses(Localization),
+            use => use.Target.Assembly.GetName().Name is { } a && a != Localization && Dependencies.Products.Contains(a));
+    }
+
+    /// <summary>
     /// The rules are deterministic and do no I/O (ARCHITECTURE.md "Principles"): no file system, no console, no environment variable, no
     /// wall clock, no System.Random in the model, the card scripts and the simulation. A tester's trace or the oracle's feed is a
     /// plain hook the hosts set (Darklands.Presentation TesterHooks.Apply, given the host's environment reader). Time and chance come in through IRandomSource and the
