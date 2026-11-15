@@ -61,7 +61,7 @@ not meant for players.
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
 | `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
-| `sdl.library` | the `SDL3.dll` next to the program (shipped on Windows), else the system's (`libSDL3.so.0`) | `--sdl` | the SDL3 library to load (SDL host only) |
+| `sdl.library` | the copy next to the program (`SDL3.dll` on Windows, `libSDL3.so.0` on Linux, both shipped), else the system's | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
 | `console.font` | the bundled DejaVu Sans Mono | | a TrueType (.ttf) file for the console, e.g. `"C:/Windows/Fonts/consola.ttf"` |
 | `console.fontSize` | 14 | | the console's text height in pixels at the 720x400 window (6..64); it grows with the window |
