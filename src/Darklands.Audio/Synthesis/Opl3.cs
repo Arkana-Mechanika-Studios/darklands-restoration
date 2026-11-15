@@ -63,7 +63,7 @@ public sealed class Opl3
             var bank = c / 9;
             var local = c % 9;
             var modulator = bank * 18 + OperatorAt[local % 3 + local / 3 * 8];
-            _channels[c] = new Channel(_operators[modulator], _operators[modulator + 3]);
+            _channels[c] = new Channel(_operators[modulator], _operators[modulator + 3]) { Index = c };
             _operators[modulator].Channel = _channels[c];
             _operators[modulator + 3].Channel = _channels[c];
         }
@@ -197,8 +197,8 @@ public sealed class Opl3
         for (var c = 0; c < 18; c++)
         {
             var channel = _channels[c];
-            var modulatorKey = channel.KeyOn;
-            var carrierKey = channel.KeyOn;
+            var modulatorKey = Driving(channel).KeyOn;
+            var carrierKey = modulatorKey;
             if (_rhythm && c is >= 6 and <= 8)
             {
                 switch (c)
@@ -222,6 +222,19 @@ public sealed class Opl3
         }
     }
 
+    /// <summary>
+    /// The channel whose key, F-number and block drive <paramref name="channel"/>'s operators: itself, except the second
+    /// channel of a four-operator pair (OPL3 mode, register 104h), whose operators follow the first channel; the second
+    /// channel's own A0h and B0h registers then do nothing.
+    /// </summary>
+    private Channel Driving(Channel channel)
+    {
+        var local = channel.Index % 9;
+        return _opl3 && local is 3 or 4 or 5 && (_fourOperator & (1 << (local - 3 + 3 * (channel.Index / 9)))) != 0
+            ? _channels[channel.Index - 3]
+            : channel;
+    }
+
     /// <summary>Produces the next output sample (left and right, before clipping).</summary>
     public void Generate(out int left, out int right)
     {
@@ -238,7 +251,7 @@ public sealed class Opl3
 
         foreach (var op in _operators)
         {
-            op.Advance(_envelopeClock, vibratoPosition, _deepVibrato, _noteSelect);
+            op.Advance(Driving(op.Channel), _envelopeClock, vibratoPosition, _deepVibrato, _noteSelect);
         }
 
         left = 0;
@@ -450,6 +463,7 @@ public sealed class Opl3
     {
         public Operator Modulator { get; } = modulator;
         public Operator Carrier { get; } = carrier;
+        public int Index { get; init; }
         public int Number { get; set; }        // F-number, 10 bits
         public int Block { get; set; }         // octave
         public bool KeyOn { get; set; }
@@ -513,10 +527,10 @@ public sealed class Opl3
             _key = on;
         }
 
-        public void Advance(uint clock, int vibratoPosition, bool deepVibrato, bool noteSelect)
+        public void Advance(Channel driving, uint clock, int vibratoPosition, bool deepVibrato, bool noteSelect)
         {
-            var number = Channel.Number;
-            var block = Channel.Block;
+            var number = driving.Number;
+            var block = driving.Block;
 
             // Key scaling of level: 3/1.5/6 dB per octave above a point set by the F-number.
             var level = KeyScaleLevelBase[number >> 6] * 4 - ((8 - block) << 5);

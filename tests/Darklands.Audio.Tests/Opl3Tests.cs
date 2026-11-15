@@ -93,6 +93,43 @@ public sealed class Opl3Tests
         Assert.Equal(0x55, chip.RegisterValue(0x1A0));
     }
 
+    /// <summary>
+    /// A four-operator voice (OPL3 mode, channels 0 and 3 paired, A &gt; B &gt; C &gt; D with A, B and C silent): the first
+    /// channel's key, F-number and block drive all four operators, as the Sound Blaster Pro 2 drivers use it (they write
+    /// only the first channel's A0h and B0h); the second channel's own A0h and B0h do nothing.
+    /// </summary>
+    [Fact]
+    public void AFourOperatorVoiceFollowsItsFirstChannel()
+    {
+        var chip = new Opl3();
+        chip.Write(0x105, 0x01);
+        chip.Write(0x104, 0x01); // channels 0 and 3 as one voice
+        foreach (var slot in new[] { 0x00, 0x03, 0x08, 0x0B })
+        {
+            chip.Write(0x20 + slot, 0x21); // sustained, multiplier 1
+            chip.Write(0x40 + slot, slot == 0x0B ? (byte)0x00 : (byte)0x3F); // only D sounds
+            chip.Write(0x60 + slot, 0xF0);
+            chip.Write(0x80 + slot, 0x0F);
+        }
+        chip.Write(0xC0, 0x30); // FM, both sides
+        chip.Write(0xC3, 0x30); // FM: A > B > C > D
+        chip.Write(0xA0, 0x44);
+        chip.Write(0xB0, 0x20 | (4 << 2) | 0x02); // 440 Hz, key on (channel 0 only)
+        chip.Write(0xA3, 0x10);
+        chip.Write(0xB3, 1 << 2); // the second channel's own key off and another pitch: ignored
+        var samples = Render(chip, 1.0);
+        var crossings = 0;
+        for (var i = 1; i < samples.Length; i++)
+        {
+            if (samples[i - 1] < 0 && samples[i] >= 0)
+            {
+                crossings++;
+            }
+        }
+        Assert.InRange(crossings, 438, 442);
+        Assert.InRange(samples.Max(), 4000, 4084);
+    }
+
     [Fact]
     public void AStartedTimerReportsItsOverflow()
     {
