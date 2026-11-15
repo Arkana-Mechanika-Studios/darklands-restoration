@@ -29,11 +29,15 @@ variants:
           perception with the trigger's roll), alarms and stairs fights; each change is printed (record, field, old, new)
   ammo<N>  every stack of ammunition (arrows, quarrels, balls: item types 0x40..0x42) in the records' packs holds N: a missile fight
           runs out after N shots (spend-ammunition R014+0xB0D8 readies the hand weapon), the missile-check sessions
+  eater<slot>[last]  party slot <slot>'s pack gets one Eater-Water (code 99, count 1, quality 30, the list's type and weight) as its first stack
+          (last: after its last stack), any Eater-Water it held taken out: the Dissolve Lock sessions (the potion moved away on the
+          character sheet while the order waits, so that the slot found when the order was given is stale)
   king, stonebox  a game saved in the mine of Rammelsburg's battle (the original's DKSAVE2 of savemid-mine, with its .BSV) moved to level 3
           before the dwarf king's riddle door / to level 6 before the stone box's door (battle_level; the .BSV is written beside the target)
 """
 from __future__ import annotations
 
+import os
 import struct
 import sys
 from pathlib import Path
@@ -65,7 +69,10 @@ def pots(b: bytearray, members: int = 4) -> None:
         b[base + PACK_COUNT] = len(new)
 
 
+# the game folder beside the checkout (code/), else <DARKLANDS_ROOT>/game/DARKLAND (a worktree under worktrees/)
 LST = Path(__file__).resolve().parent.parent.parent.parent / "game" / "DARKLAND" / "DARKLAND.LST"
+if not LST.exists() and os.environ.get("DARKLANDS_ROOT"):
+    LST = Path(os.environ["DARKLANDS_ROOT"]) / "game" / "DARKLAND" / "DARKLAND.LST"
 
 
 def kitchen(b: bytearray, members: int = 4) -> None:
@@ -410,6 +417,27 @@ def hardy(b: bytearray) -> None:
             b[at + SKILL + k] = value
 
 
+EATER_WATER = 99
+
+
+def eater_water(slot: int, last: bool):
+    """Party slot <slot>'s pack holds one Eater-Water, first (or last), and no other."""
+    def edit(b: bytearray) -> None:
+        lst = LST.read_bytes()
+        at = 3 + EATER_WATER * 0x2E
+        record = struct.unpack_from("<h", b, PARTY_IDS + 2 * slot)[0]
+        base = HEAD_END + record * CHAR
+        count = struct.unpack_from("b", b, base + PACK_COUNT)[0]
+        old = [bytes(b[base + PACK + ENTRY * i:base + PACK + ENTRY * (i + 1)]) for i in range(count)]
+        old = [e for e in old if struct.unpack_from("<H", e, 0)[0] != EATER_WATER]
+        mine = struct.pack("<HBBBB", EATER_WATER, lst[at + 0x1E], 30, 1, lst[at + 0x25])
+        new = (old + [mine] if last else [mine] + old)[:64]
+        for i, e in enumerate(new):
+            b[base + PACK + ENTRY * i:base + PACK + ENTRY * (i + 1)] = e
+        b[base + PACK_COUNT] = len(new)
+        print("slot %d record %d: %d stacks, the Eater-Water at %d: %s" % (slot, record, len(new), new.index(mine), " ".join(e.hex() for e in new)))
+    return edit
+
 VARIANTS = {"allformulas": all_formulas, "dragonev": dragon_events, "ev300": full_events, "q7night": night_hunt(True, True), "q7nightfree": night_hunt(True, False),
             "q7nightkept": night_hunt(False, True), "relics": relics, "marchm1": marching_minus_one, "hourm3": hour_minus_three, "dead": dead, "out3": out3, "sea": sea, "away": away, "hurtattr": hurt_attributes, "hurtstatus": hurt_status, "unlist0": unlisted(0), "kitchen": kitchen, "kitchen3": lambda b: kitchen(b, 3), "pots": pots, "pots3": lambda b: pots(b, 3), "hurt": hurt, "hardy": hardy,
             "away24": away_card(0x24), "away7b": away_card(0x7B), "awaya0": away_card(0xA0),
@@ -436,6 +464,8 @@ def main() -> None:
             if day is not None:
                 struct.pack_into("<H", b, 0x6C, day)
         VARIANTS[variant] = moved
+    if variant not in VARIANTS and variant.startswith("eater"):
+        VARIANTS[variant] = eater_water(int(variant[5]), variant.endswith("last"))
     if variant not in VARIANTS and variant.startswith("ammo"):
         VARIANTS[variant] = ammunition(int(variant[4:]))
     if variant not in VARIANTS and variant.startswith("pos"):
