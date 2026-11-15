@@ -748,6 +748,12 @@ Open items (2026-11-05, release candidate 1.0.0-rc1), listed honestly:
   deleted member's shield picture (D-34f49d), two omitted pop-up flags (D-920e47, D-40b596), the omitted previous-card global
   (D-58560f), the fortress room bookkeeping (D-ca7108), a card number outside the table (D-5dc345), the rejection of an
   oversized message (D-3854a2), the knock-back test that reads record -1's target byte (D-74b517), records 5..12 left by an earlier battle (D-63478f), the sheet key with the pointer in an item or saint box (D-ef9111); and, from the two Dissolve leads, use-up-slot's write outside the packs (past them for the Dissolve Lock order's slot 0xFF of members 2 to 4, before them for the Dissolve key with nobody selected, D-5471a9) and member -1's count byte DS:9C53 (D-c055d0).
+* A side note of thread #4947 (v7: nameless items of a huge quality, which the poster guessed to be an unsigned underflow when items of
+  low quality are looted), read in the code on 2026-11-15, not run: the found items do not underflow (loot-split-entry R040+0x0000
+  clamps quality − 10 to 1..99, LootSharing.PrepareFoundItems); the one place an item's quality byte wraps is battle armour wear
+  (R019+0x0968, B-8e79e5), and the worn-out test that follows in the same pass throws the wrapped stack away (R019+0x0914, B-fd2f1c).
+  Nameless items rather point to damaged item records (the inn cache rewrite, B-85e0e4 / B-3de49c, fixed by default). Not traced
+  further: no saved game shows it.
 
 Closed items, kept for the record. The three reachable original bugs listed before are now
 reproduced behind fix flags (faithful by default; none damages a saved game, so none is in `DataSafe`):
