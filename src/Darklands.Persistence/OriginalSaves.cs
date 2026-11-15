@@ -472,7 +472,7 @@ public static class OriginalSaves
     /// changed (status, attributes, equipment, potions, the pack) and where it stands and what it does are in it.
     /// </summary>
     // orig: R037+0x2ACE (1462:2ACE) writes the slot's combatant record (0x80 bytes at DS:9C55), saints, formulas and pack for a party member
-    // C: the record byte the model does not keep for a combatant (+0x1C, the slot) is written as the record was read; +0x02 is the
+    // C: the record byte +0x1C is the combatant's slot (set at each battle start, below); +0x02 is the
     //   screen Y and +0x0E the pose's info pointer (CombatantRecords.WriteAnimation). Checked against the original's own Alt-S saves in a battle
     //   (lockstep sessions b3-save-fight, -2, -3: five saves of four members in the walking pose, all 0x80 bytes agree, +0x0E = DS:CAB4 +
     //   0x90 x slot). A save is refused in real combat (DS:9920 = 2, R014+0x0000), so the fighting and hit poses are not saved; the dying and
@@ -495,6 +495,8 @@ public static class OriginalSaves
         var record = CharacterRecords.Write(copy);
         CombatantRecords.Write(c, record);
         CombatantRecords.WriteAnimation(c, record);
+        // orig: battle-state-reset R002+0x1830 (R002+0x19FE..0x1A07) stores the combatant's own index i at +0x1C of every record at each battle start
+        record[0x1C] = (byte)c.Index;
         return record;
     }
 

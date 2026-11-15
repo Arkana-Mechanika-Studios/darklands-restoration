@@ -879,6 +879,9 @@ SESSIONS.update({"ev300-night": "synth/DKSAVE99-q7night.sav", "ev300-night-kept"
 # "no work file" arms (0x182A..0x1838 removes terrain.fil, 0x18E7..0x18F5 the loot file). The copy is made under local/oracle-games/clean when
 # missing (clean_game); every other session keeps the default game folder, so their recordings stay valid.
 SESSIONS["tester-clean-reload"] = None
+# party-slot-fix (1.0): a fresh game of four, Alt-S in the first battle (+0x1C of the party records = the slot, set at battle start R002+0x1830)
+SESSIONS["fresh-battle-save"] = None
+BATTLE_RECORDS.add("fresh-battle-save")
 CLEAN_GAME = {"tester-clean-reload"}
 # restart (item 5): R030+0x0C44's key cases the tester can now give (ctrlf<n>, kp<n>, F9) and its own Alt-Q (the second key of a pass, tkey)
 SESSIONS["tk-map-keys"] = "synth/DKSAVE17-out3.sav"
