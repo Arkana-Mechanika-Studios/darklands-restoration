@@ -102,7 +102,7 @@ public sealed class ArchitectureRulesTests
     /// <summary>
     /// The rules are deterministic and do no I/O (ARCHITECTURE.md "Principles"): no file system, no console, no environment variable, no
     /// wall clock, no System.Random in the model, the card scripts and the simulation. A tester's trace or the oracle's feed is a
-    /// plain hook the host sets (Darklands.Host.Headless OracleFeeds). Time and chance come in through IRandomSource and the
+    /// plain hook the hosts set (Darklands.Presentation TesterHooks.Apply, given the host's environment reader). Time and chance come in through IRandomSource and the
     /// game's own clock; files come in through Content.
     /// </summary>
     [Fact]
@@ -113,9 +113,21 @@ public sealed class ArchitectureRulesTests
     }
 
     /// <summary>The places in the rules that do I/O or read the wall clock today, and why.</summary>
-    private static readonly Dictionary<string, string> KnownIoOrClock = new()
+    private static readonly Dictionary<string, string> KnownIoOrClock = new();
+
+    /// <summary>
+    /// The views read no environment variable either: the tester's traces and the oracle's timings of the screens are plain hooks the
+    /// hosts set, through TesterHooks.Apply with the host's environment reader, before the game starts.
+    /// </summary>
+    [Fact]
+    public void TheViewsReadNoEnvironment()
     {
-    };
+        var breaks = Owners([Presentation], use => IsEnvironmentRead(use));
+        Check(breaks, KnownEnvironmentReaders, "environment reads in the views");
+    }
+
+    /// <summary>The places in the views that read the environment today, and why.</summary>
+    private static readonly Dictionary<string, string> KnownEnvironmentReaders = new();
 
     /// <summary>
     /// Views only show and ask: a screen draws, reads the player and hands the choice to the rules; it does not write the game's
@@ -189,9 +201,12 @@ public sealed class ArchitectureRulesTests
         use.Target.FullName is { } name
         && (IoTypes.Contains(name)
             || name is "System.DateTime" or "System.DateTimeOffset" && use.Member is "get_Now" or "get_UtcNow" or "get_Today"
-            || name == "System.Environment" && (use.Member.StartsWith("get_TickCount", StringComparison.Ordinal)
-                || use.Member.StartsWith("GetEnvironmentVariable", StringComparison.Ordinal))
+            || name == "System.Environment" && use.Member.StartsWith("get_TickCount", StringComparison.Ordinal)
+            || IsEnvironmentRead(use)
             || name == "System.Threading.Thread" && use.Member == "Sleep");
+
+    private static bool IsEnvironmentRead(Use use) =>
+        use.Target.FullName == "System.Environment" && use.Member.StartsWith("GetEnvironmentVariable", StringComparison.Ordinal);
 
     /// <summary>The types of <paramref name="assemblies"/> that make a use <paramref name="breaks"/> matches, each with its first such use.</summary>
     private static Dictionary<string, Use> Owners(string[] assemblies, Func<Use, bool> breaks)

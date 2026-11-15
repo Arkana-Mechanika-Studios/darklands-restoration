@@ -17,14 +17,14 @@ public sealed partial class TacticalBattle
     [field: ThreadStatic]
     public static Action<int>? RegainRead { get; set; }
 
-    /// <summary>A debugging aid: each combatant's step call, as tools/oracle/lockstep.py compares it; null in play (the headless host
-    /// sets it from DARKLANDS_STEP_TRACE).</summary>
+    /// <summary>A debugging aid: each combatant's step call, as tools/oracle/lockstep.py compares it; null in play (the hosts set it from
+    /// DARKLANDS_STEP_TRACE through RulesTesterHooks).</summary>
     public static Action<string>? StepTrace { get; set; }
 
     /// <summary>A debugging aid: the destination a record keeps when its enemy is first placed,
     /// by record. The original copies the enemy file's record whole (R025+0x0267) and its destination bytes (+0x08..+0x0B) are whatever the
     /// work buffer DS:A895 held when R020+0x0000 converted the level (CombatantSetup.FromEnemy); until the enemy first moves they steer what reads them (the facing of a spell at a spot, R014+0x306A). The oracle reads
-    /// them off the original's run; the C# leaves them 0. The headless host sets it from DARKLANDS_BATTLE_STALE_DEST through
+    /// them off the original's run; the C# leaves them 0. The hosts set it from DARKLANDS_BATTLE_STALE_DEST (RulesTesterHooks) through
     /// <see cref="ParseStaleDestinations"/>.</summary>
     public static Dictionary<int, MapPoint>? StaleDestinations { get; set; }
 

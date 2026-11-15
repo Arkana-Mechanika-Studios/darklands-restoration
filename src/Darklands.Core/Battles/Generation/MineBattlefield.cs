@@ -22,10 +22,6 @@ public static class MineBattlefield
         var mine = new MineBuilder(g);
         return mine.Build(battlefieldType, specs);
     }
-
-    /// <summary>A debugging aid: feeds the oracle's stale pile words ("0,24011,10699", tools/oracle/timer_marks.py) to the pile filler;
-    /// null or empty for none, as in play.</summary>
-    public static void FeedPileWords(string? text) => MineBuilder.PileWords = MineBuilder.ParsePileWords(text);
 }
 
 /// <summary>The state of one mine being built, and the layouts of the mine types.</summary>
@@ -81,7 +77,7 @@ internal sealed partial class MineBuilder
 
     /// <summary>A debugging aid: the stale word the original's pile filler took at each fill in turn (R009+0x4EAE,
     /// tools/oracle/timer_marks.py), the timer interrupt's word where one came between the pile roll and the call; null in play (the word is
-    /// then <see cref="StaleStackWord"/>). The headless host sets it from DARKLANDS_MINE_PILE_WORDS through <see cref="MineBattlefield.FeedPileWords"/>.</summary>
+    /// then <see cref="StaleStackWord"/>). The hosts set it from DARKLANDS_MINE_PILE_WORDS through <see cref="RulesTesterHooks"/>.</summary>
     public static Queue<int>? PileWords { get; set; }
 
     /// <summary>The oracle's pile words, "0,24011,10699"; null for an empty or missing text.</summary>

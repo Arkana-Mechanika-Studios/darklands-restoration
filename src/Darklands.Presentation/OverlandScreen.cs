@@ -17,6 +17,13 @@ namespace Darklands.Presentation;
 // DIVERGENCE: not ported from the loop: the joystick (DS:E3FA/DS:E3FB, taken as centred: no stick; the held keys DS:0880..DS:0882 are, see HeldKey), the "DS:9C46" reload after the menu bar (the bar itself, right button and F10, comes with GameUi.Poll). The copy-protection check of world-map-entry is DarklandsGame.Travel's (the question left out, its random draws made).
 public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
 {
+
+    /// <summary>Sets the tester's traces and the oracle's feeds above from the environment (the hosts call it through
+    /// <see cref="TesterHooks.Apply"/> before the game starts); each is what its variable gave when the screen read it itself.</summary>
+    internal static void FromEnvironment(Func<string, string?> environment)
+    {
+        Trace = environment("DARKLANDS_TRACE_MAP") is null ? null : Console.WriteLine;
+    }
     private const int AreaX = 60;
     private const int AreaY = 16;
     private const int AreaWidth = 260;
@@ -49,7 +56,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // orig: the view of R030: DS:286A the first column shown, DS:286E the first row of the row buffer, DS:286C the first row shown in it; the
     //   marker's position in the view is DS:2866 / DS:2868 (here _markerX - _originX, _markerY - _originY)
     /// <summary>A debugging aid: each step of the marker, as tools/oracle/lockstep.py prints the original's (DARKLANDS_TRACE_MAP).</summary>
-    public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_TRACE_MAP") is null ? null : Console.WriteLine;
+    public static Action<string>? Trace { get; set; }
 
     /// <summary>A tester's hook (the headless host, tools/oracle/lockstep.py's mapclick): true when a pass of the map's loop has read the left
     /// button (before it acts on it: a portrait's sheet opens after), false when the loop is left. Not set in play.</summary>

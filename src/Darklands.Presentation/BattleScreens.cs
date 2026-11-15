@@ -14,6 +14,10 @@ namespace Darklands.Presentation;
 // orig: battle-entry R002+0x0000 (0E76:0000) draft
 public sealed class BattleScreens
 {
+    /// <summary>A debugging aid: the battle tester's arguments for every battle, "mode,battlefield,seed,a,b,c,a,b,c,a,b,c" (null in play;
+    /// <see cref="TesterHooks.Apply"/> sets it from DARKLANDS_BATTLE_REQUEST).</summary>
+    public static string? RequestOverride { get; set; }
+
     private readonly GameUi _ui;
     private readonly Func<GameState> _state;
     private readonly Action<IList<ItemStack>, Money>? _loot;
@@ -53,7 +57,7 @@ public sealed class BattleScreens
     {
         // the battle tester (tools/oracle/battle_oracle.py): DARKLANDS_BATTLE_REQUEST="mode,battlefield,seed,a,b,c,a,b,c,a,b,c"
         // replaces the battle's arguments, as the tester rewrites the original's at R002+0x0000's entry
-        if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_REQUEST") is { Length: > 0 } given)
+        if (RequestOverride is { Length: > 0 } given)
         {
             var v = given.Split(',').Select(t => int.Parse(t, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
             request = request with { Mode = v[0], BattlefieldType = v[1], Seed = v[2], Groups = [(v[3], v[4], v[5]), (v[6], v[7], v[8]), (v[9], v[10], v[11])] };

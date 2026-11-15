@@ -41,6 +41,8 @@ using Darklands.Rendering;
 // session log; --log-window opens a console window of its own for them (ConsoleWindow).
 
 ConsoleWindow.Connect(ownWindow: args.TakeWhile(a => a != "--").Contains("--log-window"));
+// the tester's traces and the oracle's feeds from the environment (off unless their variables are set)
+TesterHooks.Apply(Environment.GetEnvironmentVariable);
 
 // the release version (Directory.Build.props): the window title, the start screen's corner, the console, --version
 var version = typeof(SdlHost).Assembly

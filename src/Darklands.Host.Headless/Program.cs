@@ -67,7 +67,8 @@ using Darklands.Rendering;
 // The text screen is drawn with the 8x16 font named by DARKLANDS_TEXT_FONT (a 4096-byte BIOS font dump or its base64), else the
 // built-in one.
 
-OracleFeeds.FromEnvironment();
+// the tester's traces and the oracle's feeds (tools/oracle/lockstep.py sets them in the environment)
+TesterHooks.Apply(Environment.GetEnvironmentVariable);
 var argList = args.ToList();
 GameSettings fileSettings = new();
 var settingsIndex = argList.IndexOf("--settings");
