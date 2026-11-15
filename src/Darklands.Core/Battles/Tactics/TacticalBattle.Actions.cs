@@ -94,10 +94,6 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>A debugging aid: each combatant's step call, as tools/oracle/lockstep.py compares it; null in play (the headless host
-    /// sets it from DARKLANDS_STEP_TRACE).</summary>
-    public static Action<string>? StepTrace { get; set; }
-
     /// <summary>One step along the path (or the step queued by a key).</summary>
     // orig: fighter-step R014+0x1624 (0E76:1624) draft (spec D §2.3, asm-verified)
     private void Step(int i, int set)
@@ -724,5 +720,4 @@ public sealed partial class TacticalBattle
             }
         }
     }
-
 }
