@@ -15,7 +15,7 @@ archive 368bed8b24e44ad9ea372990814f2343fcfb9e468abb7f8f4a3bc146c7304752, of the
 66844f10251cc1c10619ed5d8e4e3224f564900ee6d69ba87d63de782addae40). The SDL host's build and publish
 output carry it next to the program. `src/Darklands.Host.Sdl/Native/linux-x64/libSDL3.so.0` is the same
 SDL 3.4.20, unmodified, built on Ubuntu 22.04 from the official source release (`SDL3-3.4.20.tar.gz`, SHA-256
-of the archive f3bb06f55bed9557227a700af2ea62e49497ebdf58037732a731a5fb3ef8581f, of the library SHA256_SO) by
+of the archive f3bb06f55bed9557227a700af2ea62e49497ebdf58037732a731a5fb3ef8581f, of the library 8a69ef868a47f29232faf0cecdac61b407700c205440434b38e4eb8cb1e55c4d) by
 `tools/linux/build_sdl3.sh`; the Linux publish carries it next to the program. Source code: https://www.libsdl.org/.
 Its licence:
 
