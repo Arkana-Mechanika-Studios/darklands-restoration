@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 77 | 3 | 74 |
 | events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
-| battles | 66 | 32 | 34 |
+| battles | 67 | 32 | 35 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 15 | 8 | 7 |
-| total | 277 | 73 | 204 |
+| total | 278 | 73 | 205 |
 
-## Core logic (262)
+## Core logic (263)
 
 ### rules (104)
 
@@ -623,7 +623,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (66)
+### battles (67)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -805,10 +805,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R014+0xC33C` (19CD:0DCC, draft)  
   why: with the party split every click on the view gives USE STAIRS (R014+0xC33C), and the walk refusal of command-mode-end (R014+0xBCA8, real combat only) cannot be reached with Walk greyed. Kept as the original (party-split audit row 26). Decision: never, the split mode's own controls, as designed.
   decision: never: the split mode's own controls, as designed
-- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:691` `TacticalBattle.LeaveWithNobodySelected`  
+- **B-dd294a** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:640` `TacticalBattle.LeaveOrderMode`  
+  original: `R014+0xBCA8` (19CD:0738, draft)  
+  why: F (Flee, action 1) with no destination given to a member whose missile order stands comes here with the cursor target order mode took from the member: the hand weapon is readied and the return below leaves Action (missile), State and the target as they were, the missile weapon still at +0x22. The member goes on launching missiles with the hand weapon's speed, faster than an aimed shot, until the ammunition runs out, then stands (lockstep missile-prague-flee-60, missile-prague-flee-150; the players' "rapid fire", groups.io #9306). Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
+- **B-8d32e1** `bug`, flag `FixLeaveOrderModeWithoutSelection` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:693` `TacticalBattle.LeaveWithNobodySelected`  
   original: `R014+0xBCA8` (19CD:0738, draft)  
   why: OriginalBehaviour.FixLeaveOrderModeWithoutSelection - Enter travelling individually (R016+0x0734) calls it with nobody selected, and a cursor target left by the button held over a member (R014+0xB632..: the target of that member's order) gives the order to record -1: for 0x400 the pause byte loses 0x10; the 0x1BE test clears it too; a missile (0x80) sets 0x02 of the pause byte; a missile or a throw sets exchange[12] = 7 (Ready) and repath[12] = the order clock DS:C867; an attack with bit 1 (or adjacent) sets exchange[12] = 7; a walk to a spot sets exchange[12] = 0 and give-up[12] = the order clock + 30, or, the party split in real combat, shows "USE STAIRS..." (DS:064A) for 150 ticks.
-- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:844` `TacticalBattle.CancelOrder`  
+- **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:846` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the Following bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
 - **B-e9dc75** `bug`, flag `FixFollowersOnShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:243` `TacticalBattle.PlaceInitialEnemies`  

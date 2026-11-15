@@ -27,6 +27,8 @@ variants:
   hardy   every party member's perception 50, endurance 50 and strength 45 (current = maximum) and weapon skills (0..6) at 60, all within
           what the character creation allows (attributes 1..99, skills 0..99): the dungeon sessions' searches (R023+0x0812 compares
           perception with the trigger's roll), alarms and stairs fights; each change is printed (record, field, old, new)
+  ammo<N>  every stack of ammunition (arrows, quarrels, balls: item types 0x40..0x42) in the records' packs holds N: a missile fight
+          runs out after N shots (spend-ammunition R014+0xB0D8 readies the hand weapon), the missile-check sessions
   king, stonebox  a game saved in the mine of Rammelsburg's battle (the original's DKSAVE2 of savemid-mine, with its .BSV) moved to level 3
           before the dwarf king's riddle door / to level 6 before the stone box's door (battle_level; the .BSV is written beside the target)
 """
@@ -376,6 +378,22 @@ HARDY_ATTRIBUTES = {0: ("endurance", 50), 1: ("strength", 45), 3: ("perception",
 HARDY_SKILLS = {k: 60 for k in range(7)}
 
 
+AMMUNITION = (0x40, 0x41, 0x42)        # item types of arrows, quarrels, balls (DARKLAND.LST +0x1E of codes 0x21..0x23)
+
+
+def ammunition(count: int):
+    """Every ammunition stack of every record's pack (the header's record count, +0xF1) holds count."""
+    def edit(b: bytearray) -> None:
+        n = struct.unpack_from("<H", b, 0xF1)[0]
+        for member in range(n):
+            base = HEAD_END + member * CHAR
+            for i in range(b[base + PACK_COUNT]):
+                at = base + PACK + ENTRY * i
+                if b[at + 2] in AMMUNITION:
+                    b[at + 4] = count
+    return edit
+
+
 def hardy(b: bytearray) -> None:
     """The party's members (the records the five party slots name) with the attributes and skills of HARDY_*; current = maximum."""
     for slot in range(5):
@@ -418,6 +436,8 @@ def main() -> None:
             if day is not None:
                 struct.pack_into("<H", b, 0x6C, day)
         VARIANTS[variant] = moved
+    if variant not in VARIANTS and variant.startswith("ammo"):
+        VARIANTS[variant] = ammunition(int(variant[4:]))
     if variant not in VARIANTS and variant.startswith("pos"):
         # pos<column>x<row>: the party's map cell moved (header words +0x7E / +0x80, OriginalSaves.MapXAt / MapYAt): the starts of the travel map's
         # edge and paging walks (batch 33 clamp, batch 34 m4..m6, batch 35 d). The battle file beside the source is copied beside the target.

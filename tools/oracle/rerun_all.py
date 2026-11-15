@@ -56,6 +56,9 @@ SESSIONS = {"pressburg-map": "DKSAVE0.SAV", "tyrnau": "DKSAVE0.SAV", "residence"
             "orders-attack-b": "DKSAVE0.SAV", "orders-attack-b2": "DKSAVE0.SAV", "orders-attack-v": "DKSAVE0.SAV", "orders-attacks": "DKSAVE0.SAV",
             "orders-sheet": "DKSAVE0.SAV", "orders-sheetclick": "DKSAVE0.SAV", "orders-save": "DKSAVE0.SAV", "orders-potion": "Dksave21.sav", "luebeck-potion": "Dksave21.sav", "orders-cloud": "Dksave21.sav", "orders-potion2": NORMALISED,
             "orders-potion3": NORMALISED, "orders-prague-missile": NORMALISED,
+            # the missile check (2026-11-15): a party missile order that takes, its run-out, and F with no destination while aiming (#9306)
+            "missile-prague-aim": NORMALISED, "missile-prague-archer": NORMALISED, "missile-prague-flee-60": NORMALISED, "missile-prague-flee-150": NORMALISED,
+            "missile-prague-ammo1": "synth/DKSAVE40N-ammo1.sav", "missile-prague-ammo2": "synth/DKSAVE40N-ammo2.sav", "missile-prague-hardy": "synth/DKSAVE40N-hardy.sav",
             "sheet-dksave0": "DKSAVE0.SAV",
             # items dragged on the character sheet (ldown .. lup, drag_mouse.py): moved, readied, given, the stack given
             "sheet-drag": "Dksave10.sav",
@@ -737,6 +740,7 @@ SESSIONS.update({
 # the sessions run with --battle-records (the combatant records of every battle pass compared: report.json's battle)
 BATTLE_RECORDS = {"gen-bheld-01", "gen-bheld-04", "gen-bheld-12", "gen-bheld-13", "gen-bkeys-16", "gen-bsafe-02", "gen-bsafe-08", "gen-bheld-32", "gen-bsafe-03", "gen-bsafe-05", "gen-bsafe-32", "gen-bsafe-38", "gen-bheld-34", "gen-bedge-01", "gen-bedge-04", "gen-bheld-11", "gen-bkeys-02", "gen-bkeys-11", "gen-bkeys-15", "gen-bkeys-27", "gen-bkeys-39", "gen-bkeys-47", "gen-bkeys-50", "gen-blue-03", "orders-select", "orders-walk", "orders-missile", "orders-attack-a", "orders-attack-b", "orders-attack-b2", "orders-attack-v",
                   "orders-attacks", "orders-sheet", "orders-sheetclick", "orders-save", "orders-potion", "luebeck-potion", "orders-cloud", "orders-potion2", "orders-potion3", "orders-prague-missile",
+                  "missile-prague-aim", "missile-prague-archer", "missile-prague-flee-60", "missile-prague-flee-150", "missile-prague-ammo1", "missile-prague-ammo2", "missile-prague-hardy",
                   "dungeon-mine-doors", "dungeon-mine-orders", "dungeon-mine-group",
                   "res5-footpads", "res5-ChasedByTheCityGuard", "res5-MarketAtNight", "res5-rebelmob", "res5-WolfPackOnTheTrail", "res5-WildBoarsCharge"}      # the minimal case of the sheet's allocation error (R031+0x0B22): ends, does not agree
 SESSIONS["gen-bhurt-01"] = "synth/DKSAVE0-hurt.sav"
@@ -941,7 +945,9 @@ def resolve_save(name: str, saves: Path) -> Path:
         target = LOCAL / "oracle-saves" / name
         if not target.exists():
             source, _, variant = name[len("synth/"):-len(".sav")].rpartition("-")
-            subprocess.run([sys.executable, "-I", "-B", str(HERE / "synth_saves.py"), variant, str(saves / (source + ".sav")), str(target)], check=True)
+            # the source is a saved game of the game folder, or the normalised copy (DKSAVE40N: local/oracle-saves/DKSAVE40N.SAV)
+            origin = resolve_save(NORMALISED, saves) if "local/oracle-saves/%s.SAV" % source == NORMALISED else saves / (source + ".sav")
+            subprocess.run([sys.executable, "-I", "-B", str(HERE / "synth_saves.py"), variant, str(origin), str(target)], check=True)
         return target
     if not name.startswith("local/"):
         return saves / name
