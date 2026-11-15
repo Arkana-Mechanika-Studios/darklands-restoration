@@ -1,0 +1,26 @@
+name: sdl3-linux
+
+# Builds the libSDL3.so.0 that the Linux release ships beside the program (src/Darklands.Host.Sdl/Native/linux-x64),
+# from SDL's official source release in an Ubuntu 22.04 container (tools/linux/build_sdl3.sh). Run by hand when the SDL
+# version changes; the library it uploads is then committed, and its SHA-256 goes in THIRD_PARTY_NOTICES.md.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build SDL3 on Ubuntu 22.04
+        run: docker run --rm -v "$PWD:/work" -w /work ubuntu:22.04 sh tools/linux/build_sdl3.sh out
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: libSDL3-linux-x64
+          path: out/libSDL3.so.0
+          if-no-files-found: error

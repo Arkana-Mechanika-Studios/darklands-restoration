@@ -27,6 +27,13 @@
     <None Include="Native/win-x64/SDL3.dll" Link="SDL3.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(RuntimeIdentifier)' != '' and $(RuntimeIdentifier.StartsWith('linux'))">
+    <!-- SDL 3.4.20 built from the official source release on Ubuntu 22.04 by tools/linux/build_sdl3.sh (zlib licence, see
+         THIRD_PARTY_NOTICES.md), next to the program in a Linux publish: it is loaded before the system's, so systems without
+         SDL3 (Ubuntu 24.04 and older) run the game -->
+    <None Include="Native/linux-x64/libSDL3.so.0" Link="libSDL3.so.0" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <PropertyGroup>
     <!-- a windowed program: no console window opens with the game (ConsoleWindow: the log-window switch opens one for the messages) -->
     <OutputType>WinExe</OutputType>

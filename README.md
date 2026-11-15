@@ -183,13 +183,13 @@ script `DarklandsRP-Launcher` in its place:
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=win-x64
 ```
 
-A release for Linux x64 (also the Steam Deck: desktop mode and Steam as a non-Steam game; keyboard and mouse as on Windows) is built the same way, with `libmt32emu.so` beside the program (`artifacts/linux-x64`):
+A release for Linux x64 (also the Steam Deck: desktop mode and Steam as a non-Steam game; keyboard and mouse as on Windows) is built the same way, with `libmt32emu.so` and `libSDL3.so.0` beside the program (`artifacts/linux-x64`):
 
 ```
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=linux-x64
 ```
 
-SDL3 is not shipped on Linux: the program uses the system's `libSDL3.so.0` (SDL 3.2 or later: Debian 13 / Ubuntu 25.04 and later `libsdl3-0`, Fedora `SDL3`, Arch and SteamOS `sdl3`; the Steam Linux Runtime has it), or a copy placed beside the program (older systems such as Ubuntu 24.04 have no SDL3). Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
+The Linux release ships SDL 3.4.20 as `libSDL3.so.0` beside the program, built on Ubuntu 22.04 from SDL's source release (`src/Darklands.Host.Sdl/Native/linux-x64`, made by `tools/linux/build_sdl3.sh` in an `ubuntu:22.04` container), so it runs on Ubuntu 22.04 and later, Debian 12 and later and SteamOS, including systems that have no SDL3 of their own such as Ubuntu 24.04. The copy beside the program is loaded first; without it the program uses the system's `libSDL3.so.0` (SDL 3.2 or later: Debian 13 / Ubuntu 25.04 and later `libsdl3-0`, Fedora `SDL3`, Arch and SteamOS `sdl3`; the Steam Linux Runtime has it). Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
 
 The launcher shows the release notes: write `releases/<version>/release-notes.md` (beside the repository) before
 publishing, and the build puts it next to the program as `RELEASE_NOTES.md`; without it the launcher only links to the

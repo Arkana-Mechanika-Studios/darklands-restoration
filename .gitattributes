@@ -2,6 +2,8 @@
 *.json text eol=lf
 docs/source-map/map.csv merge=union
 *.dll binary
+*.so binary
+*.so.* binary
 *.ttf binary
 *.png binary
 *.gz binary
