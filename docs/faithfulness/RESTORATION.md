@@ -144,7 +144,7 @@ the large buckets are firm, the boundary between neighbouring buckets is not.
 ## The first candidates for the Restored preset
 
 Ranked by how solid the evidence is, how little else has to exist first, and how small the change is. None needs an
-engine seam beyond the 1.2 plan; none touches Classic.
+engine seam beyond the 1.1 plan (Restored is its last step); none touches Classic.
 
 1. **Mounted travel** (R-4e7c44, level 1+3+4, S). The original works out each time the map opens whether the whole
    party is mounted and never reads the answer; the clue book says an all-mounted party is faster. The amount is the
