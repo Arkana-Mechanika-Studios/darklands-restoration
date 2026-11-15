@@ -2,7 +2,8 @@
 
 Thank you for wanting to help. This guide says what the project is, how to build it, which kind of work suits you,
 how a change gets in, and the few rules that are not negotiable. Read the first section and the lane you want;
-skim the rest.
+skim the rest. What is planned after 1.0 is in `docs/ROADMAP.md`; the principles, the classes of change and how
+decisions are taken are in `docs/GOVERNANCE.md`.
 
 Contents:
 
@@ -84,7 +85,7 @@ had. CI has no game files, so CI only proves that the project builds and the gam
 
 ## 3. The lanes
 
-Work falls into six lanes. Pick the one that matches what you want to do and the skills you have. If your idea
+Work falls into seven lanes. Pick the one that matches what you want to do and the skills you have. If your idea
 touches two lanes, say so in the issue (section 4); the stricter lane's rules win.
 
 | Lane | One line | Who |
@@ -94,6 +95,7 @@ touches two lanes, say so in the issue (section 4); the stricter lane's rules wi
 | Moddable | mod and pack formats and their loaders | anyone with C# skills |
 | Extendable | optional new features, screens, commands | anyone with C# skills |
 | Playtesting and bug reports | finding and describing problems | everyone with the game |
+| Research and restoration | what the designers meant, the game's history | historians, veterans, careful readers |
 | Content | packs and translations | artists, musicians, writers, translators |
 
 ### Foundation: read this before any code lane
@@ -212,7 +214,8 @@ packs (`docs/PACKS.md`, `src/Darklands.Rendering`, `src/Darklands.Audio`), the m
 **What you need.** C#, and an eye for data formats that stay readable for years. Reading a mod must never run code
 from the mod's folder.
 
-**Where to start.** `docs/MODS.md` and `docs/PACKS.md`, the examples `docs/mods/wayside-shrine` and
+**Where to start.** The mod specification draft (`docs/modding/SPEC-DRAFT.md`, open for review: the mod system it
+describes comes with release 1.2), `docs/MODS.md` and `docs/PACKS.md`, the examples `docs/mods/wayside-shrine` and
 `docs/audio-pack-example`, the card engine in `src/Darklands.Cards`, and the card table
 (`src/Darklands.Cards/CardTable.cs`).
 
@@ -283,6 +286,21 @@ not attach game files other than your own saves.
 **Where to start.** Open an issue (section 7). `docs/RC-CHECKLIST.md` is the maintainers'
 own play-through check before a release.
 
+### Research and restoration
+
+**Covers.** The Restored preset and the history behind the game: content the original program holds but never uses,
+features left half-wired, what the manual or the hint book describes that the game does not do, what the designers
+said they meant, and the history of the places, saints and alchemy the game draws on.
+
+**What you need.** Patience with sources. No programming is needed to start: a finding is written down with its
+sources and their level (`docs/GOVERNANCE.md`, section 3).
+
+**Where to start.** The registers of unused and unreachable code (`docs/faithfulness/dormant.csv`,
+`unreachable.csv`), the restoration register when it is published, and the Discord.
+
+**How a change is checked.** Every item names its sources. Research informs; it does not by itself change a rule: a
+restoration ships behind a switch (or as a first-party mod) with its evidence, and Classic stays as it was.
+
 ### Content: packs and translations
 
 **Covers.** Picture packs (PNG), sound packs (OGG, WAV, General MIDI), mods that add cards, and translations of the
@@ -296,8 +314,9 @@ user interface and texts.
   `docs/audio-pack-example`.
 * Mods: `docs/MODS.md`, with the example in `docs/mods/wayside-shrine`.
 * The modding guides are being written under `docs/modding/`; use them when they are there.
-* Translations: `docs/LOCALISATION.md`. Translations arrive with version 1.2; that guide says how to prepare. Until
-  then, please discuss on Discord rather than sending finished translations.
+* Translations: `docs/LOCALISATION.md`. Translations arrive with version 1.1, whose test builds will go to
+  translators first; that guide says how to prepare. Until then, please discuss on Discord rather than sending
+  finished translations.
 
 **How a change is checked.** A pack changes how the game looks or sounds and never what it does. Your pack must
 load without errors on the console and leave the game's decisions unchanged.
@@ -366,8 +385,9 @@ What you can do about an original bug you want fixed:
    settings of the flag.
 3. **Decide who gets the fix by default.** Only bugs that **damage the player's data** (saved games, the item
    stores in `CACHE.TMP`) are fixed in the player's default game, by listing the flag in
-   `OriginalBehaviour.DataSafe`. Gameplay quirks stay as they are, with their fix flag off; the switches are not
-   exposed in the settings file today. Talk to the maintainers before adding to `DataSafe`: it must be a data-damaging
+   `OriginalBehaviour.DataSafe`. Gameplay quirks stay as they are in Classic, with their fix flag off. From release
+   1.1, gameplay fixes are gathered in the **Fixed** preset (`docs/ROADMAP.md`), which players choose in the game; a
+   fix still keeps the original's path beside it, and Classic never changes. Talk to the maintainers before adding to `DataSafe`: it must be a data-damaging
    bug, and what the fixed game writes must still be readable by the original.
 
 A fix of this kind is for the Faithful lane, because it needs the original's coordinates and a proof of what the
@@ -389,10 +409,18 @@ This applies to code, comments, tests, documents, commit messages and issues.
 * Names in the C# are readable ordinary descriptions. Mark guesses `UNCERTAIN`, not as facts.
 * Write plainly: short sentences, no marketing.
 
-**Licence.** The project is licensed under GPL-3.0-or-later (see `LICENSE`). By contributing you agree that your
-contribution is licensed under the same terms. *Darklands* itself belongs to its owners and is not covered by that
-licence; third-party components keep theirs (`THIRD_PARTY_NOTICES.md`). Do not contribute anything you do not have
-the right to give under the GPL.
+**Licence.** The project is licensed under GPL-3.0-or-later (see `LICENSE`). By sending a contribution you agree it
+is published under the project's licence, and you confirm you have the right to send it. Contributions are their
+authors' responsibility; nothing more is asked (no sign-off lines, no agreement to sign).
+
+* **New art, sound and text** (packs, mods): you choose the licence and state it in the mod or pack. It must allow
+  redistribution; CC BY-SA is suggested, not required.
+* **The mod specification**, its schemas and the sample mods are under the MIT licence, so other tools may use the
+  format.
+
+*Darklands* itself belongs to its owners and is not covered by any of these licences; third-party components keep
+theirs (`THIRD_PARTY_NOTICES.md`). The one thing refused is what would put the project at risk: the original game's
+files, or anything copied out of them, in a contribution.
 
 ## 7. Getting help
 
