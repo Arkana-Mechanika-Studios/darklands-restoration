@@ -46,7 +46,8 @@ dotnet test Darklands.slnx
 ```
 
 CI builds in Release (`dotnet build Darklands.slnx -c Release`, then `dotnet test Darklands.slnx -c Release --no-build`)
-on Windows and on Ubuntu 24.04; Linux needs the system's SDL 2 (`libsdl2-2.0-0` on Debian and Ubuntu).
+on Windows and on Linux. The Windows and Linux releases ship SDL 3 beside the program; to run from the source tree
+on Linux, install SDL 3 (3.2 or later: `libsdl3-0` on Debian 13 and Ubuntu 25.04 and later) or name a copy with `--sdl`.
 
 To play from the source tree, give the SDL host your game folder:
 
@@ -188,7 +189,7 @@ interfaces and settings (`src/Darklands.Platform`), game folder search (`GameFol
 input, audio and video hosts. Linux x64 (including the Steam Deck) is built today; other systems and controller
 support are open ground.
 
-**What you need.** .NET, SDL 2, and a machine of the kind you target. Skills in packaging or in an audio or video
+**What you need.** .NET, SDL 3, and a machine of the kind you target. Skills in packaging or in an audio or video
 API help.
 
 **Where to start.** The README's technical section (build and publish), `docs/SETTINGS.md` (the settings and the
