@@ -107,7 +107,7 @@ internal static class TacticsOverlay
             throw new BattleCallsTests.SkipJob("the floor shown is not a level of this battlefield");
         }
         // the level shown is the one DS:11CA names: the rewrite's own start may show another (a job that moves the shown floor)
-        t.Map.Level = Get<IReadOnlyList<BattlefieldLevel>>(t, "_levels")[t.Battle.LevelShown];
+        t.Map.Level = t.Levels[t.Battle.LevelShown];
         t.Battle.ExitCards = t.Map.Level.ExitCards;
         far.AsSpan(0, FloorSize).CopyTo(t.LevelShown.Image);
         var map = t.Map;

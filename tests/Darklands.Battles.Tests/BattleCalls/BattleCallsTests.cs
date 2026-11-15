@@ -525,7 +525,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             }
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
-                var levels = TacticsOverlay.Get<IReadOnlyList<BattlefieldLevel>>(c.Tactics, "_levels");
+                var levels = c.Tactics.Levels.All;
                 Console.WriteLine("levels: " + string.Join(" ", levels.Select(l => $"{l.Image[0x300C]}/{l.Image.GetHashCode()}")) + $" current {c.Tactics.LevelShown.Image.GetHashCode()}");
                 Console.WriteLine($"after: shown {c.Battle.LevelShown} selected {c.Tactics.Selected}");
             }

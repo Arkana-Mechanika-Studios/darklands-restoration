@@ -118,7 +118,7 @@ public sealed partial class TacticalBattle
             return;
         }
         Store.Prepared = true;
-        foreach (var level in _levels)
+        foreach (var level in Levels.All)
         {
             for (var j = 0; j < level.GetByte(RegionCountAt); j++)
             {

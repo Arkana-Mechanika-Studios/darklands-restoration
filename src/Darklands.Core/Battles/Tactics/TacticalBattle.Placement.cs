@@ -232,7 +232,7 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a
         //   member left on the old level they appear there, and the end test turns him Away (split audit row 9)
         int? shownBefore = null;
-        if (Battle.Behaviour.FixFollowersOnShownLevel && Battle.PartyLevel != Battle.LevelShown && Battle.PartyLevel >= 0 && Battle.PartyLevel < _levels.Count)
+        if (Battle.Behaviour.FixFollowersOnShownLevel && Battle.PartyLevel != Battle.LevelShown && Battle.PartyLevel >= 0 && Battle.PartyLevel < Levels.Count)
         {
             shownBefore = Battle.LevelShown;
             SwitchLevel(Battle.PartyLevel);
@@ -561,7 +561,7 @@ public sealed partial class TacticalBattle
         var c = Battle[i];
         // BUG: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to
         //   any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
-        var own = Battle.Behaviour.FixWokenOnOtherLevel && c.Level >= 0 && c.Level < _levels.Count;
+        var own = Battle.Behaviour.FixWokenOnOtherLevel && c.Level >= 0 && c.Level < Levels.Count;
         int? shownBefore = null;
         if (own && c.Level != Battle.LevelShown)
         {

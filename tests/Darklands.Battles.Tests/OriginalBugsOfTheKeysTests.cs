@@ -170,7 +170,7 @@ public sealed class OriginalBugsOfTheKeysTests
         const int wall = 1;
         level.SetByte(StairsAt + 7, wall);
         // the planted byte is the level file's too (a level left without DS:D4E4 is read back from its file)
-        typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
+        t.Levels.SaveFiles();
         var spot = new MapPoint(level.GetWord(StairsAt) + level.GetByte(StairsAt + 4) / 2, level.GetWord(StairsAt + 2) + level.GetByte(StairsAt + 5) / 2);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -226,7 +226,7 @@ public sealed class OriginalBugsOfTheKeysTests
         var from = t.Battle.LevelShown;
         const int at = 0x33F0;
         t.LevelShown.SetByte(at, 0x5A);
-        typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
+        t.Levels.SaveFiles();
         t.LevelShown.SetByte(at, 0xA5);
         t.LevelChanged = changed;
         t.SwitchLevel((from + 1) % t.LevelCount);

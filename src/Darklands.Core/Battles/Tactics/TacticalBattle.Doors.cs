@@ -277,7 +277,7 @@ public sealed partial class TacticalBattle
         //   (door-flip, lock-picking, chest-opening, R023+0x153E read the image of DS:11CA): another level's door or chest is toggled,
         //   picked, opened or disarmed, and his own is untouched (split audit row 1)
         int? shownBefore = null;
-        if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Level != Battle.LevelShown && c.Level >= 0 && c.Level < _levels.Count
+        if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Level != Battle.LevelShown && c.Level >= 0 && c.Level < Levels.Count
             && c.Place is PlaceAction.UseDoor or PlaceAction.PickDoorLock or PlaceAction.PickChestLock or PlaceAction.OpenChest
                 or PlaceAction.DissolveLock or PlaceAction.DisarmChestTrap)
         {
@@ -411,7 +411,7 @@ public sealed partial class TacticalBattle
             if (leader.StairsBack != -1 && !StaleStairsRecord(Battle.Leader, leader.StairsBack))
             {
                 if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && leader.Level != Battle.LevelShown && leader.Level >= 0
-                    && leader.Level < _levels.Count)
+                    && leader.Level < Levels.Count)
                 {
                     // the fix: the leader's own level shown first, so the record is his own level's
                     shownBefore = Battle.LevelShown;
@@ -619,7 +619,7 @@ public sealed partial class TacticalBattle
             return;
         }
         int? shownBefore = null;
-        if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Level != Battle.LevelShown && c.Level >= 0 && c.Level < _levels.Count)
+        if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Level != Battle.LevelShown && c.Level >= 0 && c.Level < Levels.Count)
         {
             // the fix: his own level shown first, so the record is his own level's
             shownBefore = Battle.LevelShown;
@@ -679,8 +679,8 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch:
         //   the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his
         //   level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
-        return Battle.Behaviour.FixStaleStairsBackRecord && floor >= 0 && floor < _levels.Count
-            && (n < 0 || n >= _levels[floor].GetByte(StairsCountAt));
+        return Battle.Behaviour.FixStaleStairsBackRecord && floor >= 0 && floor < Levels.Count
+            && (n < 0 || n >= Levels[floor].GetByte(StairsCountAt));
     }
 
     /// <summary>After a stairs fix showed the actor's own level first (FixStairsRecordOfShownLevel, FixLeaderStairsRecordOfShownLevel):
@@ -722,7 +722,7 @@ public sealed partial class TacticalBattle
         // DIVERGENCE: a record whose level (+6) the battle does not have (a slot past the count with other bytes, never seen in the
         //   generated levels: their slots hold zeros or castle and mine records) would make level-change (R024+0x059A) read a level
         //   file the battle never wrote; here the order is ignored (nothing written, nobody moved) rather than the program stopped.
-        if ((sbyte)record[6] < 0 || (sbyte)record[6] >= _levels.Count)
+        if ((sbyte)record[6] < 0 || (sbyte)record[6] >= Levels.Count)
         {
             return;
         }
@@ -730,10 +730,10 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called
         // at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change
         // and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original
-        // reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
+        // reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by BattleLevels.SaveOrLoseUnsaved).
         if (wall != -1 && !Battle.Behaviour.FixStairsWallMarkLost)
         {
-            _unsavedLevelBytes.Add((at + 7, (byte)wall));
+            Levels.NoteUnsavedByte(at + 7, (byte)wall);
         }
         else if (wall != -1)
         {

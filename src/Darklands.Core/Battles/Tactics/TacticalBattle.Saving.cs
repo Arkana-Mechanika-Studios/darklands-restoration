@@ -54,8 +54,8 @@ public sealed partial class TacticalBattle
         // then cleared; the levels written below are the files (BattlefieldStore.FloorFiles)
         if (LevelChanged)
         {
-            SaveLevelFiles();
-            _unsavedLevelBytes.Clear();
+            Levels.SaveFiles();
+            Levels.ClearUnsavedBytes();
             LevelChanged = false;
         }
         var v = file.Variables;
@@ -166,7 +166,7 @@ public sealed partial class TacticalBattle
         v[BattleVariables.LockIsDoor] = Flag(LockIsDoor);
         PutWord(v, BattleVariables.Result, (int)Battle.Result);
         PutWord(v, BattleVariables.ResultCard, Battle.ResultCard);
-        v[BattleVariables.LevelCount] = (byte)_levels.Count;
+        v[BattleVariables.LevelCount] = (byte)Levels.Count;
         PutWord(v, BattleVariables.StartLevel, Field.StartLevel);
         PutWord(v, BattleVariables.Seed, Seed);
         PutWord(v, BattleVariables.ClearedLevels, clearedLevels | EncounteredLevels);
@@ -188,13 +188,13 @@ public sealed partial class TacticalBattle
         PutWord(v, BattleVariables.LastCastleFlags, lastCastleFlags);
 
         file.Levels.Clear();
-        for (var level = 0; level < _levels.Count; level++)
+        for (var level = 0; level < Levels.Count; level++)
         {
-            var atv = Store.ActivationFiles is { } atvs && level < atvs.Length ? (byte[])atvs[level].Clone() : ActivationFile(level);
+            var atv = Store.ActivationFiles is { } atvs && level < atvs.Length ? (byte[])atvs[level].Clone() : Levels.ActivationFile(level);
             var enm = Field.EnemyFiles is { } files && level < files.Count && files[level] is { } kept
                 ? (byte[])kept.Clone()
                 : LevelEnemyFile.Write(Field.Forces.Kinds[level] ?? []);
-            file.Levels.Add(new LevelFiles(SavedFloor(Store.FloorFiles is { } floors && level < floors.Length ? floors[level] : _levels[level].Image), atv, enm));
+            file.Levels.Add(new LevelFiles(SavedFloor(Store.FloorFiles is { } floors && level < floors.Length ? floors[level] : Levels[level].Image), atv, enm));
         }
         file.Terrain = (byte[])Field.Terrain.Bytes.Clone();
         file.Loot = loot.FileExists ? loot.ToFile() : null;
