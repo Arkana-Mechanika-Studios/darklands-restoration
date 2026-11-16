@@ -24,14 +24,14 @@ public sealed class PlaceActionsOnOwnLevelTests
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Lone]);
         var his = t.Battle[Lone].Level;
         Assert.NotEqual(party, his);
-        Assert.True(t.LevelAt(party).GetByte(DoorCountAt) > 0 && t.LevelAt(his).GetByte(DoorCountAt) > 0);
+        Assert.True(t.Levels[party].GetByte(DoorCountAt) > 0 && t.Levels[his].GetByte(DoorCountAt) > 0);
         var b = Enumerable.Range(0, Combatant.PartySlots).First(i => i != Lone && t.Battle[i].IsAble);
         var c = t.Battle[b];
         c.Door = 0;
         c.DoorOpens = true;
         c.Place = PlaceAction.UseDoor;
-        Assert.Equal(0, t.LevelAt(party).GetByte(DoorOpenAt));
-        Assert.Equal(0, t.LevelAt(his).GetByte(DoorOpenAt));
+        Assert.Equal(0, t.Levels[party].GetByte(DoorOpenAt));
+        Assert.Equal(0, t.Levels[his].GetByte(DoorOpenAt));
         t.SwitchLevel(his);
         typeof(TacticalBattle).GetMethod("DoPlaceAction", Any)!.Invoke(t, [b]);
         return (t, party, his, b);
@@ -45,8 +45,8 @@ public sealed class PlaceActionsOnOwnLevelTests
             return;
         }
         var (t, party, his, _) = Split(OriginalBehaviour.Faithful);
-        Assert.Equal(1, t.LevelAt(his).GetByte(DoorOpenAt));
-        Assert.Equal(0, t.LevelAt(party).GetByte(DoorOpenAt));
+        Assert.Equal(1, t.Levels[his].GetByte(DoorOpenAt));
+        Assert.Equal(0, t.Levels[party].GetByte(DoorOpenAt));
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public sealed class PlaceActionsOnOwnLevelTests
             return;
         }
         var (t, party, his, _) = Split(OriginalBehaviour.DataSafe);
-        Assert.Equal(0, t.LevelAt(his).GetByte(DoorOpenAt));
-        Assert.Equal(1, t.LevelAt(party).GetByte(DoorOpenAt));
+        Assert.Equal(0, t.Levels[his].GetByte(DoorOpenAt));
+        Assert.Equal(1, t.Levels[party].GetByte(DoorOpenAt));
         Assert.Equal(his, t.Battle.LevelShown);
     }
 }

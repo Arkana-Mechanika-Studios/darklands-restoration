@@ -101,7 +101,7 @@ public sealed partial class TacticalBattle
 
     private static bool Inside(MapPoint p, int x, int y, int w, int h) => x <= p.X && p.X < x + w && y <= p.Y && p.Y < y + h;
 
-    private (int X, int Y, int W, int H) Box(int at) => (LevelShown.GetWord(at), LevelShown.GetWord(at + 2), LevelShown.GetByte(at + 4), LevelShown.GetByte(at + 5));
+    private (int X, int Y, int W, int H) Box(int at) => (Levels.Shown.GetWord(at), Levels.Shown.GetWord(at + 2), Levels.Shown.GetByte(at + 4), Levels.Shown.GetByte(at + 5));
 
     // ---- the level files ----------------------------------------------------------------
 
@@ -142,7 +142,7 @@ public sealed partial class TacticalBattle
             {
                 level.SetWord(ListsAt + 2 * i, level.GetWord(ListsAt + 2 * i) + ListBase);
             }
-            if (level.LevelNumber == Battle.LevelShown && (sbyte)level.Image[0x1F51] >= 0)
+            if (level.LevelNumber == Levels.ShownIndex && (sbyte)level.Image[0x1F51] >= 0)
             {
                 OpenGroupBit(level.LevelNumber, (sbyte)level.Image[0x1F51]);
             }
@@ -165,10 +165,10 @@ public sealed partial class TacticalBattle
         {
             yield break;
         }
-        var at = (ushort)LevelShown.GetWord(ListsAt + 2 * n);
+        var at = (ushort)Levels.Shown.GetWord(ListsAt + 2 * n);
         for (var j = 0; at + j + 1 < BattlefieldLevel.ImageSize; j += 2)
         {
-            var w = (ushort)LevelShown.GetWord(at + j);
+            var w = (ushort)Levels.Shown.GetWord(at + j);
             if (w == 0xFFFF)
             {
                 yield break;
@@ -181,10 +181,10 @@ public sealed partial class TacticalBattle
     // orig: the REVEAL block inlined in R023 0000, 00B8, 04AC, 0812, 0B6E (draft)
     private void RevealGroup(int n)
     {
-        OpenGroupBit(Battle.LevelShown, n);
+        OpenGroupBit(Levels.ShownIndex, n);
         foreach (var (x, y) in WallGroup(n))
         {
-            LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) & 0x7F);
+            Levels.Shown.SetCellByte(x, y, 3, Levels.Shown.CellByte(x, y, 3) & 0x7F);
         }
     }
 
@@ -195,20 +195,20 @@ public sealed partial class TacticalBattle
         Array.Clear(_twinDoor);
         for (var i = 0; i < 40; i++)
         {
-            var link = (sbyte)LevelShown.GetByte(DoorsAt + 14 * i + 0x0C);
+            var link = (sbyte)Levels.Shown.GetByte(DoorsAt + 14 * i + 0x0C);
             if (!_twinDoor[i] && link != -1 && link is >= 0 and < 40)
             {
                 _twinDoor[link] = true;
             }
         }
-        var mask = Battle.LevelShown is >= 0 and < 16 ? Store.DoorsOpened[Battle.LevelShown] : 0;
-        for (var k = 0; k < LevelShown.GetByte(ListCountAt); k++)
+        var mask = Levels.ShownIndex is >= 0 and < 16 ? Store.DoorsOpened[Levels.ShownIndex] : 0;
+        for (var k = 0; k < Levels.Shown.GetByte(ListCountAt); k++)
         {
             if ((mask & 1) == 0)
             {
                 foreach (var (x, y) in WallGroup(k))
                 {
-                    LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) | 0x80);
+                    Levels.Shown.SetCellByte(x, y, 3, Levels.Shown.CellByte(x, y, 3) | 0x80);
                 }
             }
             mask >>= 1;

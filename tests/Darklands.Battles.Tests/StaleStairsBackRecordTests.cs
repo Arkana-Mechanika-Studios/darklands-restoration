@@ -24,7 +24,7 @@ public sealed class StaleStairsBackRecordTests
         var his = t.Battle[Lone].Level;
         Assert.NotEqual(party, his);
         t.SwitchLevel(his);
-        var lv = t.LevelShown;
+        var lv = t.Levels.Shown;
         int count = lv.GetByte(CountAt);
         for (var k = 0; k < 14; k++)
         {

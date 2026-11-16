@@ -24,7 +24,7 @@ public sealed class StairsRecordPastCountTests
             return;
         }
         var (_, t) = BattleScreenTests.Start(GameFolder.Files, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]));
-        var level = t.LevelShown;
+        var level = t.Levels.Shown;
         var count = level.GetByte(StairsCountAt);
         Assert.True(count >= 1);
         // the slot just past the count gets a copy of record 0 (to another level)

@@ -177,7 +177,7 @@ public sealed partial class BattleScreen
         var ctrlFunction = (key & 0xFF) == 0 && key is >= Keys.CtrlF1 and <= Keys.CtrlF5;
         var digit = key is >= 0x0231 and <= 0x0635 && Keys.ForCharacter(Keys.CharacterOf(key)) == key;
         var letter = char.IsAsciiLetter(Keys.CharacterOf(key)) && Keys.ForCharacter(Keys.CharacterOf(key)) == key ? char.ToUpperInvariant(Keys.CharacterOf(key)) : ' ';
-        if (tb.Battle.PartyLevel != tb.Battle.LevelShown)
+        if (tb.Levels.PartyIndex != tb.Levels.ShownIndex)
         {
             // The party is split over two levels (R016+0x00AC: DS:C623 != DS:11CA): every arrow word, the keypad's digits too and Shift or not,
             // gives the message (R016+0x00EA), U takes the stairs back (R016+0x014E), a few keys go on to the switch.

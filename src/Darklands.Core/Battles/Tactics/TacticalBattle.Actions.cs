@@ -27,7 +27,7 @@ public sealed partial class TacticalBattle
                     continue;
                 }
                 var set = AnimationSet(i);
-                if (c.Place == PlaceAction.Stairs && Battle.LevelShown != Battle.PartyLevel)
+                if (c.Place == PlaceAction.Stairs && Levels.ShownIndex != Battle.PartyLevel)
                 {
                     TakeStairsOrder(i);
                     CancelAction(i);

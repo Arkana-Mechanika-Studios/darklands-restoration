@@ -141,9 +141,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         _library = library;
         _view = view;
         Map = new BattleMap(battle, field.Levels[Math.Clamp(field.StartLevel, 0, field.Levels.Count - 1)], furniture, field.Terrain.FirstSightBlockingFurniture);
-        Levels = new BattleLevels(field.Levels, Map, field.Store, field.Forces);
+        Levels = new BattleLevels(battle, field.Levels, Map, field.Store, field.Forces);
         Map.OwnLevel = who => Battle.Behaviour.FixWalkingOnOwnLevel && who is >= 0 and < Combatant.Count && Battle[who].Level is var f
-            && f >= 0 && f < Levels.Count && f != Battle.LevelShown ? Levels[f] : null;
+            && f >= 0 && f < Levels.Count && f != Levels.ShownIndex ? Levels[f] : null;
         Paths = new PathFinder(Map);
         Paths.UseHalfSizes(k => battle[k].HalfWidth, k => battle[k].HalfHeight);
         Effects = new EffectField(battle, Map, n => _view.Sound(n), ReadyWeapon, slot => SlotWeapons[slot], () => PauseByte != 0) { Terrain = field.Terrain };
@@ -178,18 +178,8 @@ public sealed partial class TacticalBattle : IBattleEndActions
     /// <summary>enemy-sprite-slot (DS:D67C) / DS:D67E: the enemy identity each enemy slot holds (−1 free).</summary>
     public int[] EnemySlotIdentity { get; } = [-1, -1];
 
-    /// <summary>The level on screen (its index is <see cref="Battle.LevelShown"/>); the combatants may stand on other levels.</summary>
-    public BattlefieldLevel LevelShown => Map.Level;
-
-    /// <summary>The levels of the battlefield and their files (the old LevelAt, LevelCount, Activations, LevelSwitches and LevelChanged forward to it).</summary>
+    /// <summary>The levels of the battlefield and their files; the level shown is <c>Levels.Shown</c>, its index <c>Levels.ShownIndex</c>.</summary>
     public BattleLevels Levels { get; }
-
-    public BattlefieldLevel LevelAt(int level) => Levels[level];
-
-    public int LevelCount => Levels.Count;
-
-    /// <summary>The hidden encounters of each level (the .atv activation records; X &lt; 0 disabled).</summary>
-    public List<EnemyGroup>[] Activations => Levels.Activations;
 
     public List<LootPile> LootPiles => Store.Loot.Piles;
 
@@ -360,7 +350,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         if (missing)
         {
-            PlaceParty(LevelShown.PartyStart.X, LevelShown.PartyStart.Y, LevelShown.PartyFacing);
+            PlaceParty(Levels.Shown.PartyStart.X, Levels.Shown.PartyStart.Y, Levels.Shown.PartyFacing);
         }
         for (var i = 0; i < Combatant.PartySlots && i < kept.Count; i++)
         {
@@ -450,9 +440,9 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Levels.KeepFiles();
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
-            Battle[i].Level = Battle.LevelShown;
+            Battle[i].Level = Levels.ShownIndex;
         }
-        Battle.PartyLevel = Battle.LevelShown;
+        Battle.PartyLevel = Levels.ShownIndex;
         // fight-flags 0x10 (R024 0000, mode 0) and 0x20 (R014+0x0058, modes 2 and 3) place the party at the level's start before the
         // timers are cleared; mode 1 (fight-flags 2) places nobody: each member stands where the last battle left it.
         // orig: R002+0x0098..0x00EE (R002+0x0000's modes) and R014+0x0058..0x0104, checked against the asm; tests: RevisitTests
@@ -484,28 +474,28 @@ public sealed partial class TacticalBattle : IBattleEndActions
         //   tested on the level without them (a read-only hook at R014+0x4188's collision calls: every slot free on cells level-change makes
         //   void a moment later; local/battlefuzz-2026-11-08.md L2); tests: PlacementOrderTests
         var placedBeforeShow = keptPlaces is null && newBattlefield && !arrivedThroughDoor;
-        if (placedBeforeShow && Battle.LevelShown >= 0 && Battle.LevelShown < Levels.Count)
+        if (placedBeforeShow && Levels.ShownIndex >= 0 && Levels.ShownIndex < Levels.Count)
         {
-            Map.Level = Levels[Battle.LevelShown];
-            PlaceParty(LevelShown.PartyStart.X, LevelShown.PartyStart.Y, LevelShown.PartyFacing);
+            Map.Level = Levels[Levels.ShownIndex];
+            PlaceParty(Levels.Shown.PartyStart.X, Levels.Shown.PartyStart.Y, Levels.Shown.PartyFacing);
         }
         else
         {
             placedBeforeShow = false;
         }
-        SwitchLevel(Battle.LevelShown);
-        if (arrivedThroughDoor && LevelShown.PartyRoom >= 0)
+        SwitchLevel(Levels.ShownIndex);
+        if (arrivedThroughDoor && Levels.Shown.PartyRoom >= 0)
         {
             // C: arrived through a door: its wall group is remembered as open (opened-door-list) and its cells uncovered.
-            RevealGroup(LevelShown.PartyRoom);
-            LevelChanged = true;
+            RevealGroup(Levels.Shown.PartyRoom);
+            Levels.Changed = true;
             _redraw = true;
         }
         if (keptPlaces is null)
         {
             if (!placedBeforeShow)
             {
-                PlaceParty(LevelShown.PartyStart.X, LevelShown.PartyStart.Y, LevelShown.PartyFacing);
+                PlaceParty(Levels.Shown.PartyStart.X, Levels.Shown.PartyStart.Y, Levels.Shown.PartyFacing);
             }
         }
         else
@@ -514,26 +504,26 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         // fight-flags 4: the fight was started by an alarm trigger: its furniture or wall goes now.
         // C: R014+0x0110 has no test of the box's x (−1 after the last battle): a trigger at x −1 would match.
-        for (var k = 0; (combatFlags & 4) == 4 && k < (sbyte)LevelShown.GetByte(TriggerCountAt); k++)
+        for (var k = 0; (combatFlags & 4) == 4 && k < (sbyte)Levels.Shown.GetByte(TriggerCountAt); k++)
         {
             var (x, y, w, h) = Box(TriggersAt + 14 * k);
             if ((x, y, w, h) == AlarmTrigger)
             {
-                var handler = (TriggerHandler)LevelShown.GetWord(TriggersAt + 14 * k + 6);
+                var handler = (TriggerHandler)Levels.Shown.GetWord(TriggersAt + 14 * k + 6);
                 if (handler == TriggerHandler.FurnitureAlarm)
                 {
-                    RemoveFurniture((byte)LevelShown.GetWord(TriggersAt + 14 * k + 10), k);
+                    RemoveFurniture((byte)Levels.Shown.GetWord(TriggersAt + 14 * k + 10), k);
                 }
                 else if (handler == TriggerHandler.WallAlarm)
                 {
-                    RemoveWall((byte)LevelShown.GetWord(TriggersAt + 14 * k + 10), k);
+                    RemoveWall((byte)Levels.Shown.GetWord(TriggersAt + 14 * k + 10), k);
                 }
                 break;
             }
         }
         // C: only DS:C925 (the x) is reset; the y, width and height keep their values
         AlarmTrigger = AlarmTrigger with { X = -1 };
-        var activations = Activations[Battle.LevelShown];
+        var activations = Levels.Activations[Levels.ShownIndex];
         if ((combatFlags & 8) == 8)
         {
             var k = activations.FindIndex(g => g.X < 0);
@@ -640,7 +630,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         {
             return;
         }
-        var list = Activations[Battle.LevelShown];
+        var list = Levels.Activations[Levels.ShownIndex];
         for (var k = 0; k < list.Count; k++)
         {
             if (list[k].X < 0)
@@ -959,12 +949,6 @@ public sealed partial class TacticalBattle : IBattleEndActions
         FreeEnemySlots();
     }
 
-    /// <summary>How many times a level was switched to (the harness of the single calls tells the original's file reloads by it).</summary>
-    public int LevelSwitches => Levels.Switches;
-
-    /// <summary>DS:D4E4: the level in the buffer changed since it was loaded or saved (level-change and the battle's end save it only then).</summary>
-    public bool LevelChanged { get => Levels.Changed; set => Levels.Changed = value; }
-
     /// <summary>Shows another level (level-change).</summary>
     // orig: level-change R024+0x059A (1EF8:059A) draft (outline; the end checked against the asm: `if (DS:D6EE != 0) R024+0x07A2();`)
     // DIVERGENCE: the levels stay in memory (the .flr/.atv files are BattlefieldStore.FloorFiles / ActivationFiles, which only the battle
@@ -978,7 +962,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
         }
         Levels.Switches++;
         Levels.SaveOrLoseUnsaved();
-        Battle.LevelShown = level;
+        Levels.ShownIndex = level;
         Map.Level = Levels[level];
         Battle.ExitCards = Map.Level.ExitCards;
         AfterSwitchLevel();

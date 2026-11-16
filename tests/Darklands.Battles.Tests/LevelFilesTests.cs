@@ -28,7 +28,7 @@ public sealed class LevelFilesTests
             var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
             var state = Simulation.NewGame.Quickstart(world, 7);
             var (_, tactics) = BattleSaveTests.StartBattle(ui, files, state, new BattleRequest(battlefield, seed, NoGroups, Persistent: true));
-            if (Hidden(tactics.LevelShown.Image) > Hidden(tactics.Field.Store.FloorFiles![tactics.Battle.LevelShown]))
+            if (Hidden(tactics.Levels.Shown.Image) > Hidden(tactics.Field.Store.FloorFiles![tactics.Battle.LevelShown]))
             {
                 return tactics;
             }
@@ -46,11 +46,11 @@ public sealed class LevelFilesTests
         }
         var tactics = WithHiddenGroups(files);
         var shown = tactics.Battle.LevelShown;
-        Assert.False(tactics.LevelChanged);
+        Assert.False(tactics.Levels.Changed);
         var file = new BattleFile();
         tactics.WriteBattleFile(file, inBattle: true, 0, 0);
         Assert.Equal(TacticalBattle.SavedFloor(tactics.Field.Store.FloorFiles![shown]), file.Levels[shown].Floor);
-        Assert.True(Hidden(file.Levels[shown].Floor) < Hidden(tactics.LevelShown.Image));
+        Assert.True(Hidden(file.Levels[shown].Floor) < Hidden(tactics.Levels.Shown.Image));
     }
 
     [Fact]
@@ -62,11 +62,11 @@ public sealed class LevelFilesTests
         }
         var tactics = WithHiddenGroups(files);
         var shown = tactics.Battle.LevelShown;
-        tactics.LevelChanged = true;
+        tactics.Levels.Changed = true;
         var file = new BattleFile();
         tactics.WriteBattleFile(file, inBattle: true, 0, 0);
-        Assert.Equal(TacticalBattle.SavedFloor(tactics.LevelShown.Image), file.Levels[shown].Floor);
-        Assert.Equal(tactics.LevelShown.Image, tactics.Field.Store.FloorFiles![shown]);
-        Assert.False(tactics.LevelChanged);
+        Assert.Equal(TacticalBattle.SavedFloor(tactics.Levels.Shown.Image), file.Levels[shown].Floor);
+        Assert.Equal(tactics.Levels.Shown.Image, tactics.Field.Store.FloorFiles![shown]);
+        Assert.False(tactics.Levels.Changed);
     }
 }

@@ -119,11 +119,11 @@ public sealed class BattleSaveTests
         Assert.Equal(b.PartyLevel, r.PartyLevel);
         Assert.Equal(b.RealCombat, r.RealCombat);
         Assert.Equal(tactics.MarchingOrder, resumed.MarchingOrder);
-        Assert.Equal(tactics.LevelCount, resumed.LevelCount);
-        for (var level = 0; level < tactics.LevelCount; level++)
+        Assert.Equal(tactics.Levels.Count, resumed.Levels.Count);
+        for (var level = 0; level < tactics.Levels.Count; level++)
         {
-            Assert.Equal(TacticalBattle.SavedFloor(tactics.LevelAt(level).Image), TacticalBattle.SavedFloor(resumed.LevelAt(level).Image));
-            Assert.Equal(tactics.Activations[level].Select(g => g.ToRecord()), resumed.Activations[level].Select(g => g.ToRecord()));
+            Assert.Equal(TacticalBattle.SavedFloor(tactics.Levels[level].Image), TacticalBattle.SavedFloor(resumed.Levels[level].Image));
+            Assert.Equal(tactics.Levels.Activations[level].Select(g => g.ToRecord()), resumed.Levels.Activations[level].Select(g => g.ToRecord()));
         }
         Assert.Equal(tactics.LootPiles.Count, resumed.LootPiles.Count);
         for (var i = 0; i < Combatant.PartySlots; i++)

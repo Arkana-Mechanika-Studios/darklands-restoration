@@ -24,7 +24,7 @@ public sealed class LeaderStairsRecordOfShownLevelTests
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
         var party = t.Battle.LevelShown;
-        Assert.True(t.LevelCount >= 3);
+        Assert.True(t.Levels.Count >= 3);
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Who]);
         var his = t.Battle[Who].Level;
         Assert.NotEqual(party, his);
@@ -35,8 +35,8 @@ public sealed class LeaderStairsRecordOfShownLevelTests
         t.PauseByte = 0;
         t.Battle[leader].StairsBack = 0;
         // record 0 of the lone member's level (the level shown) names a third level
-        var third = Enumerable.Range(0, t.LevelCount).First(l => l != party && l != his);
-        t.LevelAt(his).SetByte(StairsAt + 6, third);
+        var third = Enumerable.Range(0, t.Levels.Count).First(l => l != party && l != his);
+        t.Levels[his].SetByte(StairsAt + 6, third);
         return (t, leader, party, his);
     }
 
@@ -63,7 +63,7 @@ public sealed class LeaderStairsRecordOfShownLevelTests
             return;
         }
         var (t, leader, party, his) = Split(OriginalBehaviour.DataSafe);
-        var expected = (sbyte)t.LevelAt(party).GetByte(StairsAt + 6);
+        var expected = (sbyte)t.Levels[party].GetByte(StairsAt + 6);
         Assert.Equal(his, expected);
         t.UseKey(-1);
         // record 0 of his own level: the stairs the lone member took, so the leader joins him

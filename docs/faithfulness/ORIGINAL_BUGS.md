@@ -726,7 +726,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   why: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch: the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
 - **B-e7ca8e** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace`, `FixStairsWallMarkLost` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:730` `TacticalBattle.TakeStairs`  
   original: `R023+0x1618` (1EF8:1618, draft)  
-  why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by BattleLevels.SaveOrLoseUnsaved).
+  why: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (Levels.Changed: any change of the level sets it; level-change and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by BattleLevels.SaveOrLoseUnsaved).
 - **B-d4d9e6** `bug`, flag `FixExitedMemberStrandsTheRest`, `FixStairsArrivalWithoutPlace` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Doors.cs:749` `TacticalBattle.TakeStairs`  
   original: `R023+0x1618` (1EF8:1618, draft)  
   why: OriginalBehaviour.FixExitedMemberStrandsTheRest - a member gone through an exit (status 1, floor -99) counts as one on another level: once anyone has left, the party never comes together by the stairs (split audit row 10)
@@ -832,14 +832,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  
   original: `R003+0x00DC` (0E76:00DC, draft), `R024+0x059A` (1EF8:059A, draft), `R014+0x0694` (0E76:0694, draft)  
   why: DS:9084 (Battle.LeaveAfterVictory, set when an enemy that ends the battle dies) is not among what is written (R003 never touches it): a castle battle saved after its lord fell and loaded again does not end with the victory, and leaving counts as fleeing.
-- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:372` `TacticalBattle.KeepPlaces`  
+- **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:362` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
-- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:853` `TacticalBattle.Tick`  
+- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:843` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row 28). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:883` `TacticalBattle.Tick`  
+- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:873` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21). Decision: never, display only: the view stops following him.
   decision: never: display only: the view stops following him

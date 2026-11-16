@@ -811,7 +811,7 @@ public sealed partial class BattleScreen : ITacticalView
             file.Variables[BattleVariables.Result + 1] = 0;
         }
         // floor-picture keeps the level shown at the end for the next battle's empty battlefield.
-        _owner.GenerationMemory.FloorImage = (byte[])_battle.LevelShown.Image.Clone();
+        _owner.GenerationMemory.FloorImage = (byte[])_battle.Levels.Shown.Image.Clone();
         // the party's collision sizes (DS:C80F / DS:C831) stay in the program's tables for the next battle's placement
         _owner.GenerationMemory.PartySizes = [.. Enumerable.Range(0, Combatant.PartySlots).Select(i => (b[i].HalfWidth, b[i].HalfHeight))];
         // and so do the party's animation slots' sizes (DS:1182 / DS:118E), which the next battle's start copies into them

@@ -39,7 +39,7 @@ public sealed class PlacementOrderTests
             Assert.Equal((places[2 * i], places[2 * i + 1]), (battle[i].Position.X, battle[i].Position.Y));
         }
         // the start's group is hidden once the level is shown: the first spot is void now, as in the original's level at the first pass
-        Assert.True(screen.Tactics.LevelShown[places[0] >> 5, places[1] >> 4].IsVoid);
+        Assert.True(screen.Tactics.Levels.Shown[places[0] >> 5, places[1] >> 4].IsVoid);
     }
 
     /// <summary>

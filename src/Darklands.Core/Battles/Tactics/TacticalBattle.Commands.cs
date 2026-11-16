@@ -70,7 +70,7 @@ public sealed partial class TacticalBattle
         Battle.ActiveMember = i;
         // R016+0x0A72..0x0A7D: DS:D6EA = the member's Following bit (flags 0x1000), after order mode was left
         _followingBefore = (c.Flags & TacticalFlags.Following) != 0;
-        if (c.Level != Battle.LevelShown)
+        if (!Levels.IsShown(c))
         {
             SwitchLevel(c.Level);
             _view.Recentre(i);
@@ -94,7 +94,7 @@ public sealed partial class TacticalBattle
         }
         FollowsActive = true;
         Battle.ActiveMember = Battle.Leader = i;
-        if (c.Level != Battle.LevelShown)
+        if (!Levels.IsShown(c))
         {
             SwitchLevel(c.Level);
         }
@@ -107,13 +107,13 @@ public sealed partial class TacticalBattle
     // orig: fight-keys R016+0x0000 (1EF8:0000) draft (spec D §7.1)
     public void StepKey(int direction)
     {
-        if (Battle.PartyLevel != Battle.LevelShown)
+        if (Levels.PartyIndex != Levels.ShownIndex)
         {
             _view.Message(UseStairsText, 0x96);
             return;
         }
         var i = Battle.ActiveMember;
-        if (i is < 0 or >= Combatant.PartySlots || Battle[i].Level != Battle.LevelShown || MoveMode == 1)
+        if (i is < 0 or >= Combatant.PartySlots || Battle[i].Level != Levels.ShownIndex || MoveMode == 1)
         {
             return;
         }
@@ -526,7 +526,7 @@ public sealed partial class TacticalBattle
     private bool InAnyBox(MapPoint p)
     {
         bool In(int x, int y, int w, int h) => x <= p.X && p.X <= w + x && y <= p.Y && p.Y <= h + y;
-        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(DoorCountAt); k++)
         {
             var (x, y, w, h) = Box(DoorsAt + 14 * k);
             if (In(x, y, w, h))
@@ -534,7 +534,7 @@ public sealed partial class TacticalBattle
                 return true;
             }
         }
-        for (var k = 0; k < LevelShown.GetByte(StairsCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(StairsCountAt); k++)
         {
             var (x, y, w, h) = Box(StairsAt + 14 * k);
             if (In(x, y, w, h))
@@ -542,7 +542,7 @@ public sealed partial class TacticalBattle
                 return true;
             }
         }
-        for (var k = 0; k < LevelShown.GetByte(RegionCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(RegionCountAt); k++)
         {
             var (x, y, w, h) = Box(RegionsAt + RegionSize * k);
             if (In(x, y, w, h))
@@ -550,10 +550,10 @@ public sealed partial class TacticalBattle
                 return true;
             }
         }
-        for (var k = 0; k < LevelShown.GetByte(ZoneCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(ZoneCountAt); k++)
         {
             var at = ZonesAt + 10 * k;
-            if (In(LevelShown.GetWord(at), LevelShown.GetWord(at + 2), LevelShown.GetWord(at + 4), LevelShown.GetWord(at + 6)))
+            if (In(Levels.Shown.GetWord(at), Levels.Shown.GetWord(at + 2), Levels.Shown.GetWord(at + 4), Levels.Shown.GetWord(at + 6)))
             {
                 return true;
             }

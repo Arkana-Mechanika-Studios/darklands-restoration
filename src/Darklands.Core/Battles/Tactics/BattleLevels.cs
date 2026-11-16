@@ -10,7 +10,7 @@ namespace Darklands.Core.Battles.Tactics;
 /// </summary>
 // Not in the original (a type of its own for the original's level buffer and its files); no rule decisions live here: the stairs rules, the
 // place and trigger tests stay in TacticalBattle and read the levels through this type.
-public sealed class BattleLevels(IReadOnlyList<BattlefieldLevel> levels, BattleMap map, BattlefieldStore store, BattlefieldForces forces)
+public sealed class BattleLevels(Battle battle, IReadOnlyList<BattlefieldLevel> levels, BattleMap map, BattlefieldStore store, BattlefieldForces forces)
 {
     /// <summary>The number of levels.</summary>
     public int Count => levels.Count;
@@ -19,7 +19,25 @@ public sealed class BattleLevels(IReadOnlyList<BattlefieldLevel> levels, BattleM
     public BattlefieldLevel this[int level] => levels[level];
 
     /// <summary>The level in memory, the one on screen.</summary>
+    /// <remarks>The original's rules read THIS image for a member's action whatever level he stands on; every such read in the rules is a
+    /// shown-level read (Classic), and the ten split-party fixes (<c>OriginalBehaviour.Fix*OfShownLevel</c>, <c>FixTriggersOfOtherLevels</c>,
+    /// <c>FixPileOfOtherLevel</c>, <c>FixPlaceActionsOnOwnLevel</c>, <c>FixFollowersOnShownLevel</c>, <c>FixWokenOnOtherLevel</c>,
+    /// <c>FixLeaderKeysOnOtherLevel</c>, <c>FixCombatAcrossLevels</c>, <c>FixWalkingOnOwnLevel</c>) read his own level instead; step 7's
+    /// audit starts from the uses of this property.</remarks>
     public BattlefieldLevel Shown => map.Level;
+
+    /// <summary>The index of the level in memory (DS:11CA, <see cref="Battle.LevelShown"/>, saved by the battle file).</summary>
+    public int ShownIndex { get => battle.LevelShown; set => battle.LevelShown = value; }
+
+    /// <summary>The level the party's leader stands on (DS:C623).</summary>
+    public int PartyIndex => battle.PartyLevel;
+
+    /// <summary>Whether combatant <paramref name="who"/> stands on the level shown (the original's rules read the image in memory whatever level
+    /// the member they act for stands on; where that is the split-party bug, an <c>OriginalBehaviour.Fix*</c> switch reads his own level instead).</summary>
+    public bool IsShown(int who) => battle[who].Level == ShownIndex;
+
+    /// <summary>Whether <paramref name="who"/> stands on the level shown.</summary>
+    public bool IsShown(Combatant who) => who.Level == ShownIndex;
 
     /// <summary>Every level image, in order.</summary>
     public IReadOnlyList<BattlefieldLevel> All => levels;

@@ -52,11 +52,11 @@ public sealed partial class TacticalBattle
     {
         // orig: R003+0x0132..0x01AB: the level in the buffer and its activations go to their files only while DS:D4E4 is set, which is
         // then cleared; the levels written below are the files (BattlefieldStore.FloorFiles)
-        if (LevelChanged)
+        if (Levels.Changed)
         {
             Levels.SaveFiles();
             Levels.ClearUnsavedBytes();
-            LevelChanged = false;
+            Levels.Changed = false;
         }
         var v = file.Variables;
         v[BattleVariables.InBattle] = (byte)(inBattle ? 1 : 0);
@@ -153,7 +153,7 @@ public sealed partial class TacticalBattle
         }
         v[BattleVariables.RealCombat] = Flag(Battle.RealCombat);
         v[BattleVariables.EnemySaw] = Flag(EnemySawMember);
-        v[BattleVariables.LevelShown] = (byte)Battle.LevelShown;
+        v[BattleVariables.LevelShown] = (byte)Levels.ShownIndex;
         v[BattleVariables.PartyLevel] = (byte)Battle.PartyLevel;
         v[BattleVariables.EnemyLevel] = (byte)Battle.EnemyLevel;
         var alarm = AlarmTrigger;
@@ -393,7 +393,7 @@ public sealed partial class TacticalBattle
         Battle.Alarm = v[BattleVariables.Alarm];
         Battle.RealCombat = v[BattleVariables.RealCombat] != 0;
         EnemySawMember = v[BattleVariables.EnemySaw] != 0;
-        Battle.LevelShown = v[BattleVariables.LevelShown];
+        Levels.ShownIndex = v[BattleVariables.LevelShown];
         Battle.PartyLevel = v[BattleVariables.PartyLevel];
         Battle.EnemyLevel = (sbyte)v[BattleVariables.EnemyLevel];
         AlarmTrigger = (Word(v, BattleVariables.AlarmTrigger), Word(v, BattleVariables.AlarmTrigger + 2),
@@ -454,7 +454,7 @@ public sealed partial class TacticalBattle
         Ticks = 0;
         InitMenus();
         RebuildMarchingOrder();
-        SwitchLevel(Battle.LevelShown);
+        SwitchLevel(Levels.ShownIndex);
         AlarmTrigger = (-1, 0, 0, 0);
         CheckActivations();
         for (var i = 0; i < Combatant.Count; i++)
