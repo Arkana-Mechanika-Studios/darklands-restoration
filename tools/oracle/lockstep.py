@@ -558,6 +558,17 @@ def jump_battles(jumps, trace) -> list[int]:
     return out
 
 
+def _rebased(jump):
+    """A jump whose rises carried the clock past 50000 (the emulated time of an in-battle save, which rises past it without falling back: the
+    fortress-lugum-split-load save took 62839 ticks, 2447 -> 65286): the original's pass head then took 49000 off (R014's clock rebase, which the
+    C# host does itself), so the clock_jumps rest, b - cur, is 49000 short; what is left to give the C# after its own rebase is the ticks after
+    the pass. (The recording's clock_jumps is not changed: an original-side module, so any change stales every stored recording.)"""
+    clock, rest, *rises = jump
+    if rest < 0 and clock + 1 + sum(int(r.split(":")[1]) for r in rises) > 50000:
+        return (clock, rest + 49000, *rises)
+    return jump
+
+
 def save_wraps(jumps, trace, log) -> list:
     """The jumps with those of the passes of an in-battle save whose emulated time carried the 16-bit combat clock past 0xFFFF (gen-carry-14:
     the save's Enter at clock 41366, the next pass head 14135, i.e. 38305 callbacks of the save and its compression), which the recording's
@@ -565,6 +576,7 @@ def save_wraps(jumps, trace, log) -> list:
     every battle timer. A save is the key read by the save dialog R037+0x2A68 (the innermost of the log line's callers) in a battle pass;
     the fall of the clock after that pass is the wrap, not a new battle (the C# host counts its battles at a fall of the clock the same way,
     so the jump keys agree)."""
+    jumps = [_rebased(j) for j in jumps]
     clocks = [int(l.split()[2]) for l in trace or []]
     saves = set()
     for l in log or ():
