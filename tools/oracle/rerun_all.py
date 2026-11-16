@@ -786,6 +786,9 @@ for _name in ("castle-rotenburg-split", "castle-rotenburg-split-menu", "castle-r
 # prefinal: the party-split audit's rows in lockstep (Faithful agreeing with the original; the DataSafe end states in
 # docs/faithfulness/SUMMARY.md): Lugum's split (rows 3, 4, 5) and battles given by the request step (rows 6, 7; the pit, dart trap and
 # chest routines of battlefield 0x88), and the request step's own probe
+# split-load (1.1 seam 1): the split party saved, its battle loaded from that save and saved again
+SESSIONS["fortress-lugum-split-load"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
+BATTLE_RECORDS.add("fortress-lugum-split-load")
 SESSIONS["fortress-lugum-split-door"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
 BATTLE_RECORDS.add("fortress-lugum-split-door")
 SESSIONS["fortress-lugum-split-alarm"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
