@@ -1,8 +1,8 @@
 # Localisation (translations)
 
 > **Status: designed, not built.** Nothing in this guide can be used yet. The game has no language setting, no
-> translation packs and no translation tools today. Localisation is planned for **version 1.2**, after the
-> release candidates and the 1.0 and 1.1 work. Everything below describes the plan, so that translators can prepare
+> translation packs and no translation tools today. Localisation is planned for **version 1.1**, the first
+> release after 1.0. Everything below describes the plan, so that translators can prepare
 > and developers can see what is coming. Names, file layouts and examples are drafts and may change. This guide
 > will be rewritten as each part is built.
 
