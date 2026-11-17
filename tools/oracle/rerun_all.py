@@ -797,6 +797,8 @@ SESSIONS["fortress-lugum-split-walk"] = "local/oracle-saves/lugum/DKSAVE2.SAV"
 BATTLE_RECORDS.add("fortress-lugum-split-walk")
 SESSIONS["castle-request31-split-sight"] = "DKSAVE0.SAV"
 BATTLE_RECORDS.add("castle-request31-split-sight")
+SESSIONS["castle-request31-split-fall"] = "DKSAVE0.SAV"
+BATTLE_RECORDS.add("castle-request31-split-fall")
 SESSIONS["castle-request31-split-archers"] = "DKSAVE0.SAV"
 BATTLE_RECORDS.add("castle-request31-split-archers")
 SESSIONS["dungeon-request136-pit"] = "DKSAVE0.SAV"
