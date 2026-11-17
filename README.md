@@ -129,12 +129,11 @@ want:
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
 `--scale 2`, `--no-intro` and so on).
 
-## Status: version 1.0.0-rc6 (release candidate)
+## Status: version 1.0.0
 
 The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
 churches, the world map and its encounters, battles, camping, saints and alchemy, saving and loading.
-The release candidates are the last checks before 1.0: play them, and report anything that differs from the
-original (above, "Reporting a problem").
+If anything differs from the original, please report it (above, "Reporting a problem").
 
 The original's bugs are part of Darklands and are kept, with one exception: the few that damage a saved game or
 lose your items (the inn's item stores, a member leaving the party, a damaged saved file...) are fixed, and the
