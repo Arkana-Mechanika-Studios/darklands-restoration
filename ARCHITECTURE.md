@@ -50,6 +50,7 @@ Darklands.Platform       host interfaces (video, input, audio, clock, game timer
 Darklands.Audio          the player's sound drivers in an emulated PC; Darklands.Audio.Mt32 adds mt32emu
 Darklands.Rendering      replacement graphics (HD packs) over the 320x200 screen, for the hosts (needs Platform only)
 Darklands.DevConsole     the developer console (references Core only; no game project references it)
+Darklands.DevTools       the developer's inspector (references Platform only; in DevTools builds only, never released)
 Darklands.Launcher       the settings screen before the game (references Platform only; draws into its own pixels;
                          only the SDL host references it, through ILauncher)
 ```
@@ -123,6 +124,12 @@ SDL host opens it with F11 (a key the original never reads) and draws it over th
 font (StbTrueTypeSharp, DejaVu Sans Mono), outside the game's picture; the headless host runs its commands
 with `console:` steps (docs/SETTINGS.md).
 
+`Darklands.DevTools`: the developer's inspector, a host feature like the console: for a pixel of the frame, the asset that
+drew it and its own pixel, the palette index, and the input step the host has reached. It only reads the frame. It is not
+in a player's release: the hosts reference it only when the build property `DevTools` is true (Directory.Build.targets: true
+in Debug builds, false in Release builds and in the publish profiles), and the CI fails a release package that holds it. The
+headless host runs it with `inspect:x,y` steps.
+
 ## Rendering
 
 Presentation draws every frame into `Darklands.Platform.Screen`: 320x200 palette indices and the 256
@@ -164,9 +171,9 @@ not followed yet.
 * `tests/Darklands.Architecture.Tests`: the dependency direction above, on the compiled assemblies, with the places that break it
   today as known exceptions (docs/ARCHITECTURE-RULES.md).
 * `tests/Darklands.Battles.Tests`, `Darklands.Persistence.Tests`, `Darklands.Audio.Tests`,
-  `Darklands.Platform.Tests`, `Darklands.DevConsole.Tests`, `Darklands.Host.Sdl.Tests`,
+  `Darklands.Platform.Tests`, `Darklands.DevConsole.Tests`, `Darklands.DevTools.Tests`, `Darklands.Host.Sdl.Tests`,
   `Darklands.Rendering.Tests`: the screens and battles, saved games, the sound drivers, settings, the console,
-  the HD backend.
+  the inspector, the HD backend.
 
 Tests that need the player's files read the game folder from `DARKLANDS_DIR` (or `DARKLANDS_EXE` for
 the EXE alone); without them those tests pass without checking anything.

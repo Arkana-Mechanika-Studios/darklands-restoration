@@ -10,6 +10,11 @@
     <ProjectReference Include="..\Darklands.Launcher\Darklands.Launcher.csproj" />
   </ItemGroup>
 
+  <!-- the developer's inspector, only in builds with the property DevTools (Directory.Build.targets): never in a player's release -->
+  <ItemGroup Condition="'$(DevTools)' == 'true'">
+    <ProjectReference Include="..\Darklands.DevTools\Darklands.DevTools.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="Darklands.Host.Sdl.Tests" />
   </ItemGroup>

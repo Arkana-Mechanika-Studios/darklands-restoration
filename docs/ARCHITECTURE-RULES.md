@@ -9,7 +9,7 @@ breaks the rule fails the test too: take it off the list. The lists only shrink.
 | Rule | Checked | Known exceptions |
 | --- | --- | --- |
 | Each assembly references only the layers below it | a table of the allowed references per product assembly; a new project needs its row | none |
-| The game (Core, Persistence, Content, Cards, Simulation) depends on no presentation, device or host; nothing references a host; only the hosts use the console, the launcher and the HD backend | assembly references | none |
+| The game (Core, Persistence, Content, Cards, Simulation) depends on no presentation, device or host; nothing references a host; only the hosts use the console, the inspector, the launcher and the HD backend | assembly references | none |
 | The rules (Core, Cards, Simulation) do no I/O and read no wall clock or environment: no file system, console, environment variable, `System.Random`, `DateTime.Now`, tick counts, `Stopwatch`, `Thread.Sleep`; a tester's trace or the oracle's feed is a plain hook the hosts set (`TesterHooks.Apply`) | member uses | none |
 | The views (Presentation) read no environment variable: their tester hooks are set by the hosts the same way | member uses in Presentation | none |
 | The game carries text ids, never resolved text: no game assembly references `Darklands.Localization` or uses its types; the localiser uses no other product type; only Presentation and the hosts may resolve ids to text (docs/LOCALISATION.md) | assembly references and member uses | none |

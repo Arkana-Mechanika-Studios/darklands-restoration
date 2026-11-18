@@ -18,6 +18,7 @@ public sealed class ArchitectureRulesTests
     private const string Mt32 = "Darklands.Audio.Mt32";
     private const string Launcher = "Darklands.Launcher";
     private const string DevConsole = "Darklands.DevConsole";
+    private const string DevTools = "Darklands.DevTools";
     private const string Presentation = "Darklands.Presentation";
     private const string Headless = "Darklands.Host.Headless";
     private const string Sdl = "DarklandsRP"; // Darklands.Host.Sdl builds the program players start
@@ -41,9 +42,10 @@ public sealed class ArchitectureRulesTests
         [Launcher] = [Platform],
         [Localization] = [], // message ids to text (Fluent packs over the original text); it knows no game rules
         [DevConsole] = [Core],
+        [DevTools] = [Platform], // the developer's inspector; the hosts reference it only in DevTools builds
         [Presentation] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio],
-        [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, Presentation],
-        [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, Launcher, Presentation],
+        [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Presentation],
+        [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Launcher, Presentation],
     };
 
     /// <summary>The scan sees every use: no member or type token of the product code is left unresolved.</summary>
@@ -84,7 +86,7 @@ public sealed class ArchitectureRulesTests
     [Fact]
     public void TheGameDependsOnNoPresentationAndNoHost()
     {
-        string[] above = [Platform, Rendering, Audio, Mt32, Launcher, DevConsole, Presentation, Headless, Sdl];
+        string[] above = [Platform, Rendering, Audio, Mt32, Launcher, DevConsole, DevTools, Presentation, Headless, Sdl];
         foreach (var name in Game)
         {
             Assert.Empty(References(name).Intersect(above));
@@ -95,8 +97,8 @@ public sealed class ArchitectureRulesTests
             Assert.DoesNotContain(Sdl, References(name));
             if (name is not (Headless or Sdl))
             {
-                // the developer console, the launcher and the HD backend are host features
-                Assert.Empty(References(name).Intersect([DevConsole, Launcher, Rendering]));
+                // the developer console, the inspector, the launcher and the HD backend are host features
+                Assert.Empty(References(name).Intersect([DevConsole, DevTools, Launcher, Rendering]));
             }
         }
     }

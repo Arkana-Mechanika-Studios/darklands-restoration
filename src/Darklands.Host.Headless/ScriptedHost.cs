@@ -56,8 +56,22 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     /// <summary>The dump step (the battle's combatants on the console).</summary>
     public Action? Dump { get; set; }
 
+    /// <summary>
+    /// Runs an inspect:x,y step on the last frame shown: the developer's inspector (frame, x, y, the number of steps taken before
+    /// this one); null in a build without it (the build property DevTools).
+    /// </summary>
+    public Action<Screen, int, int, int>? Inspect { get; set; }
+
+    private int _stepsTaken;
+
     /// <summary>Drops the next step (one the program itself has read).</summary>
-    public void Skip() => _steps.Dequeue();
+    public void Skip() => Take();
+
+    private string Take()
+    {
+        _stepsTaken++;
+        return _steps.Dequeue();
+    }
 
 
     public IVideo Video => this;
@@ -346,6 +360,7 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
             QuitRequested = true;
             return;
         }
+        _stepsTaken++;
         var (kind, value) = (step.Split(':', 2)[0], step.Contains(':') ? step.Split(':', 2)[1] : "");
         switch (kind)
         {
@@ -458,6 +473,22 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "dump":
                 Dump?.Invoke();
+                break;
+            case "inspect":
+                // what drew a pixel of the last frame (DevTools builds only); it reads the frame and changes nothing
+                var (ix, iy) = Point(value);
+                if (Inspect is null)
+                {
+                    Console.WriteLine("inspect: not in this build (DevTools is false)");
+                }
+                else if (_last is null)
+                {
+                    Console.WriteLine("inspect: no frame shown yet");
+                }
+                else
+                {
+                    Inspect(_last, ix, iy, _stepsTaken - 1);
+                }
                 break;
         }
     }

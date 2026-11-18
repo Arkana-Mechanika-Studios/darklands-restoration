@@ -292,6 +292,10 @@ Commands (`help` lists them, `help <command>` shows one):
 The commands change the game being played between two frames; a screen shows a change the next time it
 draws. The headless host runs the same commands with the step `console:<command>`.
 
+In a developer build (a Debug build, or any build with `-p:DevTools=true`; never a player's release) the headless host also
+takes `inspect:<x>,<y>`: it prints what drew that pixel of the last frame (the asset and its own pixel, the palette index) and
+the number of steps taken before it. It only reads the frame.
+
 ## Logs and reports folders
 
 Beside the settings file (or, when that folder cannot be written, in `%APPDATA%\DarklandsRestoration`) the program keeps a `logs`

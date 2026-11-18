@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The developer's inspector (what is under the pointer): a host feature, kept out of release builds. The hosts reference
+       it only when the build property DevTools is true (Directory.Build.props: true in Debug, false in Release and in every
+       publish profile); the game projects never reference it. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.DevTools.Tests" />
+  </ItemGroup>
+
+</Project>

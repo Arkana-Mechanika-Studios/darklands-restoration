@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\src\Darklands.Content\Darklands.Content.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Core\Darklands.Core.csproj" />
     <ProjectReference Include="..\..\src\Darklands.DevConsole\Darklands.DevConsole.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.DevTools\Darklands.DevTools.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Host.Headless\Darklands.Host.Headless.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Host.Sdl\Darklands.Host.Sdl.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Launcher\Darklands.Launcher.csproj" />
