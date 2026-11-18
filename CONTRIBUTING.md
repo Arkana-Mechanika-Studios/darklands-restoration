@@ -94,7 +94,7 @@ GitHub issues. If your idea touches two tracks, say so in the issue (section 4);
 | Faithfulness | keep Classic exact: the checks against the original, the registers | few, experienced contributors |
 | Engine structure | separate the rules from the screens, text, data and rule settings | experienced C# contributors |
 | Original bug fixing | the Fixed rule set: each original bug registered, then fixed behind its own switch | contributors who can read the original |
-| Restoration and research | the Restored preset and the game's history, each item with its sources | historians, veterans, careful readers |
+| Restoration and research | the Restored preset and the game's history, each item with its sources | C# contributors who can read the original; historians, veterans, careful readers |
 | Localisation | the game in other languages, with fonts that fit | translators |
 | Interface and features | optional new screens, comfort and features, never changing what the game decides | anyone with C# skills |
 | Graphics, sound and fonts | picture, sound and music packs, sharper fonts; the original pixels stay the reference | artists, musicians |
@@ -230,11 +230,21 @@ bug of the original (that is Restoration or a new feature).
 features left half-wired, what the manual or the hint book describes that the game does not do, what the designers
 said they meant, and the history of the places, saints and alchemy the game draws on.
 
-**What you need.** Patience with sources. No programming is needed to start: a finding is written down with its
-sources, saying how sure each one is (the program's own bytes, a designer's word, a manual, a player's memory).
+**What you need.** Patience with sources, and one of two kinds of skill:
+
+* **Digging into the code.** Most restorations start in the program: a branch nothing reaches, a table the game
+  never reads, a card that exists but is never chosen. Finding them, and building them behind a switch, needs C#
+  and the reading skills of the Faithfulness track: the original's 16-bit code, its coordinates and the oracle, to
+  show what the original holds and that Classic is untouched.
+* **Research from other sources.** The manual, the hint book, interviews, the history behind the game. No
+  programming is needed for this.
+
+Either way, a finding is written down with its sources, saying how sure each one is (the program's own bytes, a
+designer's word, a manual, a player's memory).
 
 **Where to start.** The registers of unused and unreachable code (`docs/faithfulness/dormant.csv`,
-`unreachable.csv`), and the Discord.
+`unreachable.csv`) and the `DORMANT` markers in the source (`docs/TRACEABILITY.md`), the Faithfulness track above
+for the checks, and the Discord.
 
 **How a change is checked.** Every item names its sources. Research informs; it does not by itself change a rule: a
 restoration ships behind a switch (or as a mod) with its evidence, and Classic stays as it was.
