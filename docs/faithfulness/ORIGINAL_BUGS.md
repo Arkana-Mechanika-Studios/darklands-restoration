@@ -737,39 +737,39 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R023+0x17D2` (1EF8:17D2, draft)  
   why: when the last member's stairs bring the party together, the enemies fighting on the level he arrives on count as left behind with the level left (R023+0x17D2): those of a following kind freeze and come again at his arrival spot, the others vanish. Kept as the original (party-split audit row 12). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
+- **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:25` `TacticalBattle.PartyLocations`  
+  original: `R014+0xDC14` (19CD:26A4, draft)  
+  why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
+- **B-9116a9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:82` `TacticalBattle.PartyLocations`  
+  original: `R014+0xDC14` (19CD:26A4, draft)  
+  why: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an optional fixed rule after 1.0.
+  decision: later: an optional fixed rule after 1.0
+- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:250` `TacticalBattle.UseUpDissolveSlot`  
+  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
+  why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
+- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:271` `TacticalBattle.ConsumeSlotAsOriginal`  
+  original: `R014+0xB434` (18BF:0FA4, draft)  
+  why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
+- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Triggers.cs:16` `TacticalBattle.Triggers`  
+  original: `R014+0xD6DA` (19CD:216A, draft)  
+  why: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level: an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
 - **B-b2de46** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:62` `TacticalBattle.LockIsDoor`  
   original: `R024+0x0000` (1EF8:0000, draft)  
   why: DS:CA99 follows the leader's place tests, so a member's Dissolve Lock order dissolves a door or a chest by the leader's last place, not his own (fighter-goto-action R014+0x2170 case 7). Kept as the original (party-split audit row 20). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-55c416** `bug`, flag `FixPlaceActionsOnOwnLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:236` `TacticalBattle.PartyLocations`  
-  original: `R014+0xDC14` (19CD:26A4, draft)  
-  why: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
-- **B-9116a9** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:293` `TacticalBattle.PartyLocations`  
-  original: `R014+0xDC14` (19CD:26A4, draft)  
-  why: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an optional fixed rule after 1.0.
-  decision: later: an optional fixed rule after 1.0
-- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:461` `TacticalBattle.UseUpDissolveSlot`  
-  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
-  why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
-- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:482` `TacticalBattle.ConsumeSlotAsOriginal`  
-  original: `R014+0xB434` (18BF:0FA4, draft)  
-  why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
-- **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.cs:646` `TacticalBattle.Triggers`  
-  original: `R014+0xD6DA` (19CD:216A, draft)  
-  why: OriginalBehaviour.FixTriggersOfOtherLevels - the shown level's triggers are tested at the place of a combatant on any level: an alarm ends the battle, a dart or spell trap fires, a secret door or trap is found by remote (split audit row 4)
-- **B-71d98a** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:391` `EffectField.EffectLevel`  
+- **B-71d98a** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.Rules.cs:18` `EffectField.EffectLevel`  
   original: `R019+0x0000` (1EF8:0000, matched)  
   why: OriginalBehaviour.FixCombatAcrossLevels - a spell or potion effect lands on the level SHOWN, whatever level its missile flew on (split audit row 7)
-- **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:718` `EffectField.DropWornOut`  
+- **B-fd2f1c** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.Rules.cs:345` `EffectField.DropWornOut`  
   original: `R019+0x0914` (1EF8:0914, matched)  
   why: items are consumed until none of that type and quality is left: the spares stacked with the worn piece (worn down with it by WearItem) are thrown away with it.
-- **B-8e79e5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:741` `EffectField.WearItem`  
+- **B-8e79e5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.Rules.cs:368` `EffectField.WearItem`  
   original: `R019+0x0968` (1EF8:0968, matched)  
   why: armour wear hits the whole stack: the stack loses the quality, not one piece, so identical spare pieces stacked with the worn armour wear down with it.
-- **B-3cc78a** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:955` `EffectField.LineCrossesCloud`  
+- **B-3cc78a** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.Rules.cs:582` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: the loop runs to the count inclusive, so the slot after the last cloud (an old cloud's copy, or zeros) is tested too (OriginalBehaviour.FixCloudLineOneTooMany stops at the last cloud).
-- **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.cs:957` `EffectField.LineCrossesCloud`  
+- **B-bfb04e** `bug`, flag `FixCloudLineOneTooMany` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Effects.Rules.cs:584` `EffectField.LineCrossesCloud`  
   original: `R014+0x10672` (1EC9:0142, draft)  
   why: a missed box reloads the line from the saved words, which are the stack residue until a box was hit: the clouds after it are tested against that line (3, 17405)-(state words), not a → t. Kept.
 - **B-de34f4** `bug`, flag `FixCombatAcrossLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.EnemyTurn.cs:49` `TacticalBattle.EnemySees`  
@@ -815,18 +815,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2eb386** `bug`, flag `FixEscapeWithoutSelectionPauseByte` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.OrderMode.cs:846` `TacticalBattle.CancelOrder`  
   original: `R016+0x13D4` (1EF8:13D4, draft)  
   why: OriginalBehaviour.FixEscapeWithoutSelectionPauseByte - with nobody selected the xor at R016+0x13F9 (bx = -2) lands on flags[-1]'s high byte, the pause byte DS:A695: its bit 0x10 becomes DS:D6EA (the Following bit before order mode), so a pause byte of 1 with D6EA = 1 turns 0x11, which the tests for paused (== 1) and for running (== 0) both refuse.
-- **B-e9dc75** `bug`, flag `FixFollowersOnShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:243` `TacticalBattle.PlaceInitialEnemies`  
+- **B-e9dc75** `bug`, flag `FixFollowersOnShownLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:232` `TacticalBattle.PlaceInitialEnemies`  
   original: `R025+0x0CFC` (1EF8:0CFC, draft)  
   why: OriginalBehaviour.FixFollowersOnShownLevel - the followers are placed on the level SHOWN when the delay ends: with the view on a member left on the old level they appear there, and the end test turns him Away (split audit row 9)
-- **B-7ac4d6** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:285` `TacticalBattle.CheckActivations`  
+- **B-7ac4d6** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:274` `TacticalBattle.CheckActivations`  
   original: `R014+0x4442` (0E76:4442, draft)  
   why: the encounters of the party's level are checked at the places of every member (trigger-check R014+0x4442, only while DS:11CA == DS:C623): a lone member on another level, at the coordinates of an encounter's sight on the party's level, finds it. Kept as the original (party-split audit row 23). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-6212cc** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:344` `TacticalBattle.PlaceEnemies`  
+- **B-6212cc** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:333` `TacticalBattle.PlaceEnemies`  
   original: `R025+0x0000` (1EF8:0000, draft)  
   why: a reinforcement wave (mode 1, after a kill) is placed on the level SHOWN from its .enm (R025+0x0000, DS:A6B4 = DS:11CA): with a lone member's level shown it lands on his level. Kept as the original (party-split audit row 8). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-fd4e71** `bug`, flag `FixWokenOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:573` `TacticalBattle.PlaceWoken`  
+- **B-fd4e71** `bug`, flag `FixWokenOnOtherLevel` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Placement.cs:562` `TacticalBattle.PlaceWoken`  
   original: `R014+0x0DEE` (0E76:0DEE, draft)  
   why: OriginalBehaviour.FixWokenOnOtherLevel - the free spot is searched with the walls and sight of the level SHOWN, then next to any able member on any level: a member woken on another level can land in a wall of his own (split audit row 15)
 - **B-61f351** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Saving.cs:47` `TacticalBattle.WriteBattleFile`  
@@ -835,11 +835,11 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-b189d0** `bug`, flag `FixFloorsOfResumedBattle` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:375` `TacticalBattle.KeepPlaces`  
   original: `R014+0x9C4C` (14F7:343C, draft)  
   why: OriginalBehaviour.FixFloorsOfResumedBattle - mode 1 keeps each member's x/y but puts everybody on the level shown at the end: a member who was alone on another level stands there at his own level's coordinates (split audit row 17)
-- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:861` `TacticalBattle.Tick`  
+- **B-d94fc5** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:856` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: a member gone through the exit keeps status 1 with floor -99, so after one has left the members are never on one floor and Group / Single file stay greyed (R014+0x0F58, DS:D610). Kept as the original (party-split audit row 28). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:891` `TacticalBattle.Tick`  
+- **B-6737a3** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.cs:886` `TacticalBattle.Tick`  
   original: `R014+0x0F58` (0E76:0F58, draft)  
   why: the view follows the active member by his place in the last frame, which is set only for combatants on the level SHOWN (R014+0x99F6): once he is on a level not shown it stops following him. Kept as the original (party-split audit row 21). Decision: never, display only: the view stops following him.
   decision: never: display only: the view stops following him
@@ -860,7 +860,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
-- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.cs:2935` `BattleScreen.RecordScreenPlaces`  
+- **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.Drawing.cs:50` `BattleScreen.RecordScreenPlaces`  
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
   why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
   decision: never: display only: his order mode opens when he is drawn again
@@ -888,14 +888,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:123` `CardTextLayout.Draw`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
-- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:302` `OverlandScreen.FreeBuffer`  
+- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:309` `OverlandScreen.FreeBuffer`  
   original: `root 05BA:00C2` (05BA:00C2, matched), `root 0000:13A0` (0000:13A0, draft), `root 0000:0CAA` (0000:0CAA, draft) +2 more  
   why: OriginalBehaviour.FixMapQuitFreedBuffers - after the map's Alt-Q answered "no" the handles are 0, and the next free of one (a second Alt-Q "M", a portrait click or the camp "S", leaving the map "Map") fails root 05BA:00C2's check (root 044A:0164): root 0000:1354 (the drivers stopped, text mode), "<name> - Buffer dealloc error" by DOS function 9, exit(0) (session tk-map-altq-twice, local/batch/mapquit: the second Alt-Q). Fixed (DataSafe): the buffers are the map's as before.
-- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:463` `OverlandScreen.PlaceParty`  
+- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:470` `OverlandScreen.PlaceParty`  
   original: `R030+0x00A8` (1462:00A8, draft)  
   why: R030+0x01EB..0x0220: with x - 8 < 0 the marker x is 0x82 - (x - 8), one pixel per missing tile instead of 16, and the view column is 0; the party that leaves a place whose column is below 8 stands 2 to 5 tiles east of it (a column of 3 gives 8, a column of 6 gives 8 as well: 0x82 + 5 and 0x82 + 2 pixels read as tile 8) once the map runs (each pass of R030+0x0C44 takes the party's cell from the marker). In the shipped data the places are Nancy and Elberg (their exit points, DARKLAND.CTY, columns 6 and 6) and Valkenberg, Tongeren, Gemert, Helmond, Limberg, Spa and Briey (DARKLAND.LOC columns 5, 5, 5, 3, 6, 3, 3); a column of exactly 8 (Moresnet) is exact. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:528` `OverlandScreen.Scroll`  
+- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:535` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 - **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:234` `PartyRosterScreen.Arrow`  

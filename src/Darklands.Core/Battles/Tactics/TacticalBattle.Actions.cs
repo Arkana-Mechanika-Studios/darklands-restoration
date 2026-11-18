@@ -94,9 +94,6 @@ public sealed partial class TacticalBattle
         }
     }
 
-    /// <summary>A debugging aid (DARKLANDS_STEP_TRACE): each combatant's step call, as tools/oracle/lockstep.py compares it.</summary>
-    public static Action<string>? StepTrace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_STEP_TRACE") is null ? null : Console.WriteLine;
-
     /// <summary>One step along the path (or the step queued by a key).</summary>
     // orig: fighter-step R014+0x1624 (0E76:1624) draft (spec D §2.3, asm-verified)
     private void Step(int i, int set)
@@ -723,5 +720,4 @@ public sealed partial class TacticalBattle
             }
         }
     }
-
 }

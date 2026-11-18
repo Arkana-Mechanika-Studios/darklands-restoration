@@ -826,11 +826,6 @@ public sealed partial class TacticalBattle : IBattleEndActions
         Effects.Rebase(R);
     }
 
-    /// <summary>A debugging aid: called where a tick's phases begin (-1 the scheduler, -2 the melee exchanges, or earlier: after a rethink's path search in the scheduler; -3 after the activations' test; -6 a tick found not due), as MscRandom.BeforeDraw is before a draw
-    /// (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes had reached there, DARKLANDS_BATTLE_CLOCK_JUMPS).</summary>
-    [field: ThreadStatic]
-    public static Action<int>? ClockPhase { get; set; }
-
     /// <summary>One combat tick when due: AI, places, melee exchanges, speed masks, actions.</summary>
     /// <returns>True when a tick ran.</returns>
     // orig: fight-tick R014+0x0F58 (0E76:0F58) draft (spec D §1.3, asm-verified)
@@ -949,11 +944,6 @@ public sealed partial class TacticalBattle : IBattleEndActions
             _view.RowChanged(i);
         }
     }
-
-    /// <summary>A debugging aid for the oracle (null in play): called before the endurance regain reads the clock for a member (its slot),
-    /// where tools/oracle/timer_marks.py found the original's timer callbacks inside the loop (DARKLANDS_BATTLE_REGAIN_RISES).</summary>
-    [field: ThreadStatic]
-    public static Action<int>? RegainRead { get; set; }
 
     /// <summary>After the battle: skill improvement from what was used (unless the party fell into a pit).</summary>
     // orig: R014+0x0694 (0E76:0694) draft (byte-matched per the draft notes)

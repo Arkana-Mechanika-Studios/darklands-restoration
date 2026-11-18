@@ -38,8 +38,9 @@ public sealed class MscRandom(uint seed = 1) : IRandomSource
         Trace?.Invoke($"seed {seed}");
     }
 
-    /// <summary>A debugging aid (DARKLANDS_RANDOM_TRACE): each seed and each draw with the method that drew (tools/oracle/lockstep.py).</summary>
-    public static Action<string>? Trace { get; set; } = Environment.GetEnvironmentVariable("DARKLANDS_RANDOM_TRACE") is null ? null : Console.WriteLine;
+    /// <summary>A debugging aid: each seed and each draw with the method that drew (tools/oracle/lockstep.py); null in play (the hosts set
+    /// it from DARKLANDS_RANDOM_TRACE through RulesTesterHooks).</summary>
+    public static Action<string>? Trace { get; set; }
 
     /// <summary>A debugging aid: called before each draw (tools/oracle/battle_oracle.py gives the C# the clock the original's long passes counted between draws).
     /// One per thread: a battle screen clears it at each pass, which must not clear the hook a harness set on another thread (the Battles
