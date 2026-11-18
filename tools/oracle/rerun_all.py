@@ -807,6 +807,13 @@ SESSIONS["dungeon-request136-dart"] = "DKSAVE0.SAV"
 BATTLE_RECORDS.add("dungeon-request136-dart")
 SESSIONS["dungeon-request136-chest"] = "DKSAVE0.SAV"
 BATTLE_RECORDS.add("dungeon-request136-chest")
+# Dissolve Lock free opening (branch free-opening, local/free-opening-2026-11-15.md): Hans (party slot 2) with an Eater-Water first in his pack
+# (synth_saves.py eater<slot>) is ordered Dissolve Lock at the magic-locked chest of request 137 / seed 2; in the second the order waits while his
+# character sheet gives the stack away. The runs that save the battle with Alt-S (evidence-sessions/, not in this set) show the packs.
+SESSIONS["dissolve-free-control"] = "synth/DKSAVE0-eater2.sav"
+BATTLE_RECORDS.add("dissolve-free-control")
+SESSIONS["dissolve-free-moved"] = "synth/DKSAVE0-eater2.sav"
+BATTLE_RECORDS.add("dissolve-free-moved")
 SESSIONS["gate-request-castle124"] = "DKSAVE0.SAV"
 BATTLE_RECORDS.add("gate-request-castle124")
 # carry: two or more battles in one program run (gen_carry_sessions.py: wild, city, the mine; won, given up, abandoned by an Alt-L,

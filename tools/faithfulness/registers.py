@@ -246,7 +246,9 @@ def build(root: Path = ROOT):
             hi = m.scope_end if m.scope_end and m.scope_end >= m.line else m.line + 40
             window = "\n".join(lines[lo:hi])
             found = sorted(set(re.findall(r"\b(Fix[A-Z]\w+)\b", window)) & flags)
-            e.flags = found
+            # a bug kept as the original (its note closes with a decision) has no fix flag, even when a flag of a neighbouring bug is
+            # in the window (the planned fix is a `planned` row of switches.csv)
+            e.flags = [] if decision(e) else found
         entries.append(e)
     # BUG: the flag nearest after the marker wins when several flags sit in the window
     return index, flags, entries

@@ -233,6 +233,12 @@ public sealed partial class TacticalBattle
         var c = Battle[i];
         // C: the slot is a byte: no Eater-Water found (−1) is 255.
         var slot = c.DissolveSlot & 0xFF;
+        // BUG: the order is carried out without a look at the pack: when the Eater-Water has been moved away since the order was given
+        //   (given or dropped on the character sheet while the order waits), the lock opens all the same and the stack that now lies at
+        //   the old slot pays for it (lockstep sessions dissolve-free-control / dissolve-free-moved: the stack that slid into the slot is
+        //   used up, the chest opens). With OriginalBehaviour.FixStaleDissolveSlot nothing is used up and the lock opens for free; the
+        //   switch of the rule is planned as FixDissolveWithoutEaterWater (fix.battle.dissolve-lock-without-eater-water, switches.csv).
+        //   Decision: later, in the Fixed rule set the order is cancelled and the lock stays shut (1.1 step 7, after the battle seam); Classic keeps the original.
         if (Battle.Behaviour.FixStaleDissolveSlot)
         {
             // DIVERGENCE: with the fix (data safety, switchable; on in the player's game) only an Eater-Water is used up: the slot's stack

@@ -2,7 +2,8 @@
 
 [switches.csv](switches.csv) lists every switch of the game: each place where the code can take the original's path or a
 changed one, and the setting or flag that chooses. Nothing in the register changes the game; it records what the code has
-today. (Plan: the post-1.0 keyed flag table builds on it, so a row's `id` is the key it will keep.)
+today, and the few fixes already decided for a later step (`planned` rows). (Plan: the post-1.0 keyed flag table builds on it, so a
+row's `id` is the key it will keep.)
 
 The rules it serves: every departure from the original sits behind a switch with an id, and the original path stays beside it;
 the faithful game ("Classic") stays the reference the oracles check; two kinds of fix are on in every player mode, each kept
@@ -13,25 +14,25 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 | Column | Meaning |
 |---|---|
 | `id` | The stable key, lower case, dotted: `<family>.<area>.<name>`, words joined by hyphens. Never renamed once released. Families: `fix` (a fixed original bug), `view` (what is drawn), `comfort` (how orders are given), `content` (mods and packs). |
-| `kind` | `flag`: a property of `OriginalBehaviour` (`src/Darklands.Core/OriginalBehaviour.cs`), set per game. `setting`: a key of the settings file ([../SETTINGS.md](../SETTINGS.md)), set per player. |
+| `kind` | `flag`: a property of `OriginalBehaviour` (`src/Darklands.Core/OriginalBehaviour.cs`), set per game. `setting`: a key of the settings file ([../SETTINGS.md](../SETTINGS.md)), set per player. `planned`: a fix decided for a later step of the plan and not in the code yet; its key is the flag it will be, and the row becomes a `flag` row when the flag is added. |
 | `key` | The name in the code: the property (`FixFameCost`) or the settings key (`input.mouseWheel`). |
 | `class` | The change class of the plan's table: `data-safety` (a bug that damages saved games or stores or ends the program: on in every player mode), `visual` (an evident drawing glitch: on in every player mode), `gameplay` (an original bug that changes what the game decides: in the Fixed rule set), `interface-comfort`, `presentation`, `content-mod`. (`restoration` and `new-capability` are allowed for later rows; none exist yet.) |
 | `axis` | `Rules` (what the game decides), `Presentation` (what is seen and heard), `Interface` (how the same orders are given). |
 | `presets` | Where the switch is on, as the plan sets the presets out: `classic`, `fixed`, `restored` joined by `;`, or `any` for a choice independent of the rules preset. Restored always includes Fixed. **This is the plan, not the code**: today nothing but `OriginalBehaviour.DataSafe` and the settings file select anything. |
 | `default` | The state in the player's game of this release: for a flag, whether `OriginalBehaviour.DataSafe` (what the SDL host plays with) has it on; for a setting, the default of the settings file. The faithful game (`OriginalBehaviour.Faithful`, which the oracles and the headless host use) has every flag off. |
-| `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). Empty for settings. |
+| `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). For a `planned` row the bugs it will fix (kept as the original today: no fix flag, decision `later`, the note naming the planned flag). Empty for settings. |
 | `code` | The files where the code chooses between the two paths (up to three, `;` joined). A flag's name is in at least one of them. |
 | `description` | One line: the original's behaviour and what the switch does. The long account is the flag's comment in the source and the register entries. |
 
 ## Counts (at the time of writing)
 
-60 flags and 8 settings, 68 rows:
+60 flags, 8 settings and 1 planned fix, 69 rows:
 
 | Class | Rows | Of which on in the player's game now |
 |---|---|---|
 | data-safety | 28 | 28 |
 | visual | 2 flags + 1 setting | the 2 flags (the setting `view.clean-drawing` is off by default) |
-| gameplay | 30 | 0 (the plan's Fixed rule set, release 1.1) |
+| gameplay | 30 flags + 1 planned | 0 (the plan's Fixed rule set, release 1.1) |
 | interface-comfort | 2 | 2 |
 | presentation | 4 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
@@ -47,7 +48,9 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 - a code location does not exist, or (for a flag) none of its files mentions the flag;
 - a key of the table in `docs/SETTINGS.md` is neither a `setting` row nor on the test's short list of keys that are not
   switches (paths, window, sound hardware, start-up, developer console), so a new setting has to be decided;
-- an id is malformed or repeated, or a class, axis or preset is not one of the allowed words.
+- an id is malformed or repeated, or a class, axis or preset is not one of the allowed words;
+- a `planned` row names a flag that already exists, is not off, or names bugs that are not kept as the original with a decision
+  `later` and a note naming the planned flag.
 
 To add a switch: add the flag (or settings key), give it a row here, keep the original path beside the changed one, and
 run the test. A removed switch loses its row in the same change.

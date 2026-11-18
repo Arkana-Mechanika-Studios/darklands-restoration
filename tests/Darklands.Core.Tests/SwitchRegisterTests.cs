@@ -37,7 +37,7 @@ public sealed class SwitchRegisterTests
             var id = row["id"];
             Assert.Matches(@"^[a-z]+(\.[a-z0-9]+(-[a-z0-9]+)*){1,3}$", id);
             Assert.True(ids.Add(id), $"duplicate id {id}");
-            Assert.Contains(row["kind"], new[] { "flag", "setting" });
+            Assert.Contains(row["kind"], new[] { "flag", "setting", "planned" });
             Assert.True(Classes.Contains(row["class"]), $"{id}: unknown class '{row["class"]}'");
             Assert.True(Axes.Contains(row["axis"]), $"{id}: unknown axis '{row["axis"]}'");
             var presets = row["presets"].Split(';');
@@ -143,6 +143,58 @@ public sealed class SwitchRegisterTests
             if (!files.Any(f => names.Any(n => File.ReadAllText(Path.Combine(Root, f)).Contains(n, StringComparison.Ordinal))))
             {
                 problems.Add($"{row["id"]}: none of {string.Join(", ", files)} mentions {string.Join(" or ", names)}");
+            }
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
+    /// <summary>
+    /// A planned switch (a fix decided for a later step, not in the code yet) names the flag it will be, which <see cref="OriginalBehaviour"/>
+    /// does not have yet; it is off, its presets follow its class, and its register ids are bugs kept as the original (no fix flag, decision
+    /// "later") whose note in one of its code files names the planned flag. When the flag is added, its row becomes a `flag` row.
+    /// </summary>
+    [Fact]
+    public void PlannedSwitchesAreDecidedBugsNotYetInTheCode()
+    {
+        var properties = typeof(OriginalBehaviour).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name).ToHashSet(StringComparer.Ordinal);
+        var bugs = ReadCsv(Path.Combine(Docs, "original_bugs.csv")).ToDictionary(b => b["id"], StringComparer.Ordinal);
+        var problems = new List<string>();
+        foreach (var row in Rows().Where(r => r["kind"] == "planned"))
+        {
+            var id = row["id"];
+            if (!Regex.IsMatch(row["key"], "^Fix[A-Z][A-Za-z]+$") || properties.Contains(row["key"]))
+            {
+                problems.Add($"{id}: the planned flag {row["key"]} is not a new Fix… name (a flag in the code has a `flag` row)");
+            }
+            if (row["default"] != "off")
+            {
+                problems.Add($"{id}: a planned switch is off ('{row["default"]}')");
+            }
+            var presets = row["presets"].Split(';');
+            if ((row["class"] is "data-safety" or "visual") != presets.Contains("classic") || !presets.Contains("fixed") || !presets.Contains("restored"))
+            {
+                problems.Add($"{id}: class {row["class"]} and presets '{row["presets"]}' disagree");
+            }
+            var ids = row["register"].Split(';', StringSplitOptions.RemoveEmptyEntries);
+            if (ids.Length == 0)
+            {
+                problems.Add($"{id}: a planned switch names the bugs it will fix");
+            }
+            foreach (var bug in ids)
+            {
+                if (!bugs.TryGetValue(bug, out var b))
+                {
+                    problems.Add($"{id}: {bug} is not in original_bugs.csv");
+                    continue;
+                }
+                if (b["fix_flag"] != "none" || !b["decision"].StartsWith("later", StringComparison.Ordinal))
+                {
+                    problems.Add($"{id}: {bug} has fix flag '{b["fix_flag"]}' and decision '{b["decision"]}' (a planned fix is for a bug kept as the original, decision later)");
+                }
+                if (!b["note"].Contains(row["key"], StringComparison.Ordinal))
+                {
+                    problems.Add($"{id}: the note of {bug} does not name the planned flag {row["key"]}");
+                }
             }
         }
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));

@@ -15,12 +15,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | cards | 77 | 3 | 74 |
 | events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
-| battles | 67 | 32 | 35 |
+| battles | 68 | 32 | 36 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 15 | 8 | 7 |
-| total | 278 | 73 | 205 |
+| total | 279 | 73 | 206 |
 
-## Core logic (263)
+## Core logic (264)
 
 ### rules (104)
 
@@ -623,7 +623,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `root 06A1:12DC` (06A1:12DC, asm), `R030+0x1DD4` (1462:1DD4, draft)  
   why: scrolling up moves d slots, not 0x83 - d: slots 2d .. 0x82 keep the rows they held, d rows further down the map than their new place. With the scroll's d = 0x41 only slot 0x82 is stale; when the buffer's top is clamped to row 0 (old top 0x18 or 0x30 from world-map-start, d = old) the rows from slot 2d on are 0x18 / 0x30 rows off until the next scroll down reads them again. Reproduced: the map drawing (and the cell reads of the step and the camp) show those rows (checked by direct calls of 1dd4 in the original).
 
-### battles (67)
+### battles (68)
 
 - **B-2e264a** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:338` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
@@ -744,10 +744,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R014+0xDC14` (19CD:26A4, draft)  
   why: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:250` `TacticalBattle.UseUpDissolveSlot`  
+- **B-12142a** `bug`, no fix flag - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:236` `TacticalBattle.UseUpDissolveSlot`  
+  original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
+  why: the order is carried out without a look at the pack: when the Eater-Water has been moved away since the order was given (given or dropped on the character sheet while the order waits), the lock opens all the same and the stack that now lies at the old slot pays for it (lockstep sessions dissolve-free-control / dissolve-free-moved: the stack that slid into the slot is used up, the chest opens). With OriginalBehaviour.FixStaleDissolveSlot nothing is used up and the lock opens for free; the switch of the rule is planned as FixDissolveWithoutEaterWater (fix.battle.dissolve-lock-without-eater-water, switches.csv). Decision: later, in the Fixed rule set the order is cancelled and the lock stays shut (1.1 step 7, after the battle seam); Classic keeps the original.
+  decision: later: in the Fixed rule set the order is cancelled and the lock stays shut (1.1 step 7, after the battle seam); Classic keeps the original
+- **B-dce22a** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:256` `TacticalBattle.UseUpDissolveSlot`  
   original: `R014+0x2170` (0E76:2170, draft), `R014+0xB434` (18BF:0FA4, draft), `R014+0xDF28` (19CD:29B8, draft) +2 more  
   why: OriginalBehaviour.FixStaleDissolveSlot - the stack at the slot is used up whatever it is now; past the last stack it is the stale entry there (its count byte decremented, and when that was 0 or 1 the pack's count goes down: the last stack is lost, an empty pack's count becomes −1).
-- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:271` `TacticalBattle.ConsumeSlotAsOriginal`  
+- **B-bf6904** `bug`, flag `FixStaleDissolveSlot` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Places.cs:277` `TacticalBattle.ConsumeSlotAsOriginal`  
   original: `R014+0xB434` (18BF:0FA4, draft)  
   why: OriginalBehaviour.FixStaleDissolveSlot - slot 255 is entry m × 64 + 255 of the five packs (2E38:003E): for members 0 and 1 entry 63 of member m + 3's pack, for member −1 (nobody selected) member 2's entry 63, whose count byte is decremented; when it was 0 or 1, use-up-slot's removal (no shift, k past the count) lowers member m's own count.
 - **B-3f56bf** `bug`, flag `FixTriggersOfOtherLevels` - `src/Darklands.Core/Battles/Tactics/TacticalBattle.Dungeon.Triggers.cs:16` `TacticalBattle.Triggers`  
