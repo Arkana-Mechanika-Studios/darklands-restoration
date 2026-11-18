@@ -20,7 +20,8 @@ proposed, decided and reviewed is in `docs/GOVERNANCE.md`; how to take part is i
 
 ## Tracks
 
-The work is organised in tracks. Each has its own goal, its own standard of evidence and its own entry points.
+The work is organised in ten tracks. Each has its own goal, its own standard of evidence and its own entry points;
+`CONTRIBUTING.md` (section 3) describes each one for contributors, and the issue labels use the same names.
 
 | Track | Goal |
 |---|---|
@@ -29,11 +30,11 @@ The work is organised in tracks. Each has its own goal, its own standard of evid
 | Original bug fixing | The Fixed rule set: each bug of the original reproduced, registered with an id, then fixed behind its own switch. |
 | Restoration and research | The Restored preset: content made or meant by the designers, each item with its sources; the history of the game. |
 | Localisation | The game, its card texts included, in other languages, with fonts that fit. |
-| Interface and comfort | An in-game settings screen, quality-of-life options and new screens, never changing what the game decides. |
+| Interface and features | An in-game settings screen, quality-of-life options and new screens, never changing what the game decides. |
 | Graphics, sound and fonts | Optional new art, sound, music and sharper fonts; the original pixels stay the reference picture. |
-| Modding and the Workshop | A mod format, and tools to make mods: pictures, sounds, texts, items, cards, rules, maps and screens. |
+| Modding | A mod format, the Workshop, and tools to make mods: pictures, sounds, texts, items, cards, rules, maps and screens. |
 | Platforms | Linux, macOS, handheld PCs; packaging; finding the player's game files. |
-| Player documentation | The manual of the restoration's own features and switches, the FAQ, the website, problem reports. |
+| Testing and documentation | Playtesting and problem reports; the manual of the restoration's own features and switches, the FAQ, the website. |
 
 ## Releases
 
