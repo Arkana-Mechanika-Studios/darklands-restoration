@@ -705,6 +705,14 @@ rows of game logic were read again against the original's code (100 rows: 84 rig
 the text, corrected, 7 wrong, of which 3 are now implemented and 4 are leads below, 1 unsure).
 
 Open items (2026-11-05, release candidate 1.0.0-rc1), listed honestly:
+* The mailing list's high-relevance leads (11 threads, checked 2026-11-15): ten are registered (the night streets, the tower fire, the
+  saved last texts, the town hall, Edged practice, the inn cache, the dead-end ladder) or agree (one javelin's damage). Open: a Flee (F) with
+  no destination given to a member whose missile order stands (groups.io #9306, "rapid fire"). The C# leaves the missile action with the
+  hand weapon readied (LeaveOrderMode.Give), but no lockstep session holds a party missile order at all: in the 189 replay sessions with combatant records (rerun-rc5c)
+  no party record has the missile action (0x80) at any pass; in orders-missile and orders-prague-missile the M order's
+  target click leaves no missile action (Hans' action there is 0x22, a parry; Elizabeth shows the M letter, then 0x12, most likely the A
+  that replaced her M). To settle: a session whose missile order takes (record +0x10 = 0x80 in the trace) for a member with a hand
+  weapon, then pause, F, resume, compared pass for pass.
 * Round leftovers' two visual leads after the loot screen: settled in round lootvis (below). The dead member's frame line is fixed (R014+0x0D25..0x0D38's frame-set and row-set after the loot); the 13 px of floor debris are the registered dirty-tile redraw D-420a1f, proved by write watches and hooks. vis10 leftovers-msg: 18 -> 13 px, all D-420a1f.
 * Round battlefuzz's open leads, settled in round battlelead (below): the mine fights' placement fixed, the first-pass targets and the three random-state fights registered as host timing (D-196232, D-a5aa83, D-f091d5, D-8fb626), the 86 poked battle-call jobs judged (fixed, tester or named), the last 6 in its second pass: none open; local/battlelead-2026-11-08.md.
 * The saint pop-up of card 0x129 (round visuals' lead, the box one line taller in the original): fixed in round saintbox (below). wrapped-text-size (root 0265:0654) is now its own loop in the C#: when the text ends inside a hidden option line it reads on past the zero into the 0x14 the box's builder cut off and counts one more line; all 4,060 direct calls of batch 34 agree in height, so D-4f276c and D-3cc0f8 are gone. vis10 visuals-fortress-saint: the box 0 px; the only pixels left (43, colour 0xBB one DAC step) are the night fade's measure, D-dff56b.
@@ -740,6 +748,12 @@ Open items (2026-11-05, release candidate 1.0.0-rc1), listed honestly:
   deleted member's shield picture (D-34f49d), two omitted pop-up flags (D-920e47, D-40b596), the omitted previous-card global
   (D-58560f), the fortress room bookkeeping (D-ca7108), a card number outside the table (D-5dc345), the rejection of an
   oversized message (D-3854a2), the knock-back test that reads record -1's target byte (D-74b517), records 5..12 left by an earlier battle (D-63478f), the sheet key with the pointer in an item or saint box (D-ef9111); and, from the two Dissolve leads, use-up-slot's write outside the packs (past them for the Dissolve Lock order's slot 0xFF of members 2 to 4, before them for the Dissolve key with nobody selected, D-5471a9) and member -1's count byte DS:9C53 (D-c055d0).
+* A side note of thread #4947 (v7: nameless items of a huge quality, which the poster guessed to be an unsigned underflow when items of
+  low quality are looted), read in the code on 2026-11-15, not run: the found items do not underflow (loot-split-entry R040+0x0000
+  clamps quality − 10 to 1..99, LootSharing.PrepareFoundItems); the one place an item's quality byte wraps is battle armour wear
+  (R019+0x0968, B-8e79e5), and the worn-out test that follows in the same pass throws the wrapped stack away (R019+0x0914, B-fd2f1c).
+  Nameless items rather point to damaged item records (the inn cache rewrite, B-85e0e4 / B-3de49c, fixed by default). Not traced
+  further: no saved game shows it.
 
 Closed items, kept for the record. The three reachable original bugs listed before are now
 reproduced behind fix flags (faithful by default; none damages a saved game, so none is in `DataSafe`):

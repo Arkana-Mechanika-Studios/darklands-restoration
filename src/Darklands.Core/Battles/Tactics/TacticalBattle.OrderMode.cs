@@ -637,6 +637,10 @@ public sealed partial class TacticalBattle
                 }
                 ReadyWeapon(i, c.DefaultWeapon, 0);
                 c.Target = (sbyte)CursorTarget;
+                // C: F (Flee, action 1) with no destination given to a member whose missile order stands reaches here with the cursor target
+                //   left by order mode: the hand weapon is readied and the return below leaves Action (missile) and State as they were, the
+                //   missile weapon still at +0x22 (a players' report, groups.io #9306: melee swings that launch missiles). Not yet seen in the
+                //   original: no lockstep session holds a party missile order (SUMMARY.md, open items).
                 if (!_targetChosen)
                 {
                     if ((OrderAction & 2) != 2)
