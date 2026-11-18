@@ -402,3 +402,5 @@ the right to give under the GPL.
 
 When you are unsure which lane something belongs to, or whether a behaviour is a bug or the original's way, ask
 before you change it.
+
+Everyone taking part follows the short [code of conduct](CODE_OF_CONDUCT.md).
