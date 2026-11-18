@@ -2,7 +2,8 @@
 
 Thank you for wanting to help. This guide says what the project is, how to build it, which kind of work suits you,
 how a change gets in, and the few rules that are not negotiable. Read the first section and the track you want;
-skim the rest.
+skim the rest. What is planned after 1.0 is in `docs/ROADMAP.md`; the principles, the classes of change and how
+decisions are taken are in `docs/GOVERNANCE.md`.
 
 Contents:
 
@@ -240,7 +241,7 @@ said they meant, and the history of the places, saints and alchemy the game draw
   programming is needed for this.
 
 Either way, a finding is written down with its sources, saying how sure each one is (the program's own bytes, a
-designer's word, a manual, a player's memory).
+designer's word, a manual, a player's memory), and their level (`docs/GOVERNANCE.md`, section 3).
 
 **Where to start.** The registers of unused and unreachable code (`docs/faithfulness/dormant.csv`,
 `unreachable.csv`) and the `DORMANT` markers in the source (`docs/TRACEABILITY.md`), the Faithfulness track above
@@ -325,7 +326,8 @@ packs (`docs/PACKS.md`, `src/Darklands.Rendering`, `src/Darklands.Audio`), the m
 **What you need.** C#, and an eye for data formats that stay readable for years. Reading a mod must never run code
 from the mod's folder.
 
-**Where to start.** `docs/MODS.md` and `docs/PACKS.md` (the modding guides are being written under `docs/modding/`),
+**Where to start.** The mod specification draft (`docs/modding/SPEC-DRAFT.md`, open for review: the mod system it
+describes comes with release 1.2), `docs/MODS.md` and `docs/PACKS.md` (the modding guides are being written under `docs/modding/`),
 the examples `docs/mods/wayside-shrine` and
 `docs/audio-pack-example`, the card engine in `src/Darklands.Cards`, and the card table
 (`src/Darklands.Cards/CardTable.cs`).
@@ -454,7 +456,7 @@ What you can do about an original bug you want fixed:
 3. **Decide who gets the fix by default.** Only bugs that **damage the player's data** (saved games, the item
    stores in `CACHE.TMP`) are fixed in the player's default game, by listing the flag in
    `OriginalBehaviour.DataSafe`. Gameplay quirks stay as they are in Classic, with their fix flag off. From release
-   1.1, gameplay fixes are gathered in the Fixed rule set, which players choose; Classic never changes. Talk to the maintainers before adding to `DataSafe`: it must be a data-damaging
+   1.1, gameplay fixes are gathered in the Fixed rule set (`docs/ROADMAP.md`), which players choose; Classic never changes. Talk to the maintainers before adding to `DataSafe`: it must be a data-damaging
    bug, and what the fixed game writes must still be readable by the original.
 
 A fix of this kind belongs to the Original bug fixing track, which follows the Faithfulness track's rules: it needs
@@ -476,10 +478,18 @@ This applies to code, comments, tests, documents, commit messages and issues.
 * Names in the C# are readable ordinary descriptions. Mark guesses `UNCERTAIN`, not as facts.
 * Write plainly: short sentences, no marketing.
 
-**Licence.** The project is licensed under GPL-3.0-or-later (see `LICENSE`). By contributing you agree that your
-contribution is licensed under the same terms. *Darklands* itself belongs to its owners and is not covered by that
-licence; third-party components keep theirs (`THIRD_PARTY_NOTICES.md`). Do not contribute anything you do not have
-the right to give under the GPL.
+**Licence.** The project is licensed under GPL-3.0-or-later (see `LICENSE`). By sending a contribution you agree it
+is published under the project's licence, and you confirm you have the right to send it. Contributions are their
+authors' responsibility; nothing more is asked (no sign-off lines, no agreement to sign).
+
+* **New art, sound and text** (packs, mods): you choose the licence and state it in the mod or pack. It must allow
+  redistribution; CC BY-SA is suggested, not required.
+* **The mod specification**, its schemas and the sample mods are under the MIT licence, so other tools may use the
+  format.
+
+*Darklands* itself belongs to its owners and is not covered by any of these licences; third-party components keep
+theirs (`THIRD_PARTY_NOTICES.md`). The one thing refused is what would put the project at risk: the original game's
+files, or anything copied out of them, in a contribution.
 
 ## 7. Getting help
 
