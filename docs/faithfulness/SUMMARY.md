@@ -505,10 +505,11 @@ from a saved game in Pressburg:
 | mapsave | saving on the map with Alt-S, loading it back | identical |
 | banks | the Fugger and Medici offices, the Hanse hall | identical (it found the hour of the Hanse hall passing before its options instead of after, R061+0x2278, now fixed) |
 | menubar, menubar2 | the menu bar's keys and the keyboard menu | identical |
-| orders-select, -walk, -missile, -attack-a, -attack-b, -attack-b2, -attack-v, -attacks, -sheet, -save | the player's orders in the gate battle: selecting, pausing, walking, missiles, the attack orders, berserk, the combat sheet, saving in battle | identical, and the 13 combatant records at every battle pass |
+| orders-select, -walk, -missile, -attack-a, -attack-b, -attack-b2, -attack-v, -attacks, -sheet, -save | the player's orders in the gate battle: selecting, pausing, walking, the attack orders, berserk, the combat sheet, saving in battle | identical, and the 13 combatant records at every battle pass (-missile gives the M order, but its click gives no missile order; the missile sessions below are the ones that shoot) |
 | luebeck-potion | the Lübeck gate: potions thrown in battle | identical, records at every pass included |
 | orders-potion | as luebeck-potion, with the combat sheet opened for long | identical (it found that the timer goes on counting while the sheet holds the battle clock, so a paused battle ticks as soon as the sheet closes: root 047C:000A, R022+0x0066 / +0x03C6, R014+0x0F7B; the C# now does the same) |
-| orders-potion2, orders-potion3, orders-prague-missile | the Prague gate: potions and missiles | identical, from a copy of DKSAVE40 made consistent (its true party size, no slot of status 0; the file as given comes from another tool, and the original's writer R037+0x2ACE recounts the size and skips the status-0 slots, which the C# now does too) |
+| orders-potion2, orders-potion3, orders-prague-missile | the Prague gate: potions, and the M order (its click falls beside the guard: no missile order is given) | identical, from a copy of DKSAVE40 made consistent (its true party size, no slot of status 0; the file as given comes from another tool, and the original's writer R037+0x2ACE recounts the size and skips the status-0 slots, which the C# now does too) |
+| missile-prague-aim, -archer, -hardy, -ammo1, -ammo2, -flee-60, -flee-150 | the Prague gate: a party member's missile order that takes (Elizabeth, an arbalest and a hand weapon; the click on the centre of a guard's sprite): aiming, the launch, misses, the reload, the switch to the hand weapon when the guards close in, the last quarrel spent (spend-ammunition readies the hand weapon and drops the target; synthetic saves `synth_saves.py ammo1` / `ammo2`), skills at 60 (`hardy`); F with no destination while aiming (groups.io #9306, original bug B-dd294a): the missile action kept with the hand weapon readied, quarrels launched at the hand weapon's rate, hits on the target, then the member stands | identical, records at every pass included (2026-11-15; before them no session held a party missile order: in the 189 sessions with records no party member had the missile action at any pass) |
 | roster-colours, roster-moves, roster-wrap, roster-mouse, roster-create2, roster-ulm | the inn's roster: hiring, retiring, the portrait colours, creating a character, by keys and by mouse | identical |
 | loot-keys, loot-mouse, loot-esc | the loot after a fight: taking, sharing, leaving, by keys and by mouse | identical |
 | camp-wild-brew, camp-wild-risk, camp-inn-broke, camp-rough, camp-mouse | camping in the wild, at the inn without money, in the slum: each member's work over days | identical |
@@ -693,7 +694,7 @@ memory-layout effects (writes outside arrays the original performs).
 ## Divergences and original bugs
 
 `DIVERGENCES.md`, `ORIGINAL_BUGS.md`, `UNCERTAIN.md`, `DIVERGENCE_REVIEW.md`: generated from the
-markers in the code, each with its reason and original coordinate: 277 original bugs registered
+markers in the code, each with its reason and original coordinate: 278 original bugs registered
 (53 with their own `OriginalBehaviour` flag; reproduced unless a divergence says otherwise), 367 registered divergences,
 875 dormant branches kept as the original has them, no uncertain reading left (they were
 naming only, or settled by an agreeing oracle or the code, now closed; the last, the opening's tick against a tune, was
@@ -705,14 +706,12 @@ rows of game logic were read again against the original's code (100 rows: 84 rig
 the text, corrected, 7 wrong, of which 3 are now implemented and 4 are leads below, 1 unsure).
 
 Open items (2026-11-05, release candidate 1.0.0-rc1), listed honestly:
-* The mailing list's high-relevance leads (11 threads, checked 2026-11-15): ten are registered (the night streets, the tower fire, the
-  saved last texts, the town hall, Edged practice, the inn cache, the dead-end ladder) or agree (one javelin's damage). Open: a Flee (F) with
-  no destination given to a member whose missile order stands (groups.io #9306, "rapid fire"). The C# leaves the missile action with the
-  hand weapon readied (LeaveOrderMode.Give), but no lockstep session holds a party missile order at all: in the 189 replay sessions with combatant records (rerun-rc5c)
-  no party record has the missile action (0x80) at any pass; in orders-missile and orders-prague-missile the M order's
-  target click leaves no missile action (Hans' action there is 0x22, a parry; Elizabeth shows the M letter, then 0x12, most likely the A
-  that replaced her M). To settle: a session whose missile order takes (record +0x10 = 0x80 in the trace) for a member with a hand
-  weapon, then pause, F, resume, compared pass for pass.
+* The mailing list's high-relevance leads (11 threads, checked 2026-11-15): all settled. Ten are registered (the night streets, the tower
+  fire, the saved last texts, the town hall, Edged practice, the inn cache, the dead-end ladder) or agree (one javelin's damage). The last,
+  a Flee (F) with no destination given to a member whose missile order stands (groups.io #9306, "rapid fire"), is the original's: the
+  missile-prague sessions (the table above) give a party member a missile order that takes, and with F while aiming the original and the
+  C# both keep the missile action with the hand weapon readied and launch the quarrels at the hand weapon's rate until they run out,
+  pass for pass with records. Registered as original bug B-dd294a; decision later (an optional fixed rule after 1.0).
 * Round leftovers' two visual leads after the loot screen: settled in round lootvis (below). The dead member's frame line is fixed (R014+0x0D25..0x0D38's frame-set and row-set after the loot); the 13 px of floor debris are the registered dirty-tile redraw D-420a1f, proved by write watches and hooks. vis10 leftovers-msg: 18 -> 13 px, all D-420a1f.
 * Round battlefuzz's open leads, settled in round battlelead (below): the mine fights' placement fixed, the first-pass targets and the three random-state fights registered as host timing (D-196232, D-a5aa83, D-f091d5, D-8fb626), the 86 poked battle-call jobs judged (fixed, tester or named), the last 6 in its second pass: none open; local/battlelead-2026-11-08.md.
 * The saint pop-up of card 0x129 (round visuals' lead, the box one line taller in the original): fixed in round saintbox (below). wrapped-text-size (root 0265:0654) is now its own loop in the C#: when the text ends inside a hidden option line it reads on past the zero into the 0x14 the box's builder cut off and counts one more line; all 4,060 direct calls of batch 34 agree in height, so D-4f276c and D-3cc0f8 are gone. vis10 visuals-fortress-saint: the box 0 px; the only pixels left (43, colour 0xBB one DAC step) are the night fade's measure, D-dff56b.
