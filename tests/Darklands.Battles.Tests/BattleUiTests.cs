@@ -763,7 +763,7 @@ public sealed class BattleUiTests
         run.QueueOnly("wait:3", "key:x");
         var frames = new List<byte[]>();
         run.Presented = screen => frames.Add((byte[])screen.Pixels.Clone());
-        run.Screen.MemberMessage(0, "Edged Weapons changed from 20 to 22", 15);
+        run.Screen.MemberMessage(GameMessage.SkillChanged(0, 0, 20, 22));
         run.Presented = null;
         Assert.NotEmpty(frames);
         foreach (var frame in frames)

@@ -31,9 +31,7 @@ public sealed partial class CardContext
     /// <summary>Rule messages shown on the card screen.</summary>
     private sealed class ScreenMessages(ICardScreen screen) : IGameMessages
     {
-        public void Show(string text, int ticks) => screen.ShowMessage(text, ticks);
-
-        public void Report(int member, string text, bool good) => screen.Tell(text, member);
+        public void Post(GameMessage message) => screen.Post(message);
     }
 
     // ---- item and saint pop-ups (card-item-lines, card-saint-lines) ----------------------------

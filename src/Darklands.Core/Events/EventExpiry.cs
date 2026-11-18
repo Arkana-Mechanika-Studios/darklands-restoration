@@ -116,7 +116,7 @@ public static class EventExpiry
             {
                 s.Events.Create(-2, s.CurrentLocation, 0x32, EventKinds.AlchemyMishap, e.Data1, longer, 0, longer * 0x870 + 0x2D0, 0, 0);
             }
-            s.Messages.Show("Alchemy Failure");
+            s.Messages.Post(GameMessage.Notice(GameMessageIds.AlchemyFailure));
             Practice.PracticeSkill(s, e.Owner, (int)Skill.Alchemy, 0, 3, 0);
             return;
         }
@@ -124,7 +124,7 @@ public static class EventExpiry
         var potion = s.Item(code);
         var stack = new ItemStack(code, (byte)potion.Type, (byte)(e.Type % 3 * 10 + potion.Quality), (byte)e.Extra, (byte)potion.Weight);
         Inventory.AddStack(s, e.Owner, stack);
-        s.Messages.Show("Alchemy Success");
+        s.Messages.Post(GameMessage.Notice(GameMessageIds.AlchemySuccess));
         Practice.PracticeSkill(s, e.Owner, (int)Skill.Alchemy, 1, 3, 0);
     }
 

@@ -361,6 +361,9 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
 
     private static string Say(OptionHint h) => $"{h.Chance} '{(h.Chance == -1 ? h.Message : "")}' {h.Member}";
 
+    public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
+
+
     public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {message}");
 
     public void PassTime(int hours) => Log.Add($"time {hours}");

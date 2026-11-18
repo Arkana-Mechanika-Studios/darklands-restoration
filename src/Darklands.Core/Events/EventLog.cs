@@ -584,7 +584,7 @@ public sealed class EventLog
         var i = Array.IndexOf(_slots, null);
         if (i == -1)
         {
-            _state.Messages.Show("EVENT Failure");
+            _state.Messages.Post(GameMessage.Notice(GameMessageIds.EventTableFull));
         }
         return i;
     }

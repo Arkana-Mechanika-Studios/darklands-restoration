@@ -457,7 +457,7 @@ public sealed class CampAndSheetRulesTests
         s.Party.Purse = Money.Zero;
         var date = s.Date;
         new CampStay(s, CampPlace.Inn).PassTheDay();
-        Assert.Contains("Not Enough Money", ((GameMessageLog)s.Messages).Lines);
+        Assert.Equal(GameMessage.Notice(GameMessageIds.NotEnoughMoney, 0x50), Assert.Single(((GameMessageLog)s.Messages).Posted));
         Assert.Equal(date, s.Date);
     }
 

@@ -448,6 +448,9 @@ public sealed class TracingScreen(int option, bool probe) : ICardScreen
 
     private static string Say(OptionHint h) => $"{h.Chance} '{h.Message}' {h.Member}";
 
+    public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
+
+
     public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {message}");
 
     public void PassTime(int hours) => Log.Add($"time {hours}");

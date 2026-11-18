@@ -158,7 +158,7 @@ public sealed class EventLogTests
             Assert.Equal(k, s.Events.CreateHere(0x50, 10));
         }
         Assert.Equal(-1, s.Events.CreateHere(0x50, 10));
-        Assert.Contains("EVENT Failure", messages.Lines);
+        Assert.Contains(GameMessageIds.EventTableFull, messages.Ids);
     }
 
     [Fact]

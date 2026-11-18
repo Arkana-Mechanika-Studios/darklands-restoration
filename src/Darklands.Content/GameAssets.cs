@@ -36,6 +36,12 @@ public sealed class GameAssets(GameFiles files)
 
     private CommonSprites? _common;
 
+    /// <summary>The rules' messages in the original's words, from the player's DARKLAND.EXE (loaded on first use).</summary>
+    public Formats.Text.Strings.OriginalMessageText MessageText =>
+        _messageText ??= new(Formats.Exe.DarklandsExecutable.Load(files));
+
+    private Formats.Text.Strings.OriginalMessageText? _messageText;
+
     public bool PictureExists(string name)
     {
         var file = name.Contains('.') ? name : name + ".PIC";

@@ -1,3 +1,5 @@
+using Darklands.Core;
+
 namespace Darklands.Cards;
 
 /// <summary>How an option line of a card text is offered.</summary>
@@ -164,6 +166,12 @@ public interface ICardScreen
 
     /// <summary>A framed message for <paramref name="ticks"/> timer ticks, no key waited for (root 0000:24BC); a screen without one tells it.</summary>
     void ShowMessage(string text, int ticks) => Tell(text);
+
+    /// <summary>
+    /// A rule's message (<see cref="IGameMessages"/>), shown at once in the screen's words: a notice with <see cref="ShowMessage"/>, a
+    /// member's report with <see cref="Tell"/>.
+    /// </summary>
+    void Post(GameMessage message);
 
     /// <summary>Shows the hourglass while time passes.</summary>
     void PassTime(int hours);

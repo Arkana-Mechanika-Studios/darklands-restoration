@@ -124,6 +124,13 @@ public sealed class ArchitectureRulesTests
         Assert.Empty(References(Localization));
         Assert.DoesNotContain(Dependencies.Uses(Localization),
             use => use.Target.Assembly.GetName().Name is { } a && a != Localization && Dependencies.Products.Contains(a));
+        // The original's words for the rules' messages (Content's OriginalMessageText, GameAssets.MessageText) are for the screens only.
+        foreach (var name in new[] { Core, Persistence, Cards, Simulation })
+        {
+            Assert.DoesNotContain(Dependencies.Uses(name), use =>
+                use.Target.FullName == "Darklands.Content.Formats.Text.Strings.OriginalMessageText" ||
+                use.Target.FullName == "Darklands.Content.GameAssets" && use.Member.Contains("MessageText", StringComparison.Ordinal));
+        }
     }
 
     /// <summary>

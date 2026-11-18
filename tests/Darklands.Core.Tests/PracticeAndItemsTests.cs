@@ -217,13 +217,13 @@ public sealed class PracticeAndItemsTests
 
         TimePassage.Advance(s, 5);
 
-        Assert.Contains("Alchemy Success", messages.Lines);
+        Assert.Contains(GameMessageIds.AlchemySuccess, messages.Ids);
         var potion = Assert.Single(s.Party.Slots[2].Pack, st => st.Code == TestGame.Potion);
         Assert.Equal((0x90, 25, 3, 1), (potion.Type, potion.Quality, potion.Count, potion.Weight));
 
         s.Events.Create(2, 5, 3, 0x50, formula, -1, (int)ExpiryHandler.AlchemyResult, 5, 1, 0);
         TimePassage.Advance(s, 5);
-        Assert.Contains("Alchemy Failure", messages.Lines);
+        Assert.Contains(GameMessageIds.AlchemyFailure, messages.Ids);
     }
 
     [Fact]

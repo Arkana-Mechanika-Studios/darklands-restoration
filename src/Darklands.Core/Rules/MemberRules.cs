@@ -39,7 +39,7 @@ public static class MemberRules
     /// <see cref="GameState.ReportSkillChanges"/> (<c>raise-skill-by</c>; −2: every present member).
     /// </summary>
     // orig: raise-skill-by R029+0x02EA (0E76:02EA) matched; tests: MemberRulesTests; Oracle:rules.json (through exercise-skill)
-    // C: the report text is also copied into text-bank-buffer (DS:9085) and shown with thunk 09C0:1E91(member, 15 up / 12 down) only while DS:26BC is set; here Messages.Report.
+    // C: the report text is also copied into text-bank-buffer (DS:9085) and shown with thunk 09C0:1E91(member, 15 up / 12 down) only while DS:26BC is set; here a posted GameMessage.SkillChanged.
     public static void AddSkill(GameState s, int who, int skill, int change)
     {
         if (change == 0)
@@ -69,7 +69,7 @@ public static class MemberRules
             RecordOverrun.SetSkill(s, who, skill, after);
             if (s.ReportSkillChanges)
             {
-                s.Messages.Report(who, $"{SkillNames[skill]} changed from {before} to {after}", change > 0);
+                s.Messages.Post(GameMessage.SkillChanged(who, skill, before, after));
             }
         }
     }
@@ -81,7 +81,7 @@ public static class MemberRules
         m.Skills[skill] = Math.Clamp(before + change, 0, 99);
         if (s.ReportSkillChanges)
         {
-            s.Messages.Report(member, $"{SkillNames[skill]} changed from {before} to {m.Skills[skill]}", change > 0);
+            s.Messages.Post(GameMessage.SkillChanged(member, skill, before, m.Skills[skill]));
         }
     }
 

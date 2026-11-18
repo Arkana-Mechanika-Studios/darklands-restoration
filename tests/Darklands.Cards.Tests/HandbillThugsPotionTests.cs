@@ -51,6 +51,9 @@ public sealed class HandbillThugsPotionTests
             return 4;
         }
 
+        public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
+
+
         public void Tell(string message, int member = OptionHint.WholeParty) { }
 
         public void PassTime(int hours) { }

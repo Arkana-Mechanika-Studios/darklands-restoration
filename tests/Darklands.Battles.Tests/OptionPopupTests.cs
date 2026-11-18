@@ -16,6 +16,8 @@ public sealed class OptionPopupTests
         public void ShowPicture(string picture) { }
         public void Text(int block, TextFrame frame = TextFrame.OnPicture) { }
         public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint = null) => 0;
+        public void Post(Darklands.Core.GameMessage message) { }
+
         public void Tell(string message, int member = OptionHint.WholeParty) { }
         public void PassTime(int hours) { }
     }

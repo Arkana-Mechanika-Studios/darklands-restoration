@@ -1,5 +1,6 @@
 using Darklands.Cards;
 using Darklands.Content.Formats.Battles;
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Battles;
 using Darklands.Core.Battles.Generation;
@@ -516,14 +517,18 @@ public sealed partial class BattleScreen
         DrawPointer(_ui.Canvas, _driverShape);
     }
 
-    /// <summary>A message in a member's panel row (or the whole column for −2), waiting for a key or a left click.</summary>
+    /// <summary>A report in its member's panel row (or the whole column for −2) in the original's words: good news in colour 15, bad news in 12.</summary>
+    public void MemberMessage(GameMessage message) =>
+        MemberMessage(message.Member, new OriginalMessageText(_assets.Executable).Text(message), message.Good ? 15 : 12);
+
+    /// <summary>A text in a member's panel row (or the whole column for −2) in colour <paramref name="color"/>, waiting for a key or a left click.</summary>
     // orig: R021+0x01E2 (1EF8:01E2) matched: the row background DS:A626 at (3, row × 40 + 1)
     // (the column: the strips DS:A628 and y 0x51), the text wrapped in 0x37 pixels from y + 4, then `while (!key-waiting-test() && !(mouse-button-state & 1))
     // menu-bar-loop(...)` and the button waited out
     // orig: R021+0x01F9 pointer-hide (root 047C:12C3) before the row is drawn, R021+0x0298 pointer-show (root 047C:1293) after it, no
     //   shape set: the driver's pointer waits in the battle's last shape (the hand after the loot screen, R014+0xE67A..0xE6A7; the bar
     //   opened meanwhile sets the hand too, root 0000:0000+0x0084), not the gauntlet; tests: BattleUiTests
-    public void MemberMessage(int member, string text, int color)
+    private void MemberMessage(int member, string text, int color)
     {
         ErasePointer();
         var canvas = _ui.Canvas;
