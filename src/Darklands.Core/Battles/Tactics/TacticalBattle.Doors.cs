@@ -14,30 +14,30 @@ public sealed partial class TacticalBattle
     // (REVEAL, the open flags, the lock byte, the twin); R023+0x03CA (1EF8:03CA) draft
     private void ToggleDoor(int n, int who)
     {
-        LevelChanged = true;
+        Levels.Changed = true;
         var c = Battle[who];
         var at = DoorsAt + 14 * n;
-        var wall = (sbyte)LevelShown.GetByte(at + 6);
+        var wall = (sbyte)Levels.Shown.GetByte(at + 6);
         if (wall >= 0)
         {
             RevealGroup(wall);
         }
-        LevelShown.SetByte(DoorOpenAt + n, c.DoorOpens ? 1 : 0);
-        LevelShown.SetByte(at + 7, 0);
-        var link = (sbyte)LevelShown.GetByte(at + 0x0C);
+        Levels.Shown.SetByte(DoorOpenAt + n, c.DoorOpens ? 1 : 0);
+        Levels.Shown.SetByte(at + 7, 0);
+        var link = (sbyte)Levels.Shown.GetByte(at + 0x0C);
         if (link != -1)
         {
-            LevelShown.SetByte(DoorsAt + 14 * link + 7, 0);
-            LevelShown.SetByte(DoorOpenAt + link, c.DoorOpens ? 1 : 0);
+            Levels.Shown.SetByte(DoorsAt + 14 * link + 7, 0);
+            Levels.Shown.SetByte(DoorOpenAt + link, c.DoorOpens ? 1 : 0);
         }
         DoorBits(at + 8, c.DoorSide, c.DoorOpens);
-        if ((LevelShown.GetByte(at + 10) & 0x3F) != 0)
+        if ((Levels.Shown.GetByte(at + 10) & 0x3F) != 0)
         {
             DoorBits(at + 10, c.DoorSide, c.DoorOpens);
         }
         if (wall != -1 && ActivationsEnabled)
         {
-            var list = Activations[Battle.LevelShown];
+            var list = Levels.Activations[Levels.ShownIndex];
             for (var k = 0; k < list.Count; k++)
             {
                 // C: R023+0x0362..0x0368: the encounter's +0x00 word (X; negative while disabled) must be > 0.
@@ -59,7 +59,7 @@ public sealed partial class TacticalBattle
     /// <param name="cellAt">The record's cell bytes (+8/+9 or +10/+11).</param>
     private void DoorBits(int cellAt, int side, bool open)
     {
-        int x = LevelShown.GetByte(cellAt) & 0x3F, y = LevelShown.GetByte(cellAt + 1) & 0x3F;
+        int x = Levels.Shown.GetByte(cellAt) & 0x3F, y = Levels.Shown.GetByte(cellAt + 1) & 0x3F;
         switch (side)
         {
             case 0:
@@ -86,8 +86,8 @@ public sealed partial class TacticalBattle
     private void DoorBit(int x, int y, int dir, bool open)
     {
         var k = dir switch { 0 => 2, 1 => 0, 2 => 3, _ => 1 };
-        var b = LevelShown.CellByte(x, y, k);
-        LevelShown.SetCellByte(x, y, k, open ? b | 8 : b & ~8);
+        var b = Levels.Shown.CellByte(x, y, k);
+        Levels.Shown.SetCellByte(x, y, k, open ? b | 8 : b & ~8);
     }
 
     /// <summary>Door n opens or shuts by itself (an enemy walks into it, or a path search tries it), its group uncovered when <paramref name="reveal"/>.</summary>
@@ -106,25 +106,25 @@ public sealed partial class TacticalBattle
     private void SetDoor(int n, bool open, bool reveal)
     {
         var at = DoorsAt + 14 * n;
-        int b8 = LevelShown.GetByte(at + 8), b9 = LevelShown.GetByte(at + 9);
+        int b8 = Levels.Shown.GetByte(at + 8), b9 = Levels.Shown.GetByte(at + 9);
         var dir = (b8 & 0x80) != 0 ? 0 : (b8 & 0x40) != 0 ? 1 : (b9 & 0x80) != 0 ? 2 : (b9 & 0x40) != 0 ? 3 : 0;
-        LevelShown.SetByte(DoorOpenAt + n, open ? 1 : 0);
+        Levels.Shown.SetByte(DoorOpenAt + n, open ? 1 : 0);
         if (reveal)
         {
-            LevelChanged = true;
-            var wall = (sbyte)LevelShown.GetByte(at + 6);
+            Levels.Changed = true;
+            var wall = (sbyte)Levels.Shown.GetByte(at + 6);
             if (wall >= 0)
             {
                 RevealGroup(wall);
             }
         }
-        var link = (sbyte)LevelShown.GetByte(at + 0x0C);
+        var link = (sbyte)Levels.Shown.GetByte(at + 0x0C);
         if (link != -1)
         {
-            LevelShown.SetByte(DoorOpenAt + link, open ? 1 : 0);
+            Levels.Shown.SetByte(DoorOpenAt + link, open ? 1 : 0);
         }
         DoorBits(at + 8, dir, open);
-        if ((LevelShown.GetByte(at + 10) & 0x3F) != 0)
+        if ((Levels.Shown.GetByte(at + 10) & 0x3F) != 0)
         {
             DoorBits(at + 10, dir, open);
         }
@@ -137,25 +137,25 @@ public sealed partial class TacticalBattle
     {
         if (open)
         {
-            LevelShown.Image.AsSpan(DoorOpenAt, 40).CopyTo(_doorsBeforeSearch);
-            for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
+            Levels.Shown.Image.AsSpan(DoorOpenAt, 40).CopyTo(_doorsBeforeSearch);
+            for (var k = 0; k < Levels.Shown.GetByte(DoorCountAt); k++)
             {
                 var at = DoorsAt + 14 * k;
-                if (!_twinDoor[k] && LevelShown.GetByte(at + 7) == 0 && LevelShown.GetWord(at) > 0)
+                if (!_twinDoor[k] && Levels.Shown.GetByte(at + 7) == 0 && Levels.Shown.GetWord(at) > 0)
                 {
                     SetDoor(k, true, false);
                 }
             }
             return;
         }
-        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(DoorCountAt); k++)
         {
-            if (!_twinDoor[k] && LevelShown.GetWord(DoorsAt + 14 * k) > 0)
+            if (!_twinDoor[k] && Levels.Shown.GetWord(DoorsAt + 14 * k) > 0)
             {
                 SetDoor(k, _doorsBeforeSearch[k] == 1, false);
             }
         }
-        _doorsBeforeSearch.CopyTo(LevelShown.Image.AsSpan(DoorOpenAt, 40));
+        _doorsBeforeSearch.CopyTo(Levels.Shown.Image.AsSpan(DoorOpenAt, 40));
     }
 
     /// <summary>DS:E0C0: the open flags before an enemy's path search.</summary>
@@ -193,11 +193,11 @@ public sealed partial class TacticalBattle
             return false;
         }
         var s = c.Skills[14] + (byte)c.Items[k].Quality - 25;
-        var locked = LevelShown.GetByte(lockAt) & 0x7F;
+        var locked = Levels.Shown.GetByte(lockAt) & 0x7F;
         if (locked < Battle.RollOneTo(10) + s)
         {
             _view.Message(LockYieldsText, 150);
-            LevelShown.SetByte(lockAt, 0);
+            Levels.Shown.SetByte(lockAt, 0);
             c.SkillsUsed |= SkillUse.ArtificeSucceeded;
             return true;
         }
@@ -211,25 +211,25 @@ public sealed partial class TacticalBattle
     private void OpenChest(int who)
     {
         var at = RegionsAt + RegionSize * Battle[who].Chest;
-        int cx = LevelShown.GetByte(at + 6), cy = LevelShown.GetByte(at + 7);
-        if ((LevelShown.CellByte(cx, cy, 0) & 0xF0) == 0x50)
+        int cx = Levels.Shown.GetByte(at + 6), cy = Levels.Shown.GetByte(at + 7);
+        if ((Levels.Shown.CellByte(cx, cy, 0) & 0xF0) == 0x50)
         {
             // C: the cell's long += 0x10: furniture 5 (a shut chest) becomes 6 (open).
-            LevelShown[cx, cy] = new BattlefieldCell(LevelShown[cx, cy].Bits + 0x10);
+            Levels.Shown[cx, cy] = new BattlefieldCell(Levels.Shown[cx, cy].Bits + 0x10);
         }
-        var idx = LevelShown.GetByte(at + 0x0C);
+        var idx = Levels.Shown.GetByte(at + 0x0C);
         var loot = Store.Loot;
         int[] offset = [idx < loot.ChestOffsets.Length ? loot.ChestOffsets[idx] : -1];
-        int[] count = [LevelShown.GetByte(at + 0x0B)];
+        int[] count = [Levels.Shown.GetByte(at + 0x0B)];
         var contents = new List<ItemStack>();
         loot.Take(contents, 0, count, offset, 1);
-        var money = new Money(LevelShown.GetWord(at + 0x0E), LevelShown.GetWord(at + 0x10), LevelShown.GetWord(at + 0x12));
+        var money = new Money(Levels.Shown.GetWord(at + 0x0E), Levels.Shown.GetWord(at + 0x10), Levels.Shown.GetWord(at + 0x12));
         _view.OpenLoot(who, contents, money);
-        LevelShown.SetWord(at + 0x0E, 0);
-        LevelShown.SetWord(at + 0x10, 0);
-        LevelShown.SetWord(at + 0x12, 0);
-        LevelShown.SetByte(at + 0x0B, contents.Count);
-        LevelChanged = true;
+        Levels.Shown.SetWord(at + 0x0E, 0);
+        Levels.Shown.SetWord(at + 0x10, 0);
+        Levels.Shown.SetWord(at + 0x12, 0);
+        Levels.Shown.SetByte(at + 0x0B, contents.Count);
+        Levels.Changed = true;
         if (contents.Count != 0 && idx < loot.ChestOffsets.Length)
         {
             loot.ChestOffsets[idx] = loot.Append(contents, contents.Count);
@@ -253,17 +253,17 @@ public sealed partial class TacticalBattle
         var at = RegionsAt + RegionSize * c.Chest;
         var s = c.Skills[14] - 10;
         var r = Battle.RollOneTo(20);
-        if (LevelShown.GetByte(at + 9) < s + r)
+        if (Levels.Shown.GetByte(at + 9) < s + r)
         {
             _view.Message(TrapDisarmedText, 150);
             c.SkillsUsed |= SkillUse.ArtificeSucceeded;
-            LevelShown.SetByte(at + 9, 0);
+            Levels.Shown.SetByte(at + 9, 0);
             return true;
         }
         _view.Message(OopsText, 60);
         c.SkillsUsed |= SkillUse.ArtificeTried;
-        var trap = LevelShown.GetByte(at + 0x0A);
-        Effects.Lands(c.Position.X, c.Position.Y, who, trap & 0x0F, (trap >> 4) * 10, who, Battle.LevelShown);
+        var trap = Levels.Shown.GetByte(at + 0x0A);
+        Effects.Lands(c.Position.X, c.Position.Y, who, trap & 0x0F, (trap >> 4) * 10, who, Levels.ShownIndex);
         return false;
     }
 
@@ -277,15 +277,15 @@ public sealed partial class TacticalBattle
         //   (door-flip, lock-picking, chest-opening, R023+0x153E read the image of DS:11CA): another level's door or chest is toggled,
         //   picked, opened or disarmed, and his own is untouched (split audit row 1)
         int? shownBefore = null;
-        if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Level != Battle.LevelShown && c.Level >= 0 && c.Level < _levels.Count
+        if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && !Levels.IsShown(c) && c.Level >= 0 && c.Level < Levels.Count
             && c.Place is PlaceAction.UseDoor or PlaceAction.PickDoorLock or PlaceAction.PickChestLock or PlaceAction.OpenChest
                 or PlaceAction.DissolveLock or PlaceAction.DisarmChestTrap)
         {
-            shownBefore = Battle.LevelShown;
+            shownBefore = Levels.ShownIndex;
             SwitchLevel(c.Level);
         }
         DoPlaceActionHere(i);
-        if (shownBefore is { } before && Battle.LevelShown != before)
+        if (shownBefore is { } before && Levels.ShownIndex != before)
         {
             SwitchLevel(before);
         }
@@ -384,7 +384,7 @@ public sealed partial class TacticalBattle
     // orig: R016+0x1182 (1EF8:1182) matched; the U case of fight-keys for a split party (R016+0x014E)
     public void UseKey(int selected)
     {
-        if (Battle.PartyLevel != Battle.LevelShown)
+        if (Levels.PartyIndex != Levels.ShownIndex)
         {
             // fight-keys with the party split: only U (and a few keys) work.
             if (Paused)
@@ -410,11 +410,11 @@ public sealed partial class TacticalBattle
             int? shownBefore = null;
             if (leader.StairsBack != -1 && !StaleStairsRecord(Battle.Leader, leader.StairsBack))
             {
-                if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && leader.Level != Battle.LevelShown && leader.Level >= 0
-                    && leader.Level < _levels.Count)
+                if (Battle.Behaviour.FixLeaderStairsRecordOfShownLevel && !Levels.IsShown(leader) && leader.Level >= 0
+                    && leader.Level < Levels.Count)
                 {
                     // the fix: the leader's own level shown first, so the record is his own level's
-                    shownBefore = Battle.LevelShown;
+                    shownBefore = Levels.ShownIndex;
                     SwitchLevel(leader.Level);
                 }
                 // BUG: OriginalBehaviour.FixLeaderStairsRecordOfShownLevel - with the party split and the battle running, U (R016+0x014E,
@@ -619,10 +619,10 @@ public sealed partial class TacticalBattle
             return;
         }
         int? shownBefore = null;
-        if (Battle.Behaviour.FixStairsRecordOfShownLevel && c.Level != Battle.LevelShown && c.Level >= 0 && c.Level < _levels.Count)
+        if (Battle.Behaviour.FixStairsRecordOfShownLevel && !Levels.IsShown(c) && c.Level >= 0 && c.Level < Levels.Count)
         {
             // the fix: his own level shown first, so the record is his own level's
-            shownBefore = Battle.LevelShown;
+            shownBefore = Levels.ShownIndex;
             SwitchLevel(c.Level);
         }
         // BUG: OriginalBehaviour.FixStairsRecordOfShownLevel - use-exit reads record n of the level SHOWN (R023+0x162B, no count test):
@@ -639,25 +639,25 @@ public sealed partial class TacticalBattle
     {
         // BUG: OriginalBehaviour.FixLeaderKeysOnOtherLevel - the leader's U, O, P and D use his stairs record, door or chest index from the
         //   place tests of the level SHOWN: alone on another level he acts on the party's level by remote (split audit row 3)
-        return Battle.Behaviour.FixLeaderKeysOnOtherLevel && Battle[Battle.Leader].Level != Battle.LevelShown;
+        return Battle.Behaviour.FixLeaderKeysOnOtherLevel && !Levels.IsShown(Battle.Leader);
     }
 
     /// <summary>FixStairsArrivalWithoutPlace: around the shown level's stairs back to <paramref name="from"/>, then any stairs, then around
     /// a member standing on this level.</summary>
     private void PlaceAfterFailedArrival(int who, int from)
     {
-        var count = LevelShown.GetByte(StairsCountAt);
+        var count = Levels.Shown.GetByte(StairsCountAt);
         foreach (var back in new[] { true, false })
         {
             for (var k = 0; k < count; k++)
             {
                 var at = StairsAt + 14 * k;
-                if (back != ((sbyte)LevelShown.GetByte(at + 6) == from))
+                if (back != ((sbyte)Levels.Shown.GetByte(at + 6) == from))
                 {
                     continue;
                 }
-                var box = new MapPoint(LevelShown.GetWord(at) + LevelShown.GetByte(at + 4) / 2, LevelShown.GetWord(at + 2) + LevelShown.GetByte(at + 5) / 2);
-                if (PlaceAround(who, box, LevelShown.GetByte(at + 12) & 7))
+                var box = new MapPoint(Levels.Shown.GetWord(at) + Levels.Shown.GetByte(at + 4) / 2, Levels.Shown.GetWord(at + 2) + Levels.Shown.GetByte(at + 5) / 2);
+                if (PlaceAround(who, box, Levels.Shown.GetByte(at + 12) & 7))
                 {
                     return;
                 }
@@ -679,8 +679,8 @@ public sealed partial class TacticalBattle
         // BUG: OriginalBehaviour.FixStaleStairsBackRecord - the stairs-back record number (DS:C8B2) is written after use-exit's level switch:
         //   the new level's record when the party came together, 0 for a member who never went alone; Use Stairs then takes record n of his
         //   level past its count (a zero record: level 0 at (0, 0), outside the map; split audit row 14)
-        return Battle.Behaviour.FixStaleStairsBackRecord && floor >= 0 && floor < _levels.Count
-            && (n < 0 || n >= _levels[floor].GetByte(StairsCountAt));
+        return Battle.Behaviour.FixStaleStairsBackRecord && floor >= 0 && floor < Levels.Count
+            && (n < 0 || n >= Levels[floor].GetByte(StairsCountAt));
     }
 
     /// <summary>After a stairs fix showed the actor's own level first (FixStairsRecordOfShownLevel, FixLeaderStairsRecordOfShownLevel):
@@ -688,7 +688,7 @@ public sealed partial class TacticalBattle
     /// rather than the actor's old level, which use-exit leaves shown and which may now be empty.</summary>
     private void ShowAgainAfterFix(int? shownBefore, int who)
     {
-        if (shownBefore is { } before && Battle.PartyLevel != Battle[who].Level && Battle.LevelShown != before)
+        if (shownBefore is { } before && Battle.PartyLevel != Battle[who].Level && Levels.ShownIndex != before)
         {
             SwitchLevel(before);
         }
@@ -711,37 +711,37 @@ public sealed partial class TacticalBattle
     //   before, R016+0x014E).
     private void TakeStairs(int stairsRecord, int who)
     {
-        if (stairsRecord < 0 || StairsAt + 14 * (stairsRecord + 1) > LevelShown.Image.Length)
+        if (stairsRecord < 0 || StairsAt + 14 * (stairsRecord + 1) > Levels.Shown.Image.Length)
         {
             return;
         }
-        var old = Battle.LevelShown;
+        var old = Levels.ShownIndex;
         var cameFrom = Battle[who].Level;
         var at = StairsAt + 14 * stairsRecord;
-        var record = LevelShown.Image.AsSpan(at, 14).ToArray();
+        var record = Levels.Shown.Image.AsSpan(at, 14).ToArray();
         // DIVERGENCE: a record whose level (+6) the battle does not have (a slot past the count with other bytes, never seen in the
         //   generated levels: their slots hold zeros or castle and mine records) would make level-change (R024+0x059A) read a level
         //   file the battle never wrote; here the order is ignored (nothing written, nobody moved) rather than the program stopped.
-        if ((sbyte)record[6] < 0 || (sbyte)record[6] >= _levels.Count)
+        if ((sbyte)record[6] < 0 || (sbyte)record[6] >= Levels.Count)
         {
             return;
         }
-        var wall = (sbyte)LevelShown.GetByte(at + 7);
+        var wall = (sbyte)Levels.Shown.GetByte(at + 7);
         // BUG: OriginalBehaviour.FixStairsWallMarkLost - the write below goes to the level's buffer, and level-change (R024+0x05B4, called
-        // at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (LevelChanged: any change of the level sets it; level-change
+        // at R023+0x16C7) saves the level it leaves only when DS:D4E4 is set (Levels.Changed: any change of the level sets it; level-change
         // and the battle's end R014+0x069A clear it), which this write does not do: after a switch with DS:D4E4 clear the original
-        // reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by SaveLevelOrLoseUnsaved).
+        // reloads the old level without the 0xFF (the levels stay in memory here, the mark is taken back by BattleLevels.SaveOrLoseUnsaved).
         if (wall != -1 && !Battle.Behaviour.FixStairsWallMarkLost)
         {
-            _unsavedLevelBytes.Add((at + 7, (byte)wall));
+            Levels.NoteUnsavedByte(at + 7, (byte)wall);
         }
         else if (wall != -1)
         {
             // the fix: the level counts as changed, so the mark is saved with it
-            LevelChanged = true;
+            Levels.Changed = true;
         }
-        LevelShown.SetByte(at + 7, 0xFF);
-        int newLevel = (sbyte)LevelShown.GetByte(at + 6);
+        Levels.Shown.SetByte(at + 7, 0xFF);
+        int newLevel = (sbyte)Levels.Shown.GetByte(at + 6);
         Battle[who].Level = newLevel;
         var alone = true;
         for (var i = 0; i < Combatant.PartySlots; i++)
@@ -764,12 +764,12 @@ public sealed partial class TacticalBattle
         if (wall != -1)
         {
             // orig: R023+0x1764: the wall group opened on the new level, DS:D4E4 = 1
-            LevelChanged = true;
+            Levels.Changed = true;
             OpenGroupBit(newLevel, wall);
             foreach (var (x, y) in WallGroup(wall))
             {
                 // C: this copy reads the list words as (y, x) bytes: c[1] is the column, c[0] the row (the same cells).
-                LevelShown.SetCellByte(x, y, 3, LevelShown.CellByte(x, y, 3) & 0x7F);
+                Levels.Shown.SetCellByte(x, y, 3, Levels.Shown.CellByte(x, y, 3) & 0x7F);
             }
         }
         var spot = new MapPoint((short)(record[8] | record[9] << 8), (short)(record[10] | record[11] << 8));
@@ -793,7 +793,7 @@ public sealed partial class TacticalBattle
         Battle[who].Action = CombatAction.None;
         ForgetTarget(who);
         // C: the stairs record stairsRecord of the level shown NOW (after switching back when the party stays): its +0x0D.
-        Battle[who].StairsBack = (sbyte)LevelShown.GetByte(StairsAt + 14 * stairsRecord + 0x0D);
+        Battle[who].StairsBack = (sbyte)Levels.Shown.GetByte(StairsAt + 14 * stairsRecord + 0x0D);
     }
 
     /// <summary>
@@ -945,8 +945,8 @@ public sealed partial class TacticalBattle
             group.Kinds[k] = (sbyte)types[k + 4];
             group.Counts[k] = (sbyte)counts[k + 4];
         }
-        Activations[Battle.LevelShown].Add(group);
-        LevelChanged = true;
+        Levels.Activations[Levels.ShownIndex].Add(group);
+        Levels.Changed = true;
         WavesEnabled = false;
         for (var i = Combatant.PartySlots; i < Combatant.Count; i++)
         {

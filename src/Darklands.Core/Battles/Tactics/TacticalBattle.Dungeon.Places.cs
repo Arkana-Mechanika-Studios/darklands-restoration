@@ -24,7 +24,7 @@ public sealed partial class TacticalBattle
             }
             // BUG: OriginalBehaviour.FixPlaceActionsOnOwnLevel - the place tests read the level SHOWN for every member: one on another level
             //   standing at a door, stairs or chest box of the shown level's map takes its index (split audit row 1)
-            if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && c.Level != Battle.LevelShown)
+            if (Battle.Behaviour.FixPlaceActionsOnOwnLevel && !Levels.IsShown(c))
             {
                 continue;
             }
@@ -77,13 +77,13 @@ public sealed partial class TacticalBattle
                 Triggers(i);
             }
         }
-        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(DoorCountAt); k++)
         {
             // BUG: the enemies open the unlocked doors of the level SHOWN that they walk into, from any level (party-place-table
             //   R014+0xDC14, the door-assign at R014+0xDDE1). Kept as the original (party-split audit row 24). Decision: later, an
             //   optional fixed rule after 1.0.
             var at = DoorsAt + 14 * k;
-            if (LevelShown.GetByte(DoorOpenAt + k) != 0 || LevelShown.GetByte(at + 7) != 0 || LevelShown.GetWord(at) <= 0)
+            if (Levels.Shown.GetByte(DoorOpenAt + k) != 0 || Levels.Shown.GetByte(at + 7) != 0 || Levels.Shown.GetWord(at) <= 0)
             {
                 continue;
             }
@@ -119,7 +119,7 @@ public sealed partial class TacticalBattle
     {
         var c = Battle[i];
         var v = 0;
-        for (var k = 0; k < LevelShown.GetByte(DoorCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(DoorCountAt); k++)
         {
             var at = DoorsAt + 14 * k;
             var (x0, y0, w, h) = Box(at);
@@ -129,8 +129,8 @@ public sealed partial class TacticalBattle
             }
             if (Inside(c.Position, x0, y0, w, h))
             {
-                int b8 = LevelShown.GetByte(at + 8), b9 = LevelShown.GetByte(at + 9);
-                var cell = LevelShown[b8 & 0x3F, b9 & 0x3F].Bits;
+                int b8 = Levels.Shown.GetByte(at + 8), b9 = Levels.Shown.GetByte(at + 9);
+                var cell = Levels.Shown[b8 & 0x3F, b9 & 0x3F].Bits;
                 if ((b8 & 0x80) != 0)
                 {
                     c.DoorSide = 0;
@@ -168,7 +168,7 @@ public sealed partial class TacticalBattle
         }
         if ((c.Flags & TacticalFlags.InDoorway) != 0)
         {
-            var locked = (sbyte)LevelShown.GetByte(DoorsAt + 14 * c.Door + 7);
+            var locked = (sbyte)Levels.Shown.GetByte(DoorsAt + 14 * c.Door + 7);
             if (locked != 0 && !Battle.RealCombat)
             {
                 Menus.Set(OrdersItem.UseDoor, 2);
@@ -298,7 +298,7 @@ public sealed partial class TacticalBattle
     private void OnStairsAt(int i)
     {
         var c = Battle[i];
-        for (var k = 0; k < LevelShown.GetByte(StairsCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(StairsCountAt); k++)
         {
             var (x, y, w, h) = Box(StairsAt + 14 * k);
             if (Inside(c.Position, x, y, w, h))
@@ -311,7 +311,7 @@ public sealed partial class TacticalBattle
         }
         if (Battle.Leader == i && Running)
         {
-            if (Battle.PartyLevel != Battle.LevelShown)
+            if (Levels.PartyIndex != Levels.ShownIndex)
             {
                 Menus.Set(OrdersItem.UseStairs, 1);
                 c.StairsToTake = c.StairsBack;
@@ -327,7 +327,7 @@ public sealed partial class TacticalBattle
     private void RegionAt(int i)
     {
         var c = Battle[i];
-        for (var k = 0; k < LevelShown.GetByte(RegionCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(RegionCountAt); k++)
         {
             var at = RegionsAt + RegionSize * k;
             var (x, y, w, h) = Box(at);
@@ -354,7 +354,7 @@ public sealed partial class TacticalBattle
             Menus.Set(OrdersItem.DissolveLock, 2);
             Menus.Set(OrdersItem.DisarmTrap, 2);
             var at = RegionsAt + RegionSize * c.Chest;
-            int locked = LevelShown.GetByte(at + 8), trap = LevelShown.GetByte(at + 9);
+            int locked = Levels.Shown.GetByte(at + 8), trap = Levels.Shown.GetByte(at + 9);
             if ((locked & 0x7F) != 0 && !Battle.RealCombat)
             {
                 Menus.Set(OrdersItem.PickLock, 1);
@@ -403,15 +403,15 @@ public sealed partial class TacticalBattle
     private void ZoneAt(int i)
     {
         var c = Battle[i];
-        for (var k = 0; k < LevelShown.GetByte(ZoneCountAt); k++)
+        for (var k = 0; k < Levels.Shown.GetByte(ZoneCountAt); k++)
         {
             var at = ZonesAt + 10 * k;
-            int x0 = LevelShown.GetWord(at), y0 = LevelShown.GetWord(at + 2), w = LevelShown.GetWord(at + 4), h = LevelShown.GetWord(at + 6);
+            int x0 = Levels.Shown.GetWord(at), y0 = Levels.Shown.GetWord(at + 2), w = Levels.Shown.GetWord(at + 4), h = Levels.Shown.GetWord(at + 6);
             if (x0 <= 0)
             {
                 continue;
             }
-            if (c.Level == Battle.LevelShown && Inside(c.Position, x0, y0, w, h))
+            if (c.Level == Levels.ShownIndex && Inside(c.Position, x0, y0, w, h))
             {
                 c.ExitZone = k;
                 c.Flags |= TacticalFlags.InExitZone;
@@ -430,7 +430,7 @@ public sealed partial class TacticalBattle
     private void PileNextTo(int i)
     {
         var c = Battle[i];
-        c.LootPile = LootPiles.FindIndex(p => p.Level == Battle.LevelShown && p.Count != 0
+        c.LootPile = LootPiles.FindIndex(p => p.Level == Levels.ShownIndex && p.Count != 0
             && c.Position.X - 16 <= p.Position.X && p.Position.X < c.Position.X + 16
             && c.Position.Y - 16 <= p.Position.Y && p.Position.Y < c.Position.Y + 16);
         NextToPile = c.LootPile != -1;

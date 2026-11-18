@@ -48,7 +48,7 @@ public sealed partial class TacticalBattle
                 var m = Battle[p];
                 // BUG: OriginalBehaviour.FixCombatAcrossLevels - the members on the level SHOWN are seen, by enemies on any level: with a lone member's
                 //   level shown, enemies on the party's level see him and go for him (split audit row 6)
-                if (seen[p] || !m.IsAble || m.Level != (Battle.Behaviour.FixCombatAcrossLevels ? en.Level : Battle.LevelShown))
+                if (seen[p] || !m.IsAble || m.Level != (Battle.Behaviour.FixCombatAcrossLevels ? en.Level : Levels.ShownIndex))
                 {
                     continue;
                 }
@@ -134,7 +134,7 @@ public sealed partial class TacticalBattle
                 continue;
             }
             var t = Battle[en.Target];
-            if (!t.IsAble || t.Level != (Battle.Behaviour.FixCombatAcrossLevels ? en.Level : Battle.LevelShown))
+            if (!t.IsAble || t.Level != (Battle.Behaviour.FixCombatAcrossLevels ? en.Level : Levels.ShownIndex))
             {
                 en.ClearOrders();
                 CancelAction(e);

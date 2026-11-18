@@ -165,12 +165,12 @@ public sealed class OriginalBugsOfTheKeysTests
     private static (TacticalBattle Tactics, int Record, int To, int Wall) Prepare(OriginalBehaviour behaviour)
     {
         var t = Start(behaviour, 0x0B, 4242);
-        var level = t.LevelShown;
+        var level = t.Levels.Shown;
         var to = (sbyte)level.GetByte(StairsAt + 6);
         const int wall = 1;
         level.SetByte(StairsAt + 7, wall);
         // the planted byte is the level file's too (a level left without DS:D4E4 is read back from its file)
-        typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
+        t.Levels.SaveFiles();
         var spot = new MapPoint(level.GetWord(StairsAt) + level.GetByte(StairsAt + 4) / 2, level.GetWord(StairsAt + 2) + level.GetByte(StairsAt + 5) / 2);
         for (var i = 0; i < Combatant.PartySlots; i++)
         {
@@ -184,7 +184,7 @@ public sealed class OriginalBugsOfTheKeysTests
 
     private static void TakeFirstStairs(TacticalBattle t, bool changed)
     {
-        t.LevelChanged = changed;
+        t.Levels.Changed = changed;
         var who = t.Battle.Leader;
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, who]);
     }
@@ -201,14 +201,14 @@ public sealed class OriginalBugsOfTheKeysTests
             return;
         }
         var (t, _, to, wall) = Prepare(new OriginalBehaviour { FixStairsWallMarkLost = fix });
-        Assert.Equal(wall, t.LevelShown.GetByte(StairsAt + 7));
+        Assert.Equal(wall, t.Levels.Shown.GetByte(StairsAt + 7));
         var from = t.Battle.LevelShown;
         TakeFirstStairs(t, changed);
         // one member alone takes the stairs: the party stays, the level shown is the one left again (its switch back saved the new level)
         Assert.Equal(from, t.Battle.LevelShown);
         Assert.NotEqual(to, t.Battle.LevelShown);
         Assert.Equal(to, t.Battle[t.Battle.Leader].Level);
-        Assert.Equal(expected, t.LevelAt(from).GetByte(StairsAt + 7));
+        Assert.Equal(expected, t.Levels[from].GetByte(StairsAt + 7));
     }
     /// <summary>R024+0x059A reloads a level from its file at each switch to it; R024+0x05B4 saves the level left only when DS:D4E4 is set:
     /// any change made without it (a sprung trap's sign, a found trap) is lost by a switch away and back (split audit row 18).</summary>
@@ -222,15 +222,15 @@ public sealed class OriginalBugsOfTheKeysTests
             return;
         }
         var t = Start(OriginalBehaviour.Faithful, 0x0B, 4242);
-        Assert.True(t.LevelCount >= 2);
+        Assert.True(t.Levels.Count >= 2);
         var from = t.Battle.LevelShown;
         const int at = 0x33F0;
-        t.LevelShown.SetByte(at, 0x5A);
-        typeof(TacticalBattle).GetMethod("SaveLevelFiles", Any)!.Invoke(t, []);
-        t.LevelShown.SetByte(at, 0xA5);
-        t.LevelChanged = changed;
-        t.SwitchLevel((from + 1) % t.LevelCount);
+        t.Levels.Shown.SetByte(at, 0x5A);
+        t.Levels.SaveFiles();
+        t.Levels.Shown.SetByte(at, 0xA5);
+        t.Levels.Changed = changed;
+        t.SwitchLevel((from + 1) % t.Levels.Count);
         t.SwitchLevel(from);
-        Assert.Equal(expected, t.LevelShown.GetByte(at));
+        Assert.Equal(expected, t.Levels.Shown.GetByte(at));
     }
 }

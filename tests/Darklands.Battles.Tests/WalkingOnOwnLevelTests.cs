@@ -35,7 +35,7 @@ public sealed class WalkingOnOwnLevelTests
             {
                 t.Map.OwnLevel = null;
                 var shown = Blocked(t.Map.Collides(walker, px, py));
-                t.Map.OwnLevel = _ => t.LevelAt(party);
+                t.Map.OwnLevel = _ => t.Levels[party];
                 var own = Blocked(t.Map.Collides(walker, px, py));
                 if (shown == own)
                 {

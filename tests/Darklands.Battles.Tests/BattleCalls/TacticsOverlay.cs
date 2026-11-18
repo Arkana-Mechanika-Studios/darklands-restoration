@@ -102,14 +102,14 @@ internal static class TacticsOverlay
     {
         var ds = image.Ds;
         var far = image.Far;
-        if (t.Battle.LevelShown < 0 || t.Battle.LevelShown >= t.LevelCount)
+        if (t.Battle.LevelShown < 0 || t.Battle.LevelShown >= t.Levels.Count)
         {
             throw new BattleCallsTests.SkipJob("the floor shown is not a level of this battlefield");
         }
         // the level shown is the one DS:11CA names: the rewrite's own start may show another (a job that moves the shown floor)
-        t.Map.Level = Get<IReadOnlyList<BattlefieldLevel>>(t, "_levels")[t.Battle.LevelShown];
+        t.Map.Level = t.Levels[t.Battle.LevelShown];
         t.Battle.ExitCards = t.Map.Level.ExitCards;
-        far.AsSpan(0, FloorSize).CopyTo(t.LevelShown.Image);
+        far.AsSpan(0, FloorSize).CopyTo(t.Levels.Shown.Image);
         var map = t.Map;
         foreach (var f in Flags)
         {
@@ -327,7 +327,7 @@ internal static class TacticsOverlay
             map.LastParts[j] = Word(ds, LastParts + 2 * j);
         }
         Set(map, "LastMask", (int)(short)Word(ds, 0xD708));
-        var list = t.Activations[t.Battle.LevelShown];
+        var list = t.Levels.Activations[t.Battle.LevelShown];
         list.Clear();
         for (var k = 0; k < ds[ActivationCount] && ActivationsAt + ActivationSize * (k + 1) <= far.Length; k++)
         {
@@ -350,7 +350,7 @@ internal static class TacticsOverlay
     {
         var ds = image.Ds;
         var far = image.Far;
-        t.LevelShown.Image.AsSpan().CopyTo(far);
+        t.Levels.Shown.Image.AsSpan().CopyTo(far);
         var map = t.Map;
         foreach (var f in Flags)
         {
@@ -567,7 +567,7 @@ internal static class TacticsOverlay
             ds[at + 0x17] = (byte)m.Speed;
             ds[at + 0x18] = (byte)m.Level;
         }
-        var list = t.Activations[t.Battle.LevelShown];
+        var list = t.Levels.Activations[t.Battle.LevelShown];
         ds[ActivationCount] = (byte)list.Count;
         for (var k = 0; k < list.Count && ActivationsAt + ActivationSize * (k + 1) <= far.Length; k++)
         {

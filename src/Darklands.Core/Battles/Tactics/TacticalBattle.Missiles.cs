@@ -114,7 +114,7 @@ public sealed partial class TacticalBattle
             Position = c.Position, Goal = goal, Facing = c.SpriteFacing, Shooter = who, Target = target,
             // BUG: OriginalBehaviour.FixCombatAcrossLevels - the missile is made on the level SHOWN at its launch: between combatants on a hidden
             //   level it never hits, and from the party's level it reaches a lone member through the floors (split audit row 7)
-            Sprite = sprite, Speed = speed, Level = Battle.Behaviour.FixCombatAcrossLevels && c.Level >= 0 ? c.Level : Battle.LevelShown,
+            Sprite = sprite, Speed = speed, Level = Battle.Behaviour.FixCombatAcrossLevels && c.Level >= 0 ? c.Level : Levels.ShownIndex,
             Spell = type >= 6 ? spell : 0, Power = type >= 6 ? power : 0,
         };
         Missiles.Add(missile);
@@ -170,7 +170,7 @@ public sealed partial class TacticalBattle
         Missiles.Add(new Missile
         {
             Position = from, Goal = target != -1 ? Battle[target].Position : to, Facing = facing, Shooter = -1, Target = target,
-            Sprite = sprite, Speed = speed, Level = Battle.LevelShown, Done = (byte)(who == -1 ? 0 : 1),
+            Sprite = sprite, Speed = speed, Level = Levels.ShownIndex, Done = (byte)(who == -1 ? 0 : 1),
         });
     }
 

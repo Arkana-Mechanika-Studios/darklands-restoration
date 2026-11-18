@@ -159,7 +159,7 @@ public sealed partial class BattleScreen
             {
                 restore();
             }
-            _battle.SwitchLevel(_battle.Battle.LevelShown);
+            _battle.SwitchLevel(_battle.Levels.ShownIndex);
             // orig: R037+0x451A..0x453C: the comment box (text-prompt) is put back with colour 0 transparent and colour 5 turned into 0, so
             //   the screen keeps some of its pixels (TextInputBox); the battle's back page never had the box, and the save's level switch
             //   (R024+0x059A through thunk 09C0:1B3F at R003+0x0CD6) paints nothing: only a later frame's sprite boxes or a full paint

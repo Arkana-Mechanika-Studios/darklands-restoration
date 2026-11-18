@@ -89,7 +89,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
     {
         // the encounter record it adds holds the three kinds of the slots 4..6 whatever the slot holds: for a slot with no enemy the original writes a local
         // it never set (the stack's leftovers; the rewrite has -1 for the first, 0 for the others), unseen as the count is 0: the original's byte is taken
-        var list = c.Tactics.Activations[floor];
+        var list = c.Tactics.Levels.Activations[floor];
         if (list.Count == before + 1)
         {
             var group = list[^1];
@@ -221,7 +221,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 throw new SkipJob("a member of the party leaves");
             }
             var at = job.Args[1];
-            var before = c.Tactics.Activations[c.Battle.LevelShown].Count;
+            var before = c.Tactics.Levels.Activations[c.Battle.LevelShown].Count;
             Call(c.Tactics, "LeaveLevel", job.Args[0], c.Input.Ds.AsSpan(at, 14).ToArray());
             AdoptUnsetBytesOfTheNewRecord(c, job, c.Battle.LevelShown, before);
             return null;
@@ -361,7 +361,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
         ["R023+0x04AC"] = (c, job) =>
         {
             CheckDoor(c, job.Args[0]);
-            var record = c.Tactics.LevelShown.Image.AsSpan(0x1F54 + 14 * job.Args[0], 14);
+            var record = c.Tactics.Levels.Shown.Image.AsSpan(0x1F54 + 14 * job.Args[0], 14);
             if (SideFlags(record) != 1)
             {
                 throw new SkipJob("a door record without exactly one side flag");
@@ -495,7 +495,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             }
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
-                Console.WriteLine($"key {key:X4}: shown {c.Battle.LevelShown} levels {c.Tactics.LevelCount} party floor {c.Battle.PartyLevel} floors {string.Join(",", Enumerable.Range(0, 5).Select(k => c.Battle[k].Level))} selected {c.Tactics.Selected} paused {c.Tactics.Paused}");
+                Console.WriteLine($"key {key:X4}: shown {c.Battle.LevelShown} levels {c.Tactics.Levels.Count} party floor {c.Battle.PartyLevel} floors {string.Join(",", Enumerable.Range(0, 5).Select(k => c.Battle[k].Level))} selected {c.Tactics.Selected} paused {c.Tactics.Paused}");
             }
             if (char.ToUpperInvariant((char)(key & 0xFF)) == 'U' && c.Input.Ds[0xA695] == 0)
             {
@@ -525,8 +525,8 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             }
             if (Environment.GetEnvironmentVariable("DARKLANDS_BATTLE_CALLS_ONLY") is not null)
             {
-                var levels = TacticsOverlay.Get<IReadOnlyList<BattlefieldLevel>>(c.Tactics, "_levels");
-                Console.WriteLine("levels: " + string.Join(" ", levels.Select(l => $"{l.Image[0x300C]}/{l.Image.GetHashCode()}")) + $" current {c.Tactics.LevelShown.Image.GetHashCode()}");
+                var levels = c.Tactics.Levels.All;
+                Console.WriteLine("levels: " + string.Join(" ", levels.Select(l => $"{l.Image[0x300C]}/{l.Image.GetHashCode()}")) + $" current {c.Tactics.Levels.Shown.Image.GetHashCode()}");
                 Console.WriteLine($"after: shown {c.Battle.LevelShown} selected {c.Tactics.Selected}");
             }
             return null;
@@ -556,7 +556,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 throw new SkipJob("the dissolve action for an empty member: fight-action-table passes over status 0 (R014+0x11B0), the only caller");
             }
             var floor = c.Battle.LevelShown;
-            var records = c.Tactics.Activations[floor].Count;
+            var records = c.Tactics.Levels.Activations[floor].Count;
             Call(c.Tactics, "DoPlaceAction", job.Args[0]);
             // the stairs make level-exit's record (R014+0x2170 case 2 -> R023+0x17D2): its unset bytes are the original's
             AdoptUnsetBytesOfTheNewRecord(c, job, floor, records);
@@ -663,7 +663,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
             EnemyGroup? group = null;
             if (mode == 0)
             {
-                var list = c.Tactics.Activations[c.Battle.LevelShown];
+                var list = c.Tactics.Levels.Activations[c.Battle.LevelShown];
                 var k = (job.Args[1] - TacticsOverlay.ActivationsAt) / TacticsOverlay.ActivationSize;
                 if ((job.Args[1] - TacticsOverlay.ActivationsAt) % TacticsOverlay.ActivationSize != 0 || k < 0 || k >= list.Count)
                 {
@@ -1031,7 +1031,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
 
     private static void CheckDoors(TacticalBattle t)
     {
-        var image = t.LevelShown.Image;
+        var image = t.Levels.Shown.Image;
         for (var k = 0; k < Math.Min((int)image[0x1F52], 40); k++)
         {
             var at = 0x1F54 + 14 * k;
@@ -1047,7 +1047,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
 
     private static void CheckDoor(Context c, int n)
     {
-        if (n >= c.Tactics.LevelShown.Image[0x1F52])
+        if (n >= c.Tactics.Levels.Shown.Image[0x1F52])
         {
             throw new SkipJob("a door past the level's door count");
         }
@@ -1176,11 +1176,11 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 TacticsOverlay.Apply(tactics, input);
                 if (only is not null)
                 {
-                    output.WriteLine($"{job.Id}: far doors {input.Far[0x1F52]}, level doors {tactics.LevelShown.Image[0x1F52]}, same array {ReferenceEquals(tactics.LevelShown, tactics.Map.Level)}, ops {job.Ops.Count}");
+                    output.WriteLine($"{job.Id}: far doors {input.Far[0x1F52]}, level doors {tactics.Levels.Shown.Image[0x1F52]}, same array {ReferenceEquals(tactics.Levels.Shown, tactics.Map.Level)}, ops {job.Ops.Count}");
                 }
                 CheckDoors(tactics);
                 CheckReachable(job, input, state.Ds);
-                var switches = tactics.LevelSwitches;
+                var switches = tactics.Levels.Switches;
                 // a state captured without the loot file (older rounds): the C# store is its own start's, so a call that appends to the file
                 // (R014+0xE774: the new block's offset is the file's length) or cuts blocks out of it (R014+0xE7C8) works on another file
                 var lootStore = tactics.Field.Store.Loot;
@@ -1202,7 +1202,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                     }
                     lootStore.FileExists = fileBefore;
                 }
-                if (tactics.LevelSwitches != switches)
+                if (tactics.Levels.Switches != switches)
                 {
                     // level-change (R024+0x059A) saves the level it leaves (20A5:0000, its encounter list 20A5:47EE through DS:A895) only when
                     // DS:D4E4 is set, and loads the level it shows from its files: what the job changed in a level without that flag, or in a
@@ -1252,7 +1252,7 @@ public sealed class BattleCallsTests(Xunit.Abstractions.ITestOutputHelper output
                 {
                     // the encounter records past the count are not the level's: every reader stops at DS:D6CC, a level switch leaves the staging
                     // buffer's (DS:A896) leftovers of the last level loaded there, and the draw's scratch lies past the longest lists (20A5:4C62..)
-                    var records = Math.Max(expected.Ds[TacticsOverlay.ActivationCount], tactics.LevelSwitches != switches ? 0 : input.Ds[TacticsOverlay.ActivationCount]);
+                    var records = Math.Max(expected.Ds[TacticsOverlay.ActivationCount], tactics.Levels.Switches != switches ? 0 : input.Ds[TacticsOverlay.ActivationCount]);
                     var from = TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * records;
                     var to = Math.Min(TacticsOverlay.ActivationsAt + TacticsOverlay.ActivationSize * 40, actual.Far.Length);
                     if (from < to)

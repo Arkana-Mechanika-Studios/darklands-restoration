@@ -42,7 +42,7 @@ public sealed class JudgeBattleLeadsTests
         {
             for (var y = 17; y <= 24; y++)
             {
-                t.LevelShown[x, y] = new BattlefieldCell(0x8000_0000);
+                t.Levels.Shown[x, y] = new BattlefieldCell(0x8000_0000);
             }
         }
         var random = (MscRandom)t.Battle.Random;
@@ -190,7 +190,7 @@ public sealed class JudgeBattleLeadsTests
             c.Position = new MapPoint((short)(t.Battle[0].Position.X + 64 * (k + 1)), t.Battle[0].Position.Y);
         }
         t.Battle.RealCombat = false;
-        var groups = t.Activations[t.Battle.LevelShown];
+        var groups = t.Levels.Activations[t.Battle.LevelShown];
         var before = groups.Count;
         Call(t, "LeaveLevel", 0, new byte[14]);
         Assert.Equal(before + 1, groups.Count);

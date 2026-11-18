@@ -403,7 +403,7 @@ public sealed partial class TacticalBattle
         for (var i = 0; i < Combatant.Count; i++)
         {
             var c = Battle[i];
-            if (c.Status == CharacterStatus.Empty || c.Level != Battle.LevelShown)
+            if (c.Status == CharacterStatus.Empty || !Levels.IsShown(c))
             {
                 continue;
             }

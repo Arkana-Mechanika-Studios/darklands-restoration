@@ -24,7 +24,7 @@ public sealed class TriggersOfOtherLevelsTests
         var his = t.Battle[Lone].Level;
         var b = Enumerable.Range(0, Combatant.PartySlots).First(i => i != Lone && t.Battle[i].IsAble);
         t.SwitchLevel(his);
-        var lv = t.LevelShown;
+        var lv = t.Levels.Shown;
         var k = lv.GetByte(TriggerCountAt);
         var at = TriggersAt + 14 * k;
         var p = t.Battle[b].Position;

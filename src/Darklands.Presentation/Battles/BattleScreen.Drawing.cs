@@ -52,7 +52,7 @@ public sealed partial class BattleScreen
         //   the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
         for (var i = 0; i < Combatant.Count; i++)
         {
-            if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Battle[i].Level == tb.Battle.LevelShown && SpriteBox(i) is { } box)
+            if (tb.Battle[i].Status != CharacterStatus.Empty && tb.Levels.IsShown(i) && SpriteBox(i) is { } box)
             {
                 tb.Battle[i].ScreenPlace = (box.Left - BattlefieldView.Left, box.Top);
                 if (tickDraw)
@@ -122,11 +122,11 @@ public sealed partial class BattleScreen
         {
             RecordScreenPlaces(tb.TickToDraw);
         }
-        _view.Draw(canvas, tb.LevelShown, _tiles!);
+        _view.Draw(canvas, tb.Levels.Shown, _tiles!);
         var clip = BattlefieldView.Area;
         foreach (var pile in tb.LootPiles)
         {
-            if (pile.Level == tb.Battle.LevelShown && pile.Visible)
+            if (pile.Level == tb.Levels.ShownIndex && pile.Visible)
             {
                 // orig: R014+0x799E (14F7:118E) draft: x = −dx − ((y − sy0) − x) − sx0 + 0x88, y = (y − sy0) − dy + 0x69 (dx 10, dy 4).
                 var (px, py) = _view.ToScreen(pile.Position.X, pile.Position.Y);
@@ -136,7 +136,7 @@ public sealed partial class BattleScreen
         DrawAreas(canvas);
         _hotSpots.Clear();
         var shown = Enumerable.Range(0, Combatant.Count)
-            .Where(i => tb.Battle[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious or CharacterStatus.Dead && tb.Battle[i].Level == tb.Battle.LevelShown)
+            .Where(i => tb.Battle[i].Status is CharacterStatus.Able or CharacterStatus.Unconscious or CharacterStatus.Dead && tb.Levels.IsShown(i))
             .ToList();
         // list B: the fallen (and an able combatant out of view, which has no entry and draws nothing in the view)
         foreach (var i in shown.Where(i => !tb.Battle[i].IsAble || !CombatantInView(i)).OrderBy(i => tb.Battle[i].Position.Y).ThenBy(i => tb.Battle[i].Position.X))
@@ -360,7 +360,7 @@ public sealed partial class BattleScreen
         var placed = new List<(int Image, int X, int Y, MapPoint Point)>();
         foreach (var m in tb.MissilesDrawn)
         {
-            if (m.Level != tb.Battle.LevelShown || (m.Arrived && m.Sprite != 0))
+            if (m.Level != tb.Levels.ShownIndex || (m.Arrived && m.Sprite != 0))
             {
                 continue;
             }
@@ -447,7 +447,7 @@ public sealed partial class BattleScreen
         var tb = _battle!;
         for (var k = 0; k < tb.Effects.AreaCount; k++)
         {
-            if (tb.Effects.Areas[k].Level != tb.Battle.LevelShown)
+            if (tb.Effects.Areas[k].Level != tb.Levels.ShownIndex)
             {
                 continue;
             }
@@ -489,17 +489,17 @@ public sealed partial class BattleScreen
             for (var slot = 0; slot < BattlefieldDirtyBoxes.Slots; slot++)
             {
                 int row = slot / BattlefieldView.Columns, column = slot % BattlefieldView.Columns;
-                if (_view.SlotCell(tb.LevelShown, row, column) is not var (x, y) || tb.Effects.PieceFrame(layer, x, y) is var frame && frame < 0)
+                if (_view.SlotCell(tb.Levels.Shown, row, column) is not var (x, y) || tb.Effects.PieceFrame(layer, x, y) is var frame && frame < 0)
                 {
                     continue;
                 }
-                var cell = tb.LevelShown[x, y];
+                var cell = tb.Levels.Shown[x, y];
                 var (fx, fy) = BattlefieldView.SlotFloor(row, column);
                 var (decoration, px, py, w, h, key) = layer switch
                 {
                     0 => (tiles.NorthWallDecorations[cell.NorthWallDecoration], fx + 16, fy - 25, 0, 0, new DepthKey(x * 32 + 4, y * 16, y * 16)),
                     1 => (tiles.WestWallDecorations[cell.WestWallDecoration], fx, fy - 25, 0, 0, new DepthKey(x * 32 + 1, y * 16 + 8, y * 16 + 8)),
-                    _ => (tiles.FloorDecorations[tb.LevelShown.FloorDecoration(x, y)], fx, fy, 0x30, 0x10, default),
+                    _ => (tiles.FloorDecorations[tb.Levels.Shown.FloorDecoration(x, y)], fx, fy, 0x30, 0x10, default),
                 };
                 if (layer != 2)
                 {
@@ -637,7 +637,7 @@ public sealed partial class BattleScreen
             {
                 continue;
             }
-            foreach (var piece in _view.WallPieces(tb.LevelShown, _tiles!, tb.Field.Terrain, slot / BattlefieldView.Columns, slot % BattlefieldView.Columns))
+            foreach (var piece in _view.WallPieces(tb.Levels.Shown, _tiles!, tb.Field.Terrain, slot / BattlefieldView.Columns, slot % BattlefieldView.Columns))
             {
                 if (_listCount >= EffectField.DrawListLimit)
                 {
@@ -750,7 +750,7 @@ public sealed partial class BattleScreen
             var m = tb.Effects.Markers[k];
             // C: frame 4 reads DS:CEA4[4] (DS:CEAC, set to 0 by the loader): nothing is drawn.
             var frame = m.Frame & 7;
-            if (m.Level != tb.Battle.LevelShown || frame > 3)
+            if (m.Level != tb.Levels.ShownIndex || frame > 3)
             {
                 continue;
             }

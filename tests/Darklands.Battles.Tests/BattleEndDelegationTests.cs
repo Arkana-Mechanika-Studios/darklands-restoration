@@ -68,8 +68,8 @@ public sealed class BattleEndDelegationTests
         {
             return;
         }
-        tactics.LevelChanged = true;
+        tactics.Levels.Changed = true;
         BattleCallsTests.Call(tactics, "AfterBattle");
-        Assert.False(tactics.LevelChanged);   // DS:D4E4 cleared by the save of the level
+        Assert.False(tactics.Levels.Changed);   // DS:D4E4 cleared by the save of the level
     }
 }

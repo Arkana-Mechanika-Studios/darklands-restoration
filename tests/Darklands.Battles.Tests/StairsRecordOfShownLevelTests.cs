@@ -23,7 +23,7 @@ public sealed class StairsRecordOfShownLevelTests
     {
         var (_, t) = BattleScreenTests.Start(GameFolder.Files!, new BattleRequest(0x7C, 3434, [(8, 3, 8), (2, 2, 4), (-1, 0, 0)]), state => state.Behaviour = behaviour);
         var party = t.Battle.LevelShown;
-        Assert.True(t.LevelShown.GetByte(StairsAt - 2) >= 1);
+        Assert.True(t.Levels.Shown.GetByte(StairsAt - 2) >= 1);
         typeof(TacticalBattle).GetMethod("TakeStairs", Any)!.Invoke(t, [0, Who]);
         var c = t.Battle[Who];
         Assert.NotEqual(party, c.Level);
@@ -36,7 +36,7 @@ public sealed class StairsRecordOfShownLevelTests
     /// <summary>Plants a record at slot n of the party's level: record 0's bytes with the given level number.</summary>
     private static void Plant(TacticalBattle t, int floor, int slot, int level)
     {
-        var image = t.LevelAt(floor);
+        var image = t.Levels[floor];
         for (var k = 0; k < 14; k++)
         {
             image.SetByte(StairsAt + 14 * slot + k, image.GetByte(StairsAt + k));
@@ -69,7 +69,7 @@ public sealed class StairsRecordOfShownLevelTests
         }
         var (t, party, his, back) = Split(OriginalBehaviour.DataSafe);
         Plant(t, t.Battle.LevelShown, back, his);
-        var expected = (sbyte)t.LevelAt(his).GetByte(StairsAt + 14 * back + 6);
+        var expected = (sbyte)t.Levels[his].GetByte(StairsAt + 14 * back + 6);
         Order(t);
         Assert.Equal(expected, t.Battle[Who].Level);
         Assert.NotEqual(his, t.Battle[Who].Level);

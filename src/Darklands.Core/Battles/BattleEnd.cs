@@ -364,7 +364,7 @@ public static class BattleEnd
     /// <summary>After the battle: each skill used may improve (mode 1 for successful use).</summary>
     // orig: R014+0x0694 (0E76:0694) draft (byte-matched per the draft notes)
     // C: the save of the changed floor and activations (DS:D4E4) and the end of the temporary modifiers (DS:A532) that open the original function are
-    // TacticalBattle.AfterBattle (SaveLevelOrLoseUnsaved, Effects.EndPartyModifiers), which calls this for the skills.
+    // TacticalBattle.AfterBattle (BattleLevels.SaveOrLoseUnsaved, Effects.EndPartyModifiers), which calls this for the skills.
     // Tests: BattleEndDelegationTests.AfterABattleTheLevelIsSavedAndTheModifiersEnd
     public static void ImproveSkills(Battle b, Action<int, int, int, int>? changed = null)
     {

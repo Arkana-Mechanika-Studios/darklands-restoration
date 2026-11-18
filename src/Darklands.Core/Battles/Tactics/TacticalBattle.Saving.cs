@@ -52,11 +52,11 @@ public sealed partial class TacticalBattle
     {
         // orig: R003+0x0132..0x01AB: the level in the buffer and its activations go to their files only while DS:D4E4 is set, which is
         // then cleared; the levels written below are the files (BattlefieldStore.FloorFiles)
-        if (LevelChanged)
+        if (Levels.Changed)
         {
-            SaveLevelFiles();
-            _unsavedLevelBytes.Clear();
-            LevelChanged = false;
+            Levels.SaveFiles();
+            Levels.ClearUnsavedBytes();
+            Levels.Changed = false;
         }
         var v = file.Variables;
         v[BattleVariables.InBattle] = (byte)(inBattle ? 1 : 0);
@@ -153,7 +153,7 @@ public sealed partial class TacticalBattle
         }
         v[BattleVariables.RealCombat] = Flag(Battle.RealCombat);
         v[BattleVariables.EnemySaw] = Flag(EnemySawMember);
-        v[BattleVariables.LevelShown] = (byte)Battle.LevelShown;
+        v[BattleVariables.LevelShown] = (byte)Levels.ShownIndex;
         v[BattleVariables.PartyLevel] = (byte)Battle.PartyLevel;
         v[BattleVariables.EnemyLevel] = (byte)Battle.EnemyLevel;
         var alarm = AlarmTrigger;
@@ -166,7 +166,7 @@ public sealed partial class TacticalBattle
         v[BattleVariables.LockIsDoor] = Flag(LockIsDoor);
         PutWord(v, BattleVariables.Result, (int)Battle.Result);
         PutWord(v, BattleVariables.ResultCard, Battle.ResultCard);
-        v[BattleVariables.LevelCount] = (byte)_levels.Count;
+        v[BattleVariables.LevelCount] = (byte)Levels.Count;
         PutWord(v, BattleVariables.StartLevel, Field.StartLevel);
         PutWord(v, BattleVariables.Seed, Seed);
         PutWord(v, BattleVariables.ClearedLevels, clearedLevels | EncounteredLevels);
@@ -188,13 +188,13 @@ public sealed partial class TacticalBattle
         PutWord(v, BattleVariables.LastCastleFlags, lastCastleFlags);
 
         file.Levels.Clear();
-        for (var level = 0; level < _levels.Count; level++)
+        for (var level = 0; level < Levels.Count; level++)
         {
-            var atv = Store.ActivationFiles is { } atvs && level < atvs.Length ? (byte[])atvs[level].Clone() : ActivationFile(level);
+            var atv = Store.ActivationFiles is { } atvs && level < atvs.Length ? (byte[])atvs[level].Clone() : Levels.ActivationFile(level);
             var enm = Field.EnemyFiles is { } files && level < files.Count && files[level] is { } kept
                 ? (byte[])kept.Clone()
                 : LevelEnemyFile.Write(Field.Forces.Kinds[level] ?? []);
-            file.Levels.Add(new LevelFiles(SavedFloor(Store.FloorFiles is { } floors && level < floors.Length ? floors[level] : _levels[level].Image), atv, enm));
+            file.Levels.Add(new LevelFiles(SavedFloor(Store.FloorFiles is { } floors && level < floors.Length ? floors[level] : Levels[level].Image), atv, enm));
         }
         file.Terrain = (byte[])Field.Terrain.Bytes.Clone();
         file.Loot = loot.FileExists ? loot.ToFile() : null;
@@ -393,7 +393,7 @@ public sealed partial class TacticalBattle
         Battle.Alarm = v[BattleVariables.Alarm];
         Battle.RealCombat = v[BattleVariables.RealCombat] != 0;
         EnemySawMember = v[BattleVariables.EnemySaw] != 0;
-        Battle.LevelShown = v[BattleVariables.LevelShown];
+        Levels.ShownIndex = v[BattleVariables.LevelShown];
         Battle.PartyLevel = v[BattleVariables.PartyLevel];
         Battle.EnemyLevel = (sbyte)v[BattleVariables.EnemyLevel];
         AlarmTrigger = (Word(v, BattleVariables.AlarmTrigger), Word(v, BattleVariables.AlarmTrigger + 2),
@@ -454,7 +454,7 @@ public sealed partial class TacticalBattle
         Ticks = 0;
         InitMenus();
         RebuildMarchingOrder();
-        SwitchLevel(Battle.LevelShown);
+        SwitchLevel(Levels.ShownIndex);
         AlarmTrigger = (-1, 0, 0, 0);
         CheckActivations();
         for (var i = 0; i < Combatant.Count; i++)
