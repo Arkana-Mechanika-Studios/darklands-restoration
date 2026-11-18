@@ -54,7 +54,7 @@ public sealed class OriginalSaveTests
             ? state.Locations[state.CurrentLocation].Name
             : OriginalSaves.Wilderness;
         var nameEnd = Array.IndexOf(written, (byte)0, 0, 0x15);
-        Assert.Equal(place, System.Text.Encoding.Latin1.GetString(written, 0, nameEnd < 0 ? 0x15 : nameEnd));
+        Assert.Equal(place, Darklands.Core.GameTextCodec.Decode(written.AsSpan(0, nameEnd < 0 ? 0x15 : nameEnd)));
         var expectedSav = AsTheOriginalWritesIt(sav);
         if (!sav.AsSpan(0, 0x15).SequenceEqual(written.AsSpan(0, 0x15)))
         {

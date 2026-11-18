@@ -124,7 +124,7 @@ public sealed class DarklandListDecoder
                 throw new InvalidDataException($"DARKLAND.LST has an unterminated string in {tableName}.");
             }
 
-            strings[index] = Encoding.ASCII.GetString(data, start, offset - start);
+            strings[index] = Darklands.Core.GameTextCodec.Decode(data.AsSpan(start, offset - start));
             offset++;
         }
 
@@ -139,7 +139,7 @@ public sealed class DarklandListDecoder
             length++;
         }
 
-        return Encoding.ASCII.GetString(data, offset, length);
+        return Darklands.Core.GameTextCodec.Decode(data.AsSpan(offset, length));
     }
 
     private static int ReadUInt16(byte[] data, int offset)

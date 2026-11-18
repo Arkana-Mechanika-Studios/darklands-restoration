@@ -124,6 +124,6 @@ public sealed class WorldData : IGameData
         {
             end++;
         }
-        return System.Text.Encoding.Latin1.GetString(bytes, offset, end - offset);
+        return Darklands.Core.GameTextCodec.Decode(bytes.AsSpan(offset, end - offset));
     }
 }

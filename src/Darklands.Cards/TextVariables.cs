@@ -1,4 +1,3 @@
-using System.Text;
 using Darklands.Core;
 using Darklands.Core.Rules;
 using Darklands.Core.Time;
@@ -103,8 +102,8 @@ public static class TextVariables
 
     private static byte[] Evaluate(List<byte> name, CardContext c)
     {
-        var text = Encoding.Latin1.GetString([.. name]);
-        return Encoding.Latin1.GetBytes(Value(text, c) ?? "$" + text);
+        var text = GameTextCodec.Decode([.. name]);
+        return GameTextCodec.Encode(Value(text, c) ?? "$" + text);
     }
 
     /// <summary>The value of one variable, or null when it is not one the game knows.</summary>
@@ -238,7 +237,7 @@ public static class TextVariables
         }
         var file = c.MessageFileBytes!;
         var end = Array.IndexOf(file, (byte)0, at);
-        return Encoding.Latin1.GetString(file, at, (end < 0 ? file.Length : end) - at);
+        return GameTextCodec.Decode(file.AsSpan(at, (end < 0 ? file.Length : end) - at));
     }
 
     // orig: case 54 / 70 of R043+0x1316: locations[text-slot-place]->name
@@ -396,6 +395,6 @@ public static class TextVariables
         {
             end++;
         }
-        return Encoding.Latin1.GetString(bytes, start, end - start);
+        return GameTextCodec.Decode(bytes.AsSpan(start, end - start));
     }
 }

@@ -1,4 +1,3 @@
-using System.Text;
 
 namespace Darklands.Persistence;
 
@@ -20,7 +19,7 @@ internal static class RecordBytes
     {
         var field = r.Slice(at, length);
         var end = field.IndexOf((byte)0);
-        return Encoding.Latin1.GetString(end < 0 ? field : field[..end]);
+        return Darklands.Core.GameTextCodec.Decode(end < 0 ? field : field[..end]);
     }
 
     /// <summary>
@@ -36,7 +35,7 @@ internal static class RecordBytes
         }
         var field = r.Slice(at, length);
         field.Clear();
-        var bytes = Encoding.Latin1.GetBytes(text);
+        var bytes = Darklands.Core.GameTextCodec.Encode(text);
         bytes.AsSpan(0, Math.Min(bytes.Length, length - 1)).CopyTo(field);
     }
 }

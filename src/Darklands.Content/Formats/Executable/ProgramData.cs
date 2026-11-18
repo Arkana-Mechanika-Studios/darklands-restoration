@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Text;
 
 namespace Darklands.Content.Formats.Executable;
 
@@ -65,12 +64,12 @@ public sealed class ProgramData
 
     public short Int16(int segment, int offset) => BinaryPrimitives.ReadInt16LittleEndian(_image.AsSpan(Linear(segment, offset)));
 
-    /// <summary>The zero-terminated string at an address, its bytes kept as Latin-1 characters (colour codes included).</summary>
+    /// <summary>The zero-terminated string at an address as text (<see cref="Darklands.Core.GameTextCodec"/>; colour codes included).</summary>
     public string String(int segment, int offset)
     {
         var start = Linear(segment, offset);
         var end = Array.IndexOf(_image, (byte)0, start);
-        return Encoding.Latin1.GetString(_image, start, (end < 0 ? _image.Length : end) - start);
+        return Darklands.Core.GameTextCodec.Decode(_image.AsSpan(start, (end < 0 ? _image.Length : end) - start));
     }
 
     /// <summary>The strings of a table of <paramref name="count"/> far pointers.</summary>

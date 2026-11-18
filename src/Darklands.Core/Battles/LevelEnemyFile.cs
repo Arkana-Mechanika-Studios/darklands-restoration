@@ -1,4 +1,3 @@
-using System.Text;
 using Darklands.Core.Characters;
 
 namespace Darklands.Core.Battles;
@@ -156,7 +155,7 @@ public static class LevelEnemyFile
 
     private static void Text(Span<byte> d, int at, int size, string text)
     {
-        var bytes = Encoding.Latin1.GetBytes(text);
+        var bytes = GameTextCodec.Encode(text);
         var n = Math.Min(bytes.Length, size - 1);
         bytes.AsSpan(0, n).CopyTo(d[at..]);
         d[at + n] = 0;
@@ -166,6 +165,6 @@ public static class LevelEnemyFile
     {
         var field = d.Slice(at, size);
         var end = field.IndexOf((byte)0);
-        return Encoding.Latin1.GetString(end < 0 ? field : field[..end]);
+        return GameTextCodec.Decode(end < 0 ? field : field[..end]);
     }
 }

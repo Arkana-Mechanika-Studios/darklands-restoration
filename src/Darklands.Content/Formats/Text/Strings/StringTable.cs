@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 
 namespace Darklands.Content.Formats.Text.Strings;
 
@@ -17,7 +16,7 @@ public enum StringOrigin
 /// <param name="Key">The stable id (see <see cref="OriginalTextExtractor"/>); never depends on the wording.</param>
 /// <param name="Origin">Known (read by the program) or scanned (found by the EXE scan).</param>
 /// <param name="Raw">The game's own bytes, control and colour codes included, without the terminator.</param>
-/// <param name="Text">The bytes as characters, one byte per character (Latin-1), as the rest of Content decodes game text.</param>
+/// <param name="Text">The bytes as characters, one per byte (GameTextCodec: the fonts' letters, as the rest of the program decodes game text).</param>
 public sealed record StringEntry(string Key, StringOrigin Origin, byte[] Raw, string Text);
 
 /// <summary>
@@ -50,14 +49,14 @@ public sealed class StringTable
             throw new ArgumentException($"Duplicate string key {key}.", nameof(key));
         }
         var bytes = raw.ToArray();
-        var entry = new StringEntry(key, origin, bytes, Encoding.Latin1.GetString(bytes));
+        var entry = new StringEntry(key, origin, bytes, Darklands.Core.GameTextCodec.Decode(bytes));
         _index[key] = _entries.Count;
         _entries.Add(entry);
         return entry;
     }
 
-    /// <summary>Adds an entry from text already decoded one byte per character (Latin-1).</summary>
-    public StringEntry Add(string key, StringOrigin origin, string text) => Add(key, origin, Encoding.Latin1.GetBytes(text));
+    /// <summary>Adds an entry from text already decoded one byte per character (<see cref="Darklands.Core.GameTextCodec"/>).</summary>
+    public StringEntry Add(string key, StringOrigin origin, string text) => Add(key, origin, Darklands.Core.GameTextCodec.Encode(text));
 
     /// <summary>The number of entries per key prefix (the part before the first ':'), in prefix order.</summary>
     public IReadOnlyDictionary<string, int> CountsByPrefix() =>

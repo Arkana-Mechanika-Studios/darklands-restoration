@@ -166,7 +166,7 @@ public sealed class BattleScreens
     {
         var bytes = Assets.Executable.Far(0x286B, offset, 60);
         var end = bytes.IndexOf((byte)0);
-        return System.Text.Encoding.Latin1.GetString(end < 0 ? bytes : bytes[..end]);
+        return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
     }
 
     internal BattleAssets Assets => _assets ??= new BattleAssets(_ui.Assets.Files);

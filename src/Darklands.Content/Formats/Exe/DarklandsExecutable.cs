@@ -72,7 +72,7 @@ public sealed class DarklandsExecutable
     {
         var bytes = DataSegment(offset, 200);
         var end = bytes.IndexOf((byte)0);
-        return System.Text.Encoding.Latin1.GetString(end < 0 ? bytes : bytes[..end]);
+        return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
     }
 
     /// <summary>Bytes at a far address (<c>segment:offset</c>) inside the preloaded data section.</summary>

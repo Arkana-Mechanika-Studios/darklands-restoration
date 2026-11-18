@@ -149,7 +149,7 @@ public sealed class TextPainter(FntFont font)
     // orig: root 0265:0004 draft (bytes match) and drv+0x0FDC: the colour codes as the driver reads them (the map row of DrawCoded)
     public int DrawCoded(Canvas canvas, int x, int y, string text, byte color) => Draw(canvas, x, y, Encode(text), color);
 
-    public static byte[] Encode(string text) => System.Text.Encoding.Latin1.GetBytes(text);
+    public static byte[] Encode(string text) => Darklands.Core.GameTextCodec.Encode(text);
 }
 
 /// <summary>How a text pixel combines with the screen: bits 8..9 of the window's colour word (0x380 = colour 0x80 by xor).</summary>
