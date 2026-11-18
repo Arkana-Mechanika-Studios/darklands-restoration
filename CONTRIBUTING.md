@@ -1,14 +1,14 @@
 # Contributing to the Darklands Restoration Project
 
 Thank you for wanting to help. This guide says what the project is, how to build it, which kind of work suits you,
-how a change gets in, and the few rules that are not negotiable. Read the first section and the lane you want;
+how a change gets in, and the few rules that are not negotiable. Read the first section and the track you want;
 skim the rest.
 
 Contents:
 
 1. [What the project is](#1-what-the-project-is)
 2. [Building and running](#2-building-and-running)
-3. [The lanes](#3-the-lanes)
+3. [The tracks](#3-the-tracks)
 4. [How a change gets in](#4-how-a-change-gets-in)
 5. [Faithfulness, in plain words](#5-faithfulness-in-plain-words)
 6. [Rules for committed text, and the licence](#6-rules-for-committed-text-and-the-licence)
@@ -83,21 +83,26 @@ executable alone from `DARKLANDS_EXE`). **Without it those tests pass without ch
 on a machine without the game proves less than a green run with it: say in your pull request which of the two you
 had. CI has no game files, so CI only proves that the project builds and the game-independent tests pass.
 
-## 3. The lanes
+## 3. The tracks
 
-Work falls into six lanes. Pick the one that matches what you want to do and the skills you have. If your idea
-touches two lanes, say so in the issue (section 4); the stricter lane's rules win.
+The work is organised in ten tracks. Each has its own goal, its own standard of evidence and its own place to start.
+Pick the one that matches what you want to do and the skills you have. The same names are used for the labels on
+GitHub issues. If your idea touches two tracks, say so in the issue (section 4); the stricter track's rules win.
 
-| Lane | One line | Who |
+| Track | Goal | Who |
 |---|---|---|
-| Faithful | the game logic, equal to the original | few, experienced contributors |
-| Portable | more platforms and devices, no change to the game | anyone with platform skills |
-| Moddable | mod and pack formats and their loaders | anyone with C# skills |
-| Extendable | optional new features, screens, commands | anyone with C# skills |
-| Playtesting and bug reports | finding and describing problems | everyone with the game |
-| Content | packs and translations | artists, musicians, writers, translators |
+| Faithfulness | keep Classic exact: the checks against the original, the registers | few, experienced contributors |
+| Engine structure | separate the rules from the screens, text, data and rule settings | experienced C# contributors |
+| Original bug fixing | the Fixed rule set: each original bug registered, then fixed behind its own switch | contributors who can read the original |
+| Restoration and research | the Restored preset and the game's history, each item with its sources | historians, veterans, careful readers |
+| Localisation | the game in other languages, with fonts that fit | translators |
+| Interface and features | optional new screens, comfort and features, never changing what the game decides | anyone with C# skills |
+| Graphics, sound and fonts | picture, sound and music packs, sharper fonts; the original pixels stay the reference | artists, musicians |
+| Modding | the mod and pack formats, their loaders, tools for mod authors | anyone with C# skills |
+| Platforms | more systems and devices, packaging, finding the game's files | anyone with platform skills |
+| Testing and documentation | playtesting, problem reports, the manual, the FAQ, the website | everyone with the game |
 
-### Foundation: read this before any code lane
+### Foundation: read this before any code track
 
 Two documents describe the structure that every code change must respect.
 
@@ -125,7 +130,7 @@ Where code breaks a rule today, the file lists it as a known exception with its 
 not add an exception to get a change through, and if you remove the last break of one, take it off the list (the
 test fails otherwise).
 
-### Faithful lane
+### Faithfulness
 
 **Covers.** The game logic: `src/Darklands.Core` (rules, battles, generators), `src/Darklands.Cards` (the card
 engine and every card script), and the parts of `Darklands.Simulation`, `Darklands.Persistence` and
@@ -134,7 +139,7 @@ including its oddities.
 
 **What you need.** Reading skills for 16-bit x86 code and for C semantics (16-bit wrap-around, signed against
 unsigned comparison, evaluation order of random draws), your own `DARKLAND.EXE`, Python for the tools, and patience.
-This lane has few contributors on purpose; talk to the maintainers before you start (section 7).
+This track has few contributors on purpose; talk to the maintainers before you start (section 7).
 
 **How faithfulness is checked, at a high level.** The checks run against the original program itself, never against
 another reimplementation:
@@ -181,52 +186,77 @@ preserved, dormant ones too. Do not simplify silently: an omission is a `DIVERGE
 * Behaviour with no citation of where in the original it comes from.
 * References to other reverse-engineering projects (section 6).
 
-### Portable lane
+### Engine structure
 
-**Covers.** Running the game on more systems and devices: the SDL host (`src/Darklands.Host.Sdl`), the host
-interfaces and settings (`src/Darklands.Platform`), game folder search (`GameFolderSearch.cs`,
-`GameFolderSearch.Linux.cs`), packaging and publish profiles, the CI workflow `.github/workflows/build.yml`, and
-input, audio and video hosts. Linux x64 (including the Steam Deck) is built today; other systems and controller
-support are open ground.
+**Covers.** The groundwork the other tracks build on, done in release 1.1: screens that only read models and send
+commands, card hints and popups as queries, the camp and the world map, the game loop moved into
+`Darklands.Simulation`, battles last; text given as message ids instead of English (for Localisation), rule
+parameters given to the rules from outside (for the Fixed and Restored rule sets), and records and the world loaded
+through interfaces (for Modding).
 
-**What you need.** .NET, SDL 3, and a machine of the kind you target. Skills in packaging or in an audio or video
-API help.
+**What you need.** Solid C#, the foundation above, and care: every step moves original behaviour without changing
+it. Talk to the maintainers before you start (section 7); the order of the steps matters.
 
-**Where to start.** The README's technical section (build and publish), `docs/SETTINGS.md` (the settings and the
-places the program looks), `src/Darklands.Platform/IHost.cs` (what a host must provide), and the headless host
-`src/Darklands.Host.Headless` for scripted runs.
+**Where to start.** `ARCHITECTURE.md`, `docs/ARCHITECTURE-RULES.md` (the known exceptions are the work list),
+`docs/COMMANDS.md` (the screens already on the command layer and the known gaps).
 
-**How a change is checked.** It builds and the tests pass on the existing platforms in CI; you have run the game
-on the new platform yourself and say what you tried. Host tests are in `tests/Darklands.Host.Sdl.Tests` and
-`tests/Darklands.Platform.Tests`.
+**How a change is checked.** The oracles and session replays agree exactly as before, after every step; the
+architecture test passes and its exception lists get shorter, never longer.
 
-**What will not be accepted.** Anything that changes game logic, timing of the rules, or random draws; a host that
-needs a different `Core`; a dependency from the game layers on a host or a platform library (the architecture test
-fails it); files of the game copied into a package.
+**What will not be accepted.** A structural change that also changes behaviour; a new exception on the architecture
+test's lists.
 
-### Moddable lane
+### Original bug fixing
 
-**Covers.** How mods and packs are described and loaded: card mods (`mod.json`, `docs/MODS.md`), picture and sound
-packs (`docs/PACKS.md`, `src/Darklands.Rendering`, `src/Darklands.Audio`), the modded-save marking
-(`docs/SAVES.md`), and future checking tools for mod authors.
+**Covers.** The Fixed rule set, which players can choose from release 1.1: the bugs of the original (a wrong
+formula, a skipped check, a misbehaving card) fixed one by one, each behind its own switch, with the original's
+behaviour kept beside it. Section 5 says how a fix is made.
 
-**What you need.** C#, and an eye for data formats that stay readable for years. Reading a mod must never run code
-from the mod's folder.
+**What you need.** The same as for Faithfulness: a fix needs the original's coordinates and a proof of what the
+original does, so the bug is reproduced exactly before it is fixed.
 
-**Where to start.** `docs/MODS.md` and `docs/PACKS.md`, the examples `docs/mods/wayside-shrine` and
-`docs/audio-pack-example`, the card engine in `src/Darklands.Cards`, and the card table
-(`src/Darklands.Cards/CardTable.cs`).
+**Where to start.** `docs/faithfulness/ORIGINAL_BUGS.md` (the bugs found so far), `src/Darklands.Core/OriginalBehaviour.cs`
+(the switches), and section 5.
 
-**How a change is checked.** Existing mods and packs must still load and behave the same (the formats are
-backward compatible: add, do not change the meaning of what exists). **With no mod loaded, Classic must be
-untouched**: the oracle and session replays must still agree. A mod's saved games are marked modded in a companion
-file and stay loadable by the original; keep that true. Add tests for the new field or rule, and update the guide.
+**How a change is checked.** A test for both settings of the switch; with the switch off, the oracles and session
+replays agree as before.
 
-**What will not be accepted.** Mods that execute code; a loader that changes anything when no mod is named; a mod
-or pack format that cannot express the game's own data without changing it; shipping a mod or pack that contains
-game files or text derived from them.
+**What will not be accepted.** A fix with no switch, or one that changes Classic; a fix of something that is not a
+bug of the original (that is Restoration or a new feature).
 
-### Extendable lane
+### Restoration and research
+
+**Covers.** The Restored preset and the history behind the game: content the original program holds but never uses,
+features left half-wired, what the manual or the hint book describes that the game does not do, what the designers
+said they meant, and the history of the places, saints and alchemy the game draws on.
+
+**What you need.** Patience with sources. No programming is needed to start: a finding is written down with its
+sources, saying how sure each one is (the program's own bytes, a designer's word, a manual, a player's memory).
+
+**Where to start.** The registers of unused and unreachable code (`docs/faithfulness/dormant.csv`,
+`unreachable.csv`), and the Discord.
+
+**How a change is checked.** Every item names its sources. Research informs; it does not by itself change a rule: a
+restoration ships behind a switch (or as a mod) with its evidence, and Classic stays as it was.
+
+### Localisation
+
+**Covers.** The game in other languages: the screens, the card texts and the program's own messages, with fonts
+that have the letters each language needs.
+
+**What you need.** A language you write well, and the game in English to compare. No programming is needed.
+
+**Where to start.** `docs/LOCALISATION.md`. Translations arrive with release 1.1, whose test builds go to translators
+first; that guide says how to prepare. Until then, please discuss on Discord rather than sending finished
+translations.
+
+**How a change is checked.** A translation changes the words and never what the game does; the English game stays
+exactly as it is.
+
+**What will not be accepted.** In this repository: the game's own English text, or any copy of it (section 1). A
+translation is written from your own reading of the game.
+
+### Interface and features
 
 **Covers.** New, optional things the original never had: the enhanced mode, new screens (information such as a
 journal, a quest log or tooltips), convenience features, new commands, new mechanics.
@@ -257,9 +287,76 @@ unchanged with it off; the architecture test; a short description of how to try 
 a new exception on the architecture test's lists; a feature that changes the original's saved-game bytes for a
 Classic game.
 
-### Playtesting and bug reports
+### Graphics, sound and fonts
 
-You do not need to write code to help, and this lane matters for a project that claims fidelity.
+**Covers.** Picture packs (PNG), sound and music packs (OGG, WAV, General MIDI), and sharper fonts: optional, with
+the original pixels and sounds as the reference.
+
+**What you need.** Art or music skills. No programming is needed: packs are data.
+
+**Where to start.** `docs/PACKS.md`: the formats, how a replacement is named after what it replaces, and the names
+of all the game's music and sounds, with the example in `docs/audio-pack-example`.
+
+**How a change is checked.** A pack changes how the game looks or sounds and never what it does, and it shows
+nothing the original hides. Your pack must load without errors on the console and leave the game's decisions
+unchanged.
+
+**What will not be accepted.** In this repository: the game's own pictures, music or text, or any copy or
+conversion of them. Publish your own packs in your own place, with your own licence, and tell us about them.
+Original artwork, music and writing that you made yourself are welcome as examples when you give them under the
+project's licence.
+
+### Modding
+
+**Covers.** How mods and packs are described and loaded: card mods (`mod.json`, `docs/MODS.md`), picture and sound
+packs (`docs/PACKS.md`, `src/Darklands.Rendering`, `src/Darklands.Audio`), the modded-save marking
+(`docs/SAVES.md`), mods that add cards, and future checking tools for mod authors.
+
+**What you need.** C#, and an eye for data formats that stay readable for years. Reading a mod must never run code
+from the mod's folder.
+
+**Where to start.** `docs/MODS.md` and `docs/PACKS.md` (the modding guides are being written under `docs/modding/`),
+the examples `docs/mods/wayside-shrine` and
+`docs/audio-pack-example`, the card engine in `src/Darklands.Cards`, and the card table
+(`src/Darklands.Cards/CardTable.cs`).
+
+**How a change is checked.** Existing mods and packs must still load and behave the same (the formats are
+backward compatible: add, do not change the meaning of what exists). **With no mod loaded, Classic must be
+untouched**: the oracle and session replays must still agree. A mod's saved games are marked modded in a companion
+file and stay loadable by the original; keep that true. Add tests for the new field or rule, and update the guide.
+
+**What will not be accepted.** Mods that execute code; a loader that changes anything when no mod is named; a mod
+or pack format that cannot express the game's own data without changing it; shipping a mod or pack that contains
+game files or text derived from them.
+
+### Platforms
+
+**Covers.** Running the game on more systems and devices: the SDL host (`src/Darklands.Host.Sdl`), the host
+interfaces and settings (`src/Darklands.Platform`), game folder search (`GameFolderSearch.cs`,
+`GameFolderSearch.Linux.cs`), packaging and publish profiles, the CI workflow `.github/workflows/build.yml`, and
+input, audio and video hosts. Linux x64 (including the Steam Deck) is built today; other systems and controller
+support are open ground.
+
+**What you need.** .NET, SDL 3, and a machine of the kind you target. Skills in packaging or in an audio or video
+API help.
+
+**Where to start.** The README's technical section (build and publish), `docs/SETTINGS.md` (the settings and the
+places the program looks), `src/Darklands.Platform/IHost.cs` (what a host must provide), and the headless host
+`src/Darklands.Host.Headless` for scripted runs.
+
+**How a change is checked.** It builds and the tests pass on the existing platforms in CI; you have run the game
+on the new platform yourself and say what you tried. Host tests are in `tests/Darklands.Host.Sdl.Tests` and
+`tests/Darklands.Platform.Tests`.
+
+**What will not be accepted.** Anything that changes game logic, timing of the rules, or random draws; a host that
+needs a different `Core`; a dependency from the game layers on a host or a platform library (the architecture test
+fails it); files of the game copied into a package.
+
+### Testing and documentation
+
+You do not need to write code to help, and this track matters for a project that claims fidelity. It covers
+playtesting and problem reports, and the player's documentation: the manual of the restoration's own features and
+switches, the Darklands FAQ 4.0 and the website.
 
 **What you need.** Your own copy of the game and this program. If possible, DOSBox (or another way to run the
 original) to compare.
@@ -281,46 +378,25 @@ original) to compare.
 Because randomness is deterministic, a save plus steps usually lets a maintainer reproduce a problem exactly. Do
 not attach game files other than your own saves.
 
-**Where to start.** Open an issue (section 7). `docs/RC-CHECKLIST.md` is the maintainers'
-own play-through check before a release.
-
-### Content: packs and translations
-
-**Covers.** Picture packs (PNG), sound packs (OGG, WAV, General MIDI), mods that add cards, and translations of the
-user interface and texts.
-
-**What you need.** Art, music or writing skills. No programming is needed for packs and mods, which are data.
-
-**Where to start.**
-
-* Packs: `docs/PACKS.md` (formats, names of all the game's music and sounds), with the example in
-  `docs/audio-pack-example`.
-* Mods: `docs/MODS.md`, with the example in `docs/mods/wayside-shrine`.
-* The modding guides are being written under `docs/modding/`; use them when they are there.
-* Translations: `docs/LOCALISATION.md`. Translations arrive with version 1.2; that guide says how to prepare. Until
-  then, please discuss on Discord rather than sending finished translations.
-
-**How a change is checked.** A pack changes how the game looks or sounds and never what it does. Your pack must
-load without errors on the console and leave the game's decisions unchanged.
-
-**What will not be accepted.** In this repository: the game's own pictures, music or text, or any copy or
-conversion of them. Publish your own packs in your own place, with your own licence, and tell us about them.
-Original artwork, music and writing that you made yourself are welcome as examples when you give them under the
-project's licence.
+**Where to start.** Open an issue (section 7); in the game, Ctrl+F12 packs your logs and last save for it
+(`docs/REPORTING.md`). `docs/RC-CHECKLIST.md` is the maintainers' own play-through check before a release. For the
+documentation: the files in `docs/`, and the FAQ and the website at https://arkana-mechanika-labs.github.io/ (a
+mistake in the FAQ is reported here as an issue too).
 
 ## 4. How a change gets in
 
-1. **Issue first for anything non-trivial.** Open an issue on GitHub saying what you want to change and which lane
+1. **Issue first for anything non-trivial.** Open an issue on GitHub saying what you want to change and which track
    it is in, and wait for a reply before you spend days on it. A typo or a one-line obvious fix may go straight to
    a pull request.
 2. **Branch.** Fork the repository or branch from `master`, one branch per change, with a short descriptive name.
 3. **Small commits.** One idea per commit; the project builds and the tests pass at each one.
-4. **Tests.** A behaviour change comes with a test. In the Faithful lane, with an oracle or comparison run too.
+4. **Tests.** A behaviour change comes with a test. In the Faithfulness and Original bug fixing tracks,
+   with an oracle or comparison run too.
    Run `dotnet test Darklands.slnx` before you push, with `DARKLANDS_DIR` set if you have the game.
 5. **Registers and docs.** If you touched a `DIVERGENCE`, `BUG`, `UNCERTAIN` or `DORMANT` marker, regenerate the
    registers (`python tools/faithfulness/registers.py`). If you changed a setting, the file formats or a command,
    update the matching document in `docs/`.
-6. **Pull request.** Describe what changed and why, the lane, how you checked it, and whether you had the game
+6. **Pull request.** Describe what changed and why, the track, how you checked it, and whether you had the game
    files for the tests. CI (the `build` workflow: build and test on Windows and Linux) must pass.
 7. **Review.** A maintainer reviews. Expect questions about faithfulness and about whether Classic is untouched.
    Keep the discussion on the change; push fixes as new commits.
@@ -367,12 +443,12 @@ What you can do about an original bug you want fixed:
    settings of the flag.
 3. **Decide who gets the fix by default.** Only bugs that **damage the player's data** (saved games, the item
    stores in `CACHE.TMP`) are fixed in the player's default game, by listing the flag in
-   `OriginalBehaviour.DataSafe`. Gameplay quirks stay as they are, with their fix flag off; the switches are not
-   exposed in the settings file today. Talk to the maintainers before adding to `DataSafe`: it must be a data-damaging
+   `OriginalBehaviour.DataSafe`. Gameplay quirks stay as they are in Classic, with their fix flag off. From release
+   1.1, gameplay fixes are gathered in the Fixed rule set, which players choose; Classic never changes. Talk to the maintainers before adding to `DataSafe`: it must be a data-damaging
    bug, and what the fixed game writes must still be readable by the original.
 
-A fix of this kind is for the Faithful lane, because it needs the original's coordinates and a proof of what the
-original does.
+A fix of this kind belongs to the Original bug fixing track, which follows the Faithfulness track's rules: it needs
+the original's coordinates and a proof of what the original does.
 
 ## 6. Rules for committed text, and the licence
 
@@ -401,7 +477,7 @@ the right to give under the GPL.
 * **GitHub issues:** https://github.com/Arkana-Mechanika-Studios/darklands-restoration for bug reports, proposals
   and work in progress.
 
-When you are unsure which lane something belongs to, or whether a behaviour is a bug or the original's way, ask
+When you are unsure which track something belongs to, or whether a behaviour is a bug or the original's way, ask
 before you change it.
 
 Everyone taking part follows the short [code of conduct](CODE_OF_CONDUCT.md).
