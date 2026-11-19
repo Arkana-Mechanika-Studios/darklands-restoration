@@ -42,6 +42,11 @@ public sealed class GameAssets(GameFiles files)
 
     private Formats.Text.Strings.OriginalMessageText? _messageText;
 
+    /// <summary>The original's word tables (fame titles, standing, directions, shop, job, skill and risk words), from the player's DARKLAND.EXE.</summary>
+    public Formats.Text.Strings.OriginalWords Words => _words ??= Formats.Text.Strings.OriginalWords.Load(files);
+
+    private Formats.Text.Strings.OriginalWords? _words;
+
     public bool PictureExists(string name)
     {
         var file = name.Contains('.') ? name : name + ".PIC";

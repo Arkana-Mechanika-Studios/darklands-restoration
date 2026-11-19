@@ -133,6 +133,14 @@ public sealed class ArchitectureRulesTests
                 use.Target.FullName == "Darklands.Content.Formats.Text.Strings.OriginalMessageText" ||
                 use.Target.FullName == "Darklands.Content.GameAssets" && use.Member.Contains("MessageText", StringComparison.Ordinal));
         }
+        // The original's word tables (Content's OriginalWords): the rules keep numbers; the screens and the card texts word them (the
+        // cards as the original's card code does: the card-text variables and the shop name a card leaves out).
+        foreach (var name in new[] { Core, Persistence, Simulation })
+        {
+            Assert.DoesNotContain(Dependencies.Uses(name), use =>
+                use.Target.FullName is "Darklands.Content.Formats.Text.Strings.OriginalWords" or "Darklands.Content.Formats.Text.Strings.WordTable" ||
+                use.Target.FullName is "Darklands.Content.GameAssets" or "Darklands.Content.WorldData" && use.Member.Contains("Words", StringComparison.Ordinal));
+        }
     }
 
     /// <summary>

@@ -7,9 +7,10 @@ namespace Darklands.Core.Rules;
 
 /// <summary>
 /// A shop the party barters at: its number (0..8 a city shop, −2 the pawnshop, other numbers
-/// a trader without a shop), its name, the item categories it deals in and its quality.
+/// a trader without a shop), its name, the item categories it deals in and its quality. A null
+/// <paramref name="Name"/> is the shop's entry of the name table (<see cref="Trading.HasTableName"/>): the screen words it.
 /// </summary>
-public sealed record Shop(int Number, string Name, long Categories, int Quality);
+public sealed record Shop(int Number, string? Name, long Categories, int Quality);
 
 /// <summary>What a shop offers today: the item codes in list order, and the prices the listing showed for the first four.</summary>
 public sealed record ShopStock(IReadOnlyList<int> Codes, IReadOnlyList<int> ListedPrices);
@@ -42,12 +43,6 @@ public static class Trading
     /// <summary>The value a fresh stock scan finds in the stale stack slot: a code segment, far above every city.</summary>
     // C: the real value is the R032 overlay's run-time CS, assumed in 0x005C..0x7FFF (any DOS load address the game fits at); the oracle runs at the link-time CS 1462.
     public const int StaleCodeSegment = 0x2000;
-
-    /// <summary>Default names of the nine city shops (when a card gives none).</summary>
-    public static readonly IReadOnlyList<string> ShopNames =
-    [
-        "Blacksmith", "Goods Merchant", "Swordsmith", "Armorer", "Gunsmith", "Bowyer", "Artificier", "Jeweler", "Clothmaker",
-    ];
 
     /// <summary>
     /// The chance in % (row: city size − 1, column: rarity) that a shop stocks an item. Row 9
@@ -98,31 +93,21 @@ public static class Trading
         _ => 25,
     };
 
-    /// <summary>Opens a shop; without a name a city shop takes its default name.</summary>
+    /// <summary>Opens a shop; without a name it is named by its entry of the name table (a null <see cref="Shop.Name"/>), or empty outside the table.</summary>
     // orig: trade-screen-entry R032+0x0000 (1462:0000) draft: DS:869C = name ? name : R136+0xA70F[shop]
     // DORMANT: cards reach barter through R029+0x21AA, which already substitutes the table name for a null name; the fallback here only runs for direct callers.
     public static Shop Open(GameState s, int shop, string? name, long categories) =>
-        new(shop, name ?? DefaultName(shop), categories, ShopQuality(s, shop));
+        new(shop, name ?? (HasTableName(shop) ? null : ""), categories, ShopQuality(s, shop));
 
     /// <summary>
-    /// The name table entry for a shop without a name. Only 0..8 are shop names; the original
-    /// indexes the far-pointer table with any shop number, and the neighbouring entries are
-    /// other names (−3..−1: Tope, Ull, Volund; 9..11: Physician, Hospital, Nobility).
+    /// Whether a shop without a name takes its entry of the name table. Only 0..8 are shop names;
+    /// the original indexes the far-pointer table with any shop number, and the neighbouring
+    /// entries are other names (−3..−1 and 9..11).
     /// </summary>
     // orig: R136+0xA70F DS-resident table 290E:207F (data, read by trade-screen-entry and R029+0x21AA)
     // DORMANT: entries outside −3..11 are not reproduced (empty name); the cards that leave the name null ask for the shops 0..3, 5, 8 and 9 (-1 and -2 are always
     //   given a name).
-    private static string DefaultName(int shop) => shop switch
-    {
-        >= 0 and < 9 => ShopNames[shop],
-        -3 => "Tope",
-        -2 => "Ull",
-        -1 => "Volund",
-        9 => "Physician",
-        10 => "Hospital",
-        11 => "Nobility",
-        _ => "",
-    };
+    public static bool HasTableName(int shop) => shop is >= -3 and <= 11;
 
     /// <summary>
     /// The quality of the goods a shop sells: 25 for item types 0x17..0x19 and 0x40..0x42 and

@@ -19,13 +19,6 @@ public sealed partial class CardContext
 
     // ---- shops ----------------------------------------------------------------------
 
-    /// <summary>The names the shop screen shows when a card gives none, by shop slot (0..11).</summary>
-    public static readonly string[] ShopNames =
-    [
-        "Blacksmith", "Goods Merchant", "Swordsmith", "Armorer", "Gunsmith", "Bowyer",
-        "Artificier", "Jeweler", "Clothmaker", "Physician", "Hospital", "Nobility",
-    ];
-
     /// <summary>
     /// Names of kinds of traders and patrons, used for $NamedOneName (goods merchant,
     /// blacksmith, artificier, cathedral, foreign trader, pharmacist, Medici, Hanse, Fugger,
@@ -49,9 +42,16 @@ public sealed partial class CardContext
     //   is kept for its results; the redraw itself is the card screen's (see OpenItemStore)
     public void Barter(int shop, long categories, string? name = null)
     {
-        Screens.Barter(shop, name ?? (shop >= 0 && shop < ShopNames.Length ? ShopNames[shop] : ""), categories);
+        Screens.Barter(shop, ShopName(shop, name), categories);
         Core.Rules.PartyQueries.CardRunQuery(State);
     }
+
+    /// <summary>The name a shop is opened under: the card's, else the shop slot's own name (0..11, the name table R136+0xA70F), else empty.</summary>
+    // orig: R029+0x21AA (0E76:21C4..21DD): a null name is replaced by R136+0xA70F[shop] (OriginalWords.ShopNames)
+    // C: the original indexes the table with any slot; here only 0..11 are looked up and other slots get "" (as 1.0; the cards that leave
+    //   the name null ask for 0..3, 5, 8 and 9).
+    private string ShopName(int shop, string? name) =>
+        name ?? (shop >= 0 && shop < 12 ? World.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.ShopNames, shop) : "");
 
     /// <summary>Camping or lodging (R029 222a): mode 0 at an inn, 1 in the wilderness, 2 other lodging, 3 sleeping rough.</summary>
     // orig: R029+0x222A (0E76:222A): the camp screen (thunk 09C0:1EEB), then card-run (thunk 09C0:1EA5): its MEM.LOG query kept (CardRunQuery)

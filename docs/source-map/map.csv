@@ -739,8 +739,8 @@ DayJobs.Best(),R036+0x197E,R036+0x197E,draft,CampAndSheetRulesTests,bug: cats2 j
 DayJobs.SkillTerm(),R036+0x1B4C;root 047C:11AB,R036+0x1B4C,draft,CampAndSheetRulesTests,
 PartyStanding.Direction(),R030+0x29FA,R030+0x29FA,draft,CampAndSheetRulesTests,
 PartyStanding.NearestTown(),R034+0x1A86,R034+0x1A86,matched,CampAndSheetRulesTests,
-PartyStanding.SizeWord(),R034+0x0EE6;R034+0x144C,R034+0x0EE6,matched,CampAndSheetRulesTests,
-PartyStanding.FameTitle(),R136+0xA60B,far 290E:1F7B,matched,CampAndSheetRulesTests,divergence: negative fame clamped
+PartyStanding.SizeClass(),R034+0x0EE6;R034+0x144C,R034+0x0EE6,matched,CampAndSheetRulesTests,
+PartyStanding.FameRank(),R136+0xA60B,far 290E:1F7B,matched,CampAndSheetRulesTests,divergence: negative fame clamped
 PartyInfoScreen,R034+0x0EE6;R034+0x119C;R034+0x11BC;R034+0x1B3C,R034+0x0EE6,matched,,visual (headless); divergence: pointer not moved on Tab
 PartyInfoScreen.StepToTown(),R034+0x144C,R034+0x144C,matched,,uncertain: Shift-Tab code from hosts
 PartyInfoScreen.DrawPartyMarker(),R034+0x19D0,R034+0x19D0,matched,,

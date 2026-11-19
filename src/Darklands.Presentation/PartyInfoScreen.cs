@@ -1,4 +1,5 @@
 using Darklands.Cards;
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Rules;
 using Darklands.Core.Time;
@@ -63,7 +64,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
                 if (town != shown && town != -1)
                 {
                     shown = town;
-                    DescribeTown(state, town, 0x78, 0x34);
+                    DescribeTown(state, town, 0x78, 0x34, OriginalWords.TownSizes);
                 }
                 else if (town == -1 && shown != -1)
                 {
@@ -101,20 +102,22 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         {
             _nextTabCity = Location.CityCount - 1;
         }
-        DescribeTown(state, _nextTabCity, 0x7A, 0x32);
+        DescribeTown(state, _nextTabCity, 0x7A, 0x32, OriginalWords.TownSizesTab);
         if (++_nextTabCity >= Location.CityCount)
         {
             _nextTabCity = 0;
         }
     }
 
-    private void DescribeTown(GameState state, int town, int clearWidth, int clearHeight)
+    // orig: inline in R034+0x0EE6 (the pointer) and R034+0x144C (Tab): each reads its own copy of the size words (OriginalWords.TownSizes, TownSizesTab)
+    private void DescribeTown(GameState state, int town, int clearWidth, int clearHeight, WordTable sizeWords)
     {
+        var words = ui.Assets.Words;
         ui.Canvas.CopyFrom(_back, TownBoxX, TownBoxY, clearWidth, clearHeight);
         var place = state.Locations[town];
         ScreenDrawing.Centered(ui, TownCenterX, 0x22, place.Name, TextColor);
-        ScreenDrawing.Centered(ui, TownCenterX, 0x2C, PartyStanding.SizeWord(place.Size), TextColor);
-        ScreenDrawing.Centered(ui, TownCenterX, 0x36, "Rep: " + PartyStanding.StandingWord(state, town), TextColor);
+        ScreenDrawing.Centered(ui, TownCenterX, 0x2C, words.Text(sizeWords, PartyStanding.SizeClass(place.Size)), TextColor);
+        ScreenDrawing.Centered(ui, TownCenterX, 0x36, "Rep: " + words.Text(OriginalWords.StandingWords, PartyStanding.StandingBand(state, town)), TextColor);
         ScreenDrawing.Centered(ui, TownCenterX, 0x40, $"({place.Reputation})", TextColor);
     }
 
@@ -150,7 +153,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
             var near = LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y);
             var town = state.Locations[near];
             var direction = PartyStanding.Direction(town.X, town.Y, state.MapPosition.X, state.MapPosition.Y);
-            text.Draw(canvas, 0x46, 0x6F, PartyStanding.Directions[direction] + " of ", TextColor);
+            text.Draw(canvas, 0x46, 0x6F, ui.Assets.Words.Text(OriginalWords.Directions, direction) + " of ", TextColor);
             text.Draw(canvas, 0x48, 0x78, town.Name, TextColor);
         }
         var purse = state.Party.Purse;
@@ -162,7 +165,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         text.Draw(canvas, 0x84, 0xAD, $"{state.Party.PhilosophersStone} PhStone", TextColor);
         if (state.InCity)
         {
-            text.Draw(canvas, 0x84, 0x6F, PartyStanding.StandingWord(state, state.CurrentLocation), TextColor);
+            text.Draw(canvas, 0x84, 0x6F, ui.Assets.Words.Text(OriginalWords.StandingWords, PartyStanding.StandingBand(state, state.CurrentLocation)), TextColor);
             text.Draw(canvas, 0x8E, 0x77, $"({state.Here!.Reputation})", TextColor);
         }
     }
@@ -171,7 +174,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     /// <summary>The headings, drawn twice: a shadow one pixel lower right, then the title colour.</summary>
     private void DrawTitles(int fame)
     {
-        var title = PartyStanding.FameTitle(fame);
+        var title = ui.Assets.Words.Text(OriginalWords.FameTitles, PartyStanding.FameRank(fame));
         // orig: text-width-measure R034+0x1B3C (1550:0C5C) matched: the sum of glyph-width(c, screen-window-font)
         //   over the string, as Measure in the current font; also centres the town lines at TownCenterX (0x102 - width / 2).
         var width = ui.Text.Measure(title);

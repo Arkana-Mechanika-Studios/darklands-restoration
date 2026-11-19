@@ -1,3 +1,4 @@
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Rules;
 using Darklands.Core.Time;
@@ -22,10 +23,8 @@ public static class TextVariables
 
     private static readonly string[] Ordinals = ["One", "Two", "Three", "Four", "Five"];
 
-    // orig: R136+0xA813, indexed by place-query(location-now, 1) (the standing band 0..5)
-    private static readonly string[] StandingWords = ["a local hero", "respected", "unknown", "suspected", "wanted", "hunted"];
-
-    // orig: R136+0xA773, indexed by the result of R030+0x29FA (0 north, clockwise)
+    // orig: R136+0xA813 (the standing words, OriginalWords.StandingWords), indexed by place-query(location-now, 1) (the standing band 0..5);
+    //   R136+0xA773 (the direction words, OriginalWords.Directions), indexed by the result of R030+0x29FA (0 north, clockwise)
     // orig: R136+0xA9B3 (city type 1: f56 % 6) and R136+0xA9CB (city type 2: f56 % 9); the bytes are the game's own: 0x1F is its a-umlaut, { o-umlaut, | u-umlaut
     private static readonly string[] LordTitlesType1 = ["Vogt", "Erbvogt", "Obervogt", "Burggraf", "Richter", "Landhofmeister"];
 
@@ -274,7 +273,7 @@ public static class TextVariables
     {
         var here = c.State.CurrentLocation;
         var band = here >= 0 && here < c.State.Locations.Count ? LocationRules.Query(c.State, here, 1) : 2;
-        return StandingWords[Math.Clamp(band, 0, StandingWords.Length - 1)];
+        return c.World.Words.Text(OriginalWords.StandingWords, Math.Clamp(band, 0, OriginalWords.StandingWords.Count - 1));
     }
 
     // orig: case 51: the lord's title depends on the city's type word (swapped after an uprising, flag 0x80)
@@ -331,7 +330,7 @@ public static class TextVariables
             return "";   // DIVERGENCE: the original indexes locations[location-now] and locations[text-slot-place] unchecked
         }
         var to = state.Locations[c.Variables.Location];
-        return PartyStanding.Directions[PartyStanding.Direction(from.X, from.Y, to.X, to.Y)];
+        return Direction(c, PartyStanding.Direction(from.X, from.Y, to.X, to.Y));
     }
 
     // orig: case 58: R136+0xA773[thunk 09C0:1FBD(loc2.x, loc2.y, loc.x, loc.y)] = the direction from text-slot-place-two to text-slot-place
@@ -343,7 +342,7 @@ public static class TextVariables
         {
             return "";   // DIVERGENCE: unchecked indexes in the original
         }
-        return PartyStanding.Directions[PartyStanding.Direction(state.Locations[a].X, state.Locations[a].Y, state.Locations[b].X, state.Locations[b].Y)];
+        return Direction(c, PartyStanding.Direction(state.Locations[a].X, state.Locations[a].Y, state.Locations[b].X, state.Locations[b].Y));
     }
 
     // orig: case 68: month name, a space and the day of the next witches' sabbat (thunk 09C0:20DF, thunk 09C0:21A7)
@@ -375,8 +374,11 @@ public static class TextVariables
             return "";
         }
         var from = state.Locations[city];
-        return PartyStanding.Directions[PartyStanding.Direction(from.X, from.Y, place.X, place.Y)] + " of " + from.Name;
+        return Direction(c, PartyStanding.Direction(from.X, from.Y, place.X, place.Y)) + " of " + from.Name;
     }
+
+    /// <summary>The word of a direction (0 north … 7 northwest).</summary>
+    private static string Direction(CardContext c, int direction) => c.World.Words.Text(OriginalWords.Directions, direction);
 
     /// <summary>A name of the working city record (city-record->names[n]); n = -1 is the short name at the start of the record.</summary>
     // C: _fstrcpy copies up to the first zero byte: a 32-byte field without one runs on into the next field. An index outside the 16 names reads other parts of the record.

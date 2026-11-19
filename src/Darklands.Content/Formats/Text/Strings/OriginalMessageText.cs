@@ -1,7 +1,6 @@
 using System.Globalization;
 using Darklands.Content.Formats.Exe;
 using Darklands.Core;
-using Darklands.Core.Rules;
 
 namespace Darklands.Content.Formats.Text.Strings;
 
@@ -13,7 +12,9 @@ namespace Darklands.Content.Formats.Text.Strings;
 /// </summary>
 public sealed class OriginalMessageText(DarklandsExecutable exe)
 {
-    // orig: raise-skill-by R029+0x02EA and ability-change-notice R021+0x0080: the skill's name, " changed from " (DS:26BE), the old
+    private readonly OriginalWords _words = new(exe);
+
+    // orig: raise-skill-by R029+0x02EA and ability-change-notice R021+0x0080: the skill's name (the far table 290E:2137, OriginalWords.SkillNames), " changed from " (DS:26BE), the old
     //   value, " to " (DS:26CD), the new value, in text-bank-buffer (DS:9085)
     private const int ChangedFrom = 0x26BE;
     private const int To = 0x26CD;
@@ -23,8 +24,7 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
     {
         if (message.Id == GameMessageIds.SkillChanged)
         {
-            // C8: the names are still Core's table (MemberRules.SkillNames), two copies of it are in the EXE (L-4 keys them).
-            return MemberRules.SkillNames[message.Number("skill")] + exe.String(ChangedFrom) + Number(message, "from") + exe.String(To) +
+            return _words.Text(OriginalWords.SkillNames, message.Number("skill")) + exe.String(ChangedFrom) + Number(message, "from") + exe.String(To) +
                 Number(message, "to");
         }
         if (message.Id.StartsWith("exe:DS:", StringComparison.Ordinal) &&

@@ -56,7 +56,7 @@ public sealed class OriginalMessageTextTests
         Assert.Equal(StringOrigin.Known, table.Find("exe:DS:26BE")?.Origin);
         Assert.Equal(StringOrigin.Known, table.Find("exe:DS:26CD")?.Origin);
         Assert.Equal(
-            Core.Rules.MemberRules.SkillNames[7] + table.Find("exe:DS:26BE")!.Text + "4" + table.Find("exe:DS:26CD")!.Text + "5",
+            table.Find("exe:290E:0C42")!.Text + table.Find("exe:DS:26BE")!.Text + "4" + table.Find("exe:DS:26CD")!.Text + "5",
             text.Text(GameMessage.SkillChanged(1, 7, 4, 5)));
     }
 

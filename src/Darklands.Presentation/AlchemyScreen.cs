@@ -1,3 +1,4 @@
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Items;
@@ -327,7 +328,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         ui.Text.Draw(canvas, MenuX, MenuTop + 24, ScreenDrawing.Hotkey('S') + "atisfied with this", b.Count != 0 ? MenuColor : MenuGreyed);
         DrawSelectedFormula();
         canvas.CopyFrom(_back, 0xC3, 0x3C, 0x5A, 0x4C);
-        ScreenDrawing.Wrapped(ui, $"{f.RiskName} risk - magic #{f.MysticNumber}", 0x55, 0xC6, 0x3F, MenuColor);
+        ScreenDrawing.Wrapped(ui, $"{ui.Assets.Words.Text(OriginalWords.RiskWords, f.RiskWord)} risk - magic #{f.MysticNumber}", 0x55, 0xC6, 0x3F, MenuColor);
         ui.Text.Draw(canvas, 0xC6, 0x56, "Ingredients:", MenuColor);
         var y = 0x5E;
         foreach (var ing in f.Slots)

@@ -349,7 +349,7 @@ public sealed partial class CardContext
     // C: the wrapper's card-run afterwards starts with card-run's MEM.LOG query (PartyQueries.CardRunQuery), kept for its results
     public void OpenShop(int shop, string? name, int low, int high)
     {
-        Screens.Barter(shop, name ?? (shop >= 0 && shop < ShopNames.Length ? ShopNames[shop] : ""), (uint)(ushort)low | (long)(ushort)high << 16);
+        Screens.Barter(shop, ShopName(shop, name), (uint)(ushort)low | (long)(ushort)high << 16);
         Core.Rules.PartyQueries.CardRunQuery(State);
     }
 

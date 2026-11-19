@@ -1,3 +1,4 @@
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Content.Formats.World;
 using Darklands.Core.Items;
 using Darklands.Core.World;
@@ -7,8 +8,12 @@ namespace Darklands.Content;
 /// <summary>The static world: cities (DARKLAND.CTY), places (DARKLAND.LOC) and items (DARKLAND.LST).</summary>
 public sealed class WorldData : IGameData
 {
-    private WorldData(DarklandCities cities, DarklandLocations locations, DarklandList items, DarklandDescriptions descriptions)
+    private readonly Lazy<OriginalWords> _words;
+
+    private WorldData(DarklandCities cities, DarklandLocations locations, DarklandList items, DarklandDescriptions descriptions,
+        Lazy<OriginalWords> words)
     {
+        _words = words;
         Cities = cities;
         Descriptions = descriptions;
         LocationRecords = locations;
@@ -24,6 +29,10 @@ public sealed class WorldData : IGameData
 
     /// <summary>The one-line city descriptions (DARKLAND.DSC, 0x50 bytes each, in city order).</summary>
     public DarklandDescriptions Descriptions { get; }
+
+    /// <summary>The original's word tables from the player's DARKLAND.EXE (read on first use): the card texts' standing and direction
+    /// words, the shop names a card leaves out.</summary>
+    public OriginalWords Words => _words.Value;
 
     /// <summary>The description of a city ($PlaceDesc), or "" when the file has none.</summary>
     // orig: city-description, the 0x50-byte DARKLAND.DSC record read with the city record when the party arrives in a city: fseek(city * 0x50 + 1), repeated inline in R030+0x02C0 (1462:02C0) draft (bytes match; 16 of the file's 22 functions do); tests: TextAndOpeningTests
@@ -41,7 +50,8 @@ public sealed class WorldData : IGameData
         DarklandListDecoder.DecodeBytes(files.Read("DARKLAND.LST"), "DARKLAND.LST"),
         files.Exists("DARKLAND.DSC")
             ? new DarklandDescriptionsDecoder().Decode(files.Read("DARKLAND.DSC"), "DARKLAND.DSC")
-            : new DarklandDescriptions("DARKLAND.DSC", []));
+            : new DarklandDescriptions("DARKLAND.DSC", []),
+        new Lazy<OriginalWords>(() => OriginalWords.Load(files)));
 
     /// <summary>Fresh, mutable locations for a new game.</summary>
     // orig: the location part of world-read R043+0x0100 (1462:0100): the file is a word count and then 0x3A-byte records; locations[i] (far table R136+0xE9EE) points into them

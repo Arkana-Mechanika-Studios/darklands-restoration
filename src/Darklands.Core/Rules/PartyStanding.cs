@@ -2,37 +2,28 @@ using Darklands.Core.World;
 
 namespace Darklands.Core.Rules;
 
-/// <summary>How the party information screen words fame, standing, town sizes and directions.</summary>
+/// <summary>How the party information screen ranks fame, standing, town sizes and directions (the screens word them).</summary>
 public static class PartyStanding
 {
-    // orig: R136+0xA60B (fame titles), read by R034+0x11DC
-    /// <summary>Fame titles, one per 50 points of fame (the last from 500 on).</summary>
-    public static readonly string[] FameTitles =
-    [
-        "Unknown", "Barely Known", "Slight Reputation", "Modest Reputation", "Good Reputation", "Slight Heroes",
-        "Modest Heroes", "Great Heroes", "Famous Heroes", "Storied Heroes", "Legendary Heroes",
-    ];
+    /// <summary>The number of fame ranks (entries of the fame-title table R136+0xA60B).</summary>
+    public const int FameRanks = 11;
 
-    // orig: R136+0xA813 (standing words)
-    /// <summary>The words of the standing bands (<see cref="LocationRules.ReputationBand"/>).</summary>
-    public static readonly string[] StandingWords = ["a local hero", "respected", "unknown", "suspected", "wanted", "hunted"];
+    // orig: R136+0xA60B (fame titles), read by R034+0x11DC with fame / 50
+    // DIVERGENCE: negative fame indexes before the table in the original (fame / 50 < 0); kept at rank 0 (the first title) here.
+    /// <summary>The fame rank 0..10, one per 50 points of fame (the last from 500 on): the entry of the fame-title table.</summary>
+    public static int FameRank(int fame) => Math.Clamp(fame / 50, 0, FameRanks - 1);
 
-    // orig: R136+0xA773 (compass words)
-    /// <summary>The eight compass directions, from north clockwise.</summary>
-    public static readonly string[] Directions = ["North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"];
+    // orig: R136+0xA813 (standing words), indexed by place-query(location, 1)
+    /// <summary>The party's standing band at a location (<see cref="LocationRules.ReputationBand"/>, 0..5): the entry of the standing words.</summary>
+    public static int StandingBand(GameState s, int location) => LocationRules.Query(s, location, 1);
 
-    // DIVERGENCE: negative fame indexes before the table in the original (fame / 50 < 0); kept at "Unknown" here.
-    public static string FameTitle(int fame) => FameTitles[Math.Clamp(fame / 50, 0, 10)];
-
-    public static string StandingWord(GameState s, int location) => StandingWords[LocationRules.Query(s, location, 1)];
-
-    // orig: the size switch of R034+0x0EE6 and R034+0x144C (matched)
-    /// <summary>"Small-Sized" up to size 4, "Moderate-Sized" for 5 and 6, else "Large-Sized".</summary>
-    public static string SizeWord(int size) => size switch
+    // orig: the size switch of R034+0x0EE6 and R034+0x144C (matched); each reads its own copy of the three words
+    /// <summary>The town's size class, the entry of the size words: 0 up to size 4, 1 for 5 and 6, else 2.</summary>
+    public static int SizeClass(int size) => size switch
     {
-        >= 0 and <= 4 => "Small-Sized",
-        5 or 6 => "Moderate-Sized",
-        _ => "Large-Sized",
+        >= 0 and <= 4 => 0,
+        5 or 6 => 1,
+        _ => 2,
     };
 
     // orig: R030+0x29FA (1462:29FA) draft (called through thunk 09C0:1FBD; bytes match); tests: CampAndSheetRulesTests, TextAndOpeningTests

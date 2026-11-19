@@ -1,3 +1,4 @@
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
@@ -462,7 +463,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             var y = i * 0x12 + 0x30;
             ui.Text.Draw(ui.Canvas, 0x49, y, m.ShortName + "...", color);
             var text = string.Format(System.Globalization.CultureInfo.InvariantCulture, ActivityTexts[(int)_stay.Activity[i]],
-                _stay.Gain[i], _stay.Detail[i]);
+                _stay.Gain[i], ui.Assets.Words.Detail(_stay.Detail[i]));
             ScreenDrawing.Wrapped(ui, text, 0x50, 0x78, y, color, leading: 0);
         }
     }
@@ -506,7 +507,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     private void OpenTeacherBox()
     {
         var canvas = ui.Canvas;
-        var lines = string.Join("\n", _stay.TeacherList().Select(skill => MemberRules.SkillNames[skill]));
+        var lines = string.Join("\n", _stay.TeacherList().Select(skill => ui.Assets.Words.Text(OriginalWords.SkillNames, skill)));
         _teacherBox = canvas.Save(TeacherBoxX, TeacherBoxY, TeacherBoxWidth, 0x41);
         canvas.Fill(TeacherBoxX, TeacherBoxY, TeacherBoxWidth, 0x41, Palette.Blank);
         canvas.Outline(TeacherBoxX, TeacherBoxY, TeacherBoxWidth - 1, 0x40, 1);

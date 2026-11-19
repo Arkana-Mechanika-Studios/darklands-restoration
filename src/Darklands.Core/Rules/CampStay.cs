@@ -47,6 +47,26 @@ public enum StayEnd
     Over,
 }
 
+/// <summary>What a member's detail of the camp list is about.</summary>
+public enum CampDetailKind
+{
+    /// <summary>Nothing set yet (the stay starts empty).</summary>
+    None,
+
+    /// <summary>Potions being made: <see cref="CampDetail.Number"/> is the count (the word is plural unless it is 1).</summary>
+    Potions,
+
+    /// <summary>A day job: <see cref="CampDetail.Number"/> is its entry of the job-name table (<see cref="DayJobs.Job.NameEntry"/>).</summary>
+    Job,
+
+    /// <summary>A teacher: <see cref="CampDetail.Number"/> is the fee in pfennigs.</summary>
+    Fee,
+}
+
+// orig: the detail words DS:8A4E + 20 i, written by R036+0x08EC (strcpy / strcat of the words, the fee by itoa) and R036+0x197E (the job name)
+/// <summary>A member's detail of the camp list, as numbers: the screen words it ("potion" / "potions", the job, the fee and "pfs").</summary>
+public readonly record struct CampDetail(CampDetailKind Kind, int Number);
+
 // orig: overlay R036 (draft, 19/23 functions byte-matched; 0082, 076a, 10d0 and 147a not); tests: CampAndSheetRulesTests
 /// <summary>
 /// A stay at an inn, other lodging, a camp in the wild or the streets (overlay R036): each
@@ -84,8 +104,8 @@ public sealed class CampStay
     /// <summary>Each member's number for the activity: the gain, the potions, the daily pay or the teacher's skill.</summary>
     public int[] Gain { get; } = new int[Party.MaxMembers];
 
-    /// <summary>Each member's word for the activity: the job, "potions", or the teacher's fee ("12pfs").</summary>
-    public string[] Detail { get; } = ["", "", "", "", ""];
+    /// <summary>Each member's detail of the activity: the potions being made, the job, or the teacher's fee (the screen words it).</summary>
+    public CampDetail[] Detail { get; } = new CampDetail[Party.MaxMembers];
 
     /// <summary>Days spent so far (also counted when a day could not be paid).</summary>
     public int Days { get; set; }
@@ -232,7 +252,7 @@ public sealed class CampStay
         }
         else
         {
-            Detail[i] = Gain[i] != 1 ? "potions" : "potion";
+            Detail[i] = new CampDetail(CampDetailKind.Potions, Gain[i]);
         }
     }
 
@@ -243,7 +263,8 @@ public sealed class CampStay
         {
             Brewing.CallOff(_s, formulas, i);
             Activity[i] = CampActivity.EarnMoney;
-            (Gain[i], Detail[i]) = DayJobs.Best(_s, i);
+            var (pay, job) = DayJobs.Best(_s, i);
+            (Gain[i], Detail[i]) = (pay, new CampDetail(CampDetailKind.Job, job));
         }
     }
 
@@ -272,7 +293,7 @@ public sealed class CampStay
             ChosenTeacher = 0;
         }
         Gain[i] = TeacherSkill(ChosenTeacher);
-        Detail[i] = (Teacher(Gain[i])?.Value ?? 0) + "pfs";
+        Detail[i] = new CampDetail(CampDetailKind.Fee, Teacher(Gain[i])?.Value ?? 0);
     }
 
     // ---- the cost of a day ----------------------------------------------------------

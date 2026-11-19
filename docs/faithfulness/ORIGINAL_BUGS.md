@@ -48,16 +48,16 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-9d82a1** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:263` `Brewing.CallOff`  
   original: `R036+0x1EC2` (1462:1EC2, draft)  
   why: the scan for the member's brews starts at the slot numbered as many as there are formulas (1462:1F71 `mov di, [bp - 8]`: the formula count the table loop of 1462:1F4A..1F6F added up is the scan's first slot), so a brew in a lower slot (every one in a game with fewer events than formulas) is never found: the brew goes on and its ingredients stay used (FixCallOffScansEveryEvent).
-- **B-459e15** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:114` `CampStay.TeacherList`  
+- **B-459e15** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:134` `CampStay.TeacherList`  
   original: `R036+0x1D24` (1462:1D24, draft), `R036+0x0082` (1462:0082, draft), `R036+0x147A` (1462:147A, draft)  
   why: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
-- **B-630527** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:144` `CampStay.Teacher`  
+- **B-630527** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:164` `CampStay.Teacher`  
   original: `R036+0x08EC` (1462:08EC, draft), `R036+0x1858` (1462:1858, draft), `R036+0x147A` (1462:147A, draft)  
   why: event-search (R029+0x3B62, called at R036+0x156E and by key T and the day's cost) returns the lowest matching slot: with two teachers of one skill here (the alchemist and the university both teach Alchemy) the one in the lower slot always gives the lesson, its fee and its level, whichever row is chosen.
-- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:445` `CampStay.DoTheActivity`  
+- **B-c0e7af** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:466` `CampStay.DoTheActivity`  
   original: `R036+0x147A` (1462:147A, draft)  
   why: no limit at the teacher's ability, which a guild text says a pupil "cannot progress beyond" (MSGFILES): any teacher can take a skill to 99.
-- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:485` `CampStay.GrowRisk`  
+- **B-8a1b71** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:506` `CampStay.GrowRisk`  
   original: `R036+0x1B80` (1462:1B80, draft)  
   why: the weapon-skill test reads +0x57, +0x5C, +0x59, +0x5A, +0x5B, +0x5D: Impact Weapons (+0x58) is not among them.
 - **B-af3f91** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:88` `CityPolitics.ConflictOutcome`  
@@ -78,7 +78,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-bcf989** `bug`, no fix flag - `src/Darklands.Core/Rules/CityPolitics.cs:274` `CityPolitics.DailyPolitics`  
   original: `R029+0x4180` (0E76:4180, draft)  
   why: the unrest (fact 0x15 or 0x16) lasts 0x1E0 = 480 hours (20 days); it is created again, as one more event, every seventh day its test holds, while an earlier one still runs; and it has no expiry handler (0): nothing settles it but a card the party meets in the city. Kept; never reached in the original's play (no politics season starts: SetUpCity).
-- **B-074e99** `bug`, no fix flag - `src/Darklands.Core/Rules/DayJobs.cs:61` `DayJobs.static`  
+- **B-074e99** `bug`, no fix flag - `src/Darklands.Core/Rules/DayJobs.cs:65` `DayJobs.static`  
   original: `R036+0x197E` (1462:197E, draft)  
   why: the second contents test is written `!otherContents & city.Contents`, so a job with OtherContents != 0 is never open.
 - **B-1d4d7c** `bug`, flag `FixRosterStaleRow` - `src/Darklands.Core/Rules/InnRoster.cs:141` `InnRoster.SlotOfRow`  
@@ -111,22 +111,22 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-dc949d** `bug`, no fix flag - `src/Darklands.Core/Rules/LootSharing.cs:34` `LootSharing.ReplaceFallenLeader`  
   original: `R040+0x0000` (1462:0000, draft)  
   why: the second test reads party[leader] instead of party[i] (as in the source; loot-split-entry is byte-matched): reproduced, no fix flag.
-- **B-a84745** `bug`, flag `FixBestWeaponSkillNumber` - `src/Darklands.Core/Rules/MemberRules.cs:93` `MemberRules.BestWeaponSkill`  
+- **B-a84745** `bug`, flag `FixBestWeaponSkillNumber` - `src/Darklands.Core/Rules/MemberRules.cs:85` `MemberRules.BestWeaponSkill`  
   original: `R029+0x01C0` (0E76:01C0, draft)  
   why: `top-skill-so-far = i` sits outside the if (missing braces): it ends as 6 (FixBestWeaponSkillNumber).
-- **B-2ffc47** `bug`, flag `FixSetAttributeMaximumLimit` - `src/Darklands.Core/Rules/MemberRules.cs:169` `MemberRules.SetAttributeMaximum`  
+- **B-2ffc47** `bug`, flag `FixSetAttributeMaximumLimit` - `src/Darklands.Core/Rules/MemberRules.cs:161` `MemberRules.SetAttributeMaximum`  
   original: `R029+0x0B84` (0E76:0B84, draft)  
   why: the clamp's result is dropped and v is stored as a char (FixSetAttributeMaximumLimit).
-- **B-308359** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:196` `MemberRules.HealAttribute`  
+- **B-308359** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:188` `MemberRules.HealAttribute`  
   original: `R029+0x08F2` (0E76:08F2, draft)  
   why: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
-- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:289` `MemberRules.RaiseAttributeTemporarily`  
+- **B-8b2837** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:281` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: (-2) a member above the boost ends the call and the reduced boost carries over (FixWholePartyBoosts).
-- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:326` `MemberRules.RaiseAttributeTemporarily`  
+- **B-6eb045** `bug`, no fix flag - `src/Darklands.Core/Rules/MemberRules.cs:318` `MemberRules.RaiseAttributeTemporarily`  
   original: `R029+0x4C04` (0E76:4C04, draft)  
   why: a temporary attribute boost that is not wholly applied lowers the attribute for good: the boost is cut only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either order) leaves the attribute lower than before. The whole-party path above does the same.
-- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:354` `MemberRules.RaiseSkillTemporarily`  
+- **B-c14d7c** `bug`, flag `FixWholePartyBoosts` - `src/Darklands.Core/Rules/MemberRules.cs:346` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   why: (-2) member-ability(-2) and raise-skill-by(-2) for each present member (FixWholePartyBoosts).
 - **B-014a8d** `bug`, flag `FixAttributeSums` - `src/Darklands.Core/Rules/PartyQueries.cs:126` `PartyQueries.MinAttributeSum`  
@@ -331,10 +331,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2cf199** `bug`, no fix flag - `src/Darklands.Core/Rules/Storing.cs:84` `Storing.Get`  
   original: `R035+0x0A46` (1462:0A46, matched)  
   why: taking from an inn store into a full pack loses the item: the store entry gives it up whatever AddStack did, and with 64 stacks and none that the item joins, AddStack adds nothing.
-- **B-700b91** `bug`, flag `FixShopStockSize` - `src/Darklands.Core/Rules/Trading.cs:252` `Trading.ShopHasItem`  
+- **B-700b91** `bug`, flag `FixShopStockSize` - `src/Darklands.Core/Rules/Trading.cs:237` `Trading.ShopHasItem`  
   original: `R032+0x1D18` (1462:1D18, draft)  
   why: the original compares its uninitialised size slot where location-now was meant (checked against asm 1D72: mov dx,[bp-2]; cmp dx,5Ch; inc dx); OriginalBehaviour.FixShopStockSize uses the city size always.
-- **B-fd421f** `bug`, no fix flag - `src/Darklands.Core/Rules/Trading.cs:336` `Trading.Buy`  
+- **B-fd421f** `bug`, no fix flag - `src/Darklands.Core/Rules/Trading.cs:321` `Trading.Buy`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
 
@@ -861,14 +861,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### screens/presentation (15)
 
-- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:216` `BarterScreen.Purchase`  
+- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:221` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 - **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.Drawing.cs:50` `BattleScreen.RecordScreenPlaces`  
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
   why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
   decision: never: display only: his order mode opens when he is drawn again
-- **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:72` `CampScreen.Stay`  
+- **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:73` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
 - **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:389` `DarklandsGame.LoadSavedGame`  

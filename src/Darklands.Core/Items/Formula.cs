@@ -16,7 +16,7 @@ public sealed record Formula(int Index, string Name, string ShortName, string De
     /// <summary>The ingredients: the slots up to the first empty one.</summary>
     public IEnumerable<Ingredient> Ingredients => Slots.TakeWhile(i => i.Count != 0);
 
-    // C: R033+0x094A has cases 0, 1, 2 only; another risk leaves the buffer uninitialised ("High" here).
-    /// <summary>"Low", "Medium" or "High".</summary>
-    public string RiskName => Risk switch { 0 => "Low", 1 => "Medium", _ => "High" };
+    // C: R033+0x094A has cases 0, 1, 2 only; another risk leaves the buffer uninitialised (the third word here).
+    /// <summary>The entry of the risk words the alchemy screen shows: 0 low, 1 medium, 2 high (also for any other risk).</summary>
+    public int RiskWord => Risk switch { 0 => 0, 1 => 1, _ => 2 };
 }

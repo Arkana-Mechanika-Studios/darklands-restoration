@@ -627,27 +627,58 @@ public sealed class CampAndSheetRulesTests
         var m = s.Party.Slots[0];
         Array.Fill(m.Skills, 0);
         Array.Fill(m.Attributes, 0);
-        Assert.Equal((2, "Day Laborer"), DayJobs.Best(s, 0));
+        Assert.Equal((2, DayJobs.DayLabourer), DayJobs.Best(s, 0));
+    }
+
+    [Fact]
+    public void EarningMoneyKeepsTheJobAsTheDetail()
+    {
+        var s = TestGame.Create();
+        Array.Fill(s.Party.Slots[0].Skills, 0);
+        Array.Fill(s.Party.Slots[0].Attributes, 0);
+        var stay = new CampStay(s, CampPlace.Inn);
+        Assert.Equal(CampDetailKind.None, stay.Detail[0].Kind);
+        stay.EarnMoney(0, []);
+        Assert.Equal(new CampDetail(CampDetailKind.Job, DayJobs.DayLabourer), stay.Detail[0]);
+        Assert.Equal(2, stay.Gain[0]);
     }
 
     [Fact]
     public void JobsNeedingASecondSetOfBuildingsAreNeverOpen() =>
-        Assert.All(DayJobs.All.Where(j => j.OtherContents != 0), j => Assert.Contains("Friar", j.Name));
+        Assert.All(DayJobs.All.Where(j => j.OtherContents != 0), j => Assert.Contains(j.NameEntry, new[] { 4, 5 }));   // the preaching and the mendicant friar
 
     // ---- party information ----------------------------------------------------------
 
     [Theory]
-    [InlineData(-10, "Unknown")]
-    [InlineData(49, "Unknown")]
-    [InlineData(50, "Barely Known")]
-    [InlineData(5000, "Legendary Heroes")]
-    public void FameTitles(int fame, string title) => Assert.Equal(title, PartyStanding.FameTitle(fame));
+    [InlineData(-10, 0)]
+    [InlineData(49, 0)]
+    [InlineData(50, 1)]
+    [InlineData(499, 9)]
+    [InlineData(500, 10)]
+    [InlineData(5000, 10)]
+    public void FameRanks(int fame, int rank) => Assert.Equal(rank, PartyStanding.FameRank(fame));
 
     [Theory]
-    [InlineData(4, "Small-Sized")]
-    [InlineData(6, "Moderate-Sized")]
-    [InlineData(7, "Large-Sized")]
-    public void TownSizes(int size, string word) => Assert.Equal(word, PartyStanding.SizeWord(size));
+    [InlineData(-1, 2)]
+    [InlineData(0, 0)]
+    [InlineData(4, 0)]
+    [InlineData(5, 1)]
+    [InlineData(6, 1)]
+    [InlineData(7, 2)]
+    public void TownSizes(int size, int sizeClass) => Assert.Equal(sizeClass, PartyStanding.SizeClass(size));
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(1, 1)]
+    [InlineData(2, 2)]
+    [InlineData(3, 2)]    // R033+0x094A has no case for it: the third word, as 1.0
+    [InlineData(-1, 2)]
+    public void RiskWords(int risk, int word) =>
+        Assert.Equal(word, new Darklands.Core.Items.Formula(0, "", "", "", 0, risk, []).RiskWord);
+
+    [Fact]
+    public void EveryJobNamesAnEntryOfTheJobTable() =>
+        Assert.All(DayJobs.All, j => Assert.InRange(j.NameEntry, 0, 24));
 
     [Theory]
     [InlineData(100, 50, 0)]

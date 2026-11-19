@@ -12,14 +12,6 @@ namespace Darklands.Core.Rules;
 /// </summary>
 public static class MemberRules
 {
-    /// <summary>The skill names the change reports use.</summary>
-    public static readonly string[] SkillNames =
-    [
-        "Edged Wpns", "Impact Wpns", "Flail Wpns", "Polearm Wpns", "Thrown Wpns", "Bow Wpns", "Missile Dvc",
-        "Alchemy", "Religion", "Virtue", "Speak Common", "Speak Latin", "Read & Write", "Healing", "Artifice",
-        "Stealth", "Streetwise", "Riding", "Woodwise",
-    ];
-
     // ---- skills ---------------------------------------------------------------------
 
     /// <summary>The member's skill value (<c>member-ability</c>); a member past the records is read from the overrun.</summary>
