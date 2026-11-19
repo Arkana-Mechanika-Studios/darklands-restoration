@@ -54,7 +54,7 @@ public sealed class ForeignTraders : Card
         //   title, "foreign trader" (without the EXE's tables the slot keeps its text).
         c.Variables.Named[0] = c.PersonalNames.Count(NameTable.Titles) > 0 ? c.PersonalNames.Name(NameTable.Titles, 4) : c.Variables.Named[0];
         c.Variables.Chosen[0] = c.Leader;
-        c.Screens.Barter(-1, "Foreign Trader", 0x3843F);
+        c.Screens.Barter(-1, c.ExeText("exe:DS:629F"), 0x3843F);  // "Foreign Trader"
     }
 
     // orig: R092+0x1114 (1920:0294) matched

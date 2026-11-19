@@ -297,7 +297,7 @@ public sealed partial class CardContext
     // DORMANT: kinds above 8 copy nothing in the original either.
     public void NameToSlot(int kind, int index, int slot)
     {
-        var bells = TextVariables.BellNames;
+        string Bell(int band) => World.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, band);
         // C: the tables are read unchecked (IPersonalNames.Name reads the neighbouring pointers); without the EXE's tables the slot keeps its text
         string Table(NameTable table) => PersonalNames.Count(table) > 0 ? PersonalNames.Name(table, index) : Variables.Named[slot];
         Variables.Named[slot] = kind switch
@@ -306,8 +306,8 @@ public sealed partial class CardContext
             1 => index >= 0 && index < World.Items.Saints.Count ? World.Items.Saints[index].FullName : "",
             2 => FormulaOrSaintName(index - FormulaTableBase) ?? Variables.Named[slot],
             // C: bell-time-label(time-of-day-band(index), slot) (R029+0x5756 matched: _fstrcpy(dst, bell-time-labels[i])).
-            3 or 4 => bells[TimeOfDay.Band(index)],
-            5 => bells[TimeOfDay.Band(index) + 1 > 7 ? 0 : TimeOfDay.Band(index) + 1],
+            3 or 4 => Bell(TimeOfDay.Band(index)),
+            5 => Bell(TimeOfDay.Band(index) + 1 > 7 ? 0 : TimeOfDay.Band(index) + 1),
             6 => Table(NameTable.Dragons),
             7 => Table(NameTable.Dwarfs),
             8 => Table(NameTable.Titles),

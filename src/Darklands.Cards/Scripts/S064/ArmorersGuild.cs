@@ -240,7 +240,7 @@ public sealed class ArmorersGuild : Card
         {
             c.Events.Create(-2, c.Here, skill, 0x28, 0x0E, 0x32, 0, 0xA8, 0, 0);
         }
-        c.Variables.Texts[0] = "Weapon Skills";
+        c.Variables.Texts[0] = c.ExeText("exe:DS:5C5D");  // "Weapon Skills"
         // C: unlike the blacksmiths' card, no clamp: just roll-below(0x78).
         c.Variables.Money[0] = Core.Economy.Money.From(0, 0, c.Random(0x78));
         c.PassHours(1);

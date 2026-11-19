@@ -74,7 +74,7 @@ public sealed class BattleEventTableSaveTests
 
     private static GameState Game()
     {
-        var state = new GameState(new MscRandom(1234)) { Party = DefaultParty.Create(seed: 77), Date = new GameDate(9, 3, 4, 1401) };
+        var state = new GameState(new MscRandom(1234)) { Party = DefaultParty.Create(77, QuickstartTestNames.All), Date = new GameDate(9, 3, 4, 1401) };
         state.Roster.Reset(state.Party);
         state.Locations.Add(new Location { Index = 0, Name = "Koln", X = 10, Y = 20 });
         state.CurrentLocation = 0;

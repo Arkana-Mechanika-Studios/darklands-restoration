@@ -141,9 +141,9 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         var text = ui.Text;
         var canvas = ui.Canvas;
         var date = state.Date;
-        ScreenDrawing.Centered(ui, 0x60, 0x40, TextVariables.BellNames[TimeOfDay.Band(date.Hour)], TextColor);
+        ScreenDrawing.Centered(ui, 0x60, 0x40, ui.Assets.Words.Text(OriginalWords.BellNames, TimeOfDay.Band(date.Hour)), TextColor);
         text.Draw(canvas, 0x58, 0x48, date.Hour.ToString(Invariant), TextColor);
-        ScreenDrawing.Centered(ui, 0xA0, 0x40, TextVariables.MonthNames[date.Month], TextColor);
+        ScreenDrawing.Centered(ui, 0xA0, 0x40, ui.Assets.Words.Text(OriginalWords.MonthNames, date.Month), TextColor);
         text.Draw(canvas, 0x98, 0x48, date.Day.ToString(Invariant), TextColor);
         if (state.InCity)
         {

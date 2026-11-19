@@ -39,7 +39,7 @@ public sealed class AlchemistsShop : Card
         c.PartyMaxSkill((int)Skill.Alchemy);
         c.Variables.Chosen[0] = (byte)c.LastQueryMember;
         c.RandomName(c.HereQuery(0x21) + 0x49, 0, 0);
-        c.Variables.Texts[3] = quality >= 25 ? "Potions" : "Alchemical Components";
+        c.Variables.Texts[3] = quality >= 25 ? c.ExeText("exe:DS:5CC3") : c.ExeText("exe:DS:5CCB");  // "Potions", "Alchemical Components"
         if (quality < 25)
         {
             menu[2] = OptionState.Hidden;

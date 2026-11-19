@@ -9,7 +9,7 @@ public sealed class QuickstartColoursTests
     [Fact]
     public void AMemberWithItsOwnColoursKeepsThem()
     {
-        var party = DefaultParty.Create(1);
+        var party = DefaultParty.Create(1, QuickstartTestNames.All);
         for (var i = 0; i < 4; i++)
         {
             Assert.Same(party.Slots[i].ImagePalette, BattleScreen.PartyColours(party.Slots[i].ImagePalette, i));

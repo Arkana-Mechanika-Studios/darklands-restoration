@@ -74,7 +74,7 @@ public sealed class OriginalMessageTextTests
             .SelectMany(f => System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(f), "\"(exe:(?:DS|[0-9A-F]{4}):[0-9A-F]{4})\"")
                 .Select(m => m.Groups[1].Value))
             .Distinct().Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(38, keys.Count);
+        Assert.Equal(74, keys.Count);
         foreach (var key in keys)
         {
             var entry = table.Find(key);
@@ -82,9 +82,9 @@ public sealed class OriginalMessageTextTests
             Assert.Equal(entry!.Text, text.Text(GameText.Of(key)));
         }
         // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was checked against the literal it replaced
-        // (152 sites, scratch check of 2026-11-19), so this pins the 1.0 card hints.
+        // (152 sites, scratch check of 2026-11-19; the 36 words the scripts fill in, CardWordsTests), so this pins the 1.0 card texts.
         var joined = string.Join('\n', keys.Select(k => k + "=" + Encoding.Latin1.GetString(GameTextCodec.Encode(text.Text(GameText.Of(k))))));
-        Assert.Equal("424CFEE3049642C6B54375116C66C92D19B440E77B275957098B510CEFD8CAE4",
+        Assert.Equal("A9D65272BBDB5E7FF8EBB2691DD62EC3A27B7D8F3CA7BFAA96B5DD4F8F1510E2",
             Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(joined))));
     }
 

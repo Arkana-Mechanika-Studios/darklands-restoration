@@ -362,7 +362,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             return;
         }
         var day = SaintTable.Of(saint).FeastDay;
-        var date = $"{TextVariables.MonthNames[Quests.MonthOf(day)]} {Quests.DayOfMonth(day)}";
+        var date = $"{ui.Assets.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.MonthNames, Quests.MonthOf(day))} {Quests.DayOfMonth(day)}";
         var measured = _text.Measure(date);
         var width = measured < 0x31 ? measured : 0x32;
         _text.Draw(_canvas, (0x32 - width) / 2 + 0x4B, 0xBD, date, TextColor);

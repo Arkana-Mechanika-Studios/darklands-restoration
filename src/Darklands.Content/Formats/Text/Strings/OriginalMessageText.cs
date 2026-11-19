@@ -98,26 +98,7 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
     }
 
     // exe:DS:XXXX or exe:SSSS:XXXX (a far segment, 290E): the zero-terminated string there
-    private string? Exe(string id)
-    {
-        var parts = id.Split(':');
-        if (parts.Length != 3 || parts[0] != "exe" ||
-            !int.TryParse(parts[2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var offset) || parts[2].Length != 4)
-        {
-            return null;
-        }
-        if (parts[1] == "DS")
-        {
-            return exe.String(offset);
-        }
-        if (parts[1].Length != 4 || !int.TryParse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var segment))
-        {
-            return null;
-        }
-        var bytes = exe.Far(segment, offset, MaxLength);
-        var end = bytes.IndexOf((byte)0);
-        return GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
-    }
+    private string? Exe(string id) => _words.ExeOrNull(id);
 
     // a value of chance-line: "N%" at Basic, else the grade word (the argument is then the word's index)
     private string Chance(GameText text, string name) =>

@@ -30,13 +30,13 @@ public sealed class PaganAltarOnTheHill : Card
             // C: event-search does not set latest-event; event-detail-word-of(latest-event) reads the stale global.
             _ = c.Events.Find(8, -1, c.Here, -1, 10, -1);
             c.NameToSlot(0, c.EventDetail(c.LastEvent), 0);
-            c.Variables.Texts[0] = "touch the " + c.Variables.Named[0];
+            c.Variables.Texts[0] = c.ExeText("exe:DS:652F") + c.Variables.Named[0];  // "touch the "
             menu.Block = 20;
         }
         else
         {
-            c.Variables.Texts[0] = "turn the stone";
-            c.Variables.Named[0] = "heart";
+            c.Variables.Texts[0] = c.ExeText("exe:DS:653A");  // "turn the stone"
+            c.Variables.Named[0] = c.ExeText("exe:DS:6549");  // "heart"
         }
         // C: card-saint-lines[2] = card-item-lines[1] = 0x6F assigns right to left: the item slot first.
         c.SetCardItems(0x66, 0x6F, 0x73, 0x6E);

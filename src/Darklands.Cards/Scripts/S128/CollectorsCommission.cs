@@ -92,11 +92,11 @@ public sealed class CollectorsCommission : Card
                 c.Screen.Text(0x0A);
                 break;
             case 7:
-                NameTheSite(c, siteKind);
+                NameTheSite(c, siteKind, secondCopy: false);
                 c.Screen.Text(c.Random(2) != 0 ? 0x0B : 0x0C);
                 break;
             case 8:
-                NameTheSite(c, siteKind);
+                NameTheSite(c, siteKind, secondCopy: true);
                 c.Screen.Text(0x0D);
                 break;
             case 9:
@@ -147,21 +147,22 @@ public sealed class CollectorsCommission : Card
     }
 
     /// <summary>What kind of place it is, into $NamedOneName (other kinds leave it as it was).</summary>
-    private static void NameTheSite(CardContext c, int kind)
+    // C: the function holds the switch twice, inlined: case 7's copy reads the words at DS:68AF.., case 8's at DS:68D9..
+    private static void NameTheSite(CardContext c, int kind, bool secondCopy)
     {
-        var word = kind switch
+        var key = kind switch
         {
-            0x10 => "spring",
-            0x11 => "lake",
-            5 or 0x13 => "cave",
-            0x12 => "shrine",
-            0x0D => "mound",
-            0x14 => "pagan altar",
+            0x10 => secondCopy ? "exe:DS:68D9" : "exe:DS:68AF",          // "spring"
+            0x11 => secondCopy ? "exe:DS:68E0" : "exe:DS:68B6",          // "lake"
+            5 or 0x13 => secondCopy ? "exe:DS:68E5" : "exe:DS:68BB",     // "cave"
+            0x12 => secondCopy ? "exe:DS:68EA" : "exe:DS:68C0",          // "shrine"
+            0x0D => secondCopy ? "exe:DS:68F1" : "exe:DS:68C7",          // "mound"
+            0x14 => secondCopy ? "exe:DS:68F7" : "exe:DS:68CD",          // "pagan altar"
             _ => null,
         };
-        if (word is not null)
+        if (key is not null)
         {
-            c.Variables.Named[0] = word;
+            c.Variables.Named[0] = c.ExeText(key);
         }
     }
 

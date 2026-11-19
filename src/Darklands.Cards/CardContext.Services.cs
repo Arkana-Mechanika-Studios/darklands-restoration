@@ -20,18 +20,17 @@ public sealed partial class CardContext
     // ---- shops ----------------------------------------------------------------------
 
     /// <summary>
-    /// Names of kinds of traders and patrons, used for $NamedOneName (goods merchant,
-    /// blacksmith, artificier, cathedral, foreign trader, pharmacist, Medici, Hanse, Fugger,
-    /// village, City Lord, castle).
+    /// The name of a kind of trader or patron, for $NamedOneName (0 goods merchant, blacksmith, artificier, cathedral, foreign trader,
+    /// pharmacist, Medici, Hanse, Fugger, village, City Lord, 11 castle).
     /// </summary>
-    public static readonly string[] PatronNames =
-    [
-        "goods merchant", "blacksmith", "artificier", "cathedral", "foreign trader", "pharmacist",
-        "Medici", "Hanse", "Fugger", "village", "City Lord", "castle",
-    ];
+    // orig: 290E:2107 entries 0..11 (OriginalWords.PatronNames)
+    public string PatronName(int k) => World.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.PatronNames, k);
 
-    /// <summary>The message shown when a missile weapon is needed.</summary>
-    public const string NeedMissileWeapon = "You need a missile weapon";
+    /// <summary>The words of an EXE key (<c>exe:DS:XXXX</c>): a card's own copy of a word it puts into a text variable or names a shop by.</summary>
+    public string ExeText(string key) => World.Words.Exe(key);
+
+    /// <summary>The message shown when a missile weapon is needed: "You need a missile weapon" (the far string the slot 290E:1E5F points at).</summary>
+    public const string NeedMissileWeapon = "exe:290E:049A";
 
     /// <summary>
     /// Opens a shop (R029 21aa): <paramref name="shop"/> is the city's shop slot (−1 a shop of

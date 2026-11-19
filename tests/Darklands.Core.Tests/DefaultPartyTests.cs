@@ -8,7 +8,7 @@ public sealed class DefaultPartyTests
     [Fact]
     public void EachMemberCarriesItsSlotsColours()
     {
-        var party = DefaultParty.Create(1);
+        var party = DefaultParty.Create(1, QuickstartTestNames.All);
         Assert.Equal(5, DefaultParty.Colours.Count);
         for (var i = 0; i < 4; i++)
         {
@@ -32,7 +32,7 @@ public sealed class DefaultPartyTests
     [Fact]
     public void AChangeToAMembersColoursLeavesTheNextPartyAlone()
     {
-        DefaultParty.Create(1).Slots[0].ImagePalette[0] = 0;
-        Assert.Equal(0x3F, DefaultParty.Create(1).Slots[0].ImagePalette[0]);
+        DefaultParty.Create(1, QuickstartTestNames.All).Slots[0].ImagePalette[0] = 0;
+        Assert.Equal(0x3F, DefaultParty.Create(1, QuickstartTestNames.All).Slots[0].ImagePalette[0]);
     }
 }

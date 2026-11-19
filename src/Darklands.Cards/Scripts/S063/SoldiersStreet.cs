@@ -48,7 +48,7 @@ public sealed class SoldiersStreet : Card
     // orig: R063+0x0F60
     private static void VisitTheArmsOutfitter(CardContext c)
     {
-        c.OpenShop(1, "Arms Outfitter", 0xFF, 0x400);
+        c.OpenShop(1, c.ExeText("exe:DS:5C27"), 0xFF, 0x400);  // "Arms Outfitter"
         c.PassHours(1);
         c.Next = CityStreets;
     }

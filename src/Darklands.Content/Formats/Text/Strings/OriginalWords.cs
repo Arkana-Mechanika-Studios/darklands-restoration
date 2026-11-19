@@ -107,9 +107,35 @@ public sealed class OriginalWords(DarklandsExecutable exe)
     //   Shift hint R043+0x27E6; the words round it (index 7 DS:6F43, -1 DS:0000, -2 DS:7461) are empty strings (GradeWord)
     public static readonly WordTable GradeWords = WordTable.Near("grade-words", 0x4FCE, 7);
 
+    // orig: R136+0xA3D3 = 290E:1D43, 12 far strings: the month names, read by the card texts' $MonthName and $SabbatDate (R043+0x1316)
+    //   and the party information and prayer screens (R034)
+    public static readonly WordTable MonthNames = WordTable.Far("month-names", 0x1D43, 12);
+
+    // orig: 290E:20C3, 8 far strings: the canonical hours of TimeOfDay.Band (bell-time-labels), read by the card texts' $CurrentBell
+    //   (R043+0x1316), label-to-slot kinds 3..5 (R029, CardContext.NameToSlot), the hourglass (R043) and the party information (R034)
+    public static readonly WordTable BellNames = WordTable.Far("bell-names", 0x20C3, 8);
+
+    // orig: R136+0xA9B3 = 290E:2323 (city type 1: f56 % 6) and R136+0xA9CB = 290E:233B (city type 2: f56 % 9): the lord titles of the
+    //   card texts' $CityLordTitle (R043+0x1316, case 51); the bytes are the game's own (0x1F its a-umlaut, { o-umlaut, | u-umlaut)
+    public static readonly WordTable LordTitles1 = WordTable.Far("lord-titles-1", 0x2323, 6);
+
+    public static readonly WordTable LordTitles2 = WordTable.Far("lord-titles-2", 0x233B, 9);
+
+    // orig: 290E:2B57, 3 far strings (-1 "oppose", 0 "are undecided about", 1 "support"): R136+0xB1EB is the middle one, indexed by
+    //   text-slot-support-zero..6 (the card texts' $Support..$Support6, R043+0x1316); the word of a side s is entry s + 1
+    public static readonly WordTable SupportWords = WordTable.Far("support-words", 0x2B57, 3);
+
+    // orig: 290E:2107 entries 0..11 (goods merchant .. castle), the patrons of the market (R049) and the council hall (R054)
+    public static readonly WordTable PatronNames = WordTable.Far("patron-names", 0x2107, 12);
+
+    // orig: party-defaults R001+0x0000 copies each Quickstart member's full and short name from DS:0E50 / 0E61, 0E68 / 0E77, 0E7F / 0E8B,
+    //   0E90 / 0EA2 (DefaultParty)
+    public static readonly WordTable QuickstartNames = WordTable.Data("quickstart-names", 0x0E50, 0x0E61, 0x0E68, 0x0E77, 0x0E7F, 0x0E8B, 0x0E90, 0x0EA2);
+
     /// <summary>Every table, for reports and tests.</summary>
     public static IReadOnlyList<WordTable> All { get; } =
-        [FameTitles, StandingWords, Directions, TownSizes, TownSizesTab, ShopNames, JobNames, SkillNames, RiskWords, CampWords, GradeWords, SheetLabels];
+        [FameTitles, StandingWords, Directions, TownSizes, TownSizesTab, ShopNames, JobNames, SkillNames, RiskWords, CampWords, GradeWords, SheetLabels,
+         MonthNames, BellNames, LordTitles1, LordTitles2, SupportWords, PatronNames, QuickstartNames];
 
     /// <summary>The words read from the player's EXE.</summary>
     public static OriginalWords Load(GameFiles files) => new(DarklandsExecutable.Load(files));
@@ -121,6 +147,36 @@ public sealed class OriginalWords(DarklandsExecutable exe)
         var bytes = segment == DarklandsExecutable.DataGroup
             ? exe.DataSegment(offset, Math.Min(MaxLength, 0x10000 - offset))
             : exe.Far(segment, offset, MaxLength);
+        var end = bytes.IndexOf((byte)0);
+        return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
+    }
+
+    /// <summary>The four Quickstart members' names, as party-defaults copies them (DefaultParty.Create).</summary>
+    public IReadOnlyList<Darklands.Core.Characters.QuickstartName> Quickstart() =>
+        [.. Enumerable.Range(0, 4).Select(m => new Darklands.Core.Characters.QuickstartName(Text(QuickstartNames, 2 * m), Text(QuickstartNames, 2 * m + 1)))];
+
+    /// <summary>The words at an EXE key (<c>exe:DS:XXXX</c>, <c>exe:290E:XXXX</c>, the extractor's keys) in the original's bytes.</summary>
+    public string Exe(string key) => ExeOrNull(key) ?? throw new ArgumentException($"Not a key of the EXE: {key}", nameof(key));
+
+    /// <summary>The words at an EXE key, or null when <paramref name="key"/> is not one.</summary>
+    public string? ExeOrNull(string key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        var parts = key.Split(':');
+        if (parts.Length != 3 || parts[0] != "exe" || parts[2].Length != 4 ||
+            !int.TryParse(parts[2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var offset))
+        {
+            return null;
+        }
+        if (parts[1] == "DS")
+        {
+            return exe.String(offset);
+        }
+        if (parts[1].Length != 4 || !int.TryParse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var segment))
+        {
+            return null;
+        }
+        var bytes = exe.Far(segment, offset, MaxLength);
         var end = bytes.IndexOf((byte)0);
         return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
     }

@@ -64,7 +64,7 @@ public sealed class Marketplace : Card
         var foreign = new Merchant(Owner: 4, Patron: 4, OfferBelow: 3, NameSeedPaid: 0x63, NameSeedErrand: 0x63, QuestType: 0x63,
             FairWage: true, PaidSiteIcon: 2,
             // C: (-0x7bc1, 0x3f) is the long mask 0x003F843F.
-            Shop: () => c.Barter(-1, 0x003F843F, "Foreign Trader"));
+            Shop: () => c.Barter(-1, 0x003F843F, c.ExeText("exe:DS:586E")));  // "Foreign Trader"
         var herbalist = new Merchant(Owner: 5, Patron: 5, OfferBelow: 2, NameSeedPaid: 0, NameSeedErrand: 5, QuestType: 0x62,
             FairWage: false, PaidSiteIcon: 2, Shop: () => c.Barter(-1, 0x400, "herbalist"));
 
@@ -151,7 +151,7 @@ public sealed class Marketplace : Card
     /// </summary>
     private void Trade(CardContext c, Merchant m, int chance)
     {
-        c.Variables.Named[0] = CardContext.PatronNames[m.Patron];
+        c.Variables.Named[0] = c.PatronName(m.Patron);
         c.Variables.Chosen[0] = c.Leader;
         if (Noticed(c, chance))
         {

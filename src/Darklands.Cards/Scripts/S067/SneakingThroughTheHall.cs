@@ -169,10 +169,10 @@ public sealed class SneakingThroughTheHall : Card
         c.Variables.Numbers[0] = c.Random(24);
         c.Variables.Texts[1] = c.Random(4) switch
         {
-            0 => "today",
-            1 => "tomorrow",
-            2 => "two days hence",
-            _ => "three days hence",
+            0 => c.ExeText("exe:DS:5D9F"),  // "today"
+            1 => c.ExeText("exe:DS:5DA5"),  // "tomorrow"
+            2 => c.ExeText("exe:DS:5DAE"),  // "two days hence"
+            _ => c.ExeText("exe:DS:5DBD"),  // "three days hence"
         };
         var side = c.Events.FactValue(PoliticsQuest, 0, c.Here);
         if (side == -1)

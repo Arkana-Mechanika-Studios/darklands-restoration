@@ -7,7 +7,7 @@ namespace Darklands.Core.Tests;
 public sealed class CreationRosterTests
 {
     private static CreationRoster New() =>
-        new(DefaultParty.Create(1).Slots, [.. Enumerable.Range(0, 5).Select(i => Enumerable.Repeat((byte)i, 24).ToArray())]);
+        new(DefaultParty.Create(1, QuickstartTestNames.All).Slots, [.. Enumerable.Range(0, 5).Select(i => Enumerable.Repeat((byte)i, 24).ToArray())]);
 
     [Fact]
     public void OnlyFourSlotsAreFilledAndACharacterJoinsOnce()
@@ -54,7 +54,7 @@ public sealed class CreationRosterTests
         Assert.Equal(0, r.Member(0)!.Encumbrance);
         Assert.Equal(0x0A, r.Characters[4].Encumbrance);
 
-        var weighed = new CreationRoster(DefaultParty.Create(1).Slots, [.. Enumerable.Range(0, 5).Select(i => new byte[24])],
+        var weighed = new CreationRoster(DefaultParty.Create(1, QuickstartTestNames.All).Slots, [.. Enumerable.Range(0, 5).Select(i => new byte[24])],
             item: code => new Items.ItemDefinition(code, "", "", 0, 0, 7, 0, 0));
         weighed.Characters[0].Encumbrance = 0;
         weighed.AddToParty(0, "F01");
