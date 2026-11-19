@@ -14,6 +14,10 @@ public static class LoadScreenTexts
     private const int Segment = 0x290E;
     private const int Table = 0x1DD3;
 
+    /// <summary>The keys of the three texts (<c>exe:290E:...</c>), by which a translation pack gives their words.</summary>
+    // Not in the original: the 1.1 translations (L-6b).
+    public static IReadOnlyList<string> Keys(byte[] exe) => ProgramData.Load(exe, Segment).StringKeys(Segment, Table, 3);
+
     public static IReadOnlyList<string> Decode(byte[] exe)
     {
         var texts = ProgramData.Load(exe, Segment).StringTable(Segment, Table, 3);

@@ -73,6 +73,15 @@ public sealed class ProgramData
     }
 
     /// <summary>The strings of a table of <paramref name="count"/> far pointers.</summary>
+    /// <summary>
+    /// The keys of a far-pointer string table's entries (<c>exe:290E:0112</c>: the segment and offset each pointer names, as the
+    /// original-text extractor keys them), for the translation packs.
+    /// </summary>
+    // Not in the original: the 1.1 translations (L-6b).
+    public IReadOnlyList<string> StringKeys(int segment, int offset, int count) =>
+        [.. Enumerable.Range(0, count).Select(i => string.Create(System.Globalization.CultureInfo.InvariantCulture,
+            $"exe:{(ushort)Int16(segment, offset + 4 * i + 2):X4}:{(ushort)Int16(segment, offset + 4 * i):X4}"))];
+
     public IReadOnlyList<string> StringTable(int segment, int offset, int count)
     {
         var list = new string[count];

@@ -60,7 +60,7 @@ public sealed partial class BattleScreen : ITacticalView
     private TacticalBattle? _battle;
     private BattlefieldTiles? _tiles;
     private TextPainter? _panelText;
-    private TextPainter _panel => _panelText ??= new TextPainter(_ui.Assets.Font(1));
+    private TextPainter _panel => _panelText ??= _ui.Painter(1);
     /// <summary>The game's hot keys outside the battle (Alt-Q, Alt-P …), which the battle passes some keys to.</summary>
     private Func<int, bool>? _hotKey;
     private string? _message;

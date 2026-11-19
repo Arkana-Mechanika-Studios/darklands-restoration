@@ -20,8 +20,9 @@ public sealed class LanguagePack
     public static string TextFolder(string language) => Path.Combine("text", language);
 
     private LanguagePack(string folder, string language, string? name, string? author, string? baseVersion, FluentLocalizer localizer,
-        IReadOnlyList<LocalizationDiagnostic> problems, int files)
+        IReadOnlyList<LocalizationDiagnostic> problems, int files, IReadOnlyList<(string File, FtlSource.Message Message)> messages)
     {
+        Messages = messages;
         Folder = folder;
         Language = language;
         Name = name;
@@ -54,6 +55,9 @@ public sealed class LanguagePack
 
     /// <summary>How many <c>.ftl</c> files were read.</summary>
     public int Files { get; }
+
+    /// <summary>The messages the files define as written (the file relative to the pack's folder): for the pack's checks.</summary>
+    public IReadOnlyList<(string File, FtlSource.Message Message)> Messages { get; }
 
     /// <summary>Whether <paramref name="folder"/> holds a manifest that names a language (a translation pack, not another kind of pack).</summary>
     public static bool IsPack(string folder) => ReadManifest(folder, out _) is { Language: not null };
@@ -91,11 +95,15 @@ public sealed class LanguagePack
         var files = Directory.Exists(text)
             ? Directory.EnumerateFiles(text, "*.ftl", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToList()
             : [];
+        var messages = new List<(string, FtlSource.Message)>();
         foreach (var file in files)
         {
             try
             {
-                problems.AddRange(localizer.AddOverlay(Path.GetRelativePath(folder, file), File.ReadAllText(file)));
+                var relative = Path.GetRelativePath(folder, file);
+                var source = File.ReadAllText(file);
+                problems.AddRange(localizer.AddOverlay(relative, source));
+                messages.AddRange(FtlSource.Messages(source).Select(m => (relative, m)));
             }
             catch (IOException e)
             {
@@ -104,7 +112,7 @@ public sealed class LanguagePack
         }
         why = null;
         return new LanguagePack(folder, language, manifest.Name ?? Path.GetFileName(Path.TrimEndingDirectorySeparator(folder)), manifest.Author,
-            manifest.Base, localizer, problems, files.Count);
+            manifest.Base, localizer, problems, files.Count, messages);
     }
 
     private sealed record Manifest(string? Language, string? Name, string? Author, string? Base);

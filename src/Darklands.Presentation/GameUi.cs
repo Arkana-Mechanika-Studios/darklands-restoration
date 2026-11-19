@@ -139,12 +139,17 @@ public sealed class GameUi
     {
         ArgumentNullException.ThrowIfNull(text);
         // a translation pack's words for the keys it has; the original's for every other (and with no pack: the original's, as always)
-        var words = Language is { } pack && pack.Localizer.IsTranslated(text.Id)
-            ? pack.Localizer.Get(text.Id, FluentArguments(text))
-            : Assets.MessageText.Text(text);
+        var translated = Language is { } pack && pack.Localizer.IsTranslated(text.Id);
+        if (!translated && !ScreenTextPlane.Recording)
+        {
+            return Assets.MessageText.Text(text);
+        }
+        var arguments = FluentArguments(text);
+        // a translation's colour tags (<c12>M</c>ore: the menus' hot keys) as the program's colour characters
+        var words = translated ? Darklands.Core.TextCodes.FromTags(Language!.Localizer.Get(text.Id, arguments)) : Assets.MessageText.Text(text);
         // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
         return ScreenTextPlane.Recording
-            ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values))
+            ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values), Values(arguments))
             : words;
     }
 
@@ -155,7 +160,9 @@ public sealed class GameUi
     public string Word(Darklands.Content.Formats.Text.Strings.WordTable table, int k)
     {
         var key = Language is null && !ScreenTextPlane.Recording ? null : Assets.Words.Key(table, k);
-        var words = key is not null && Language is { } pack && pack.Localizer.IsTranslated(key) ? pack.Localizer.Get(key) : Assets.Words.Text(table, k);
+        var words = key is not null && Language is { } pack && pack.Localizer.IsTranslated(key)
+            ? Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(key))
+            : Assets.Words.Text(table, k);
         return key is not null && ScreenTextPlane.Recording ? ScreenTextPlane.Keyed(words, key) : words;
     }
 
@@ -183,11 +190,21 @@ public sealed class GameUi
         {
             report($"language pack: {problem}");
         }
-        report($"language pack: {pack.Name} ({pack.Language}), {pack.Files} file(s)");
+        // its fonts (fonts/slotN.json, the Unicode text path): every text of their slots is drawn in them
+        PackFonts = FontPack.Load(folder, report);
+        report($"language pack: {pack.Name} ({pack.Language}), {pack.Files} file(s)" +
+            (PackFonts.Count > 0 ? $", fonts for slot(s) {string.Join(", ", PackFonts.Keys.Order())}" : ""));
         Language = pack;
         LanguageReport = report;
+        _text = _cardText = null;
         return true;
     }
+
+    /// <summary>The translation pack's fonts by slot (empty: the game's fonts).</summary>
+    public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();
+
+    /// <summary>A painter of font slot <paramref name="slot"/>: the game's font, with the pack's for that slot when it has one.</summary>
+    public TextPainter Painter(int slot) => new(Assets.Font(slot)) { PackFont = PackFonts.GetValueOrDefault(slot) };
 
     /// <summary>Where a translation the screens cannot use while playing is told (the pack's report; null: nowhere).</summary>
     public Action<string>? LanguageReport { get; set; }
@@ -196,11 +213,28 @@ public sealed class GameUi
     /// A text's arguments as Fluent variables: a named one keeps its name (<c>$count</c>), a format string's positional ones are
     /// <c>$arg0</c>, <c>$arg1</c> ... (Fluent names start with a letter).
     /// </summary>
-    internal static Dictionary<string, object?>? FluentArguments(Darklands.Core.GameText text)
+    // the arguments by their Fluent names, as text (the text plane's record of a keyed text, L-7w)
+    private static List<KeyValuePair<string, string>>? Values(Dictionary<string, object?>? arguments) =>
+        arguments?.Select(a => KeyValuePair.Create(a.Key, Convert.ToString(a.Value, System.Globalization.CultureInfo.InvariantCulture) ?? "")).ToList();
+
+    /// <summary>
+    /// The arguments of <paramref name="text"/> by their Fluent names: one of the original's format strings (an <c>exe:</c> key with
+    /// arguments "0", "1" ...) gives <c>arg0</c>, <c>arg1</c> ... the text each of its conversions prints (OriginalFormat.Pieces: the
+    /// original's widths and padding stay); a named argument keeps its name.
+    /// </summary>
+    internal Dictionary<string, object?>? FluentArguments(Darklands.Core.GameText text)
     {
         if (text.Args.Count == 0)
         {
             return null;
+        }
+        if (text.Args.ContainsKey("0") && Assets.Words.ExeOrNull(text.Id) is { } format)
+        {
+            var positional = Enumerable.Range(0, text.Args.Count)
+                .Select(k => text.Args.TryGetValue(k.ToString(System.Globalization.CultureInfo.InvariantCulture), out var v) ? v : "")
+                .ToList();
+            var pieces = Content.Formats.Text.Strings.OriginalFormat.Pieces(format, positional);
+            return pieces.Select((p, k) => (p, k)).ToDictionary(e => "arg" + e.k.ToString(System.Globalization.CultureInfo.InvariantCulture), e => (object?)e.p, StringComparer.Ordinal);
         }
         var map = new Dictionary<string, object?>(text.Args.Count, StringComparer.Ordinal);
         foreach (var (name, value) in text.Args)
@@ -217,6 +251,22 @@ public sealed class GameUi
     // Not in the original: a development aid (local post-1.0 design note, the dev-only inspector, step I-4).
     public Func<int, int, IReadOnlyList<string>>? Inspect { get; set; }
 
+    /// <summary>
+    /// A list of the original's texts read from a table (the creation and load screens' menus) in the words the screens show: the
+    /// translation pack's for the keys it has, the list's own for the rest (no pack: the list itself).
+    /// </summary>
+    // Not in the original: the 1.1 translations (L-6b).
+    public IReadOnlyList<string> Translated(IReadOnlyList<string> texts, IReadOnlyList<string> keys)
+    {
+        ArgumentNullException.ThrowIfNull(texts);
+        ArgumentNullException.ThrowIfNull(keys);
+        if (Language is not { } pack || keys.Count != texts.Count)
+        {
+            return texts;
+        }
+        return [.. texts.Select((t, i) => pack.Localizer.IsTranslated(keys[i]) ? Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(keys[i])) : t)];
+    }
+
     /// <summary>The text <paramref name="id"/> (<c>exe:DS:0086</c>) in the words the screens show.</summary>
     public string Words(string id) => Words(Darklands.Core.GameText.Of(id));
 
@@ -228,7 +278,7 @@ public sealed class GameUi
     //   side window, pointer DS:0104), DS:0106 (DS:0118), DS:0156 (DS:0168, the panel's page), DS:017E (DS:0190), DS:0192 (DS:01A4)
     //   have font 1; the menu bar loop root 0000:0000 sets the card window's font to 1 while the bar runs. checked against the DS bytes
     // C: read on first use: the program start checks FONTS.FNT where the original loads it (with the graphics driver).
-    public TextPainter Text => _text ??= new TextPainter(Assets.Font(1));
+    public TextPainter Text => _text ??= Painter(1);
 
     private TextPainter? _text;
 
@@ -237,7 +287,7 @@ public sealed class GameUi
     //   DS:012E and DS:0142 (pointer DS:0154) have font 3 too; the load-game screen R037+0x8B76 (1C7D:09C6) sets the card window's font
     //   to 3 again. The driver's font slot n is font n - 1 of FONTS.FNT (drv+0x13A4: the slot indexes the offset table at the start of
     //   the file the loader root 047C:07CE reads behind the driver). checked against asm and the DS bytes; tests: tools/visuals/compare.py
-    public TextPainter CardText => _cardText ??= new TextPainter(Assets.Font(3));
+    public TextPainter CardText => _cardText ??= Painter(3);
 
     private TextPainter? _cardText;
 
@@ -254,7 +304,7 @@ public sealed class GameUi
     {
         1 => Text,
         3 => CardText,
-        _ => new TextPainter(Assets.Font(CardWindowFont)),
+        _ => Painter(CardWindowFont),
     };
 
     /// <summary>Runs <paramref name="run"/> as menu-bar-loop runs its part: with the card window's font set to 1, put back after.</summary>

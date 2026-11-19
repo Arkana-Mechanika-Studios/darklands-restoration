@@ -10,8 +10,16 @@ namespace Darklands.Platform;
 // The widest drawing of each text is kept too: the box a translation of the key must fit (decision 12, for L-7w).
 public static class ScreenTextPlane
 {
-    /// <summary>A text: the words drawn, the key they came from (null: a literal or text of a game file) and its arguments.</summary>
-    public readonly record struct Entry(string Text, string? Key, string? Arguments, int WidestDrawn);
+    /// <summary>
+    /// A text: the words drawn, the key they came from (null: a literal or text of a game file) and its arguments; the widest it was
+    /// drawn, the least room it had (<see cref="NoRoom"/>: not known), whether that room was a window's (else the screen's right edge),
+    /// the font slot it was drawn in (0: not known), and the arguments by name (Fluent's: <c>arg0</c> ...) of its widest drawing.
+    /// </summary>
+    public readonly record struct Entry(string Text, string? Key, string? Arguments, int WidestDrawn, int Room = NoRoom, bool Windowed = false,
+        int Font = 0, IReadOnlyList<KeyValuePair<string, string>>? Values = null);
+
+    /// <summary>The room of a text drawn with no known room.</summary>
+    public const int NoRoom = int.MaxValue;
 
     /// <summary>The most texts kept; later ones get no id (the plane says nothing for them).</summary>
     public const int Capacity = 1 << 16;
@@ -21,16 +29,16 @@ public static class ScreenTextPlane
     private static readonly Lock Gate = new();
     private static readonly Dictionary<string, int> Ids = new(StringComparer.Ordinal);
     private static readonly List<Entry> Entries = [default];
-    private static readonly Dictionary<string, (string Key, string? Arguments)> Keys = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, (string Key, string? Arguments, IReadOnlyList<KeyValuePair<string, string>>? Values)> Keys = new(StringComparer.Ordinal);
 
     /// <summary>On: the screens' texts are kept for the plane (developer builds turn it on with the inspector).</summary>
     public static bool Recording { get; set; }
 
     /// <summary>
-    /// <paramref name="shown"/>, the words of key <paramref name="key"/> (with <paramref name="arguments"/>), remembered so that its
-    /// drawing is put down to the key; returns <paramref name="shown"/>.
+    /// <paramref name="shown"/>, the words of key <paramref name="key"/> (with <paramref name="arguments"/>, and by name
+    /// <paramref name="values"/>), remembered so that its drawing is put down to the key; returns <paramref name="shown"/>.
     /// </summary>
-    public static string Keyed(string shown, string key, string? arguments = null)
+    public static string Keyed(string shown, string key, string? arguments = null, IReadOnlyList<KeyValuePair<string, string>>? values = null)
     {
         if (!Recording || shown.Length == 0 || key.Length == 0)
         {
@@ -42,13 +50,16 @@ public static class ScreenTextPlane
             {
                 Keys.Clear();
             }
-            Keys[shown] = (key, arguments);
+            Keys[shown] = (key, arguments, values);
         }
         return shown;
     }
 
-    /// <summary>The id of <paramref name="text"/> as drawn <paramref name="width"/> pixels wide (0: not recording, empty, or the table full).</summary>
-    public static int Drawn(string text, int width)
+    /// <summary>
+    /// The id of <paramref name="text"/> as drawn <paramref name="width"/> pixels wide (0: not recording, empty, or the table full), with
+    /// <paramref name="room"/> pixels for it (a window's when <paramref name="windowed"/>) in font slot <paramref name="font"/>.
+    /// </summary>
+    public static int Drawn(string text, int width, int room = NoRoom, bool windowed = false, int font = 0)
     {
         if (!Recording || text.Length == 0)
         {
@@ -56,7 +67,7 @@ public static class ScreenTextPlane
         }
         lock (Gate)
         {
-            var (key, arguments) = Keys.TryGetValue(text, out var k) ? k : (null, null);
+            var (key, arguments, values) = Keys.TryGetValue(text, out var k) ? k : (null, null, null);
             var name = key is null ? "\u0001" + text : key + "\u0001" + arguments + "\u0001" + text;
             if (!Ids.TryGetValue(name, out var id))
             {
@@ -65,12 +76,22 @@ public static class ScreenTextPlane
                     return 0;
                 }
                 id = Entries.Count;
-                Entries.Add(new Entry(text, key, arguments, width));
+                Entries.Add(new Entry(text, key, arguments, width, room, windowed, font, values));
                 Ids[name] = id;
             }
-            else if (Entries[id].WidestDrawn < width)
+            else
             {
-                Entries[id] = Entries[id] with { WidestDrawn = width };
+                var e = Entries[id];
+                if (e.WidestDrawn < width || room < e.Room || e.Font == 0)
+                {
+                    Entries[id] = e with
+                    {
+                        WidestDrawn = Math.Max(e.WidestDrawn, width),
+                        Room = Math.Min(e.Room, room),
+                        Windowed = room < e.Room ? windowed : e.Windowed,
+                        Font = e.Font == 0 ? font : e.Font,
+                    };
+                }
             }
             return id;
         }

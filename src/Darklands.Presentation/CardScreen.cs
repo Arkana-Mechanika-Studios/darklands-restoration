@@ -23,6 +23,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     private const int TextAreaWidth = 0xF5;
     private const int TextAreaHeight = 0xBC;
 
+    /// <summary>The card's text area (the box of a card text: the translator's template and the pack check, L-7w).</summary>
+    internal static (int X, int Y, int Width, int Height) TextArea => (TextAreaX, TextAreaY, TextAreaWidth, TextAreaHeight);
+
     /// <summary>Option lines are drawn as this colour by xor (colour word 0x380), invisible until the fade (see GreyThePicture).</summary>
     // orig: `if (color == 1) w->color = 0x380;` in text-paint-wrapped root 0265:0134 at the first option marker: colour 0x80, and bits 8..9 = 3 make the driver xor it in (TextMode)
     private const byte OptionColor = 0x80;
@@ -212,12 +215,15 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
 
     /// <summary>
     /// A translation pack's text of block <paramref name="block"/> of card <paramref name="card"/> (key <c>msg:$CARD#n</c>, written in
-    /// <see cref="Content.Formats.Text.CardTextForm"/>), as block bytes; null to keep the original's: no pack, no such text, or one
-    /// that does not keep the original's option lines, passages, $Names and code bytes (CardTextForm.Check; reported once).
+    /// <see cref="Content.Formats.Text.CardTextForm"/>), as block bytes, or as codes in <paramref name="codes"/> when it needs the
+    /// Unicode path (a letter the game's bytes cannot hold, or the pack's own font for the card window); null to keep the original's:
+    /// no pack, no such text, or one that does not keep the original's option lines, passages, $Names and code bytes
+    /// (CardTextForm.Check; reported once).
     /// </summary>
     // Not in the original: the 1.1 translation packs (docs/LOCALISATION.md).
-    private byte[]? TranslatedBlock(string card, int block, byte[] original)
+    private byte[]? TranslatedBlock(string card, int block, byte[] original, out int[]? codes)
     {
+        codes = null;
         if (ui.Language is not { } pack)
         {
             return null;
@@ -229,6 +235,11 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         }
         var translation = pack.Localizer.Get(key);
         var problem = Content.Formats.Text.CardTextForm.Check(translation, original);
+        if (problem is null && (ui.CardText.PackFont is not null || !Darklands.Core.TextCodes.FitsBytes(translation)))
+        {
+            codes = Content.Formats.Text.CardTextForm.ToCodes(translation, out problem);
+            return null;
+        }
         var bytes = problem is null ? Content.Formats.Text.CardTextForm.ToBytes(translation, out problem) : null;
         if (bytes is null && _reported.Add(key))
         {
@@ -372,9 +383,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         _lastBlock = b;
         var c = context();
         c.MessageFileBytes = _messages.Bytes;
-        var text = TextVariables.Expand(TranslatedBlock(_messages.Name, block, b.Text) ?? b.Text, c);
+        var translated = TranslatedBlock(_messages.Name, block, b.Text, out var codes);
         var layout = new CardTextLayout(ui.CardText);
-        var areas = layout.Draw(_canvas, text, WindowX + b.X + 5, b.Y + 5, b.Width - 10, new CardTextLayout.Settings
+        var settings = new CardTextLayout.Settings
         {
             Options = options,
             Conditions = c.Variables.Conditions,
@@ -382,7 +393,11 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             OptionColor = options.Count > 0 ? OptionColor : null,
             OptionMode = TextMode.Xor,
             DropCap = DropCap,
-        });
+        };
+        // a translation with letters the game's bytes cannot hold, or in the pack's font, is laid out by codes (the same loop, L-6b)
+        var areas = codes is not null
+            ? layout.Draw(_canvas, TextVariables.Expand(codes, c), WindowX + b.X + 5, b.Y + 5, b.Width - 10, settings)
+            : layout.Draw(_canvas, TextVariables.Expand(translated ?? b.Text, c), WindowX + b.X + 5, b.Y + 5, b.Width - 10, settings);
         // orig: text-paint-wrapped leaves the option lines in the hotspot list DS:E96E as soon as it has laid the text out (before press-to-continue), which is what a scripted host's option:<n> step reads
         _choosing = new OptionLayout(areas, WindowX + b.X + 5, b.Width - 10);
         return _lastAreas = areas;

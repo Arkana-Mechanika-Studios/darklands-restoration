@@ -54,6 +54,9 @@ using Darklands.Rendering;
 //   load:<file>                  starts with that saved game of the saves folder; a game saved in a battle resumes it
 //   console:<command>            a developer console command on the game being played ("console:money add 10" as one argument)
 //   inspect:<x>,<y>              (developer builds only: DevTools) what drew that pixel of the last frame, and the steps taken before it
+//   (developer builds only) the environment variable DARKLANDS_TEXT_BOXES=<folder> writes the box of every keyed text drawn (the
+//                                widest English, the least room: docs/LOCALISATION.md, the translator's template) to
+//                                <folder>/boxes-<process id>.json at the end (tools/oracle/rerun_all.py's sessions pass it on)
 //   screen:barter|store|loot     opens that screen on a Quickstart game instead of playing
 //   saint:<n>[,<member>[,party]] (first step) opens the prayer screen for that saint over the Quickstart party
 //   battle:<battlefield>,<seed>[,<type>,<quality>,<count> ...]   a Quickstart party goes straight into that battle, paused in
@@ -386,6 +389,8 @@ var game = new DarklandsGame(host, OpenGame())
 // a translation pack (languagepack:<folder> or the settings file's text.languagePack) changes the screens' words only
 if (languagePackStep is not null)
 {
+    // its fonts' pictures read with the program's PNG reader (font packs)
+    Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
     game.Ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
 }
 game.Options.Apply(resolved);
@@ -466,6 +471,7 @@ host.State = name =>
 // the developer's inspector (inspect:x,y steps): only in builds with the property DevTools (not in release builds); its text plane
 //   (ScreenTextPlane) is kept from the start
 Darklands.Platform.ScreenTextPlane.Recording = true;
+var textBoxesFolder = Environment.GetEnvironmentVariable("DARKLANDS_TEXT_BOXES");
 host.Inspect = (frame, x, y, step) =>
 {
     foreach (var line in Darklands.DevTools.Inspector.Describe(frame, x, y, new Darklands.DevTools.InspectedMoment(step, game.Ui.Inspect?.Invoke(x, y))))
@@ -482,6 +488,17 @@ host.ConsoleCommand = line =>
     }
 };
 game.Run();
+#if DEV_TOOLS
+if (!string.IsNullOrEmpty(textBoxesFolder))
+{
+    // the boxes of the keyed texts drawn (L-7w): keys and numbers, never the words
+    Directory.CreateDirectory(textBoxesFolder);
+    Darklands.Localization.TextBoxes.Write(Path.Combine(textBoxesFolder, $"boxes-{Environment.ProcessId}.json"),
+        Darklands.Platform.ScreenTextPlane.KeyedTexts().Select(e => new Darklands.Localization.TextBox(e.Key!, e.WidestDrawn,
+            e.Room == Darklands.Platform.ScreenTextPlane.NoRoom ? -1 : e.Room, e.Windowed, e.Font,
+            e.Values?.ToDictionary(v => v.Key, v => v.Value, StringComparer.Ordinal))));
+}
+#endif
 if (game.ProgramExit is { } ended)
 {
     // the program's own end (the original's exit: lockstep.py's original side logs "program exit <code>")

@@ -39,6 +39,26 @@ public sealed class TextPlaneTests
     }
 
     [Fact]
+    public void AKeyedTextKeepsTheLeastRoomItWasDrawnInAndItsFont()
+    {
+        ScreenTextPlane.Recording = true;
+        try
+        {
+            var shown = ScreenTextPlane.Keyed("Leave the plane test", "exe:DS:2FF2", null, [KeyValuePair.Create("arg0", "x")]);
+            ScreenTextPlane.Drawn(shown, 40, 200, windowed: false, font: 1);
+            ScreenTextPlane.Drawn(shown, 40, 64, windowed: true, font: 1);
+            ScreenTextPlane.Drawn(shown, 40, 90, windowed: false, font: 1);
+            var e = Assert.Single(ScreenTextPlane.KeyedTexts(), t => t.Text == shown);
+            Assert.Equal((64, true, 1), (e.Room, e.Windowed, e.Font));
+            Assert.Equal("x", Assert.Single(e.Values!).Value);
+        }
+        finally
+        {
+            ScreenTextPlane.Recording = false;
+        }
+    }
+
+    [Fact]
     public void ALiteralSaysItHasNoKeyAndNothingIsKeptWhileNotRecording()
     {
         Assert.Equal(0, ScreenTextPlane.Drawn("not kept", 10));

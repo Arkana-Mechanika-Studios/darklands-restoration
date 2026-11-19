@@ -13,8 +13,8 @@ public static class GameTextCodec
     /// <summary>The byte for a character the game cannot show.</summary>
     public const byte Unshowable = (byte)'?';
 
-    /// <summary>Private-use characters that stand for a byte whose Latin-1 character is one of the seven letters (a colour code).</summary>
-    private const char ByteAsIs = '';
+    /// <summary>Private-use characters that stand for a colour byte from 0xA0 (U+E0A0 .. U+E0FF: the byte as itself, never a letter).</summary>
+    public const char ByteAsIs = '';
 
     private static readonly (byte Byte, char Letter)[] Letters =
     [
@@ -30,11 +30,15 @@ public static class GameTextCodec
         {
             table[b] = (char)b;
         }
+        // a colour byte from 0xA0 keeps a character of its own (not its Latin-1 letter): a translation's é or ç is a letter, never one of
+        //   the game's colour codes (L-6b, the Unicode text path); 0x80..0x9F are Unicode's controls and stay themselves
+        for (var b = 0xA0; b < 256; b++)
+        {
+            table[b] = (char)(ByteAsIs + b);
+        }
         foreach (var (code, letter) in Letters)
         {
             table[code] = letter;
-            // the byte whose Latin-1 character is the letter (a colour code) keeps a character of its own
-            table[letter] = (char)(ByteAsIs + letter);
         }
         return table;
     }

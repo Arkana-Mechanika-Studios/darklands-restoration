@@ -16,6 +16,9 @@ internal static class CommandLineUsage
           --no-audio                 no sound at all
           --audio-pack <folder>      replace the music and sounds (docs/PACKS.md)
           --language-pack <folder>   a translation pack (docs/LOCALISATION.md)
+          --translator-template <folder>    write the translator's template of your game there, then stop
+          --check-language-pack <folder>    list what is wrong with a translation pack, then stop
+          --text-boxes <file or folder>     the texts' boxes for the two above (docs/LOCALISATION.md)
           --soundfont <file>         the SoundFont for the pack's .mid music (default: the first .sf2 in SOUNDFONT next to the program)
           --hd-pack <folder>         replace the pictures
           --mod <folder or name>     play a mod; once per mod (docs/MODS.md)

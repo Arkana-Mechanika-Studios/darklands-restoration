@@ -25,11 +25,14 @@ public sealed class GameTextCodecTests
     public void ControlAndColourCodesStayAsTheyAre()
     {
         // the hotkey colour (0x8C .. 0xFF), a line break, the card text's layout codes
-        Assert.Equal("\x8C J\xFF\n\x14\x1D\x01\x13", GameTextCodec.Decode([0x8C, 0x20, 0x4A, 0xFF, 0x0A, 0x14, 0x1D, 0x01, 0x13]));
+        Assert.Equal("\x8C J\n\x14\x1D\x01\x13", GameTextCodec.Decode([0x8C, 0x20, 0x4A, 0xFF, 0x0A, 0x14, 0x1D, 0x01, 0x13]));
+        Assert.Equal([0x8C, 0x20, 0x4A, 0xFF], GameTextCodec.Encode("\x8C J"));
         Assert.Equal([0x8C, 0x20, 0x4A, 0xFF], GameTextCodec.Encode("\x8C J\xFF"));
-        // a colour byte whose Latin-1 character is one of the letters keeps a character of its own
+        // a colour byte from 0xA0 keeps a character of its own, never its Latin-1 letter (a translation's é is a letter)
         Assert.NotEqual('ä', GameTextCodec.ToChar(0xE4));
+        Assert.NotEqual('é', GameTextCodec.ToChar(0xE9));
         Assert.Equal(0xE4, GameTextCodec.ToByte(GameTextCodec.ToChar(0xE4)));
+        Assert.Equal(0xE9, GameTextCodec.ToByte(GameTextCodec.ToChar(0xE9)));
     }
 
     [Fact]

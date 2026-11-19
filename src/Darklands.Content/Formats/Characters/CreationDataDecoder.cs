@@ -12,6 +12,9 @@ namespace Darklands.Content.Formats.Characters;
 /// <param name="SlotPalettes">The five slots' figure colours (24 bytes each) before any change.</param>
 public sealed record CreationData(CreationTables Tables, IReadOnlyList<string> Texts, IReadOnlyList<byte[]> SlotPalettes)
 {
+    /// <summary>The keys of <see cref="Texts"/> (<c>exe:290E:...</c>), by which a translation pack gives their words.</summary>
+    public IReadOnlyList<string> TextKeys { get; init; } = [];
+
     // Indexes of Texts the two menus use.
     public const int AddToParty = 0x00;
     public const int CreateCharacter = 0x01;
@@ -72,7 +75,7 @@ public static class CreationDataDecoder
         var texts = data.StringTable(Segment, 0x1DDF, 0x41);
         var palettes = Enumerable.Range(0, 5).Select(i => data.Bytes(0x20A5, 0x33FC + 24 * i, 24).ToArray()).ToList();
         return new CreationData(new CreationTables(backgrounds, occupations, aging, names) { EntryAt = k => EntryByWrappedIndex(data, k) },
-            texts, palettes);
+            texts, palettes) { TextKeys = data.StringKeys(Segment, 0x1DDF, 0x41) };
     }
 
     /// <summary>The entry at 2CC1 + k × 0x3A as a 16-bit offset in the segment (the C index wraps); zeros where the image ends.</summary>

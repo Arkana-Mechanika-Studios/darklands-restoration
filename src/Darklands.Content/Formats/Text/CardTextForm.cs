@@ -35,8 +35,29 @@ public static class CardTextForm
     //   the skipped byte is never one of the translator's letters.
     public static byte[]? ToBytes(string written, out string? problem)
     {
+        var bytes = new List<byte>(written?.Length + 16 ?? 0);
+        return Parse(written!, text => bytes.AddRange(Darklands.Core.GameTextCodec.Encode(text)), code => bytes.Add(code), out problem)
+            ? [.. bytes]
+            : null;
+    }
+
+    /// <summary>
+    /// The block's codes for a written card text (the Unicode text path, <see cref="Darklands.Core.TextCodes"/>): the same codes as
+    /// <see cref="ToBytes"/> gives for the same text, with the letters as code points (a letter the game's bytes cannot hold stays itself).
+    /// </summary>
+    // Not in the original: the 1.1 translations with letters of their own (L-6b).
+    public static int[]? ToCodes(string written, out string? problem)
+    {
+        var codes = new List<int>(written?.Length + 16 ?? 0);
+        return Parse(written!, text => codes.AddRange(Darklands.Core.TextCodes.OfText(text)), code => codes.Add(Darklands.Core.TextCodes.OfByte(code)), out problem)
+            ? [.. codes]
+            : null;
+    }
+
+    // the written form read once for both: its text runs and its tags' bytes (a tag's byte; the space after 0x01 / 0x13 is a text run)
+    private static bool Parse(string written, Action<string> addText, Action<byte> addCode, out string? problem)
+    {
         ArgumentNullException.ThrowIfNull(written);
-        var bytes = new List<byte>(written.Length + 16);
         var text = new StringBuilder();
         var pendingBreak = false;
         var lastWasTag = true;
@@ -44,7 +65,7 @@ public static class CardTextForm
         {
             if (text.Length > 0)
             {
-                bytes.AddRange(Darklands.Core.GameTextCodec.Encode(text.ToString()));
+                addText(text.ToString());
                 text.Clear();
             }
         }
@@ -71,11 +92,16 @@ public static class CardTextForm
                 if (end < 0)
                 {
                     problem = $"a '<' at {i} has no '>'";
-                    return null;
+                    return false;
                 }
                 var name = written[(i + 1)..end];
                 byte code;
-                if (Tags.FirstOrDefault(t => t.Tag == name) is { Tag: not null } tag)
+                if (Darklands.Core.TextCodes.TagAt(written, i, out var colour, out _))
+                {
+                    // a colour tag (<c12> ... </c>): the original's colour byte
+                    code = (byte)(0x80 | colour);
+                }
+                else if (Tags.FirstOrDefault(t => t.Tag == name) is { Tag: not null } tag)
                 {
                     code = tag.Code;
                 }
@@ -90,14 +116,14 @@ public static class CardTextForm
                 else
                 {
                     problem = $"unknown tag <{name}>";
-                    return null;
+                    return false;
                 }
                 pendingBreak = false;
                 Flush();
-                bytes.Add(code);
+                addCode(code);
                 if (code is 0x01 or 0x13)
                 {
-                    bytes.Add((byte)' ');
+                    addText(" ");
                 }
                 lastWasTag = true;
                 i = end;
@@ -113,7 +139,7 @@ public static class CardTextForm
         }
         Flush();
         problem = null;
-        return [.. bytes];
+        return true;
     }
 
     /// <summary>The written form of an original block (the translator's template): its codes as tags.</summary>
@@ -128,7 +154,7 @@ public static class CardTextForm
             if (run.Count > 0)
             {
                 // Fluent's own braces, should a text ever hold one, as string literals
-                written.Append(Darklands.Core.GameTextCodec.Decode([.. run]).Replace("{", "\u0001").Replace("}", "{\"}\"}").Replace("\u0001", "{\"{\"}"));
+                written.Append(Darklands.Core.TextCodes.ToTags(Darklands.Core.GameTextCodec.Decode([.. run])).Replace("{", "\u0001").Replace("}", "{\"}\"}").Replace("\u0001", "{\"{\"}"));
                 run.Clear();
             }
         }
@@ -168,7 +194,7 @@ public static class CardTextForm
         var conditions = new List<int>();
         var codes = new HashSet<string>(StringComparer.Ordinal);
         var names = new HashSet<string>(StringComparer.Ordinal);
-        foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(written, @"<([a-z0-9-]+)>|\$[A-Za-z][A-Za-z0-9]*"))
+        foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(written, @"<(/?[a-z0-9-]+)>|\$[A-Za-z][A-Za-z0-9]*"))
         {
             if (m.Value[0] == '$')
             {
@@ -184,7 +210,7 @@ public static class CardTextForm
             {
                 conditions.Add(n);
             }
-            else if (tag.Length == 3 && tag[0] == 'x')
+            else if ((tag.Length == 3 && tag[0] == 'x') || tag == "/c" || (tag.Length > 1 && tag[0] == 'c' && char.IsAsciiDigit(tag[1])))
             {
                 codes.Add(tag);
             }

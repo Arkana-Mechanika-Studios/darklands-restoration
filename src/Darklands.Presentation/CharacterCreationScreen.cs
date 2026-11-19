@@ -106,10 +106,15 @@ public sealed class CharacterCreationScreen
         _world = world;
         _seed = seed;
         _partyTicks = partyTicks;
-        _data = CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
+        _data = Translated(ui, CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE")));
         _panel = new PartyPanel(ui.Assets);
         _images = FigureImages(ui.Assets.Files);
     }
+
+    /// <summary>The creation data with its menu texts in the words the screens show (a translation pack's by key; no pack: unchanged).</summary>
+    // Not in the original: the 1.1 translations (L-6b).
+    internal static CreationData Translated(GameUi ui, CreationData data) =>
+        ui.Language is null ? data : data with { Texts = ui.Translated(data.Texts, data.TextKeys) };
 
     private Canvas Screen => _ui.Canvas;
 
