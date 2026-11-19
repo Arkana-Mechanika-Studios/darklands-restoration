@@ -139,12 +139,16 @@ public sealed class GameUi
     {
         ArgumentNullException.ThrowIfNull(text);
         // a translation pack's words for the keys it has; the original's for every other (and with no pack: the original's, as always)
-        var words = Language is { } pack && pack.Localizer.IsTranslated(text.Id)
-            ? pack.Localizer.Get(text.Id, FluentArguments(text))
-            : Assets.MessageText.Text(text);
+        var translated = Language is { } pack && pack.Localizer.IsTranslated(text.Id);
+        if (!translated && !ScreenTextPlane.Recording)
+        {
+            return Assets.MessageText.Text(text);
+        }
+        var arguments = FluentArguments(text);
+        var words = translated ? Language!.Localizer.Get(text.Id, arguments) : Assets.MessageText.Text(text);
         // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
         return ScreenTextPlane.Recording
-            ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values))
+            ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values), Values(arguments))
             : words;
     }
 
@@ -196,11 +200,28 @@ public sealed class GameUi
     /// A text's arguments as Fluent variables: a named one keeps its name (<c>$count</c>), a format string's positional ones are
     /// <c>$arg0</c>, <c>$arg1</c> ... (Fluent names start with a letter).
     /// </summary>
-    internal static Dictionary<string, object?>? FluentArguments(Darklands.Core.GameText text)
+    // the arguments by their Fluent names, as text (the text plane's record of a keyed text, L-7w)
+    private static List<KeyValuePair<string, string>>? Values(Dictionary<string, object?>? arguments) =>
+        arguments?.Select(a => KeyValuePair.Create(a.Key, Convert.ToString(a.Value, System.Globalization.CultureInfo.InvariantCulture) ?? "")).ToList();
+
+    /// <summary>
+    /// The arguments of <paramref name="text"/> by their Fluent names: one of the original's format strings (an <c>exe:</c> key with
+    /// arguments "0", "1" ...) gives <c>arg0</c>, <c>arg1</c> ... the text each of its conversions prints (OriginalFormat.Pieces: the
+    /// original's widths and padding stay); a named argument keeps its name.
+    /// </summary>
+    internal Dictionary<string, object?>? FluentArguments(Darklands.Core.GameText text)
     {
         if (text.Args.Count == 0)
         {
             return null;
+        }
+        if (text.Args.ContainsKey("0") && Assets.Words.ExeOrNull(text.Id) is { } format)
+        {
+            var positional = Enumerable.Range(0, text.Args.Count)
+                .Select(k => text.Args.TryGetValue(k.ToString(System.Globalization.CultureInfo.InvariantCulture), out var v) ? v : "")
+                .ToList();
+            var pieces = Content.Formats.Text.Strings.OriginalFormat.Pieces(format, positional);
+            return pieces.Select((p, k) => (p, k)).ToDictionary(e => "arg" + e.k.ToString(System.Globalization.CultureInfo.InvariantCulture), e => (object?)e.p, StringComparer.Ordinal);
         }
         var map = new Dictionary<string, object?>(text.Args.Count, StringComparer.Ordinal);
         foreach (var (name, value) in text.Args)

@@ -88,6 +88,11 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     //   the window DS:27F4 (page 0, x 0, y 0, last x 319, last y 199), whose x and last x nothing writes: that edge is the screen's (b32).
     public void Text(int x, int y, string text, byte color)
     {
+        if (Darklands.Platform.ScreenTextPlane.Recording)
+        {
+            // the developer's text plane: the box of the line (L-7w; drawn letter by letter, so its pixels name no text)
+            Darklands.Platform.ScreenTextPlane.Drawn(text, ui.Text.Measure(text), Math.Max(0, Darklands.Platform.Screen.Width - x), false, ui.Text.Font.Index + 1);
+        }
         var ink = color;
         foreach (var c in TextPainter.Encode(text))
         {

@@ -23,6 +23,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     private const int TextAreaWidth = 0xF5;
     private const int TextAreaHeight = 0xBC;
 
+    /// <summary>The card's text area (the box of a card text: the translator's template and the pack check, L-7w).</summary>
+    internal static (int X, int Y, int Width, int Height) TextArea => (TextAreaX, TextAreaY, TextAreaWidth, TextAreaHeight);
+
     /// <summary>Option lines are drawn as this colour by xor (colour word 0x380), invisible until the fade (see GreyThePicture).</summary>
     // orig: `if (color == 1) w->color = 0x380;` in text-paint-wrapped root 0265:0134 at the first option marker: colour 0x80, and bits 8..9 = 3 make the driver xor it in (TextMode)
     private const byte OptionColor = 0x80;

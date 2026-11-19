@@ -56,8 +56,9 @@ its author.
   those pictures with a picture pack ([PACKS.md](PACKS.md)).
 * **Characters the original fonts lack.** Languages that need other characters will need **font packs**.
 * **Fixed screen space.** In Classic, the screens, buttons and menus have fixed sizes. A translation that is longer than
-  the English must be shortened or wrapped. Translators should expect to abbreviate; each key will carry the width of
-  the box the original draws it in, and the pack checker will flag a translation that does not fit (planned).
+  the English must be shortened or wrapped. Translators should expect to abbreviate; the template gives each text the
+  width of the box the original draws it in, and the pack check flags a translation that does not fit
+  ([below](#the-translators-template-and-the-pack-check)).
 
 **Not supported as a base:** the original German release. It uses a different `DARKLAND.EXE`; only the English 483.07
 is supported. A German translation is a translation pack on the English base like any other.
@@ -152,9 +153,58 @@ on the console's error output):
 
 `{` and `}` are Fluent's own: in a card text write them as `{"{"}` and `{"}"}` (the English texts hold none).
 
-The translator's template (planned) will give every key with the English and a comment saying what each argument
-is. The keys of a screen can also be found with the developer's inspector (a development build: hold F9 over a word; see
-[SETTINGS.md](SETTINGS.md)) or in the text extract of your own game files (planned for the translators' tools).
+## The translator's template and the pack check
+
+The program writes the template of your own game files, and checks a pack against them:
+
+```
+DarklandsRP <game folder> --translator-template <folder>   [--text-boxes <file or folder>]
+DarklandsRP <game folder> --check-language-pack <pack folder>   [--text-boxes <file or folder>]
+```
+
+**The template** is a pack of the original English (`pack.json` and `text/en/`: `exe.ftl`, `ui.ftl`, `msg/<FILE>.ftl`),
+every text a pack can translate today. Copy its files into your pack's `text/<language>/` folder and write your words
+after each `=`. Above each message a comment gives its key, its box and what each argument is:
+
+```
+# exe:DS:2F71 · box 148 px (English 131 px); $arg0: the leader's short name, $arg1: florins, $arg2: groschen, $arg3: pfennigs, $arg4: the whole purse in pfennigs
+exe-ds-2f71 = { $arg0 } ...
+```
+
+* **The box** is the room the screen gives the text: up to the edge of its window ("box"), or up to the screen's right
+  edge where the screen sets no window ("room ... to the screen's edge"); "box ?" is a text not drawn in the sessions the
+  boxes were collected from. A card text's box ("box: 12 lines of 230 px") is its block: the lines it has down to the
+  foot of the card's window and the width they wrap in.
+* **The arguments.** A format of the original (`%s`, `%d`) has one `$argN` per value it prints, in the original's order;
+  each is the value as the original prints it (a number padded to the width the English gives it stays padded), so a
+  translation may put them in any order or leave one out.
+* **Odd characters** are written as Fluent string literals: `{"{"}` and `{"}"}` for braces, `{" "}` for a space at a
+  text's start or end (Fluent drops those), and `{"\u008C"}` ... `{"\u00FF"}` for the colour codes some menus use to
+  mark a hot key's letter (the code before the letter, `{"\u00FF"}` after it). Keep them where the letter is.
+* Texts are only written from your game files: the template is yours and is not to be shared as part of a pack unless
+  it is your translation.
+
+**The check** loads a pack and lists, with each file and line:
+
+* errors (the pack's text is not used, or not as meant): a Fluent syntax error, an id no text of the game has, a
+  variable the screen does not give, a card text whose option lines, passages, `$Names` or code bytes are not the
+  original's, a character the game's font cannot draw (the fonts have the game's ä ö ü Ä Ö Ü ß; other letters need a font
+  pack);
+* overflows: a text wider than its box (measured in the font the screen draws it in, with the arguments a session drew
+  it with), a card text that runs past the foot of the card's window (laid out with every passage shown and the `$Names`
+  as written);
+* notes: an argument the translation does not use.
+
+It ends with a count; the exit code is 1 when there are errors. The boxes come from `--text-boxes`, else from a
+`boxes.json` in the pack's folder (the template writes one when it was given boxes), else there are none (then no
+width is checked).
+
+**Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
+environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to
+`<folder>/boxes-<process>.json` when it ends; the recorded sessions replayed with it (`tools/oracle/rerun_all.py
+--headless <that build> --fights none --replay-only`) give the boxes of the screens they visit. The files hold keys and
+numbers (and the values a session drew), never the game's words. The keys of a screen can also be found with the
+developer's inspector (a development build: hold F9 over a word; see [SETTINGS.md](SETTINGS.md)).
 
 ## Fonts, layout and mouse areas
 

@@ -13,7 +13,51 @@ namespace Darklands.Content.Formats.Text.Strings;
 public static class OriginalFormat
 {
     /// <summary>The text of <paramref name="format"/> with <paramref name="args"/> put in.</summary>
-    public static string Format(string format, IReadOnlyList<object> args)
+    public static string Format(string format, IReadOnlyList<object> args) => Run(format, args, null);
+
+    /// <summary>
+    /// What each conversion of <paramref name="format"/> prints with <paramref name="args"/> (its width and padding included): the
+    /// arguments <c>$arg0</c>, <c>$arg1</c> ... of a translation of the format, one per conversion (a <c>*</c> width takes an argument
+    /// but makes no piece).
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (docs/LOCALISATION.md): a translation places the original's printed pieces.
+    public static IReadOnlyList<string> Pieces(string format, IReadOnlyList<object> args)
+    {
+        var pieces = new List<string>();
+        Run(format, args, pieces);
+        return pieces;
+    }
+
+    /// <summary>The conversions of <paramref name="format"/> in order, as (start, length) in it (<c>%%</c> is none).</summary>
+    // Not in the original: the translator's template writes each one as { $argN } (docs/LOCALISATION.md).
+    public static IReadOnlyList<(int Start, int Length)> Conversions(string format)
+    {
+        ArgumentNullException.ThrowIfNull(format);
+        var found = new List<(int, int)>();
+        for (var i = 0; i < format.Length; i++)
+        {
+            if (format[i] != '%')
+            {
+                continue;
+            }
+            var start = i++;
+            if (i < format.Length && format[i] == '%')
+            {
+                continue;
+            }
+            while (i < format.Length && "-+ 0#*.0123456789lhFN".Contains(format[i], StringComparison.Ordinal))
+            {
+                i++;
+            }
+            if (i < format.Length && "diuxXocs".Contains(format[i], StringComparison.Ordinal))
+            {
+                found.Add((start, i - start + 1));
+            }
+        }
+        return found;
+    }
+
+    private static string Run(string format, IReadOnlyList<object> args, List<string>? pieces)
     {
         ArgumentNullException.ThrowIfNull(format);
         ArgumentNullException.ThrowIfNull(args);
@@ -89,6 +133,7 @@ public static class OriginalFormat
                 break;
             }
             var conversion = format[i];
+            var printedFrom = text.Length;
             string body;
             var sign = "";
             switch (conversion)
@@ -155,6 +200,7 @@ public static class OriginalFormat
             {
                 text.Append(' ', pad).Append(sign).Append(body);
             }
+            pieces?.Add(text.ToString(printedFrom, text.Length - printedFrom));
         }
         return text.ToString();
     }

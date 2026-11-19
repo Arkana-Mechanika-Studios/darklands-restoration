@@ -112,8 +112,10 @@ public sealed class TextPainter(FntFont font)
         {
             return Draw(canvas, x, y, bytes, color, right);
         }
-        // the developer's text plane (ScreenTextPlane): which text, by which key, each letter's pixels are; the pixels are the same
-        _text = ScreenTextPlane.Drawn(text, Measure(bytes));
+        // the developer's text plane (ScreenTextPlane): which text, by which key, each letter's pixels are; the pixels are the same. Its
+        //   room: to the window's last column, else to the screen's right edge (the box a translation must fit, L-7w)
+        var windowed = right != int.MaxValue;
+        _text = ScreenTextPlane.Drawn(text, Measure(bytes), Math.Max(0, (windowed ? right + 1 : Screen.Width) - x), windowed, font.Index + 1);
         try
         {
             return Draw(canvas, x, y, bytes, color, right);

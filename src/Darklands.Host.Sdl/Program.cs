@@ -93,6 +93,10 @@ var setup = arguments.Remove("--setup");
 arguments.Remove("--log-window"); // taken at the start (ConsoleWindow.Connect)
 var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
+// the translators' commands (docs/LOCALISATION.md): they write or check, then stop
+var translatorTemplate = Option("--translator-template");
+var checkLanguagePack = Option("--check-language-pack");
+var textBoxes = Option("--text-boxes");
 // --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods
 var mods = new List<string>();
 while (Option("--mod") is { } mod)
@@ -139,7 +143,7 @@ var reports = ReportHost.Start(settingsPath, version, args, logIt: !soundCheck);
 new CrashHandler(reports, CrashHandler.ShowWithSdl, Console.Error.WriteLine).Install();
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
-if (settingsPath is null && !soundCheck)
+if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null)
 {
     settingsPath = SettingsFile.WriteFirstRunTemplate(Console.Error.WriteLine);
     reports.SettingsFile = settingsPath;
@@ -158,6 +162,17 @@ if (Resolve(fileSettings) is not { } settings)
     return 1;
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
+if (translatorTemplate is not null || checkLanguagePack is not null)
+{
+    if (folder is null)
+    {
+        Console.Error.WriteLine("The game's files were not found: give the game folder (DarklandsRP <game folder> ...).");
+        return 1;
+    }
+    return translatorTemplate is not null
+        ? Darklands.Presentation.TranslatorCommands.WriteTemplate(folder, translatorTemplate, textBoxes, Console.Out)
+        : Darklands.Presentation.TranslatorCommands.CheckPack(folder, checkLanguagePack!, textBoxes, Console.Out);
+}
 NoteRun();
 // SDL3: the settings file or --sdl, else the SDL3.dll next to the program, else DARKLANDS_SDL3_PATH or the developer's
 // local/paths.json "sdl", else the system's
