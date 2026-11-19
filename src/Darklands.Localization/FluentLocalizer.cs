@@ -31,11 +31,20 @@ public sealed class FluentLocalizer : ILocalizer
     /// <param name="original">The fallback texts.</param>
     /// <param name="functions">Functions translations may call, by upper-case name.</param>
     public FluentLocalizer(string locale, OriginalTable original, IReadOnlyDictionary<string, FluentFunctionImpl>? functions = null)
+        : this(locale, original, functions, pseudoTransform: true)
+    {
+    }
+
+    /// <summary>
+    /// A localizer whose <c>qps</c> locale applies the pseudo transform only when <paramref name="pseudoTransform"/> (a translation pack's
+    /// texts are used as written: a pseudo-locale pack is made already transformed, in letters the game's fonts have).
+    /// </summary>
+    public FluentLocalizer(string locale, OriginalTable original, IReadOnlyDictionary<string, FluentFunctionImpl>? functions, bool pseudoTransform)
     {
         ArgumentException.ThrowIfNullOrEmpty(locale);
         Locale = locale;
         _original = original ?? throw new ArgumentNullException(nameof(original));
-        _pseudo = string.Equals(locale, PseudoLocale.Tag, StringComparison.OrdinalIgnoreCase);
+        _pseudo = pseudoTransform && string.Equals(locale, PseudoLocale.Tag, StringComparison.OrdinalIgnoreCase);
 
         var step = LinguiniBuilder.Builder().CultureInfo(CultureFor(locale)).SkipResources().SetUseIsolating(false);
         if (functions is not null)

@@ -129,7 +129,9 @@ public sealed class TextPainter(FntFont font)
             }
             else
             {
-                DrawFontGlyph(canvas, f, x, y, glyph, current, visible, mode);
+                // a scalable font's glyph: its 1x pixels name it, so the host draws it again at the window's resolution (L-6b set 2)
+                var texel = f is IScalableFont scalable ? TextGlyphs.TexelOf(TextGlyphs.Id(scalable, glyph, x, y)) : 0;
+                DrawFontGlyph(canvas, f, x, y, glyph, current, visible, mode, texel);
             }
             x += visible;
             room -= advance;
@@ -143,7 +145,7 @@ public sealed class TextPainter(FntFont font)
     }
 
     // a pack font's glyph, pixel by pixel in the colour (as DrawGlyph does for the game's fonts)
-    private void DrawFontGlyph(Canvas canvas, IFont f, int x, int y, int code, byte color, int columns, TextMode mode)
+    private void DrawFontGlyph(Canvas canvas, IFont f, int x, int y, int code, byte color, int columns, TextMode mode, int glyph)
     {
         for (var row = 0; row < f.Height; row++)
         {
@@ -154,7 +156,18 @@ public sealed class TextPainter(FntFont font)
                     continue;
                 }
                 var under = canvas[x + column, y + row];
-                if (mode == TextMode.Copy && _text != 0)
+                var value = mode switch
+                {
+                    TextMode.Copy => color,
+                    TextMode.And => (byte)(under & color),
+                    TextMode.Or => (byte)(under | color),
+                    _ => (byte)(under ^ color),
+                };
+                if (glyph != 0)
+                {
+                    canvas.PlotText(x + column, y + row, value, glyph);
+                }
+                else if (mode == TextMode.Copy && _text != 0)
                 {
                     canvas.PlotText(x + column, y + row, color, _text);
                 }
@@ -164,12 +177,7 @@ public sealed class TextPainter(FntFont font)
                 }
                 else
                 {
-                    canvas.Repaint(x + column, y + row, mode switch
-                    {
-                        TextMode.And => (byte)(under & color),
-                        TextMode.Or => (byte)(under | color),
-                        _ => (byte)(under ^ color),
-                    });
+                    canvas.Repaint(x + column, y + row, value);
                 }
             }
         }

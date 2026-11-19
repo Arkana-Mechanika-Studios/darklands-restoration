@@ -204,6 +204,16 @@ It ends with a count; the exit code is 1 when there are errors. The boxes come f
 `boxes.json` in the pack's folder (the template writes one when it was given boxes), else there are none (then no
 width is checked).
 
+**The pseudo-locale** shows where a longer language will not fit, before any translation exists:
+
+```
+DarklandsRP <game folder> --pseudo-language-pack <folder>   [--text-boxes <file or folder>]
+```
+
+writes a `qps` pack of every text a third longer, its vowels marked (a → ä, o → ö, u → ü, so a text from the pack is seen at
+once and the game's fonts draw it), its tags, `$Names`, arguments and hot keys kept, and lists with the check where it
+does not fit. Play with it (`--language-pack <folder>`) to see the screens in it.
+
 **Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
 environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to
 `<folder>/boxes-<process>.json` when it ends; the recorded sessions replayed with it (`tools/oracle/rerun_all.py
@@ -224,7 +234,20 @@ fonts/slot3.png    the glyphs; a pixel is drawn where its alpha is 128 or more
 ```
 
 Each glyph is `[x, y, width]` in the picture; its height is the font's. The glyphs are drawn in the screen's colour, as
-the original's are. A font of a pack has its own metrics: with it every text of its slot (the translation's and any
+the original's are.
+
+A slot can also take a **TrueType or OpenType font**, drawn sharp at the window's resolution:
+
+```
+fonts/slot3.json   { "ttf": "MyFont.ttf", "size": 8, "spacing": 0, "lineSpacing": 1 }
+```
+
+`size` is the height of a line (ascent to descent) in the game's 320-wide pixels; each letter's advance is rounded to whole
+pixels, so the game lays the text out as it does with any font. The game's 320x200 picture gets the letters at that size;
+the window, the screenshots and the HD renderer's pictures draw them again at their own resolution, in the colour the
+picture shows (option lines, highlights and the fades included). Known limits: no hinting and no shaping of complex
+scripts, so Latin, Greek and Cyrillic fonts work, while Arabic or Indic scripts would need shaping later. The card's
+option lines, invisible on the picture until it fades, may show faintly in the window during that moment. A font of a pack has its own metrics: with it every text of its slot (the translation's and any
 left in English) is measured and laid out again, and the pack check measures in it. A letter neither the pack's font
 nor the original's has is drawn as `?`.
 
@@ -262,7 +285,8 @@ against the original); with a translation or another font, the mouse areas follo
 * **Fixed slots** (menu items, the lines of a shop's list, labels on the character sheet, buttons): the slot keeps the
   original's place and size, and its mouse area stays the slot. The text must fit in it: the translation's short form
   first (a `.short` attribute), then slightly narrower spacing, then the text cut with "…" and shown in full in a
-  hint. The pseudo-locale (step 5) lists every slot that overflows, so translators know where to abbreviate.
+  hint. The pseudo-locale ([above](#the-translators-template-and-the-pack-check)) lists every slot that overflows, so
+  translators know where to abbreviate.
 * **Text inside pictures:** a picture pack scoped to the language.
 
 **Clicks give choices, not positions.** The game never receives a mouse position: a click becomes "choice 3" or "buy

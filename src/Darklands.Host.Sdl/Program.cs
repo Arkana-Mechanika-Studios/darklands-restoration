@@ -95,9 +95,11 @@ var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
 // a pack's fonts' pictures are read with the program's PNG reader (font packs, docs/LOCALISATION.md)
 Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
 // the translators' commands (docs/LOCALISATION.md): they write or check, then stop
 var translatorTemplate = Option("--translator-template");
 var checkLanguagePack = Option("--check-language-pack");
+var pseudoLanguagePack = Option("--pseudo-language-pack");
 var textBoxes = Option("--text-boxes");
 // --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods
 var mods = new List<string>();
@@ -145,7 +147,7 @@ var reports = ReportHost.Start(settingsPath, version, args, logIt: !soundCheck);
 new CrashHandler(reports, CrashHandler.ShowWithSdl, Console.Error.WriteLine).Install();
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
-if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null)
+if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null && pseudoLanguagePack is null)
 {
     settingsPath = SettingsFile.WriteFirstRunTemplate(Console.Error.WriteLine);
     reports.SettingsFile = settingsPath;
@@ -164,15 +166,15 @@ if (Resolve(fileSettings) is not { } settings)
     return 1;
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
-if (translatorTemplate is not null || checkLanguagePack is not null)
+if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLanguagePack is not null)
 {
     if (folder is null)
     {
         Console.Error.WriteLine("The game's files were not found: give the game folder (DarklandsRP <game folder> ...).");
         return 1;
     }
-    return translatorTemplate is not null
-        ? Darklands.Presentation.TranslatorCommands.WriteTemplate(folder, translatorTemplate, textBoxes, Console.Out)
+    return translatorTemplate is not null ? Darklands.Presentation.TranslatorCommands.WriteTemplate(folder, translatorTemplate, textBoxes, Console.Out)
+        : pseudoLanguagePack is not null ? Darklands.Presentation.TranslatorCommands.WritePseudoPack(folder, pseudoLanguagePack, textBoxes, Console.Out)
         : Darklands.Presentation.TranslatorCommands.CheckPack(folder, checkLanguagePack!, textBoxes, Console.Out);
 }
 NoteRun();
@@ -345,6 +347,18 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     if (settings.LanguagePack is { } languagePack)
     {
         game.Ui.UseLanguagePack(languagePack, Console.Error.WriteLine);
+        // a TrueType font of the pack: its glyphs are drawn again at the window's resolution (the renderer's text layer)
+        if (game.Ui.PackFonts.Values.Any(f => f is Darklands.Platform.IScalableFont))
+        {
+            host.Renderer ??= new HdRenderer(HdPack.Empty);
+            // a screenshot is the composed picture at 4x (the frame's 320x200 alone would show the 1x glyphs)
+            var shots = new HdRenderer(host.Renderer.Pack);
+            game.Ui.ScreenshotWriter = (screen, path) =>
+            {
+                var output = new Darklands.Platform.DisplayRectangle(0, 0, 4 * Darklands.Platform.Screen.Width, 4 * Darklands.Platform.Screen.Height);
+                PngCodec.Write(FrameCompositor.Compose(shots.Render(screen, output), output.Width, output.Height), path);
+            };
+        }
     }
     if (audioTrace is not null)
     {
