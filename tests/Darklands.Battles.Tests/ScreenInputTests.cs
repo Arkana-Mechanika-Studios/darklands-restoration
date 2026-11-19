@@ -493,8 +493,8 @@ public sealed class ScreenInputTests
         sheet.Show(state, 0);
         Assert.False(host.QuitRequested);
         var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
-        return ((int)typeof(CharacterSheetScreen).GetField("_cursor", flags)!.GetValue(sheet)!,
-            (bool)typeof(CharacterSheetScreen).GetField("_open", flags)!.GetValue(sheet)!);
+        var session = (Darklands.Simulation.SheetSession)typeof(CharacterSheetScreen).GetField("_s", flags)!.GetValue(sheet)!;
+        return (session.Cursor, session.IsOpen);
     }
 
     // orig: R031+0x161C: the Ctrl-F1..F5 case tests `slot < party-headcount` (DS:A67E); the character menu's sheet has party-headcount 0
