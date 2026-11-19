@@ -24,10 +24,22 @@ public sealed partial class CardContext
     /// pharmacist, Medici, Hanse, Fugger, village, City Lord, 11 castle).
     /// </summary>
     // orig: 290E:2107 entries 0..11 (OriginalWords.PatronNames)
-    public string PatronName(int k) => World.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.PatronNames, k);
+    public string PatronName(int k) => Word(Darklands.Content.Formats.Text.Strings.OriginalWords.PatronNames, k);
 
     /// <summary>The words of an EXE key (<c>exe:DS:XXXX</c>): a card's own copy of a word it puts into a text variable or names a shop by.</summary>
-    public string ExeText(string key) => World.Words.Exe(key);
+    public string ExeText(string key) => Translation?.Invoke(key) ?? World.Words.Exe(key);
+
+    /// <summary>Entry <paramref name="k"/> of one of the original's word tables, as the card texts put it in (a translation's words when there is one).</summary>
+    public string Word(Darklands.Content.Formats.Text.Strings.WordTable table, int k) =>
+        Translation is { } translation && translation(World.Words.Key(table, k)) is { } words ? words : World.Words.Text(table, k);
+
+    /// <summary>
+    /// A translation pack's words for a key (<c>exe:290E:0000</c>), or null to keep the original's: supplied by the presentation, which
+    /// alone knows the packs (null: no translation). The cards' own words only (the values of their text variables and shop names);
+    /// none of them is kept in a saved game or decides anything.
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (docs/LOCALISATION.md).
+    public Func<string, string?>? Translation { get; set; }
 
     /// <summary>The message shown when a missile weapon is needed: "You need a missile weapon" (the far string the slot 290E:1E5F points at).</summary>
     public const string NeedMissileWeapon = "exe:290E:049A";
@@ -50,7 +62,7 @@ public sealed partial class CardContext
     // C: the original indexes the table with any slot; here only 0..11 are looked up and other slots get "" (as 1.0; the cards that leave
     //   the name null ask for 0..3, 5, 8 and 9).
     private string ShopName(int shop, string? name) =>
-        name ?? (shop >= 0 && shop < 12 ? World.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.ShopNames, shop) : "");
+        name ?? (shop >= 0 && shop < 12 ? Word(Darklands.Content.Formats.Text.Strings.OriginalWords.ShopNames, shop) : "");
 
     /// <summary>Camping or lodging (R029 222a): mode 0 at an inn, 1 in the wilderness, 2 other lodging, 3 sleeping rough.</summary>
     // orig: R029+0x222A (0E76:222A): the camp screen (thunk 09C0:1EEB), then card-run (thunk 09C0:1EA5): its MEM.LOG query kept (CardRunQuery)

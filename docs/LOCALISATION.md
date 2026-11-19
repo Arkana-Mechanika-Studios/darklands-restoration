@@ -1,9 +1,9 @@
 # Localisation (translations)
 
 > **Status: being built for version 1.1.** A first form of translation packs works in the development branch: the
-> program loads a pack and shows its words on the screens it covers (below). Card texts, the cards' own words and the
-> battle screen's messages are not translatable yet, there is no in-game language screen yet, and the file layout may
-> still change before 1.1. This guide is updated as each part is built.
+> program loads a pack and shows its words on the screens and in the card texts it covers (below). The battle screen's
+> messages and the names in the data tables are not translatable yet, there is no in-game language screen yet, and the
+> file layout may still change before 1.1. This guide is updated as each part is built.
 
 This guide is for would-be translators first ([how you can help now](#how-translators-can-help-now)), then for
 developers ([the plan in steps](#the-plan-for-developers)).
@@ -19,10 +19,11 @@ developers ([the plan in steps](#the-plan-for-developers)).
 * **What a pack translates now:** the screens' own words (menus, labels, lists, prompts, notices and hints: everything a
   screen asks for by key), the entries of the original's word tables the screens show (months, canonical hours, fame
   titles, standing words, directions, town sizes, shop names, job names, skill names, risk words, the character
-  sheet's labels), and the program's own notices (a damaged saved game, missing mods ...).
-* **Not yet:** card texts (`.MSG` files) and the words the cards put into them (`$MonthName`, shop and patron names
-  ...), the battle screen's messages, item, saint and place names, and the program start's messages. These keep the
-  original English for now.
+  sheet's labels), the program's own notices (a damaged saved game, missing mods ...), the **card texts** (the `.MSG`
+  blocks, [written as below](#card-texts)) and the words the cards put into them (months, hours, lord titles, patron and
+  shop names, the cards' own words such as a physician's verdict).
+* **Not yet:** the battle screen's messages, item, saint and place names, and the program start's messages. These keep
+  the original English for now.
 * **Fonts.** The game draws its text with the original fonts, which have no letters beyond the original's set (the
   German edition's umlauts and ß are among them). A letter the font lacks is drawn as `?`. Font packs come later.
 
@@ -72,7 +73,7 @@ into words: from the pack when it has the id, else from the player's own files. 
 | `exe:290E:XXXX` | a string of the EXE's far string segment |
 | `id:rw.…` | a sentence of the restoration's own (the original has no such text): `id:rw.save.damaged.1` |
 | `id:card.…`, `id:skill.changed` | a sentence the original builds from pieces: the chance of an option, a skill report |
-| `msg:FILE#block` | a card text: block number in a `.MSG` file (not translatable yet) |
+| `msg:$FILE#block` | a card text: block number in a `.MSG` file (`msg:$ADDCH00#0`, Fluent id `msg-addch00-0`) |
 
 In a `.ftl` file a key is written as a Fluent identifier: lower case, `:` `.` `/` `#` `+` turned into `-`, `$` dropped.
 So `exe:DS:2FF2` is `exe-ds-2ff2` and `id:rw.save.damaged.1` is `id-rw-save-damaged-1`. Two keys never meet in one
@@ -94,7 +95,7 @@ my-translation-pack/
       exe.ftl          the EXE's strings and the word tables
       ui.ftl           the restoration's own notices
       msg/
-        CITYG04.ftl    card texts, one file per .MSG file (not read yet: card texts come next)
+        $CITYG04.ftl   card texts, one file per .MSG file (the file names are free; this one is the convention)
 ```
 
 `pack.json` must name the `language` (a language tag: `de`, `fr`, `pt-BR`; `qps` is the pseudo-locale); `name`,
@@ -114,6 +115,42 @@ exe-ds-2f71 = { $arg0 } verwaltet die Börse: { $arg1 } Gulden, { $arg2 } Grosch
 # the months (290E:1D43 points at 290E:0000 "January" ...)
 exe-290e-0000 = Januar
 ```
+
+## Card texts
+
+A card text is one Fluent message per block. Its control codes are written as tags:
+
+| Tag | What it is |
+|---|---|
+| `<br>` | the end of a line |
+| `<p>` | a paragraph (an empty line) |
+| `<opt>` | the start of an option line the player chooses |
+| `<opt-items>`, `<opt-saints>`, `<opt-battle>` | an option line that opens the item list, the saints' list, or starts a battle |
+| `<indent>` | the rest of the line, and its following lines, start here (the hanging indent after "...") |
+| `<if-1>` … `<endif>` | a passage the card shows or leaves out by its condition 1 (`<if-2>` the block's second passage, condition 2 …) |
+| `<x19>` | any other code byte, by its number |
+
+`$Names` (`$ChosenOneName`, `$MonthName`) stay as written: the game puts the words in. A line break in the `.ftl` file and the
+spaces round it count as one space, or as nothing next to a tag, so a long text may be wrapped freely. As Fluent requires,
+a line of the file may not start with `.`, `[` or `*`: start it with a tag or end the line before such a character.
+
+```
+# text/de/msg/$ADDCH00.ftl  (the German is only an illustration)
+msg-addch00-0 =
+    Ihr verbringt einige Zeit damit, mehr zu erfahren über...<br><p>
+    <opt>...<indent>einen alten Jugendfreund.<br>
+    <opt>...<indent>einen Söldner.<br>
+```
+
+**What must stay as the original's**, or the block is not used (the original text is shown, and the problem is reported
+on the console's error output):
+
+* the option lines: the same number, in the same order, of the same kinds (the menu chooses by line);
+* the passages: the same `<if-N>`, in the same order (the game counts a block's passages to know which condition each
+  tests, so they cannot be reordered);
+* the same `$Names` and the same `<xNN>` bytes (in any order, any number of times).
+
+`{` and `}` are Fluent's own: in a card text write them as `{"{"}` and `{"}"}` (the English texts hold none).
 
 The translator's template (planned) will give every key with the English and a comment saying what each argument
 is. The keys of a screen can also be found with the developer's inspector (a development build: hold F9 over a word; see
@@ -190,7 +227,7 @@ check passes.
    [the section above](#fonts-layout-and-mouse-areas); mouse areas of flowing text read from the layout. Nothing
    visible changes: the original English must give the original's frames exactly. The 1.1 high-resolution fonts
    (same metrics) are built on this step.
-4. **Fluent overlay loader.** (First form built: packs, the setting, the launcher row; card texts next.) Load `.ftl` files from translation packs over the original-language text. A missing
+4. **Fluent overlay loader.** (Built in 1.1: packs, the setting, the launcher row, the screens' words and the card texts.) Load `.ftl` files from translation packs over the original-language text. A missing
    message falls back to the original text; the game never shows an empty string. The Fluent library is chosen
    after a trial, before this step. The wrapping routine for long words belongs here, and so do fonts with their own
    metrics.

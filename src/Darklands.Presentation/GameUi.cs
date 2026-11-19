@@ -185,8 +185,12 @@ public sealed class GameUi
         }
         report($"language pack: {pack.Name} ({pack.Language}), {pack.Files} file(s)");
         Language = pack;
+        LanguageReport = report;
         return true;
     }
+
+    /// <summary>Where a translation the screens cannot use while playing is told (the pack's report; null: nowhere).</summary>
+    public Action<string>? LanguageReport { get; set; }
 
     /// <summary>
     /// A text's arguments as Fluent variables: a named one keeps its name (<c>$count</c>), a format string's positional ones are
