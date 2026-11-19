@@ -155,6 +155,26 @@ on the console's error output):
 
 `{` and `}` are Fluent's own: in a card text write them as `{"{"}` and `{"}"}` (the English texts hold none).
 
+**A pack's own variables.** A language may need words the English `$Names` do not give, such as a pronoun in each of its
+grammatical cases. A pack defines them in its `.ftl` files as `var-<name>` messages, chosen by the chosen character's sex
+(`$sex` is `female` or `male`); its card texts may then use `$<name>` beside the English block's `$Names`:
+
+```
+# text/de/ui.ftl  (German: the dative pronoun)
+var-him1 =
+    { $sex ->
+        [female] ihr
+       *[male] ihm
+    }
+
+# text/de/msg/$ARMOR00.ftl
+msg-armor00-12 = ... Ihr gebt $ChosenOneName $him1 ...
+```
+
+A name is letters and digits, and its case counts (`var-Him1` beside `var-him1`). The check allows in a card text exactly
+the English block's `$Names` and the pack's own (a translation need not use them all); any other is an error, and so is a
+variable that uses anything but `$sex`. As Fluent requires, each variant of a choice is on a line of its own.
+
 ## The translator's template and the pack check
 
 The program writes the template of your own game files, and checks a pack against them:
@@ -224,8 +244,9 @@ DarklandsRP <game folder> --edition-pack <folder> --from-edition <the other edit
 
 It takes each block by its key (the same `.MSG` file and block), keeps those that keep the English block's structure,
 says how many were left out and why, and checks the pack. Such a pack holds that edition's text: it is yours, not one to
-share. (The German edition's card texts: 2,790 of 3,753 blocks taken; the others use pronoun variables of their own, such
-as `$him1`, other option lines, or blocks the English does not have.)
+share. `--edition-variables <file.ftl>` adds a file of the pack's own variables (above). (The German edition's card texts,
+with its fifteen pronoun variables: 3,159 of 3,753 blocks taken; the others use other `$Names` or option lines, or are
+blocks the German edition does not have.)
 
 **Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
 environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to

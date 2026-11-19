@@ -61,7 +61,8 @@ public static class TranslatorCommands
     /// Writes to <paramref name="output"/> a pack of <paramref name="language"/> made from the card texts of the edition in
     /// <paramref name="otherFolder"/> (<see cref="EditionPack"/>), says what was left out and why, and checks it; 0 when written.
     /// </summary>
-    public static int WriteEditionPack(string gameFolder, string otherFolder, string language, string output, string? boxes, TextWriter say)
+    public static int WriteEditionPack(string gameFolder, string otherFolder, string language, string output, string? boxes, TextWriter say,
+        string? variables = null)
     {
         ArgumentNullException.ThrowIfNull(say);
         if (!GameFiles.IsGameFolder(otherFolder))
@@ -69,7 +70,7 @@ public static class TranslatorCommands
             say.WriteLine($"{otherFolder}: no game there (no DARKLAND.EXE)");
             return 1;
         }
-        var result = EditionPack.Write(new GameFiles(gameFolder), new GameFiles(otherFolder), language, $"Card texts of the edition in {otherFolder}", output);
+        var result = EditionPack.Write(new GameFiles(gameFolder), new GameFiles(otherFolder), language, $"Card texts of the edition in {otherFolder}", output, variables);
         foreach (var group in result.LeftOut.GroupBy(l => Reason(l.Why)).OrderByDescending(g => g.Count()))
         {
             say.WriteLine($"left out: {group.Count()} block(s): {group.Key} (for example {group.First().Key}: {group.First().Why})");

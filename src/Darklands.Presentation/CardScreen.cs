@@ -234,7 +234,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             return null;
         }
         var translation = pack.Localizer.Get(key);
-        var problem = Content.Formats.Text.CardTextForm.Check(translation, original);
+        var problem = Content.Formats.Text.CardTextForm.Check(translation, original, pack.Variables);
         if (problem is null && (ui.CardText.PackFont is not null || !Darklands.Core.TextCodes.FitsBytes(translation)))
         {
             codes = Content.Formats.Text.CardTextForm.ToCodes(translation, out problem);

@@ -89,7 +89,7 @@ public static class TextVariables
         var result = new List<int>(text.Length + 64);
         var name = new System.Text.StringBuilder();
         var inName = false;
-        int[] Value() => TextCodes.OfText(TextVariables.Value(name.ToString(), c) ?? "$" + name);
+        int[] Value() => TextCodes.OfText(TextVariables.Value(name.ToString(), c) ?? PackValue(name.ToString(), c) ?? "$" + name);
         foreach (var b in text)
         {
             if (b == 0)
@@ -125,8 +125,16 @@ public static class TextVariables
     private static byte[] Evaluate(List<byte> name, CardContext c)
     {
         var text = GameTextCodec.Decode([.. name]);
-        return GameTextCodec.Encode(Value(text, c) ?? "$" + text);
+        return GameTextCodec.Encode(Value(text, c) ?? PackValue(text, c) ?? "$" + text);
     }
+
+    // a translation pack's own variable, for a name the game does not know (null: none, or no pack, as the original: "$name" stays)
+    private static string? PackValue(string name, CardContext c) =>
+        c.PackVariable is { } pack ? pack(name, ChosenIsFemale(c)) : null;
+
+    /// <summary>Whether the chosen one (text-slot-chosen-one) is female, as the pronouns read it (Value).</summary>
+    public static bool ChosenIsFemale(CardContext c) =>
+        Member(c, c.Variables.Chosen[0]) is { } chosenOne ? chosenOne.IsFemale : OutsideByte(c, c.Variables.Chosen[0], SexAt) is > 0;
 
     /// <summary>The value of one variable, or null when it is not one the game knows.</summary>
     // orig: text-slot-expand R043+0x1316 (150B:0886) draft (its switch on the variable index)

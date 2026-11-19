@@ -64,6 +64,19 @@ public static class LanguagePackCheck
             {
                 continue;
             }
+            if (message.Id.StartsWith(LanguagePack.VariablePrefix, StringComparison.Ordinal))
+            {
+                // a pack's own card-text variable: a name of letters and digits, chosen by $sex only
+                if (!pack.Variables.Contains(message.Id[LanguagePack.VariablePrefix.Length..]))
+                {
+                    Add(Severity.Error, "a variable's name is letters and digits only (var-him1): it is not used");
+                }
+                else if (message.Variables.Except(["sex"]).Any())
+                {
+                    Add(Severity.Error, $"a variable may only use $sex (female or male), not {string.Join(", ", message.Variables.Except(["sex"]).Select(v => "$" + v))}");
+                }
+                continue;
+            }
             if (!byId.TryGetValue(message.Id, out var english))
             {
                 Add(Severity.Error, "no text of the game has this id (a typing mistake, or a text not translatable yet): it is not used");
@@ -138,7 +151,7 @@ public static class LanguagePackCheck
         var hash = key.IndexOf('#', StringComparison.Ordinal);
         var block = assets.Messages(key[4..hash]).Blocks[int.Parse(key.AsSpan(hash + 1), CultureInfo.InvariantCulture)];
         var translation = pack.Localizer.Get(key);
-        if (CardTextForm.Check(translation, block.Text) is { } problem)
+        if (CardTextForm.Check(translation, block.Text, pack.Variables) is { } problem)
         {
             add(Severity.Error, problem + ": the original text is shown");
             return;

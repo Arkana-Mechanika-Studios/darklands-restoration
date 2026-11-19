@@ -687,6 +687,7 @@ public sealed class DarklandsGame
         context = new CardContext(state, World, screen) { Variables = _cardVariables };
         // the cards' own words (their text variables, shop names) in the translation pack's language when it has them
         context.Translation = key => _ui.Language is { } pack && pack.Localizer.IsTranslated(key) ? pack.Localizer.Get(key) : null;
+        context.PackVariable = (name, female) => _ui.Language?.Variable(name, female);
         context.TakeEngineGlobals(_lastCards);
         _lastCards = context;
         context.PersonalNames = _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")));

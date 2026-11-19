@@ -41,6 +41,13 @@ public sealed partial class CardContext
     // Not in the original: the 1.1 translation packs (docs/LOCALISATION.md).
     public Func<string, string?>? Translation { get; set; }
 
+    /// <summary>
+    /// A translation pack's own card-text variable (its name, whether the chosen one is female): its words, or null (none, or no pack).
+    /// Asked only for a name the game does not know (TextVariables).
+    /// </summary>
+    // Not in the original: the 1.1 translations (docs/LOCALISATION.md: a language's inflected pronouns).
+    public Func<string, bool, string?>? PackVariable { get; set; }
+
     /// <summary>The message shown when a missile weapon is needed: "You need a missile weapon" (the far string the slot 290E:1E5F points at).</summary>
     public const string NeedMissileWeapon = "exe:290E:049A";
 

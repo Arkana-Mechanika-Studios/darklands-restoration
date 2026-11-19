@@ -184,6 +184,25 @@ public sealed class FluentLocalizer : ILocalizer
         return null;
     }
 
+    /// <summary>
+    /// The message <paramref name="id"/> as written in the files (no key mangling: a pack's own variables keep their case, <c>var-Him1</c>
+    /// beside <c>var-him1</c>), or null when there is none.
+    /// </summary>
+    public string? GetById(string id, IReadOnlyDictionary<string, object?>? args = null)
+    {
+        ArgumentNullException.ThrowIfNull(id);
+        lock (_gate)
+        {
+            if (!_bundle.HasMessage(id))
+            {
+                return null;
+            }
+            _bundle.TryGetMessage(id, ConvertArgs(args), out var errors, out var text);
+            NoteRuntime(id, errors);
+            return text;
+        }
+    }
+
     private static string? IdOrNull(string key)
     {
         try

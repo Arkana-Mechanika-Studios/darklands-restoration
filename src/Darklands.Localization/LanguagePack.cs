@@ -56,6 +56,27 @@ public sealed class LanguagePack
     /// <summary>How many <c>.ftl</c> files were read.</summary>
     public int Files { get; }
 
+    /// <summary>The prefix of a pack's own card-text variables: <c>var-him1</c> is <c>$him1</c>.</summary>
+    public const string VariablePrefix = "var-";
+
+    /// <summary>
+    /// The pack's own card-text variables (docs/LOCALISATION.md): the names its <c>var-&lt;name&gt;</c> messages define, which its card
+    /// texts may use beside the English <c>$Names</c> (a language's inflected pronouns: <c>$him1</c>).
+    /// </summary>
+    public IReadOnlySet<string> Variables => _variables ??= Messages
+        .Select(m => m.Message.Id)
+        .Where(id => id.StartsWith(VariablePrefix, StringComparison.Ordinal) && id.Length > VariablePrefix.Length && id[VariablePrefix.Length..].All(char.IsAsciiLetterOrDigit))
+        .Select(id => id[VariablePrefix.Length..])
+        .ToHashSet(StringComparer.Ordinal);
+
+    private IReadOnlySet<string>? _variables;
+
+    /// <summary>The words of the pack's variable <paramref name="name"/> for the chosen one's sex (<c>$sex</c>: female or male), or null.</summary>
+    public string? Variable(string name, bool female) =>
+        Variables.Contains(name)
+            ? Localizer.GetById(VariablePrefix + name, new Dictionary<string, object?> { ["sex"] = female ? "female" : "male" })
+            : null;
+
     /// <summary>The messages the files define as written (the file relative to the pack's folder): for the pack's checks.</summary>
     public IReadOnlyList<(string File, FtlSource.Message Message)> Messages { get; }
 

@@ -103,6 +103,7 @@ var pseudoLanguagePack = Option("--pseudo-language-pack");
 var editionPack = Option("--edition-pack");
 var fromEdition = Option("--from-edition");
 var editionLanguage = Option("--edition-language") ?? "de";
+var editionVariables = Option("--edition-variables");
 var textBoxes = Option("--text-boxes");
 // --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods
 var mods = new List<string>();
@@ -180,7 +181,7 @@ if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLan
         : pseudoLanguagePack is not null ? Darklands.Presentation.TranslatorCommands.WritePseudoPack(folder, pseudoLanguagePack, textBoxes, Console.Out)
         : editionPack is not null ? (fromEdition is null
             ? Fail("--edition-pack needs --from-edition <the other edition's game folder>")
-            : Darklands.Presentation.TranslatorCommands.WriteEditionPack(folder, fromEdition, editionLanguage, editionPack, textBoxes, Console.Out))
+            : Darklands.Presentation.TranslatorCommands.WriteEditionPack(folder, fromEdition, editionLanguage, editionPack, textBoxes, Console.Out, editionVariables))
         : Darklands.Presentation.TranslatorCommands.CheckPack(folder, checkLanguagePack!, textBoxes, Console.Out);
 }
 NoteRun();

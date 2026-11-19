@@ -17,11 +17,20 @@ public static class EditionPack
     /// <summary>What was taken: the blocks written, and the blocks left out with why (their key and the check's words).</summary>
     public sealed record Result(int Written, IReadOnlyList<(string Key, string Why)> LeftOut);
 
-    /// <summary>Writes the pack of <paramref name="other"/>'s card texts in <paramref name="language"/> to <paramref name="folder"/>.</summary>
-    public static Result Write(GameFiles english, GameFiles other, string language, string name, string folder)
+    /// <summary>
+    /// Writes the pack of <paramref name="other"/>'s card texts in <paramref name="language"/> to <paramref name="folder"/>; with
+    /// <paramref name="variables"/>, a Fluent file of the pack's own variables (<c>var-him1 = ...</c>) copied in, whose names the card
+    /// texts may use.
+    /// </summary>
+    public static Result Write(GameFiles english, GameFiles other, string language, string name, string folder, string? variables = null)
     {
         ArgumentNullException.ThrowIfNull(english);
         ArgumentNullException.ThrowIfNull(other);
+        var source = variables is null ? null : File.ReadAllText(variables);
+        var names = source is null
+            ? new HashSet<string>(StringComparer.Ordinal)
+            : FtlSource.Messages(source).Select(m => m.Id).Where(id => id.StartsWith(LanguagePack.VariablePrefix, StringComparison.Ordinal))
+                .Select(id => id[LanguagePack.VariablePrefix.Length..]).ToHashSet(StringComparer.Ordinal);
         var theirs = new GameAssets(other);
         var messages = new List<TranslatorTemplate.Message>();
         var leftOut = new List<(string, string)>();
@@ -50,7 +59,7 @@ public static class EditionPack
                 leftOut.Add((e.Key, "the other edition has no such block"));
                 continue;
             }
-            if (CardTextForm.Check(translation, e.Raw) is { } why)
+            if (CardTextForm.Check(translation, e.Raw, names) is { } why)
             {
                 leftOut.Add((e.Key, why));
                 continue;
@@ -59,6 +68,10 @@ public static class EditionPack
                 TranslatorTemplate.CardValueOf(translation), [e.Key + " · from the other edition"]));
         }
         TranslatorTemplate.Write(folder, messages, language, name);
+        if (source is not null)
+        {
+            File.WriteAllText(Path.Combine(folder, LanguagePack.TextFolder(language), "variables.ftl"), source);
+        }
         return new Result(messages.Count, leftOut);
     }
 }
