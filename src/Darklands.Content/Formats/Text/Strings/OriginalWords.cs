@@ -100,13 +100,16 @@ public sealed class OriginalWords(DarklandsExecutable exe)
     //   "pfs" (DS:3D65, R036+0x0BE7) (CampStay.Detail)
     public static readonly WordTable CampWords = WordTable.Data("camp-words", 0x3D5C, 0x3D63, 0x3D65);
 
+    // orig: R136+0xA4F7 = 290E:1E67, 26 far strings: the character sheet's attribute and skill labels of the open boxes (R031+0x2B14)
+    public static readonly WordTable SheetLabels = WordTable.Far("sheet-labels", 0x1E67, 26);
+
     // orig: grade-words DS:4FCE, 7 near pointers (DS:4E54 "very poor" .. DS:4E81 "superb"), read by chance-line R029+0x5B62 and the
     //   Shift hint R043+0x27E6; the words round it (index 7 DS:6F43, -1 DS:0000, -2 DS:7461) are empty strings (GradeWord)
     public static readonly WordTable GradeWords = WordTable.Near("grade-words", 0x4FCE, 7);
 
     /// <summary>Every table, for reports and tests.</summary>
     public static IReadOnlyList<WordTable> All { get; } =
-        [FameTitles, StandingWords, Directions, TownSizes, TownSizesTab, ShopNames, JobNames, SkillNames, RiskWords, CampWords, GradeWords];
+        [FameTitles, StandingWords, Directions, TownSizes, TownSizesTab, ShopNames, JobNames, SkillNames, RiskWords, CampWords, GradeWords, SheetLabels];
 
     /// <summary>The words read from the player's EXE.</summary>
     public static OriginalWords Load(GameFiles files) => new(DarklandsExecutable.Load(files));

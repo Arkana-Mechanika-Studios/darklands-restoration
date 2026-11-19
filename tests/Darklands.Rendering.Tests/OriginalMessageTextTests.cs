@@ -96,16 +96,16 @@ public sealed class OriginalMessageTextTests
             return;
         }
         var keys = KeysIn("Darklands.Presentation");
-        Assert.Equal(137, keys.Count);
+        Assert.Equal(353, keys.Count);
         foreach (var key in keys.Concat([SaintPrayer.CallSuccessful, SaintPrayer.CallFailsWithLoss, SaintPrayer.CallFails]))
         {
             var entry = table.Find(key);
             Assert.True(entry is { Origin: StringOrigin.Known }, $"{key} is not a known string of the extractor");
             Assert.Equal(entry!.Text, text.Text(GameText.Of(key)));
         }
-        // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was read back against the literal it replaced (L-6, first set)
+        // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was read back against the literal it replaced (L-6)
         var joined = string.Join('\n', keys.Select(k => k + "=" + Encoding.Latin1.GetString(GameTextCodec.Encode(text.Text(GameText.Of(k))))));
-        Assert.Equal("6CB5991DF60FBDF71AE363D28671971C76B954BE0774DA2790812DD22D1AA86B",
+        Assert.Equal("3BC82A6EC1FE3D170A7FC7B674261349B132507E56BCBE302CEC68D43848AEBD",
             Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(joined))));
         Assert.Equal(text.Text(GameText.Of(SaintPrayer.CallFails)), text.Text(GameText.Of(SaintPrayer.CallFailsWithLoss)));
     }
@@ -164,6 +164,67 @@ public sealed class OriginalMessageTextTests
         Assert.Equal(55, all.Count);
         Assert.Equal("53B8C32F4BA86E2680A9F5D335A64C7CEC8F3FBBA9B3E50C0EC24DD714EE65AF",
             Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(string.Join('\n', all)))));
+    }
+
+    [Fact]
+    public void TheSecondSetsFormatsPrintWhat1Point0Printed()
+    {
+        if (Text.Value is not { } text)
+        {
+            return;
+        }
+        string F(string key, params object[] args) => text.Text(GameText.Format(key, args));
+        var all = new List<string>();
+        foreach (var price in new[] { 0, 1, 1000 })
+        {
+            all.Add(F("exe:DS:3DEE", price / 12, price % 12));
+            foreach (var (fl, gr, pf) in new[] { (0, 0, 0), (12, 19, 11) })
+            {
+                all.Add(F("exe:DS:3E5A", price / 12, price % 12, fl, gr, pf));
+                all.Add(F("exe:DS:3ECE", price / 12, price % 12, fl, gr, pf));
+            }
+        }
+        foreach (var (days, risk) in new[] { (1, 0), (12, 47) })
+        {
+            all.Add(F("exe:DS:3F4C", days, risk / 5));
+        }
+        all.Add(F("exe:DS:3FE7", "Anna"));
+        foreach (var gain in new[] { 0, 3, 9 })
+        {
+            all.Add(F("exe:DS:3A2C", gain, "x"));
+            all.Add(F("exe:DS:3A34", gain, "x"));
+            all.Add(F("exe:DS:3A4F", gain, "x"));
+            all.Add(F("exe:DS:3A70", gain, "potions"));
+            all.Add(F("exe:DS:3A7B", gain, "Day Laborer"));
+            all.Add(F("exe:DS:3A90", gain, "x"));
+        }
+        all.Add(F("exe:DS:3AA4", "40pfs"));
+        foreach (var v in new[] { 0, 7, 32767 })
+        {
+            all.Add(F("exe:DS:375A", v));
+            all.Add(F("exe:DS:3765", v));
+            all.Add(F("exe:DS:3771", v));
+            all.Add(F("exe:DS:377E", v * 240));
+            all.Add(F("exe:DS:3795", v));
+            all.Add(F("exe:DS:37A0", v));
+        }
+        all.Add(F("exe:DS:3752", "north"));
+        foreach (var (name, q, count) in new[] { ("Longsword", 25, 1), ("Arrows", 7, 120) })
+        {
+            all.Add(F("exe:DS:2DC2", name, q, count));
+        }
+        foreach (var (a, b) in new[] { (0, 0), (5, 12), (25, 30) })
+        {
+            all.Add(F("exe:DS:2E21", a, b));
+            all.Add(F("exe:DS:2E73", a));
+        }
+        all.Add(F("exe:DS:23DC", "the second"));
+        // SHA-256 of the 65 lines as 1.0's interpolations printed the same samples (scratch formats2_hash.py mirrors each one)
+        Assert.Equal(65, all.Count);
+        Assert.Equal("4280A8EDBAA71AD56FF90A27491061B0E26600DC9569E29635A8C677B61EF39D",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(string.Join('\n', all)))));
+        // the original's "%02d" prints a negative value with its sign and one digit ("-5"; 1.0's C# printed "-05" for a negative load)
+        Assert.Equal("-5/40", F("exe:DS:2E21", -5, 40));
     }
 
     private static List<string> KeysIn(string project) =>

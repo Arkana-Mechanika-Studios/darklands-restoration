@@ -225,14 +225,14 @@ public sealed partial class BattleScreen
             }
             return;
         }
-        small.Draw(canvas, 4, y, "Natrl Armr", 0x0F);
+        small.Draw(canvas, 4, y, _ui.Words("exe:DS:2334"), 0x0F);
         y += 8;
         if (!expert)
         {
             small.Draw(canvas, 4, --y, " - " + Word(Math.Clamp(c.WeaponClass & 0x0F, 0, 6)), 0x0F);
             y += 8;
         }
-        small.Draw(canvas, 4, y, "Natrl Weapn", 0x0F);
+        small.Draw(canvas, 4, y, _ui.Words("exe:DS:2345"), 0x0F);
         y += 8;
         if (!expert)
         {
