@@ -131,6 +131,7 @@ A card text is one Fluent message per block. Its control codes are written as ta
 | `<indent>` | the rest of the line, and its following lines, start here (the hanging indent after "...") |
 | `<if-1>` … `<endif>` | a passage the card shows or leaves out by its condition 1 (`<if-2>` the block's second passage, condition 2 …) |
 | `<x19>` | any other code byte, by its number |
+| `<lt>`, `<gt>` | a `<` or `>` of the text itself |
 
 `$Names` (`$ChosenOneName`, `$MonthName`) stay as written: the game puts the words in. A line break in the `.ftl` file and the
 spaces round it count as one space, or as nothing next to a tag, so a long text may be wrapped freely. As Fluent requires,
@@ -213,6 +214,18 @@ DarklandsRP <game folder> --pseudo-language-pack <folder>   [--text-boxes <file 
 writes a `qps` pack of every text a third longer, its vowels marked (a → ä, o → ö, u → ü, so a text from the pack is seen at
 once and the game's fonts draw it), its tags, `$Names`, arguments and hot keys kept, and lists with the check where it
 does not fit. Play with it (`--language-pack <folder>`) to see the screens in it.
+
+**Another edition's texts.** If you own another edition of the game (the German one), the program can make a pack of
+its card texts for your own use, to see a long language on the screens:
+
+```
+DarklandsRP <game folder> --edition-pack <folder> --from-edition <the other edition's folder> [--edition-language de]
+```
+
+It takes each block by its key (the same `.MSG` file and block), keeps those that keep the English block's structure,
+says how many were left out and why, and checks the pack. Such a pack holds that edition's text: it is yours, not one to
+share. (The German edition's card texts: 2,790 of 3,753 blocks taken; the others use pronoun variables of their own, such
+as `$him1`, other option lines, or blocks the English does not have.)
 
 **Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
 environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to

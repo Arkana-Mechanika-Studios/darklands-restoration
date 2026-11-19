@@ -76,7 +76,7 @@ public static class TranslatorTemplate
         var text = Path.Combine(folder, LanguagePack.TextFolder(language));
         Directory.CreateDirectory(text);
         File.WriteAllText(Path.Combine(folder, LanguagePack.ManifestName),
-            "{ \"language\": \"" + language + "\", \"name\": \"" + name + "\", \"base\": \"483.07\" }\n");
+            System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, string> { ["language"] = language, ["name"] = name, ["base"] = "483.07" }) + "\n");
         foreach (var group in messages.GroupBy(m => m.File, StringComparer.Ordinal))
         {
             var path = Path.Combine(text, group.Key.Replace('/', Path.DirectorySeparatorChar));
@@ -157,6 +157,9 @@ public static class TranslatorTemplate
 
     // a card text's written form over several lines: a new line after each <br> and <p>, unless what follows would start the line with a
     //   character Fluent gives a meaning there (. [ *) or a space (the line break would eat it)
+    /// <summary>A card text's written form as a Fluent value (over several lines, its edge spaces kept), as the template writes it.</summary>
+    public static string CardValueOf(string written) => CardValue(written);
+
     private static string CardValue(string written)
     {
         var value = new StringBuilder("\n    ");

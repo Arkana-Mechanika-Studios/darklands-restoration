@@ -96,6 +96,15 @@ public static class CardTextForm
                 }
                 var name = written[(i + 1)..end];
                 byte code;
+                if (name is "lt" or "gt")
+                {
+                    // a text's own angle bracket (the German edition writes some): text, not a code
+                    pendingBreak = false;
+                    text.Append(name == "lt" ? '<' : '>');
+                    lastWasTag = false;
+                    i = end;
+                    continue;
+                }
                 if (Darklands.Core.TextCodes.TagAt(written, i, out var colour, out _))
                 {
                     // a colour tag (<c12> ... </c>): the original's colour byte
@@ -154,7 +163,7 @@ public static class CardTextForm
             if (run.Count > 0)
             {
                 // Fluent's own braces, should a text ever hold one, as string literals
-                written.Append(Darklands.Core.TextCodes.ToTags(Darklands.Core.GameTextCodec.Decode([.. run])).Replace("{", "\u0001").Replace("}", "{\"}\"}").Replace("\u0001", "{\"{\"}"));
+                written.Append(Darklands.Core.TextCodes.ToTags(Darklands.Core.GameTextCodec.Decode([.. run]).Replace("<", "\u0002").Replace(">", "<gt>").Replace("\u0002", "<lt>")).Replace("{", "\u0001").Replace("}", "{\"}\"}").Replace("\u0001", "{\"{\"}"));
                 run.Clear();
             }
         }

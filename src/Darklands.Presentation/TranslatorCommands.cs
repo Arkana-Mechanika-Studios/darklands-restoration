@@ -57,6 +57,34 @@ public static class TranslatorCommands
         return CheckPack(gameFolder, output, boxes, say);
     }
 
+    /// <summary>
+    /// Writes to <paramref name="output"/> a pack of <paramref name="language"/> made from the card texts of the edition in
+    /// <paramref name="otherFolder"/> (<see cref="EditionPack"/>), says what was left out and why, and checks it; 0 when written.
+    /// </summary>
+    public static int WriteEditionPack(string gameFolder, string otherFolder, string language, string output, string? boxes, TextWriter say)
+    {
+        ArgumentNullException.ThrowIfNull(say);
+        if (!GameFiles.IsGameFolder(otherFolder))
+        {
+            say.WriteLine($"{otherFolder}: no game there (no DARKLAND.EXE)");
+            return 1;
+        }
+        var result = EditionPack.Write(new GameFiles(gameFolder), new GameFiles(otherFolder), language, $"Card texts of the edition in {otherFolder}", output);
+        foreach (var group in result.LeftOut.GroupBy(l => Reason(l.Why)).OrderByDescending(g => g.Count()))
+        {
+            say.WriteLine($"left out: {group.Count()} block(s): {group.Key} (for example {group.First().Key}: {group.First().Why})");
+        }
+        say.WriteLine($"edition pack: {result.Written} card texts in {output}, {result.LeftOut.Count} left out");
+        return CheckPack(gameFolder, output, boxes, say);
+    }
+
+    // the kind of a structure problem, without the block's own tags (so like ones count together)
+    private static string Reason(string why)
+    {
+        var at = why.IndexOf(" (", StringComparison.Ordinal);
+        return at > 0 ? why[..at] : why;
+    }
+
     /// <summary>Checks the pack in <paramref name="pack"/> against the game in <paramref name="gameFolder"/>; 0 when nothing stops its texts being used.</summary>
     public static int CheckPack(string gameFolder, string pack, string? boxes, TextWriter say)
     {
