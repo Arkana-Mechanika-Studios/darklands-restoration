@@ -11,18 +11,18 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
-| rules | 104 | 24 | 80 |
+| rules | 105 | 24 | 81 |
 | cards | 77 | 3 | 74 |
 | events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
 | battles | 68 | 32 | 36 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 15 | 8 | 7 |
+| screens/presentation | 14 | 8 | 6 |
 | total | 279 | 73 | 206 |
 
-## Core logic (264)
+## Core logic (265)
 
-### rules (104)
+### rules (105)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
@@ -337,6 +337,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fd421f** `bug`, no fix flag - `src/Darklands.Core/Rules/Trading.cs:321` `Trading.Buy`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: buying into a full pack loses the money: the price is paid before the item is added and the screen does not test the pack, so with 64 stacks and none that the item joins, AddStack adds nothing and the money is not given back.
+- **B-abb9be** `bug`, no fix flag - `src/Darklands.Simulation/BarterSession.cs:97` `BarterSession.Purchase`  
+  original: `R032+0x0F60` (1462:0F60, draft)  
+  why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 
 ### cards (77)
 
@@ -857,13 +860,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (15)
+## Presentation and host (14)
 
-### screens/presentation (15)
+### screens/presentation (14)
 
-- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:242` `BarterScreen.Purchase`  
-  original: `R032+0x0F60` (1462:0F60, draft)  
-  why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 - **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.Drawing.cs:50` `BattleScreen.RecordScreenPlaces`  
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
   why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.

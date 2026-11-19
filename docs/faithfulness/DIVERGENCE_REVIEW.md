@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 57 entries; recommendations: document: 2, justify: 41, keep: 14.
-- Part B (undefined-memory in core logic): 160 entries; determinism: deterministic: 1, n/a: 83, no: 63, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 161 entries; determinism: deterministic: 1, n/a: 83, no: 63, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -503,7 +503,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (39)
+### rules (40)
 
 - **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -661,6 +661,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R040+0x0C22` (1462:0C22, draft)  
   divergence: rows past the pile's end are ignored (see LootSharing.Get).  
   deterministic: **no** (checked against the original); action: **keep** - The pile G reads past its end (R040+0x0DF6, only DS:8DBC != 0 tested) is the far block the battle passes: loot-view R014+0xE530 allocates 6000 bytes with DOS 48h (root 05BA:0004, nothing cleared) right after freeing the battlefield buffers, and R014+0xE56C copies only count * 6 bytes of the list into it (disassembly checked); a removal (R040+0x12EC) moves entry [count] down, also from that block. So the entries past the end are whatever DOS memory held: undefined, not reproducible (a code past the item table would also be stored in the pack and saved). The battle is the only caller of the loot screen. Kept: not modelled with evidence (see D-87c67a).
+- **D-03c80e** `undefined-memory` - `src/Darklands.Simulation/SheetSession.cs:289` `SheetSession.Give`  
+  original: `R031+0x10AE` (1462:10AE, draft)  
+  divergence: Ctrl-F1 makes to −1, which the original reads as the record before member 0; here nothing is given.  
+  deterministic: **partly** (checked against the original); action: **keep** - Ctrl-F1 with the pack open (R031+0x1612..0x16ED) makes member 0 the leader and falls into the give case with to = -1: it reads record -1's status DS:9BE9 and count DS:9C53. DS:9BE9 is not the menu bar's: it is the first word of line 19 of the battle's Throw sub-menu (DS:9A47 + 19 * 0x16, 22-byte records, written by R019+0x0C80 through the index, which an absolute-address scan misses), 0 at start-up (BSS, read in the oracle machine) and written only when a battle lists 19 or more Throw lines for one member (at most 20: 9 potions x 3 grades, trimmed), then the low byte of a potion-name pointer (DS:114A = 0x0EB0, DS:114E[] = 0x0EB1 + 11i: never 0 or 5). While it is 0 the original returns, as the C#. After such a battle the give runs when the low byte of DS:9C53 (the last sub-menu's text column, R000 menu code) is below 0x40 signed: R031+0x4850 / R031+0x48CC give to -1, which give-item-record-form takes as the leader (member 0), and the item is taken from the member even when member 0's pack is full (lost). Deterministic only with the session's Throw lists and the menu bar's geometry modelled (the same not-modelled UI memory as DS:9C53 in D-8bb04c), and data-damaging when it acts: kept, not modelled with evidence.
 
 ### cards (70)
 

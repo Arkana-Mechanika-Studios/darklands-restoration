@@ -12,7 +12,7 @@ namespace Darklands.Presentation;
 /// arrows move and switch lists, Ctrl-F1..F5 choose who leads the haggling (Charisma counts),
 /// D drops one item. Draws and redraws the parts the original redraws, when it does.
 /// </summary>
-// orig: barter overlay R032 = R032 (linked paragraph 1462, payload = offset) draft (the byte match 8/11); rules in Trading; checked visually with Darklands.Host.Headless screen:barter
+// orig: barter overlay R032 = R032 (linked paragraph 1462, payload = offset) draft (the byte match 8/11); the lists and keys in Simulation.BarterSession, rules in Trading; checked visually with Darklands.Host.Headless screen:barter
 public sealed class BarterScreen
 {
     // C: a click on menu row 2 (the blank line) gives 0x1E41 ('A'), which no case handles: kept as a no-op key.
@@ -47,45 +47,31 @@ public sealed class BarterScreen
     private readonly BuySellPage _page;
     private readonly GameState _state;
     private readonly IGameScreens _screens;
-    private readonly Shop _shop;
-    private readonly int _leaderBefore;
-
-    private ShopStock _stock = new([], []);
-    private int _member;
-
-    // Per member, as in the original: buying or selling, the stack count, the pack list's top and cursor.
-    private readonly bool[] _buying = [true, true, true, true, true];
-    private readonly int[] _packCount = new int[5];
-    private readonly int[] _packTop = new int[5];
-    private readonly int[] _packRow = new int[5];
-
-    // The shop list's top and cursor (one for everybody).
-    private int _shopTop;
-    private int _shopRow;
+    private readonly Simulation.BarterSession _s;
 
     public BarterScreen(BuySellPage page, GameState state, IGameScreens screens, int shop, string? name, long categories)
     {
         _page = page;
         _state = state;
         _screens = screens;
-        _shop = Trading.Open(state, shop, name, categories);
-        _leaderBefore = state.Party.LeaderIndex;
-        _member = state.Party.LeaderIndex;
+        _s = new Simulation.BarterSession(state, shop, name, categories, page.BarterListing);
     }
 
     private Core.Characters.Party Party => _state.Party;
 
     // orig: trade-screen-entry R032+0x0058: DS:869C = name ? name : R136+0xA70F[shop] (OriginalWords.ShopNames)
     /// <summary>The shop's name: the one it was opened under, else its entry of the name table.</summary>
-    private string ShopName => _shop.Name ?? _page.Ui.Assets.Words.Text(OriginalWords.ShopNames, _shop.Number);
+    private string ShopName => _s.Shop.Name ?? _page.Ui.Assets.Words.Text(OriginalWords.ShopNames, _s.Shop.Number);
 
     private int Leader => Party.LeaderIndex;
+
+    private int Member => _s.Member;
 
     private Core.Characters.Pack PackOf(int member) => Party.Slot(member).Pack;
 
     /// <summary>Runs the screen until the player leaves.</summary>
     // orig: trade-screen-entry R032+0x0000 (1462:0000) draft (unmatched: registers/slots); main loop
-    // C: on entry the five members' modes are set to buying, their counts, tops and cursors and the shared shop top/cursor to 0 (the field initialisers).
+    // C: on entry the five members' modes are set to buying, their counts, tops and cursors and the shared shop top/cursor to 0 (BarterSession).
     public void Run()
     {
         DrawScreen();
@@ -115,7 +101,7 @@ public sealed class BarterScreen
         {
             // orig: trade-screen-close R032+0x076C (1462:076C) draft (byte-matched function): restores the fonts, the panel mode flags DS:9920/DS:9934 and leader = DS:884C.
             // DIVERGENCE: fonts and panel mode flags are host state not modelled here; only the leader is restored.
-            Simulation.GameCommands.Lead(_state, _leaderBefore);
+            _s.End();
         }
     }
 
@@ -132,48 +118,46 @@ public sealed class BarterScreen
         var key = _page.MenuStep(ref lit, MenuKeys, 9);
         if (_page.HeldRow(BuySellPage.LowerRowAt) is { } packRow)
         {
-            _buying[_member] = false;
-            _packRow[_member] = packRow;
+            _s.ChoosePackRow(packRow);
             ShowSelling();
             _page.Recolor(0x3C, 0x55, 0xFA, 0x78, BuySellPage.Lit, BuySellPage.Ink);
-            _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xFA);
+            _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
             _page.WaitForRelease();
         }
         if (_page.HeldRow(BuySellPage.UpperRowAt) is { } shopRow)
         {
-            _buying[_member] = true;
-            _shopRow = shopRow;
+            _s.ChooseShopRow(shopRow);
             ShowBuying();
             _page.Recolor(0x3C, 0x55, 0xFA, 0x78, BuySellPage.Lit, BuySellPage.Ink);
-            _page.Light(0x52, _shopRow * 8 + 0x55, 0xFA);
+            _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xFA);
             _page.WaitForRelease();
         }
         if (_page.Held(BuySellPage.OnLowerUpArrow))
         {
             _page.WaitForRelease();
             key = Keys.Up;
-            _buying[_member] = false;
+            _s.UseList(buying: false);
             ShowSelling();
         }
         if (_page.Held(BuySellPage.OnLowerDownArrow))
         {
             _page.WaitForRelease();
             key = Keys.Down;
-            _buying[_member] = false;
+            _s.UseList(buying: false);
             ShowSelling();
         }
         if (_page.Held(BuySellPage.OnUpperUpArrow))
         {
             _page.WaitForRelease();
             key = Keys.Up;
-            _buying[_member] = true;
+            _s.UseList(buying: true);
             ShowBuying();
         }
         if (_page.Held(BuySellPage.OnUpperDownArrow))
         {
             _page.WaitForRelease();
             key = Keys.Down;
-            _buying[_member] = true;
+            _s.UseList(buying: true);
             ShowBuying();
         }
         // C: member-sheet-overlay-entry(row) returns the member to show next; barter ignores it and redraws (pic, palette, panel, the lists).
@@ -230,207 +214,131 @@ public sealed class BarterScreen
         }
     }
 
-    // orig: trade-screen-keys R032+0x0F60 draft, case P; the rule is Trading.Buy
+    // orig: trade-screen-keys R032+0x0F60 draft, case P (BarterSession.Purchase)
     private void Purchase()
     {
-        // C: only the list in use (DS:8842[who]) and the count DS:885C != 0 are tested; the code is DS:86A2[top + row].
-        if (!_buying[_member] || _stock.Codes.Count == 0)
-        {
-            return;
-        }
-        var index = _shopTop + _shopRow;
-        // BUG: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end;
-        //   P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any),
-        //   at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices,
-        //   rates and adds DS:86A2[3]).
-        var code = index < _stock.Codes.Count ? _stock.Codes[index] : _page.BarterListing[index];
-        var count = Trading.Buy(_state, _shop, _member, code);
-        if (count < 0)
+        if (!_s.Purchase())
         {
             return;
         }
         RedrawPurse(PurseAfterPurchase);
-        _packCount[_member] = count;
         DrawPackItems();
-        _page.Light(0x52, _shopRow * 8 + 0x55, 0x5F);
+        _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0x5F);
     }
 
-    // orig: trade-screen-keys R032+0x0F60 draft, case S; the rule is Trading.Sell
+    // orig: trade-screen-keys R032+0x0F60 draft, case S (BarterSession.Sell)
     private void Sell()
     {
-        var index = _packRow[_member] + _packTop[_member];
-        // C: only the list in use and the stack count DS:8838 != 0 are tested: a lit row past the pack's end sells its stale entry (Trading.Sell).
-        if (_buying[_member] || _packCount[_member] == 0)
-        {
-            return;
-        }
-        var count = Trading.Sell(_state, _member, index);
-        if (count < 0)
+        if (!_s.Sell())
         {
             return;
         }
         RedrawPurse(PurseAfterSale);
-        _packCount[_member] = count;
-        if (index >= count)
-        {
-            if (_packTop[_member] != 0)
-            {
-                _packTop[_member]--;
-            }
-            else if (_packRow[_member] != 0)
-            {
-                _packRow[_member]--;
-            }
-        }
         DrawPackItems();
-        _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
+        _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
     }
 
-    /// <summary>D: one item of the <em>leader's</em> stack at the bartering member's lit row is thrown away.</summary>
-    // orig: trade-screen-keys R032+0x0F60 draft, case D (0x2044/0x2064): item-take-single-overlay-entry(leader, row + top), the count stored for the bartering member, a 0x5F-wide highlight in the menu area
+    /// <summary>D: one item of the <em>leader's</em> stack at the bartering member's lit row is thrown away (BarterSession.DropFromLeader).</summary>
+    // orig: trade-screen-keys R032+0x0F60 draft, case D (0x2044/0x2064): a 0x5F-wide highlight in the menu area
     private void DropFromLeader()
     {
-        var index = _packRow[_member] + _packTop[_member];
-        // C: no count test: past the end of the leader's pack the stale entry there loses an item (Inventory.TakeAt).
-        if (_buying[_member])
+        if (!_s.DropFromLeader())
         {
             return;
         }
-        _packCount[_member] = Core.Rules.Inventory.TakeAt(_state, Leader, index);
         DrawPackItems();
-        _page.Light(0x50, _packRow[_member] * 8 + 0x1B, 0x5F);
+        _page.Light(0x50, _s.PackRow * 8 + 0x1B, 0x5F);
     }
 
-    // orig: trade-screen-keys R032+0x0F60 draft, case B (0x3042/0x3062)
+    // orig: trade-screen-keys R032+0x0F60 draft, case B (0x3042/0x3062) (BarterSession.NextMember)
     private void BarterForTheNextMember()
     {
         _page.DrawParty(Party);
-        do
-        {
-            _member = (_member + 1) % 5;
-        }
-        // C: (DS:884E + 1) % 5 until party[].present: loops forever if nobody is present (impossible while the party exists).
-        while (Party.OccupiedSlot(_member) is null);
+        _s.NextMember();
         Redraw();
         _page.Recolor(0x50, 0x33, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);
     }
 
-    // orig: trade-screen-keys R032+0x0F60 draft, case 0x4800
+    // orig: trade-screen-keys R032+0x0F60 draft, case 0x4800 (BarterSession.MoveUp)
     private void MoveUp()
     {
-        if (_buying[_member])
+        switch (_s.MoveUp())
         {
-            _shopRow--;
-        }
-        else
-        {
-            _packRow[_member]--;
-        }
-        if (_buying[_member] && _shopRow < 0 && _shopTop > 0)
-        {
-            _shopRow++;
-            _shopTop--;
-            DrawShopItems();
-            _page.Light(0x52, _shopRow * 8 + 0x55, 0xB9);
-        }
-        else if (!_buying[_member] && _packRow[_member] < 0 && _packTop[_member] > 0)
-        {
-            _packRow[_member]++;
-            _packTop[_member]--;
-            DrawPackItems();
-            _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
-        }
-        else
-        {
-            _shopRow = Math.Max(_shopRow, 0);
-            _packRow[_member] = Math.Max(_packRow[_member], 0);
-            _page.Recolor(0x3C, 0x55, 0x103, 0x69, BuySellPage.Lit, BuySellPage.Ink);
-            if (_buying[_member])
-            {
-                _page.Light(0x52, _shopRow * 8 + 0x55, 0xC3);
-            }
-            else
-            {
-                _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
-            }
+            case Simulation.ListMove.UpperScrolled:
+                DrawShopItems();
+                _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xB9);
+                break;
+            case Simulation.ListMove.LowerScrolled:
+                DrawPackItems();
+                _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                break;
+            default:
+                _page.Recolor(0x3C, 0x55, 0x103, 0x69, BuySellPage.Lit, BuySellPage.Ink);
+                if (_s.Buying)
+                {
+                    _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xC3);
+                }
+                else
+                {
+                    _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                }
+                break;
         }
     }
 
-    // orig: trade-screen-keys R032+0x0F60 draft, case 0x5000
-    // C: the shop cursor is kept inside the list (one step back) but the pack cursor only inside the four rows.
+    // orig: trade-screen-keys R032+0x0F60 draft, case 0x5000 (BarterSession.MoveDown)
     private void MoveDown()
     {
-        if (_buying[_member])
+        switch (_s.MoveDown())
         {
-            _shopRow++;
-        }
-        else
-        {
-            _packRow[_member]++;
-        }
-        if (_buying[_member] && _shopRow >= 4 && _shopTop + _shopRow < _stock.Codes.Count)
-        {
-            _shopRow--;
-            _shopTop++;
-            DrawShopItems();
-            _page.Light(0x52, _shopRow * 8 + 0x55, 0xB9);
-        }
-        else if (!_buying[_member] && _packRow[_member] >= 4 && _packRow[_member] + _packTop[_member] < _packCount[_member])
-        {
-            _packRow[_member]--;
-            _packTop[_member]++;
-            DrawPackItems();
-            _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
-        }
-        else
-        {
-            if (_shopRow >= _stock.Codes.Count)
-            {
-                _shopRow--;
-            }
-            _shopRow = Math.Min(_shopRow, 3);
-            _packRow[_member] = Math.Min(_packRow[_member], 3);
-            _page.Recolor(0x3C, 0x55, 0x103, 0x6E, BuySellPage.Lit, BuySellPage.Ink);
-            if (_buying[_member])
-            {
-                _page.Light(0x52, _shopRow * 8 + 0x55, 0xC8);
-            }
-            else
-            {
-                _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xC8);
-            }
+            case Simulation.ListMove.UpperScrolled:
+                DrawShopItems();
+                _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xB9);
+                break;
+            case Simulation.ListMove.LowerScrolled:
+                DrawPackItems();
+                _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                break;
+            default:
+                _page.Recolor(0x3C, 0x55, 0x103, 0x6E, BuySellPage.Lit, BuySellPage.Ink);
+                if (_s.Buying)
+                {
+                    _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xC8);
+                }
+                else
+                {
+                    _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xC8);
+                }
+                break;
         }
     }
 
     /// <summary>Ctrl-F1..F5: a present member leads the haggling; then the lists switch, as the original falls through.</summary>
-    // orig: trade-screen-keys R032+0x0F60 draft, cases 0x5E00..0x6200 (falls through into the list switch); prices on screen are not recomputed
+    // orig: trade-screen-keys R032+0x0F60 draft, cases 0x5E00..0x6200 (BarterSession.ChooseLeader); prices on screen are not recomputed
     private void ChooseLeader(int member)
     {
-        if (Party.OccupiedSlot(member) is null)
+        if (!_s.ChooseLeader(member))
         {
             return;
         }
-        Simulation.GameCommands.Lead(_state, member);
         _page.DrawParty(Party);
         SwitchLists();
     }
 
-    // orig: trade-screen-keys R032+0x0F60 draft, cases 0x4B00/0x4D00
+    // orig: trade-screen-keys R032+0x0F60 draft, cases 0x4B00/0x4D00 (BarterSession.SwitchLists; the rows stay)
     private void SwitchLists()
     {
-        if (_buying[_member])
+        if (_s.SwitchLists() == Simulation.ListSwitch.ToLower)
         {
             ShowSelling();
-            _page.Unlight(0x52, _shopRow * 8 + 0x55, 0xB9);
-            _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
-            _buying[_member] = false;
+            _page.Unlight(0x52, _s.ShopRow * 8 + 0x55, 0xB9);
+            _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
         }
         else
         {
             ShowBuying();
-            _page.Unlight(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
-            _page.Light(0x52, _shopRow * 8 + 0x55, 0xB9);
-            _buying[_member] = true;
+            _page.Unlight(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+            _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xB9);
         }
     }
 
@@ -463,27 +371,23 @@ public sealed class BarterScreen
         _page.Text(0x50, 0x23, Words(SellLine), BuySellPage.Faded);
         _page.Text(0x50, 0x2B, BlankLine, BuySellPage.Faded);
         DrawMenuTail(FullDrawing);
-        _page.Text(0x81, 0x83, _page.Ui.Format(FullDrawing.Has, Party.Slot(_member).ShortName), BuySellPage.Ink);
-        var pack = PackOf(_member);
+        _page.Text(0x81, 0x83, _page.Ui.Format(FullDrawing.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
+        var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
             _page.Text(0x75, 0x93 + i * 8, PackLine(FullDrawing.PackItem, pack[i]), BuySellPage.Ink);
         }
         // C: the pack lines above were priced before the stock listing seeds the generator (price-to-sell draws under the clock seed, in a flag-8 place).
-        _stock = Trading.Stock(_state, _shop);
-        // orig: R032+0x0ACD: DS:86A2[DS:8850] = k for every item for sale; the entries past the list's end are left as they were
-        for (var i = 0; i < _stock.Codes.Count && i < _page.BarterListing.Length; i++)
+        // orig: R032+0x0ACD: DS:86A2[DS:8850] = k for every item for sale (BarterSession.ListStock)
+        var stock = _s.ListStock();
+        for (var i = 0; i < stock.ListedPrices.Count; i++)
         {
-            _page.BarterListing[i] = _stock.Codes[i];
-        }
-        for (var i = 0; i < _stock.ListedPrices.Count; i++)
-        {
-            var code = _stock.Codes[i];
+            var code = stock.Codes[i];
             // C: the first listing places its lines with the pack list's top DS:8852[DS:884E] instead of the shop list's (both 0 on entry).
-            _page.Text(0x55, (i - _packTop[_member]) * 8 + 0x55, ShopLine(FullDrawing.ShopItem, code, _stock.ListedPrices[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _s.PackTop) * 8 + 0x55, ShopLine(FullDrawing.ShopItem, code, stock.ListedPrices[i]), BuySellPage.Ink);
         }
         _page.Light(0x53, 0x55, 0xB8);
-        _packCount[_member] = pack.Count;
+        _s.PackShown(pack.Count);
     }
 
     /// <summary>The whole page again (after another member is chosen or a character sheet).</summary>
@@ -500,30 +404,30 @@ public sealed class BarterScreen
         _page.Text(0x49, 9, PurseLine(RedrawTexts.Purse), BuySellPage.Ink);
         // C: the redraw prints this line at x 0x4E, the first drawing at 0x49.
         _page.Text(0x4E, 0x12, BartersLine(RedrawTexts), BuySellPage.Ink);
-        _page.Text(0x50, 0x1B, Words(PurchaseLine), _buying[_member] ? BuySellPage.Ink : BuySellPage.Faded);
-        _page.Text(0x50, 0x23, Words(SellLine), _buying[_member] ? BuySellPage.Faded : BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(PurchaseLine), _s.Buying ? BuySellPage.Ink : BuySellPage.Faded);
+        _page.Text(0x50, 0x23, Words(SellLine), _s.Buying ? BuySellPage.Faded : BuySellPage.Ink);
         _page.Text(0x50, 0x2B, BlankLine, BuySellPage.Faded);
         DrawMenuTail(RedrawTexts);
-        _page.Text(0x81, 0x83, _page.Ui.Format(RedrawTexts.Has, Party.Slot(_member).ShortName), BuySellPage.Ink);
-        var pack = PackOf(_member);
-        for (var i = _packTop[_member]; i < _packTop[_member] + 4 && i < pack.Count; i++)
+        _page.Text(0x81, 0x83, _page.Ui.Format(RedrawTexts.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
+        var pack = PackOf(Member);
+        for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[_member]) * 8 + 0x93, PackLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, PackLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
         }
-        for (var i = _shopTop; i < _shopTop + 4 && i < _stock.Codes.Count; i++)
+        for (var i = _s.ShopTop; i < _s.ShopTop + 4 && i < _s.Stock.Codes.Count; i++)
         {
-            var code = _stock.Codes[i];
-            _page.Text(0x55, (i - _shopTop) * 8 + 0x55, ShopLine(RedrawTexts.ShopItem, code, Trading.BuyPrice(_state, _shop, code)), BuySellPage.Ink);
+            var code = _s.Stock.Codes[i];
+            _page.Text(0x55, (i - _s.ShopTop) * 8 + 0x55, ShopLine(RedrawTexts.ShopItem, code, _s.BuyPrice(code)), BuySellPage.Ink);
         }
-        if (_buying[_member])
+        if (_s.Buying)
         {
-            _page.Light(0x52, _shopRow * 8 + 0x55, 0xB9);
+            _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xB9);
         }
         else
         {
-            _page.Light(0x72, _packRow[_member] * 8 + 0x93, 0xB9);
+            _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
         }
-        _packCount[_member] = pack.Count;
+        _s.PackShown(pack.Count);
     }
 
     private void DrawMenuTail(PageTexts texts)
@@ -538,10 +442,10 @@ public sealed class BarterScreen
     private void DrawPackItems()
     {
         _page.Restore(0x72, 0x93, 0xB6, 0x20);
-        var pack = PackOf(_member);
-        for (var i = _packTop[_member]; i < _packTop[_member] + 4 && i < pack.Count; i++)
+        var pack = PackOf(Member);
+        for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[_member]) * 8 + 0x93, PackLine(PackListItem, pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, PackLine(PackListItem, pack[i]), BuySellPage.Ink);
         }
     }
 
@@ -550,10 +454,10 @@ public sealed class BarterScreen
     private void DrawShopItems()
     {
         _page.Restore(0x52, 0x55, 0xB9, 0x20);
-        for (var i = _shopTop; i < _shopTop + 4 && i < _stock.Codes.Count; i++)
+        for (var i = _s.ShopTop; i < _s.ShopTop + 4 && i < _s.Stock.Codes.Count; i++)
         {
-            var code = _stock.Codes[i];
-            _page.Text(0x55, (i - _shopTop) * 8 + 0x55, ShopLine(ShopListItem, code, Trading.BuyPrice(_state, _shop, code)), BuySellPage.Ink);
+            var code = _s.Stock.Codes[i];
+            _page.Text(0x55, (i - _s.ShopTop) * 8 + 0x55, ShopLine(ShopListItem, code, _s.BuyPrice(code)), BuySellPage.Ink);
         }
     }
 
@@ -576,8 +480,8 @@ public sealed class BarterScreen
     private string BartersLine(PageTexts texts)
     {
         var leader = Party.Slot(Leader);
-        var member = Party.Slot(_member).ShortName;
-        return Leader != _member
+        var member = Party.Slot(Member).ShortName;
+        return Leader != Member
             ? _page.Ui.Format(texts.BartersFor, Words(leader.IsFemale ? texts.She : texts.He), member, ShopName)
             : _page.Ui.Format(texts.BartersForSelf, member, Words(leader.IsFemale ? texts.Herself : texts.Himself), ShopName);
     }
@@ -587,7 +491,7 @@ public sealed class BarterScreen
     {
         var code = stack.Code & 0xFFF;
         // C: sprintf arguments right to left: quality, count, name, then price-to-sell (a flag-8 draw per line).
-        var price = Trading.SellPrice(_state, code, stack.Quality);
+        var price = _s.SellPrice(stack);
         return _page.Ui.Format(format, price, _state.Item(code).Name, stack.Count, stack.Quality);
     }
 
@@ -596,6 +500,6 @@ public sealed class BarterScreen
     private string ShopLine(string format, int code, int price)
     {
         var d = _state.Item(code);
-        return _page.Ui.Format(format, price, d.Name, Trading.OfferedQuality(_state, _shop, code), (sbyte)d.Weight);
+        return _page.Ui.Format(format, price, d.Name, _s.OfferedQuality(code), (sbyte)d.Weight);
     }
 }
