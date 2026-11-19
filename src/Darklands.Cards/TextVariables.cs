@@ -163,8 +163,8 @@ public static class TextVariables
             "Support5" => Support(c, 5),
             "Support6" => Support(c, 6),
             "Government" => LocationRules.Query(state, here, 0x18) != 0 ? Names(city, 4) : Names(city, 5),
-            "CurrentBell" => c.World.Words.Text(OriginalWords.BellNames, TimeOfDay.Band(state.Date.Hour)),
-            "MonthName" => c.World.Words.Text(OriginalWords.MonthNames, GameDate.Mod12(state.Date.Month)),   // DIVERGENCE: a month outside 0..11 wraps (the original reads past its table)
+            "CurrentBell" => c.Word(OriginalWords.BellNames, TimeOfDay.Band(state.Date.Hour)),
+            "MonthName" => c.Word(OriginalWords.MonthNames, GameDate.Mod12(state.Date.Month)),   // DIVERGENCE: a month outside 0..11 wraps (the original reads past its table)
             "SabbatTime" => SabbatTime(c),
             "SabbatLocation" => SabbatLocation(c),
             "LocName2" => LocationName(c, c.Variables.Location2),
@@ -252,7 +252,7 @@ public static class TextVariables
     {
         var here = c.State.CurrentLocation;
         var band = here >= 0 && here < c.State.Locations.Count ? LocationRules.Query(c.State, here, 1) : 2;
-        return c.World.Words.Text(OriginalWords.StandingWords, Math.Clamp(band, 0, OriginalWords.StandingWords.Count - 1));
+        return c.Word(OriginalWords.StandingWords, Math.Clamp(band, 0, OriginalWords.StandingWords.Count - 1));
     }
 
     // orig: case 51: the lord's title depends on the city's type word (swapped after an uprising, flag 0x80)
@@ -267,8 +267,8 @@ public static class TextVariables
         return kind switch
         {
             0 => Names(city, risen ? 1 : 0),
-            1 => c.World.Words.Text(OriginalWords.LordTitles1, city.Ordinal % OriginalWords.LordTitles1.Count),
-            2 => c.World.Words.Text(OriginalWords.LordTitles2, city.Ordinal % OriginalWords.LordTitles2.Count),
+            1 => c.Word(OriginalWords.LordTitles1, city.Ordinal % OriginalWords.LordTitles1.Count),
+            2 => c.Word(OriginalWords.LordTitles2, city.Ordinal % OriginalWords.LordTitles2.Count),
             _ => name,
         };
     }
@@ -278,7 +278,7 @@ public static class TextVariables
     private static string Support(CardContext c, int index)
     {
         var value = c.Variables.Support[index] + 1;
-        return OriginalWords.SupportWords.Contains(value) ? c.World.Words.Text(OriginalWords.SupportWords, value) : "";
+        return OriginalWords.SupportWords.Contains(value) ? c.Word(OriginalWords.SupportWords, value) : "";
     }
 
     // orig: case 56: with a location chosen (location-now != -1) the city nearest to location text-slot-place, in the wilderness the one nearest to the party
@@ -326,7 +326,7 @@ public static class TextVariables
 
     // orig: case 68: month name, a space and the day of the next witches' sabbat (thunk 09C0:20DF, thunk 09C0:21A7)
     private static string SabbatTime(CardContext c) =>
-        c.World.Words.Text(OriginalWords.MonthNames, GameDate.Mod12(Quests.SabbatMonth(c.State))) + " " + Quests.SabbatDayOfMonth(c.State).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        c.Word(OriginalWords.MonthNames, GameDate.Mod12(Quests.SabbatMonth(c.State))) + " " + Quests.SabbatDayOfMonth(c.State).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     // orig: case 69 of R043+0x1316: "<direction> of <nearest city>" for the site of the next sabbat (20fd, Quests.SabbatSite)
     private static string SabbatLocation(CardContext c) => RelativeToNearestCity(c, Quests.SabbatSite(c.State));
@@ -357,7 +357,7 @@ public static class TextVariables
     }
 
     /// <summary>The word of a direction (0 north … 7 northwest).</summary>
-    private static string Direction(CardContext c, int direction) => c.World.Words.Text(OriginalWords.Directions, direction);
+    private static string Direction(CardContext c, int direction) => c.Word(OriginalWords.Directions, direction);
 
     /// <summary>A name of the working city record (city-record->names[n]); n = -1 is the short name at the start of the record.</summary>
     // C: _fstrcpy copies up to the first zero byte: a 32-byte field without one runs on into the next field. An index outside the 16 names reads other parts of the record.

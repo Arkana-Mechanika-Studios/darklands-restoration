@@ -297,7 +297,7 @@ public sealed partial class CardContext
     // DORMANT: kinds above 8 copy nothing in the original either.
     public void NameToSlot(int kind, int index, int slot)
     {
-        string Bell(int band) => World.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, band);
+        string Bell(int band) => Word(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, band);
         // C: the tables are read unchecked (IPersonalNames.Name reads the neighbouring pointers); without the EXE's tables the slot keeps its text
         string Table(NameTable table) => PersonalNames.Count(table) > 0 ? PersonalNames.Name(table, index) : Variables.Named[slot];
         Variables.Named[slot] = kind switch

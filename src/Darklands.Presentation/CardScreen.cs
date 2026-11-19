@@ -210,6 +210,35 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         return lines;
     }
 
+    /// <summary>
+    /// A translation pack's text of block <paramref name="block"/> of card <paramref name="card"/> (key <c>msg:$CARD#n</c>, written in
+    /// <see cref="Content.Formats.Text.CardTextForm"/>), as block bytes; null to keep the original's: no pack, no such text, or one
+    /// that does not keep the original's option lines, passages, $Names and code bytes (CardTextForm.Check; reported once).
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (docs/LOCALISATION.md).
+    private byte[]? TranslatedBlock(string card, int block, byte[] original)
+    {
+        if (ui.Language is not { } pack)
+        {
+            return null;
+        }
+        var key = System.FormattableString.Invariant($"msg:{card}#{block}");
+        if (!pack.Localizer.IsTranslated(key))
+        {
+            return null;
+        }
+        var translation = pack.Localizer.Get(key);
+        var problem = Content.Formats.Text.CardTextForm.Check(translation, original);
+        var bytes = problem is null ? Content.Formats.Text.CardTextForm.ToBytes(translation, out problem) : null;
+        if (bytes is null && _reported.Add(key))
+        {
+            ui.LanguageReport?.Invoke($"language pack: {key}: {problem}; the original text is shown");
+        }
+        return bytes;
+    }
+
+    private readonly HashSet<string> _reported = new(StringComparer.Ordinal);
+
     /// <summary>The option lines of the last text laid out (DS:E96E), kept for a menu that draws none.</summary>
     private List<OptionArea> _lastAreas = [];
 
@@ -343,7 +372,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         _lastBlock = b;
         var c = context();
         c.MessageFileBytes = _messages.Bytes;
-        var text = TextVariables.Expand(b.Text, c);
+        var text = TextVariables.Expand(TranslatedBlock(_messages.Name, block, b.Text) ?? b.Text, c);
         var layout = new CardTextLayout(ui.CardText);
         var areas = layout.Draw(_canvas, text, WindowX + b.X + 5, b.Y + 5, b.Width - 10, new CardTextLayout.Settings
         {

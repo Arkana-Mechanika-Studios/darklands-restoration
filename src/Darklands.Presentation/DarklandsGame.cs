@@ -684,6 +684,8 @@ public sealed class DarklandsGame
         // the developer's inspector asks the card screen what is under the pointer (it only reads)
         _ui.Inspect = screen.Inspect;
         context = new CardContext(state, World, screen) { Variables = _cardVariables };
+        // the cards' own words (their text variables, shop names) in the translation pack's language when it has them
+        context.Translation = key => _ui.Language is { } pack && pack.Localizer.IsTranslated(key) ? pack.Localizer.Get(key) : null;
         context.TakeEngineGlobals(_lastCards);
         _lastCards = context;
         context.PersonalNames = _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")));
