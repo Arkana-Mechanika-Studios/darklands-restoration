@@ -115,7 +115,7 @@ public sealed class BarterScreen
         {
             // orig: trade-screen-close R032+0x076C (1462:076C) draft (byte-matched function): restores the fonts, the panel mode flags DS:9920/DS:9934 and leader = DS:884C.
             // DIVERGENCE: fonts and panel mode flags are host state not modelled here; only the leader is restored.
-            Party.LeaderIndex = _leaderBefore;
+            Simulation.GameCommands.Lead(_state, _leaderBefore);
         }
     }
 
@@ -410,7 +410,7 @@ public sealed class BarterScreen
         {
             return;
         }
-        Party.LeaderIndex = member;
+        Simulation.GameCommands.Lead(_state, member);
         _page.DrawParty(Party);
         SwitchLists();
     }

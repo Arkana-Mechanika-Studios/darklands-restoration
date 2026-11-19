@@ -3,6 +3,7 @@ using Darklands.Core.Characters;
 using Darklands.Core.Economy;
 using Darklands.Core.Rules;
 using Darklands.Platform;
+using Darklands.Simulation;
 
 namespace Darklands.Presentation;
 
@@ -39,20 +40,14 @@ public sealed class LootScreen
     private readonly BuySellPage _page;
     private readonly GameState _state;
     private readonly IList<ItemStack> _pile;
-    private readonly int[] _packCount = new int[5];
-    private readonly bool[] _usingPile = [true, true, true, true, true];
-    private readonly int[] _packTop = new int[5];
-    private readonly int[] _pileTop = new int[5];
-    private readonly int[] _packRow = new int[5];
-    private readonly int[] _pileRow = new int[5];
-    private Money _cash;
-    private int _member;
+    private readonly LootSession _s;
 
     public LootScreen(BuySellPage page, GameState state, IList<ItemStack> pile)
     {
         _page = page;
         _state = state;
         _pile = pile;
+        _s = new LootSession(state, pile);
     }
 
     private Party Party => _state.Party;
@@ -60,7 +55,7 @@ public sealed class LootScreen
     /// <summary>The battle's test of D for a slot gone from the battlefield: shows the "can't view" message and answers true (BattleScreens.LootSkipsMember).</summary>
     public Func<int, bool>? CannotView { get; init; }
 
-    private int Member => _member;
+    private int Member => _s.Member;
 
     private Pack PackOf(int member) => Party.Slot(member).Pack;
 
@@ -69,11 +64,7 @@ public sealed class LootScreen
     // C: the battle code's own cash (the pointer it passed) is what this returns; IGameScreens.Loot is called by the battle code (not modelled here), which does not take it back.
     public Money Run(Money found)
     {
-        LootSharing.ReplaceFallenLeader(_state);
-        LootSharing.PrepareFoundItems(_pile);
-        var leaderBefore = Party.LeaderIndex;
-        _member = Party.LeaderIndex;
-        _cash = LootSharing.TakeCash(_state, ref found);
+        _s.Start(ref found);
         DrawScreen();
         // orig: R040+0x01C8 `while (mouse-button-state & 1);` before the loop
         _page.WaitForRelease();
@@ -99,7 +90,7 @@ public sealed class LootScreen
         finally
         {
             // orig: R040+0x06C8 (1462:06C8) draft (byte-matched function): fonts back (host state, not modelled) and leader = DS:8DBA.
-            Party.LeaderIndex = leaderBefore;
+            _s.End();
         }
     }
 
@@ -114,45 +105,43 @@ public sealed class LootScreen
         var key = _page.MenuStep(ref lit, MenuKeys, 8);
         if (_page.HeldRow(BuySellPage.LowerRowAt) is { } packRow)
         {
-            _usingPile[Member] = false;
-            _packRow[Member] = packRow;
+            _s.ChoosePackRow(packRow);
             ShowPacking();
             _page.Recolor(0x3C, 0x55, 0xFA, 0x78, BuySellPage.Lit, BuySellPage.Ink);
-            _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xFA);
+            _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
             _page.WaitForRelease();
         }
         if (_page.HeldRow(BuySellPage.UpperRowAt) is { } pileRow)
         {
-            _usingPile[Member] = true;
-            _pileRow[Member] = pileRow;
+            _s.ChoosePileRow(pileRow);
             ShowGetting();
             _page.Recolor(0x3C, 0x55, 0xFA, 0x78, BuySellPage.Lit, BuySellPage.Ink);
-            _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
+            _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
             _page.WaitForRelease();
         }
         if (_page.Held(BuySellPage.OnLowerUpArrow))
         {
             _page.WaitForRelease();
             key = Keys.Up;
-            _usingPile[Member] = false;
+            _s.UseList(pile: false);
         }
         if (_page.Held(BuySellPage.OnLowerDownArrow))
         {
             _page.WaitForRelease();
             key = Keys.Down;
-            _usingPile[Member] = false;
+            _s.UseList(pile: false);
         }
         if (_page.Held(BuySellPage.OnUpperUpArrow))
         {
             _page.WaitForRelease();
             key = Keys.Up;
-            _usingPile[Member] = true;
+            _s.UseList(pile: true);
         }
         if (_page.Held(BuySellPage.OnUpperDownArrow))
         {
             _page.WaitForRelease();
             key = Keys.Down;
-            _usingPile[Member] = true;
+            _s.UseList(pile: true);
         }
         return key;
     }
@@ -192,188 +181,90 @@ public sealed class LootScreen
         }
     }
 
-    // orig: R040+0x0C22 draft, case P; the rule is LootSharing.Put
+    // orig: R040+0x0C22 draft, case P (LootSession.Put)
     private void Put()
     {
-        var index = _packTop[Member] + _packRow[Member];
-        // C: only the list in use and item-count-local[who] != 0 are tested: a row past the pack's end puts its stale entry (LootSharing.Put).
-        if (_usingPile[Member] || _packCount[Member] == 0)
+        if (!_s.Put())
         {
             return;
         }
-        _packCount[Member] = LootSharing.Put(_state, _pile, Member, index);
-        // C: "top + row + 1 >= count" (checked against asm 0D19..0D26): unlike the other screens the cursor also steps back when the stack is still there on the last row.
-        if (index + 1 >= _packCount[Member])
-        {
-            if (_packTop[Member] != 0)
-            {
-                _packTop[Member]--;
-            }
-            else if (_packRow[Member] != 0)
-            {
-                _packRow[Member]--;
-            }
-        }
         DrawPileItems();
         DrawPackItems();
-        _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
+        _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
     }
 
-    // orig: R040+0x0C22 draft, case G; the rule is LootSharing.Get
+    // orig: R040+0x0C22 draft, case G (LootSession.Get)
     private void Get()
     {
-        var index = _pileTop[Member] + _pileRow[Member];
-        // DIVERGENCE: rows past the pile's end are ignored (see LootSharing.Get).
-        // C: the original's G gives the entry there, a leftover of the DOS block the battle hands over: undefined memory (LootSharing.Get).
-        if (!_usingPile[Member] || _pile.Count == 0 || index >= _pile.Count)
+        if (!_s.Get())
         {
             return;
         }
-        _packCount[Member] = LootSharing.Get(_state, _pile, Member, index);
-        // C: "top + row + 1 > count" (checked against asm 0EA7..0EB4).
-        if (index + 1 > _pile.Count)
-        {
-            if (_pileTop[Member] != 0)
-            {
-                _pileTop[Member]--;
-            }
-            else if (_pileRow[Member] != 0)
-            {
-                _pileRow[Member]--;
-            }
-        }
         DrawPileItems();
         DrawPackItems();
-        _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
+        _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
     }
 
-    /// <summary>D: the next member in the party who is neither dead nor missing.</summary>
-    // orig: R040+0x0C22 draft, case D (0x2044/0x2064)
+    /// <summary>D: the next member in the party who is neither dead nor missing (LootSession.NextMember).</summary>
+    // orig: R040+0x0C22 draft, case D (0x2044/0x2064): the party drawn first, then the search, the page again
     private void DistributeToTheNextMember()
     {
         _page.DrawParty(Party);
-        // C: (DS:8DC4 + 1) % 5, skipping slots ≥ party-headcount and status 0 or 3 (checked against asm 0D9E..0DD9).
-        // orig: R040+0x0DB4..0x0DC8: a slot whose combat floor test (fighter-floor-level, DS:A6B4, read as words: BattleScreens.LootSkipsMember) says
-        //   −99 (gone through an exit) is skipped after thunk 09C0:1D51 = R022+0x04E4 ("You can't view ... at this time.") is called for it,
-        //   before the status test; tests: SheetCannotViewTests
-        // C: 0C22 against the asm (R040 seg 1462 0C22..123D): every case of the draft matches it (cross-jumped tails only); P, G and D return
-        //   without pointer-show, Left/Right on an empty pile returns with the pointer still hidden (the host owns the pointer here).
-        // DIVERGENCE: the original loops forever when no member qualifies; here the search stops after five slots.
-        for (var tries = 0; tries < Party.MaxMembers; tries++)
-        {
-            _member = (_member + 1) % Party.MaxMembers;
-            if (_member >= Party.Slots.Count || CannotView?.Invoke(_member) == true)
-            {
-                continue;
-            }
-            if (Party.Slot(_member).Status is not (CharacterStatus.Empty or CharacterStatus.Dead))
-            {
-                break;
-            }
-        }
+        _s.NextMember(CannotView);
         Redraw();
         _page.Recolor(0x50, 0x2B, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);
     }
 
-    // orig: R040+0x0C22 draft, case 0x4800
-    private void MoveUp()
-    {
-        if (_usingPile[Member])
-        {
-            _pileRow[Member]--;
-        }
-        else
-        {
-            _packRow[Member]--;
-        }
-        if (_usingPile[Member] && _pileRow[Member] < 0 && _pileTop[Member] > 0)
-        {
-            _pileRow[Member]++;
-            _pileTop[Member]--;
-            DrawPileItems();
-            _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
-        }
-        else if (!_usingPile[Member] && _packRow[Member] < 0 && _packTop[Member] > 0)
-        {
-            _packRow[Member]++;
-            _packTop[Member]--;
-            DrawPackItems();
-            _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-        }
-        else
-        {
-            _pileRow[Member] = Math.Max(_pileRow[Member], 0);
-            _packRow[Member] = Math.Max(_packRow[Member], 0);
-            _page.Recolor(0x3C, 0x55, 0x103, 0x69, BuySellPage.Lit, BuySellPage.Ink);
-            if (_usingPile[Member])
-            {
-                _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
-            }
-            else
-            {
-                _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-            }
-        }
-    }
+    // orig: R040+0x0C22 draft, case 0x4800 (LootSession.MoveUp)
+    private void MoveUp() => DrawMove(_s.MoveUp(), 0x69, 0xB9);
 
     /// <summary>Down: unlike the other two screens the cursor is only kept within the four rows, not within the list.</summary>
-    // orig: R040+0x0C22 draft, case 0x5000
-    private void MoveDown()
+    // orig: R040+0x0C22 draft, case 0x5000 (LootSession.MoveDown)
+    private void MoveDown() => DrawMove(_s.MoveDown(), 0x6E, 0xC8);
+
+    // what a cursor key draws: the list that scrolled with its light, or the lights again (the clear's height and the pack light's width
+    //   differ between Up and Down, as the original's cases)
+    private void DrawMove(ListMove move, int clearHeight, int packLightWidth)
     {
-        if (_usingPile[Member])
+        switch (move)
         {
-            _pileRow[Member]++;
-        }
-        else
-        {
-            _packRow[Member]++;
-        }
-        if (_usingPile[Member] && _pileRow[Member] >= 4 && _pileTop[Member] + _pileRow[Member] < _pile.Count)
-        {
-            _pileRow[Member]--;
-            _pileTop[Member]++;
-            DrawPileItems();
-            _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
-        }
-        else if (!_usingPile[Member] && _packRow[Member] >= 4 && _packTop[Member] + _packRow[Member] < _packCount[Member])
-        {
-            _packRow[Member]--;
-            _packTop[Member]++;
-            DrawPackItems();
-            _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-        }
-        else
-        {
-            _pileRow[Member] = Math.Min(_pileRow[Member], 3);
-            _packRow[Member] = Math.Min(_packRow[Member], 3);
-            _page.Recolor(0x3C, 0x55, 0x103, 0x6E, BuySellPage.Lit, BuySellPage.Ink);
-            if (_usingPile[Member])
-            {
-                _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
-            }
-            else
-            {
-                _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xC8);
-            }
+            case ListMove.UpperScrolled:
+                DrawPileItems();
+                _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
+                break;
+            case ListMove.LowerScrolled:
+                DrawPackItems();
+                _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                break;
+            default:
+                _page.Recolor(0x3C, 0x55, 0x103, clearHeight, BuySellPage.Lit, BuySellPage.Ink);
+                if (_s.UsingPile)
+                {
+                    _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
+                }
+                else
+                {
+                    _page.Light(0x72, _s.PackRow * 8 + 0x93, packLightWidth);
+                }
+                break;
         }
     }
 
-    // orig: R040+0x0C22 draft, cases 0x4B00/0x4D00 (no switch to an empty pile)
+    // orig: R040+0x0C22 draft, cases 0x4B00/0x4D00 (no switch to an empty pile; LootSession.SwitchLists)
     private void SwitchLists()
     {
-        if (_usingPile[Member])
+        switch (_s.SwitchLists())
         {
-            ShowPacking();
-            _page.Unlight(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
-            _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xFA);
-            _usingPile[Member] = false;
-        }
-        else if (_pile.Count != 0)
-        {
-            ShowGetting();
-            _page.Unlight(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-            _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
-            _usingPile[Member] = true;
+            case ListSwitch.ToLower:
+                ShowPacking();
+                _page.Unlight(0x52, _s.PileRow * 8 + 0x55, 0xFA);
+                _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
+                break;
+            case ListSwitch.ToUpper:
+                ShowGetting();
+                _page.Unlight(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
+                break;
         }
     }
 
@@ -412,10 +303,10 @@ public sealed class LootScreen
         for (var i = 0; i < _pile.Count && i < 4; i++)
         {
             // C: the first drawing places the pile's lines with the pack list's top (pack-top-row) instead of the pile's (both 0 on entry).
-            _page.Text(0x55, (i - _packTop[Member]) * 8 + 0x55, ItemLine(FullDrawing.PileItem, _pile[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _s.PackTop) * 8 + 0x55, ItemLine(FullDrawing.PileItem, _pile[i]), BuySellPage.Ink);
         }
         _page.Light(0x53, 0x55, 0xFA);
-        _packCount[Member] = pack.Count;
+        _s.PackShown(pack.Count);
     }
 
     // orig: R040+0x0952 (1462:0952) draft (byte-matched function)
@@ -427,30 +318,30 @@ public sealed class LootScreen
     {
         _page.DrawBackground(Party, drawParty: false);
         _page.Text(0x49, 9, CashLine(RedrawTexts.Cash), BuySellPage.Ink);
-        _page.Text(0x50, 0x1B, Words(GetLine), _usingPile[Member] ? BuySellPage.Ink : BuySellPage.Faded);
-        _page.Text(0x50, 0x23, Words(PutLine), _usingPile[Member] ? BuySellPage.Faded : BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(GetLine), _s.UsingPile ? BuySellPage.Ink : BuySellPage.Faded);
+        _page.Text(0x50, 0x23, Words(PutLine), _s.UsingPile ? BuySellPage.Faded : BuySellPage.Ink);
         DrawMenuTail();
         // C: the redraw prints this heading at x 0x57, the first drawing at 0x6B.
         _page.Text(0x57, 0x45, Words(RedrawTexts.Loot), BuySellPage.Ink);
         _page.Text(0x77, 0x83, _page.Ui.Format(RedrawTexts.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
         var pack = PackOf(Member);
-        for (var i = _packTop[Member]; i < _packTop[Member] + 4 && i < pack.Count; i++)
+        for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, ItemLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
         }
-        for (var i = _pileTop[Member]; i < _pileTop[Member] + 4 && i < _pile.Count; i++)
+        for (var i = _s.PileTop; i < _s.PileTop + 4 && i < _pile.Count; i++)
         {
-            _page.Text(0x55, (i - _pileTop[Member]) * 8 + 0x55, ItemLine(RedrawTexts.PileItem, _pile[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _s.PileTop) * 8 + 0x55, ItemLine(RedrawTexts.PileItem, _pile[i]), BuySellPage.Ink);
         }
-        if (_usingPile[Member])
+        if (_s.UsingPile)
         {
-            _page.Light(0x52, _pileRow[Member] * 8 + 0x55, 0xFA);
+            _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
         }
         else
         {
-            _page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB7);
+            _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB7);
         }
-        _packCount[Member] = pack.Count;
+        _s.PackShown(pack.Count);
     }
 
     private void DrawMenuTail()
@@ -464,9 +355,9 @@ public sealed class LootScreen
     {
         _page.Restore(0x72, 0x93, 0xB6, 0x20);
         var pack = PackOf(Member);
-        for (var i = _packTop[Member]; i < _packTop[Member] + 4 && i < pack.Count; i++)
+        for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(PackListItem, pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, ItemLine(PackListItem, pack[i]), BuySellPage.Ink);
         }
     }
 
@@ -474,15 +365,15 @@ public sealed class LootScreen
     private void DrawPileItems()
     {
         _page.Restore(0x52, 0x55, 0xB6, 0x20);
-        for (var i = _pileTop[Member]; i < _pileTop[Member] + 4 && i < _pile.Count; i++)
+        for (var i = _s.PileTop; i < _s.PileTop + 4 && i < _pile.Count; i++)
         {
-            _page.Text(0x55, (i - _pileTop[Member]) * 8 + 0x55, ItemLine(PileListItem, _pile[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _s.PileTop) * 8 + 0x55, ItemLine(PileListItem, _pile[i]), BuySellPage.Ink);
         }
     }
 
     private string Words(string id) => _page.Ui.Words(id);
 
-    private string CashLine(string format) => _page.Ui.Format(format, _cash.Florins, _cash.Groschen, _cash.Pfennigs);
+    private string CashLine(string format) => _page.Ui.Format(format, _s.Cash.Florins, _s.Cash.Groschen, _s.Cash.Pfennigs);
 
     /// <summary>"%Fs  (%3d) %2d-Qual": the item's name, the count, the quality.</summary>
     private string ItemLine(string format, ItemStack stack) =>

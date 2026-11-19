@@ -193,14 +193,9 @@ public sealed class ArchitectureRulesTests
         ["Darklands.Presentation.BattleScreens"] = "battle set-up and end inline (battles fought, the orders' flags)",
         ["Darklands.Presentation.CharacterCreationScreen"] = "creation builds the new party and the starting state inline (figures, roster place, date, city)",
         ["Darklands.Presentation.PartyRosterScreen"] = "the roster menu's selection and record buffer kept in the model's PartyMenuState",
-        ["Darklands.Presentation.CampScreen"] = "the camp's day loop inline (risk, teacher, hourglass) and the member chosen as leader",
+        ["Darklands.Presentation.CampScreen"] = "the camp's day loop inline (risk, teacher, hourglass)",
         ["Darklands.Presentation.AlchemyScreen"] = "the batch count the player chooses is stored into the brewing rule's batch",
         ["Darklands.Presentation.OverlandScreen"] = "map travel inline (position, location, leave mode)",
-        ["Darklands.Presentation.HotKeys"] = "option toggles (difficulty, saintly changes) and Ctrl-F1..F5's new leader written directly",
-        ["Darklands.Presentation.BarterScreen"] = "choosing whose page is shown writes the party's leader, as the original's shop does (and puts it back)",
-        ["Darklands.Presentation.ItemStoreScreen"] = "choosing whose page is shown writes the party's leader, as the original's shop does",
-        ["Darklands.Presentation.LootScreen"] = "choosing whose page is shown writes the party's leader",
-        ["Darklands.Presentation.CharacterSheetScreen"] = "the sheet's 'make leader' and member choice write the party's leader",
         ["Darklands.Presentation.SaveGameDialog"] = "a save names the battle file in the state before writing",
     };
 

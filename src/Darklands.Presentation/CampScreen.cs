@@ -303,7 +303,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             var m = (key >> 8) - (CtrlF1 >> 8);
             if (m < _state.Party.Slots.Count && _state.Party.Slots[m].IsAble)
             {
-                _state.Party.LeaderIndex = m;
+                Simulation.GameCommands.Lead(_state, m);
                 panel.Draw(ui.Canvas, _state.Party);
             }
             return false;

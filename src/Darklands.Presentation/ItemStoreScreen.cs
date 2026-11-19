@@ -4,6 +4,7 @@ using Darklands.Core.Characters;
 using Darklands.Core.Items;
 using Darklands.Core.Rules;
 using Darklands.Platform;
+using Darklands.Simulation;
 
 namespace Darklands.Presentation;
 
@@ -37,20 +38,12 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private const string PackListItem = "exe:DS:3988";
     private const string StoreListItem = "exe:DS:3998";
 
-    // Per member, kept between visits.
-    private readonly int[] _packCount = new int[5];
-    private readonly bool[] _usingStore = new bool[5];
-    private readonly int[] _packTop = new int[5];
-    private readonly int[] _storeTop = new int[5];
-    private readonly int[] _packRow = new int[5];
-    private readonly int[] _storeRow = new int[5];
-
-    private StoreTable _store = new();
-    private int _member;
+    // the screen's model: per member, kept between visits (the original's statics)
+    private readonly StoreSession _s = new(state);
 
     private Party Party => state.Party;
 
-    private int Member => _member;
+    private int Member => _s.Member;
 
     private Pack PackOf(int member) => Party.Slot(member).Pack;
 
@@ -63,8 +56,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         {
             return;
         }
-        var leaderBefore = Party.LeaderIndex;
-        _member = Party.LeaderIndex;
+        _s.Start();
         DrawScreen(place);
         // orig: R035+0x0000 `while (mouse-button-state & 1);` before the loop (the click that opened the screen is waited out)
         page.WaitForRelease();
@@ -90,8 +82,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         finally
         {
             // orig: stash-screen-close R035+0x04BC (1462:04BC) matched: save (or forget an empty store) and leader = DS:89EE; fonts are host state (not modelled).
-            state.ItemStores.Close(place, _store, state.Behaviour, state.Locations);
-            Party.LeaderIndex = leaderBefore;
+            _s.End(place);
         }
     }
 
@@ -107,45 +98,43 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         var key = page.MenuStep(ref lit, MenuKeys, 8);
         if (page.HeldRow(BuySellPage.LowerRowAt) is { } packRow)
         {
-            _usingStore[Member] = false;
-            _packRow[Member] = packRow;
+            _s.ChoosePackRow(packRow);
             ShowPacking();
             page.Recolor(0x3C, 0x55, 0xFA, 0x78, BuySellPage.Lit, BuySellPage.Ink);
-            page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xFA);
+            page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
             page.WaitForRelease();
         }
         if (page.HeldRow(BuySellPage.UpperRowAt) is { } storeRow)
         {
-            _usingStore[Member] = true;
-            _storeRow[Member] = storeRow;
+            _s.ChooseStoreRow(storeRow);
             ShowGetting();
             page.Recolor(0x3C, 0x55, 0xFA, 0x78, BuySellPage.Lit, BuySellPage.Ink);
-            page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xFA);
+            page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xFA);
             page.WaitForRelease();
         }
         if (page.Held(BuySellPage.OnLowerUpArrow))
         {
             page.WaitForRelease();
             key = Keys.Up;
-            _usingStore[Member] = false;
+            _s.UseList(store: false);
         }
         if (page.Held(BuySellPage.OnLowerDownArrow))
         {
             page.WaitForRelease();
             key = Keys.Down;
-            _usingStore[Member] = false;
+            _s.UseList(store: false);
         }
         if (page.Held(BuySellPage.OnUpperUpArrow))
         {
             page.WaitForRelease();
             key = Keys.Up;
-            _usingStore[Member] = true;
+            _s.UseList(store: true);
         }
         if (page.Held(BuySellPage.OnUpperDownArrow))
         {
             page.WaitForRelease();
             key = Keys.Down;
-            _usingStore[Member] = true;
+            _s.UseList(store: true);
         }
         // C: the original loops `row = pointer-row / 0x28; while (row != -1) { row = member-sheet-overlay-entry(row); panel redrawn }`; member-sheet-screen returns -1 on every
         //   path (its only two returns give -1), the member shown changing inside the sheet: the loop runs once, as here, and IGameScreens.CharacterSheet
@@ -198,202 +187,126 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         }
     }
 
-    // orig: stash-screen-keys R035+0x0A46 matched, case P; the rule is Storing.Put
+    // orig: stash-screen-keys R035+0x0A46 matched, case P (StoreSession.Put)
     private void Put()
     {
-        var index = _packRow[Member] + _packTop[Member];
-        // C: only the list in use and `party[who].nitems == 0` are tested: a row past the pack's end puts its stale entry (Storing.Put).
-        if (_usingStore[Member] || PackOf(Member).Stacks == 0)
+        switch (_s.Put(state.Here!))
         {
-            return;
-        }
-        // DIVERGENCE: data safety (OriginalBehaviour.FixCacheStoreLimit): a Put the compact CACHE.TMP layout cannot hold is refused here, with a message, the item staying in the pack.
-        if (!Storing.CanPut(state, state.Here!, _store, Member, index))
-        {
-            page.ShowMessage(Storing.NoRoomMessage);
-            return;
-        }
-        _packCount[Member] = Storing.Put(state, _store, Member, index);
-        if (index >= _packCount[Member])
-        {
-            if (_packTop[Member] != 0)
-            {
-                _packTop[Member]--;
-            }
-            else if (_packRow[Member] != 0)
-            {
-                _packRow[Member]--;
-            }
+            case StorePut.NoRoom:
+                page.ShowMessage(Storing.NoRoomMessage);
+                return;
+            case StorePut.Nothing:
+                return;
         }
         DrawStoreItems();
         DrawPackItems();
-        page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
+        page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
     }
 
-    /// <summary>D: one item of the <em>leader's</em> stack at the member's lit row is thrown away.</summary>
-    // orig: stash-screen-keys R035+0x0A46 matched, case D (0x2044/0x2064): item-take-single-overlay-entry(leader, row + top)
+    /// <summary>D: one item of the <em>leader's</em> stack at the member's lit row is thrown away (StoreSession.DropFromLeader).</summary>
+    // orig: stash-screen-keys R035+0x0A46 matched, case D (0x2044/0x2064)
     private void DropFromLeader()
     {
-        var index = _packRow[Member] + _packTop[Member];
-        // C: no count test: past the end of the leader's pack the stale entry there loses an item (Inventory.TakeAt).
-        if (_usingStore[Member])
+        if (!_s.DropFromLeader())
         {
             return;
         }
-        _packCount[Member] = Core.Rules.Inventory.TakeAt(state, Party.LeaderIndex, index);
         DrawPackItems();
-        page.Light(0x50, _packRow[Member] * 8 + 0x1B, 0x5F);
+        page.Light(0x50, _s.PackRow * 8 + 0x1B, 0x5F);
     }
 
-    // orig: stash-screen-keys R035+0x0A46 matched, case G; the rule is Storing.Get
+    // orig: stash-screen-keys R035+0x0A46 matched, case G (StoreSession.Get)
     private void Get()
     {
-        var index = _storeTop[Member] + _storeRow[Member];
-        // C: only the list in use and an empty store are tested: a row past the store's end hands out its stale entry (Storing.Get).
-        if (!_usingStore[Member] || _store.Count == 0)
+        if (!_s.Get())
         {
             return;
-        }
-        _packCount[Member] = Storing.Get(state, _store, Member, index);
-        if (index >= _store.Count)
-        {
-            if (_storeTop[Member] != 0)
-            {
-                _storeTop[Member]--;
-            }
-            else if (_storeRow[Member] != 0)
-            {
-                _storeRow[Member]--;
-            }
         }
         DrawStoreItems();
         DrawPackItems();
-        page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0x5F);
+        page.Light(0x52, _s.StoreRow * 8 + 0x55, 0x5F);
     }
 
-    /// <summary>C: the next present member (counting up to the party size).</summary>
-    // orig: stash-screen-keys R035+0x0A46 matched, case C (0x2E43/0x2E63)
+    /// <summary>C: the next present member (StoreSession.NextMember).</summary>
+    // orig: stash-screen-keys R035+0x0A46 matched, case C (0x2E43/0x2E63): the party drawn first
     private void ShowTheNextMember()
     {
         page.DrawParty(Party);
-        var size = Math.Max(1, Party.Slots.Count);
-        do
-        {
-            _member = (_member + 1) % size;
-        }
-        // C: (DS:89F2 + 1) % party-headcount (not % 5 as on the barter screen).
-        while (Party.OccupiedSlot(_member) is null);
+        _s.NextMember();
         Redraw();
         // C: copied from the barter screen: the highlight lands on the Leave line (0x33), not on "Cache another person's items" (0x2B).
         page.Recolor(0x50, 0x33, 0xC8, 9, BuySellPage.Ink, BuySellPage.Lit);
     }
 
-    // orig: stash-screen-keys R035+0x0A46 matched, case 0x4800
+    // orig: stash-screen-keys R035+0x0A46 matched, case 0x4800 (StoreSession.MoveUp)
     private void MoveUp()
     {
-        if (_usingStore[Member])
+        switch (_s.MoveUp())
         {
-            _storeRow[Member]--;
-        }
-        else
-        {
-            _packRow[Member]--;
-        }
-        if (_usingStore[Member] && _storeRow[Member] < 0 && _storeTop[Member] > 0)
-        {
-            _storeRow[Member]++;
-            _storeTop[Member]--;
-            DrawStoreItems();
-            page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xB9);
-        }
-        else if (!_usingStore[Member] && _packRow[Member] < 0 && _packTop[Member] > 0)
-        {
-            _packRow[Member]++;
-            _packTop[Member]--;
-            DrawPackItems();
-            page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-        }
-        else
-        {
-            _storeRow[Member] = Math.Max(_storeRow[Member], 0);
-            _packRow[Member] = Math.Max(_packRow[Member], 0);
-            page.Recolor(0x3C, 0x55, 0x103, 0x69, BuySellPage.Lit, BuySellPage.Ink);
-            if (_usingStore[Member])
-            {
-                page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xC3);
-            }
-            else
-            {
-                page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-            }
+            case ListMove.UpperScrolled:
+                DrawStoreItems();
+                page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xB9);
+                break;
+            case ListMove.LowerScrolled:
+                DrawPackItems();
+                page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                break;
+            default:
+                page.Recolor(0x3C, 0x55, 0x103, 0x69, BuySellPage.Lit, BuySellPage.Ink);
+                if (_s.UsingStore)
+                {
+                    page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xC3);
+                }
+                else
+                {
+                    page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                }
+                break;
         }
     }
 
-    // orig: stash-screen-keys R035+0x0A46 matched, case 0x5000 (both cursors are kept inside their lists)
+    // orig: stash-screen-keys R035+0x0A46 matched, case 0x5000 (both cursors are kept inside their lists; StoreSession.MoveDown)
     private void MoveDown()
     {
-        if (_usingStore[Member])
+        switch (_s.MoveDown())
         {
-            _storeRow[Member]++;
-        }
-        else
-        {
-            _packRow[Member]++;
-        }
-        if (_usingStore[Member] && _storeRow[Member] >= 4 && _storeTop[Member] + _storeRow[Member] < _store.Count)
-        {
-            _storeRow[Member]--;
-            _storeTop[Member]++;
-            DrawStoreItems();
-            page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xB9);
-        }
-        else if (!_usingStore[Member] && _packRow[Member] >= 4 && _packTop[Member] + _packRow[Member] < _packCount[Member])
-        {
-            _packRow[Member]--;
-            _packTop[Member]++;
-            DrawPackItems();
-            page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-        }
-        else
-        {
-            if (_storeRow[Member] >= _store.Count)
-            {
-                _storeRow[Member]--;
-            }
-            if (_packCount[Member] <= _packRow[Member])
-            {
-                _packRow[Member]--;
-            }
-            _storeRow[Member] = Math.Min(_storeRow[Member], 3);
-            _packRow[Member] = Math.Min(_packRow[Member], 3);
-            page.Recolor(0x3C, 0x55, 0x103, 0x6E, BuySellPage.Lit, BuySellPage.Ink);
-            if (_usingStore[Member])
-            {
-                page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xC8);
-            }
-            else
-            {
-                page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xC8);
-            }
+            case ListMove.UpperScrolled:
+                DrawStoreItems();
+                page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xB9);
+                break;
+            case ListMove.LowerScrolled:
+                DrawPackItems();
+                page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                break;
+            default:
+                page.Recolor(0x3C, 0x55, 0x103, 0x6E, BuySellPage.Lit, BuySellPage.Ink);
+                if (_s.UsingStore)
+                {
+                    page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xC8);
+                }
+                else
+                {
+                    page.Light(0x72, _s.PackRow * 8 + 0x93, 0xC8);
+                }
+                break;
         }
     }
 
-    // orig: stash-screen-keys R035+0x0A46 matched, cases 0x4B00/0x4D00 (no switch to an empty store)
+    // orig: stash-screen-keys R035+0x0A46 matched, cases 0x4B00/0x4D00 (no switch to an empty store; StoreSession.SwitchLists)
     private void SwitchLists()
     {
-        if (_usingStore[Member])
+        switch (_s.SwitchLists())
         {
-            ShowPacking();
-            page.Unlight(0x52, _storeRow[Member] * 8 + 0x55, 0xB9);
-            page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-            _usingStore[Member] = false;
-        }
-        else if (_store.Count != 0)
-        {
-            ShowGetting();
-            page.Unlight(0x72, _packRow[Member] * 8 + 0x93, 0xB9);
-            page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xB9);
-            _usingStore[Member] = true;
+            case ListSwitch.ToLower:
+                ShowPacking();
+                page.Unlight(0x52, _s.StoreRow * 8 + 0x55, 0xB9);
+                page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                break;
+            case ListSwitch.ToUpper:
+                ShowGetting();
+                page.Unlight(0x72, _s.PackRow * 8 + 0x93, 0xB9);
+                page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xB9);
+                break;
         }
     }
 
@@ -430,13 +343,13 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
             page.Text(0x75, 0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
         }
         // C: the pack lines are drawn from row 0 (not from the kept top) and the store's lines at (i − kept top), as the original does with its persistent statics.
-        _store = state.ItemStores.Open(place.CacheHandle, state.StoreTable);
-        for (var i = 0; i < _store.Count && i < 4; i++)
+        _s.Open(place);
+        for (var i = 0; i < _s.Store.Count && i < 4; i++)
         {
-            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(FullDrawing.StoreItem, _store[i]), BuySellPage.Ink);
+            page.Text(0x55, (i - _s.StoreTop) * 8 + 0x55, StoreLine(FullDrawing.StoreItem, _s.Store[i]), BuySellPage.Ink);
         }
         page.Light(0x73, 0x93, 0xB7);
-        _packCount[Member] = pack.Count;
+        _s.PackShown(pack.Count);
     }
 
     /// <summary>The whole page again (another member, or after a character sheet).</summary>
@@ -445,8 +358,8 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     {
         page.DrawBackground(Party);
         page.Text(0x49, 9, PurseLine(RedrawTexts.Purse), BuySellPage.Ink);
-        page.Text(0x50, 0x1B, Words(GetLine), _usingStore[Member] ? BuySellPage.Ink : BuySellPage.Faded);
-        page.Text(0x50, 0x23, Words(PutLine), _usingStore[Member] ? BuySellPage.Faded : BuySellPage.Ink);
+        page.Text(0x50, 0x1B, Words(GetLine), _s.UsingStore ? BuySellPage.Ink : BuySellPage.Faded);
+        page.Text(0x50, 0x23, Words(PutLine), _s.UsingStore ? BuySellPage.Faded : BuySellPage.Ink);
         DrawMenuTail(RedrawTexts.Another, RedrawTexts.Leave);
         // C: the redraw prints this heading at x 0x57, the first drawing at 0x6B.
         page.Text(0x57, 0x45, Words(RedrawTexts.Cache), BuySellPage.Ink);
@@ -456,19 +369,19 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         {
             page.Text(0x75, 0x93 + i * 8, ItemLine(RedrawTexts.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
         }
-        for (var i = 0; i < _store.Count && i < 4; i++)
+        for (var i = 0; i < _s.Store.Count && i < 4; i++)
         {
-            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(RedrawTexts.StoreItem, _store[i]), BuySellPage.Ink);
+            page.Text(0x55, (i - _s.StoreTop) * 8 + 0x55, StoreLine(RedrawTexts.StoreItem, _s.Store[i]), BuySellPage.Ink);
         }
-        if (_usingStore[Member])
+        if (_s.UsingStore)
         {
-            page.Light(0x52, _storeRow[Member] * 8 + 0x55, 0xB7);
+            page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xB7);
         }
         else
         {
-            page.Light(0x72, _packRow[Member] * 8 + 0x93, 0xB7);
+            page.Light(0x72, _s.PackRow * 8 + 0x93, 0xB7);
         }
-        _packCount[Member] = pack.Count;
+        _s.PackShown(pack.Count);
     }
 
     private void DrawMenuTail(string another, string leave)
@@ -483,9 +396,9 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     {
         page.Restore(0x72, 0x93, 0xB6, 0x20);
         var pack = PackOf(Member);
-        for (var i = _packTop[Member]; i < _packTop[Member] + 4 && i < pack.Count; i++)
+        for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(PackListItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
+            page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, ItemLine(PackListItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
         }
     }
 
@@ -493,9 +406,9 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private void DrawStoreItems()
     {
         page.Restore(0x52, 0x55, 0xB6, 0x20);
-        for (var i = _storeTop[Member]; i < _storeTop[Member] + 4 && i < _store.Count; i++)
+        for (var i = _s.StoreTop; i < _s.StoreTop + 4 && i < _s.Store.Count; i++)
         {
-            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(StoreListItem, _store[i]), BuySellPage.Ink);
+            page.Text(0x55, (i - _s.StoreTop) * 8 + 0x55, StoreLine(StoreListItem, _s.Store[i]), BuySellPage.Ink);
         }
     }
 

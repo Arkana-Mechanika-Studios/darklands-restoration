@@ -249,7 +249,7 @@ public sealed partial class BattleScreen
     private void SetDifficulty(Difficulty d)
     {
         // C: the battle's difficulty is the game's (Battle.DifficultyOf)
-        _state.Difficulty = d;
+        Simulation.GameCommands.SetDifficulty(_state, d);
         // C: the box's wait counts in the bar's run (RunMenu: the menu's measured callbacks hold it)
         new MessageBox(_ui).Show(HotKeys.DifficultyText(_ui, d));
     }
