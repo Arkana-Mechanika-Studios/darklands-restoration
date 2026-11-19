@@ -52,6 +52,7 @@ using Darklands.Rendering;
 //                                "Darklands"; tools/oracle/lockstep.py compares it with the original's at the same point)
 //   load:<file>                  starts with that saved game of the saves folder; a game saved in a battle resumes it
 //   console:<command>            a developer console command on the game being played ("console:money add 10" as one argument)
+//   inspect:<x>,<y>              (developer builds only: DevTools) what drew that pixel of the last frame, and the steps taken before it
 //   screen:barter|store|loot     opens that screen on a Quickstart game instead of playing
 //   saint:<n>[,<member>[,party]] (first step) opens the prayer screen for that saint over the Quickstart party
 //   battle:<battlefield>,<seed>[,<type>,<quality>,<count> ...]   a Quickstart party goes straight into that battle, paused in
@@ -454,6 +455,16 @@ host.State = name =>
         Console.WriteLine($"state {name}: no game");
     }
 };
+#if DEV_TOOLS
+// the developer's inspector (inspect:x,y steps): only in builds with the property DevTools (not in release builds)
+host.Inspect = (frame, x, y, step) =>
+{
+    foreach (var line in Darklands.DevTools.Inspector.Describe(frame, x, y, new Darklands.DevTools.InspectedMoment(step)))
+    {
+        Console.WriteLine("inspect: " + line);
+    }
+};
+#endif
 host.ConsoleCommand = line =>
 {
     foreach (var text in developerConsole.Execute(line).Lines)

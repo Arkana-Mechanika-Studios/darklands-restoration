@@ -63,7 +63,7 @@ public sealed class SaintsDecoder
             length++;
         }
 
-        return Encoding.ASCII.GetString(data, offset, length);
+        return Darklands.Core.GameTextCodec.Decode(data.AsSpan(offset, length));
     }
 }
 

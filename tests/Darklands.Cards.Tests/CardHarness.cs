@@ -105,6 +105,9 @@ public sealed class ScriptedScreen(int option) : ICardScreen
         return choice;
     }
 
+    public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
+
+
     public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {message}");
 
     public void PassTime(int hours) => Log.Add($"time {hours}");

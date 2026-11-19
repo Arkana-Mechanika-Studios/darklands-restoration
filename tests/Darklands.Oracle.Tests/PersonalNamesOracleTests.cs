@@ -23,7 +23,7 @@ public sealed class PersonalNamesOracleTests
         return File.Exists(path) ? PersonalNamesDecoder.Decode(File.ReadAllBytes(path)) : null;
     });
 
-    private static string Sha(string text) => Convert.ToHexStringLower(SHA256.HashData(Encoding.Latin1.GetBytes(text)));
+    private static string Sha(string text) => Convert.ToHexStringLower(SHA256.HashData(Darklands.Core.GameTextCodec.Encode(text)));
 
     private static void AssertName(OracleCase c, string name)
     {

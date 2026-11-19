@@ -218,8 +218,12 @@ public static class GameCommands
         var (x, y) = s.Here is { } here ? (here.X, here.Y) : (s.MapPosition.X, s.MapPosition.Y);
         return place.X == x && place.Y == y
             ? "here"
-            : PartyStanding.Directions[PartyStanding.Direction(x, y, place.X, place.Y)].ToLowerInvariant() + " of here";
+            : CompassWords[PartyStanding.Direction(x, y, place.X, place.Y)] + " of here";
     }
+
+    /// <summary>The console's own words for <see cref="PartyStanding.Direction"/> (developer English, like the rest of its output; the
+    /// game's words are the EXE's, read by the screens).</summary>
+    private static readonly string[] CompassWords = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
 
     private static ConsoleResult Heal(GameState s, string[] w)
     {

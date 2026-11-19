@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- the developer's inspector (src/Darklands.DevTools): in Debug builds only unless set; the publish profiles set it false -->
+    <DevTools Condition="'$(DevTools)' == '' and '$(Configuration)' == 'Debug'">true</DevTools>
+    <DevTools Condition="'$(DevTools)' == ''">false</DevTools>
+    <DefineConstants Condition="'$(DevTools)' == 'true'">$(DefineConstants);DEV_TOOLS</DefineConstants>
+  </PropertyGroup>
+</Project>

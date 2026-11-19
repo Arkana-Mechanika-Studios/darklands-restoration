@@ -1,5 +1,6 @@
 using System.Globalization;
 using Darklands.Cards;
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Rules;
 using Darklands.Platform;
@@ -52,6 +53,10 @@ public sealed class BarterScreen
     }
 
     private Core.Characters.Party Party => _state.Party;
+
+    // orig: trade-screen-entry R032+0x0058: DS:869C = name ? name : R136+0xA70F[shop] (OriginalWords.ShopNames)
+    /// <summary>The shop's name: the one it was opened under, else its entry of the name table.</summary>
+    private string ShopName => _shop.Name ?? _page.Ui.Assets.Words.Text(OriginalWords.ShopNames, _shop.Number);
 
     private int Leader => Party.LeaderIndex;
 
@@ -504,7 +509,7 @@ public sealed class BarterScreen
     {
         _page.Text(0x50, 0x33, "\u008C B\u00FFarter for another person", BuySellPage.Ink);
         _page.Text(0x50, 0x3B, "\u008C L\u00FFeave", BuySellPage.Ink);
-        _page.Text(0x7A, 0x45, $"The {_shop.Name} offers...", BuySellPage.Ink);
+        _page.Text(0x7A, 0x45, $"The {ShopName} offers...", BuySellPage.Ink);
     }
 
     /// <summary>Four of the member's stacks with what the shop pays.</summary>
@@ -550,8 +555,8 @@ public sealed class BarterScreen
         var leader = Party.Slot(Leader);
         var member = Party.Slot(_member).ShortName;
         return Leader != _member
-            ? $"{(leader.IsFemale ? "She" : "He")} barters for {member} to the {_shop.Name}"
-            : $"{member} barters for {(leader.IsFemale ? "herself" : "himself")} to the {_shop.Name}";
+            ? $"{(leader.IsFemale ? "She" : "He")} barters for {member} to the {ShopName}"
+            : $"{member} barters for {(leader.IsFemale ? "herself" : "himself")} to the {ShopName}";
     }
 
     /// <summary>"%5upf  name  (%3d) %2dq": what the shop pays for one, the name, the count and the quality.</summary>

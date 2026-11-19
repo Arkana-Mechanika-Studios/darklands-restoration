@@ -133,6 +133,9 @@ internal static class Adapters
 
         public int Choose(int block, IReadOnlyList<Cards.OptionState> options, Func<int, Cards.OptionHint>? hint = null) => 0;
 
+        public void Post(Darklands.Core.GameMessage message) { }
+
+
         public void Tell(string message, int member = Cards.OptionHint.WholeParty) { }
 
         public void PassTime(int hours) { }

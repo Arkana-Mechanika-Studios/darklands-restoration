@@ -29,7 +29,8 @@ public sealed class RecordOverrunTests
         var twin = new MscRandom(0xBBE34725);
         twin.NextRaw();
         Assert.Equal(twin.State, ((MscRandom)s.Random).State);
-        Assert.Contains("20: Stealth changed from 0 to 3", ((GameMessageLog)s.Messages).Lines);
+        var report = Assert.Single(((GameMessageLog)s.Messages).Posted);
+        Assert.Equal((20, GameMessageIds.SkillChanged, (int)Skill.Stealth, 0, 3), (report.Member, report.Id, report.Number("skill"), report.Number("from"), report.Number("to")));
     }
 
     [Fact]

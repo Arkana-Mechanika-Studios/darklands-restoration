@@ -266,7 +266,7 @@ public sealed partial class BattleScreen
         }
         var bytes = exe.Far(seg, off, 40);
         var end = bytes.IndexOf((byte)0);
-        return System.Text.Encoding.Latin1.GetString(end < 0 ? bytes : bytes[..end]);
+        return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
     }
 
     /// <summary>Change Marching Order (Party menu, Alt-O): the members are picked in order with F1..F5 or clicks.</summary>

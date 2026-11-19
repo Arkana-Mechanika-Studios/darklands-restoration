@@ -1,4 +1,3 @@
-using System.Text;
 using Darklands.Core.Battles;
 using Darklands.Core.Characters;
 
@@ -96,7 +95,7 @@ public static class EnemyRecords
     // C: _fstrcpy copies up to the terminating zero; the bytes after it keep the default record's bytes (zeros).
     private static void PutTextOverZeros(byte[] r, int at, int size, string text)
     {
-        var bytes = Encoding.Latin1.GetBytes(text);
+        var bytes = Darklands.Core.GameTextCodec.Encode(text);
         bytes.AsSpan(0, Math.Min(bytes.Length, size - 1)).CopyTo(r.AsSpan(at));
     }
 }

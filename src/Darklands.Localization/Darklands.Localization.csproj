@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.Localization.Tests" />
+  </ItemGroup>
+
+  <!-- the Fluent library is referenced by this project only; nothing else sees it -->
+  <ItemGroup>
+    <PackageReference Include="Linguini.Bundle" Version="0.11.0" />
+  </ItemGroup>
+
+</Project>

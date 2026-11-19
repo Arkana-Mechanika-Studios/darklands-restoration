@@ -18,7 +18,7 @@ public sealed partial class CardContext
     public static int ClampRange(int low, int high, int value) => value > high ? high : value < low ? low : value;
 
     // ---- music -------------------------------------------------------------------------
-    // PlayMusic (R043 09ae), PlaySound (sound-start), RandomName, ShopNames and the shops are shared:
+    // PlayMusic (R043 09ae), PlaySound (sound-start), RandomName, ShopName and the shops are shared:
     // see CardContext.Services.cs and CardContext.Memory.cs.
 
     // orig: R043+0x09AE (1462:09AE) matched, music-start(5) (driver command 5: the number last played, root 047C:078A); tests: CardSmokeTests

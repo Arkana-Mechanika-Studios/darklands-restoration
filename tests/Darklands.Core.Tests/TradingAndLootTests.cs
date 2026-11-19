@@ -74,15 +74,17 @@ public sealed class TradingAndLootTests
     {
         var s = Make();
         var shop = Trading.Open(s, 1, null, 0x2);
-        Assert.Equal("Goods Merchant", shop.Name);
+        Assert.Null(shop.Name);                                                 // the name table's entry 1: the screen words it
         Assert.Equal(1, shop.Number);
         Assert.Equal(0x2, shop.Categories);
         Assert.Equal(25, shop.Quality);
-        Assert.Equal("Swordsmith", Trading.Open(s, 2, null, 0).Name);
         Assert.Equal("Toms Wares", Trading.Open(s, 1, "Toms Wares", 0).Name);
         Assert.Equal("", Trading.Open(s, 1, "", 0).Name);                      // an empty name is a name (only null falls back)
-        Assert.Equal("Physician", Trading.Open(s, 9, null, 0).Name);           // neighbouring entries of the name table
-        Assert.Equal("Ull", Trading.Open(s, Trading.Pawnshop, null, 0).Name);
+        Assert.Null(Trading.Open(s, 9, null, 0).Name);                         // neighbouring entries of the name table
+        Assert.Null(Trading.Open(s, Trading.Pawnshop, null, 0).Name);
+        Assert.Null(Trading.Open(s, -3, null, 0).Name);
+        Assert.Equal("", Trading.Open(s, -4, null, 0).Name);                    // outside the table: empty
+        Assert.Equal("", Trading.Open(s, 12, null, 0).Name);
         Assert.Equal("", Trading.Open(s, 40, null, 0).Name);
         Assert.Equal(10, Trading.Open(s, Trading.Pawnshop, "Pawn", 0).Quality);
     }

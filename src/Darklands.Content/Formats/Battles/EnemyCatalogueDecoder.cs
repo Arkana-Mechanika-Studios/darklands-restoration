@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Text;
 using Darklands.Core.Battles;
 
 namespace Darklands.Content.Formats.Battles;
@@ -92,6 +91,6 @@ public static class EnemyCatalogueDecoder
     private static string Text(ReadOnlySpan<byte> bytes)
     {
         var end = bytes.IndexOf((byte)0);
-        return Encoding.Latin1.GetString(end < 0 ? bytes : bytes[..end]);
+        return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
     }
 }

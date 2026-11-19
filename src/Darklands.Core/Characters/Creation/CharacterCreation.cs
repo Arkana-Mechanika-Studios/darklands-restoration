@@ -801,7 +801,7 @@ public sealed class CharacterCreation
 
     private static void Keep(byte[] buffer, string text, int max)
     {
-        var bytes = System.Text.Encoding.Latin1.GetBytes(text);
+        var bytes = GameTextCodec.Encode(text);
         var n = Math.Min(Math.Min(bytes.Length, max), buffer.Length - 1);
         Array.Copy(bytes, buffer, n);
         buffer[n] = 0;

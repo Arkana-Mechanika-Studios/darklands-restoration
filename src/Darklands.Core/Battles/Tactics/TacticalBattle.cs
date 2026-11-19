@@ -24,10 +24,10 @@ public interface ITacticalView : IBattleViewport
     void Message(int text, int ticks, int member);
 
     /// <summary>
-    /// A message in member <paramref name="member"/>'s panel row (−2: the whole column) in colour <paramref name="color"/>
-    /// until a key or a left click (the skill changes at the end of a fight).
+    /// A report in its member's panel row (−2: the whole column) until a key or a left click (the skill changes at the end of a fight):
+    /// good news in colour 15, bad news in colour 12.
     /// </summary>
-    void MemberMessage(int member, string text, int color);
+    void MemberMessage(GameMessage message);
 
     /// <summary>The panel row of a member (or everything when −1) needs redrawing.</summary>
     void RowChanged(int member);
@@ -944,7 +944,7 @@ public sealed partial class TacticalBattle : IBattleEndActions
             // orig: ability-change-notice R021+0x0080 (1EF8:0080) matched: "<skill> changed from X to Y" (text-bank-buffer) shown by
             // R021+0x01E2 (1EF8:01E2) matched in colour 15 (a gain) or 12 (a loss)
             BattleEnd.ImproveSkills(Battle, (m, skill, from, to) =>
-                _view.MemberMessage(m, $"{Rules.MemberRules.SkillNames[skill]} changed from {from} to {to}", to > from ? 15 : 12));
+                _view.MemberMessage(GameMessage.SkillChanged(m, skill, from, to)));
         }
         FreeEnemySlots();
     }

@@ -115,7 +115,7 @@ public sealed class GoldenTraceTests
         var log = new StringBuilder();
         foreach (var line in screen.Log)
         {
-            log.Append(line).Append('\n');
+            log.Append(AsRecorded(line)).Append('\n');
         }
         log.Append($"{end} random {random} state {Digest(state, c, $"{card.Number:X3}-{(probe ? "probe" : "plain")}-{location}-{option}")}\n");
         return log.ToString();
@@ -155,8 +155,11 @@ public sealed class GoldenTraceTests
             var name = $"{run}.txt";
             File.WriteAllText(Path.Combine(folder, name), text.ToString());
         }
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text.ToString())))[..16];
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(AsRecorded(text.ToString()))))[..16];
     }
+
+    /// <summary>Text as the game's bytes read one per character: the form the traces were recorded in before GameTextCodec.</summary>
+    private static string AsRecorded(string text) => Encoding.Latin1.GetString(GameTextCodec.Encode(text));
 
     private static object? Safe(Func<object?> get)
     {
@@ -447,6 +450,9 @@ public sealed class TracingScreen(int option, bool probe) : ICardScreen
     }
 
     private static string Say(OptionHint h) => $"{h.Chance} '{h.Message}' {h.Member}";
+
+    public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
+
 
     public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {message}");
 

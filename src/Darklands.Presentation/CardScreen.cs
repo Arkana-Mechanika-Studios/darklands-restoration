@@ -246,6 +246,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: a framed box for the ticks, not the side window's wait for a key (Tell)
     public void ShowMessage(string text, int ticks) => new MessageBox(ui).Show(text, ticks * 1000 / 60);
 
+    public void Post(GameMessage message) => SideWindowMessages.Show(ui, message);
+
     /// <summary>The hourglass while hours pass (see <see cref="Hourglass"/>).</summary>
     public void PassTime(int hours) => Hourglass.Show(ui, context().State.Date, hours);
 

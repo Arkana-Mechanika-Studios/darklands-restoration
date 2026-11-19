@@ -11,8 +11,21 @@ namespace Darklands.Presentation;
 //   session carry-create-pray3: R034+0x0102 < R039+0x49C4 < R043+0x29D0 in the original's stack samples)
 public sealed class SideWindowMessages(GameUi ui) : IGameMessages
 {
-    public void Show(string text, int ticks = 100) => new MessageBox(ui).Show(text, ticks * 1000 / 60);
+    /// <summary>Shows the message at once, in the original's words: a notice box for its ticks, a report in the side window (its
+    /// <see cref="GameMessage.Good"/> is not used: the window draws every report the same).</summary>
+    public void Post(GameMessage message) => Show(ui, message);
 
-    /// <summary>A member's report in the side window, waiting for a key or the left button; <paramref name="good"/> is not used: the window draws every report the same.</summary>
-    public void Report(int member, string text, bool good) => CardScreen.Tell(ui, text, member);
+    /// <summary>A rule's message on <paramref name="ui"/>'s screen, at once.</summary>
+    public static void Show(GameUi ui, GameMessage message)
+    {
+        var text = ui.Assets.MessageText.Text(message);
+        if (message.Kind == MessageKind.Notice)
+        {
+            new MessageBox(ui).Show(text, message.Ticks * 1000 / 60);
+        }
+        else
+        {
+            CardScreen.Tell(ui, text, message.Member);
+        }
+    }
 }

@@ -26,7 +26,7 @@ public sealed class TextAndOpeningTests
     }
 
     private static string Expand(CardContext c, string text) =>
-        Encoding.Latin1.GetString(TextVariables.Expand(Encoding.Latin1.GetBytes(text), c));
+        GameTextCodec.Decode(TextVariables.Expand(GameTextCodec.Encode(text), c));
 
     [Fact]
     public void ANameEndsAtTheFirstByteThatIsNotALetterOrDigit()

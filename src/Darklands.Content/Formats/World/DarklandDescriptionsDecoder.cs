@@ -61,7 +61,7 @@ public sealed class DarklandDescriptionsDecoder
             length++;
         }
 
-        return Encoding.ASCII.GetString(data.Slice(offset, length));
+        return Darklands.Core.GameTextCodec.Decode(data.Slice(offset, length));
     }
 }
 

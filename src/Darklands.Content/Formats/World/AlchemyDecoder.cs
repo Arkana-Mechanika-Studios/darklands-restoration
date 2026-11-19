@@ -94,7 +94,7 @@ public sealed class AlchemyDecoder
             length++;
         }
 
-        return Encoding.ASCII.GetString(data, offset, length);
+        return Darklands.Core.GameTextCodec.Decode(data.AsSpan(offset, length));
     }
 
     private static int ReadUInt16(byte[] data, int offset)

@@ -18,9 +18,11 @@ public sealed class ArchitectureRulesTests
     private const string Mt32 = "Darklands.Audio.Mt32";
     private const string Launcher = "Darklands.Launcher";
     private const string DevConsole = "Darklands.DevConsole";
+    private const string DevTools = "Darklands.DevTools";
     private const string Presentation = "Darklands.Presentation";
     private const string Headless = "Darklands.Host.Headless";
     private const string Sdl = "DarklandsRP"; // Darklands.Host.Sdl builds the program players start
+    private const string Localization = "Darklands.Localization";
 
     /// <summary>The game: its model, rules, files and saved games. It knows nothing of screens, devices or hosts.</summary>
     private static readonly string[] Game = [Core, Persistence, Content, Cards, Simulation];
@@ -38,10 +40,12 @@ public sealed class ArchitectureRulesTests
         [Audio] = [Platform, Content, Core],
         [Mt32] = [Audio, Platform, Content, Core],
         [Launcher] = [Platform],
+        [Localization] = [], // message ids to text (Fluent packs over the original text); it knows no game rules
         [DevConsole] = [Core],
+        [DevTools] = [Platform], // the developer's inspector; the hosts reference it only in DevTools builds
         [Presentation] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio],
-        [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, Presentation],
-        [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, Launcher, Presentation],
+        [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Presentation],
+        [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Launcher, Presentation],
     };
 
     /// <summary>The scan sees every use: no member or type token of the product code is left unresolved.</summary>
@@ -82,7 +86,7 @@ public sealed class ArchitectureRulesTests
     [Fact]
     public void TheGameDependsOnNoPresentationAndNoHost()
     {
-        string[] above = [Platform, Rendering, Audio, Mt32, Launcher, DevConsole, Presentation, Headless, Sdl];
+        string[] above = [Platform, Rendering, Audio, Mt32, Launcher, DevConsole, DevTools, Presentation, Headless, Sdl];
         foreach (var name in Game)
         {
             Assert.Empty(References(name).Intersect(above));
@@ -93,9 +97,49 @@ public sealed class ArchitectureRulesTests
             Assert.DoesNotContain(Sdl, References(name));
             if (name is not (Headless or Sdl))
             {
-                // the developer console, the launcher and the HD backend are host features
-                Assert.Empty(References(name).Intersect([DevConsole, Launcher, Rendering]));
+                // the developer console, the inspector, the launcher and the HD backend are host features
+                Assert.Empty(References(name).Intersect([DevConsole, DevTools, Launcher, Rendering]));
             }
+        }
+    }
+
+    /// <summary>
+    /// The game carries text ids, never resolved text (docs/LOCALISATION.md, "How text will be identified"): no assembly of the game
+    /// references Darklands.Localization or uses one of its types, so a language can never change an outcome; the localiser knows no
+    /// game type (it maps ids to text and nothing else); only the views and the hosts may resolve ids to text.
+    /// </summary>
+    [Fact]
+    public void TheGameResolvesNoText()
+    {
+        string[] mayResolve = [Presentation, Headless, Sdl];
+        foreach (var name in Dependencies.Products)
+        {
+            if (!mayResolve.Contains(name))
+            {
+                Assert.DoesNotContain(Localization, References(name));
+            }
+        }
+        foreach (var name in Game)
+        {
+            Assert.DoesNotContain(Dependencies.Uses(name), use => use.Target.Assembly.GetName().Name == Localization);
+        }
+        Assert.Empty(References(Localization));
+        Assert.DoesNotContain(Dependencies.Uses(Localization),
+            use => use.Target.Assembly.GetName().Name is { } a && a != Localization && Dependencies.Products.Contains(a));
+        // The original's words for the rules' messages (Content's OriginalMessageText, GameAssets.MessageText) are for the screens only.
+        foreach (var name in new[] { Core, Persistence, Cards, Simulation })
+        {
+            Assert.DoesNotContain(Dependencies.Uses(name), use =>
+                use.Target.FullName == "Darklands.Content.Formats.Text.Strings.OriginalMessageText" ||
+                use.Target.FullName == "Darklands.Content.GameAssets" && use.Member.Contains("MessageText", StringComparison.Ordinal));
+        }
+        // The original's word tables (Content's OriginalWords): the rules keep numbers; the screens and the card texts word them (the
+        // cards as the original's card code does: the card-text variables and the shop name a card leaves out).
+        foreach (var name in new[] { Core, Persistence, Simulation })
+        {
+            Assert.DoesNotContain(Dependencies.Uses(name), use =>
+                use.Target.FullName is "Darklands.Content.Formats.Text.Strings.OriginalWords" or "Darklands.Content.Formats.Text.Strings.WordTable" ||
+                use.Target.FullName is "Darklands.Content.GameAssets" or "Darklands.Content.WorldData" && use.Member.Contains("Words", StringComparison.Ordinal));
         }
     }
 

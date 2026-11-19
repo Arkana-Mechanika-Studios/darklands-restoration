@@ -21,7 +21,9 @@ public sealed class MemberRulesTests
 
         Assert.Equal(99, s.Party.Slots[0][Skill.Religion]);
         Assert.Equal(0, s.Party.Slots[1][Skill.Religion]);
-        Assert.Equal(["0: Religion changed from 13 to 99", "1: Religion changed from 9 to 0"], messages.Lines);
+        Assert.Equal([GameMessage.SkillChanged(0, Religion, 13, 99).ToString(), GameMessage.SkillChanged(1, Religion, 9, 0).ToString()],
+            messages.Posted.Select(m => m.ToString()));
+        Assert.Equal([(0, true), (1, false)], messages.Posted.Select(m => (m.Member, m.Good)));
     }
 
     [Fact]

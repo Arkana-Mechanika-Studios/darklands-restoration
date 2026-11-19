@@ -1,4 +1,3 @@
-using System.Text;
 
 namespace Darklands.Content.Formats.World;
 
@@ -107,7 +106,7 @@ public sealed class DarklandCitiesDecoder
             length++;
         }
 
-        return Encoding.ASCII.GetString(data.Slice(offset, length));
+        return Darklands.Core.GameTextCodec.Decode(data.Slice(offset, length));
     }
 
     private static int ReadUInt16(ReadOnlySpan<byte> data, int offset)

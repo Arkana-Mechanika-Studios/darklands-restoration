@@ -22,9 +22,8 @@ public sealed class SaintHelpOracleTests
     /// <summary>The messages of the rules, in the oracle's words.</summary>
     private sealed class Recorder(List<string> log) : IGameMessages
     {
-        public void Show(string text, int ticks = 100) => log.Add($"tell -2 {text}");
-
-        public void Report(int member, string text, bool good) => log.Add($"tell {member} {text}");
+        public void Post(GameMessage message) =>
+            log.Add(message.Kind == MessageKind.Notice ? $"tell -2 {TestMessages.Text(message)}" : $"tell {message.Member} {TestMessages.Text(message)}");
     }
 
     [Fact]

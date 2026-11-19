@@ -21,7 +21,8 @@ internal static class Dependencies
     [
         "Darklands.Core", "Darklands.Persistence", "Darklands.Content", "Darklands.Cards", "Darklands.Simulation",
         "Darklands.Platform", "Darklands.Rendering", "Darklands.Audio", "Darklands.Audio.Mt32", "Darklands.Launcher",
-        "Darklands.DevConsole", "Darklands.Presentation", "Darklands.Host.Headless", "DarklandsRP",
+        "Darklands.DevConsole", "Darklands.Presentation", "Darklands.Host.Headless", "DarklandsRP", "Darklands.Localization",
+        "Darklands.DevTools",
     ];
 
     public static Assembly Load(string name) => Assembly.Load(name);

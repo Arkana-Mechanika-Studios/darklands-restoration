@@ -36,6 +36,17 @@ public sealed class GameAssets(GameFiles files)
 
     private CommonSprites? _common;
 
+    /// <summary>The rules' messages in the original's words, from the player's DARKLAND.EXE (loaded on first use).</summary>
+    public Formats.Text.Strings.OriginalMessageText MessageText =>
+        _messageText ??= new(Formats.Exe.DarklandsExecutable.Load(files));
+
+    private Formats.Text.Strings.OriginalMessageText? _messageText;
+
+    /// <summary>The original's word tables (fame titles, standing, directions, shop, job, skill and risk words), from the player's DARKLAND.EXE.</summary>
+    public Formats.Text.Strings.OriginalWords Words => _words ??= Formats.Text.Strings.OriginalWords.Load(files);
+
+    private Formats.Text.Strings.OriginalWords? _words;
+
     public bool PictureExists(string name)
     {
         var file = name.Contains('.') ? name : name + ".PIC";

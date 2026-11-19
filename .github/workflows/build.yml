@@ -55,6 +55,11 @@ jobs:
       - name: Publish ${{ matrix.rid }}
         run: dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=${{ matrix.rid }}
 
+      # the developer's inspector never ships (DevTools is false in the publish profiles): the package must not hold it
+      - name: No developer tools in the package
+        shell: bash
+        run: if grep -a -q -r "Darklands.DevTools" artifacts/${{ matrix.rid }}; then echo "Darklands.DevTools is in the package"; exit 1; fi
+
       # tar keeps DarklandsRP executable on Linux; a zip is the usual form on Windows
       - name: Pack (Linux)
         if: runner.os == 'Linux'
