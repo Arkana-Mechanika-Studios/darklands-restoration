@@ -127,6 +127,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         // what was drawn with the old renderer goes with it (the console's and the corner's fonts are loaded again on the new one)
         Console?.ReleaseFont();
         Corner?.ReleaseFont();
+        Inspector?.ReleaseFont();
         ReleaseRendering();
         SdlNative.SDL_DestroyRenderer(_renderer);
         Open(width, height, fullscreen, frameless, gpu, hidden: true, display);
@@ -197,6 +198,20 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     /// <summary>A line drawn small in the window's bottom-right corner when it gives one (the version on the start screen).</summary>
     public CornerText? Corner { get; set; }
+
+    /// <summary>
+    /// The developer's inspector (null: none, and F9 goes to the game as before). Program.cs sets it in developer builds only
+    /// (DEV_TOOLS): F9 held shows it at the pointer, Ctrl+F9 pins it there and copies its lines, Ctrl+F9 again lets it go.
+    /// </summary>
+    // Host feature, developer builds only: no code of the original acts on F9 (checked for I-1: its key tables and handlers), so
+    //   taking it loses the game nothing; the headless host's scripted F9 still reaches the game.
+    internal InspectorOverlay? Inspector { get; set; }
+
+    /// <summary>The frame presented last (null before the first); the inspector reads it and nothing writes it here.</summary>
+    internal Screen? LastFrame { get; private set; }
+
+    /// <summary>The text screen is showing (it has no pixel planes to inspect).</summary>
+    internal bool ShowingText => _showingText;
 
     /// <summary>
     /// Replacement graphics (null: none): each frame is drawn as the renderer's items, the game's frame first and the
@@ -370,6 +385,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
 
     public void Present(Screen screen)
     {
+        LastFrame = screen;
         if (Renderer is not null)
         {
             PresentHd(screen, Renderer);
@@ -481,6 +497,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         {
             overlay.Draw(_renderer, w, h);
         }
+        if (Inspector is { Visible: true } inspector && !_showingText)
+        {
+            var (x, y) = inspector.Target(_mouse.X, _mouse.Y);
+            inspector.Draw(_renderer, w, h, Graphics, x, y);
+        }
         SdlNative.SDL_RenderPresent(_renderer);
         _framePresented = true;
     }
@@ -579,6 +600,7 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         var pressedThisPump = MouseButtons.None;
         var toggledThisPump = false;
+        var inspectorChanged = false;
         while (SdlNative.SDL_PollEvent(out var e))
         {
             // Ctrl+F11: the next picture filter (Filter), shown at once even while the game waits
@@ -607,6 +629,13 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 {
                     ReportRequested();
                 }
+                continue;
+            }
+            // F9 (developer builds): the inspector, before the console and the game
+            if (Inspector is not null && IsInspectorKey(e))
+            {
+                InspectorKey(e);
+                inspectorChanged = true;
                 continue;
             }
             if (Console is { Console.IsOpen: true } && ConsoleEvent(e, toggledThisPump))
@@ -684,6 +713,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         {
             Redraw();
         }
+        // the inspector follows the pointer while the game waits too, and goes when F9 is let go
+        else if (Inspector is not null && (inspectorChanged || (Inspector.Visible && !_framePresented)))
+        {
+            Redraw();
+        }
         _framePresented = false;
     }
 
@@ -699,6 +733,33 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         var ticks = (int)_wheel;
         _wheel -= ticks;
         return ticks;
+    }
+
+    /// <summary>F9 pressed or let go (with or without Ctrl): the inspector's key.</summary>
+    internal static bool IsInspectorKey(SdlNative.SdlEvent e) =>
+        e.Type is SdlNative.EventKeyDown or SdlNative.EventKeyUp && e.Keyboard.Scancode == SdlNative.ScancodeF9;
+
+    /// <summary>F9 held shows the inspector, let go hides it; Ctrl+F9 pins it at the pointer's pixel (its lines to the clipboard) or lets it go.</summary>
+    private void InspectorKey(SdlNative.SdlEvent e)
+    {
+        var inspector = Inspector!;
+        if (e.Type == SdlNative.EventKeyUp)
+        {
+            inspector.Held = false;
+            return;
+        }
+        if (e.Keyboard.Repeat != 0)
+        {
+            return;
+        }
+        if ((e.Keyboard.Mod & SdlNative.KeyModCtrl) == 0)
+        {
+            inspector.Held = true;
+        }
+        else if (inspector.TogglePin(_mouse.X, _mouse.Y) is { } lines && !SdlNative.SDL_SetClipboardText(string.Join(Environment.NewLine, lines)))
+        {
+            System.Console.Error.WriteLine("inspector: the clipboard could not take the lines (" + SdlNative.GetErrorText() + ")");
+        }
     }
 
     /// <summary>A press of Ctrl+F11 (either Ctrl key; not with Alt), the key that goes to the next picture filter.</summary>

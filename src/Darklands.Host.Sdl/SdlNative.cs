@@ -48,6 +48,7 @@ internal static class SdlNative
     internal const int WindowCentered = 0x2FFF0000;
     internal const int KeyTab = 9;
     internal const int KeyV = 118;
+    internal const int ScancodeF9 = 66;
     internal const int ScancodeF11 = 68;
     internal const int ScancodeF12 = 69;
     internal const int KeyModCtrl = 0x00C0;
@@ -828,6 +829,11 @@ internal static class SdlNative
     /// <summary>The clipboard's text (freed with SDL_free; an empty string when there is none).</summary>
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr SDL_GetClipboardText();
+
+    /// <summary>Puts <paramref name="text"/> on the clipboard; false when it could not.</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_SetClipboardText([MarshalAs(UnmanagedType.LPUTF8Str)] string text);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern void SDL_free(IntPtr memory);

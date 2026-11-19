@@ -44,6 +44,17 @@ public sealed class Canvas(Screen screen)
         }
     }
 
+    /// <summary>Sets one pixel of a letter of text <paramref name="text"/> (a <see cref="ScreenTextPlane"/> id): no owner, the text plane's entry.</summary>
+    public void PlotText(int x, int y, byte color, int text)
+    {
+        if ((uint)x < Width && (uint)y < Height)
+        {
+            _pixels[y * Width + x] = color;
+            _owners[y * Width + x] = 0;
+            _texels[y * Width + x] = text;
+        }
+    }
+
     /// <summary>Changes one pixel's colour and keeps its owner, as a recolour does (text drawn by and, or, xor).</summary>
     public void Repaint(int x, int y, byte color)
     {
@@ -138,7 +149,8 @@ public sealed class Canvas(Screen screen)
                     _pixels[sy * Width + sx] = color;
                     var pixelOwner = owners.IsEmpty ? owner : owners[row * width + column];
                     _owners[sy * Width + sx] = pixelOwner;
-                    _texels[sy * Width + sx] = pixelOwner == 0 ? 0
+                    // (an unowned pixel of a saved region keeps its text plane entry)
+                    _texels[sy * Width + sx] = pixelOwner == 0 ? (owners.IsEmpty || texels.IsEmpty ? 0 : texels[row * width + column])
                         : owners.IsEmpty ? ScreenTexel.Pack(column, row)
                         : texels.IsEmpty ? ScreenTexel.Unknown : texels[row * width + column];
                 }
@@ -227,7 +239,7 @@ public sealed class Canvas(Screen screen)
             {
                 copy[row * width + column] = this[x + column, y + row];
                 owners[row * width + column] = OwnerAt(x + column, y + row);
-                texels[row * width + column] = owners[row * width + column] == 0 ? 0 : _texels[(y + row) * Width + x + column];
+                texels[row * width + column] = (uint)(x + column) < Width && (uint)(y + row) < Height ? _texels[(y + row) * Width + x + column] : 0;
             }
         }
         return new SavedRegion(x, y, width, height, copy, owners, texels);

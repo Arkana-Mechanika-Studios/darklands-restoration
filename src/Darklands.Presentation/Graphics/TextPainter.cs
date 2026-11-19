@@ -1,4 +1,5 @@
 using Darklands.Content.Formats.Graphics;
+using Darklands.Platform;
 
 namespace Darklands.Presentation.Graphics;
 
@@ -19,6 +20,9 @@ namespace Darklands.Presentation.Graphics;
 // DORMANT: the hi-res (doubled x) branch of text-paint / text-paint-far-string.
 public sealed class TextPainter(FntFont font)
 {
+    // the text plane's id of the text being drawn (ScreenTextPlane; 0: none, or not recording)
+    private int _text;
+
     public FntFont Font => font;
 
     /// <summary>The font's line height (font-line-height): the glyph height plus the font's line spacing.</summary>
@@ -101,7 +105,24 @@ public sealed class TextPainter(FntFont font)
         return x;
     }
 
-    public int Draw(Canvas canvas, int x, int y, string text, byte color, int right = int.MaxValue) => Draw(canvas, x, y, Encode(text), color, right);
+    public int Draw(Canvas canvas, int x, int y, string text, byte color, int right = int.MaxValue)
+    {
+        var bytes = Encode(text);
+        if (!ScreenTextPlane.Recording)
+        {
+            return Draw(canvas, x, y, bytes, color, right);
+        }
+        // the developer's text plane (ScreenTextPlane): which text, by which key, each letter's pixels are; the pixels are the same
+        _text = ScreenTextPlane.Drawn(text, Measure(bytes));
+        try
+        {
+            return Draw(canvas, x, y, bytes, color, right);
+        }
+        finally
+        {
+            _text = 0;
+        }
+    }
 
     public int DrawCharacter(Canvas canvas, int x, int y, byte c, byte color)
     {
@@ -126,7 +147,11 @@ public sealed class TextPainter(FntFont font)
                 if ((bits & 0x8000) != 0)
                 {
                     var under = canvas[x + column, y + row];
-                    if (mode == TextMode.Copy)
+                    if (mode == TextMode.Copy && _text != 0)
+                    {
+                        canvas.PlotText(x + column, y + row, color, _text);
+                    }
+                    else if (mode == TextMode.Copy)
                     {
                         canvas[x + column, y + row] = color;
                     }
@@ -147,7 +172,7 @@ public sealed class TextPainter(FntFont font)
 
     /// <summary>Draws a text with colour codes (see <see cref="Draw(Canvas, int, int, ReadOnlySpan{byte}, byte, int)"/>).</summary>
     // orig: root 0265:0004 draft (bytes match) and drv+0x0FDC: the colour codes as the driver reads them (the map row of DrawCoded)
-    public int DrawCoded(Canvas canvas, int x, int y, string text, byte color) => Draw(canvas, x, y, Encode(text), color);
+    public int DrawCoded(Canvas canvas, int x, int y, string text, byte color) => Draw(canvas, x, y, text, color);
 
     public static byte[] Encode(string text) => Darklands.Core.GameTextCodec.Encode(text);
 }

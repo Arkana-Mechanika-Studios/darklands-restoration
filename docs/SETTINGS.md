@@ -294,7 +294,11 @@ draws. The headless host runs the same commands with the step `console:<command>
 
 In a developer build (a Debug build, or any build with `-p:DevTools=true`; never a player's release) the headless host also
 takes `inspect:<x>,<y>`: it prints what drew that pixel of the last frame (the asset and its own pixel, the palette index) and
-the number of steps taken before it. It only reads the frame.
+the number of steps taken before it. It only reads the frame. In the window of such a build, hold **F9** to see the same lines
+beside the pointer (the pixel framed); **Ctrl+F9** pins the box to that pixel and puts its lines on the clipboard, Ctrl+F9 again
+lets it go. F9 is then the inspector's, not the game's (the game has no use for it). Both list, besides the asset, the text a letter
+belongs to (the key of the original's string it was drawn from, its arguments, and the widest it was drawn) and, on a card, the
+card, its text block and the option line under the point.
 
 ## Logs and reports folders
 

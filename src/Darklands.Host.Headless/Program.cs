@@ -456,10 +456,12 @@ host.State = name =>
     }
 };
 #if DEV_TOOLS
-// the developer's inspector (inspect:x,y steps): only in builds with the property DevTools (not in release builds)
+// the developer's inspector (inspect:x,y steps): only in builds with the property DevTools (not in release builds); its text plane
+//   (ScreenTextPlane) is kept from the start
+Darklands.Platform.ScreenTextPlane.Recording = true;
 host.Inspect = (frame, x, y, step) =>
 {
-    foreach (var line in Darklands.DevTools.Inspector.Describe(frame, x, y, new Darklands.DevTools.InspectedMoment(step)))
+    foreach (var line in Darklands.DevTools.Inspector.Describe(frame, x, y, new Darklands.DevTools.InspectedMoment(step, game.Ui.Inspect?.Invoke(x, y))))
     {
         Console.WriteLine("inspect: " + line);
     }
