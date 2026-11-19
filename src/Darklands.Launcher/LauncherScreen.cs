@@ -568,7 +568,7 @@ internal sealed partial class LauncherScreen
             Item.Picture => "display.filter",
             Item.HdPack => "display.hdPack",
             Item.AudioPack => "sound.audioPack",
-            Item.LanguagePack => "languagePack",
+            Item.LanguagePack => "text.languagePack",
             Item.SoundFont => "sound.soundFont",
             Item.Sound => "sound.card",
             Item.Roms => "sound.mt32Roms",

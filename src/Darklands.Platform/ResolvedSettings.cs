@@ -92,8 +92,8 @@ public sealed class CommandLineOptions
         By("sound.audioPack", Given(AudioPack), "--audio-pack");
         By("sound.soundFont", Given(SoundFont), "--soundfont");
         By("sound.audioPack", Given(environment("DARKLANDS_AUDIO_PACK")), "DARKLANDS_AUDIO_PACK");
-        By("languagePack", Given(LanguagePack), "--language-pack");
-        By("languagePack", Given(environment("DARKLANDS_LANGUAGE_PACK")), "DARKLANDS_LANGUAGE_PACK");
+        By("text.languagePack", Given(LanguagePack), "--language-pack");
+        By("text.languagePack", Given(environment("DARKLANDS_LANGUAGE_PACK")), "DARKLANDS_LANGUAGE_PACK");
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
         By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");

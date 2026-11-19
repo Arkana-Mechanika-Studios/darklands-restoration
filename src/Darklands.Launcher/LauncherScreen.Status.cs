@@ -143,7 +143,7 @@ internal sealed partial class LauncherScreen
                 + "\nThe preview at the left approximates the game window.",
             Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
             Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
-            Item.LanguagePack => $"A translation of the game's words (a pack.json naming its language, Fluent .ftl files); the game plays the same. ←/→: None (the original English) or a pack of the packs folder; {browse}.",
+            Item.LanguagePack => $"A translation of the game's words (a pack.json naming its language, Fluent .ftl files under text/<language>); the game plays the same. ←/→: None (the original English) or a pack of the packs folder; {browse}.",
             Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
                 ? $"Without one a pack's .mid music is skipped. Any General MIDI .sf2 works: put it in {SoundFontFolder} next to the program, drop it here, or Browse…. Free: {FreeSoundFont} by Frank Wen (MIT, 140 MB; on Linux fluid-soundfont-gm)."
                 : $"The SoundFont (.sf2) for the packs' .mid music. Enter or Browse…: another file; ←/→: the default (the {SoundFontFolder} folder next to the program).",

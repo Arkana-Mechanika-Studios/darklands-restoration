@@ -4,7 +4,9 @@ namespace Darklands.Localization;
 
 /// <summary>
 /// A translation pack: a folder with a <c>pack.json</c> that names its language (<c>{ "language": "de", "name": "...",
-/// "author": "..." }</c>) and Project Fluent files (<c>*.ftl</c>, anywhere under the folder, read in path order). Its
+/// "author": "...", "base": "483.07" }</c>) and Project Fluent files under <c>text/&lt;language&gt;/</c> (<c>text/de/exe.ftl</c>,
+/// <c>text/de/msg/&lt;FILE&gt;.ftl</c>, <c>text/de/ui.ftl</c>: every <c>*.ftl</c> there, read in path order; the mods' layout, so the
+/// 1.2 mod loader takes a language pack unchanged as a cosmetic mod). Its
 /// <see cref="Localizer"/> answers the keys the pack translates; for any other key the caller keeps the original text.
 /// Loading never throws for a broken pack: what is wrong is in <see cref="Problems"/> and the valid entries are kept.
 /// </summary>
@@ -14,13 +16,17 @@ public sealed class LanguagePack
     /// <summary>The manifest's file name.</summary>
     public const string ManifestName = "pack.json";
 
-    private LanguagePack(string folder, string language, string? name, string? author, FluentLocalizer localizer,
+    /// <summary>The folder of a language's Fluent files, under the pack's folder.</summary>
+    public static string TextFolder(string language) => Path.Combine("text", language);
+
+    private LanguagePack(string folder, string language, string? name, string? author, string? baseVersion, FluentLocalizer localizer,
         IReadOnlyList<LocalizationDiagnostic> problems, int files)
     {
         Folder = folder;
         Language = language;
         Name = name;
         Author = author;
+        Base = baseVersion;
         Localizer = localizer;
         Problems = problems;
         Files = files;
@@ -36,6 +42,9 @@ public sealed class LanguagePack
     public string? Name { get; }
 
     public string? Author { get; }
+
+    /// <summary>The game version the pack translates (the manifest's "base"; the only one supported: 483.07).</summary>
+    public string? Base { get; }
 
     /// <summary>The pack's texts over no fallback: <see cref="ILocalizer.IsTranslated"/> says which keys it has.</summary>
     public FluentLocalizer Localizer { get; }
@@ -70,7 +79,18 @@ public sealed class LanguagePack
         }
         var localizer = new FluentLocalizer(language, OriginalTable.Empty);
         var problems = new List<LocalizationDiagnostic>();
-        var files = Directory.EnumerateFiles(folder, "*.ftl", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToList();
+        var text = Path.Combine(folder, TextFolder(language));
+        if (!Directory.Exists(text))
+        {
+            problems.Add(new LocalizationDiagnostic(ManifestName, 0, $"no {TextFolder(language).Replace('\\', '/')} folder: nothing to translate with"));
+        }
+        if (manifest.Base is { } version && version != "483.07")
+        {
+            problems.Add(new LocalizationDiagnostic(ManifestName, 0, $"made for the game's version {version}; only 483.07 is supported"));
+        }
+        var files = Directory.Exists(text)
+            ? Directory.EnumerateFiles(text, "*.ftl", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToList()
+            : [];
         foreach (var file in files)
         {
             try
@@ -84,10 +104,10 @@ public sealed class LanguagePack
         }
         why = null;
         return new LanguagePack(folder, language, manifest.Name ?? Path.GetFileName(Path.TrimEndingDirectorySeparator(folder)), manifest.Author,
-            localizer, problems, files.Count);
+            manifest.Base, localizer, problems, files.Count);
     }
 
-    private sealed record Manifest(string? Language, string? Name, string? Author);
+    private sealed record Manifest(string? Language, string? Name, string? Author, string? Base);
 
     private static Manifest? ReadManifest(string folder, out string? why)
     {
@@ -109,7 +129,7 @@ public sealed class LanguagePack
                     ? v.GetString()
                     : null;
             why = null;
-            return new Manifest(Text("language"), Text("name"), Text("author"));
+            return new Manifest(Text("language"), Text("name"), Text("author"), Text("base"));
         }
         catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
         {

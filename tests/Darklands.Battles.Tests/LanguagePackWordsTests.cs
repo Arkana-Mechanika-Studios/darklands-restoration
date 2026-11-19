@@ -37,7 +37,8 @@ public sealed class LanguagePackWordsTests : IDisposable
 
         Directory.CreateDirectory(_folder);
         File.WriteAllText(Path.Combine(_folder, "pack.json"), """{ "language": "de" }""");
-        File.WriteAllText(Path.Combine(_folder, "test.ftl"),
+        Directory.CreateDirectory(Path.Combine(_folder, "text", "de"));
+        File.WriteAllText(Path.Combine(_folder, "text", "de", "test.ftl"),
             "exe-ds-2ff2 = Verlassen\nexe-ds-2f71 = { $arg0 } hat { $arg1 } Gulden\nexe-290e-0000 = Januar\nid-rw-save-damaged-1 = Beschädigt.\n");
         var reports = new List<string>();
         Assert.True(ui.UseLanguagePack(_folder, reports.Add));

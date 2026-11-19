@@ -57,7 +57,7 @@ not meant for players.
 | `startup.intro` | true | `--no-intro` | the opening animation |
 | `startup.commandLine` | `[]` | `-- <words>` | the game's own DOS command line (`-Q`, `-O`, `-A<letter>`), a list of words or one string |
 | `textFont` | built-in | `--text-font`; `DARKLANDS_TEXT_FONT` | 4096-byte VGA BIOS 8x16 font dump, or its base64 |
-| `languagePack` | none | `--language-pack <folder>`; `DARKLANDS_LANGUAGE_PACK` | a translation pack: a folder with a `pack.json` naming its language and Fluent `.ftl` files ([LOCALISATION.md](LOCALISATION.md)); not part of the original: it changes words only, the game plays the same; the launcher's Advanced tab has its row |
+| `text.languagePack` | none | `--language-pack <folder>`; `DARKLANDS_LANGUAGE_PACK` | a translation pack: a folder with a `pack.json` naming its language and Fluent `.ftl` files under `text/<language>/` ([LOCALISATION.md](LOCALISATION.md)); not part of the original: it changes words only, the game plays the same; the launcher's Advanced tab has its row |
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |

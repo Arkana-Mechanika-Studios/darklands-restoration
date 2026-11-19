@@ -105,7 +105,7 @@ internal sealed partial class LauncherScreen
         {
             PackKind.Pictures => "a picture (HD) pack: PNG files named after the game's pictures",
             PackKind.Sounds => "a sound pack: OGG or WAV files named after the game's music and effects",
-            _ => "a translation pack: a pack.json naming its language and Fluent (.ftl) files",
+            _ => "a translation pack: a pack.json naming its language and Fluent (.ftl) files under text/<language>",
         };
         if (!cycle && _surface.PickFolder is null)
         {

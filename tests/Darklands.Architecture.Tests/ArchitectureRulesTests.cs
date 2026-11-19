@@ -43,9 +43,9 @@ public sealed class ArchitectureRulesTests
         [Localization] = [], // message ids to text (Fluent packs over the original text); it knows no game rules
         [DevConsole] = [Core],
         [DevTools] = [Platform], // the developer's inspector; the hosts reference it only in DevTools builds
-        [Presentation] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio],
-        [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Presentation],
-        [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Launcher, Presentation],
+        [Presentation] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Localization],
+        [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Localization, Presentation],
+        [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Launcher, Localization, Presentation],
     };
 
     /// <summary>The scan sees every use: no member or type token of the product code is left unresolved.</summary>

@@ -383,7 +383,7 @@ var game = new DarklandsGame(host, OpenGame())
     QuickstartCard = cardStep is null ? null : Convert.ToInt32(cardStep[5..], 16),
     StartWithSave = loadStep?[5..],
 };
-// a translation pack (languagepack:<folder> or the settings file's languagePack) changes the screens' words only
+// a translation pack (languagepack:<folder> or the settings file's text.languagePack) changes the screens' words only
 if (languagePackStep is not null)
 {
     game.Ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);

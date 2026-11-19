@@ -10,7 +10,7 @@ developers ([the plan in steps](#the-plan-for-developers)).
 
 ## What exists today
 
-* **A language pack setting.** `languagePack` in the settings file ([SETTINGS.md](SETTINGS.md)), `--language-pack
+* **A language pack setting.** `text.languagePack` in the settings file ([SETTINGS.md](SETTINGS.md)), `--language-pack
   <folder>` on the command line, the environment variable `DARKLANDS_LANGUAGE_PACK`, and the **Language pack** row on
   the launcher's Advanced tab (None, or a pack found in a `packs` folder, or a folder browsed for or dropped on the
   window). None means the original English text, exactly as before.
@@ -88,28 +88,35 @@ A pack is a folder:
 
 ```
 my-translation-pack/
-  pack.json            { "language": "de", "name": "Deutsch", "author": "…" }
-  game/exe.ftl         the EXE's strings and the word tables (any file names: every .ftl under the folder is read)
-  ui.ftl               the restoration's own notices
+  pack.json            { "language": "de", "name": "Deutsch", "author": "…", "base": "483.07" }
+  text/
+    de/
+      exe.ftl          the EXE's strings and the word tables
+      ui.ftl           the restoration's own notices
+      msg/
+        CITYG04.ftl    card texts, one file per .MSG file (not read yet: card texts come next)
 ```
 
-`pack.json` must name the `language` (a language tag: `de`, `fr`, `pt-BR`; `qps` is the pseudo-locale); `name` and
-`author` are optional. Every `.ftl` file anywhere under the folder is read, in path order; a message id defined twice
-keeps the first. A key the pack does not have shows the original English, so a pack may be partial. What is wrong
+`pack.json` must name the `language` (a language tag: `de`, `fr`, `pt-BR`; `qps` is the pseudo-locale); `name`,
+`author` and `base` (the game version translated: `483.07`, the only one supported) are optional. The Fluent files are
+under `text/<language>/`, the layout of the mods' text, so a language pack will also load unchanged as a cosmetic mod
+in 1.2. Every `.ftl` file there is read, in path order (the file names are free); a message id defined twice keeps the
+first. A key the pack does not have shows the original English, so a pack may be partial. What is wrong
 with a pack (a Fluent syntax error with its file and line, an unreadable manifest) is reported on the console's error
 output and in the launcher's line for the pack; the valid entries are still used.
 
 A small example. **The ids are real; the German is only an illustration.**
 
 ```
-# game/exe.ftl
+# text/de/exe.ftl
 exe-ds-2ff2 = Verlassen
 exe-ds-2f71 = { $arg0 } verwaltet die Börse: { $arg1 } Gulden, { $arg2 } Groschen, { $arg3 } Pfennige.
 # the months (290E:1D43 points at 290E:0000 "January" ...)
 exe-290e-0000 = Januar
 ```
 
-The keys of a screen can be found with the developer's inspector (a development build: hold F9 over a word; see
+The translator's template (planned) will give every key with the English and a comment saying what each argument
+is. The keys of a screen can also be found with the developer's inspector (a development build: hold F9 over a word; see
 [SETTINGS.md](SETTINGS.md)) or in the text extract of your own game files (planned for the translators' tools).
 
 ## Fonts, layout and mouse areas

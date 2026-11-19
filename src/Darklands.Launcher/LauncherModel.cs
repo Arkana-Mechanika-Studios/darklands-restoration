@@ -295,7 +295,7 @@ internal sealed class LauncherModel
         }
         if (LanguagePack != _initial.LanguagePack)
         {
-            changes["languagePack"] = LanguagePack?.Replace('\\', '/') ?? "";
+            changes["text.languagePack"] = LanguagePack?.Replace('\\', '/') ?? "";
         }
         if (SoundFont != _initial.SoundFont)
         {
