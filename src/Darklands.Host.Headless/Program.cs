@@ -389,6 +389,8 @@ var game = new DarklandsGame(host, OpenGame())
 // a translation pack (languagepack:<folder> or the settings file's text.languagePack) changes the screens' words only
 if (languagePackStep is not null)
 {
+    // its fonts' pictures read with the program's PNG reader (font packs)
+    Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
     game.Ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
 }
 game.Options.Apply(resolved);

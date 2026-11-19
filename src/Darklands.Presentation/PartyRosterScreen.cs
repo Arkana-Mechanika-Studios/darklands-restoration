@@ -64,7 +64,7 @@ public sealed class PartyRosterScreen
         _ui = ui;
         _panel = panel;
         _world = world;
-        _data = CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
+        _data = CharacterCreationScreen.Translated(ui, CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE")));
     }
 
     /// <summary>The flags of the game's Save Game and Load Saved Game items, greyed while the screen is up.</summary>

@@ -13,6 +13,18 @@ public static class PngCodec
 
     public static RgbaImage Read(string path) => Read(File.ReadAllBytes(path));
 
+    /// <summary>A PNG's size and one alpha byte a pixel (a font pack's glyphs, Presentation.FontPack.ReadImage).</summary>
+    public static (int Width, int Height, byte[] Alpha) ReadAlpha(string path)
+    {
+        var image = Read(path);
+        var alpha = new byte[image.Argb.Length];
+        for (var i = 0; i < alpha.Length; i++)
+        {
+            alpha[i] = (byte)(image.Argb[i] >> 24);
+        }
+        return (image.Width, image.Height, alpha);
+    }
+
     /// <summary>Decodes a PNG; throws <see cref="InvalidDataException"/> for a broken or unsupported file.</summary>
     public static RgbaImage Read(ReadOnlySpan<byte> file)
     {

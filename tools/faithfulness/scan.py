@@ -181,6 +181,8 @@ def classify_header(h: str):
         return ("block", "")
     if "(" in h:
         before = h.split("(")[0]
+        # a generic method's type parameters (Lay<T>) are not its name
+        before = re.sub(r"<[^<>()]*>\s*$", "", before)
         ids = re.findall(r"[A-Za-z_]\w*", before)
         if ids and ids[-1] not in ("if", "for", "while", "switch", "foreach", "lock", "using", "catch", "fixed", "return"):
             name = ids[-1]

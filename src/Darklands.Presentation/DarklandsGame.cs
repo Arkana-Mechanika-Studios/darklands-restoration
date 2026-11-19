@@ -118,7 +118,8 @@ public sealed class DarklandsGame
     private IReadOnlyList<string>? _loadScreenTexts;
 
     private IReadOnlyList<string> LoadScreenTexts =>
-        _loadScreenTexts ??= Content.Formats.Saves.LoadScreenTexts.Decode(_ui.Assets.Files.Read("DARKLAND.EXE"));
+        _loadScreenTexts ??= _ui.Translated(Content.Formats.Saves.LoadScreenTexts.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")),
+            Content.Formats.Saves.LoadScreenTexts.Keys(_ui.Assets.Files.Read("DARKLAND.EXE")));
 
     public GameOptions Options => _ui.Options;
 

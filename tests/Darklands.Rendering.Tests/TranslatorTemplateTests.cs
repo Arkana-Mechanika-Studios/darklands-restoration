@@ -32,7 +32,8 @@ public sealed class TranslatorTemplateTests
             var formats = 0;
             foreach (var m in template)
             {
-                var got = pack.Localizer.Get(m.Key, Arguments(m, english, out var expected));
+                // as GameUi.Words gives it: the colour tags as the program's colour characters
+                var got = Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(m.Key, Arguments(m, english, out var expected)));
                 if (m.Key.StartsWith("msg:", StringComparison.Ordinal))
                 {
                     var back = CardTextForm.ToBytes(got, out var problem);

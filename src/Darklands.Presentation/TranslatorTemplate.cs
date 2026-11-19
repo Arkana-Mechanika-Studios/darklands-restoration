@@ -22,6 +22,9 @@ public static class TranslatorTemplate
     /// <summary>One message: its file (relative to <c>text/en/</c>), its Fluent id, its key, the value as written and the comment lines.</summary>
     public sealed record Message(string File, string Id, string Key, string Value, IReadOnlyList<string> Comments)
     {
+        /// <summary>The English's coloured parts in order (the menus' hot-key letters, fixed in the code): a translation keeps them.</summary>
+        public IReadOnlyList<string> HotKeys { get; init; } = [];
+
         /// <summary>The variables the English value names (what a translation must keep).</summary>
         public IReadOnlySet<string> Variables => FtlSource.Variables(Value);
     }
@@ -137,7 +140,15 @@ public static class TranslatorTemplate
         {
             comment += "; " + string.Join(", ", described);
         }
-        return new Message("exe.ftl", KeyMangling.ToFluentId(key), key, value.ToString(), [comment]);
+        if (Darklands.Core.TextCodes.ColouredParts(english) is { Count: > 0 } keys)
+        {
+            // every menu of the template's texts tests its keys in the code, whatever the text says (L-6b survey of the screens)
+            comment += "; hot key " + string.Join(", ", keys.Select(k => "<c..>" + k + "</c>")) + ": the menu's key is fixed in the code, keep that letter coloured";
+        }
+        return new Message("exe.ftl", KeyMangling.ToFluentId(key), key, value.ToString(), [comment])
+        {
+            HotKeys = Darklands.Core.TextCodes.ColouredParts(english),
+        };
     }
 
     // a card text's written form over several lines: a new line after each <br> and <p>, unless what follows would start the line with a
@@ -194,6 +205,10 @@ public static class TranslatorTemplate
             {
                 '{' => "{\"{\"}",
                 '}' => "{\"}\"}",
+                // the original's colour codes as tags (the menus' hot keys: <c12>M</c>ore), so a lone < or > is a literal
+                '<' => "{\"<\"}",
+                '>' => "{\">\"}",
+                _ when Darklands.Core.TextCodes.ColourOf(c) >= 0 => Darklands.Core.TextCodes.ToTags(c.ToString()),
                 _ when Odd(c) => Literal(c),
                 ' ' when (i == 0 && edgeAtStart) || (i == text.Length - 1 && edgeAtEnd) => "{\" \"}",
                 _ => c.ToString(),

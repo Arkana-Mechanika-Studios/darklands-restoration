@@ -78,6 +78,50 @@ public static class TextVariables
         return [.. result];
     }
 
+    /// <summary>
+    /// <see cref="Expand(byte[], CardContext)"/> on codes (the Unicode text path, <see cref="TextCodes"/>): the same loop, a name's value
+    /// as codes (its letters kept, where the bytes would turn one the game cannot hold into '?').
+    /// </summary>
+    // Not in the original: the 1.1 translations (L-6b).
+    public static int[] Expand(int[] text, CardContext c)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        var result = new List<int>(text.Length + 64);
+        var name = new System.Text.StringBuilder();
+        var inName = false;
+        int[] Value() => TextCodes.OfText(TextVariables.Value(name.ToString(), c) ?? "$" + name);
+        foreach (var b in text)
+        {
+            if (b == 0)
+            {
+                break;
+            }
+            if (b == '$')
+            {
+                name.Clear();
+                inName = true;
+            }
+            else if (inName && !(b < 0x80 && char.IsAsciiLetterOrDigit((char)b)))
+            {
+                inName = false;
+                result.AddRange(Value());
+            }
+            if (inName && b != '$')
+            {
+                name.Append((char)b);
+            }
+            else if (!inName)
+            {
+                result.Add(b);
+            }
+        }
+        if (inName)
+        {
+            result.AddRange(Value());
+        }
+        return [.. result];
+    }
+
     private static byte[] Evaluate(List<byte> name, CardContext c)
     {
         var text = GameTextCodec.Decode([.. name]);

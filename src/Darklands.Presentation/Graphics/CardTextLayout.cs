@@ -73,7 +73,22 @@ public sealed class CardTextLayout(TextPainter painter)
 
     /// <summary>Draws <paramref name="text"/> in the column (x, y, width) and returns the option areas.</summary>
     // orig: text-paint-wrapped(w, text, width, x, y, spacing, hs, init, stop, leading, icon, color) root 0265:0134
-    public List<OptionArea> Draw(Canvas canvas, byte[] text, int x, int y, int width, Settings settings)
+    public List<OptionArea> Draw(Canvas canvas, byte[] text, int x, int y, int width, Settings settings) =>
+        Lay(new ByteText(text, painter), canvas, x, y, width, settings);
+
+    /// <summary>
+    /// Draws <paramref name="codes"/> (the Unicode text path, <see cref="Darklands.Core.TextCodes"/>: a translation with letters of its
+    /// own, or in a font pack's font) in the column, as <see cref="Draw(Canvas, byte[], int, int, int, Settings)"/> draws bytes: the
+    /// same loop.
+    /// </summary>
+    // Not in the original: the 1.1 translations (L-6b). The one loop (Lay) runs both, so the byte path's quirks are the code path's too.
+    public List<OptionArea> Draw(Canvas canvas, int[] codes, int x, int y, int width, Settings settings) =>
+        Lay(new CodeText(codes, painter), canvas, x, y, width, settings);
+
+    // C: text-paint-wrapped's loop, over a text source: ByteText is the game's bytes and the calls it always made (painter.Advance,
+    //   Measure of the raw bytes, the printable bytes drawn); CodeText the same over codes. A struct type argument: each gets its own code.
+    private List<OptionArea> Lay<T>(T text, Canvas canvas, int x, int y, int width, Settings settings)
+        where T : struct, ITextSource
     {
         var areas = new List<OptionArea>();
         var spacing = settings.Spacing ?? painter.LineHeight;
@@ -90,8 +105,8 @@ public sealed class CardTextLayout(TextPainter painter)
         var color = settings.Color;
         var mode = TextMode.Copy;
 
-        if (settings.DropCap is { } dropCap && text.Length > 0 && text[0] is > (byte)'@' and < (byte)'[' &&
-            dropCap(text[0]) is { } cap)
+        if (settings.DropCap is { } dropCap && text.Length > 0 && text.At(0) is > '@' and < '[' &&
+            dropCap((byte)text.At(0)) is { } cap)
         {
             // C: the letter is a saved driver picture (gfx-rect-save at start-up) drawn with gfx-picture-draw: colour 0 transparent, its black is colour 5.
             canvas.Draw(cap, x, y, transparent: true);
@@ -127,7 +142,7 @@ public sealed class CardTextLayout(TextPainter painter)
         //   double advance, and the original reads on past the end into the leftovers of the shared buffer DS:9085 (whatever an earlier, longer string
         //   left there: lines and option lines of another text, drawn and given hot spots); here the text ends at its end. Found by the direct calls of
         //   text-paint-wrapped (tools/oracle/text_calls.py, batch 34: card $situa00 block 4 ends with 0x13). Also the original bug B-fe596a.
-        byte At(int i) => i >= 0 && i < text.Length ? text[i] : (byte)0;
+        int At(int i) => text.At(i);
 
         var more = true;
         while (more)
@@ -139,7 +154,7 @@ public sealed class CardTextLayout(TextPainter painter)
                 var c = At(cursor);
                 if (!IsControl(c))
                 {
-                    used += painter.Advance(c);
+                    used += text.Advance(c);
                 }
                 else if (c == Paragraph)
                 {
@@ -205,7 +220,7 @@ public sealed class CardTextLayout(TextPainter painter)
                 {
                     // orig: text-paint-wrapped root 0265:0134 at 0265:0431..045F: the count bytes from the line's start copied raw, then text-width-px
                     //   (root 0265:084E) of the copy, kept as a byte
-                    indentWidth = painter.Measure(Raw(text, lineStart, count));
+                    indentWidth = text.MeasureRaw(lineStart, count);
                     resetAtLineEnd = false;
                     indentPending = true;
                 }
@@ -225,7 +240,7 @@ public sealed class CardTextLayout(TextPainter painter)
             }
 
             // Break the line after the last space or hyphen that fits.
-            while (At(cursor) is not (byte)' ' and not 0 and not (byte)'\n' and not (byte)'-' &&
+            while (At(cursor) is not ' ' and not 0 and not '\n' and not '-' &&
                    start < cursor && cursor > lineStart)
             {
                 cursor--;
@@ -257,14 +272,13 @@ public sealed class CardTextLayout(TextPainter painter)
             if (count > 0)
             {
                 // C: case 1 puts the line at (lwk - width) / 2 + lxk and case 2 at lwk - width + lxk, in int arithmetic (division truncates towards zero, so a line wider than the column moves left by half the excess)
-                var line = Printable(text, lineStart, count);
                 var lineLeft = settings.Alignment switch
                 {
-                    TextAlignment.Center => (lineWidth - painter.Measure(line)) / 2 + lineX,
-                    TextAlignment.Right => lineWidth - painter.Measure(line) + lineX,
+                    TextAlignment.Center => (lineWidth - text.MeasureLine(lineStart, count)) / 2 + lineX,
+                    TextAlignment.Right => lineWidth - text.MeasureLine(lineStart, count) + lineX,
                     _ => lineX,
                 };
-                painter.Draw(canvas, lineLeft, y, line, color, mode);
+                text.DrawLine(canvas, lineLeft, y, lineStart, count, color, mode);
                 GrowArea(spacing);
                 y += settings.Leading + spacing;
             }
@@ -314,9 +328,18 @@ public sealed class CardTextLayout(TextPainter painter)
     //   its zero, and the cursor then steps past that zero: when the text ends inside a hidden option line, the loop reads on into the
     //   bytes after the text's zero (the pop-up box: the 0x14 its builder cut off, one more line); an empty segment widens the column.
     // C: checked by direct calls of the original (tools/oracle/text_calls.py, batch 34 jobs, 4,060 jobs): every height equal.
-    public int MeasureHeight(byte[] text, int width, int leading, IReadOnlyList<OptionState>? options = null)
+    public int MeasureHeight(byte[] text, int width, int leading, IReadOnlyList<OptionState>? options = null) =>
+        Height(new ByteText(text, painter), width, leading, options);
+
+    /// <summary>The end y of <paramref name="codes"/> as <see cref="MeasureHeight(byte[], int, int, IReadOnlyList{OptionState}?)"/> counts bytes.</summary>
+    // Not in the original: the 1.1 translations (L-6b), the same loop.
+    public int MeasureHeight(int[] codes, int width, int leading, IReadOnlyList<OptionState>? options = null) =>
+        Height(new CodeText(codes, painter), width, leading, options);
+
+    private int Height<T>(T text, int width, int leading, IReadOnlyList<OptionState>? options)
+        where T : struct, ITextSource
     {
-        byte At(int i) => i >= 0 && i < text.Length ? text[i] : (byte)0;
+        int At(int i) => text.At(i);
         var spacing = painter.LineHeight;
         var y = 0;
         var indentPending = false;
@@ -334,7 +357,7 @@ public sealed class CardTextLayout(TextPainter painter)
             while (lineWidth > used)
             {
                 var c = At(cursor);
-                if (c is 0 or (byte)'\n')
+                if (c is 0 or '\n')
                 {
                     break;
                 }
@@ -358,13 +381,13 @@ public sealed class CardTextLayout(TextPainter painter)
                 }
                 else if (c == Indent)
                 {
-                    indentWidth = (byte)painter.Measure(Raw(text, lineStart, count));
+                    indentWidth = (byte)text.MeasureRaw(lineStart, count);
                     reset = false;
                     indentPending = true;
                 }
                 else if (c != 0x0D)
                 {
-                    used += painter.Advance(c);
+                    used += text.Advance(c);
                 }
                 count++;
                 cursor++;
@@ -379,7 +402,7 @@ public sealed class CardTextLayout(TextPainter painter)
                 cursor--;
                 count--;
             }
-            while (At(cursor) is not (byte)' ' and not 0 and not (byte)'\n' and not (byte)'-' && cursor > 0)
+            while (At(cursor) is not ' ' and not 0 and not '\n' and not '-' && cursor > 0)
             {
                 count--;
                 cursor--;
@@ -419,19 +442,86 @@ public sealed class CardTextLayout(TextPainter painter)
     // C: the width of the part of the line before the 0x1D marker is text-width-px of a copy of the raw bytes, control codes included (their glyph-width is whatever the driver gives them, TextPainter.Advance: the font's own widths for the codes it holds). Checked against the original by direct calls (tools/oracle/text_calls.py, batch 34): with font 0 (slot 1), whose table starts at code 0, leaving the codes out moved the indented lines of 26 texts.
     // C: glyph-width (drv+0x11A9) gives a code outside the font's first..last range no width: fonts 1 and 2 start at 0x1F, so in the card
     //   window's font the control codes take no room; font 0 starts at code 0 and gives them the widths of its table. checked against asm
-    private static bool IsOptionMarker(byte c) => c is PlainOption or ItemOption or SaintOption or BattleOption;
+    private static bool IsOptionMarker(int c) => c is PlainOption or ItemOption or SaintOption or BattleOption;
 
-    private static bool IsControl(byte c) =>
+    private static bool IsControl(int c) =>
         c is Paragraph or PlainOption or ItemOption or SaintOption or BattleOption or Indent or 0x0D
             or ConditionStart or ConditionEnd;
 
-    private static OptionKind KindOf(byte marker) => marker switch
+    private static OptionKind KindOf(int marker) => marker switch
     {
         ItemOption => OptionKind.Items,
         SaintOption => OptionKind.Saints,
         BattleOption => OptionKind.Battle,
         _ => OptionKind.Plain,
     };
+
+    /// <summary>What the layout loop reads of a text: its codes (0 past its end) and the painter's measures and drawing of its parts.</summary>
+    private interface ITextSource
+    {
+        int Length { get; }
+
+        int At(int i);
+
+        int Advance(int code);
+
+        /// <summary>The width of text[from .. from+count) as it is, control codes included (the indent's measure).</summary>
+        int MeasureRaw(int from, int count);
+
+        /// <summary>The width of the visible characters of text[from .. from+count).</summary>
+        int MeasureLine(int from, int count);
+
+        /// <summary>Draws the visible characters of text[from .. from+count).</summary>
+        void DrawLine(Canvas canvas, int x, int y, int from, int count, byte color, TextMode mode);
+    }
+
+    // the game's bytes, measured and drawn by the byte path's calls, as the loop always made them
+    private readonly struct ByteText(byte[] text, TextPainter painter) : ITextSource
+    {
+        public int Length => text.Length;
+
+        public int At(int i) => i >= 0 && i < text.Length ? text[i] : 0;
+
+        public int Advance(int code) => painter.Advance((byte)code);
+
+        public int MeasureRaw(int from, int count) => painter.Measure(Raw(text, from, count));
+
+        public int MeasureLine(int from, int count) => painter.Measure(Printable(text, from, count));
+
+        public void DrawLine(Canvas canvas, int x, int y, int from, int count, byte color, TextMode mode) =>
+            painter.Draw(canvas, x, y, Printable(text, from, count), color, mode);
+    }
+
+    // codes (the Unicode path): the same parts, measured and drawn by codes
+    private readonly struct CodeText(int[] text, TextPainter painter) : ITextSource
+    {
+        public int Length => text.Length;
+
+        public int At(int i) => i >= 0 && i < text.Length ? text[i] : 0;
+
+        public int Advance(int code) => painter.AdvanceCode(code);
+
+        public int MeasureRaw(int from, int count) =>
+            from >= 0 && from < text.Length && count > 0 ? painter.MeasureCodes(text.AsSpan(from, Math.Min(count, text.Length - from))) : 0;
+
+        public int MeasureLine(int from, int count) => painter.MeasureCodes(PrintableCodes(text, from, count));
+
+        public void DrawLine(Canvas canvas, int x, int y, int from, int count, byte color, TextMode mode) =>
+            painter.DrawCodes(canvas, x, y, PrintableCodes(text, from, count), color, mode);
+    }
+
+    private static int[] PrintableCodes(int[] text, int from, int count)
+    {
+        var result = new List<int>(Math.Max(0, count));
+        for (var i = 0; i < count && from + i < text.Length; i++)
+        {
+            if (!IsControl(text[from + i]))
+            {
+                result.Add(text[from + i]);
+            }
+        }
+        return [.. result];
+    }
 
     /// <summary>The bytes text[from .. from+count) as they are, control codes included.</summary>
     private static byte[] Raw(byte[] text, int from, int count) =>

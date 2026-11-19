@@ -43,8 +43,12 @@ public static class LanguagePackCheck
         ArgumentNullException.ThrowIfNull(template);
         ArgumentNullException.ThrowIfNull(boxes);
         var painters = new Dictionary<int, TextPainter>();
-        TextPainter Painter(int slot) => painters.TryGetValue(slot, out var p) ? p : painters[slot] = font?.Invoke(slot) ?? new TextPainter(assets.Font(slot));
         var findings = new List<Finding>();
+        // the pack's own fonts (fonts/slotN.json): a text of their slot is measured in them
+        var packFonts = FontPack.Load(pack.Folder, problem => findings.Add(new Finding(Severity.Error, FontPack.Folder, "", problem)));
+        TextPainter Painter(int slot) => painters.TryGetValue(slot, out var p)
+            ? p
+            : painters[slot] = font?.Invoke(slot) ?? new TextPainter(assets.Font(slot)) { PackFont = packFonts.GetValueOrDefault(slot) };
         foreach (var problem in pack.Problems)
         {
             findings.Add(new Finding(Severity.Error, problem.Line > 0 ? $"{problem.Source}:{problem.Line}" : problem.Source, "", problem.Message));
@@ -80,12 +84,22 @@ public static class LanguagePackCheck
             }
             var arguments = box.GetValueOrDefault(english.Key)?.Arguments?.ToDictionary(a => a.Key, a => (object?)a.Value, StringComparer.Ordinal)
                 ?? english.Variables.ToDictionary(v => v, v => (object?)"0", StringComparer.Ordinal);
-            var words = pack.Localizer.Get(english.Key, arguments);
+            var words = Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(english.Key, arguments));
             var b = box.GetValueOrDefault(english.Key);
             var painter = Painter(b is { Font: > 0 } ? b.Font : 1);
-            if (Unshowable(words, painter) is { Length: > 0 } lacking)
+            if (Unshowable(Darklands.Core.TextCodes.OfText(words), painter) is { Length: > 0 } lacking)
             {
-                Add(Severity.Error, $"the font has no {lacking}: drawn as nothing or '?'");
+                Add(Severity.Error, $"the font has no {lacking}: drawn as '?' (a font pack can add letters)");
+            }
+            if (english.HotKeys.Count > 0)
+            {
+                // every menu of these texts tests its keys in the code (the hot key's letter is fixed): the coloured letters must stay
+                var keys = Darklands.Core.TextCodes.ColouredParts(words);
+                if (!keys.SequenceEqual(english.HotKeys, StringComparer.OrdinalIgnoreCase))
+                {
+                    Add(Severity.Error, $"its coloured hot keys ({Quoted(keys)}) are not the English's ({Quoted(english.HotKeys)}): the menu's keys are " +
+                        "fixed in the code, so keep those letters coloured (<c12>M</c>)");
+                }
             }
             if (b is { Room: >= 0 })
             {
@@ -103,22 +117,20 @@ public static class LanguagePackCheck
     private static string Names(IReadOnlySet<string> variables) =>
         variables.Count == 0 ? "none" : string.Join(", ", variables.Order(StringComparer.Ordinal).Select(v => "$" + v));
 
-    // the characters of words the font cannot draw (the game has no byte for them, or the font no glyph), once each
-    private static string Unshowable(string words, TextPainter painter)
+    private static string Quoted(IReadOnlyList<string> keys) => keys.Count == 0 ? "none" : string.Join(", ", keys.Select(k => "'" + k + "'"));
+
+    // the letters of a text the painter's font has no glyph for (the game's font: those its bytes cannot hold), once each
+    private static string Unshowable(int[] codes, TextPainter painter)
     {
-        var lacking = new List<char>();
-        foreach (var c in words)
+        var lacking = new List<int>();
+        foreach (var code in codes)
         {
-            var b = Darklands.Core.GameTextCodec.ToByte(c);
-            // a Latin-1 letter other than the game's seven (é, ç ...) has a colour code's byte: it would change the colour, not draw
-            var colourByte = c is >= ' ' and <= 'þ' && "äöüÄÖÜß".IndexOf(c, StringComparison.Ordinal) < 0;
-            var none = colourByte || (b == Darklands.Core.GameTextCodec.Unshowable && c != '?') || (b is >= 0x20 and < 0x80 && painter.Advance(b) == 0 && c != ' ');
-            if (none && !lacking.Contains(c))
+            if (code > ' ' && !Darklands.Core.TextCodes.IsColour(code) && !painter.CodeFont.Has(code) && !lacking.Contains(code))
             {
-                lacking.Add(c);
+                lacking.Add(code);
             }
         }
-        return string.Join(" ", lacking.Select(c => "'" + c + "'"));
+        return string.Join(" ", lacking.Select(c => "'" + char.ConvertFromUtf32(c) + "'"));
     }
 
     private static void CheckCardText(LanguagePack pack, GameAssets assets, string key, TextPainter painter, Action<Severity, string> add)
@@ -131,14 +143,15 @@ public static class LanguagePackCheck
             add(Severity.Error, problem + ": the original text is shown");
             return;
         }
-        var bytes = CardTextForm.ToBytes(translation, out _)!;
-        if (Unshowable(Darklands.Core.GameTextCodec.Decode(bytes.Where(b => b >= 0x20).ToArray()), painter) is { Length: > 0 } lacking)
+        // by codes, as the card screen lays a translation out when it needs the Unicode path (the same loop as the bytes')
+        var codes = CardTextForm.ToCodes(translation, out _)!;
+        if (Unshowable(codes, painter) is { Length: > 0 } lacking)
         {
-            add(Severity.Error, $"the font has no {lacking}: drawn as nothing or '?'");
+            add(Severity.Error, $"the font has no {lacking}: drawn as '?' (a font pack can add letters)");
         }
         var bottom = CardScreen.TextArea.Y + CardScreen.TextArea.Height;
-        var english = Foot(assets, painter, block, block.Text);
-        var translated = Foot(assets, painter, block, bytes);
+        var english = Foot(assets, painter, block, Darklands.Core.TextCodes.OfBytes(block.Text));
+        var translated = Foot(assets, painter, block, codes);
         if (translated >= bottom && translated > english)
         {
             add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
@@ -147,7 +160,7 @@ public static class LanguagePackCheck
     }
 
     // the lowest row a block's text reaches, laid out as the card screen does with every passage shown and every option line enabled
-    private static int Foot(GameAssets assets, TextPainter painter, MessageBlock block, byte[] text)
+    private static int Foot(GameAssets assets, TextPainter painter, MessageBlock block, int[] text)
     {
         var canvas = new Canvas(new Screen());
         new CardTextLayout(painter).Draw(canvas, text, CardScreen.WindowX + block.X + 5, block.Y + 5, block.Width - 10, new CardTextLayout.Settings

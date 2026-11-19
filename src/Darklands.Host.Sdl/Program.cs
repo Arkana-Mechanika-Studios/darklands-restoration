@@ -93,6 +93,8 @@ var setup = arguments.Remove("--setup");
 arguments.Remove("--log-window"); // taken at the start (ConsoleWindow.Connect)
 var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
+// a pack's fonts' pictures are read with the program's PNG reader (font packs, docs/LOCALISATION.md)
+Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
 // the translators' commands (docs/LOCALISATION.md): they write or check, then stop
 var translatorTemplate = Option("--translator-template");
 var checkLanguagePack = Option("--check-language-pack");
