@@ -30,11 +30,19 @@ public sealed class HdRenderer(HdPack pack)
     private readonly Dictionary<int, RgbaImage?> _replacements = [];
     private readonly int[] _drawingAt = new int[Screen.Width * Screen.Height];
     private Dictionary<DrawingKey, DrawingCache> _cache = [];
+    private readonly TextLayer _text = new();
 
     public HdPack Pack => pack;
 
     /// <summary>The draw items of the screen for an output rectangle (the host's window area for the 320×200 picture).</summary>
     public HdFrame Render(Screen screen, DisplayRectangle output)
+    {
+        var frame = RenderPictures(screen, output);
+        // a font pack's scalable glyphs over everything, at the output's resolution (TextLayer, L-6b set 2)
+        return _text.Item(screen, output) is { } text ? frame with { Items = [.. frame.Items, text] } : frame;
+    }
+
+    private HdFrame RenderPictures(Screen screen, DisplayRectangle output)
     {
         for (var i = 0; i < _base.Argb.Length; i++)
         {

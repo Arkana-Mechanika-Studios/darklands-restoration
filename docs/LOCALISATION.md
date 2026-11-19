@@ -224,7 +224,20 @@ fonts/slot3.png    the glyphs; a pixel is drawn where its alpha is 128 or more
 ```
 
 Each glyph is `[x, y, width]` in the picture; its height is the font's. The glyphs are drawn in the screen's colour, as
-the original's are. A font of a pack has its own metrics: with it every text of its slot (the translation's and any
+the original's are.
+
+A slot can also take a **TrueType or OpenType font**, drawn sharp at the window's resolution:
+
+```
+fonts/slot3.json   { "ttf": "MyFont.ttf", "size": 8, "spacing": 0, "lineSpacing": 1 }
+```
+
+`size` is the height of a line (ascent to descent) in the game's 320-wide pixels; each letter's advance is rounded to whole
+pixels, so the game lays the text out as it does with any font. The game's 320x200 picture gets the letters at that size;
+the window, the screenshots and the HD renderer's pictures draw them again at their own resolution, in the colour the
+picture shows (option lines, highlights and the fades included). Known limits: no hinting and no shaping of complex
+scripts, so Latin, Greek and Cyrillic fonts work, while Arabic or Indic scripts would need shaping later. The card's
+option lines, invisible on the picture until it fades, may show faintly in the window during that moment. A font of a pack has its own metrics: with it every text of its slot (the translation's and any
 left in English) is measured and laid out again, and the pack check measures in it. A letter neither the pack's font
 nor the original's has is drawn as `?`.
 

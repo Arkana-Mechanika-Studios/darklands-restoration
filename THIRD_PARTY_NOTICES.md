@@ -158,7 +158,8 @@ image generation. They are distributed with the project under the project's own 
 
 ## StbTrueTypeSharp
 
-The developer console and the launcher rasterise their fonts with StbTrueTypeSharp (https://github.com/rds1983/StbSharp,
+The developer console, the launcher and the game's translated text (a translation pack's TrueType / OpenType fonts) rasterise
+their fonts with StbTrueTypeSharp (https://github.com/rds1983/StbSharp,
 NuGet package), a C# port of Sean Barrett's stb_truetype, which is in the public domain (or under the
 MIT licence, at the user's choice). No source of it is included in this repository.
 

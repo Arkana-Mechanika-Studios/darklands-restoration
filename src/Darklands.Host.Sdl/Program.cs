@@ -95,6 +95,7 @@ var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
 // a pack's fonts' pictures are read with the program's PNG reader (font packs, docs/LOCALISATION.md)
 Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
 // the translators' commands (docs/LOCALISATION.md): they write or check, then stop
 var translatorTemplate = Option("--translator-template");
 var checkLanguagePack = Option("--check-language-pack");
@@ -345,6 +346,18 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     if (settings.LanguagePack is { } languagePack)
     {
         game.Ui.UseLanguagePack(languagePack, Console.Error.WriteLine);
+        // a TrueType font of the pack: its glyphs are drawn again at the window's resolution (the renderer's text layer)
+        if (game.Ui.PackFonts.Values.Any(f => f is Darklands.Platform.IScalableFont))
+        {
+            host.Renderer ??= new HdRenderer(HdPack.Empty);
+            // a screenshot is the composed picture at 4x (the frame's 320x200 alone would show the 1x glyphs)
+            var shots = new HdRenderer(host.Renderer.Pack);
+            game.Ui.ScreenshotWriter = (screen, path) =>
+            {
+                var output = new Darklands.Platform.DisplayRectangle(0, 0, 4 * Darklands.Platform.Screen.Width, 4 * Darklands.Platform.Screen.Height);
+                PngCodec.Write(FrameCompositor.Compose(shots.Render(screen, output), output.Width, output.Height), path);
+            };
+        }
     }
     if (audioTrace is not null)
     {

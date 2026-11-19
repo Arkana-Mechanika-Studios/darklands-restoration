@@ -1308,6 +1308,17 @@ public sealed class GameUi
     public void SaveScreenshot(string? path = null)
     {
         path ??= Path.Combine(ScreenshotFolder ?? ".", $"darklands-{DateTime.Now:yyyyMMdd-HHmmss-fff}.png");
+        if (ScreenshotWriter is { } write)
+        {
+            write(_screen, path);
+            return;
+        }
         PngWriter.Write(_screen, path);
     }
+
+    /// <summary>
+    /// How a screenshot is written instead of the 320x200 frame (null: the frame): the host's composed picture, set when a font pack's
+    /// TrueType glyphs are drawn at the window's resolution (L-6b set 2).
+    /// </summary>
+    public Action<Screen, string>? ScreenshotWriter { get; set; }
 }

@@ -31,7 +31,10 @@ public sealed class PartyPanel(GameAssets assets)
     private const int ValuesRight = 0x38;
 
     // orig: the panel is drawn on the page window DS:0156 (pointer DS:0168), whose font is slot 1 (font 0 of FONTS.FNT); see GameUi.Text
-    private readonly TextPainter _text = new(assets.Font(1));
+    private TextPainter _text => _painter ??= _ui?.Painter(1) ?? new TextPainter(assets.Font(1));
+
+    // (a font pack's slot-1 font when the panel has the game's GameUi: L-6b)
+    private TextPainter? _painter;
 
     // the shield picture a slot holds when it is not the one of the member's letter (the inn's roster loads PICS\SHIELDA.PIC for a new member)
     private readonly (Character Member, char Letter)?[] _shieldPictures = new (Character, char)?[Party.MaxMembers];

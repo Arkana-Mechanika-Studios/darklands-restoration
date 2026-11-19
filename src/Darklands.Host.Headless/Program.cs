@@ -391,7 +391,14 @@ if (languagePackStep is not null)
 {
     // its fonts' pictures read with the program's PNG reader (font packs)
     Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
+    Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
     game.Ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
+    // a TrueType font of the pack: each shot also saves <name>.hd.png with its glyphs at hdscale (the renderer's text layer)
+    if (game.Ui.PackFonts.Values.Any(f => f is Darklands.Platform.IScalableFont) && ScriptedHost.HdRenderer is null)
+    {
+        ScriptedHost.HdRenderer = new HdRenderer(HdPack.Empty);
+        ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
+    }
 }
 game.Options.Apply(resolved);
 // the game's own notes (a saved game's mods missing, a companion file it could not use) on the error output

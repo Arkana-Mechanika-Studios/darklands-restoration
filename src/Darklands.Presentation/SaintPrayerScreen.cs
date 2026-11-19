@@ -54,7 +54,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     private const int BoxRow = 9;
 
     private readonly Canvas _canvas = ui.Canvas;
-    private readonly TextPainter _text = new(ui.Assets.Font(2));
+    private readonly TextPainter _text = ui.Painter(2);
     private readonly MessageBox _message = new(ui);
     private Pic? _background;
     private SavedRegion? _box;

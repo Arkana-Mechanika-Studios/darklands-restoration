@@ -5,10 +5,16 @@
     <ProjectReference Include="..\Darklands.Platform\Darklands.Platform.csproj" />
   </ItemGroup>
 
+  <!-- a font pack's TrueType / OpenType fonts (TtfFont, L-6b set 2): the rasteriser the console and the launcher use already -->
+  <ItemGroup>
+    <PackageReference Include="StbTrueTypeSharp" Version="1.26.12" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 </Project>
