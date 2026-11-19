@@ -51,7 +51,10 @@ public sealed class OriginalMessageTextTests
         foreach (var id in new[] { GameMessageIds.AlchemyFailure, GameMessageIds.AlchemySuccess, GameMessageIds.EventTableFull, GameMessageIds.NotEnoughMoney })
         {
             Assert.Equal(table.Find(id)?.Text, text.Text(GameMessage.Notice(id)));
+            Assert.Equal(StringOrigin.Known, table.Find(id)!.Origin);
         }
+        Assert.Equal(StringOrigin.Known, table.Find("exe:DS:26BE")?.Origin);
+        Assert.Equal(StringOrigin.Known, table.Find("exe:DS:26CD")?.Origin);
         Assert.Equal(
             Core.Rules.MemberRules.SkillNames[7] + table.Find("exe:DS:26BE")!.Text + "4" + table.Find("exe:DS:26CD")!.Text + "5",
             text.Text(GameMessage.SkillChanged(1, 7, 4, 5)));
