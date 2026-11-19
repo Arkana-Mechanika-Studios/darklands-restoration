@@ -248,7 +248,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: R043+0x29D0 (1F40): the message goes into the side window next to member `who` (-2 = the whole column): text centred in a 55-pixel column at x 3, y + 4 (y = 0x51 for the whole column, who * 0x28 + 1 for a member), then it waits for a key or the left button and eats the key
     // C: for the whole column it first clears the entire panel strip (3, 0, 0x36 x 0xC6) with the background sprite DS:A628 and centres the text in the middle at y 0x51; for one member the row (3, y, 0x36 x 0x26) with DS:A626.
     // DIVERGENCE: the text colour is the caller's (side-window->color = param-plus-8); ICardScreen.Tell has none, the text is drawn white. The original does not put the panel back afterwards (its callers redraw it); here the covered area is restored when the message is dismissed.
-    public void Tell(GameText message, int member = OptionHint.WholeParty) => Tell(ui, ui.Assets.MessageText.Text(message), member);
+    public void Tell(GameText message, int member = OptionHint.WholeParty) => Tell(ui, ui.Words(message), member);
 
     /// <summary>The side window's message (R043+0x29D0) on whatever screen is shown: the card screen, a member sheet, the creation sheet.</summary>
     public static void Tell(GameUi ui, string message, int member = OptionHint.WholeParty)
@@ -274,7 +274,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
 
     // orig: notice-display root 0000:24BC(text, ticks) (MessageBox.Show)
     // C: a framed box for the ticks, not the side window's wait for a key (Tell)
-    public void ShowMessage(GameText text, int ticks) => new MessageBox(ui).Show(ui.Assets.MessageText.Text(text), ticks * 1000 / 60);
+    public void ShowMessage(GameText text, int ticks) => new MessageBox(ui).Show(ui.Words(text), ticks * 1000 / 60);
 
     public void Post(GameMessage message) => SideWindowMessages.Show(ui, message);
 
@@ -496,7 +496,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         {
             return;
         }
-        var text = ui.Assets.MessageText.Text(hint.Describe(state.Difficulty));
+        var text = ui.Words(hint.Describe(state.Difficulty));
         var (top, height) = hint.Member == OptionHint.WholeParty ? (1, 0xC6) : (hint.Member * 40 + 1, 0x26);
         SideWindowBackground(ui, hint.Member);
         var layout = new CardTextLayout(ui.Text);

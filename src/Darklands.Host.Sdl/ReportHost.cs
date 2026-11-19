@@ -56,6 +56,7 @@ internal static class ReportHost
             ("Audio pack", s.AudioPack ?? "none"),
             ("SoundFont", s.SoundFont ?? "default"),
             ("HD pack", s.HdPack ?? "none"),
+            ("Language pack", s.LanguagePack ?? "none"),
             ("Mods", s.Mods.Count == 0 ? "none (Classic)" : string.Join(", ", s.Mods)),
             ("Game command line", s.CommandLine.Count == 0 ? "none" : string.Join(' ', s.CommandLine)),
             ("Saves folder setting", s.SavesFolder ?? "default"),

@@ -395,7 +395,7 @@ public sealed class DarklandsGame
             Log?.Invoke($"{name}: the saved game is damaged (its file ends before its contents do); not loaded");
             // DIVERGENCE: a load given on the command line has drawn nothing yet: the notice is drawn over the load screen's picture and colours, not over black with the start-up colours
             beforeNotice?.Invoke();
-            new MessageBox(_ui).Notice(DamagedSavedGame);
+            new MessageBox(_ui).Notice([.. DamagedSavedGame.Select(_ui.Words)]);
             return null;
         }
         // BUG: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
@@ -404,7 +404,7 @@ public sealed class DarklandsGame
         {
             Log?.Invoke($"{name}: the saved game holds {impossible}, which no game has (edited by hand?); not loaded");
             beforeNotice?.Invoke();
-            new MessageBox(_ui).Notice(ImpossibleSavedGame);
+            new MessageBox(_ui).Notice([.. ImpossibleSavedGame.Select(_ui.Words)]);
             return null;
         }
         var loaded = Saves.Load(name, World, running);
@@ -425,26 +425,23 @@ public sealed class DarklandsGame
         if (loaded.Mods.MissingMods is { Count: > 0 } missing)
         {
             Log?.Invoke($"{name} was saved with mods not loaded now ({string.Join(", ", missing)}): the game goes on without them");
-            var lines = new List<string> { missing.Count == 1 ? "This game was saved with the mod" : "This game was saved with the mods" };
+            var one = missing.Count == 1;
+            var lines = new List<string> { _ui.Words(one ? "id:rw.save.mods-missing.one" : "id:rw.save.mods-missing.many") };
             // at most three names (the notice has six boxes)
-            lines.AddRange(missing.Count <= 3 ? missing.Select(m => m.ToString()) : [.. missing.Take(2).Select(m => m.ToString()), $"and {missing.Count - 2} more"]);
-            lines.Add("which is not loaded now. It goes on");
-            lines.Add("without it. Press a key.");
-            if (missing.Count > 1)
-            {
-                lines[^2] = "which are not loaded now. It goes on";
-                lines[^1] = "without them. Press a key.";
-            }
+            lines.AddRange(missing.Count <= 3 ? missing.Select(m => m.ToString())
+                : [.. missing.Take(2).Select(m => m.ToString()), _ui.Words(Core.GameText.Of("id:rw.save.mods-missing.more", ("count", missing.Count - 2)))]);
+            lines.Add(_ui.Words(one ? "id:rw.save.mods-missing.one-end.1" : "id:rw.save.mods-missing.many-end.1"));
+            lines.Add(_ui.Words(one ? "id:rw.save.mods-missing.one-end.2" : "id:rw.save.mods-missing.many-end.2"));
             box.Notice(lines);
         }
         return loaded;
     }
 
-    /// <summary>The notice for a saved game that is cut short (own text, one box a line).</summary>
-    public static readonly IReadOnlyList<string> DamagedSavedGame = ["This saved game is damaged and cannot be loaded.", "Press a key."];
+    /// <summary>The notice for a saved game that is cut short (the rewrite's own text: its ids, one box a line).</summary>
+    public static readonly IReadOnlyList<string> DamagedSavedGame = ["id:rw.save.damaged.1", "id:rw.notice.press-a-key"];
 
-    /// <summary>The notice of a saved game holding what no game has (OriginalBehaviour.FixImpossibleSavedGame).</summary>
-    public static readonly IReadOnlyList<string> ImpossibleSavedGame = ["This saved game holds values no game can have", "and cannot be loaded.", "Press a key."];
+    /// <summary>The notice of a saved game holding what no game has (OriginalBehaviour.FixImpossibleSavedGame): its ids, one box a line.</summary>
+    public static readonly IReadOnlyList<string> ImpossibleSavedGame = ["id:rw.save.impossible.1", "id:rw.save.impossible.2", "id:rw.notice.press-a-key"];
 
     /// <summary>Alt-L while playing: "Loading is irreversable. Proceed?" (the original's own spelling), then the load screen; the game goes on with what it gives.</summary>
     // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: card-text-window->f10 = 3; the question;

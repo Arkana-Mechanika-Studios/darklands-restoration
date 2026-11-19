@@ -111,7 +111,7 @@ public sealed class MediciBank : Card
         ShowPicture(c, 190);
         c.Screen.Text(3);
         ShowPicture(c, OfficePicture);
-        if (BankingHouses.DepositFlorins(c))
+        if (BankingHouses.DepositFlorins(c, "exe:DS:5BBD"))   // "Deposit how many Florins?"
         {
             menu[0] = OptionState.Enabled;
         }

@@ -28,6 +28,7 @@ using Darklands.Rendering;
 //   hdpack:<folder>              replacement graphics (an HD pack, docs/SETTINGS.md display.hdPack; also from --settings): each
 //                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200,
 //                                and <name>.assets.txt, the asset names on the screen (the names a pack's PNG files take)
+//   languagepack:<folder>        a translation pack (docs/LOCALISATION.md; also from --settings): the screens' words in its language
 //
 // Game steps:
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
@@ -194,6 +195,7 @@ if (audioPackStep is not null)
     Console.Error.WriteLine($"audio pack: {pack.Folder}, {pack.Count} replacement(s), {pack.CardMusics.Count()} card(s) with music");
     ScriptedHost.ReplacementSound = pack;
 }
+var languagePackStep = TakeStep("languagepack:") ?? resolved.LanguagePack;
 var host = new ScriptedHost(steps, output);
 var battleStep = steps.FirstOrDefault(s => s.StartsWith("battle:", StringComparison.Ordinal));
 if (battleStep is not null)
@@ -381,6 +383,11 @@ var game = new DarklandsGame(host, OpenGame())
     QuickstartCard = cardStep is null ? null : Convert.ToInt32(cardStep[5..], 16),
     StartWithSave = loadStep?[5..],
 };
+// a translation pack (languagepack:<folder> or the settings file's languagePack) changes the screens' words only
+if (languagePackStep is not null)
+{
+    game.Ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
+}
 game.Options.Apply(resolved);
 // the game's own notes (a saved game's mods missing, a companion file it could not use) on the error output
 game.Log = Console.Error.WriteLine;

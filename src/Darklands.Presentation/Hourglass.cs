@@ -120,7 +120,7 @@ internal static class Hourglass
         canvas.Fill(CardScreen.WindowX + 0x84, 0x82, 0x0C, 8, Palette.Black);
         canvas.Fill(CardScreen.WindowX + 0xA0, 0x82, 0x0C, 8, Palette.Black);
         var invariant = System.Globalization.CultureInfo.InvariantCulture;
-        ui.CardText.Draw(canvas, CardScreen.WindowX + 0x48, 0x82, ui.Assets.Words.Text(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, Core.Time.TimeOfDay.Band(frame * 3)), DialText);
+        ui.CardText.Draw(canvas, CardScreen.WindowX + 0x48, 0x82, ui.Word(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, Core.Time.TimeOfDay.Band(frame * 3)), DialText);
         ui.CardText.Draw(canvas, CardScreen.WindowX + 0x84, 0x82, day.ToString(invariant), DialText);
         ui.CardText.Draw(canvas, CardScreen.WindowX + 0xA0, 0x82, (month + 1).ToString(invariant), DialText);
     }

@@ -40,7 +40,7 @@ internal sealed class LauncherModel
     private static readonly double[] WindowScaleFactors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -59,6 +59,7 @@ internal sealed class LauncherModel
         Mt32Roms = string.IsNullOrWhiteSpace(s.Mt32Roms) ? null : s.Mt32Roms;
         AudioPack = string.IsNullOrWhiteSpace(s.AudioPack) ? null : s.AudioPack;
         SoundFont = string.IsNullOrWhiteSpace(s.SoundFont) ? null : s.SoundFont;
+        LanguagePack = string.IsNullOrWhiteSpace(s.LanguagePack) ? null : s.LanguagePack;
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
         MouseWheel = s.MouseWheel ?? true;
@@ -72,7 +73,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys, LanguagePack);
         _automatic = GameFolder;
     }
 
@@ -109,18 +110,30 @@ internal sealed class LauncherModel
     /// <summary>The SoundFont that would play now (the one chosen if it exists, else the default folder's), null when none is found.</summary>
     public string? SoundFontFound => _context.FindSoundFont is { } find ? find(SoundFont) : SoundFont is { } chosen && File.Exists(chosen) ? chosen : null;
 
-    /// <summary>The picture pack's (or the sound pack's) folder.</summary>
-    public string? PackOf(PackKind kind) => kind == PackKind.Pictures ? HdPack : AudioPack;
+    /// <summary>The translation pack's folder (docs/LOCALISATION.md); null: none, the original English text.</summary>
+    public string? LanguagePack { get; set; }
+
+    /// <summary>The picture pack's, the sound pack's or the translation pack's folder.</summary>
+    public string? PackOf(PackKind kind) => kind switch
+    {
+        PackKind.Pictures => HdPack,
+        PackKind.Sounds => AudioPack,
+        _ => LanguagePack,
+    };
 
     public void SetPack(PackKind kind, string? folder)
     {
-        if (kind == PackKind.Pictures)
+        switch (kind)
         {
-            HdPack = folder;
-        }
-        else
-        {
-            AudioPack = folder;
+            case PackKind.Pictures:
+                HdPack = folder;
+                break;
+            case PackKind.Sounds:
+                AudioPack = folder;
+                break;
+            default:
+                LanguagePack = folder;
+                break;
         }
     }
 
@@ -137,7 +150,12 @@ internal sealed class LauncherModel
     }
 
     /// <summary>Whether a folder holds a pack of that kind.</summary>
-    public bool Holds(string folder, PackKind kind) => kind == PackKind.Pictures ? Pack(folder).Pictures > 0 : Pack(folder).Sounds > 0;
+    public bool Holds(string folder, PackKind kind) => kind switch
+    {
+        PackKind.Pictures => Pack(folder).Pictures > 0,
+        PackKind.Sounds => Pack(folder).Sounds > 0,
+        _ => Pack(folder).Translations > 0,
+    };
 
     /// <summary>None, then the packs of that kind found in the packs folders, then the one chosen when it is elsewhere.</summary>
     public IReadOnlyList<string?> PackChoices(PackKind kind)
@@ -275,6 +293,10 @@ internal sealed class LauncherModel
         {
             changes["sound.audioPack"] = AudioPack?.Replace('\\', '/') ?? "";
         }
+        if (LanguagePack != _initial.LanguagePack)
+        {
+            changes["languagePack"] = LanguagePack?.Replace('\\', '/') ?? "";
+        }
         if (SoundFont != _initial.SoundFont)
         {
             changes["sound.soundFont"] = SoundFont?.Replace('\\', '/') ?? "";
@@ -315,6 +337,7 @@ internal sealed class LauncherModel
         s.Mt32Roms = Mt32Roms;
         s.AudioPack = AudioPack;
         s.SoundFont = SoundFont;
+        s.LanguagePack = LanguagePack;
         s.Banner = Banner;
         s.Intro = Intro;
         s.MouseWheel = MouseWheel;
@@ -362,4 +385,7 @@ internal enum PackKind
 {
     Pictures,
     Sounds,
+
+    /// <summary>A translation pack (pack.json with a "language", Fluent files).</summary>
+    Language,
 }

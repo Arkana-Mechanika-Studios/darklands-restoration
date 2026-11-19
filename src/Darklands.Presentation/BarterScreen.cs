@@ -61,7 +61,7 @@ public sealed class BarterScreen
 
     // orig: trade-screen-entry R032+0x0058: DS:869C = name ? name : R136+0xA70F[shop] (OriginalWords.ShopNames)
     /// <summary>The shop's name: the one it was opened under, else its entry of the name table.</summary>
-    private string ShopName => _s.Shop.Name ?? _page.Ui.Assets.Words.Text(OriginalWords.ShopNames, _s.Shop.Number);
+    private string ShopName => _s.Shop.Name ?? _page.Ui.Word(OriginalWords.ShopNames, _s.Shop.Number);
 
     private int Leader => Party.LeaderIndex;
 

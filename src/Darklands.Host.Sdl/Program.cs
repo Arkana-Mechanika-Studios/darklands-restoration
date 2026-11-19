@@ -109,6 +109,7 @@ var cli = new CommandLineOptions
     TextFont = Option("--text-font"),
     Mt32Roms = Option("--mt32-roms"),
     AudioPack = Option("--audio-pack"),
+    LanguagePack = Option("--language-pack"),
     SoundFont = Option("--soundfont"),
     NoBanner = arguments.Remove("--no-banner"),
     NoIntro = arguments.Remove("--no-intro"),
@@ -323,6 +324,11 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
         // The player's game fixes the original's data-damaging bugs (saves and item stores); the files stay readable by the original.
         Behaviour = Darklands.Core.OriginalBehaviour.DataSafe,
     };
+    // a translation pack changes the screens' words only (docs/LOCALISATION.md)
+    if (settings.LanguagePack is { } languagePack)
+    {
+        game.Ui.UseLanguagePack(languagePack, Console.Error.WriteLine);
+    }
     if (audioTrace is not null)
     {
         game.Ui.Trace = audioTrace.WriteLine;

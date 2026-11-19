@@ -725,8 +725,9 @@ public sealed class RcPlayTests
     [Fact]
     public void TheNoticeOfADamagedSavedGameReadsAsASentence()
     {
-        Assert.Equal("This saved game is damaged and cannot be loaded.", DarklandsGame.DamagedSavedGame[0]);
-        Assert.All(DarklandsGame.DamagedSavedGame, l => Assert.InRange(l.Length, 1, 60));
+        var damaged = DarklandsGame.DamagedSavedGame.Select(Words).ToList();
+        Assert.Equal("This saved game is damaged and cannot be loaded.", damaged[0]);
+        Assert.All(damaged, l => Assert.InRange(l.Length, 1, 60));
     }
 
     /// <summary>
@@ -840,8 +841,9 @@ public sealed class RcPlayTests
     [Fact]
     public void TheNoticeOfASavedGameHoldingWhatNoGameHasReadsAsASentence()
     {
-        Assert.Equal("This saved game holds values no game can have and cannot be loaded.", string.Join(" ", DarklandsGame.ImpossibleSavedGame.SkipLast(1)));
-        Assert.All(DarklandsGame.ImpossibleSavedGame, l => Assert.InRange(l.Length, 1, 60));
+        var impossible = DarklandsGame.ImpossibleSavedGame.Select(Words).ToList();
+        Assert.Equal("This saved game holds values no game can have and cannot be loaded.", string.Join(" ", impossible.SkipLast(1)));
+        Assert.All(impossible, l => Assert.InRange(l.Length, 1, 60));
     }
 
     /// <summary>With the fix a whole file still loads and plays: real saves of the folder, one without its battle file, and one cut only in its cache.</summary>
@@ -871,4 +873,7 @@ public sealed class RcPlayTests
         Assert.DoesNotContain(log, l => l.Contains("damaged"));
         Assert.DoesNotContain(log, l => l.Contains("which no game has"));
     }
+
+    /// <summary>The words of one of the rewrite's own notice ids.</summary>
+    private static string Words(string id) => Darklands.Content.Formats.Text.Strings.OriginalMessageText.OwnWords(Darklands.Core.GameText.Of(id))!;
 }

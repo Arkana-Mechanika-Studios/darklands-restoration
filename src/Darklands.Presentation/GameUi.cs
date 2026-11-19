@@ -135,11 +135,76 @@ public sealed class GameUi
     public GameAssets Assets { get; }
 
     /// <summary>A text of the game in the words the screens show (today the original's, from the player's EXE).</summary>
-    public string Words(Darklands.Core.GameText text) =>
-        // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
-        ScreenTextPlane.Recording
-            ? ScreenTextPlane.Keyed(Assets.MessageText.Text(text), text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values))
+    public string Words(Darklands.Core.GameText text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        // a translation pack's words for the keys it has; the original's for every other (and with no pack: the original's, as always)
+        var words = Language is { } pack && pack.Localizer.IsTranslated(text.Id)
+            ? pack.Localizer.Get(text.Id, FluentArguments(text))
             : Assets.MessageText.Text(text);
+        // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
+        return ScreenTextPlane.Recording
+            ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values))
+            : words;
+    }
+
+    /// <summary>
+    /// Entry <paramref name="k"/> of one of the original's word tables (a month, a fame title ...): the translation pack's words for its
+    /// key when the pack has them, else the original's.
+    /// </summary>
+    public string Word(Darklands.Content.Formats.Text.Strings.WordTable table, int k)
+    {
+        var key = Language is null && !ScreenTextPlane.Recording ? null : Assets.Words.Key(table, k);
+        var words = key is not null && Language is { } pack && pack.Localizer.IsTranslated(key) ? pack.Localizer.Get(key) : Assets.Words.Text(table, k);
+        return key is not null && ScreenTextPlane.Recording ? ScreenTextPlane.Keyed(words, key) : words;
+    }
+
+    /// <summary>
+    /// The translation pack in use (null: none, the original's English text from the player's files). Set before the game starts;
+    /// a pack changes words only, never what the game does.
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (docs/LOCALISATION.md).
+    public Darklands.Localization.LanguagePack? Language { get; set; }
+
+    /// <summary>
+    /// Loads the translation pack in <paramref name="folder"/> and uses it (<see cref="Language"/>); what is wrong with it goes to
+    /// <paramref name="report"/> (a pack that cannot be read leaves the original text). True when a pack is in use.
+    /// </summary>
+    public bool UseLanguagePack(string folder, Action<string> report)
+    {
+        ArgumentNullException.ThrowIfNull(report);
+        var pack = Darklands.Localization.LanguagePack.Load(folder, out var why);
+        if (pack is null)
+        {
+            report($"language pack: {why}; the original text is shown");
+            return false;
+        }
+        foreach (var problem in pack.Problems)
+        {
+            report($"language pack: {problem}");
+        }
+        report($"language pack: {pack.Name} ({pack.Language}), {pack.Files} file(s)");
+        Language = pack;
+        return true;
+    }
+
+    /// <summary>
+    /// A text's arguments as Fluent variables: a named one keeps its name (<c>$count</c>), a format string's positional ones are
+    /// <c>$arg0</c>, <c>$arg1</c> ... (Fluent names start with a letter).
+    /// </summary>
+    internal static Dictionary<string, object?>? FluentArguments(Darklands.Core.GameText text)
+    {
+        if (text.Args.Count == 0)
+        {
+            return null;
+        }
+        var map = new Dictionary<string, object?>(text.Args.Count, StringComparer.Ordinal);
+        foreach (var (name, value) in text.Args)
+        {
+            map[name.Length > 0 && char.IsAsciiDigit(name[0]) ? "arg" + name : name] = value;
+        }
+        return map;
+    }
 
     /// <summary>
     /// The developer's inspector's question to the screens (null: none answers): what the screen shows at a point of the frame, as

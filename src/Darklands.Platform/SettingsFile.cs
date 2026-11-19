@@ -155,6 +155,7 @@ public static class SettingsFile
                     case "gameFolder": settings.GameFolder = FilePath(name, value); break;
                     case "savesFolder": settings.SavesFolder = FilePath(name, value); break;
                     case "textFont": settings.TextFont = FilePath(name, value); break;
+                    case "languagePack": settings.LanguagePack = FilePath(name, value); break;
                     case "screenshotsFolder": settings.ScreenshotsFolder = FilePath(name, value); break;
                     case "mods": settings.Mods = Tokens(name, value)?.Select(Environment.ExpandEnvironmentVariables).ToList() ?? settings.Mods; break;
                     case "display": Section(name, value, settings, Display); break;
@@ -556,6 +557,11 @@ public static class SettingsFile
           // The 8x16 text-screen font: a 4096-byte VGA BIOS font dump or its base64. "": a built-in font.
           // Command line: --text-font <file>; environment: DARKLANDS_TEXT_FONT.
           "textFont": "",
+
+          // A translation pack (a folder with a pack.json naming its language and Fluent .ftl files, docs/LOCALISATION.md). Not part
+          // of the original: it changes words only, the game plays the same. "": the original English text from your game files.
+          // Command line: --language-pack <folder>; environment: DARKLANDS_LANGUAGE_PACK.
+          "languagePack": "",
 
           // Where screenshots go. "": the current folder. Command line: --screenshots <folder>.
           "screenshotsFolder": "",

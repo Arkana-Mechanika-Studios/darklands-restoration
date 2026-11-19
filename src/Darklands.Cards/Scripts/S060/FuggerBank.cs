@@ -124,7 +124,7 @@ public sealed class FuggerBank : Card
         ShowPicture(c, PursePicture);
         c.Screen.Text(3);
         ShowPicture(c, picture);
-        if (BankingHouses.DepositFlorins(c))
+        if (BankingHouses.DepositFlorins(c, "exe:DS:5B8F"))   // "Deposit how many Florins?"
         {
             menu[0] = OptionState.Enabled;
         }

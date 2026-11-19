@@ -60,10 +60,11 @@ internal static class BankingHouses
     // itoa(party-purse[0]) preset in the prompt "Deposit how many Florins?" (thunk 09C0:20B7), v = limit-to-range(0, 500, atoi(answer)),
     // v = min(v, party-purse[0]); if v != 0: card-option-flag-0 = 1, purse-subtract-parts(party-purse, v, 0, 0), DS:9072 += v, purse-assign(text-slot-amount-one, DS:9072, 0, 0).
     // C: DS:9072 is a 16-bit int; the sum of deposits is not limited and wraps past 32767 florins (negative notes then hide the withdrawal option).
-    public static bool DepositFlorins(CardContext c)
+    // C: each card pushes its own copy of the question: R060's DS:5B8F, R061's DS:5BBD (the caller hands its key in).
+    public static bool DepositFlorins(CardContext c, string question)
     {
         var party = c.State.Party;
-        var answer = c.AskText("Deposit how many Florins?", party.Purse.Florins.ToString(System.Globalization.CultureInfo.InvariantCulture), 10);
+        var answer = c.AskText(question, party.Purse.Florins.ToString(System.Globalization.CultureInfo.InvariantCulture), 10);
         var florins = Math.Clamp(CardContext.ParseNumber(answer), 0, 500);
         if (party.Purse.Florins < florins)
         {

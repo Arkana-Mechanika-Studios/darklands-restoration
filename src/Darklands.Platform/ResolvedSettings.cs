@@ -32,6 +32,9 @@ public sealed class CommandLineOptions
 
     public string? SoundFont { get; set; }
 
+    /// <summary>--language-pack: a translation pack's folder.</summary>
+    public string? LanguagePack { get; set; }
+
     public bool NoBanner { get; set; }
 
     public bool NoIntro { get; set; }
@@ -89,6 +92,8 @@ public sealed class CommandLineOptions
         By("sound.audioPack", Given(AudioPack), "--audio-pack");
         By("sound.soundFont", Given(SoundFont), "--soundfont");
         By("sound.audioPack", Given(environment("DARKLANDS_AUDIO_PACK")), "DARKLANDS_AUDIO_PACK");
+        By("languagePack", Given(LanguagePack), "--language-pack");
+        By("languagePack", Given(environment("DARKLANDS_LANGUAGE_PACK")), "DARKLANDS_LANGUAGE_PACK");
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
         By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");
@@ -139,6 +144,9 @@ public sealed class ResolvedSettings
 
     /// <summary>The SoundFont file for the audio pack's .mid files; null: look in the SOUNDFONT folder next to the program.</summary>
     public string? SoundFont { get; private init; }
+
+    /// <summary>The translation pack's folder; null: none (the original English text).</summary>
+    public string? LanguagePack { get; private init; }
 
     public ConfigDrkSettings? ConfigDrk { get; private init; }
 
@@ -234,6 +242,7 @@ public sealed class ResolvedSettings
             Mt32Roms = FirstGiven(cli.Mt32Roms, "DARKLANDS_MT32_ROMS", file.Mt32Roms),
             AudioPack = FirstGiven(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
             SoundFont = FirstGiven(cli.SoundFont, null, file.SoundFont),
+            LanguagePack = FirstGiven(cli.LanguagePack, "DARKLANDS_LANGUAGE_PACK", file.LanguagePack),
             ConfigDrk = file.ConfigDrk,
             Mods = cli.Mods.Count > 0 ? cli.Mods.ToList() : file.Mods?.Where(m => !string.IsNullOrWhiteSpace(m)).ToList() ?? [],
             ModsFromCommandLine = cli.Mods.Count > 0,

@@ -46,7 +46,22 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         [GameTextIds.CardHasNoScript] = t => $"{t.Word("name")} has no script.",
         [GameTextIds.ModCardGoesRound] = t => $"{t.Word("name")} goes round in circles: back to the card before.",
         ["id:rw.notice.and-more"] = t => $"... and {t.Word("count")} more",
+        // the load's refusals and the missing mods' notice (DarklandsGame), one box a line
+        ["id:rw.save.damaged.1"] = _ => "This saved game is damaged and cannot be loaded.",
+        ["id:rw.save.impossible.1"] = _ => "This saved game holds values no game can have",
+        ["id:rw.save.impossible.2"] = _ => "and cannot be loaded.",
+        ["id:rw.notice.press-a-key"] = _ => "Press a key.",
+        ["id:rw.save.mods-missing.one"] = _ => "This game was saved with the mod",
+        ["id:rw.save.mods-missing.many"] = _ => "This game was saved with the mods",
+        ["id:rw.save.mods-missing.more"] = t => $"and {t.Word("count")} more",
+        ["id:rw.save.mods-missing.one-end.1"] = _ => "which is not loaded now. It goes on",
+        ["id:rw.save.mods-missing.one-end.2"] = _ => "without it. Press a key.",
+        ["id:rw.save.mods-missing.many-end.1"] = _ => "which are not loaded now. It goes on",
+        ["id:rw.save.mods-missing.many-end.2"] = _ => "without them. Press a key.",
     };
+
+    /// <summary>The words of one of the rewrite's own notices (null for any other id): they need no EXE.</summary>
+    public static string? OwnWords(GameText text) => text is not null && Own.TryGetValue(text.Id, out var own) ? own(text) : null;
 
     /// <summary>The ids of the rewrite's own notices (for tests: every one has words).</summary>
     public static IReadOnlyCollection<string> OwnIds => Own.Keys;
