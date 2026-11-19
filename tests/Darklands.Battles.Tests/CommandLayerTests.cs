@@ -10,7 +10,7 @@ namespace Darklands.Battles.Tests;
 /// The command layer (docs/COMMANDS.md): a command is the player's key or click of one pass, carried out by the same code; the card
 /// screens read the player's actions as intents. A command chooses what the player's own input chooses.
 /// </summary>
-public sealed class CommandLayerTests
+public sealed partial class CommandLayerTests
 {
     /// <summary>A host that plays scripted steps once each is ready (a step returning null waits a frame), moves its pointer when told, then idles.</summary>
     private sealed class ScriptHost(params Func<(int Key, MouseState Mouse)?>[] steps) : IHost, IVideo, IInput, IClock

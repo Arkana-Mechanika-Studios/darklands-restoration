@@ -34,6 +34,14 @@ public sealed class WorldData : IGameData
     /// words, the shop names a card leaves out.</summary>
     public OriginalWords Words => _words.Value;
 
+    /// <summary>
+    /// The four Quickstart members' names (DS:0E50 .. DS:0EA2), game data the new game's party is made with (DefaultParty.Create), as
+    /// the item names are: the game takes them from here, never from the word tables.
+    /// </summary>
+    public IReadOnlyList<Darklands.Core.Characters.QuickstartName> QuickstartNames => _quickstart ??= Words.Quickstart();
+
+    private IReadOnlyList<Darklands.Core.Characters.QuickstartName>? _quickstart;
+
     /// <summary>The description of a city ($PlaceDesc), or "" when the file has none.</summary>
     // orig: city-description, the 0x50-byte DARKLAND.DSC record read with the city record when the party arrives in a city: fseek(city * 0x50 + 1), repeated inline in R030+0x02C0 (1462:02C0) draft (bytes match; 16 of the file's 22 functions do); tests: TextAndOpeningTests
     public string CityDescription(int city) => Descriptions.Find(city)?.Text ?? "";

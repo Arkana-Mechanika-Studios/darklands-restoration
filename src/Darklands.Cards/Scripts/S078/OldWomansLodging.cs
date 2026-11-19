@@ -95,7 +95,7 @@ public sealed class OldWomansLodging : Card
             {
                 c.Screen.Text(5);
                 c.PassHours(1);
-                c.OpenShop(-1, "Village Stable", 0x2000, 0);
+                c.OpenShop(-1, c.ExeText("exe:DS:5FCF"), 0x2000, 0);  // "Village Stable"
                 c.Next = CardNumber;
             }, OptionHint.Saying(SuccessAssured)),
             // orig: R078+0x0864 (185C:0624) matched; R078+0x08C4 (185C:0684) matched; tests: CardSmokeTests

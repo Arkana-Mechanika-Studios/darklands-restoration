@@ -129,10 +129,9 @@ public sealed class MouseWheelListTests
         Assert.False(host.QuitRequested);
         Assert.Null(ui.SelectionList);
         var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
-        var cursor = (int)typeof(CharacterSheetScreen).GetField("_cursor", flags)!.GetValue(sheet)!;
-        var selected = (int[,])typeof(CharacterSheetScreen).GetField("_selected", flags)!.GetValue(sheet)!;
-        var top = (int[,])typeof(CharacterSheetScreen).GetField("_top", flags)!.GetValue(sheet)!;
-        return (cursor, (bool)typeof(CharacterSheetScreen).GetField("_open", flags)!.GetValue(sheet)!, selected[cursor, 0], top[cursor, 0], host);
+        // the sheet's model (member 0 shown): the cursor box, the open box, that box's lit and first line
+        var session = (Darklands.Simulation.SheetSession)typeof(CharacterSheetScreen).GetField("_s", flags)!.GetValue(sheet)!;
+        return (session.Cursor, session.IsOpen, session.Selected(session.Cursor), session.Top(session.Cursor), host);
     }
 
     [Fact]

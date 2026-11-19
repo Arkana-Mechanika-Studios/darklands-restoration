@@ -25,7 +25,7 @@ public sealed class GameConsoleTests
         var state = new GameState(new MscRandom(1))
         {
             Data = new Items(),
-            Party = DefaultParty.Create(7),
+            Party = DefaultParty.Create(7, QuickstartTestNames.All),
             Date = new GameDate(9, 10, 5, 1402),
             CurrentLocation = 0,
         };

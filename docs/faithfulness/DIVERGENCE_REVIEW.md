@@ -20,7 +20,7 @@ id); this file is generated from it. Nothing here changes behaviour.
 ## Summary
 
 - Part A (not-modelled, deliberate-fix, other in core logic): 57 entries; recommendations: document: 2, justify: 41, keep: 14.
-- Part B (undefined-memory in core logic): 160 entries; determinism: deterministic: 1, n/a: 83, no: 63, partly: 9, yes: 4.
+- Part B (undefined-memory in core logic): 161 entries; determinism: deterministic: 1, n/a: 83, no: 63, partly: 10, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -482,11 +482,11 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### other (4)
 
-- **D-c7cfbb** `other` - `src/Darklands.Content/WorldData.cs:45` `WorldData.Load`  
+- **D-c7cfbb** `other` - `src/Darklands.Content/WorldData.cs:53` `WorldData.Load`  
   original: `R043+0x0100` (1462:0100, matched)  
   divergence: the original reads one city record and one description (those of location-now) and keeps them as city-record / city-description; here every city is decoded and the working copy comes from GameState.City; the events.tmp file is the saved game's event list (Persistence).  
   recommendation: **justify** - Representation difference: the original reads one city record and keeps the location records in its heap and in locs.tmp; this program decodes all cities up front and restores fields through Persistence. Equivalent as long as GameState.City and the save restore give the same bytes (covered by the persistence tests).
-- **D-22b44f** `other` - `src/Darklands.Content/WorldData.cs:58` `WorldData.CreateLocations`  
+- **D-22b44f** `other` - `src/Darklands.Content/WorldData.cs:66` `WorldData.CreateLocations`  
   original: `R043+0x0100` (1462:0100, matched), `R136+0xE9EE` (2E38:10BE, data)  
   divergence: the original keeps the records in its own heap and writes them to locs.tmp when the card engine shuts down (cards-teardown R043+0x054E); a new game starts from the file here, a saved game restores the fields through Persistence.  
   recommendation: **justify** - Representation difference: the original reads one city record and keeps the location records in its heap and in locs.tmp; this program decodes all cities up front and restores fields through Persistence. Equivalent as long as GameState.City and the save restore give the same bytes (covered by the persistence tests).
@@ -503,7 +503,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (39)
+### rules (40)
 
 - **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -661,6 +661,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R040+0x0C22` (1462:0C22, draft)  
   divergence: rows past the pile's end are ignored (see LootSharing.Get).  
   deterministic: **no** (checked against the original); action: **keep** - The pile G reads past its end (R040+0x0DF6, only DS:8DBC != 0 tested) is the far block the battle passes: loot-view R014+0xE530 allocates 6000 bytes with DOS 48h (root 05BA:0004, nothing cleared) right after freeing the battlefield buffers, and R014+0xE56C copies only count * 6 bytes of the list into it (disassembly checked); a removal (R040+0x12EC) moves entry [count] down, also from that block. So the entries past the end are whatever DOS memory held: undefined, not reproducible (a code past the item table would also be stored in the pack and saved). The battle is the only caller of the loot screen. Kept: not modelled with evidence (see D-87c67a).
+- **D-03c80e** `undefined-memory` - `src/Darklands.Simulation/SheetSession.cs:289` `SheetSession.Give`  
+  original: `R031+0x10AE` (1462:10AE, draft)  
+  divergence: Ctrl-F1 makes to −1, which the original reads as the record before member 0; here nothing is given.  
+  deterministic: **partly** (checked against the original); action: **keep** - Ctrl-F1 with the pack open (R031+0x1612..0x16ED) makes member 0 the leader and falls into the give case with to = -1: it reads record -1's status DS:9BE9 and count DS:9C53. DS:9BE9 is not the menu bar's: it is the first word of line 19 of the battle's Throw sub-menu (DS:9A47 + 19 * 0x16, 22-byte records, written by R019+0x0C80 through the index, which an absolute-address scan misses), 0 at start-up (BSS, read in the oracle machine) and written only when a battle lists 19 or more Throw lines for one member (at most 20: 9 potions x 3 grades, trimmed), then the low byte of a potion-name pointer (DS:114A = 0x0EB0, DS:114E[] = 0x0EB1 + 11i: never 0 or 5). While it is 0 the original returns, as the C#. After such a battle the give runs when the low byte of DS:9C53 (the last sub-menu's text column, R000 menu code) is below 0x40 signed: R031+0x4850 / R031+0x48CC give to -1, which give-item-record-form takes as the leader (member 0), and the item is taken from the member even when member 0's pack is full (lost). Deterministic only with the session's Throw lists and the menu bar's geometry modelled (the same not-modelled UI memory as DS:9C53 in D-8bb04c), and data-damaging when it acts: kept, not modelled with evidence.
 
 ### cards (70)
 
@@ -892,55 +896,55 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R133+0x169E` (1971:030E, matched)  
   divergence: a bounds guard the C does not have (it would read/write outside the location table).  
   deterministic: **n/a** (checked against the original); action: **document** - The C# Place() guard covers locations[location-now], [location-now+1] and [location-now-4] of the Baphomet card, which runs only at one of the five last-castle sites 189..193 (LOC data: indices 185..194 are all valid), so the guard never fires and the C# equals the original. Document only.
-- **D-9654eb** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:126` `TextVariables.Value`  
+- **D-9654eb** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:105` `TextVariables.Value`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: elsewhere (the enemy combatants of the last battle, the globals after them, the stale tail of text-bank-file's 6000 bytes past the file, the word DS:A893 before it) the original reads memory that is not game state; "" here.  
   deterministic: **no** (checked against the original); action: **keep** - The deterministic part is reproduced (TextVariables.OutsideName: party[k].name = DS:9C93 + 0x80k lies in text-bank-file DS:A895 for k from 25 to the file's end; card 0x6C with the least agile member's Agility 29, card oracle local/batch/cards1o). The rest is not game state: k 5..12 the enemy combatant records of the last battle, 13..23 other DGROUP globals, 24 the word DS:A893 before text-bank-file, past the file the stale tail of text-bank-file's 6000-byte buffer.
-- **D-2fec6e** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:155` `TextVariables.Value`  
+- **D-2fec6e** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:134` `TextVariables.Value`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: no party gives "" (the original reads party[leader])  
   deterministic: **n/a** (checked against the original); action: **document** - Case 10 is strcpy(name, party[leader].name) with leader (DS:907B, a byte, initially 0) always naming a present slot while a game runs; only $WITCD09 and $WITCD30 print $LeaderName, both sabbat-site cards. A card cannot run without a party, so the empty case does not occur (with no party it would print the zeroed or stale slot-0 name).
-- **D-6bb57f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:175` `TextVariables.Value`  
+- **D-6bb57f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:154` `TextVariables.Value`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: an item code the list lacks gives "item N" (the original indexes item-definition-table unchecked)  
   deterministic: **n/a** (checked against the original); action: **document** - Case 55 is _fstrcpy(name, item-definition-table[text-slot-item]); item-definition-table (2E38:0890) is filled by world-read for the 200 entries of DARKLAND.LST (count byte 200, 0x2E bytes each), slot 200 and up are NULL pointers (interrupt-table bytes), index -1 is the last 4 bytes of saints-learned[4] (2E38:088C). Only $CATHE00, $MCGUF12, $MEDIC00 and $MERCH02 use $ItemName and their scripts set text-slot-item from real item codes (quest items 0x78..0x8A etc.), so an unknown code cannot occur; keep 'item N'.
-- **D-afa579** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:188` `TextVariables.Value`  
+- **D-afa579** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:167` `TextVariables.Value`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: a month outside 0..11 wraps (the original reads past its table)  
   deterministic: **n/a** (checked against the original); action: **document** - Case 67 is R136+0xA3D3[month-now]; the table is not 12 entries but a longer fixed pointer table (the months, then alchemy terms 'Calcination', 'Solution', 'Sublimation', ... 'Water', 'Silver', 'Sulphur', 'Mercury'), so a month 12.. would give fixed shipped strings. month-now is always 0..11 (date arithmetic normalises it) and none of the 419 MSGFILES texts contains $MonthName, so it cannot occur.
-- **D-be4932** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:243` `TextVariables.LocationName`  
+- **D-be4932** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:222` `TextVariables.LocationName`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: an index outside the 414 locations gives "" (the original reads whatever the far table holds).  
   deterministic: **n/a** (checked against the original); action: **document** - Cases 54/70 are _fstrcpy(name, locations[text-slot-place]->name) (record +0x26). text-slot-place/text-slot-place-two come from quest events (valid sites), closest-place-of-kind (returns a real site or location-now) and closest-city (never -1 on the shipped map); index -1 would read the NULL-pointer record at 2E38:10BA and >=414 the virtue-label-table pointers at 2E38:1736. Not reachable, so '' is a harmless guard.
-- **D-6c5593** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:256` `TextVariables.PlaceName`  
+- **D-6c5593** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:235` `TextVariables.PlaceName`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: a place past the location table (here >= 414) gives "" here; the original reads the far table's memory after its last record. (R043+0x133E: the far pointer es:[10BE + 4 x location-now], es = DS:7EE6, then the name at +0x26 of what it points to.) Not reached in play: every writer of location-now (DS:907E) stores -1, a constant below 414, a city index, a city record's +0x4A..+0x52 word (-1..91 in DARKLAND.CTY) or the result of a search over the 414 places (-1..413).  
   deterministic: **n/a** (checked against the original); action: **keep** - Re-derived from the EXE (capstone): case 0 (R043+0x132C) takes the city record for location-now (DS:907E) < 0x5C, else the far pointer es:[10BE + 4 x location-now] (es = DS:7EE6) and the name at +0x26, unchecked; past 413 it reads a pointer after the 414-entry table. Every writer of DS:907E: constants -1, 0x22, 0xB9; roll-below(0x5A) at start (root 03A1:01B2); nearest-city searches over the 92 cities (R030+0x132D, R082+0x1560, R109+0x0AB0/0x2102, R133+0x181A); the travel searches over i < 414 (R030+0x158E, +0x1684) and the nearest place of a type (R060+0x10CA, -1..413 or location-now); the city record's +0x4A..+0x52 words (R051, R066; -1..91 in all 92 records of DARKLAND.CTY); the saved game's header (written from the same variable). Not reached in play (only an edited save could hold more); keep.
-- **D-869de6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:271` `TextVariables.Standing`  
+- **D-869de6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:250` `TextVariables.Standing`  
   original: `R136+0xA813` (290E:2183, data)  
   divergence: in the wilderness (no location) the original indexes locations[-1]; here the standing band of an unknown place, 2, is used ("unknown").  
   deterministic: **n/a** (checked against the original); action: **document** - Case 16 is kg=place-query(location-now,1) (band from locations[location-now]->rep at +0x12) and R136+0xA813[kg] (a fixed table: local hero, respected, unknown, suspected, wanted, hunted, Day Laborer, Beggar). With location-now=-1 the pointer is NULL (tail of enemy-loot) and rep is the word at 0000:0012 = INT 4 vector segment, host dependent. $PlaceAttitude appears only in $CITYE00/01/03 and $VILLA02, whose scripts also call place-query(location-now,..)/event-at-place(..,location-now), so they run only at a place: cannot occur.
-- **D-09000b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:286` `TextVariables.LordTitle`  
+- **D-09000b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:265` `TextVariables.LordTitle`  
   original: `R136+0xA813` (290E:2183, data)  
   divergence: no location counts as not risen (the original reads locations[-1])  
   deterministic: **n/a** (checked against the original); action: **document** - Case 51 reads locations[location-now]->flags & 0x80 (+0x14) to pick city-record->f58/f5a and the name; with -1 that would be the byte at 0000:0014 (INT 5 vector, host dependent). The 24 texts that use $CityLordTitle ($CITYE*, $REVOL*, $NOBLE00, $COUNC00 ...) are city cards run at a place, so location-now>=0 and the guard never fires.
-- **D-f7cab9** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:298` `TextVariables.Support`  
+- **D-f7cab9** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:277` `TextVariables.Support`  
   original: `R136+0xB1EB` (290E:2B5B, data)  
   divergence: a value outside -1..1 gives "" (the original indexes its table unchecked and copies whatever string the neighbouring pointer gives).  
   deterministic: **n/a** (checked against the original); action: **document** - R136+0xB1EB is addressed with -1..1: its pointers sit at 290E:2B57 'oppose', 2B5B 'are undecided about', 2B5F 'support' (the C# SupportWords[value+1] is exactly this), followed by unrelated data (index 2 = 0059:004B, physical 0x5DB; indices below -1 hit other tables). All setters yield place-side-read() (-1/0/1) or roll-below(3)-1, so out-of-range values cannot occur; '' is fine.
-- **D-d7c7c6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:330` `TextVariables.DirectionFromHere`  
+- **D-d7c7c6** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:309` `TextVariables.DirectionFromHere`  
   original: `R136+0xA773` (290E:20E3, data), `R030+0x29BC` (1462:29BC, draft)  
   divergence: the original indexes locations[location-now] and locations[text-slot-place] unchecked  
   deterministic: **n/a** (checked against the original); action: **document** - Case 57 is R136+0xA773[R030+0x29BC(text-slot-place)] = direction (0..7, fixed 8-name table) from locations[location-now] to locations[text-slot-place] using x/y at +4/+6. The nine cards using $Direction ($AFFAI00, $CITYN00, $COUNT05, $MINES00, $RAUBI00, $RESCU00, $SITUA01, $SNUCK00, $SPECI00) are place/quest cards with a valid text-slot-place; with location-now=-1 the x,y would be the words at 0000:0004/0006 (INT 1 vector), host dependent. Not reachable as far as the card scripts show (not all nine were traced).
-- **D-8cf4db** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:343` `TextVariables.DirectionBetweenLocations`  
+- **D-8cf4db** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:322` `TextVariables.DirectionBetweenLocations`  
   original: `R136+0xA773` (290E:20E3, data)  
   divergence: unchecked indexes in the original  
   deterministic: **n/a** (checked against the original); action: **document** - Case 58 is R136+0xA773[R030+0x29FA(locations[text-slot-place-two].x,y, locations[text-slot-place].x,y)]; text-slot-place-two is normally closest-city(locations[text-slot-place]) (never -1 here) and text-slot-place a quest site, in the seven texts that use $Direction2 ($MCGUF12 etc.). An invalid index would read the NULL-pointer record (interrupt table, host dependent); not reachable.
-- **D-09b57b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:368` `TextVariables.RelativeToNearestCity`  
+- **D-09b57b** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:347` `TextVariables.RelativeToNearestCity`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: the original indexes locations[-1] when there is no such place  
   deterministic: **no** (checked against the original); action: **keep** - Case 69 uses kg=thunk 09C0:20FD() = R039+0x1CFE, which returns events[i]->f2a of the sabbat fact (event-search(0x1c,4,..)) and, when none is planned, falls off its end with AX still -1 (asm 1632b-1634b), then reads locations[-1]->x,y (= words 0000:0004/0006, the INT 1 vector) into closest-city and the direction call, so the printed text is host dependent. Cases 71/72 (closest-place-of-kind icons 0x16/0x17) always find a site. No sabbat is planned in play only after a full event log at a planning (D-185ea3) or after 31.12.1499 (forever events end, the quest clears its facts); the start card and each sabbat's begin always plan the next one. The card oracle's start states carry no sabbat quest, so cards 08A 0F7 123 127 132 139 144 14D (and 06C, 091 through other -1 reads) print the oracle's own vectors (F800:0030 in every slot: 'North of Flensburg'; older oracle builds other bytes): tester memory, stray-flagged, not the game's. Keep the C# ''. local/batch/b24text
-- **D-1cbe8f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:385` `TextVariables.Names`  
+- **D-1cbe8f** `undefined-memory` - `src/Darklands.Cards/TextVariables.cs:364` `TextVariables.Names`  
   original: `R043+0x1316` (150B:0886, draft)  
   divergence: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record (city-record is the far block at DS:9785). Not reached in play: the callers pass 0..15 or -1, and $CityLocation's DS:ED52 is always 0 (see CardVariables.CityLocation).  
   deterministic: **n/a** (checked against the original); action: **keep** - Re-derived from the EXE (capstone, every indexed function): text-slot-expand case 52 (R043+0x13CE) is `mov ax, [DS:ED52]; shl ax, 5; add ax, [DS:9785]` then the names offset, unchecked. That read is the only instruction in the EXE that names DS:ED52; the word 0xED52 occurs nowhere else in the file (no near or far pointer to it); the tables and buffers below it end before it (the handler table at DS:ECF6, 5 x 4 far pointers, ends at DS:ED45; $Money5 is DS:ED46..ED4B, $Number1 DS:ED4C, $Number2 DS:ED50, word stores only). DS:ED52 is in the BSS the start-up clears (DS:83B6..F400), so it is always 0 and $CityLocation is names[0]. The other callers of the names pass 0..15 or -1. Not reached in play; keep.

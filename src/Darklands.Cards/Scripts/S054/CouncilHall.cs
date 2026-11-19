@@ -225,7 +225,7 @@ public sealed class CouncilHall : Card
     // orig: R054+0x1D08 (19DF:0298) unmatched (checked against asm: the C reads as the asm; only the register choice differs)
     private void ReceiveACommission(CardContext c, int text)
     {
-        c.Variables.Named[0] = CardContext.PatronNames[CityLordName];
+        c.Variables.Named[0] = c.PatronName(CityLordName);
         // C: the roll is drawn before the event tests, whatever branch follows.
         var roll = c.Random(100);
         var here = c.State.Locations[c.Here];

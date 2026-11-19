@@ -135,13 +135,24 @@ public sealed class GameUi
     public GameAssets Assets { get; }
 
     /// <summary>A text of the game in the words the screens show (today the original's, from the player's EXE).</summary>
-    public string Words(Darklands.Core.GameText text) => Assets.MessageText.Text(text);
+    public string Words(Darklands.Core.GameText text) =>
+        // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
+        ScreenTextPlane.Recording
+            ? ScreenTextPlane.Keyed(Assets.MessageText.Text(text), text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values))
+            : Assets.MessageText.Text(text);
+
+    /// <summary>
+    /// The developer's inspector's question to the screens (null: none answers): what the screen shows at a point of the frame, as
+    /// lines (the card screen: its card, text block and the option line there). It reads only.
+    /// </summary>
+    // Not in the original: a development aid (local post-1.0 design note, the dev-only inspector, step I-4).
+    public Func<int, int, IReadOnlyList<string>>? Inspect { get; set; }
 
     /// <summary>The text <paramref name="id"/> (<c>exe:DS:0086</c>) in the words the screens show.</summary>
-    public string Words(string id) => Assets.MessageText.Text(Darklands.Core.GameText.Of(id));
+    public string Words(string id) => Words(Darklands.Core.GameText.Of(id));
 
     /// <summary>One of the original's format strings <paramref name="id"/> printed with <paramref name="args"/> (its sprintf).</summary>
-    public string Format(string id, params object[] args) => Assets.MessageText.Text(Darklands.Core.GameText.Format(id, args));
+    public string Format(string id, params object[] args) => Words(Darklands.Core.GameText.Format(id, args));
 
     /// <summary>The font of slot 1 (font 0 of FONTS.FNT, 6 pixels high): the side window, the screen pages, the party panel's pages, the menu bar.</summary>
     // orig: the window records in DGROUP (page, x, y, last column, last row, mode, colour, background, font at +0x10): DS:00F2 (the

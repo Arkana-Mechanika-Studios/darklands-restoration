@@ -379,6 +379,15 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     }
     using var corner = new CornerText(() => game.OnStartScreen ? "v" + version : null);
     host.Corner = corner;
+#if DEV_TOOLS
+    // the developer's inspector (F9 held; Ctrl+F9 pins and copies): only in builds with the property DevTools (not in release builds)
+    using var inspector = new InspectorOverlay((x, y) => host.LastFrame is not { } frame || host.ShowingText
+        ? ["the text screen (or no frame yet): nothing recorded"]
+        : Darklands.DevTools.Inspector.Describe(frame, x, y, new Darklands.DevTools.InspectedMoment(-1, game.Ui.Inspect?.Invoke(x, y))));
+    host.Inspector = inspector;
+    // its text plane (ScreenTextPlane): which key drew each letter, kept from now on
+    ScreenTextPlane.Recording = true;
+#endif
     game.Options.Apply(settings);
     game.Ui.ScreenshotFolder = settings.ScreenshotsFolder ?? Environment.CurrentDirectory;
     // a pressed button stays long enough to be seen (the original's press lasts as long as its command's work on the machine)

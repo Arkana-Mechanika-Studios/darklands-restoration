@@ -11,7 +11,7 @@ namespace Darklands.Cards.Scripts;
 // DORMANT: text 4 (after the guardians fall) is never shown by this card.
 public sealed class TemplarGraveyard : Card
 {
-    private const string TheRightName = "Reinhard of OGronigen";
+    private const string TheRightName = "exe:DS:6709";   // "Reinhard of OGronigen"
 
     public override int Number => 297;
 
@@ -25,7 +25,7 @@ public sealed class TemplarGraveyard : Card
         var seed = c.State.Party.Seed + c.Here;
         c.RandomName(seed + 0x314, 0, 0);
         c.RandomName(seed + 0x315, 0, 1);
-        c.Variables.Named[2] = TheRightName;
+        c.Variables.Named[2] = c.ExeText(TheRightName);
         c.RandomName(seed + 0x317, 0, 3);
         c.RandomName(seed + 0x318, 0, 4);
         var darkStoneKnown = c.Events.FactAnywhere(1, 0x12);

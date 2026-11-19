@@ -57,7 +57,7 @@ public sealed class OverlandTests
     {
         var state = new GameState(new MscRandom(seed))
         {
-            Party = DefaultParty.Create(7),
+            Party = DefaultParty.Create(7, QuickstartTestNames.All),
             Date = new GameDate(12, 10, 5, 1402),
         };
         for (var i = 0; i < 414; i++)

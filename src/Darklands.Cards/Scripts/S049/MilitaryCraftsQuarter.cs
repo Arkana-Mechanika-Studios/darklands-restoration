@@ -121,7 +121,7 @@ public sealed class MilitaryCraftsQuarter : Card
     private void SoldiersRoad(CardContext c)
     {
         c.Screen.Text(c.HereQuery(0x21) % 2 == 0 ? 1 : 2, TextFrame.BlankPage);
-        c.Barter(1, (long)((ushort)0xFF | ((long)(ushort)0x400 << 16)), "Arms Outfitter");
+        c.Barter(1, (long)((ushort)0xFF | ((long)(ushort)0x400 << 16)), c.ExeText("exe:DS:58A4"));  // "Arms Outfitter"
         c.PassHours(2);
         c.Next = CardNumber;
     }

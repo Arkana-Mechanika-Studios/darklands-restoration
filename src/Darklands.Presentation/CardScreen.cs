@@ -180,6 +180,36 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         return Select(Enabled(), hint, popupHint, Enabled);
     }
 
+    /// <summary>
+    /// The developer's inspector's lines for frame point (<paramref name="x"/>, <paramref name="y"/>): the card last named, the text
+    /// block last drawn and how (a text, its option lines before or after the fade), and the option line of the last layout there.
+    /// The card is the one the game runs, also under another screen (a sheet opened from it).
+    /// </summary>
+    // Not in the original: a development aid (the dev-only inspector, step I-4). Reads only.
+    public IReadOnlyList<string> Inspect(int x, int y)
+    {
+        if (_cardName.Length == 0)
+        {
+            return [];
+        }
+        var lines = new List<string> { "card " + _cardName + (_pictureName.Length == 0 ? "" : ", picture " + _pictureName) };
+        if (_block >= 0)
+        {
+            lines.Add(System.FormattableString.Invariant($"text block {_block}") + _mode switch
+            {
+                Mode.Options => ", its option lines (before the fade)",
+                Mode.OptionsFaded => ", its option lines",
+                _ => "",
+            });
+        }
+        if (x >= TextAreaX && x < TextAreaX + TextAreaWidth && _lastAreas.FirstOrDefault(a => a.Y <= y && y < a.Y + a.Height) is { } area)
+        {
+            var state = area.Option < _options.Count ? ", " + _options[area.Option] : "";
+            lines.Add(System.FormattableString.Invariant($"option line {area.Option} ({area.Kind}{state})"));
+        }
+        return lines;
+    }
+
     /// <summary>The option lines of the last text laid out (DS:E96E), kept for a menu that draws none.</summary>
     private List<OptionArea> _lastAreas = [];
 

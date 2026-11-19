@@ -11,31 +11,10 @@ namespace Darklands.Cards;
 /// buildings, pronouns and so on. A name the game does not know stays as written.
 /// </summary>
 // orig: text-substitute R043+0x118E (150B:06FE) + text-slot-expand R043+0x1316 (150B:0886) + text-slot-index R043+0x1B8C (150B:10FC) draft (06fe and 10fc match the bytes; 0886 does not: its header notes 2174 against 2166 bytes; the file is 22/28 in the byte-match summary); tests: TextAndOpeningTests
-// orig: the name table is text-slot-name-table = R136+0xA88F, 73 far strings (PlaceName = 0 ... LastCastleLocation = 72); the value tables are R136+0xA3D3 (months), R136+0xA813 (standing words), R136+0xA773 (directions), R136+0xA9B3 and R136+0xA9CB (lord titles), R136+0xB1EB (support words) and bell-time-labels; data, strings checked against the string pool of R136 seg 290E
+// orig: the name table is text-slot-name-table = R136+0xA88F, 73 far strings (PlaceName = 0 ... LastCastleLocation = 72); the value tables are R136+0xA3D3 (months), R136+0xA813 (standing words), R136+0xA773 (directions), R136+0xA9B3 and R136+0xA9CB (lord titles), R136+0xB1EB (support words) and bell-time-labels, all read from the EXE (OriginalWords)
 public static class TextVariables
 {
-    /// <summary>The names of the eight canonical-hour bands (TimeOfDay.Band).</summary>
-    public static readonly string[] BellNames = ["Latins", "Prime", "Terce", "Sexts", "Nones", "Vespers", "Compline", "Matins"];
-
-    /// <summary>The month names (the table the prayer screen and $MonthName use).</summary>
-    public static readonly string[] MonthNames =
-        ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
     private static readonly string[] Ordinals = ["One", "Two", "Three", "Four", "Five"];
-
-    // orig: R136+0xA813 (the standing words, OriginalWords.StandingWords), indexed by place-query(location-now, 1) (the standing band 0..5);
-    //   R136+0xA773 (the direction words, OriginalWords.Directions), indexed by the result of R030+0x29FA (0 north, clockwise)
-    // orig: R136+0xA9B3 (city type 1: f56 % 6) and R136+0xA9CB (city type 2: f56 % 9); the bytes are the game's own: 0x1F is its a-umlaut, { o-umlaut, | u-umlaut
-    private static readonly string[] LordTitlesType1 = ["Vogt", "Erbvogt", "Obervogt", "Burggraf", "Richter", "Landhofmeister"];
-
-    private static readonly string[] LordTitlesType2 =
-    [
-        "alte Herr", "\u001fltere Herren", "Frager", "Losunger", "alte Losunger", "Oberste Hauptm\u001fnn", "Schultheiss", "Sch{ff", "B|rgermeister",
-    ];
-
-    // orig: R136+0xB1EB, indexed by text-slot-support-zero..6 (the pointer table was read in DARKLAND.EXE, tests: PersonalNamesTests)
-    // C: R136+0xB1EB is the middle entry of the three far pointers at 290E:2B57 (-1 "oppose" 2B57, 0 "are undecided about" 2B5B, 1 "support" 2B5F): the values are the sides -1/0/1 of the guilds, so the word index is value + 1.
-    private static readonly string[] SupportWords = ["oppose", "are undecided about", "support"];
 
     // orig: city-record->names[n] at +0x6E + 32n: 0 lord, 1 overlord, 3 city square, 4 council hall, 5 fortress, 6 cathedral, 7 church, 8 market, 9 mint, 10 slum, 11 barracks, 12 pawnshop, 13 monastery, 14 inn, 15 university
     private const int NamesOffset = 0x6E;
@@ -184,8 +163,8 @@ public static class TextVariables
             "Support5" => Support(c, 5),
             "Support6" => Support(c, 6),
             "Government" => LocationRules.Query(state, here, 0x18) != 0 ? Names(city, 4) : Names(city, 5),
-            "CurrentBell" => BellNames[TimeOfDay.Band(state.Date.Hour)],
-            "MonthName" => MonthNames[GameDate.Mod12(state.Date.Month)],   // DIVERGENCE: a month outside 0..11 wraps (the original reads past its table)
+            "CurrentBell" => c.World.Words.Text(OriginalWords.BellNames, TimeOfDay.Band(state.Date.Hour)),
+            "MonthName" => c.World.Words.Text(OriginalWords.MonthNames, GameDate.Mod12(state.Date.Month)),   // DIVERGENCE: a month outside 0..11 wraps (the original reads past its table)
             "SabbatTime" => SabbatTime(c),
             "SabbatLocation" => SabbatLocation(c),
             "LocName2" => LocationName(c, c.Variables.Location2),
@@ -288,8 +267,8 @@ public static class TextVariables
         return kind switch
         {
             0 => Names(city, risen ? 1 : 0),
-            1 => LordTitlesType1[city.Ordinal % LordTitlesType1.Length],
-            2 => LordTitlesType2[city.Ordinal % LordTitlesType2.Length],
+            1 => c.World.Words.Text(OriginalWords.LordTitles1, city.Ordinal % OriginalWords.LordTitles1.Count),
+            2 => c.World.Words.Text(OriginalWords.LordTitles2, city.Ordinal % OriginalWords.LordTitles2.Count),
             _ => name,
         };
     }
@@ -299,7 +278,7 @@ public static class TextVariables
     private static string Support(CardContext c, int index)
     {
         var value = c.Variables.Support[index] + 1;
-        return value >= 0 && value < SupportWords.Length ? SupportWords[value] : "";
+        return OriginalWords.SupportWords.Contains(value) ? c.World.Words.Text(OriginalWords.SupportWords, value) : "";
     }
 
     // orig: case 56: with a location chosen (location-now != -1) the city nearest to location text-slot-place, in the wilderness the one nearest to the party
@@ -347,7 +326,7 @@ public static class TextVariables
 
     // orig: case 68: month name, a space and the day of the next witches' sabbat (thunk 09C0:20DF, thunk 09C0:21A7)
     private static string SabbatTime(CardContext c) =>
-        MonthNames[GameDate.Mod12(Quests.SabbatMonth(c.State))] + " " + Quests.SabbatDayOfMonth(c.State).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        c.World.Words.Text(OriginalWords.MonthNames, GameDate.Mod12(Quests.SabbatMonth(c.State))) + " " + Quests.SabbatDayOfMonth(c.State).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     // orig: case 69 of R043+0x1316: "<direction> of <nearest city>" for the site of the next sabbat (20fd, Quests.SabbatSite)
     private static string SabbatLocation(CardContext c) => RelativeToNearestCity(c, Quests.SabbatSite(c.State));

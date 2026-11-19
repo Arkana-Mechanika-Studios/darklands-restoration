@@ -24,7 +24,8 @@ public sealed class Screen
 
     /// <summary>
     /// Per owned pixel, which pixel of its asset it shows (<see cref="ScreenTexel"/>): with the asset's size this places
-    /// the asset's drawing on the screen. Meaningless where <see cref="Owners"/> is 0.
+    /// the asset's drawing on the screen. Where <see cref="Owners"/> is 0, the text plane: the <see cref="ScreenTextPlane"/> id of the
+    /// text whose letter the pixel is (0: none; kept only while <see cref="ScreenTextPlane.Recording"/>).
     /// </summary>
     // Not in the original, like Owners: the owner names the asset, the texel says where it was drawn (an asset may be
     // drawn several times, clipped, mirrored or partly covered, so its rectangle cannot be told from the owners alone).

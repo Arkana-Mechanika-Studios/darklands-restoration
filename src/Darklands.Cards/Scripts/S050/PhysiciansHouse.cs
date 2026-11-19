@@ -196,11 +196,11 @@ public sealed class PhysiciansHouse : Card
         c.Variables.Numbers[0] = skill;
         c.Variables.Texts[0] = skill switch
         {
-            < 20 => "Poor",
-            < 40 => "Modest",
-            < 60 => "Good",
-            < 80 => "Very Good",
-            _ => "Excellent",
+            < 20 => c.ExeText("exe:DS:58BD"),  // "Poor"
+            < 40 => c.ExeText("exe:DS:58C2"),  // "Modest"
+            < 60 => c.ExeText("exe:DS:58C9"),  // "Good"
+            < 80 => c.ExeText("exe:DS:58CE"),  // "Very Good"
+            _ => c.ExeText("exe:DS:58D8"),  // "Excellent"
         };
         c.PassHours(1);
         ShowTheRoom(c);

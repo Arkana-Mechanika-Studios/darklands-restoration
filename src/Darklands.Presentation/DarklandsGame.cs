@@ -684,6 +684,8 @@ public sealed class DarklandsGame
         CardContext? context = null;
         var panel = new PartyPanel(_ui);
         var screen = new CardScreen(_ui, () => context!, panel);
+        // the developer's inspector asks the card screen what is under the pointer (it only reads)
+        _ui.Inspect = screen.Inspect;
         context = new CardContext(state, World, screen) { Variables = _cardVariables };
         context.TakeEngineGlobals(_lastCards);
         _lastCards = context;

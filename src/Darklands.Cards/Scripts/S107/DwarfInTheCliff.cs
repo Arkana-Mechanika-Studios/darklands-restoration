@@ -121,7 +121,7 @@ public sealed class DwarfInTheCliff : Card
         {
             c.State.SavedCard = PriceGold;
             c.Variables.Money[0] = Money.From(c.State.Party.Purse.Florins, 0, 0);
-            c.Variables.Named[0] = "gold coins";
+            c.Variables.Named[0] = c.ExeText("exe:DS:6511");  // "gold coins"
             if (c.State.Party.Purse.Florins > 3)
             {
                 return;

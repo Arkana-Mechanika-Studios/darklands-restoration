@@ -5,7 +5,8 @@ namespace Darklands.DevTools;
 
 /// <summary>Where the host is when a frame is inspected: the input step it has reached (the line of a scripted session).</summary>
 /// <param name="Step">The number of input steps taken so far (−1: the host does not count them).</param>
-public readonly record struct InspectedMoment(int Step);
+/// <param name="Screen">The screen's own lines for the point (the card, its block, the option line under it; none: null).</param>
+public readonly record struct InspectedMoment(int Step, IReadOnlyList<string>? Screen = null);
 
 /// <summary>
 /// The developer's inspector: for one pixel of a frame, the lines that say what drew it (the asset and its pixel, the palette
@@ -29,6 +30,15 @@ public static class Inspector
             string.Create(CultureInfo.InvariantCulture, $"pixel {x},{y}: palette index {frame.Pixels[at]}"),
             Asset(frame.Owners[at], frame.Texels[at]),
         };
+        if (frame.Owners[at] == 0 && ScreenTextPlane.Of(frame.Texels[at]) is { } text)
+        {
+            lines.Add(text.Key is null ? "text (no key)" : "text " + text.Key + (text.Arguments is null ? "" : " (" + text.Arguments + ")"));
+            lines.Add(string.Create(CultureInfo.InvariantCulture, $"  \"{text.Text}\", drawn {text.WidestDrawn} px wide at most"));
+        }
+        if (moment.Screen is { } screen)
+        {
+            lines.AddRange(screen);
+        }
         if (moment.Step >= 0)
         {
             lines.Add(string.Create(CultureInfo.InvariantCulture, $"step {moment.Step}"));

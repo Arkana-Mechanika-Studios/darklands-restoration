@@ -12,17 +12,23 @@ namespace Darklands.Core.Characters;
 // party, so a folder without SAVES\DEFAULT still plays. The colours need no such choice (see Colours).
 // C: what the original then does is read from the code, not run: the battle builds the figure's file name
 // from member-shield-picture (R002, "pics\<code>short.pic"), finds no such picture and stops.
+/// <summary>A Quickstart member's names: the full name and the short one the screens use.</summary>
+public readonly record struct QuickstartName(string Name, string ShortName);
+
 public static class DefaultParty
 {
     // orig: party-defaults R001+0x0000 (0E76:0000) draft
-    // C: the four records are taken from the original's Quickstart party (R001 party-defaults).
-    public static Party Create(int seed)
+    // C: the four records are taken from the original's Quickstart party (R001 party-defaults); their names are the words the original
+    //   copies from DS:0E50 .. DS:0EA2 (Content's OriginalWords.Quickstart hands them in: Core holds no words).
+    public static Party Create(int seed, IReadOnlyList<QuickstartName> names)
     {
+        ArgumentNullException.ThrowIfNull(names);
+        ArgumentOutOfRangeException.ThrowIfLessThan(names.Count, 4, nameof(names));
         var party = new Party { Seed = seed, Purse = Money.Zero };
 
         var gretchen = new Character
         {
-            Name = "Gretchen Wilburg", ShortName = "Gretch", Age = 35, IsFemale = true,
+            Name = names[0].Name, ShortName = names[0].ShortName, Age = 35, IsFemale = true,
             Image = "F60", ImagePalette = [.. Colours[0]], ShieldLetter = 'A', Encumbrance = 57,
             VitalArmor = new(74, 25), LimbArmor = new(82, 25),
             Weapon = new(3, 25), MissileWeapon = EquippedItem.None, Shield = EquippedItem.None,
@@ -36,7 +42,7 @@ public static class DefaultParty
 
         var gunther = new Character
         {
-            Name = "Gunther Langer", ShortName = "Gunther", Age = 40, IsFemale = false,
+            Name = names[1].Name, ShortName = names[1].ShortName, Age = 40, IsFemale = false,
             Image = "F01", ImagePalette = [.. Colours[1]], ShieldLetter = 'B', Encumbrance = 40,
             VitalArmor = new(74, 25), LimbArmor = new(80, 25),
             Weapon = new(15, 25), MissileWeapon = EquippedItem.None, Shield = EquippedItem.None,
@@ -50,7 +56,7 @@ public static class DefaultParty
 
         var hans = new Character
         {
-            Name = "Hans Muller", ShortName = "Hans", Age = 40, IsFemale = false,
+            Name = names[2].Name, ShortName = names[2].ShortName, Age = 40, IsFemale = false,
             Image = "A00", ImagePalette = [.. Colours[2]], ShieldLetter = 'C', Encumbrance = 36,
             VitalArmor = new(73, 25), LimbArmor = new(78, 25),
             Weapon = EquippedItem.None, MissileWeapon = new(31, 25), Shield = EquippedItem.None,
@@ -70,7 +76,7 @@ public static class DefaultParty
 
         var ebhard = new Character
         {
-            Name = "Ebhard of Achdorf", ShortName = "Ebhard", Age = 45, IsFemale = false,
+            Name = names[3].Name, ShortName = names[3].ShortName, Age = 45, IsFemale = false,
             Image = "C00", ImagePalette = [.. Colours[3]], ShieldLetter = 'D', Encumbrance = 58,
             VitalArmor = new(74, 25), LimbArmor = new(82, 25),
             Weapon = new(17, 25), MissileWeapon = EquippedItem.None, Shield = EquippedItem.None,

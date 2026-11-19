@@ -35,7 +35,7 @@ internal static class TestGame
         var state = new GameState(new MscRandom(seed))
         {
             Data = data,
-            Party = DefaultParty.Create(7),
+            Party = DefaultParty.Create(7, QuickstartTestNames.All),
             Date = new GameDate(9, 10, 5, 1402),
             CurrentLocation = location,
         };

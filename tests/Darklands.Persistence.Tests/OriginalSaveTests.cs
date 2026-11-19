@@ -207,7 +207,7 @@ public sealed class OriginalSaveTests
         // it; a slot of status 0 writes nothing and reads nothing, so the bench entry after it gets the record charactr.tmp holds for
         // member 3 (as it was written there) and the file says five records where four follow.
         var state = SampleGame();
-        var bench = DefaultParty.Create(seed: 78).Slots[0];
+        var bench = DefaultParty.Create(78, QuickstartTestNames.All).Slots[0];
         state.Roster.Characters.Add(bench);
         var stored = CharacterRecords.Write(state.Party.Slots[3]);
         state.Party.Slots[3].Attributes[0]++;
@@ -248,7 +248,7 @@ public sealed class OriginalSaveTests
         // FixSaveWriterSkipsEmptySlots: every roster record is written, so the count is true and the loader's layout holds.
         var state = SampleGame();
         state.Behaviour = OriginalBehaviour.DataSafe;
-        var bench = DefaultParty.Create(seed: 78).Slots[0];
+        var bench = DefaultParty.Create(78, QuickstartTestNames.All).Slots[0];
         state.Roster.Characters.Add(bench);
         state.Party.Slots[1].Status = CharacterStatus.Empty;
         var sav = OriginalSaves.Write(state).Sav;
@@ -650,7 +650,7 @@ public sealed class OriginalSaveTests
 
     internal static GameState SampleGame()
     {
-        var state = new GameState(new MscRandom(1234)) { Party = DefaultParty.Create(seed: 77), Date = new GameDate(9, 3, 4, 1401) };
+        var state = new GameState(new MscRandom(1234)) { Party = DefaultParty.Create(77, QuickstartTestNames.All), Date = new GameDate(9, 3, 4, 1401) };
         state.Roster.Reset(state.Party);
         state.Party.BankNotes = Money.From(123, 4, 5);
         state.Locations.Add(new Location { Index = 0, Name = "Koln", X = 10, Y = 20, Reputation = 5 });
