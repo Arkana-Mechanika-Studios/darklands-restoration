@@ -34,6 +34,14 @@ line). Up / Down with the pointer off the lines is `PointAt` the line they name 
 which the menu then lights from the pointer; with the pointer over a line they are the original's keys. On a host that cannot move
 the pointer those Up / Down do nothing (the digits still choose: the click is at the line).
 
+## Game commands (1.1)
+
+Below the player commands, the screens change the game only through the rules: `Darklands.Simulation.GameCommands` (`Lead`,
+`SetDifficulty`, `ToggleSaintlyChanges`) and the rule functions the list screens already call (`Trading`, `LootSharing`, `Storing`,
+`Inventory`, `BrewingBench.GiveBack`, ...). A screen keeps the original's own test before the command: the five places that change the
+leader test five different things (an able member, a present one, none), so the command tests nothing itself. The architecture rule
+`ViewsDoNotWriteTheGameModel` lists the screens that still write the model inline.
+
 ## Screens on the layer (1.0)
 
 | Screen | Intents | Notes |

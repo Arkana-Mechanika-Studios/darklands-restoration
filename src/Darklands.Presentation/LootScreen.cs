@@ -99,7 +99,7 @@ public sealed class LootScreen
         finally
         {
             // orig: R040+0x06C8 (1462:06C8) draft (byte-matched function): fonts back (host state, not modelled) and leader = DS:8DBA.
-            Party.LeaderIndex = leaderBefore;
+            Simulation.GameCommands.Lead(_state, leaderBefore);
         }
     }
 

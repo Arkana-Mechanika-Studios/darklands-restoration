@@ -185,7 +185,12 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     public void ToggleSoundEffects() => options.SoundEffects = Toggle(ScreenTexts.SoundEffects, ScreenTexts.SoundOn, ScreenTexts.SoundOff, options.SoundEffects);
 
     /// <summary>Alt-C: saintly changes shown or not.</summary>
-    public void ToggleSaintlyChanges() => state.ShowSaintlyChanges = Toggle(ScreenTexts.SaintlyChanges, ScreenTexts.SaintlyOn, ScreenTexts.SaintlyOff, state.ShowSaintlyChanges);
+    public void ToggleSaintlyChanges()
+    {
+        // the box first (it says the new state), then the switch, as before
+        Toggle(ScreenTexts.SaintlyChanges, ScreenTexts.SaintlyOn, ScreenTexts.SaintlyOff, state.ShowSaintlyChanges);
+        Simulation.GameCommands.ToggleSaintlyChanges(state);
+    }
 
     /// <summary>F1..F5: the member in that slot, if there is one.</summary>
     // orig: card-hotkeys: `key = (key >> 8) - 0x3b; if (key < party-headcount && party[key].status) { member-sheet-overlay-entry(key); ... }`
@@ -215,7 +220,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
 
     private void MakeLeader(int member)
     {
-        state.Party.LeaderIndex = member;
+        Simulation.GameCommands.Lead(state, member);
         ui.Redraw?.Invoke();
     }
 
@@ -243,7 +248,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     // orig: difficulty-easy-set root 0000:1408, difficulty-normal-set root 0000:1418, difficulty-hard-set root 0000:1428 (root 0000:1408..1428) draft (bytes match): difficulty-setting = 0 / 1 / 2, difficulty-display(1) (the menu bar's ticks follow the difficulty, see MenuBar)
     public void SetDifficulty(Difficulty difficulty)
     {
-        state.Difficulty = difficulty;
+        Simulation.GameCommands.SetDifficulty(state, difficulty);
         _box.Show(DifficultyText(ui, state.Difficulty));
     }
 

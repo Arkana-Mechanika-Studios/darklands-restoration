@@ -485,7 +485,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             {
                 return;
             }
-            _state.Party.LeaderIndex = m;
+            Simulation.GameCommands.Lead(_state, m);
             DrawPanel();
             // C: the case falls through into the 1..5 "give" case with key = the new leader's number,
             // so with the pack open the item goes to member (m & 7) − 1 (Ctrl-F2 gives to member 0).
@@ -798,7 +798,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             if (k == NameBox && _cursor == k)
             {
-                _state.Party.LeaderIndex = _who;
+                Simulation.GameCommands.Lead(_state, _who);
                 DrawPanel();
                 Screen.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
                 DrawBoxText(NameBox);

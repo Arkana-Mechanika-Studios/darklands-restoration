@@ -91,7 +91,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         {
             // orig: stash-screen-close R035+0x04BC (1462:04BC) matched: save (or forget an empty store) and leader = DS:89EE; fonts are host state (not modelled).
             state.ItemStores.Close(place, _store, state.Behaviour, state.Locations);
-            Party.LeaderIndex = leaderBefore;
+            Simulation.GameCommands.Lead(state, leaderBefore);
         }
     }
 

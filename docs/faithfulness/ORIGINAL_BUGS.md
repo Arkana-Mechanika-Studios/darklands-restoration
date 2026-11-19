@@ -39,13 +39,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-cf6bdb** `bug`, no fix flag - `src/Darklands.Core/Items/ItemStores.cs:277` `ItemStores.Rewrite`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   why: the rewrite finds store 1 by the signed low byte of its offset (p = buf + (signed char)buf[2], cbw R035+0x1615 after the load at R035+0x15A2): with store 1 at 0x80 or later (a table of 128 bytes or more, the 198-byte one of a game's file too) the other stores are copied from the wrong bytes; and it reopens the file without truncating it (R035+0x15DD, mode 1), so bytes left after a shrunk store stay and a store appended after them is later copied into an earlier one. The compact layout (126-byte table, store 1 at 126) avoids the first; the second is reproduced.
-- **B-9224b7** `bug`, no fix flag - `src/Darklands.Core/Rules/Brewing.cs:149` `BrewingBench.TakeFromParty`  
+- **B-9224b7** `bug`, no fix flag - `src/Darklands.Core/Rules/Brewing.cs:161` `BrewingBench.TakeFromParty`  
   original: `R033+0x1630` (1462:1630, draft)  
   why: the stack that slides into slot j is skipped (j still goes up), and whatever is still owed when the loop ends is forgotten: a batch whose ingredient is spread over several stacks costs only part of it.
-- **B-9d2829** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:262` `Brewing.CallOff`  
+- **B-9d2829** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:274` `Brewing.CallOff`  
   original: `R036+0x1EC2` (1462:1EC2, draft)  
   why: all five ingredient slots are returned (FixUnbrewEmptyIngredientSlots).
-- **B-9d82a1** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:263` `Brewing.CallOff`  
+- **B-9d82a1** `bug`, flag `FixCallOffScansEveryEvent`, `FixUnbrewEmptyIngredientSlots` - `src/Darklands.Core/Rules/Brewing.cs:275` `Brewing.CallOff`  
   original: `R036+0x1EC2` (1462:1EC2, draft)  
   why: the scan for the member's brews starts at the slot numbered as many as there are formulas (1462:1F71 `mov di, [bp - 8]`: the formula count the table loop of 1462:1F4A..1F6F added up is the scan's first slot), so a brew in a lower slot (every one in a game with fewer events than formulas) is never found: the brew goes on and its ingredients stay used (FixCallOffScansEveryEvent).
 - **B-459e15** `bug`, no fix flag - `src/Darklands.Core/Rules/CampStay.cs:134` `CampStay.TeacherList`  

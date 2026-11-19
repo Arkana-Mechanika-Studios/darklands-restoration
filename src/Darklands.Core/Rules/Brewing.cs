@@ -72,6 +72,18 @@ public sealed class BrewingBench
         return true;
     }
 
+    /// <summary>Gives a batch's reserved ingredients back, one batch at a time, and leaves it at 0 batches.</summary>
+    // orig: R033+0x14E6: k = count - x4 batches given back by R033+0x12EC each; x4 is never set by the screen (0), so all of them
+    public void GiveBack(Batch batch)
+    {
+        ArgumentNullException.ThrowIfNull(batch);
+        for (var k = batch.Count; k > 0; k--)
+        {
+            Release(batch.Formula);
+        }
+        batch.Count = 0;
+    }
+
     // orig: R033+0x12EC (1462:12EC) draft (bytes match)
     /// <summary>Frees the ingredients of one batch again.</summary>
     public void Release(Formula f)
