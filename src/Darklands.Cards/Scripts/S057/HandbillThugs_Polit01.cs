@@ -71,7 +71,7 @@ public sealed class HandbillThugs_Polit01 : Card
         c.Next = Number;
         return _menu.Run(
             // orig: R057+0x21DC (1A02:053C) matched (option 0 action, see EatTheHandbills); hint R057+0x2232 "No problem, feeling hungry?"
-            new MenuLine(() => EatTheHandbills(c), OptionHint.Saying("No problem, feeling hungry?")),
+            new MenuLine(() => EatTheHandbills(c), OptionHint.Saying("exe:DS:5AF3")),  // "No problem, feeling hungry?"
             // orig: R057+0x225C (1A02:05BC) matched (option 1 action, see TalkThemOut); chance handler R057+0x2312 (see TalkChance)
             new MenuLine(chance => TalkThemOut(c, chance), () => TalkChance(c)),
             // orig: R057+0x2380 (1A02:06E0) matched (option 2 action, see Bribe); chance handler R057+0x2450 (see BribeChance)

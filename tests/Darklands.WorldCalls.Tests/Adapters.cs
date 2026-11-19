@@ -136,7 +136,7 @@ internal static class Adapters
         public void Post(Darklands.Core.GameMessage message) { }
 
 
-        public void Tell(string message, int member = Cards.OptionHint.WholeParty) { }
+        public void Tell(Darklands.Core.GameText message, int member = Cards.OptionHint.WholeParty) { }
 
         public void PassTime(int hours) { }
     }

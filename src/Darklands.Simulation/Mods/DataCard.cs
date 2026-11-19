@@ -1,5 +1,6 @@
 using Darklands.Cards;
 using Darklands.Content;
+using Darklands.Core;
 using Darklands.Core.Economy;
 
 namespace Darklands.Simulation.Mods;
@@ -124,7 +125,7 @@ public sealed class DataCard(int number, string name, string picture, IReadOnlyL
             }
         }
         // DIVERGENCE: no original: a mod card whose pages lead round in a circle (chance pages only) is ended here.
-        c.Screen.Tell($"{name} goes round in circles: back to the card before.");
+        c.Screen.Tell(GameText.Of(GameTextIds.ModCardGoesRound, ("name", name)));
         return c.State.PreviousCard;
     }
 

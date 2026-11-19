@@ -42,5 +42,5 @@ public sealed class RiverboatLanding : Card
             new MenuLine(_ => c.Next = CardContext.MapCard, Unknown));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 }

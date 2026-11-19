@@ -280,11 +280,11 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R037+0x3B58` (1462:3B58, draft)  
   divergence: the shield picture is the party panel's (loaded on demand).  
   recommendation: **justify** (checked against the original) - party-leave (R037 3b58) frees the slot's shield picture handle; the C# party panel loads shield pictures on demand from Character.ShieldLetter, so no game state differs (presentation resource handling only).
-- **D-18a7b4** `other` - `src/Darklands.Simulation/Mods/DataCard.cs:74` `DataCard.Run`  
+- **D-18a7b4** `other` - `src/Darklands.Simulation/Mods/DataCard.cs:75` `DataCard.Run`  
   original: `root 03A1:000A` (03A1:000A, matched), `R136+0xD090` (2DAE:0000, data)  
   divergence: no original: a mod's card (docs/MODS.md, CardRegistry); the game's table holds none, Classic never runs one.  
   recommendation: **keep** (checked against the original) - New code for mods (1.0 pillar 3, docs/MODS.md): a data card runs only when a mod registered it in CardRegistry; Classic registers none, so no game of the game's own cards reaches it. Tests: ModCardTests.
-- **D-e27a0f** `other` - `src/Darklands.Simulation/Mods/DataCard.cs:126` `DataCard.Run`  
+- **D-e27a0f** `other` - `src/Darklands.Simulation/Mods/DataCard.cs:127` `DataCard.Run`  
   original: `root 03A1:000A` (03A1:000A, matched), `R136+0xD090` (2DAE:0000, data)  
   divergence: no original: a mod card whose pages lead round in a circle (chance pages only) is ended here.  
   recommendation: **keep** (checked against the original) - New code for mods (1.0 pillar 3): the guard of a mod's data card whose branch pages lead round in a circle; never reached by the game's own cards. Tests: ModCardTests.
@@ -293,7 +293,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### not-modelled (6)
 
-- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:233` `CardContext.InvokeSaint`  
+- **D-e60a70** `not-modelled` - `src/Darklands.Cards/CardContext.Engine.cs:246` `CardContext.InvokeSaint`  
   original: `R029+0x2180` (0E76:2180, draft)  
   divergence: the prayer screen (thunk 09C0:1EAF, then the card redraw thunk 09C0:1EA5) is the presentation's SaintPrayer; without it the prayer fails (0). In play DarklandsGame attaches SaintPrayerScreen to every card context it makes (DarklandsGame.cs, right after the CardContext is created), so no card runs without it.  
   recommendation: **justify** (checked against the original) - call-on-saint (R029+0x2180, matched) calls thunk 09C0:1EAF (the prayer screen) and then thunk 09C0:1EA5 (card redraw). The only production CardContext is made in DarklandsGame (line 397) and SaintPrayerScreen.Attach follows at once, so no card runs without the screen; the headless fallback is 0. Test NotModelledEvidenceTests.InvokeSaintNeedsThePrayerScreen.
@@ -313,7 +313,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R066+0x263E` (19EC:0AFE, matched)  
   divergence: the original sets the card before the previous one (DS:A88F) and earlier-screen (DS:A88D) to the street card (R066+0x271F, R066+0x2732); the main loop then sets DS:A88F = DS:A88D (the street card) and DS:A88D = this card (root 03A1:000A), and DS:A88F has no reader in the EXE (only these two stores), so it is not kept; FinishPass sets PreviousCard as the loop does.  
   recommendation: **justify** (checked against the original) - R066+0x271F / 0x2732 store the street card (9 by day, 10 at night) into DS:A88F and DS:A88D; the main loop (root +0x3E5F..0x3E68) then sets DS:A88F = DS:A88D and DS:A88D = DS:A772. DS:A88F has no reader anywhere in the EXE (absolute references in the root and the 136 overlays: only these two stores), so the 'two cards back' remark of the old note was wrong and nothing can observe it. CardDispatcher.FinishPass sets PreviousCard as the loop does; test NotModelledEvidenceTests.FinishPassMovesTheCardsDown.
-- **D-5dc345** `not-modelled` - `src/Darklands.Simulation/CardDispatcher.cs:89` `UnknownCard`  
+- **D-5dc345** `not-modelled` - `src/Darklands.Simulation/CardDispatcher.cs:90` `UnknownCard`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   divergence: no original: the original calls whatever R136+0xD090[number] holds; every card of the table has a script, so only a number outside it gets here.  
   recommendation: **justify** (checked against the original) - A fallback for a card number outside R136+0xD090[]'s table: test NotModelledEvidenceTests.EveryCardOfTheTableHasAScript shows every card of the table has a script, so the original's call of whatever the slot holds is never reached with a valid number.
@@ -652,11 +652,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
 
 ### cards (70)
 
-- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:260` `CardContext.ChanceText`  
+- **D-a59ea0** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:271` `CardContext.ChanceText`  
   original: `R029+0x5B62` (1367:0C52, matched)  
   divergence: an index beyond 7 or below −2 (a chance of 160 and up, or below −40; callers pass clamped chances) is clamped to 0..6.  
   deterministic: **partly** (checked against the original); action: **keep** - Slots 8 and up / −3 and below of grade-words read further words of DGROUP as near pointers (the data before DS:4FCE and after it), which a chance of 160+ or below −60 would need; the callers pass chances of the usual range (not checked caller by caller), so the case is not expected; keep the clamp.
-- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:289` `CardContext.NameToSlot`  
+- **D-6a940b** `undefined-memory` - `src/Darklands.Cards/CardContext.Engine.cs:296` `CardContext.NameToSlot`  
   original: `R029+0x1FB8` (0E76:1FB8, draft)  
   divergence: for kinds 0..2 an index past its table (or a kind-2 index below 0x5F, which reads the unwritten bytes before virtue-label-table) keeps the slot's text; kinds 6..8 read the static pointers next to their tables as the original does (TablePersonalNames.Name); without the EXE's tables kinds 6..8 keep the slot's text.  
   deterministic: **partly** (checked against the original); action: **document** - Checked with the card oracle: label-to-slot kinds 6..8 now read the far pointers next to their tables as the original does (one contiguous block of pointers in 290E); kinds 0..2 past their tables keep the slot's text, a case no card reaches with a valid quest.

@@ -69,9 +69,9 @@ public sealed class RefugeesFromThePlague : Card
             new MenuLine(_ => { c.PassHours(1); c.LeaveForTheMap(); }, () => OptionHint.Say(NoRisk)));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
-    private static OptionHint SelectASaint() => OptionHint.Say("Select a person and a saint.");
+    private static OptionHint SelectASaint() => OptionHint.Say("exe:DS:4F2A");  // "Select a person and a saint."
 
     /// <summary>Shows a picture through the card's picture buffer, which keeps it.</summary>
     // C: _fstrcpy(image-buffer, image-file-names[n]), then card-run-near(card-title, image-buffer).

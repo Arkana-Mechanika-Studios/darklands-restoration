@@ -29,7 +29,7 @@ public sealed class Blizzard_MeetB03 : Card
             // orig: R113+0x1A12 (line 0); hint R113+0x1B8C (19B5:03BC) matched
             new MenuLine(_ => KeepGoing(c), Unknown),
             // orig: R113+0x1BC4 (line 1); hint R113+0x1C6C (19B5:049C) matched
-            new MenuLine(_ => Pray(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => Pray(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R113+0x1CA4 (line 2); hint R113+0x1D66 (19B5:0596) matched
             new MenuLine(_ => WaitItOut(c), Unknown),
             // DORMANT: lines 3..9 are never offered; actions R113+0x1D9E.. and hints R113+0x1DA0.. are
@@ -43,7 +43,7 @@ public sealed class Blizzard_MeetB03 : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>
     /// Pressing on: each member loses a point of Endurance and twice the days in Strength; items

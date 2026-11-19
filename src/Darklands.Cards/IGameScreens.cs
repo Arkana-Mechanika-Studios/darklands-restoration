@@ -1,3 +1,5 @@
+using Darklands.Core;
+
 namespace Darklands.Cards;
 
 /// <summary>
@@ -45,23 +47,23 @@ public sealed record BattleRequest(int BattlefieldType, int Seed, IReadOnlyList<
 /// <summary>Screens a host does not provide: each says so and returns (a battle counts as won).</summary>
 public sealed class ScreensUnavailable(ICardScreen screen) : IGameScreens
 {
-    public void Barter(int shop, string name, long categories) => screen.Tell($"{name}: trading is not available here.");
+    public void Barter(int shop, string name, long categories) => screen.Tell(GameText.Of(GameTextIds.TradingUnavailable, ("name", name)));
 
-    public void Camp(int mode) => screen.Tell("Camping is not available here.");
+    public void Camp(int mode) => screen.Tell(GameText.Of(GameTextIds.CampUnavailable));
 
-    public void Alchemy(int member, int place) => screen.Tell("Alchemy is not available here.");
+    public void Alchemy(int member, int place) => screen.Tell(GameText.Of(GameTextIds.AlchemyUnavailable));
 
-    public void ItemStore() => screen.Tell("The item store is not available here.");
+    public void ItemStore() => screen.Tell(GameText.Of(GameTextIds.ItemStoreUnavailable));
 
-    public void CharacterSheet(int member) => screen.Tell("The character sheet is not available here.");
+    public void CharacterSheet(int member) => screen.Tell(GameText.Of(GameTextIds.CharacterSheetUnavailable));
 
-    public void PartyInfo() => screen.Tell("Party information is not available here.");
+    public void PartyInfo() => screen.Tell(GameText.Of(GameTextIds.PartyInfoUnavailable));
 
-    public void Loot(IList<Core.Characters.ItemStack> items, Core.Economy.Money money) => screen.Tell("Loot is not available here.");
+    public void Loot(IList<Core.Characters.ItemStack> items, Core.Economy.Money money) => screen.Tell(GameText.Of(GameTextIds.LootUnavailable));
 
     public int Battle(BattleRequest request)
     {
-        screen.Tell("Battles are not available here: you win.");
+        screen.Tell(GameText.Of(GameTextIds.BattleUnavailable));
         return 0;
     }
 }

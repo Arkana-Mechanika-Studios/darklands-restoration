@@ -26,9 +26,9 @@ public sealed class AstrologersManor : Card
 
         return menu.Run(
             // orig: R117+0x024E (1838:024E) matched; hint R117+0x0290
-            new MenuLine(_ => GoIn(c), () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => GoIn(c), () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // orig: R117+0x02C8 (1838:02C8) matched; hint R117+0x030A
-            new MenuLine(_ => PrayForInsight(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForInsight(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R117+0x0342 (1838:0342) matched; hint R117+0x0356 (leaves without clearing location-now)
             new MenuLine(_ => { c.Screen.Text(1, TextFrame.BlankPage); c.Next = CardContext.MapCard; }, () => OptionHint.Say(NoRisk)),
             // DORMANT: lines 3..9 are never offered; actions R117+0x038E.. and hints R117+0x0390.. are empty

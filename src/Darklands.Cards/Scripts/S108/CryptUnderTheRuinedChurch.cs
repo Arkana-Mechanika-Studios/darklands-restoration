@@ -54,17 +54,17 @@ public sealed class CryptUnderTheRuinedChurch : Card
 
         return menu.Run(
             // orig: R108+0x04A8 (line 0); hint R108+0x054A (1838:054A) matched
-            new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R108+0x0582 (line 1); hint R108+0x067E (1838:067E) matched
             new MenuLine(p => MoveTheRubble(c, menu, p), () => RubbleHint(c)),
             // orig: R108+0x06AE (line 2); hint R108+0x0792 (1838:0792) matched
-            new MenuLine(p => BlastAWayIn(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c, menu)),
+            new MenuLine(p => BlastAWayIn(c, menu, p), () => OptionHint.Say("exe:DS:4F0C"), () => PotionHint(c, menu)),  // "Select a person and a potion."
             // orig: R108+0x07CA (line 3); hint R108+0x0816 (1838:0816) matched
-            new MenuLine(_ => TakeTheItem(c, menu), () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => TakeTheItem(c, menu), () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // orig: R108+0x084E (line 4); hint R108+0x0A26 (1838:0A26) matched
-            new MenuLine(_ => AskASaintToPurify(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => AskASaintToPurify(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R108+0x0A5E (line 5); hint R108+0x0B7A (1838:0B7A) matched
-            new MenuLine(p => PurifyWithAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c, menu)),
+            new MenuLine(p => PurifyWithAPotion(c, menu, p), () => OptionHint.Say("exe:DS:4F0C"), () => PotionHint(c, menu)),  // "Select a person and a potion."
             // DORMANT: lines 6..8 are never offered; actions R108+0x0BB2/0bb6/0bba and hints
             // C: R108+0x0BB4/0bb8/0bbc are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),

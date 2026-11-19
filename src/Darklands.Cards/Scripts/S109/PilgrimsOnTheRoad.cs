@@ -44,7 +44,7 @@ public sealed class PilgrimsOnTheRoad : Card
             // orig: R109+0x1FBC (19FD:036C) matched; hint R109+0x203E
             new MenuLine(_ => GiveTheMounts(c), NoRiskForAll),
             // orig: R109+0x2076 (19FD:0426) matched; hint R109+0x2118
-            new MenuLine(_ => EscortThem(c), () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => EscortThem(c), () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // DORMANT: lines 4..9 are never offered; actions R109+0x2150.. and hints R109+0x2152..
             // C: are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),

@@ -53,7 +53,7 @@ public sealed class MadPriestOfTheHoard : Card
             // orig: R084+0x233C (1A35:036C) matched; R084+0x234A (1A35:037A) matched; tests: CardSmokeTests
             new MenuLine(() => { c.State.CurrentLocation = -1; c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)),
             // orig: R084+0x2382 (1A35:03B2) matched; R084+0x2510 (1A35:0540) matched; tests: CardSmokeTests
-            new MenuLine(() => BecomeHisAcolytes(c), OptionHint.Saying("Latin and Religious Training")));
+            new MenuLine(() => BecomeHisAcolytes(c), OptionHint.Saying("exe:290E:03D7")));  // "Latin and Religious Training"
     }
 
     /// <summary>The cross is destroyed and the dragon returns to its lair (fact 4/9; the rival knight's count +4).</summary>

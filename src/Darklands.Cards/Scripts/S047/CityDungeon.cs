@@ -127,7 +127,7 @@ public sealed class CityDungeon : Card
                 // orig: R047+0x0766 (1852:05C6) + R047+0x068A (1852:04EA) R047 seg 1852 matched
                 Stay(c, chance => ClimbOut(c, chance), () => ClimbChance(c)),
                 // orig: R047+0x0950 (1852:07B0) + R047+0x079E (1852:05FE) R047 seg 1852 matched
-                Stay(c, () => DigATunnel(c), () => OptionHint.Say("Success may take some time")),
+                Stay(c, () => DigATunnel(c), () => OptionHint.Say("exe:DS:57F3")),  // "Success may take some time"
                 // orig: R047+0x0A8C (1852:08EC) + R047+0x097A (1852:07DA) R047 seg 1852 matched
                 Stay(c, chance => CharmTheJailer(c, chance), () => CharmChance(c)),
                 // orig: R047+0x0AC8 (1852:0928) + R047+0x0AAA (1852:090A) R047 seg 1852 matched

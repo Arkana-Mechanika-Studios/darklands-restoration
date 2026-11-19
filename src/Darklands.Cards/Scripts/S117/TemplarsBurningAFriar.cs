@@ -37,15 +37,15 @@ public sealed class TemplarsBurningAFriar : Card
             // orig: R117+0x0E0A (18E0:038A) matched; hint R117+0x0E38
             new MenuLine(_ => MoveCloser(c, menu), Unknown),
             // orig: R117+0x0E70 (18E0:03F0) matched; hint R117+0x0EB4
-            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R117+0x0EEC (18E0:046C) matched; hint R117+0x0EFA
             new MenuLine(_ => c.LeaveForTheMap(), () => OptionHint.Say(NoRisk)),
             // orig: R117+0x0F32 (18E0:04B2) matched; hint R117+0x0F48
             new MenuLine(_ => { c.Screen.Text(4); FightTheTemplars(c); }, Unknown),
             // orig: R117+0x0F80 (18E0:0500) matched; hint R117+0x0FF0
-            new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("exe:DS:4F0C"), () => PotionHint(c)),  // "Select a person and a potion."
             // orig: R117+0x1028 (18E0:05A8) matched; hint R117+0x1032
-            new MenuLine(_ => FightTheTemplars(c), () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => FightTheTemplars(c), () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R117+0x106A (18E0:05EA) matched; hint R117+0x10AE
             new MenuLine(_ => LeaveTheFriar(c), () => OptionHint.Say(NoRisk)),
             // orig: R117+0x10E6 (18E0:0666) matched; hint R117+0x1118
@@ -58,7 +58,7 @@ public sealed class TemplarsBurningAFriar : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>The potions' chances by slot: quality + 2, − 3, + 12, × 2.</summary>
     // orig: R117+0x122C (18E0:07AC) matched; slots 1..3 R117+0x125A, R117+0x1288, R117+0x12B6

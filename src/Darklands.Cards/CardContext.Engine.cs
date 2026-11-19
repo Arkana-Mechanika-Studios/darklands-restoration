@@ -178,44 +178,57 @@ public sealed partial class CardContext
     public OptionState[] MenuBoxStates { get; } = new OptionState[CardMenu.MaxLines];
 
     /// <summary>
-    /// The states of an item (<paramref name="saints"/> false) or saint box's entries: entry
-    /// member × 4 + slot is enabled when the member has the item or knows the saint (every one while
-    /// <see cref="PopupListsAll"/>), shown greyed for the leader at Basic who lacks it and for a
-    /// known formula (not at Expert), hidden otherwise.
+    /// The lines of an item (<paramref name="saints"/> false) or saint box, a pure query: for each member, one line per card slot
+    /// (member × 4 + slot): usable (enabled) when the member has the item or knows the saint (every one while
+    /// <see cref="PopupListsAll"/>), shown greyed for the leader at Basic who lacks it and for a known formula (not at Expert),
+    /// listed but not choosable for an item the member holds otherwise, blank when none of these.
     /// </summary>
-    // orig: the stores into DS:EA92 + i * 4 + j of R043+0x2CE2 (150B:2252) draft (bytes match): all 20 cleared, then for i < party-headcount of a status other than 0 and 5 and j with card-item-lines/card-saint-lines[j] != -1
-    public OptionState[] PopupStates(bool saints)
+    // orig: R043+0x2CE2 (150B:2252) draft (bytes match): kind 1 lists card-item-lines through carries-item (1 carried, 2 formula known), kind 2 card-saint-lines through member-flag-bit; for i < party-headcount and slot j: status 0 or 5 or no entry -> blank; the member has it, or the leader at Basic, or DS:5204 -> a line ("\x87" greyed state 2 for the Basic leader who lacks it, "\x84" state 2 for a known formula unless at Expert, state 1 when carried or a saint or DS:5204, else "\x83" state 0) with " (count)" when carried; otherwise blank (the bytes: OptionPopupText)
+    public PopupModel PopupLines(bool saints)
     {
-        var states = new OptionState[CardMenu.MaxLines];
         var list = saints ? CardSaints : CardItems;
         var basic = State.Difficulty == Difficulty.Basic;
-        var members = State.Party.Slots;
-        for (var i = 0; i < members.Count && i < 5; i++)
+        var members = new List<PopupMember>();
+        for (var i = 0; i < State.Party.Slots.Count; i++)
         {
-            if (members[i].Status is CharacterStatus.Empty or CharacterStatus.Away)
-            {
-                continue;
-            }
+            var member = State.Party.Slots[i];
+            var lines = new PopupLine[4];
             for (var j = 0; j < 4; j++)
             {
                 var entry = list[j];
-                if (entry == -1)
+                if (member.Status is CharacterStatus.Empty or CharacterStatus.Away || entry == -1)
                 {
+                    lines[j] = PopupLine.Blank;
                     continue;
                 }
                 var has = saints ? (Saints.Knows(State, i, entry) ? 1 : 0) : Inventory.Has(State, i, entry);
                 var leaderAtBasic = basic && State.Party.LeaderIndex == i;
                 if (has == 0 && !leaderAtBasic && !PopupListsAll)
                 {
+                    lines[j] = PopupLine.Blank;
                     continue;
                 }
-                states[i * 4 + j] = leaderAtBasic && has == 0 && !PopupListsAll ? OptionState.Shown
-                    : !saints && State.Difficulty != Difficulty.Expert && has == 2 && !PopupListsAll ? OptionState.Shown
-                    : saints || has == 1 || PopupListsAll ? OptionState.Enabled
-                    : OptionState.Hidden;
+                var kind = leaderAtBasic && has == 0 && !PopupListsAll ? PopupLineKind.LeaderOnly
+                    : !saints && State.Difficulty != Difficulty.Expert && has == 2 && !PopupListsAll ? PopupLineKind.KnownFormula
+                    : saints || has == 1 || PopupListsAll ? PopupLineKind.Usable
+                    : PopupLineKind.NotUsable;
+                lines[j] = new PopupLine(kind, entry, !saints && has == 1 ? CountItems(i, entry) : -1);
             }
+            members.Add(new PopupMember(member.Status, member.ShortName, lines));
         }
-        return states;
+        return new PopupModel(saints, members);
+    }
+
+    /// <summary>The states of an item or saint box's 20 entries (<see cref="PopupLines"/>).</summary>
+    public OptionState[] PopupStates(bool saints) => PopupLines(saints).States;
+
+    /// <summary>The box opened: its lines (<see cref="PopupLines"/>), their states kept as what a choice in the box goes by.</summary>
+    // orig: the entries' states R043+0x2CE2 writes into the box layout DS:EA64 (+0x2E), DS:EA92: what card-option-enabled becomes after a choice in the box
+    public PopupModel OpenPopup(bool saints)
+    {
+        var model = PopupLines(saints);
+        model.States.CopyTo(MenuBoxStates, 0);
+        return model;
     }
 
     /// <summary>
@@ -247,33 +260,27 @@ public sealed partial class CardContext
 
     // ---- texts ----------------------------------------------------------------------
 
-    /// <summary>The quality words of chance texts at Standard difficulty.</summary>
-    public static readonly string[] QualityWords = ["very poor", "poor", "fair", "good", "very good", "excellent", "superb"];
-
     /// <summary>
-    /// "Chance of success is X% to Y%" (<c>chance-line</c>): numbers at Basic, quality words
-    /// (per 20 points) at Standard, nothing at Expert; the upper chance is at most 100.
+    /// "Chance of success is X% to Y%" (<c>chance-line</c>, <see cref="GameTextIds.ChanceRange"/>): numbers at Basic, quality words
+    /// (per 20 points) at Standard, nothing at Expert; the upper chance is at most 100. At Standard the arguments are the word
+    /// indexes (grade-words, −2..7: the entries round the seven words are empty strings).
     /// </summary>
     // orig: chance-line R029+0x5B62 (1367:0C52) matched
     // C: grade-words[lo / 20] (DS:4FCE, 7 near pointers) is not range-checked: the words next to it are pointers to empty strings in
     // the data image (index 7: DS:6F43, −1: DS:0000, −2: DS:7461, all zero bytes), so a chance of 140..159 or −40..−20 says nothing.
     // DIVERGENCE: an index beyond 7 or below −2 (a chance of 160 and up, or below −40; callers pass clamped chances) is clamped to 0..6.
     // C: only hi is limited to 100; the text is appended to the caller's buffer there.
-    public string ChanceText(int low, int high)
+    public GameText ChanceText(int low, int high)
     {
         if (State.Difficulty == Difficulty.Expert)
         {
-            return "";
+            return GameText.None;
         }
         high = Math.Min(high, 100);
-        string Word(int k) => k switch
-        {
-            >= 0 and <= 6 => QualityWords[k],
-            7 or -1 or -2 => "",
-            _ => QualityWords[Math.Clamp(k, 0, 6)],
-        };
-        string Say(int v) => State.Difficulty == Difficulty.Basic ? $"{v}%" : Word(v / 20);
-        return $"Chance of success is {Say(low)} to {Say(high)}";
+        var basic = State.Difficulty == Difficulty.Basic;
+        static int Word(int v) => v / 20 is var k && k is >= -2 and <= 7 ? k : Math.Clamp(k, 0, 6);
+        return GameText.Of(GameTextIds.ChanceRange,
+            ("low", basic ? low : Word(low)), ("high", basic ? high : Word(high)), ("basic", basic ? 1 : 0));
     }
 
     /// <summary>

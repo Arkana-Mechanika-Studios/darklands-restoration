@@ -62,7 +62,7 @@ public sealed class BishopsRoadTithe : Card
             // orig: R110+0x052E (1838:052E) matched; hint R110+0x057E
             new MenuLine(_ => { PayTheTithe(c, tithe); }, () => OptionHint.Say(SuccessAssured)),
             // orig: R110+0x05B6 (line 1); hint R110+0x0608 (1838:0608) matched
-            new MenuLine(_ => { PrayForAid(c, menu); }, () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => { PrayForAid(c, menu); }, () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R110+0x0640 (line 2); hint R110+0x0718 (1838:0718) matched
             new MenuLine(p => { PleadYourVirtue(c, menu, p); }, () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageSkill((int)Skill.Virtue) + c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2, 0, 100), c.Leader)),
@@ -71,18 +71,18 @@ public sealed class BishopsRoadTithe : Card
             // orig: R110+0x07EE (line 4); hint R110+0x08FC (1838:08FC) matched
             new MenuLine(p => { RideOff(c, menu, p); }, () => EscapeHint(c)),
             // orig: R110+0x0948 (line 5); hint R110+0x0A04 (1838:0A04) matched
-            new MenuLine(p => { ThrowAPotion(c, menu, p); }, () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => { ThrowAPotion(c, menu, p); }, () => OptionHint.Say("exe:DS:4F0C"), () => PotionHint(c)),  // "Select a person and a potion."
             // orig: R110+0x0A3C (1838:0A3C) matched; hint R110+0x0A8C
             new MenuLine(_ => { Submit(c); }, () => OptionHint.Say(SuccessAssured)),
             // orig: R110+0x0AC4 (1838:0AC4) matched; hint R110+0x0ACA
-            new MenuLine(_ => { FightTheGuard(c); }, () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => { FightTheGuard(c); }, () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // DORMANT: lines 8 and 9 are never offered; actions R110+0x0B02/0b06 and hints R110+0x0B04/0b08
             // C: are empty; the hints return AX/DX; neutral hints are used.
             new MenuLine(_ => { }),
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>Shows the card with a picture through the card's picture buffer, which keeps it.</summary>
     // C: _fstrcpy(image-buffer, image-file-names[n]), then card-run(card-title, image-buffer).

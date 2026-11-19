@@ -113,16 +113,20 @@ public sealed class SaintPrayerTests
         var favor = p.Favor;
         var events = new List<string>();
         var effects = new OrderRecorder(events);
-        var success = p.Pray(Who.Leader, effects, ok => events.Add($"message {ok} favor {s.Party.Slots[3][Attribute.DivineFavor]}"));
+        var success = p.Pray(Who.Leader, effects, id => events.Add($"message {id} favor {s.Party.Slots[3][Attribute.DivineFavor]}"));
         Assert.Equal(success ? 2 : 1, events.Count);
         // the offer is spent after the message: it still shows the favor before (less the extra loss on a failure)
-        Assert.StartsWith($"message {success}", events[0]);
         var shown = int.Parse(events[0].Split(' ')[3]);
         Assert.True(shown == 99 || !success && shown == Math.Max(1, 99 - favor / 2));
         if (success)
         {
-            Assert.Equal("message True favor 99", events[0]);
+            Assert.Equal($"message {SaintPrayer.CallSuccessful} favor 99", events[0]);
             Assert.Equal("help", events[1]);
+        }
+        else if (favor / 2 > 0)
+        {
+            // the original's two copies of the failure: the one after the extra loss, the other without it
+            Assert.StartsWith($"message {(shown == 99 ? SaintPrayer.CallFails : SaintPrayer.CallFailsWithLoss)} ", events[0]);
         }
         Assert.Equal(Math.Max(1, shown - favor), s.Party.Slots[3][Attribute.DivineFavor]);
     }

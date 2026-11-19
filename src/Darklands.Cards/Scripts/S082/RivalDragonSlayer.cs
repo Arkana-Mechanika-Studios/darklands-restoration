@@ -87,7 +87,7 @@ public sealed class RivalDragonSlayer : Card
             menu.Run(
                 // orig: R082+0x114C (1922:02AC) matched; R082+0x126A (1922:03CA) matched; tests: CardSmokeTests
                 new MenuLine(() => LaughAtHim(c, picture), OptionHint.Saying(SuccessAssured)),
-                new MenuLine(() => TakeHimAlong(c), OptionHint.Saying("He'll be glad to join you")),
+                new MenuLine(() => TakeHimAlong(c), OptionHint.Saying("exe:290E:0399")),  // "He'll be glad to join you"
                 new MenuLine(() => Attack(c), OptionHint.Saying(CardTexts.EnterCombat)),
                 // orig: R082+0x1654 (1922:07B4) matched; R082+0x166C (1922:07CC) matched; tests: CardSmokeTests
                 new MenuLine(() => { c.PassHours(1); c.State.CurrentLocation = -1; c.Next = 0x0C; }, OptionHint.Saying(SuccessAssured)));

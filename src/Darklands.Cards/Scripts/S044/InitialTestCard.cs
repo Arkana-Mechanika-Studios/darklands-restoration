@@ -62,7 +62,7 @@ public sealed class InitialTestCard : Card
             new MenuLine(() => { c.PassHours(0); c.Next = OverlandMap; }, OptionHint.Saying(SuccessAssured)),
             // orig: R044+0x03D2 (camp, R029+0x222A(1); following-card = 0; pass-hours(0)), hint R044+0x03EC
             // DORMANT: card-option-flag-4 = 0: "Camp outside the city" is never offered.
-            new MenuLine(() => { c.Camp(1); c.Next = Number; c.PassHours(0); }, OptionHint.Saying("Try it...you will like it!")),
+            new MenuLine(() => { c.Camp(1); c.Next = Number; c.PassHours(0); }, OptionHint.Saying("exe:DS:574B")),  // "Try it...you will like it!"
             // orig: R044+0x0416 (the inn, R029+0x222A(0); following-card = 0; pass-hours(0)), hint R044+0x0430
             new MenuLine(() => { c.Camp(0); c.Next = Number; c.PassHours(0); }, OptionHint.Saying(SuccessAssured)),
             // orig: R044+0x0468 (reputation-now = -0x63, place-assign(location-now, 0, -0x63), text-slot-number-one = reputation-now), hint R044+0x0484

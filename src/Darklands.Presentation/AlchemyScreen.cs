@@ -140,17 +140,17 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         {
             ScreenDrawing.DrawBackground(ui, panel, state.Party, "alcscrn0");
             ui.Text.Draw(ui.Canvas, 100, 9, f.Name, HeadingColor);
-            ui.Text.Draw(ui.Canvas, 100, 0x12, $"Mystical Number - {f.MysticNumber}", HeadingColor);
+            ui.Text.Draw(ui.Canvas, 100, 0x12, ui.Format("exe:DS:33B8", f.MysticNumber), HeadingColor);  // "Mystical Number - %d"
             ScreenDrawing.Wrapped(ui, f.Name, 0x5F, 0x49, 0x3A, MenuColor);
             ScreenDrawing.Wrapped(ui, f.Description, 0x5F, 0x49, 0x52, MenuColor);
-            ui.Text.Draw(ui.Canvas, 0xCB, 0x39, "Ingredients:", MenuColor);
+            ui.Text.Draw(ui.Canvas, 0xCB, 0x39, ui.Words("exe:DS:33D5"), MenuColor);  // "Ingredients:" (the body R033+0x16FA's copy)
             var y = 0x41;
             foreach (var ing in f.Slots)
             {
                 if (ing.Count != 0)
                 {
                     var have = stock[ing.Item & 0xFF];
-                    ui.Text.Draw(ui.Canvas, 0xCD, y, $"{ing.Count} {state.Item(ing.Item).Name} ({have})", have < ing.Count ? MenuGreyed : MenuColor);
+                    ui.Text.Draw(ui.Canvas, 0xCD, y, ui.Format("exe:DS:33E2", ing.Count, state.Item(ing.Item).Name, have), have < ing.Count ? MenuGreyed : MenuColor);  // "%d %Fs (%d)"
                 }
                 y += 8;
             }
@@ -192,15 +192,20 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         _formulaPage = false;
         var canvas = ui.Canvas;
         canvas.CopyFrom(_back, 0x3C, 0, 0x104, 200);
-        ui.Text.Draw(canvas, MenuX, MenuTop, ScreenDrawing.Hotkey('U') + "se this formula", _bench.Batches.Count != 0 ? MenuColor : MenuGreyed);
-        ui.Text.Draw(canvas, MenuX, MenuTop + 8, ScreenDrawing.Hotkey('D') + "o something else", MenuColor);
-        DrawList();
+        ui.Text.Draw(canvas, MenuX, MenuTop, ui.Words("exe:DS:3268"), _bench.Batches.Count != 0 ? MenuColor : MenuGreyed);  // "Use this formula"
+        ui.Text.Draw(canvas, MenuX, MenuTop + 8, ui.Words("exe:DS:327C"), MenuColor);  // "Do something else"
+        // C: R033+0x0796 draws the list itself, with its own "%2dx" (DS:32A3)
+        DrawList(BatchPageCount);
         DrawSelectedFormula();
     }
 
     // orig: R033+0x1116 (1462:1116) draft (register-level diffs)
     /// <summary>The scroll with the batch counts and the short names, the chosen row highlighted.</summary>
-    private void DrawList()
+    // "%2dx": R033+0x1116's copy (DS:3355) and the batch page R033+0x0796's (DS:32A3)
+    private const string ListCount = "exe:DS:3355";
+    private const string BatchPageCount = "exe:DS:32A3";
+
+    private void DrawList(string countFormat = ListCount)
     {
         var canvas = ui.Canvas;
         ScreenDrawing.Overlay(ui, "alchem13", ListX, 0x1D);
@@ -215,7 +220,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             var b = _bench.Batches[i];
             if (b.Count != 0)
             {
-                ui.Text.Draw(canvas, 0xCF, row * RowHeight + ListTop, $"{b.Count,2}x", ListColor);
+                ui.Text.Draw(canvas, 0xCF, row * RowHeight + ListTop, ui.Format(countFormat, b.Count), ListColor);
             }
             ui.Text.Draw(canvas, 0xDE, row * RowHeight + ListTop, b.Formula.ShortName, ListColor);
         }
@@ -319,24 +324,27 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         var m = _state.Party.Slot(_bench.Alchemist);
         canvas.CopyFrom(_back, 0x3C, 0, 0x104, 200);
         _canAddBatch = _bench.HasIngredients(f);
-        ScreenDrawing.Wrapped(ui, $"{m.ShortName}'s Formula - making {b.Count} batches.", 0xEA, 0x49, 0x0D, HeadingColor);
-        ScreenDrawing.Wrapped(ui, $"{Brewing.BaseChance(b.Count)} + {_state.Party.PhilosophersStone}ps + {m[Attribute.Intelligence]}int + " +
-            $"{m[Skill.Alchemy]}alch - {f.MysticNumber}mn = {_bench.Chance(b)}% success.", 0xEA, 0x49, 0x15, HeadingColor);
-        ui.Text.Draw(canvas, MenuX, MenuTop, ScreenDrawing.Hotkey('M') + "ore batches", _canAddBatch ? MenuColor : MenuGreyed);
-        ui.Text.Draw(canvas, MenuX, MenuTop + 8, ScreenDrawing.Hotkey('F') + "ewer batches", MenuColor);
-        ui.Text.Draw(canvas, MenuX, MenuTop + 16, ScreenDrawing.Hotkey('D') + "ifferent formula", MenuColor);
-        ui.Text.Draw(canvas, MenuX, MenuTop + 24, ScreenDrawing.Hotkey('S') + "atisfied with this", b.Count != 0 ? MenuColor : MenuGreyed);
+        // "%s's Formula - making %d batches." (DS:32AA), "%d + %dps + %dint + %dalch - %dmn = %d%% success." (DS:32CC)
+        ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:32AA", m.ShortName, b.Count), 0xEA, 0x49, 0x0D, HeadingColor);
+        ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:32CC", Brewing.BaseChance(b.Count), _state.Party.PhilosophersStone, m[Attribute.Intelligence],
+            m[Skill.Alchemy], f.MysticNumber, _bench.Chance(b)), 0xEA, 0x49, 0x15, HeadingColor);
+        // the menu's far strings (290E pointer table 1DC3): "More batches", "Fewer batches", "Different formula", "Satisfied with this"
+        ui.Text.Draw(canvas, MenuX, MenuTop, ui.Words("exe:290E:0112"), _canAddBatch ? MenuColor : MenuGreyed);
+        ui.Text.Draw(canvas, MenuX, MenuTop + 8, ui.Words("exe:290E:0122"), MenuColor);
+        ui.Text.Draw(canvas, MenuX, MenuTop + 16, ui.Words("exe:290E:0133"), MenuColor);
+        ui.Text.Draw(canvas, MenuX, MenuTop + 24, ui.Words("exe:290E:0148"), b.Count != 0 ? MenuColor : MenuGreyed);
         DrawSelectedFormula();
         canvas.CopyFrom(_back, 0xC3, 0x3C, 0x5A, 0x4C);
-        ScreenDrawing.Wrapped(ui, $"{ui.Assets.Words.Text(OriginalWords.RiskWords, f.RiskWord)} risk - magic #{f.MysticNumber}", 0x55, 0xC6, 0x3F, MenuColor);
-        ui.Text.Draw(canvas, 0xC6, 0x56, "Ingredients:", MenuColor);
+        // "%s risk - magic #%d" (DS:330E) with the risk word
+        ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:330E", ui.Assets.Words.Text(OriginalWords.RiskWords, f.RiskWord), f.MysticNumber), 0x55, 0xC6, 0x3F, MenuColor);
+        ui.Text.Draw(canvas, 0xC6, 0x56, ui.Words("exe:DS:3322"), MenuColor);  // "Ingredients:" (R033+0x094A's copy)
         var y = 0x5E;
         foreach (var ing in f.Slots)
         {
             if (ing.Count != 0)
             {
                 var have = _bench.Stock(ing.Item);
-                ui.Text.Draw(canvas, 0xC8, y, $"{ing.Count} {_state.Item(ing.Item).Name} ({have})", have >= ing.Count ? MenuColor : MenuGreyed);
+                ui.Text.Draw(canvas, 0xC8, y, ui.Format("exe:DS:332F", ing.Count, _state.Item(ing.Item).Name, have), have >= ing.Count ? MenuColor : MenuGreyed);  // "%d %Fs (%d)"
             }
             y += 8;
         }

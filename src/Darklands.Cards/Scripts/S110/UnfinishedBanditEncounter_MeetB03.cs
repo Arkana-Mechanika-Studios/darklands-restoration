@@ -31,20 +31,20 @@ public sealed class UnfinishedBanditEncounter_MeetB03 : Card
 
         return menu.Run(
             // orig: R110+0x0FDE (1910:025E) matched (empty); hint R110+0x0FE0
-            new MenuLine(_ => { }, () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => { }, () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // orig: R110+0x1018 (1910:0298) matched (empty); hint R110+0x101A
             new MenuLine(_ => { }, () => OptionHint.ChanceOf(100, c.Variables.Chosen[0])),
             // orig: R110+0x1032 (1910:02B2) matched; hint R110+0x1062
-            new MenuLine(p => ThrowAPotion(c, p), () => OptionHint.Say("Of course the potion will work!"), () => FullChanceForTheMember(c)),
+            new MenuLine(p => ThrowAPotion(c, p), () => OptionHint.Say("exe:DS:4F7A"), () => FullChanceForTheMember(c)),  // "Of course the potion will work!"
             // orig: R110+0x109A (1910:031A) matched; hint R110+0x1106
-            new MenuLine(_ => Pray(c), () => OptionHint.Say("XXX Saint % success msg XXX.")),
+            new MenuLine(_ => Pray(c), () => OptionHint.Say("exe:DS:4F5C")),  // "XXX Saint % success msg XXX."
             // orig: R110+0x113E (1910:03BE) matched; hint R110+0x115C
             new MenuLine(_ => { c.PassHours(1); c.Screen.Text(10); c.Next = CardContext.MapCard; }, () => OptionHint.Say(SuccessAssured)),
             // orig: R110+0x1194 (1910:0414) matched; hint R110+0x11E2
             new MenuLine(p => SneakAway(c, p), () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),
             // orig: R110+0x11F8 (1910:0478) matched (empty); hint R110+0x11FA
             // DORMANT: line 6 is never offered.
-            new MenuLine(_ => { }, () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => { }, () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R110+0x1232 (1910:04B2) matched; hint R110+0x1264
             new MenuLine(p => Scout(c, p), () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),
             // DORMANT: lines 8 and 9 are never offered; actions R110+0x127A/04fe and hints R110+0x127C/0500

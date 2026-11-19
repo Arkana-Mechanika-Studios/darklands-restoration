@@ -8,35 +8,35 @@ namespace Darklands.Cards;
 public static class CardTexts
 {
     /// <summary>The hint of most option lines.</summary>
-    public const string SuccessAssured = "Success is assured.";
+    public const string SuccessAssured = "exe:DS:4F48";
 
-    public const string NoRisk = "No risk.";
+    public const string NoRisk = "exe:DS:4F02";
 
     /// <summary>The hint of an option line a card has no handler for (the handler its reset installs).</summary>
-    public const string ScrewedUp = "screwed up.";
+    public const string ScrewedUp = "exe:DS:4EC4";
 
-    public const string SleepUntilDawn = "You'll sleep until dawn.";
+    public const string SleepUntilDawn = "exe:DS:4ED0";
 
-    public const string WaitForNight = "You'll wait for night.";
+    public const string WaitForNight = "exe:DS:4EEA";
 
     /// <summary>The hint of a "use an item" option line.</summary>
-    public const string SelectPotion = "Select a person and a potion.";
+    public const string SelectPotion = "exe:DS:4F0C";
 
     /// <summary>The hint of a "call upon a saint" option line.</summary>
-    public const string SelectSaint = "Select a person and a saint.";
+    public const string SelectSaint = "exe:DS:4F2A";
 
-    public const string PotionWorks = "Of course the potion will work!";
+    public const string PotionWorks = "exe:DS:4F7A";
 
-    public const string EncounterTheUnknown = "You can always encounter the unknown";
+    public const string EncounterTheUnknown = "exe:DS:4F9A";
 
     /// <summary>A hint when nothing can be promised (R136+0x8690+0x1E57).</summary>
-    public const string HopeForTheBest = "You can hope for the best";
+    public const string HopeForTheBest = "exe:290E:046F";
 
     /// <summary>A hint when the party cannot pay (R136+0x8690+0x1E5B).</summary>
-    public const string NotEnoughMoney = "Not enough money";
+    public const string NotEnoughMoney = "exe:290E:0489";
 
     /// <summary>The hint of an option that starts a fight.</summary>
-    public const string EnterCombat = "Enter Combat";
+    public const string EnterCombat = "exe:DS:4FC0";
 }
 
 /// <summary>

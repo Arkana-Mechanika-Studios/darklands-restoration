@@ -38,7 +38,7 @@ public sealed class DragonsLair : Card
             // orig: R082+0x04E6 (1845:0416) asm; R082+0x04EC (1845:041C) asm; tests: CardSmokeTests
             new MenuLine(() => Fight(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R082+0x0524 (1845:0454) asm; R082+0x0604 (1845:0534) asm; tests: CardSmokeTests
-            new MenuLine(() => Reason(c), hint: () => OptionHint.Say("Only high Virtue can subdue the dragon", (sbyte)c.Leader)),
+            new MenuLine(() => Reason(c), hint: () => OptionHint.Say("exe:290E:0372", (sbyte)c.Leader)),  // "Only high Virtue can subdue the dragon"
             // orig: R082+0x0634 (1845:0564) asm; R082+0x0682 (1845:05B2) asm; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -46,7 +46,7 @@ public sealed class DragonsLair : Card
                 ShowPicture(c, 332);
                 c.Screen.Text(6);
                 c.Next = 0x0C;
-            }, OptionHint.Saying("Nothing is safe")));
+            }, OptionHint.Saying("exe:DS:60A9")));  // "Nothing is safe"
     }
 
     /// <summary>The fight with the dragon: victory brings its hoard and the region's thanks.</summary>

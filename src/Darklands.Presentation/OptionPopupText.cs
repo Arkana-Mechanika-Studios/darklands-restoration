@@ -42,71 +42,49 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
     //   drv+0x11A9); hooked in the original (vis10 session uncert-polit-popup-hint): window 016A with font 3 at R043+0x2CE2, the box 0x43
     //   wide for "Stone-tar (1)". The name's width is counted for every status-1 member, listed or not.
     // C: the count is number-with-separators(item-tally(i, item)); rn is the carries-item answer until then.
-    public static OptionPopupText Build(CardContext c, bool saints, TextPainter painter, bool darkPicture)
+    public static OptionPopupText Build(CardContext c, bool saints, TextPainter painter, bool darkPicture) =>
+        Build(c.PopupLines(saints), saints ? k => SaintName(c, k) : c.World.ItemName, painter, darkPicture);
+
+    /// <summary>Lays out a box the rules decided (<see cref="CardContext.PopupLines"/>); <paramref name="entryName"/> names an item or saint.</summary>
+    public static OptionPopupText Build(PopupModel model, Func<int, string> entryName, TextPainter painter, bool darkPicture)
     {
-        var state = c.State;
-        var list = saints ? c.CardSaints : c.CardItems;
-        var basic = state.Difficulty == Difficulty.Basic;
-        var all = c.PopupListsAll;
-        var states = new OptionState[Lines];
+        ArgumentNullException.ThrowIfNull(model);
+        ArgumentNullException.ThrowIfNull(entryName);
         var text = new List<byte>();
         byte[] name = [];
         var widest = -1;
-        var members = state.Party.Slots;
-        for (var i = 0; i < members.Count; i++)
+        foreach (var member in model.Members)
         {
-            var member = members[i];
             if (member.Status == CharacterStatus.Able)
             {
                 name = [NameColor, .. TextPainter.Encode(member.ShortName), DefaultColor, (byte)'\n'];
                 widest = Math.Max(widest, painter.Measure(member.ShortName));
             }
             var lines = new List<byte>();
-            var any = false;
-            for (var j = 0; j < 4; j++)
+            foreach (var entry in member.Lines)
             {
-                var entry = list[j];
-                if (member.Status is CharacterStatus.Empty or CharacterStatus.Away || entry == -1)
+                if (entry.Kind == PopupLineKind.Blank)
                 {
                     lines.AddRange([Option, (byte)'\n']);
                     continue;
                 }
-                var has = saints ? (Saints.Knows(state, i, entry) ? 1 : 0) : Inventory.Has(state, i, entry);
-                var leaderAtBasic = basic && state.Party.LeaderIndex == i;
-                if (has == 0 && !leaderAtBasic && !all)
+                var line = new List<byte> { Option, (byte)' ', entry.Kind switch
                 {
-                    lines.AddRange([Option, (byte)'\n']);
-                    continue;
-                }
-                any = true;
-                var line = new List<byte> { Option, (byte)' ' };
-                var slot = i * 4 + j;
-                if (leaderAtBasic && has == 0 && !all)
+                    PopupLineKind.LeaderOnly => LeaderOnlyColor,
+                    PopupLineKind.KnownFormula => KnownFormulaColor,
+                    PopupLineKind.Usable => darkPicture ? (byte)0x8F : (byte)0x80,
+                    _ => NotUsableColor,
+                } };
+                line.AddRange(TextPainter.Encode(entryName(entry.Entry)));
+                if (entry.Count >= 0)
                 {
-                    (line, states[slot]) = (Append(line, LeaderOnlyColor), OptionState.Shown);
-                }
-                else if (!saints && state.Difficulty != Difficulty.Expert && has == 2 && !all)
-                {
-                    (line, states[slot]) = (Append(line, KnownFormulaColor), OptionState.Shown);
-                }
-                else if (saints || has == 1 || all)
-                {
-                    (line, states[slot]) = (Append(line, darkPicture ? (byte)0x8F : (byte)0x80), OptionState.Enabled);
-                }
-                else
-                {
-                    (line, states[slot]) = (Append(line, NotUsableColor), OptionState.Hidden);
-                }
-                line.AddRange(TextPainter.Encode(saints ? SaintName(c, entry) : c.World.ItemName(entry)));
-                if (!saints && has == 1)
-                {
-                    line.AddRange(TextPainter.Encode($" ({c.CountItems(i, entry).ToString("N0", System.Globalization.CultureInfo.InvariantCulture)})"));
+                    line.AddRange(TextPainter.Encode($" ({entry.Count.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)})"));
                 }
                 line.Add((byte)'\n');
                 widest = Math.Max(widest, painter.Measure(line.ToArray()));
                 lines.AddRange(line);
             }
-            if (any)
+            if (member.Listed)
             {
                 text.AddRange(name);
                 text.AddRange(lines);
@@ -125,16 +103,10 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
             tail = text.Count >= 2 ? [text[^1], 0] : [];
             text.RemoveRange(Math.Max(0, text.Count - 2), Math.Min(2, text.Count));
         }
-        return new OptionPopupText([.. text], states, widest + 6, tail);
-    }
-
-    private static List<byte> Append(List<byte> line, byte color)
-    {
-        line.Add(color);
-        return line;
+        return new OptionPopupText([.. text], model.States, widest + 6, tail);
     }
 
     // orig: R136+0x114F4, the second name list of the saints in darkland.lst (filled by world-read R043+0x0100): the short names
-    private static string SaintName(CardContext c, int saint) =>
+    internal static string SaintName(CardContext c, int saint) =>
         saint >= 0 && saint < c.World.Items.Saints.Count ? c.World.Items.Saints[saint].ShortName : "";
 }

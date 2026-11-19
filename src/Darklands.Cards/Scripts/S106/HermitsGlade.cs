@@ -37,7 +37,7 @@ public sealed class HermitsGlade : Card
             // orig: R106+0x02CC (line 1); hint R106+0x035E (1838:035E) matched
             new MenuLine(_ => SearchTheLeanTo(c, menu), Unknown),
             // orig: R106+0x0396 (line 2); hint R106+0x0432 (1838:0432) matched
-            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R106+0x046A (1838:046A) matched; hint R106+0x048A
             // DORMANT: line 3 (rest eight hours, +1 Divine Favour, leave) is never offered (card-option-flag-3 = 0).
             new MenuLine(_ => { c.PassHours(8); c.AddAttribute(Core.Characters.Who.Everybody, (int)Core.Characters.Attribute.DivineFavor, 1); c.Next = CardContext.MapCard; }, Assured),
@@ -52,7 +52,7 @@ public sealed class HermitsGlade : Card
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(NoRisk)));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     private static OptionHint Assured() => OptionHint.Say(SuccessAssured);
 

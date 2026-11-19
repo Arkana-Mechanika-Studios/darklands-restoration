@@ -4,6 +4,7 @@ using Darklands.Content.Formats.Exe;
 using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Characters;
+using Darklands.Core.Rules;
 
 namespace Darklands.Rendering.Tests;
 
@@ -58,6 +59,175 @@ public sealed class OriginalMessageTextTests
         Assert.Equal(
             table.Find("exe:290E:0C42")!.Text + table.Find("exe:DS:26BE")!.Text + "4" + table.Find("exe:DS:26CD")!.Text + "5",
             text.Text(GameMessage.SkillChanged(1, 7, 4, 5)));
+    }
+
+    [Fact]
+    public void TheCardsKeysAreTheExtractorsAndSayWhatTheLiteralsSaid()
+    {
+        if (Text.Value is not { } text || Table.Value is not { } table)
+        {
+            return;
+        }
+        var cards = Path.Combine(FindRepositoryRoot(), "src", "Darklands.Cards");
+        var keys = Directory.EnumerateFiles(cards, "*.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+            .SelectMany(f => System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(f), "\"(exe:(?:DS|[0-9A-F]{4}):[0-9A-F]{4})\"")
+                .Select(m => m.Groups[1].Value))
+            .Distinct().Order(StringComparer.Ordinal).ToList();
+        Assert.Equal(38, keys.Count);
+        foreach (var key in keys)
+        {
+            var entry = table.Find(key);
+            Assert.True(entry is { Origin: StringOrigin.Known }, $"{key} is not a known string of the extractor");
+            Assert.Equal(entry!.Text, text.Text(GameText.Of(key)));
+        }
+        // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was checked against the literal it replaced
+        // (152 sites, scratch check of 2026-11-19), so this pins the 1.0 card hints.
+        var joined = string.Join('\n', keys.Select(k => k + "=" + Encoding.Latin1.GetString(GameTextCodec.Encode(text.Text(GameText.Of(k))))));
+        Assert.Equal("424CFEE3049642C6B54375116C66C92D19B440E77B275957098B510CEFD8CAE4",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(joined))));
+    }
+
+    [Fact]
+    public void TheScreensKeysAreTheExtractorsAndSayWhatTheLiteralsSaid()
+    {
+        if (Text.Value is not { } text || Table.Value is not { } table)
+        {
+            return;
+        }
+        var keys = KeysIn("Darklands.Presentation");
+        Assert.Equal(137, keys.Count);
+        foreach (var key in keys.Concat([SaintPrayer.CallSuccessful, SaintPrayer.CallFailsWithLoss, SaintPrayer.CallFails]))
+        {
+            var entry = table.Find(key);
+            Assert.True(entry is { Origin: StringOrigin.Known }, $"{key} is not a known string of the extractor");
+            Assert.Equal(entry!.Text, text.Text(GameText.Of(key)));
+        }
+        // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was read back against the literal it replaced (L-6, first set)
+        var joined = string.Join('\n', keys.Select(k => k + "=" + Encoding.Latin1.GetString(GameTextCodec.Encode(text.Text(GameText.Of(k))))));
+        Assert.Equal("6CB5991DF60FBDF71AE363D28671971C76B954BE0774DA2790812DD22D1AA86B",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(joined))));
+        Assert.Equal(text.Text(GameText.Of(SaintPrayer.CallFails)), text.Text(GameText.Of(SaintPrayer.CallFailsWithLoss)));
+    }
+
+    [Fact]
+    public void TheScreensFormatsPrintWhat1Point0Printed()
+    {
+        if (Text.Value is not { } text)
+        {
+            return;
+        }
+        string F(string key, params object[] args) => text.Text(GameText.Format(key, args));
+        var all = new List<string>();
+        foreach (var (place, y, m, d, h) in new[] { ("Koeln", 1415, 3, 17, 9), ("Ulm", 1402, 12, 1, 23) })
+        {
+            all.Add(F("exe:DS:4815", place, y, m, d, h));
+        }
+        foreach (var v in new[] { 0, 5, 42, 99 })
+        {
+            all.Add(F("exe:DS:3566", v));
+            all.Add(F("exe:DS:3579", v));
+        }
+        foreach (var (fl, gr, pf) in new (short, short, short)[] { (0, 0, 0), (12, 19, 11), (-3, 4, 5), (32767, 0, 1) })
+        {
+            var purse = new Darklands.Core.Economy.Money(fl, gr, pf);
+            all.Add(F("exe:DS:4CC8", fl, gr, pf));
+            all.Add(F("exe:DS:383B", "Anna", fl, gr, pf));
+            all.Add(F("exe:DS:2F71", "Anna", fl, gr, pf, purse.TotalPfennigs));
+        }
+        foreach (var (name, count, q) in new[] { ("Longsword", 1, 25), ("Arrows", 120, 7), ("Ale", -56, -3) })
+        {
+            all.Add(F("exe:DS:4D1B", name, count, q));
+            all.Add(F("exe:DS:3988", name, count, q));
+        }
+        all.Add(F("exe:DS:4D07", "Anna"));
+        all.Add(F("exe:DS:4D93", "Anna"));
+        foreach (var n in new[] { 0, 7, 31 })
+        {
+            all.Add(F("exe:DS:33B8", n));
+            all.Add(F("exe:DS:3355", n));
+        }
+        all.Add(F("exe:DS:33E2", 3, "Sulphur", 1));
+        all.Add(F("exe:DS:32AA", "Anna", 4));
+        all.Add(F("exe:DS:32CC", 20, 0, 30, 25, 12, 63));
+        all.Add(F("exe:DS:330E", "Medium", 12));
+        all.Add(F("exe:DS:2FB8", "She", "Hans", "Blacksmith"));
+        all.Add(F("exe:DS:2FD5", "Anna", "herself", "Blacksmith"));
+        all.Add(F("exe:DS:3018", "Blacksmith"));
+        foreach (var price in new[] { 0, 99, 40000, -5 })
+        {
+            all.Add(F("exe:DS:303E", price, "Longsword", 1, 25));
+            all.Add(F("exe:DS:3055", price, "Longsword", 30, 8));
+            all.Add(F("exe:DS:31E9", price, "Longsword", 30, -2));
+        }
+        // SHA-256 of the 55 lines as 1.0's interpolations printed the same samples (scratch formats_hash.py mirrors each one)
+        Assert.Equal(55, all.Count);
+        Assert.Equal("53B8C32F4BA86E2680A9F5D335A64C7CEC8F3FBBA9B3E50C0EC24DD714EE65AF",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(string.Join('\n', all)))));
+    }
+
+    private static List<string> KeysIn(string project) =>
+        Directory.EnumerateFiles(Path.Combine(FindRepositoryRoot(), "src", project), "*.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+            .SelectMany(f => System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(f), "\"(exe:(?:DS|[0-9A-F]{4}):[0-9A-F]{4})\"")
+                .Select(m => m.Groups[1].Value))
+            .Distinct().Order(StringComparer.Ordinal).ToList();
+
+    [Fact]
+    public void TheChanceTextsAreTheOnes1Point0Formatted()
+    {
+        if (Text.Value is not { } text)
+        {
+            return;
+        }
+        var all = new List<string>();
+        foreach (var basic in new[] { 0, 1 })
+        {
+            for (var pct = 0; pct <= 100; pct++)
+            {
+                all.Add(text.Text(GameText.Of(GameTextIds.HintChance, ("chance", pct), ("basic", basic))));
+            }
+        }
+        foreach (var (low, high) in new[] { (0, 0), (5, 100), (37, 64), (-10, 140) })
+        {
+            all.Add(text.Text(GameText.Of(GameTextIds.ChanceRange, ("low", low), ("high", high), ("basic", 1))));
+        }
+        for (var low = -2; low <= 7; low++)
+        {
+            for (var high = -2; high <= 7; high++)
+            {
+                all.Add(text.Text(GameText.Of(GameTextIds.ChanceRange, ("low", low), ("high", high), ("basic", 0))));
+            }
+        }
+        // SHA-256 of the 306 texts joined by line feeds, as 1.0's CardScreen.ShowHint and CardContext.ChanceText built them
+        Assert.Equal("8F1CE5FD4CC0DB201F9A339E3F6B88EB48AB51B8D1B53EF45DE7E3917D0963F2",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(string.Join('\n', all)))));
+    }
+
+    [Fact]
+    public void TheRewritesOwnNoticesHaveWords()
+    {
+        if (Text.Value is not { } text)
+        {
+            return;
+        }
+        foreach (var id in OriginalMessageText.OwnIds)
+        {
+            var words = text.Text(GameText.Of(id, ("name", "X"), ("number", 7), ("count", 2)));
+            Assert.NotEqual(id, words);
+            Assert.Contains(" ", words, StringComparison.Ordinal);
+        }
+        Assert.Equal("", text.Text(GameText.None));
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Darklands.slnx")))
+        {
+            dir = dir.Parent;
+        }
+        return dir?.FullName ?? throw new InvalidOperationException("repository root not found");
     }
 
     [Fact]

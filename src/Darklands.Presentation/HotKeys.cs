@@ -182,10 +182,10 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     }
 
     /// <summary>Alt-F: sound effects on or off.</summary>
-    public void ToggleSoundEffects() => options.SoundEffects = Toggle("Sound effects ", options.SoundEffects);
+    public void ToggleSoundEffects() => options.SoundEffects = Toggle(ScreenTexts.SoundEffects, ScreenTexts.SoundOn, ScreenTexts.SoundOff, options.SoundEffects);
 
     /// <summary>Alt-C: saintly changes shown or not.</summary>
-    public void ToggleSaintlyChanges() => state.ShowSaintlyChanges = Toggle("Show saintly changes ", state.ShowSaintlyChanges);
+    public void ToggleSaintlyChanges() => state.ShowSaintlyChanges = Toggle(ScreenTexts.SaintlyChanges, ScreenTexts.SaintlyOn, ScreenTexts.SaintlyOff, state.ShowSaintlyChanges);
 
     /// <summary>F1..F5: the member in that slot, if there is one.</summary>
     // orig: card-hotkeys: `key = (key >> 8) - 0x3b; if (key < party-headcount && party[key].status) { member-sheet-overlay-entry(key); ... }`
@@ -223,7 +223,7 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     // C: press-to-continue (card texts) treats the answer "no" like Enter: it calls exit-to-system for key 0x1000 and then returns as if the text had been dismissed; here the text stays up after "no".
     public void QuitToDos()
     {
-        if (_box.Ask("Quit to DOS?"))
+        if (_box.Ask(ui.Words(ScreenTexts.QuitToDos)))
         {
             throw new QuitGameException();
         }
@@ -244,14 +244,20 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
     public void SetDifficulty(Difficulty difficulty)
     {
         state.Difficulty = difficulty;
-        _box.Show(DifficultyText(state.Difficulty));
+        _box.Show(DifficultyText(ui, state.Difficulty));
     }
 
     /// <summary>The text difficulty-display(1) shows.</summary>
     // orig: difficulty-display root 0000:1438: "Difficulty is now set to " + Basic / Standard / Expert by `difficulty-setting & 0x7f`
     // C: a value above 2 adds no name.
-    public static string DifficultyText(Difficulty difficulty) =>
-        "Difficulty is now set to " + (difficulty is >= Difficulty.Basic and <= Difficulty.Expert ? difficulty.ToString() : "");
+    public static string DifficultyText(GameUi ui, Difficulty difficulty) =>
+        ui.Words(ScreenTexts.DifficultyIsNow) + difficulty switch
+        {
+            Difficulty.Basic => ui.Words(ScreenTexts.Basic),
+            Difficulty.Standard => ui.Words(ScreenTexts.Standard),
+            Difficulty.Expert => ui.Words(ScreenTexts.Expert),
+            _ => "",
+        };
 
     // orig: music-switch root 0000:11F2: music-setting ^= 1, text DS:01B8 "Music " + ON/OFF via notice-display(buf, 0x3c); when turned off also sound-start(1) (stop the music)
     // C: the stop is played before the message is shown.
@@ -263,13 +269,13 @@ public sealed class HotKeys(GameUi ui, GameState state, GameOptions options)
         {
             ui.Audio.PlayMusic(GameSounds.Stop);
         }
-        Toggle("Music ", !options.Music);
+        Toggle(ScreenTexts.Music, ScreenTexts.MusicOn, ScreenTexts.MusicOff, !options.Music);
     }
 
     // orig: sound-switch root 0000:129A ("Sound effects "), saint-notices-switch root 0000:1154 ("Show saintly changes ") and music-switch: the text is the option name plus the NEW state ("ON" when it is now on), the menu entry's tick DS:9982 / DS:995A / DS:996E is set to 1 or 2
-    private bool Toggle(string what, bool on)
+    private bool Toggle(string name, string onWord, string offWord, bool on)
     {
-        _box.Show(what + (on ? "OFF" : "ON"));
+        _box.Show(ui.Words(name) + ui.Words(on ? offWord : onWord));
         return !on;
     }
 }

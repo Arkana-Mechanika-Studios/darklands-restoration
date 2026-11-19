@@ -52,7 +52,7 @@ public sealed class SmallCaveUnderTheLedge : Card
             // orig: R106+0x1DCA (line 1); hint R106+0x1E00 (19BC:05C0) matched
             new MenuLine(_ => WatchTheCave(c), Unknown),
             // orig: R106+0x1E38 (line 2); hint R106+0x1EA0 (19BC:0660) matched
-            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // DORMANT: lines 3..8 are never offered; their actions R106+0x1ED8.. and hints
             // R106+0x1EDA.. are empty functions.
             // C: those hints return whatever is in AX/DX; a neutral hint is used.
@@ -66,7 +66,7 @@ public sealed class SmallCaveUnderTheLedge : Card
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(SuccessAssured)));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>
     /// Inside: nothing, the item alone (but the quest is not finished: an original oddity), the

@@ -42,13 +42,13 @@ public sealed class RebelMobInTheStreets : Card
         }
         return menu.Run(
             new MenuLine(() => Fight(c), OptionHint.Saying(CardTexts.EnterCombat)),
-            new MenuLine(() => BackOff(c), OptionHint.Saying("Cowards!")),
+            new MenuLine(() => BackOff(c), OptionHint.Saying("exe:DS:5F0F")),  // "Cowards!"
             // orig: R074+0x2442 (1A42:03A2) matched; R074+0x2444 (1A42:03A4) matched; tests: CardSmokeTests
             // DORMANT: talking to the crowd: the original has no code behind this line (it does nothing and the menu returns).
             // C: away from the mob, line 2 takes card-option-flag-2, which this card never sets (a stale
             // global of an earlier card); block 0 has no third line, so it is taken as hidden.
             // C: if a stale value 1 left the line enabled in block 0, choosing it would also do nothing.
-            new MenuLine(() => { }, OptionHint.Saying("No Code!")));
+            new MenuLine(() => { }, OptionHint.Saying("exe:DS:5F18")));  // "No Code!"
     }
 
     // orig: R074+0x224A (1A42:01AA) matched; R074+0x23AE (1A42:030E) matched; tests: CardSmokeTests

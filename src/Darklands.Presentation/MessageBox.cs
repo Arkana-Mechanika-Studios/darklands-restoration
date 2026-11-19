@@ -143,8 +143,8 @@ public sealed class MessageBox(GameUi ui)
         ui.PointerVisible = false;
         try
         {
-            var first = Draw("Game Paused", 0x32);
-            var second = Draw("Press a key to resume", Centred);
+            var first = Draw(ui.Words(ScreenTexts.GamePaused), 0x32);
+            var second = Draw(ui.Words(ScreenTexts.PressAKey), Centred);
             ui.PointerVisible = pointer;
             // C: getch(): any key, read without the hot keys; the mouse is not looked at
             while (ui.PollKeyOnly() == 0)
@@ -169,7 +169,7 @@ public sealed class MessageBox(GameUi ui)
         // the boxes stop above the screen's bottom: at most six lines
         if (lines.Count > MaxNoticeLines)
         {
-            lines = [.. lines.Take(MaxNoticeLines - 1), $"... and {lines.Count - MaxNoticeLines + 1} more"];
+            lines = [.. lines.Take(MaxNoticeLines - 1), ui.Words(Core.GameText.Of(ScreenTexts.AndMore, ("count", lines.Count - MaxNoticeLines + 1)))];
         }
         var saved = new List<SavedRegion>();
         var row = 0x32;

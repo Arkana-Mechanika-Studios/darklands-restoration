@@ -35,15 +35,25 @@ public enum TextFrame
 
 /// <summary>
 /// What an option shows while Shift is held over it: a chance of success (0..100), or a
-/// message (Chance = -1), for one member (0..4) or the whole party (-2).
+/// text (Chance = -1; −2 is the original's error answer), for one member (0..4) or the whole party (-2).
 /// </summary>
-public readonly record struct OptionHint(int Chance, string Message, int Member)
+public readonly record struct OptionHint(int Chance, GameText Text, int Member)
 {
     public const int WholeParty = -2;
 
-    public static OptionHint Say(string message, int member = WholeParty) => new(-1, message, member);
+    /// <summary>A hint with the text <paramref name="id"/> (none for "").</summary>
+    public OptionHint(int chance, string id, int member)
+        : this(chance, GameText.Of(id), member)
+    {
+    }
 
-    public static OptionHint ChanceOf(int percent, int member) => new(percent, "", member);
+    /// <summary>A hint that says <paramref name="text"/>.</summary>
+    public static OptionHint Say(GameText text, int member = WholeParty) => new(-1, text, member);
+
+    /// <summary>A hint that says the text <paramref name="id"/> (<c>exe:DS:4F48</c>).</summary>
+    public static OptionHint Say(string id, int member = WholeParty) => new(-1, GameText.Of(id), member);
+
+    public static OptionHint ChanceOf(int percent, int member) => new(percent, GameText.None, member);
 
     /// <summary>
     /// The handler leaves its chance word (r.a) unset: the screen's Shift hint takes the word card-mouse-handler's path left there
@@ -52,13 +62,33 @@ public readonly record struct OptionHint(int Chance, string Message, int Member)
     public bool ChanceUnset { get; init; }
 
     /// <summary>A handler result whose chance word is unset (r.a never written), for <paramref name="member"/>; <paramref name="otherwise"/> outside a Shift hint.</summary>
-    public static OptionHint UnsetChance(int otherwise, int member) => new(otherwise, "", member) { ChanceUnset = true };
+    public static OptionHint UnsetChance(int otherwise, int member) => new(otherwise, GameText.None, member) { ChanceUnset = true };
 
     /// <summary>A hint function that only says something, for the member given now (the handler's <c>r.a = -1</c>).</summary>
-    public static Func<OptionHint> Saying(string message, int member = WholeParty)
+    public static Func<OptionHint> Saying(string id, int member = WholeParty)
     {
-        var hint = Say(message, member);
+        var hint = Say(id, member);
         return () => hint;
+    }
+
+    /// <summary>
+    /// What the Shift hint shows at <paramref name="difficulty"/>: nothing at Expert; for a chance, "The chance of success is " and the
+    /// percent (Basic) or the quality word; "ERROR!!!" for −2; otherwise the handler's text. A pure query: it reads only this value.
+    /// </summary>
+    // orig: R043+0x27E6 (150B:1D56): nothing at Expert (difficulty-setting == 2); pct >= 0: DS:5284 + N% (Basic) or grade-words[pct / 20] (DS:4FCE; "hopeless" DS:52A0
+    //   for 0); pct == -2: "ERROR!!!" (DS:52A9); otherwise the message the option's function put in text-bank-buffer
+    // C: pct is clamped to 0..100 first (limit-to-range), so "excellent" (index 5) is the highest word an option can show (grade-words has "superb" at 6).
+    public GameText Describe(Difficulty difficulty)
+    {
+        if (difficulty == Difficulty.Expert)
+        {
+            return GameText.None;
+        }
+        if (Chance >= 0)
+        {
+            return GameText.Of(GameTextIds.HintChance, ("chance", Math.Clamp(Chance, 0, 100)), ("basic", difficulty == Difficulty.Basic ? 1 : 0));
+        }
+        return Chance == -2 ? GameText.Of(GameTextIds.HintError) : Text;
     }
 }
 
@@ -162,10 +192,10 @@ public interface ICardScreen
         Choose(0, options, hint, popupHint);
 
     /// <summary>Shows a short message beside a member's portrait (or the whole panel) and waits.</summary>
-    void Tell(string message, int member = OptionHint.WholeParty);
+    void Tell(GameText message, int member = OptionHint.WholeParty);
 
     /// <summary>A framed message for <paramref name="ticks"/> timer ticks, no key waited for (root 0000:24BC); a screen without one tells it.</summary>
-    void ShowMessage(string text, int ticks) => Tell(text);
+    void ShowMessage(GameText text, int ticks) => Tell(text);
 
     /// <summary>
     /// A rule's message (<see cref="IGameMessages"/>), shown at once in the screen's words: a notice with <see cref="ShowMessage"/>, a

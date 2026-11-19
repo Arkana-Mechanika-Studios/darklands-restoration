@@ -35,7 +35,7 @@ public sealed class TemplarWritingDesk : Card
             // orig: R118+0x23A4 (1A2B:0474) matched; hint R118+0x23C2
             new MenuLine(_ => DestroyTheDesk(c), Unknown),
             // orig: R118+0x23FA (1A2B:04CA) matched; hint R118+0x2434
-            new MenuLine(_ => CallOnASaint(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => CallOnASaint(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R118+0x246C (1A2B:053C) matched; hint R118+0x247A
             // C: "turn and leave" starts a battle (mode 1, -2) with the battlefield type and seed left from before: R118+0x246C writes only DS:A766 = 1 and DS:E48A = -2;
             //   CardBattle is the persistent BattleOrders, which keep the battlefield type, seed and the rest.
@@ -50,7 +50,7 @@ public sealed class TemplarWritingDesk : Card
             new MenuLine(_ => EndTheCards(c), Unknown));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>The silver is worth a florin, but its guardians come (flag 8, battle mode 1, −3).</summary>
     // orig: R118+0x2174 (1A2B:0244) matched; tests: CardSmokeTests

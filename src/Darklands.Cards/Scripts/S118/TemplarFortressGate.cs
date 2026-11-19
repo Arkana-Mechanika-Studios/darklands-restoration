@@ -30,7 +30,7 @@ public sealed class TemplarFortressGate : Card
             // C: following-card = 0x0C with no time passing.
             new MenuLine(_ => c.Next = CardContext.MapCard, Unknown),
             // orig: R118+0x17BA (1984:02FA) matched; hint R118+0x18A4
-            new MenuLine(_ => CallOnASaint(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => CallOnASaint(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // DORMANT: lines 3..9 are never enabled. Each (R118+0x18DC, R118+0x1936, R118+0x1990,
             // R118+0x19EA, R118+0x1A44, R118+0x1A9E, R118+0x1AF8) would show text 0,
             // pass no time and end the card loop (EndOfCards, 0x62); hints 043a..0656 say "unknown" for no one.
@@ -43,7 +43,7 @@ public sealed class TemplarFortressGate : Card
             new MenuLine(_ => EndTheCards(c), Unknown));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>The graveyard: a visit note here for an hour, then battle 0x5E (mode 0).</summary>
     // orig: R118+0x16FA (1984:023A) matched; tests: CardSmokeTests

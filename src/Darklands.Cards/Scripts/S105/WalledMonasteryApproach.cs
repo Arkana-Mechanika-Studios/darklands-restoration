@@ -43,7 +43,7 @@ public sealed class WalledMonasteryApproach : Card
                 c.Skill(Who.Leader, (int)Skill.SpeakCommon) + c.Attribute(Who.Leader, (int)Attribute.Charisma) * 2 + c.Skill(Who.Leader, (int)Skill.Woodwise) / 5,
                 1, 99), c.Leader)),
             // orig: R105+0x1814 (line 2); hint R105+0x18DC (1954:071C) matched
-            new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // DORMANT: lines 3..6, 8 and 9 are never offered (option-flag = 0); each lets no time pass (cited per line below).
             // orig: R105+0x1914 (line 3)
             new MenuLine(_ => c.PassHours(0), Assured),

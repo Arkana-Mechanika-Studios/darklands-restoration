@@ -359,12 +359,12 @@ public sealed class OracleScreen(int option, bool probe, HandCall? hand = null) 
 
     public static string Describe(OptionHint h) => Say(h);
 
-    private static string Say(OptionHint h) => $"{h.Chance} '{(h.Chance == -1 ? h.Message : "")}' {h.Member}";
+    private static string Say(OptionHint h) => $"{h.Chance} '{(h.Chance == -1 ? TestMessages.Words(h.Text) : "")}' {h.Member}";
 
     public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
 
 
-    public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {message}");
+    public void Tell(Darklands.Core.GameText message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {TestMessages.Words(message)}");
 
     public void PassTime(int hours) => Log.Add($"time {hours}");
 }

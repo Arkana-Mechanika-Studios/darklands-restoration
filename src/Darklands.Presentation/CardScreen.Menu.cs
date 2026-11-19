@@ -454,9 +454,9 @@ public sealed partial class CardScreen
         // C: R043+0x2CE2 measures the lines in the font of its window, the card window DS:016A (font 3; hooked in the original: the box of
         //   card 0x37's potion line is 0x43 wide, the widest line in font 3 plus 6, vis10 session uncert-polit-popup-hint); 2ACA then sets
         //   font 1 for the height and the drawing.
-        var text = OptionPopupText.Build(c, line.Kind == OptionKind.Saints, ui.CardWindowText, _pictureName.StartsWith('x'));
-        // orig: the entries' states R043+0x2CE2 writes into the box layout DS:EA64 (+0x2E): what card-option-enabled becomes after a choice in the box
-        text.States.CopyTo(c.MenuBoxStates, 0);
+        var saints = line.Kind == OptionKind.Saints;
+        var text = OptionPopupText.Build(c.OpenPopup(saints), saints ? k => OptionPopupText.SaintName(c, k) : c.World.ItemName, ui.CardWindowText,
+            _pictureName.StartsWith('x'));
         var layout = new CardTextLayout(ui.Text);
         var w = text.Width;
         // C: measured on text-bank-buffer with the bytes after its zero: when the last listed member's last slot is empty (a hidden line at

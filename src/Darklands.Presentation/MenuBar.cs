@@ -152,33 +152,36 @@ public sealed class MenuBar
     public static MenuBar ForGame(GameUi ui, GameState state, GameOptions options, HotKeys keys)
     {
         static string Tick(bool on) => on ? "\x01" : "\x02";
+        // an item's string with the tick the program writes into its first byte; a key label ("\x0fS") or a title as it is
+        string Ticked(bool on, string id) => Tick(on) + ui.Words(id)[1..];
+        string Words(string id) => ui.Words(id);
         var difficulty = new List<SubItem>
         {
-            new(() => Tick(state.Difficulty == Difficulty.Basic) + "Basic", true, "", 0, () => keys.SetDifficulty(Difficulty.Basic)),
-            new(() => Tick(state.Difficulty == Difficulty.Standard) + "Standard", true, "", 0, () => keys.SetDifficulty(Difficulty.Standard)),
-            new(() => Tick(state.Difficulty == Difficulty.Expert) + "Expert", true, "", 0, () => keys.SetDifficulty(Difficulty.Expert)),
+            new(() => Ticked(state.Difficulty == Difficulty.Basic, "exe:DS:0D2F"), true, "", 0, () => keys.SetDifficulty(Difficulty.Basic)),
+            new(() => Ticked(state.Difficulty == Difficulty.Standard, "exe:DS:0D36"), true, "", 0, () => keys.SetDifficulty(Difficulty.Standard)),
+            new(() => Ticked(state.Difficulty == Difficulty.Expert, "exe:DS:0D40"), true, "", 0, () => keys.SetDifficulty(Difficulty.Expert)),
         };
         var game = new List<Item>
         {
             // C: the items' flag bytes are DS:9920 and DS:9934 (HotKeys.SaveGameItem / LoadGameItem): greyed while a screen switches them off (the inn's roster, a stay, the character sheet, barter: see HotKeys).
-            new(() => "\x02Save Game", true, "\x0fS", () => keys.Save?.Invoke(), State: () => keys.SaveGameItem),
-            new(() => "\x02Load Saved Game", true, "\x0fL", keys.LoadGame, State: () => keys.LoadGameItem),
-            new(() => "\x02" + "Difficulty", true, "\x0f" + "D", () => { }, difficulty),
-            new(() => Tick(state.ShowSaintlyChanges) + "Show Changes", true, "\x0f" + "C", keys.ToggleSaintlyChanges),
-            new(() => Tick(options.Music) + "Music", true, "\x0fM", keys.ToggleMusic),
-            new(() => Tick(options.SoundEffects) + "Sound FX", true, "\x0f" + "F", keys.ToggleSoundEffects),
-            new(() => "\x02Pause", true, "\x0fP", keys.Pause),
-            new(() => "\x02Quit to DOS", true, "\x0fQ", keys.QuitToDos),
+            new(() => Words("exe:DS:0CBB"), true, Words("exe:DS:0CC6"), () => keys.Save?.Invoke(), State: () => keys.SaveGameItem),
+            new(() => Words("exe:DS:0CC9"), true, Words("exe:DS:0CDA"), keys.LoadGame, State: () => keys.LoadGameItem),
+            new(() => Words("exe:DS:0CDD"), true, Words("exe:DS:0CE9"), () => { }, difficulty),
+            new(() => Ticked(state.ShowSaintlyChanges, "exe:DS:0CEC"), true, Words("exe:DS:0CFA"), keys.ToggleSaintlyChanges),
+            new(() => Ticked(options.Music, "exe:DS:0CFD"), true, Words("exe:DS:0D04"), keys.ToggleMusic),
+            new(() => Ticked(options.SoundEffects, "exe:DS:0D07"), true, Words("exe:DS:0D11"), keys.ToggleSoundEffects),
+            new(() => Words("exe:DS:0D14"), true, Words("exe:DS:0D1B"), keys.Pause),
+            new(() => Words("exe:DS:0D1E"), true, Words("exe:DS:0D2B"), keys.QuitToDos),
         };
         // orig: the Party menu's second item calls thunk 09C0:183D (R022+0x051C, MarchingOrderScreen) with the flag DS:9893 (1 outside a battle)
         var party = new List<Item>
         {
-            new(() => "Party Info", true, "\x0a", keys.ShowPartyInfo),
-            new(() => "Change Marching Order", true, "\x0fO", () => keys.ChoosePartyOrder?.Invoke()),
+            new(() => Words("exe:DS:0DEE"), true, "\x0a", keys.ShowPartyInfo),
+            new(() => Words("exe:DS:0DF9"), true, Words("exe:DS:0E0F"), () => keys.ChoosePartyOrder?.Invoke()),
         };
         MenuBar? bar = null;
-        bar = new MenuBar(ui, [new("Game", true, game, BeforeItems: () => BeforeGameItems(state)), new("Orders", false, []), new("Attack", false, []),
-            new("Party", true, party, BeforeItems: () => bar!.DropdownRight)])
+        bar = new MenuBar(ui, [new(Words("exe:DS:0CA1"), true, game, BeforeItems: () => BeforeGameItems(state)), new(Words("exe:DS:0CA6"), false, []),
+            new(Words("exe:DS:0CAD"), false, []), new(Words("exe:DS:0CB4"), true, party, BeforeItems: () => bar!.DropdownRight)])
         {
             QuitToDos = keys.QuitToDos,
         };

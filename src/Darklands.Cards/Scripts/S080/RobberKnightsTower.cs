@@ -84,7 +84,7 @@ public sealed class RobberKnightsTower : Card
 
         return menu.Run(
             // orig: R080+0x155A (1929:064A) matched; R080+0x16A0 (1929:0790) matched; tests: CardSmokeTests
-            new MenuLine(() => { Recognise(); LaySiege(c); }, OptionHint.Saying("This may take some time")),
+            new MenuLine(() => { Recognise(); LaySiege(c); }, OptionHint.Saying("exe:DS:6055")),  // "This may take some time"
             // orig: R080+0x16CA (1929:07BA) matched; R080+0x1966 (1929:0A56) matched; tests: CardSmokeTests
             // orig: R080+0x20A0 (1929:1190) matched; R080+0x20DC (1929:11CC) matched; R080+0x2118 (1929:1208) matched; tests: CardSmokeTests
             new MenuLine(() =>

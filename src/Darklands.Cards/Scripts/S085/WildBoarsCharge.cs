@@ -40,7 +40,7 @@ public sealed class WildBoarsCharge : Card
         }
         return menu.Run(
             // orig: R085+0x09E8 (18A9:02D8) matched; R085+0x0AAA (18A9:039A) matched; tests: CardSmokeTests
-            new MenuLine(() => DodgeAside(c), OptionHint.Saying("It's every man for himself")),
+            new MenuLine(() => DodgeAside(c), OptionHint.Saying("exe:290E:03F4")),  // "It's every man for himself"
             // orig: R085+0x0AD8 (18A9:03C8) matched; R085+0x0B94 (18A9:0484) matched; tests: CardSmokeTests
             new MenuLine(chance => OutrunThem(c, chance), () => OutrunChance(c)),
             // orig: R085+0x0BC0 (18A9:04B0) matched; R085+0x0CA0 (18A9:0590) matched; tests: CardSmokeTests

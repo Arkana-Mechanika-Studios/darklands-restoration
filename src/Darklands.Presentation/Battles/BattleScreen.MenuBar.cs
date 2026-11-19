@@ -248,7 +248,7 @@ public sealed partial class BattleScreen
         // C: the battle's difficulty is the game's (Battle.DifficultyOf)
         _state.Difficulty = d;
         // C: the box's wait counts in the bar's run (RunMenu: the menu's measured callbacks hold it)
-        new MessageBox(_ui).Show(HotKeys.DifficultyText(d));
+        new MessageBox(_ui).Show(HotKeys.DifficultyText(_ui, d));
     }
 
     private void Resume()

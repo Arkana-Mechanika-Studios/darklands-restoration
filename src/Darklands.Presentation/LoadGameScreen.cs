@@ -198,7 +198,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             }
             _names[_rowsShown - 1] = name;
             var s = folder.Summary(name);
-            var line = $"{s.Place} {s.Year}/{s.Month + 1}/{s.Day}  {s.Hour}";
+            var line = ui.Format(ScreenTexts.SavedGameLine, s.Place, s.Year, s.Month + 1, s.Day, s.Hour);
             var y = _rowsShown << 4;
             // DIVERGENCE: no original: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) a saved game of a modded game
             //   (its own companion file, SaveFolder.IsModded) carries the mod mark at the right end of its first line, which stops short of it.
@@ -245,7 +245,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         if (key == Keys.AltQ)
         {
             // C: 0218 frees the button picture before exit-to-system asks; after "no" the screen goes on without it.
-            if (new MessageBox(ui).Ask("Quit to DOS?"))
+            if (new MessageBox(ui).Ask(ui.Words(ScreenTexts.QuitToDos)))
             {
                 throw new QuitGameException();
             }
@@ -359,7 +359,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Label(1), LabelColor);
         ui.PresentPressedButton();
-        if (new MessageBox(ui).Ask("Delete this Game?"))
+        if (new MessageBox(ui).Ask(ui.Words(ScreenTexts.DeleteThisGame)))
         {
             if (_names[_cursorRow] is { } name && folder.Delete(name, Playing))
             {
