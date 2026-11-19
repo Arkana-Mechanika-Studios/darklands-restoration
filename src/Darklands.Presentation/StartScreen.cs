@@ -42,7 +42,7 @@ public sealed class StartScreen(GameUi ui)
                 {
                     // C: key 0x1000: R037+0x9CE6 (frees the buttons) then exit-to-system = "Quit to DOS? y/n"; on "n" the handler returns something other than 0x11b and the loop goes on (with the button pictures already freed, so a later button press draws stale memory).
                     // DIVERGENCE: after "no" the screen simply goes on.
-                    if (new MessageBox(ui).Ask("Quit to DOS?"))
+                    if (new MessageBox(ui).Ask(ui.Words(ScreenTexts.QuitToDos)))
                     {
                         return chosen;
                     }

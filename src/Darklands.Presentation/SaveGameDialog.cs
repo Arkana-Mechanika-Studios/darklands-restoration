@@ -29,7 +29,7 @@ public sealed class SaveGameDialog(GameUi ui, SaveFolder folder)
     //   in the card window's font 1 (root 0000:001E, GameUi.CardWindowFont), from the Game menu in font 3 (local/batch/batpal)
     public string? Run(GameState state, TacticalBattle? battle = null)
     {
-        var comment = new TextInputBox(ui).Ask("Save Game Comment:", CommentLength, OriginalSaves.DefaultComment);
+        var comment = new TextInputBox(ui).Ask(ui.Words(ScreenTexts.SaveGameComment), CommentLength, OriginalSaves.DefaultComment);
         if (comment.Length == 0)
         {
             return null;
@@ -40,7 +40,7 @@ public sealed class SaveGameDialog(GameUi ui, SaveFolder folder)
             battle.WriteBattleFile(state.BattleFile ??= new BattleFile(), inBattle: true, state.Battlefield.ClearedLevels, state.LastCastleFlags);
         }
         var box = new MessageBox(ui);
-        var shown = box.Open("Saving Game", battle is not null ? (byte)9 : MessageBox.TextColor);
+        var shown = box.Open(ui.Words(ScreenTexts.SavingGame), battle is not null ? (byte)9 : MessageBox.TextColor);
         try
         {
             return folder.Save(state, comment, ui.Options.Music, ui.Options.SoundEffects, battle?.Battle);

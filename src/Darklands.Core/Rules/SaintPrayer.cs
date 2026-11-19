@@ -166,13 +166,23 @@ public sealed class SaintPrayer
     //   helped for -1, which the saint routines read as the leader, while the divine favor is spent by the member who prayed, with his
     //   chance: a member who is not the leader prays and the leader gets the help (a boosted weapon skill, for instance). Reproduced as
     //   the original. Decision: later, an optional fixed rule after 1.0.
-    public bool Pray(int target, ISaintEffects effects, Action<bool>? announce = null)
+    /// <summary>"Saint Call Successful" (DS:33EE), shown before the help.</summary>
+    public const string CallSuccessful = "exe:DS:33EE";
+
+    /// <summary>"Saint Call Fails" after the extra loss (DS:3404; R034+0x01D0).</summary>
+    public const string CallFailsWithLoss = "exe:DS:3404";
+
+    /// <summary>"Saint Call Fails" without it (DS:3415; R034+0x01E0: the original's second copy).</summary>
+    public const string CallFails = "exe:DS:3415";
+
+    /// <summary>Prays; <paramref name="announce"/> gets the message the original shows at that moment (an id: <see cref="CallSuccessful"/>, ...).</summary>
+    public bool Pray(int target, ISaintEffects effects, Action<string>? announce = null)
     {
         var chance = Listed ? Chance : UnlistedChance;
         var success = _state.Random.Below(100) <= chance;
         if (success)
         {
-            announce?.Invoke(true);
+            announce?.Invoke(CallSuccessful);
             if (Listed)
             {
                 effects.Help(_state, target, Saint, Favor);
@@ -186,11 +196,11 @@ public sealed class SaintPrayer
         else if (_state.Random.Below(99) < chance - 66)
         {
             MemberRules.AddAttribute(_state, Member, (int)Attribute.DivineFavor, -(Favor / 2));
-            announce?.Invoke(false);
+            announce?.Invoke(CallFailsWithLoss);
         }
         else
         {
-            announce?.Invoke(false);
+            announce?.Invoke(CallFails);
         }
         MemberRules.AddAttribute(_state, Member, (int)Attribute.DivineFavor, -Favor);
         return success;

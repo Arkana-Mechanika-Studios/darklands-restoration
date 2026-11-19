@@ -318,7 +318,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a186ab** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintPrayer.cs:69` `SaintPrayer.Listed`  
   original: `R029+0x4626` (0E76:4626, draft)  
   why: an unlisted slot gets a prayer screen: the last formula's name, a garbage feast day and picture (SaintPrayerScreen), "Success: 99", no Divine Favor offered, and P prays with the screen's font word as the chance (UnlistedChance).
-- **B-2ac4c7** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintPrayer.cs:164` `SaintPrayer.Pray`  
+- **B-2ac4c7** `bug`, no fix flag - `src/Darklands.Core/Rules/SaintPrayer.cs:164` `SaintPrayer.CallSuccessful`  
   original: `R034+0x022C` (1462:022C, matched), `R034+0x06E2` (1462:06E2, matched)  
   why: a prayer that does not choose a member (the saint's use bit for the screen's mode is clear, so the P line reads "for the entire party", R034+0x022C / R034+0x06E2; the target DS:89EA is set to -1 at R034+0x06AC) is helped for -1, which the saint routines read as the leader, while the divine favor is spent by the member who prayed, with his chance: a member who is not the leader prays and the leader gets the help (a boosted weapon skill, for instance). Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
@@ -861,7 +861,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### screens/presentation (15)
 
-- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:221` `BarterScreen.Purchase`  
+- **B-abb9be** `bug`, no fix flag - `src/Darklands.Presentation/BarterScreen.cs:242` `BarterScreen.Purchase`  
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 - **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.Drawing.cs:50` `BattleScreen.RecordScreenPlaces`  

@@ -1,4 +1,3 @@
-using System.Globalization;
 using Darklands.Cards;
 using Darklands.Core;
 using Darklands.Core.Characters;
@@ -21,8 +20,22 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     // C: menu rows give G, P, C, Esc; row 4 (below Leave) gives no key. The L key itself is not handled by stash-screen-keys (only Esc leaves).
     private static readonly int[] MenuKeys = [0x2247, 0x1950, 0x2E43, Keys.Escape];
 
-    private const string GetLine = "\u008C G\u00FFet an item from cache";
-    private const string PutLine = "\u008C P\u00FFut an item into cache";
+    // the menu lines of R035, the key letter after 0x8C in colour 12
+    private const string GetLine = "exe:DS:37F6";
+    private const string PutLine = "exe:DS:3810";
+
+    // each drawing function of R035 loads its own copies: stash-screen-paint R035+0x0510 and stash-screen-repaint R035+0x0782: "Cache another
+    //   person's items", "Leave", "%s holds the purse of %dfl, %dgr, %dpf.", "The cache contains...", "%s currently has..." / "%s has...",
+    //   "%Fs  (%3d) %2d-Qual" for the pack, then for the store
+    private static readonly (string Another, string Leave, string Purse, string Cache, string Has, string PackItem, string StoreItem) FullDrawing =
+        ("exe:DS:3863", "exe:DS:3883", "exe:DS:383B", "exe:DS:388C", "exe:DS:38A2", "exe:DS:38B6", "exe:DS:38CA");
+
+    private static readonly (string Another, string Leave, string Purse, string Cache, string Has, string PackItem, string StoreItem) RedrawTexts =
+        ("exe:DS:3917", "exe:DS:3937", "exe:DS:38EF", "exe:DS:3940", "exe:DS:3956", "exe:DS:3960", "exe:DS:3974");
+
+    // member-items-paint R035+0x11AC ("%Fs  (%3d) %2dq") and stash-items-paint R035+0x1292
+    private const string PackListItem = "exe:DS:3988";
+    private const string StoreListItem = "exe:DS:3998";
 
     // Per member, kept between visits.
     private readonly int[] _packCount = new int[5];
@@ -389,15 +402,15 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     /// <summary>The menu with Put dark (the pack in use).</summary>
     private void ShowPacking()
     {
-        page.Text(0x50, 0x1B, GetLine, BuySellPage.Faded);
-        page.Text(0x50, 0x23, PutLine, BuySellPage.Ink);
+        page.Text(0x50, 0x1B, Words(GetLine), BuySellPage.Faded);
+        page.Text(0x50, 0x23, Words(PutLine), BuySellPage.Ink);
     }
 
     /// <summary>The menu with Get dark (the store in use).</summary>
     private void ShowGetting()
     {
-        page.Text(0x50, 0x23, PutLine, BuySellPage.Faded);
-        page.Text(0x50, 0x1B, GetLine, BuySellPage.Ink);
+        page.Text(0x50, 0x23, Words(PutLine), BuySellPage.Faded);
+        page.Text(0x50, 0x1B, Words(GetLine), BuySellPage.Ink);
     }
 
     /// <summary>The first drawing; the store is read here.</summary>
@@ -405,22 +418,22 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private void DrawScreen(Core.World.Location place)
     {
         page.DrawBackground(Party);
-        page.Text(0x49, 9, PurseLine(), BuySellPage.Ink);
-        page.Text(0x50, 0x1B, GetLine, BuySellPage.Faded);
-        page.Text(0x50, 0x23, PutLine, BuySellPage.Ink);
-        DrawMenuTail();
-        page.Text(0x6B, 0x45, "The cache contains...", BuySellPage.Ink);
-        page.Text(0x77, 0x83, $"{Party.Slot(Member).ShortName} currently has...", BuySellPage.Ink);
+        page.Text(0x49, 9, PurseLine(FullDrawing.Purse), BuySellPage.Ink);
+        page.Text(0x50, 0x1B, Words(GetLine), BuySellPage.Faded);
+        page.Text(0x50, 0x23, Words(PutLine), BuySellPage.Ink);
+        DrawMenuTail(FullDrawing.Another, FullDrawing.Leave);
+        page.Text(0x6B, 0x45, Words(FullDrawing.Cache), BuySellPage.Ink);
+        page.Text(0x77, 0x83, page.Ui.Format(FullDrawing.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, 0x93 + i * 8, ItemLine(pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality, "-Qual"), BuySellPage.Ink);
+            page.Text(0x75, 0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
         }
         // C: the pack lines are drawn from row 0 (not from the kept top) and the store's lines at (i − kept top), as the original does with its persistent statics.
         _store = state.ItemStores.Open(place.CacheHandle, state.StoreTable);
         for (var i = 0; i < _store.Count && i < 4; i++)
         {
-            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(_store[i]), BuySellPage.Ink);
+            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(FullDrawing.StoreItem, _store[i]), BuySellPage.Ink);
         }
         page.Light(0x73, 0x93, 0xB7);
         _packCount[Member] = pack.Count;
@@ -431,21 +444,21 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private void Redraw()
     {
         page.DrawBackground(Party);
-        page.Text(0x49, 9, PurseLine(), BuySellPage.Ink);
-        page.Text(0x50, 0x1B, GetLine, _usingStore[Member] ? BuySellPage.Ink : BuySellPage.Faded);
-        page.Text(0x50, 0x23, PutLine, _usingStore[Member] ? BuySellPage.Faded : BuySellPage.Ink);
-        DrawMenuTail();
+        page.Text(0x49, 9, PurseLine(RedrawTexts.Purse), BuySellPage.Ink);
+        page.Text(0x50, 0x1B, Words(GetLine), _usingStore[Member] ? BuySellPage.Ink : BuySellPage.Faded);
+        page.Text(0x50, 0x23, Words(PutLine), _usingStore[Member] ? BuySellPage.Faded : BuySellPage.Ink);
+        DrawMenuTail(RedrawTexts.Another, RedrawTexts.Leave);
         // C: the redraw prints this heading at x 0x57, the first drawing at 0x6B.
-        page.Text(0x57, 0x45, "The cache contains...", BuySellPage.Ink);
-        page.Text(0x77, 0x83, $"{Party.Slot(Member).ShortName} has...", BuySellPage.Ink);
+        page.Text(0x57, 0x45, Words(RedrawTexts.Cache), BuySellPage.Ink);
+        page.Text(0x77, 0x83, page.Ui.Format(RedrawTexts.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, 0x93 + i * 8, ItemLine(pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality, "-Qual"), BuySellPage.Ink);
+            page.Text(0x75, 0x93 + i * 8, ItemLine(RedrawTexts.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
         }
         for (var i = 0; i < _store.Count && i < 4; i++)
         {
-            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(_store[i]), BuySellPage.Ink);
+            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(RedrawTexts.StoreItem, _store[i]), BuySellPage.Ink);
         }
         if (_usingStore[Member])
         {
@@ -458,10 +471,10 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         _packCount[Member] = pack.Count;
     }
 
-    private void DrawMenuTail()
+    private void DrawMenuTail(string another, string leave)
     {
-        page.Text(0x50, 0x2B, "\u008C C\u00FFache another person's items", BuySellPage.Ink);
-        page.Text(0x50, 0x33, "\u008C L\u00FFeave", BuySellPage.Ink);
+        page.Text(0x50, 0x2B, Words(another), BuySellPage.Ink);
+        page.Text(0x50, 0x33, Words(leave), BuySellPage.Ink);
     }
 
     /// <summary>Four of the member's stacks (here the quality reads "q", not "-Qual").</summary>
@@ -472,7 +485,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         var pack = PackOf(Member);
         for (var i = _packTop[Member]; i < _packTop[Member] + 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality, "q"), BuySellPage.Ink);
+            page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(PackListItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
         }
     }
 
@@ -482,22 +495,21 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         page.Restore(0x52, 0x55, 0xB6, 0x20);
         for (var i = _storeTop[Member]; i < _storeTop[Member] + 4 && i < _store.Count; i++)
         {
-            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(_store[i]), BuySellPage.Ink);
+            page.Text(0x55, (i - _storeTop[Member]) * 8 + 0x55, StoreLine(StoreListItem, _store[i]), BuySellPage.Ink);
         }
     }
 
-    private string PurseLine()
+    private string Words(string id) => page.Ui.Words(id);
+
+    private string PurseLine(string format)
     {
         var purse = Party.Purse;
-        return Invariant($"{Party.Slot(Party.LeaderIndex).ShortName} holds the purse of {purse.Florins}fl, {purse.Groschen}gr, {purse.Pfennigs}pf.");
+        return page.Ui.Format(format, Party.Slot(Party.LeaderIndex).ShortName, purse.Florins, purse.Groschen, purse.Pfennigs);
     }
 
     // C: the store's qual and cnt are signed chars printed with %d (a count of 200 prints −56).
-    private string StoreLine(StoredItem entry) => ItemLine(entry.Code, (sbyte)entry.Count, (sbyte)entry.Quality, "-Qual");   // the store keeps them as signed bytes
+    private string StoreLine(string format, StoredItem entry) => ItemLine(format, entry.Code, (sbyte)entry.Count, (sbyte)entry.Quality);   // the store keeps them as signed bytes
 
-    /// <summary>"name  (%3d) %2d-Qual".</summary>
-    private string ItemLine(int code, int count, int quality, string qualityWord) =>
-        Invariant($"{state.Item(code).Name}  ({count,3}) {quality,2}{qualityWord}");
-
-    private static string Invariant(FormattableString text) => text.ToString(CultureInfo.InvariantCulture);
+    /// <summary>"%Fs  (%3d) %2d-Qual" (or "...%2dq"): the item's name, the count, the quality.</summary>
+    private string ItemLine(string format, int code, int count, int quality) => page.Ui.Format(format, state.Item(code).Name, count, quality);
 }

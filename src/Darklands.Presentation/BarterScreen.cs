@@ -1,4 +1,3 @@
-using System.Globalization;
 using Darklands.Cards;
 using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
@@ -19,8 +18,30 @@ public sealed class BarterScreen
     // C: a click on menu row 2 (the blank line) gives 0x1E41 ('A'), which no case handles: kept as a no-op key.
     private static readonly int[] MenuKeys = [0x1950, 0x1F53, 0x1E41, 0x3042, Keys.Escape];
 
-    private const string PurchaseLine = "\u008C P\u00FFurchase an item";
-    private const string SellLine = "\u008C S\u00FFell an item";
+    // the menu lines of R032 (one copy each), the key letter after 0x8C in colour 12
+    private const string PurchaseLine = "exe:DS:2F4A";
+    private const string SellLine = "exe:DS:2F3A";
+
+    /// <summary>The texts one drawing function of R032 loads: its own copies.</summary>
+    private sealed record PageTexts(string Purse, string He, string She, string Himself, string Herself, string BartersFor, string BartersForSelf,
+        string Another, string Leave, string Offers, string Has, string PackItem, string ShopItem);
+
+    // trade-screen-paint R032+0x078E: "%s holds the purse of %dfl, %dgr, %dpf (%lupf).", "He", "She", "himself", "herself", "%s barters for %s to
+    //   the %Fs" (another member, then the leader for himself), "Barter for another person", "Leave", "The %Fs offers...", "%s currently has...",
+    //   "%5upf  %Fs  (%3d) %2dq", "%5upf  %Fs  %3dq  %3dlbs"
+    private static readonly PageTexts FullDrawing = new("exe:DS:2F71", "exe:DS:2FA1", "exe:DS:2FAC", "exe:DS:2FA4", "exe:DS:2FB0", "exe:DS:2FB8",
+        "exe:DS:2FD5", "exe:DS:2FF2", "exe:DS:300F", "exe:DS:3018", "exe:DS:302A", "exe:DS:303E", "exe:DS:3055");
+
+    // trade-screen-repaint R032+0x0B30 (its "%s has...")
+    private static readonly PageTexts RedrawTexts = new("exe:DS:307F", "exe:DS:30AF", "exe:DS:30BA", "exe:DS:30B2", "exe:DS:30BE", "exe:DS:30C6",
+        "exe:DS:30E3", "exe:DS:3100", "exe:DS:311D", "exe:DS:3126", "exe:DS:3138", "exe:DS:3142", "exe:DS:3159");
+
+    // trade-screen-keys R032+0x0F60: the purse line after P (DS:3172) and after S (DS:31A2); member-items-paint R032+0x1770 ("%5upf  %Fs  (%3d) %2dq",
+    //   DS:31D2); shop-items-paint R032+0x1870 ("%3dpf  %Fs  %3dq  %3dlbs", DS:31E9)
+    private const string PurseAfterPurchase = "exe:DS:3172";
+    private const string PurseAfterSale = "exe:DS:31A2";
+    private const string PackListItem = "exe:DS:31D2";
+    private const string ShopListItem = "exe:DS:31E9";
     private const string BlankLine = " ";
 
     private readonly BuySellPage _page;
@@ -228,7 +249,7 @@ public sealed class BarterScreen
         {
             return;
         }
-        RedrawPurse();
+        RedrawPurse(PurseAfterPurchase);
         _packCount[_member] = count;
         DrawPackItems();
         _page.Light(0x52, _shopRow * 8 + 0x55, 0x5F);
@@ -248,7 +269,7 @@ public sealed class BarterScreen
         {
             return;
         }
-        RedrawPurse();
+        RedrawPurse(PurseAfterSale);
         _packCount[_member] = count;
         if (index >= count)
         {
@@ -418,17 +439,17 @@ public sealed class BarterScreen
     /// <summary>The menu with Purchase dark (the shop list in use).</summary>
     private void ShowBuying()
     {
-        _page.Text(0x50, 0x23, SellLine, BuySellPage.Faded);
-        _page.Text(0x50, 0x1B, PurchaseLine, BuySellPage.Ink);
+        _page.Text(0x50, 0x23, Words(SellLine), BuySellPage.Faded);
+        _page.Text(0x50, 0x1B, Words(PurchaseLine), BuySellPage.Ink);
         _page.Text(0x50, 0x2B, BlankLine, BuySellPage.Faded);
     }
 
     /// <summary>The menu with Sell dark (the pack list in use).</summary>
     private void ShowSelling()
     {
-        _page.Text(0x50, 0x1B, PurchaseLine, BuySellPage.Faded);
+        _page.Text(0x50, 0x1B, Words(PurchaseLine), BuySellPage.Faded);
         _page.Text(0x50, 0x2B, BlankLine, BuySellPage.Faded);
-        _page.Text(0x50, 0x23, SellLine, BuySellPage.Ink);
+        _page.Text(0x50, 0x23, Words(SellLine), BuySellPage.Ink);
     }
 
     /// <summary>The first drawing: the page, both lists, and the day's stock (which seeds the generator).</summary>
@@ -436,17 +457,17 @@ public sealed class BarterScreen
     private void DrawScreen()
     {
         _page.DrawBackground(Party);
-        _page.Text(0x49, 9, PurseLine(), BuySellPage.Ink);
-        _page.Text(0x49, 0x12, BartersLine(), BuySellPage.Ink);
-        _page.Text(0x50, 0x1B, PurchaseLine, BuySellPage.Ink);
-        _page.Text(0x50, 0x23, SellLine, BuySellPage.Faded);
+        _page.Text(0x49, 9, PurseLine(FullDrawing.Purse), BuySellPage.Ink);
+        _page.Text(0x49, 0x12, BartersLine(FullDrawing), BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(PurchaseLine), BuySellPage.Ink);
+        _page.Text(0x50, 0x23, Words(SellLine), BuySellPage.Faded);
         _page.Text(0x50, 0x2B, BlankLine, BuySellPage.Faded);
-        DrawMenuTail();
-        _page.Text(0x81, 0x83, $"{Party.Slot(_member).ShortName} currently has...", BuySellPage.Ink);
+        DrawMenuTail(FullDrawing);
+        _page.Text(0x81, 0x83, _page.Ui.Format(FullDrawing.Has, Party.Slot(_member).ShortName), BuySellPage.Ink);
         var pack = PackOf(_member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, 0x93 + i * 8, PackLine(pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, 0x93 + i * 8, PackLine(FullDrawing.PackItem, pack[i]), BuySellPage.Ink);
         }
         // C: the pack lines above were priced before the stock listing seeds the generator (price-to-sell draws under the clock seed, in a flag-8 place).
         _stock = Trading.Stock(_state, _shop);
@@ -459,7 +480,7 @@ public sealed class BarterScreen
         {
             var code = _stock.Codes[i];
             // C: the first listing places its lines with the pack list's top DS:8852[DS:884E] instead of the shop list's (both 0 on entry).
-            _page.Text(0x55, (i - _packTop[_member]) * 8 + 0x55, ShopLine(code, _stock.ListedPrices[i], wide: true), BuySellPage.Ink);
+            _page.Text(0x55, (i - _packTop[_member]) * 8 + 0x55, ShopLine(FullDrawing.ShopItem, code, _stock.ListedPrices[i]), BuySellPage.Ink);
         }
         _page.Light(0x53, 0x55, 0xB8);
         _packCount[_member] = pack.Count;
@@ -476,23 +497,23 @@ public sealed class BarterScreen
     private void Redraw()
     {
         _page.DrawBackground(Party);
-        _page.Text(0x49, 9, PurseLine(), BuySellPage.Ink);
+        _page.Text(0x49, 9, PurseLine(RedrawTexts.Purse), BuySellPage.Ink);
         // C: the redraw prints this line at x 0x4E, the first drawing at 0x49.
-        _page.Text(0x4E, 0x12, BartersLine(), BuySellPage.Ink);
-        _page.Text(0x50, 0x1B, PurchaseLine, _buying[_member] ? BuySellPage.Ink : BuySellPage.Faded);
-        _page.Text(0x50, 0x23, SellLine, _buying[_member] ? BuySellPage.Faded : BuySellPage.Ink);
+        _page.Text(0x4E, 0x12, BartersLine(RedrawTexts), BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(PurchaseLine), _buying[_member] ? BuySellPage.Ink : BuySellPage.Faded);
+        _page.Text(0x50, 0x23, Words(SellLine), _buying[_member] ? BuySellPage.Faded : BuySellPage.Ink);
         _page.Text(0x50, 0x2B, BlankLine, BuySellPage.Faded);
-        DrawMenuTail();
-        _page.Text(0x81, 0x83, $"{Party.Slot(_member).ShortName} has...", BuySellPage.Ink);
+        DrawMenuTail(RedrawTexts);
+        _page.Text(0x81, 0x83, _page.Ui.Format(RedrawTexts.Has, Party.Slot(_member).ShortName), BuySellPage.Ink);
         var pack = PackOf(_member);
         for (var i = _packTop[_member]; i < _packTop[_member] + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[_member]) * 8 + 0x93, PackLine(pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _packTop[_member]) * 8 + 0x93, PackLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
         }
         for (var i = _shopTop; i < _shopTop + 4 && i < _stock.Codes.Count; i++)
         {
             var code = _stock.Codes[i];
-            _page.Text(0x55, (i - _shopTop) * 8 + 0x55, ShopLine(code, Trading.BuyPrice(_state, _shop, code), wide: true), BuySellPage.Ink);
+            _page.Text(0x55, (i - _shopTop) * 8 + 0x55, ShopLine(RedrawTexts.ShopItem, code, Trading.BuyPrice(_state, _shop, code)), BuySellPage.Ink);
         }
         if (_buying[_member])
         {
@@ -505,11 +526,11 @@ public sealed class BarterScreen
         _packCount[_member] = pack.Count;
     }
 
-    private void DrawMenuTail()
+    private void DrawMenuTail(PageTexts texts)
     {
-        _page.Text(0x50, 0x33, "\u008C B\u00FFarter for another person", BuySellPage.Ink);
-        _page.Text(0x50, 0x3B, "\u008C L\u00FFeave", BuySellPage.Ink);
-        _page.Text(0x7A, 0x45, $"The {ShopName} offers...", BuySellPage.Ink);
+        _page.Text(0x50, 0x33, Words(texts.Another), BuySellPage.Ink);
+        _page.Text(0x50, 0x3B, Words(texts.Leave), BuySellPage.Ink);
+        _page.Text(0x7A, 0x45, _page.Ui.Format(texts.Offers, ShopName), BuySellPage.Ink);
     }
 
     /// <summary>Four of the member's stacks with what the shop pays.</summary>
@@ -520,7 +541,7 @@ public sealed class BarterScreen
         var pack = PackOf(_member);
         for (var i = _packTop[_member]; i < _packTop[_member] + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[_member]) * 8 + 0x93, PackLine(pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _packTop[_member]) * 8 + 0x93, PackLine(PackListItem, pack[i]), BuySellPage.Ink);
         }
     }
 
@@ -532,50 +553,49 @@ public sealed class BarterScreen
         for (var i = _shopTop; i < _shopTop + 4 && i < _stock.Codes.Count; i++)
         {
             var code = _stock.Codes[i];
-            _page.Text(0x55, (i - _shopTop) * 8 + 0x55, ShopLine(code, Trading.BuyPrice(_state, _shop, code), wide: false), BuySellPage.Ink);
+            _page.Text(0x55, (i - _shopTop) * 8 + 0x55, ShopLine(ShopListItem, code, Trading.BuyPrice(_state, _shop, code)), BuySellPage.Ink);
         }
     }
 
     // orig: trade-screen-keys R032+0x0F60 draft: gfx-rect-copy(backdrop-window, 0x49, 9, 0xEE, 9) and the purse line again, after P and S
-    private void RedrawPurse()
+    private void RedrawPurse(string format)
     {
         _page.Restore(0x49, 9, 0xEE, 9);
-        _page.Text(0x49, 9, PurseLine(), BuySellPage.Ink);
+        _page.Text(0x49, 9, PurseLine(format), BuySellPage.Ink);
     }
 
-    private string PurseLine()
+    private string Words(string id) => _page.Ui.Words(id);
+
+    private string PurseLine(string format)
     {
         var purse = Party.Purse;
-        return Invariant($"{Party.Slot(Leader).ShortName} holds the purse of {purse.Florins}fl, {purse.Groschen}gr, {purse.Pfennigs}pf ({(uint)purse.TotalPfennigs}pf).");
+        return _page.Ui.Format(format, Party.Slot(Leader).ShortName, purse.Florins, purse.Groschen, purse.Pfennigs, purse.TotalPfennigs);
     }
 
     // C: he/she and himself/herself follow the leader's sex (party[leader].female) even when naming another member.
-    private string BartersLine()
+    private string BartersLine(PageTexts texts)
     {
         var leader = Party.Slot(Leader);
         var member = Party.Slot(_member).ShortName;
         return Leader != _member
-            ? $"{(leader.IsFemale ? "She" : "He")} barters for {member} to the {ShopName}"
-            : $"{member} barters for {(leader.IsFemale ? "herself" : "himself")} to the {ShopName}";
+            ? _page.Ui.Format(texts.BartersFor, Words(leader.IsFemale ? texts.She : texts.He), member, ShopName)
+            : _page.Ui.Format(texts.BartersForSelf, member, Words(leader.IsFemale ? texts.Herself : texts.Himself), ShopName);
     }
 
-    /// <summary>"%5upf  name  (%3d) %2dq": what the shop pays for one, the name, the count and the quality.</summary>
-    private string PackLine(Core.Characters.ItemStack stack)
+    /// <summary>"%5upf  %Fs  (%3d) %2dq": what the shop pays for one, the name, the count and the quality.</summary>
+    private string PackLine(string format, Core.Characters.ItemStack stack)
     {
         var code = stack.Code & 0xFFF;
         // C: sprintf arguments right to left: quality, count, name, then price-to-sell (a flag-8 draw per line).
-        var price = (ushort)Trading.SellPrice(_state, code, stack.Quality);
-        return Invariant($"{price,5}pf  {_state.Item(code).Name}  ({stack.Count,3}) {stack.Quality,2}q");
+        var price = Trading.SellPrice(_state, code, stack.Quality);
+        return _page.Ui.Format(format, price, _state.Item(code).Name, stack.Count, stack.Quality);
     }
 
-    /// <summary>"%5upf  name  %3dq  %3dlbs" (or "%3dpf ..." when not <paramref name="wide"/>): the price, the name, the quality offered and the weight.</summary>
-    private string ShopLine(int code, int price, bool wide)
+    /// <summary>"%5upf  %Fs  %3dq  %3dlbs" (shop-items-paint: "%3dpf ..."): the price, the name, the quality offered and the weight.</summary>
+    // C: "%5upf" prints the price word unsigned; shop-items-paint's "%3dpf" signed, three wide (OriginalFormat takes the low 16 bits).
+    private string ShopLine(string format, int code, int price)
     {
         var d = _state.Item(code);
-        // C: "%5upf" prints the price word unsigned; shop-items-paint uses "%3dpf" (signed, three wide).
-        var shown = wide ? Invariant($"{(ushort)price,5}") : Invariant($"{(short)price,3}");
-        return Invariant($"{shown}pf  {d.Name}  {Trading.OfferedQuality(_state, _shop, code),3}q  {(sbyte)d.Weight,3}lbs");
+        return _page.Ui.Format(format, price, d.Name, Trading.OfferedQuality(_state, _shop, code), (sbyte)d.Weight);
     }
-
-    private static string Invariant(FormattableString text) => text.ToString(CultureInfo.InvariantCulture);
 }

@@ -208,7 +208,7 @@ public sealed class PartyRosterScreen
             case Keys.AltQ:
                 // C: R038+0x01FE(0) first (the flags back to 1, the pictures freed), then the question; after "no" the screen goes on.
                 SetSaveAndLoad(1);
-                if (new MessageBox(_ui).Ask("Quit to DOS?"))
+                if (new MessageBox(_ui).Ask(_ui.Words(ScreenTexts.QuitToDos)))
                 {
                     throw new QuitGameException();
                 }

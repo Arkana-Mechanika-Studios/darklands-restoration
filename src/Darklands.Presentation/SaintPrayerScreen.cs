@@ -96,7 +96,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         //   saint-prayer-party says nothing. The rolls and the favor spent are the same (SaintPrayer.Pray).
         //   The message is shown from inside SaintPrayer.Pray, at the original's place between the roll and the help.
         var success = prayer.Pray(who, effects,
-            mode == PrayerMode.ForMember ? ok => _message.Show(ok ? "Saint Call Successful" : "Saint Call Fails", MessageMilliseconds) : null);
+            mode == PrayerMode.ForMember ? id => _message.Show(ui.Words(id), MessageMilliseconds) : null);
         Leave(saved, state);
         PlayBack(mode, music);
         return prayer.Outcome(success);
@@ -315,8 +315,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     {
         CloseMemberList();
         CopyBackground(0x9F, 0x93, 0x97, 8);
-        _text.Draw(_canvas, 0xDB, 0x93, $"DF Remaining: {prayer.FavorRemaining:00}", TextColor);
-        _text.Draw(_canvas, 0x9F, 0x93, $"Success: {prayer.ShownChance}", TextColor);
+        _text.Draw(_canvas, 0xDB, 0x93, ui.Format(ScreenTexts.FavorRemaining, prayer.FavorRemaining), TextColor);
+        _text.Draw(_canvas, 0x9F, 0x93, ui.Format(ScreenTexts.SuccessChance, prayer.ShownChance), TextColor);
         ui.Present();
     }
 
@@ -326,18 +326,15 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     //   letter in colour 12, the rest in the window colour, as "\x8e+\x8f" in the battle panel. checked against asm
     private void DrawMenu(SaintPrayer prayer)
     {
-        DrawLine(MenuY, " M", "ore divine favor is spent", TextColor);
-        DrawLine(MenuY + MenuStep, " L", "ess divine favor is spent", TextColor);
-        DrawLine(MenuY + 2 * MenuStep, " P", prayer.ChoosesMember ? "ray now for ..." : "ray now for the entire party",
+        DrawLine(MenuY, ScreenTexts.MoreFavor, TextColor);
+        DrawLine(MenuY + MenuStep, ScreenTexts.LessFavor, TextColor);
+        DrawLine(MenuY + 2 * MenuStep, prayer.ChoosesMember ? ScreenTexts.PrayForMember : ScreenTexts.PrayForParty,
             prayer.CanPray ? TextColor : DisabledColor);
-        DrawLine(MenuY + 3 * MenuStep, " D", "on't pray right now", TextColor);
+        DrawLine(MenuY + 3 * MenuStep, ScreenTexts.DontPray, TextColor);
     }
 
-    private void DrawLine(int y, string key, string rest, byte color)
-    {
-        var x = _text.Draw(_canvas, MenuX, y, key, 12);
-        _text.Draw(_canvas, x, y, rest, color);
-    }
+    // the line's string carries its colour codes: the key letter after 0x8C (colour 12), the rest after 0xFF (the call's colour)
+    private void DrawLine(int y, string line, byte color) => _text.Draw(_canvas, MenuX, y, ui.Words(line), color);
 
     /// <summary>The saint's name with an illuminated capital, the feast day, the description.</summary>
     // orig: saint-info-paint R034+0x0BC4: the name (sprintf of saint-label-table R136+0xF16E) by text-paint-wrapped root 0265:0134 in a column of 0x9A
@@ -355,8 +352,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             Spacing = 8,
             DropCap = inBattle ? null : b => DropCaps.Get(ui.Assets, b),
         });
-        _text.Draw(_canvas, 0x4C, 0xAD, "Saint Day", TextColor);
-        _text.Draw(_canvas, 0x62, 0xB5, "is", TextColor);
+        _text.Draw(_canvas, 0x4C, 0xAD, ui.Words(ScreenTexts.SaintDay), TextColor);
+        _text.Draw(_canvas, 0x62, 0xB5, ui.Words(ScreenTexts.SaintDayIs), TextColor);
         // DIVERGENCE (undefined-register): an unlisted slot's feast day is the AX the "is" drawing (root 047C:055A) leaves before the what-0
         //   call (the original showed April 17); no date is drawn. Its description is DARKLAND.SNT read at -359 (past the file's end): the buffer
         //   keeps the last saint screen's text, empty before any; empty here.

@@ -45,6 +45,7 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         [GameTextIds.CardNotInTable] = t => $"Card {t.Word("number")} is not in the card table.",
         [GameTextIds.CardHasNoScript] = t => $"{t.Word("name")} has no script.",
         [GameTextIds.ModCardGoesRound] = t => $"{t.Word("name")} goes round in circles: back to the card before.",
+        ["id:rw.notice.and-more"] = t => $"... and {t.Word("count")} more",
     };
 
     /// <summary>The ids of the rewrite's own notices (for tests: every one has words).</summary>
@@ -76,7 +77,24 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         {
             return own(text);
         }
-        return Exe(text.Id) ?? text.Id;
+        if (Exe(text.Id) is not { } words)
+        {
+            return text.Id;
+        }
+        // a format string of the original with its arguments "0", "1", ... (the screens' sprintf sentences): printed as the original prints it
+        return text.Args.Count == 0 ? words : OriginalFormat.Format(words, Positional(text));
+    }
+
+    private static object[] Positional(GameText text)
+    {
+        var args = new object[text.Args.Count];
+        for (var k = 0; k < args.Length; k++)
+        {
+            args[k] = text.Args.TryGetValue(k.ToString(CultureInfo.InvariantCulture), out var v)
+                ? v
+                : throw new ArgumentException($"{text.Id}: argument {k} missing (a format's arguments are \"0\", \"1\", ...)", nameof(text));
+        }
+        return args;
     }
 
     // exe:DS:XXXX or exe:SSSS:XXXX (a far segment, 290E): the zero-terminated string there

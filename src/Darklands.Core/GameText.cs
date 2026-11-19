@@ -19,6 +19,21 @@ public sealed record GameText(string Id, IReadOnlyDictionary<string, object> Arg
     public static GameText Of(string id, params (string Name, object Value)[] args) =>
         new(id, args.ToDictionary(a => a.Name, a => a.Value, StringComparer.Ordinal));
 
+    /// <summary>
+    /// One of the original's format strings (<paramref name="id"/>, an <c>exe:</c> key) with its arguments in order (named "0", "1",
+    /// ...): the presentation prints it as the original's sprintf does.
+    /// </summary>
+    public static GameText Format(string id, params object[] args)
+    {
+        ArgumentNullException.ThrowIfNull(args);
+        var named = new Dictionary<string, object>(args.Length, StringComparer.Ordinal);
+        for (var k = 0; k < args.Length; k++)
+        {
+            named[k.ToString(System.Globalization.CultureInfo.InvariantCulture)] = args[k];
+        }
+        return new GameText(id, named);
+    }
+
     /// <summary>True for <see cref="None"/>.</summary>
     public bool IsNone => Id.Length == 0;
 

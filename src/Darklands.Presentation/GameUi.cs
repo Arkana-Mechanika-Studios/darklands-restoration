@@ -134,6 +134,15 @@ public sealed class GameUi
 
     public GameAssets Assets { get; }
 
+    /// <summary>A text of the game in the words the screens show (today the original's, from the player's EXE).</summary>
+    public string Words(Darklands.Core.GameText text) => Assets.MessageText.Text(text);
+
+    /// <summary>The text <paramref name="id"/> (<c>exe:DS:0086</c>) in the words the screens show.</summary>
+    public string Words(string id) => Assets.MessageText.Text(Darklands.Core.GameText.Of(id));
+
+    /// <summary>One of the original's format strings <paramref name="id"/> printed with <paramref name="args"/> (its sprintf).</summary>
+    public string Format(string id, params object[] args) => Assets.MessageText.Text(Darklands.Core.GameText.Format(id, args));
+
     /// <summary>The font of slot 1 (font 0 of FONTS.FNT, 6 pixels high): the side window, the screen pages, the party panel's pages, the menu bar.</summary>
     // orig: the window records in DGROUP (page, x, y, last column, last row, mode, colour, background, font at +0x10): DS:00F2 (the
     //   side window, pointer DS:0104), DS:0106 (DS:0118), DS:0156 (DS:0168, the panel's page), DS:017E (DS:0190), DS:0192 (DS:01A4)

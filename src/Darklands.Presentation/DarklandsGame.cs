@@ -409,7 +409,7 @@ public sealed class DarklandsGame
         }
         var loaded = Saves.Load(name, World, running);
         var box = new MessageBox(_ui);
-        box.Show(HotKeys.DifficultyText(loaded.State.Difficulty));
+        box.Show(HotKeys.DifficultyText(_ui, loaded.State.Difficulty));
         var shown = box.Open("Loading Game");
         loaded.State.ClockSeed = Seed;
         Options.Music = loaded.Music;

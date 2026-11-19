@@ -1,4 +1,3 @@
-using System.Globalization;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
@@ -19,8 +18,23 @@ public sealed class LootScreen
     // C: menu rows give G, P, D, Esc; row 4 gives no key. There is no party-column click on this screen.
     private static readonly int[] MenuKeys = [0x2247, 0x1950, 0x2044, Keys.Escape];
 
-    private const string GetLine = "\u008C G\u00FFet an item from pile of loot";
-    private const string PutLine = "\u008C P\u00FFut an item into the pile of loot";
+    // the menu lines (DS:4C42.. of R040), the key letter after 0x8C in colour 12
+    private const string GetLine = "exe:DS:4C42";
+    private const string PutLine = "exe:DS:4C64";
+    private const string DistributeLine = "exe:DS:4C8A";
+    private const string LeaveLine = "exe:DS:4CAE";
+
+    // each drawing function of R040 loads its own copies: the full drawing R040+0x06E2, the redraw R040+0x0952, the list redraws
+    //   R040+0x1372 (pack) and R040+0x145E (pile); "The party finds %dfl, %dgr, %dpf in cash.", "The loot contains...", "%s currently has..." /
+    //   "%s has...", "%Fs  (%3d) %2d-Qual" for the pack, then for the pile
+    private static readonly (string Cash, string Loot, string Has, string PackItem, string PileItem) FullDrawing =
+        ("exe:DS:4CC8", "exe:DS:4CF2", "exe:DS:4D07", "exe:DS:4D1B", "exe:DS:4D2F");
+
+    private static readonly (string Cash, string Loot, string Has, string PackItem, string PileItem) RedrawTexts =
+        ("exe:DS:4D54", "exe:DS:4D7E", "exe:DS:4D93", "exe:DS:4D9D", "exe:DS:4DB1");
+
+    private const string PackListItem = "exe:DS:4DC5";
+    private const string PileListItem = "exe:DS:4DD9";
 
     private readonly BuySellPage _page;
     private readonly GameState _state;
@@ -367,14 +381,14 @@ public sealed class LootScreen
 
     private void ShowPacking()
     {
-        _page.Text(0x50, 0x1B, GetLine, BuySellPage.Faded);
-        _page.Text(0x50, 0x23, PutLine, BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(GetLine), BuySellPage.Faded);
+        _page.Text(0x50, 0x23, Words(PutLine), BuySellPage.Ink);
     }
 
     private void ShowGetting()
     {
-        _page.Text(0x50, 0x23, PutLine, BuySellPage.Faded);
-        _page.Text(0x50, 0x1B, GetLine, BuySellPage.Ink);
+        _page.Text(0x50, 0x23, Words(PutLine), BuySellPage.Faded);
+        _page.Text(0x50, 0x1B, Words(GetLine), BuySellPage.Ink);
     }
 
     // orig: R040+0x06E2 (1462:06E2) draft (byte-matched function)
@@ -384,21 +398,21 @@ public sealed class LootScreen
     private void DrawScreen()
     {
         _page.DrawBackground(Party, drawParty: false);
-        _page.Text(0x49, 9, CashLine(), BuySellPage.Ink);
-        _page.Text(0x50, 0x1B, GetLine, BuySellPage.Ink);
-        _page.Text(0x50, 0x23, PutLine, BuySellPage.Faded);
+        _page.Text(0x49, 9, CashLine(FullDrawing.Cash), BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(GetLine), BuySellPage.Ink);
+        _page.Text(0x50, 0x23, Words(PutLine), BuySellPage.Faded);
         DrawMenuTail();
-        _page.Text(0x6B, 0x45, "The loot contains...", BuySellPage.Ink);
-        _page.Text(0x77, 0x83, $"{Party.Slot(Member).ShortName} currently has...", BuySellPage.Ink);
+        _page.Text(0x6B, 0x45, Words(FullDrawing.Loot), BuySellPage.Ink);
+        _page.Text(0x77, 0x83, _page.Ui.Format(FullDrawing.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, 0x93 + i * 8, ItemLine(pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, 0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i]), BuySellPage.Ink);
         }
         for (var i = 0; i < _pile.Count && i < 4; i++)
         {
             // C: the first drawing places the pile's lines with the pack list's top (pack-top-row) instead of the pile's (both 0 on entry).
-            _page.Text(0x55, (i - _packTop[Member]) * 8 + 0x55, ItemLine(_pile[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _packTop[Member]) * 8 + 0x55, ItemLine(FullDrawing.PileItem, _pile[i]), BuySellPage.Ink);
         }
         _page.Light(0x53, 0x55, 0xFA);
         _packCount[Member] = pack.Count;
@@ -412,21 +426,21 @@ public sealed class LootScreen
     private void Redraw()
     {
         _page.DrawBackground(Party, drawParty: false);
-        _page.Text(0x49, 9, CashLine(), BuySellPage.Ink);
-        _page.Text(0x50, 0x1B, GetLine, _usingPile[Member] ? BuySellPage.Ink : BuySellPage.Faded);
-        _page.Text(0x50, 0x23, PutLine, _usingPile[Member] ? BuySellPage.Faded : BuySellPage.Ink);
+        _page.Text(0x49, 9, CashLine(RedrawTexts.Cash), BuySellPage.Ink);
+        _page.Text(0x50, 0x1B, Words(GetLine), _usingPile[Member] ? BuySellPage.Ink : BuySellPage.Faded);
+        _page.Text(0x50, 0x23, Words(PutLine), _usingPile[Member] ? BuySellPage.Faded : BuySellPage.Ink);
         DrawMenuTail();
         // C: the redraw prints this heading at x 0x57, the first drawing at 0x6B.
-        _page.Text(0x57, 0x45, "The loot contains...", BuySellPage.Ink);
-        _page.Text(0x77, 0x83, $"{Party.Slot(Member).ShortName} has...", BuySellPage.Ink);
+        _page.Text(0x57, 0x45, Words(RedrawTexts.Loot), BuySellPage.Ink);
+        _page.Text(0x77, 0x83, _page.Ui.Format(RedrawTexts.Has, Party.Slot(Member).ShortName), BuySellPage.Ink);
         var pack = PackOf(Member);
         for (var i = _packTop[Member]; i < _packTop[Member] + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
         }
         for (var i = _pileTop[Member]; i < _pileTop[Member] + 4 && i < _pile.Count; i++)
         {
-            _page.Text(0x55, (i - _pileTop[Member]) * 8 + 0x55, ItemLine(_pile[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _pileTop[Member]) * 8 + 0x55, ItemLine(RedrawTexts.PileItem, _pile[i]), BuySellPage.Ink);
         }
         if (_usingPile[Member])
         {
@@ -441,8 +455,8 @@ public sealed class LootScreen
 
     private void DrawMenuTail()
     {
-        _page.Text(0x50, 0x2B, "\u008C D\u00FFistribute to a different person", BuySellPage.Ink);
-        _page.Text(0x50, 0x33, "\u008C L\u00FFeave", BuySellPage.Ink);
+        _page.Text(0x50, 0x2B, Words(DistributeLine), BuySellPage.Ink);
+        _page.Text(0x50, 0x33, Words(LeaveLine), BuySellPage.Ink);
     }
 
     // orig: R040+0x1372 (1462:1372) draft (byte-matched function)
@@ -452,7 +466,7 @@ public sealed class LootScreen
         var pack = PackOf(Member);
         for (var i = _packTop[Member]; i < _packTop[Member] + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(pack[i]), BuySellPage.Ink);
+            _page.Text(0x75, (i - _packTop[Member]) * 8 + 0x93, ItemLine(PackListItem, pack[i]), BuySellPage.Ink);
         }
     }
 
@@ -462,16 +476,15 @@ public sealed class LootScreen
         _page.Restore(0x52, 0x55, 0xB6, 0x20);
         for (var i = _pileTop[Member]; i < _pileTop[Member] + 4 && i < _pile.Count; i++)
         {
-            _page.Text(0x55, (i - _pileTop[Member]) * 8 + 0x55, ItemLine(_pile[i]), BuySellPage.Ink);
+            _page.Text(0x55, (i - _pileTop[Member]) * 8 + 0x55, ItemLine(PileListItem, _pile[i]), BuySellPage.Ink);
         }
     }
 
-    private string CashLine() =>
-        Invariant($"The party finds {_cash.Florins}fl, {_cash.Groschen}gr, {_cash.Pfennigs}pf in cash.");
+    private string Words(string id) => _page.Ui.Words(id);
 
-    /// <summary>"name  (%3d) %2d-Qual".</summary>
-    private string ItemLine(ItemStack stack) =>
-        Invariant($"{_state.Item(stack.Code & 0xFFF).Name}  ({stack.Count,3}) {stack.Quality,2}-Qual");
+    private string CashLine(string format) => _page.Ui.Format(format, _cash.Florins, _cash.Groschen, _cash.Pfennigs);
 
-    private static string Invariant(FormattableString text) => text.ToString(CultureInfo.InvariantCulture);
+    /// <summary>"%Fs  (%3d) %2d-Qual": the item's name, the count, the quality.</summary>
+    private string ItemLine(string format, ItemStack stack) =>
+        _page.Ui.Format(format, _state.Item(stack.Code & 0xFFF).Name, stack.Count, stack.Quality);
 }
