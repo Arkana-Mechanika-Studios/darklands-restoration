@@ -33,6 +33,30 @@ public static class TranslatorCommands
         return 0;
     }
 
+    /// <summary>
+    /// Writes the pseudo-locale pack of the game in <paramref name="gameFolder"/> to <paramref name="output"/> (<see cref="PseudoPack"/>),
+    /// with the boxes when given, and lists where its longer texts do not fit; 0 when written.
+    /// </summary>
+    public static int WritePseudoPack(string gameFolder, string output, string? boxes, TextWriter say)
+    {
+        ArgumentNullException.ThrowIfNull(say);
+        var found = ReadBoxes(boxes, null, say);
+        if (found is null)
+        {
+            return 1;
+        }
+        var files = new GameFiles(gameFolder);
+        var template = TranslatorTemplate.Build(files, found);
+        TranslatorTemplate.Write(output, PseudoPack.From(template), PseudoPack.Language, "Pseudo-locale (longer texts, marked vowels)");
+        if (found.Count > 0)
+        {
+            TextBoxes.Write(Path.Combine(output, BoxesFile), found);
+        }
+        say.WriteLine($"pseudo-locale pack: {template.Count} texts in {output}; play with --language-pack to see it, the check below lists where it does not fit");
+        // an error here is the generator's: the pseudo texts keep every structure the check requires
+        return CheckPack(gameFolder, output, boxes, say);
+    }
+
     /// <summary>Checks the pack in <paramref name="pack"/> against the game in <paramref name="gameFolder"/>; 0 when nothing stops its texts being used.</summary>
     public static int CheckPack(string gameFolder, string pack, string? boxes, TextWriter say)
     {

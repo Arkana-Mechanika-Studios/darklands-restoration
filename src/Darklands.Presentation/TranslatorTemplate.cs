@@ -66,13 +66,17 @@ public static class TranslatorTemplate
     }
 
     /// <summary>Writes <paramref name="messages"/> as a pack under <paramref name="folder"/> (its <c>pack.json</c> and <c>text/en/</c>).</summary>
-    public static void Write(string folder, IReadOnlyList<Message> messages)
+    public static void Write(string folder, IReadOnlyList<Message> messages) =>
+        Write(folder, messages, Language, "Translator's template (the original English)");
+
+    /// <summary>Writes <paramref name="messages"/> as a pack of <paramref name="language"/> named <paramref name="name"/>.</summary>
+    public static void Write(string folder, IReadOnlyList<Message> messages, string language, string name)
     {
         ArgumentNullException.ThrowIfNull(messages);
-        var text = Path.Combine(folder, LanguagePack.TextFolder(Language));
+        var text = Path.Combine(folder, LanguagePack.TextFolder(language));
         Directory.CreateDirectory(text);
         File.WriteAllText(Path.Combine(folder, LanguagePack.ManifestName),
-            "{ \"language\": \"" + Language + "\", \"name\": \"Translator's template (the original English)\", \"base\": \"483.07\" }\n");
+            "{ \"language\": \"" + language + "\", \"name\": \"" + name + "\", \"base\": \"483.07\" }\n");
         foreach (var group in messages.GroupBy(m => m.File, StringComparer.Ordinal))
         {
             var path = Path.Combine(text, group.Key.Replace('/', Path.DirectorySeparatorChar));

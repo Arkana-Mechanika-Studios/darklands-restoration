@@ -204,6 +204,16 @@ It ends with a count; the exit code is 1 when there are errors. The boxes come f
 `boxes.json` in the pack's folder (the template writes one when it was given boxes), else there are none (then no
 width is checked).
 
+**The pseudo-locale** shows where a longer language will not fit, before any translation exists:
+
+```
+DarklandsRP <game folder> --pseudo-language-pack <folder>   [--text-boxes <file or folder>]
+```
+
+writes a `qps` pack of every text a third longer, its vowels marked (a → ä, o → ö, u → ü, so a text from the pack is seen at
+once and the game's fonts draw it), its tags, `$Names`, arguments and hot keys kept, and lists with the check where it
+does not fit. Play with it (`--language-pack <folder>`) to see the screens in it.
+
 **Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
 environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to
 `<folder>/boxes-<process>.json` when it ends; the recorded sessions replayed with it (`tools/oracle/rerun_all.py
@@ -275,7 +285,8 @@ against the original); with a translation or another font, the mouse areas follo
 * **Fixed slots** (menu items, the lines of a shop's list, labels on the character sheet, buttons): the slot keeps the
   original's place and size, and its mouse area stays the slot. The text must fit in it: the translation's short form
   first (a `.short` attribute), then slightly narrower spacing, then the text cut with "…" and shown in full in a
-  hint. The pseudo-locale (step 5) lists every slot that overflows, so translators know where to abbreviate.
+  hint. The pseudo-locale ([above](#the-translators-template-and-the-pack-check)) lists every slot that overflows, so
+  translators know where to abbreviate.
 * **Text inside pictures:** a picture pack scoped to the language.
 
 **Clicks give choices, not positions.** The game never receives a mouse position: a click becomes "choice 3" or "buy

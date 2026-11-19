@@ -81,7 +81,8 @@ public sealed class LanguagePack
             why = $"{Path.Combine(folder, ManifestName)}: no \"language\": not a translation pack";
             return null;
         }
-        var localizer = new FluentLocalizer(language, OriginalTable.Empty);
+        // the pack's texts as written (a qps pack is made already transformed: PseudoLocale's own letters are not the game fonts')
+        var localizer = new FluentLocalizer(language, OriginalTable.Empty, null, pseudoTransform: false);
         var problems = new List<LocalizationDiagnostic>();
         var text = Path.Combine(folder, TextFolder(language));
         if (!Directory.Exists(text))
