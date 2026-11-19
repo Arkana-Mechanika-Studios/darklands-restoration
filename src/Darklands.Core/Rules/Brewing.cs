@@ -72,6 +72,15 @@ public sealed class BrewingBench
         return true;
     }
 
+    /// <summary>
+    /// Whether M (one batch more) may add a batch: the formula page's test as its last drawing left it (DS:8872), not as the stock is now.
+    /// </summary>
+    // orig: R033+0x094A stores R033+0x1334(formula)'s answer in DS:8872 while drawing the page; the page's keys (R033+0x0F6E) test DS:8872
+    public bool MayAddBatch { get; private set; }
+
+    /// <summary>The formula page's test of <paramref name="f"/>'s ingredients, kept for M (<see cref="MayAddBatch"/>); the answer.</summary>
+    public bool CheckMayAddBatch(Formula f) => MayAddBatch = HasIngredients(f);
+
     /// <summary>Gives a batch's reserved ingredients back, one batch at a time, and leaves it at 0 batches.</summary>
     // orig: R033+0x14E6: k = count - x4 batches given back by R033+0x12EC each; x4 is never set by the screen (0), so all of them
     public void GiveBack(Batch batch)

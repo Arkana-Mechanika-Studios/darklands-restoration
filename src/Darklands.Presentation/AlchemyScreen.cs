@@ -41,7 +41,6 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     private int _listRow;
     private bool _formulaPage;
     private int _hoverRow = -1;
-    private bool _canAddBatch;
 
     private Batch Selected => _bench.Batches[_currentBatch];
 
@@ -319,13 +318,13 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         var f = b.Formula;
         var m = _state.Party.Slot(_bench.Alchemist);
         canvas.CopyFrom(_back, 0x3C, 0, 0x104, 200);
-        _canAddBatch = _bench.HasIngredients(f);
+        var canAddBatch = _bench.CheckMayAddBatch(f);
         // "%s's Formula - making %d batches." (DS:32AA), "%d + %dps + %dint + %dalch - %dmn = %d%% success." (DS:32CC)
         ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:32AA", m.ShortName, b.Count), 0xEA, 0x49, 0x0D, HeadingColor);
         ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:32CC", Brewing.BaseChance(b.Count), _state.Party.PhilosophersStone, m[Attribute.Intelligence],
             m[Skill.Alchemy], f.MysticNumber, _bench.Chance(b)), 0xEA, 0x49, 0x15, HeadingColor);
         // the menu's far strings (290E pointer table 1DC3): "More batches", "Fewer batches", "Different formula", "Satisfied with this"
-        ui.Text.Draw(canvas, MenuX, MenuTop, ui.Words("exe:290E:0112"), _canAddBatch ? MenuColor : MenuGreyed);
+        ui.Text.Draw(canvas, MenuX, MenuTop, ui.Words("exe:290E:0112"), canAddBatch ? MenuColor : MenuGreyed);
         ui.Text.Draw(canvas, MenuX, MenuTop + 8, ui.Words("exe:290E:0122"), MenuColor);
         ui.Text.Draw(canvas, MenuX, MenuTop + 16, ui.Words("exe:290E:0133"), MenuColor);
         ui.Text.Draw(canvas, MenuX, MenuTop + 24, ui.Words("exe:290E:0148"), b.Count != 0 ? MenuColor : MenuGreyed);
@@ -356,7 +355,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             DrawFormulaPage();
             _hoverRow = -1;
         }
-        else if (Keys.IsLetter(key, 'm') && _canAddBatch)
+        else if (Keys.IsLetter(key, 'm') && _bench.MayAddBatch)
         {
             Selected.Count++;
             _bench.Reserve(Selected.Formula);

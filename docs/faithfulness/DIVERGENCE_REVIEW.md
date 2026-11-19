@@ -19,8 +19,8 @@ id); this file is generated from it. Nothing here changes behaviour.
 
 ## Summary
 
-- Part A (not-modelled, deliberate-fix, other in core logic): 55 entries; recommendations: document: 2, justify: 40, keep: 13.
-- Part B (undefined-memory in core logic): 159 entries; determinism: deterministic: 1, n/a: 83, no: 62, partly: 9, yes: 4.
+- Part A (not-modelled, deliberate-fix, other in core logic): 57 entries; recommendations: document: 2, justify: 41, keep: 14.
+- Part B (undefined-memory in core logic): 160 entries; determinism: deterministic: 1, n/a: 83, no: 63, partly: 9, yes: 4.
 - Entries without a recommendation yet: 0.
 
 ## Work list
@@ -222,7 +222,7 @@ Entries made faithful (the marker was replaced by the original behaviour, or rew
 
 Each is a core-logic divergence where the C# does something the original does not. Action: `implement` (make it as the original), `justify` (keep, with the reason given), `implement-later` (blocked on a missing subsystem), `remove-marker` (the divergence is gone; the marker is to be removed).
 
-### rules (14)
+### rules (16)
 
 #### not-modelled (1)
 
@@ -231,7 +231,7 @@ Each is a core-logic divergence where the C# does something the original does no
   divergence: who >= 5 counts the 16-entry lists at R136+0xE68E (with the quantities read from inventories[who - 5], an original bug); not modelled, 0. The lists are enemy-loot (the last battle's enemies' items, battle state); no caller passes who >= 5 (the cards pass -2, -1 or a member).  
   recommendation: **justify** (checked against the original) - who >= 5 counts R136+0xE68E[who - 5][0..15] = enemy-loot (the last battle's enemy items, battle state) with the quantities of inventories[who - 5]. Every caller in the original's C (card scripts: -2, -1 or a member; the R068/s073/s107 member loops over 0..4; R043's pop-up list over members) passes a value below 5, so the branch is unreachable. Test PracticeAndItemsTests.CountingForANumberPastTheMembersIsZero pins the 0.
 
-#### deliberate-fix (7)
+#### deliberate-fix (9)
 
 - **D-2a45ce** `deliberate-fix` - `src/Darklands.Core/Items/ItemStores.cs:82` `ItemStores.CanPut`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -261,6 +261,14 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R035+0x114A` (1462:114A, matched)  
   divergence: own text (the original has none, its Put never refuses): shown by the item store screen when OriginalBehaviour.FixCacheStoreLimit (data safety) refuses a Put; the item stays in the pack.  
   recommendation: **justify** (checked against the original) - The message of a refused Put: the original has no text for it (its Put never refuses); own text.
+- **D-e203c7** `deliberate-fix` - `src/Darklands.Simulation/LootSession.cs:161` `LootSession.NextMember`  
+  original: `R040+0x0C22` (1462:0C22, draft), `R022+0x04E4` (1EF8:04E4, draft)  
+  divergence: the original loops forever when no member qualifies; here the search stops after five slots.  
+  recommendation: **keep** (checked against the original) - With no member qualifying, 1462:0C22 loops for ever; the C# stops after five slots. The party would have ended before no member qualifies, so the guard is unreachable in a running game.
+- **D-761bc9** `deliberate-fix` - `src/Darklands.Simulation/StoreSession.cs:97` `StoreSession.Put`  
+  original: `R035+0x0A46` (1462:0A46, matched)  
+  divergence: data safety (OriginalBehaviour.FixCacheStoreLimit): a Put the compact CACHE.TMP layout cannot hold is refused here, with a message, the item staying in the pack.  
+  recommendation: **justify** (checked against the original) - Shows the refusal of Put (Storing.CanPut) with a message box; the item stays in the pack. Data safety, switchable (OriginalBehaviour.FixCacheStoreLimit).
 
 #### other (6)
 
@@ -495,7 +503,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 Where the original reads or writes outside its defined data, the outcome can still be a fixed function of the program state (a table that follows in the data image, a known stack leftover, a global the previous card left), in which case it can be reproduced exactly. `deterministic`: `yes` (a fixed value or a pure function of modelled state), `partly` (fixed in the shipped data or reachable states, unreproducible elsewhere), `no` (depends on unmodelled memory such as heap addresses or machine state), `n/a` (not reachable in play).
 
-### rules (38)
+### rules (39)
 
 - **D-92e987** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:47` `ItemStores.Open`  
   original: `R035+0x1350` (1462:1350, matched)  
@@ -649,6 +657,10 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R032+0x0F60` (1462:0F60, draft)  
   divergence: the original tests the 0x80 flag and prices item-definition-table[id] with the unmasked code (marker bits above 0xFFF read outside the item table); the code is masked here.  
   deterministic: **no** (checked against the original); action: **keep** - The S key indexes item-definition-table[data-file-handle[..].id] with the raw 16-bit id; item-definition-table is the far-pointer table at 2e38:0890 (4 bytes each), so ids with marker bits >= 0x1000 read 2e38:(0x890+4*id) modulo 64K - other tables/records of the 2e38 segment - and the resulting far pointer's flags/price are garbage (arbitrary physical memory), not a modelled value. Other code consistently masks with 0xFFF, so marker ids presumably exist; I did not find which cards set them. Keep the masked code.
+- **D-b00418** `undefined-memory` - `src/Darklands.Simulation/LootSession.cs:133` `LootSession.Get`  
+  original: `R040+0x0C22` (1462:0C22, draft)  
+  divergence: rows past the pile's end are ignored (see LootSharing.Get).  
+  deterministic: **no** (checked against the original); action: **keep** - The pile G reads past its end (R040+0x0DF6, only DS:8DBC != 0 tested) is the far block the battle passes: loot-view R014+0xE530 allocates 6000 bytes with DOS 48h (root 05BA:0004, nothing cleared) right after freeing the battlefield buffers, and R014+0xE56C copies only count * 6 bytes of the list into it (disassembly checked); a removal (R040+0x12EC) moves entry [count] down, also from that block. So the entries past the end are whatever DOS memory held: undefined, not reproducible (a code past the item table would also be stored in the pack and saved). The battle is the only caller of the loot screen. Kept: not modelled with evidence (see D-87c67a).
 
 ### cards (70)
 
