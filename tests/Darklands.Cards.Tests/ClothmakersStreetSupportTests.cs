@@ -84,7 +84,7 @@ public sealed class ClothmakersStreetSupportTests
         public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
 
 
-        public void Tell(string message, int member = OptionHint.WholeParty)
+        public void Tell(Darklands.Core.GameText message, int member = OptionHint.WholeParty)
         {
         }
 

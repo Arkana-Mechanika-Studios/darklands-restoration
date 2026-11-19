@@ -32,19 +32,19 @@ public sealed class UnfinishedArmyScouts_Meeta03 : Card
 
         return menu.Run(
             // orig: R110+0x1EA4 (19FD:0254) matched (empty); hint R110+0x1EA6
-            new MenuLine(_ => { }, () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => { }, () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // orig: R110+0x1EDE (19FD:028E) matched (empty); hint R110+0x1EE0
             new MenuLine(_ => { }, () => OptionHint.ChanceOf(100, c.Variables.Chosen[0])),
             // orig: R110+0x1EF8 (19FD:02A8) matched; hint R110+0x1F28
-            new MenuLine(p => ThrowAPotion(c, p), () => OptionHint.Say("Of course the potion will work!"), () => FullChanceForTheMember(c)),
+            new MenuLine(p => ThrowAPotion(c, p), () => OptionHint.Say("exe:DS:4F7A"), () => FullChanceForTheMember(c)),  // "Of course the potion will work!"
             // orig: R110+0x1F60 (19FD:0310) matched; hint R110+0x1FCC
-            new MenuLine(_ => Pray(c), () => OptionHint.Say("XXX Saint % success msg XXX.")),
+            new MenuLine(_ => Pray(c), () => OptionHint.Say("exe:DS:4F5C")),  // "XXX Saint % success msg XXX."
             // orig: R110+0x2004 (19FD:03B4) matched; hint R110+0x2022
             new MenuLine(_ => { c.PassHours(1); c.Screen.Text(10); c.Next = CardContext.MapCard; }, () => OptionHint.Say(SuccessAssured)),
             // orig: R110+0x205A (19FD:040A) matched; hint R110+0x20A8
             new MenuLine(p => SneakPast(c, p), () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),
             // orig: R110+0x20BE (19FD:046E) matched (empty: no battle); hint R110+0x20C0
-            new MenuLine(_ => { }, () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => { }, () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R110+0x20F8 (19FD:04A8) matched; hint R110+0x212A
             new MenuLine(p => { c.PracticeSkill(Who.Everybody, (int)Skill.Woodwise, c.Random(100) <= p ? 7 : 0, 10, 0); c.Next = 267; },
                 () => OptionHint.ChanceOf(100, OptionHint.WholeParty)),

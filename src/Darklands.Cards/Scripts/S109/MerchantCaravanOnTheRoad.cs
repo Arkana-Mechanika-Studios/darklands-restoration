@@ -62,7 +62,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
                 (c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2 + c.Attribute(Who.Leader, (int)Attribute.Charisma) + c.PartyAverageSkill((int)Skill.Virtue)) / 2,
                 1, 99), c.Leader)),
             // orig: R109+0x0880 (line 3); hint R109+0x0980 (1838:0980) matched (the placeholder text-saint-template)
-            new MenuLine(_ => PrayForInsight(c, menu), () => OptionHint.Say("XXX Saint % success msg XXX.")),
+            new MenuLine(_ => PrayForInsight(c, menu), () => OptionHint.Say("exe:DS:4F5C")),  // "XXX Saint % success msg XXX."
             // orig: R109+0x09B8 (1838:09B8) matched; hint R109+0x0A04
             new MenuLine(_ => LetThemPass(c), () => OptionHint.Say(SuccessAssured)),
             // orig: R109+0x0A3C (1838:0A3C) matched; hint R109+0x0AC6
@@ -70,7 +70,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
             // orig: R109+0x0AFE (1838:0AFE) matched; hint R109+0x0B18
             new MenuLine(_ => { c.Screen.Text(15); c.LeaveForTheMap(); }, Unknown),
             // orig: R109+0x0B50 (1838:0B50) matched; hint R109+0x0B5A
-            new MenuLine(_ => FightTheBandits(c, false), () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => FightTheBandits(c, false), () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R109+0x0B92 (1838:0B92) matched; hint R109+0x0BDE
             new MenuLine(_ => LetThemPass(c), Unknown),
             // orig: R109+0x0C16 (line 9); hint R109+0x0C80 (1838:0C80) matched
@@ -78,7 +78,7 @@ public sealed class MerchantCaravanOnTheRoad : Card
                 c.PartyAverageEffectiveAgility() + c.PartyMaxSkill((int)Skill.Woodwise), 1, 99), OptionHint.WholeParty)));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     private static bool Disguised(CardContext c) => c.State.SavedCard != 0;
 

@@ -112,7 +112,7 @@ public sealed class RebelsBeforeTheCouncilHall : Card
             // DORMANT: line 6 is always greyed out here.
             new MenuLine(() => { c.PassHours(22); c.Next = 0xBC; }, OptionHint.Saying(NoRisk)),
             // orig: R090+0x2C5C (1A66:097C); hint R090+0x2C94 matched
-            new MenuLine(() => Desert(c), OptionHint.Saying("Coward!")),
+            new MenuLine(() => Desert(c), OptionHint.Saying("exe:DS:6249")),  // "Coward!"
             // orig: R090+0x2CBC; R090+0x2D00 matched
             // DORMANT: lines 8 and 9 are hidden (flags 0); they would only let no time pass.
             new MenuLine(() => c.PassHours(0)),

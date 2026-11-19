@@ -68,7 +68,7 @@ public sealed class AbbotsClerk : Card
             new MenuLine(_ => c.PassHours(0), Assured),
             new MenuLine(_ => c.PassHours(0), Assured),
             // orig: R105+0x25C0 (1A12:0820) matched; hint R105+0x2688
-            new MenuLine(_ => SleepInACell(c), () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => SleepInACell(c), () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // orig: R105+0x26C0 (1A12:0920) matched; hint R105+0x2702 (leaves without clearing location-now)
             new MenuLine(_ => { c.Variables.Chosen[0] = c.Leader; ShowPicture(c, 179); c.Screen.Text(8); c.Next = CardContext.MapCard; }, Assured));
     }

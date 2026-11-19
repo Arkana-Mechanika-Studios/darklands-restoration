@@ -30,7 +30,7 @@ public sealed class UnfinishedMcGuffinSite : Card
             // orig: R107+0x2F60 (line 0); hint R107+0x2FFC (1B0A:02DC) matched
             new MenuLine(_ => LookAbout(c), Unknown),
             // orig: R107+0x3034 (line 1); hint R107+0x3078 (1B0A:0358) matched
-            new MenuLine(_ => Pray(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => Pray(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R107+0x30B0 (1B0A:0390) matched; hint R107+0x30F0
             new MenuLine(_ => DoTheSinfulThing(c), Unknown),
             // orig: R107+0x3128 (1B0A:0408) matched; hint R107+0x3136
@@ -47,7 +47,7 @@ public sealed class UnfinishedMcGuffinSite : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>
     /// The place's number (modulo 4) chooses what is told, the lore which version. The

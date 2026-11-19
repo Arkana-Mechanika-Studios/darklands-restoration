@@ -58,7 +58,7 @@ public sealed class PeasantsDemandAMaiden : Card
             }, () => PersuasionChance(c)),
             new MenuLine(chance => OutrunThem(c, chance), hint: () => RunningChance(c)),
             // orig: R084+0x1080 (18DB:0650) matched; R084+0x1134 (18DB:0704) matched; tests: CardSmokeTests
-            new MenuLine(() => GiveHerUp(c), OptionHint.Saying("You dog!")),
+            new MenuLine(() => GiveHerUp(c), OptionHint.Saying("exe:DS:6131")),  // "You dog!"
             new MenuLine(chance => Hide(c, chance), hint: () => HidingChance(c)),
             // orig: R084+0x123A (line 4); R084+0x1484 (18DB:0A54) matched; R084+0x150E (18DB:0ADE) matched; R084+0x1598 (18DB:0B68) matched;
             // tests: CardSmokeTests

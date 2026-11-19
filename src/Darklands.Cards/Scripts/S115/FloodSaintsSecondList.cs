@@ -27,7 +27,7 @@ public sealed class FloodSaintsSecondList : Card
             // orig: R115+0x0238 (1838:0238) matched; hint R115+0x0240
             new MenuLine(_ => c.Next = 283, () => OptionHint.Say(NoRisk)),
             // orig: R115+0x0278 (1838:0278) matched; hint R115+0x02FE
-            new MenuLine(_ => Pray(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => Pray(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R115+0x0336 (1838:0336) matched; hint R115+0x033E
             // C: following-card = 0x11C, this card itself (not 0x11D, the third list): the line does nothing.
             new MenuLine(_ => c.Next = 284, () => OptionHint.Say(NoRisk)),

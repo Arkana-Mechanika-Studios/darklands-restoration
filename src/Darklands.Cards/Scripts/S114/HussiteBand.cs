@@ -60,13 +60,13 @@ public sealed class HussiteBand : Card
             new MenuLine(p => ClaimFriendship(c, p), () => OptionHint.ChanceOf(
                 c.Attribute(Who.Leader, (int)Attribute.Charisma) + c.LocationQuery(c.Variables.Location, 0) + c.Skill(Who.Leader, (int)Skill.SpeakCommon) / 2, c.Leader)),
             // orig: R114+0x0E8A (line 1); hint R114+0x0F78 (18D3:05C8) matched
-            new MenuLine(_ => PrayToABohemianSaint(c), () => OptionHint.Say("Select a person and a saint."), () => c.SaintPopupChanceHint()),
+            new MenuLine(_ => PrayToABohemianSaint(c), () => OptionHint.Say("exe:DS:4F2A"), () => c.SaintPopupChanceHint()),  // "Select a person and a saint."
             // orig: R114+0x0FB0 (18D3:0600) matched; hint R114+0x0FB6
-            new MenuLine(_ => FightTheHussites(c), () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => FightTheHussites(c), () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R114+0x0FEE (line 3); hint R114+0x10C0 (18D3:0710) matched
             new MenuLine(p => RunForIt(c, p), () => OptionHint.ChanceOf(c.PartyGet(5) != 0 ? 100 : c.PartyAverageEffectiveAgility(), c.Leader)),
             // orig: R114+0x10F0 (line 4); hint R114+0x1214 (18D3:0864) matched
-            new MenuLine(p => ThrowAPotionAndRun(c, p), () => OptionHint.Say("Select a person and a potion.")),
+            new MenuLine(p => ThrowAPotionAndRun(c, p), () => OptionHint.Say("exe:DS:4F0C")),  // "Select a person and a potion."
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),
             new MenuLine(_ => { }),

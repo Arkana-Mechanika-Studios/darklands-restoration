@@ -58,15 +58,15 @@ public sealed class SchratsInTheForest : Card
             // orig: R112+0x2DAE (line 1); hint R112+0x2EE4 (1AAE:0784) matched
             new MenuLine(p => Plead(c, menu, p), () => PleadHint(c)),
             // orig: R112+0x2F66 (line 2); hint R112+0x30C4 (1AAE:0964) matched
-            new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => ThrowAPotion(c, menu, p), () => OptionHint.Say("exe:DS:4F0C"), () => PotionHint(c)),  // "Select a person and a potion."
             // orig: R112+0x30FC (line 3); hint R112+0x3228 (1AAE:0AC8) matched
-            new MenuLine(_ => PrayForDeliverance(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForDeliverance(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R112+0x3260 (line 4); hint R112+0x334E (1AAE:0BEE) matched
             new MenuLine(_ => Surrender(c, menu), () => OptionHint.Say(SuccessAssured)),
             // orig: R112+0x3386 (line 5); hint R112+0x3488 (1AAE:0D28) matched
             new MenuLine(p => SneakAround(c, menu, p), () => WoodcraftHint(c)),
             // orig: R112+0x34D6 (1AAE:0D76) matched (hint); action R112+0x34C0: fight (0316) with 1 when settings-block is set, else 2
-            new MenuLine(_ => FightTheSchrats(c, menu.Block != 0 ? 1 : 2), () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => FightTheSchrats(c, menu.Block != 0 ? 1 : 2), () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R112+0x350E (line 7); hint R112+0x362A (1AAE:0ECA) matched
             new MenuLine(p => ScoutThem(c, menu, p), () => WoodcraftHint(c)),
             // orig: R112+0x3662 (line 8); hint R112+0x376C (1AAE:100C) matched
@@ -77,7 +77,7 @@ public sealed class SchratsInTheForest : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     private static OptionHint WoodcraftHint(CardContext c) => OptionHint.ChanceOf(Math.Clamp(
         c.PartyAverageSkill((int)Skill.Woodwise) + c.PartyAverageEffectiveAgility() * 2 / 3, 5, 85), OptionHint.WholeParty);

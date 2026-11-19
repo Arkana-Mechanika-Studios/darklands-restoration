@@ -24,7 +24,7 @@ public sealed class WildHunt : Card
     private const int HuntQuest = 7;
 
     /// <summary>The hint of "kill a deer" when the party has bows or crossbows (R136 seg 290E string).</summary>
-    private const string DeathForThePrey = "This means death for the Hunt's prey";
+    private const string DeathForThePrey = "exe:290E:04B4";  // "This means death for the Hunt's prey"
 
     /// <summary>Bit of the item flags the hint tests (thrown weapons count only for the action).</summary>
     private const uint BowFlag = 0x20;

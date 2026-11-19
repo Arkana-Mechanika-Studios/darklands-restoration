@@ -74,7 +74,7 @@ public sealed class DwarfInTheCliff : Card
             // orig: R107+0x0604 (line 2); hint R107+0x0768 (1838:0768) matched
             new MenuLine(p => AllClimb(c, menu, p), () => WorstClimberHint(c)),
             // orig: R107+0x0798 (line 3); hint R107+0x0886 (1838:0886) matched
-            new MenuLine(_ => PrayForHelp(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForHelp(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R107+0x08BE (line 4); hint R107+0x09FA (1838:09FA) matched
             new MenuLine(_ => PayThePrice(c), Unknown),
             // orig: R107+0x0A32 (1838:0A32) matched; hint R107+0x0A46
@@ -90,7 +90,7 @@ public sealed class DwarfInTheCliff : Card
             new MenuLine(_ => RefuseAndLeave(c, menu), Unknown));
     }
 
-    private const string UnknownText = "You can always encounter the unknown";
+    private const string UnknownText = CardTexts.EncounterTheUnknown;
 
     private static OptionHint Unknown() => OptionHint.Say(UnknownText);
 

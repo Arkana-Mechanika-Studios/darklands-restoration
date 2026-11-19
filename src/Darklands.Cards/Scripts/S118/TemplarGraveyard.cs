@@ -46,7 +46,7 @@ public sealed class TemplarGraveyard : Card
             // orig: R118+0x0CD0 (18C2:0430) matched; hint R118+0x0CF2
             new MenuLine(_ => StartBattle(c, 3, 0), Unknown),
             // orig: R118+0x0D2A (18C2:048A) matched; hint R118+0x0DCA
-            new MenuLine(_ => CallOnASaint(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => CallOnASaint(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R118+0x0E02 (18C2:0562) matched; hint R118+0x0E5C
             new MenuLine(_ => TheGuardiansAppear(c), Unknown),
             // orig: R118+0x0E94 (18C2:05F4) matched; hint R118+0x0EEE
@@ -60,7 +60,7 @@ public sealed class TemplarGraveyard : Card
             new MenuLine(_ => TheGuardiansAppear(c), Unknown));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>Sets up the battle the main loop fights when the card returns −2.</summary>
     /// <param name="battlefieldType">The battlefield type; for mode 3, the level of the battlefield to enter.</param>

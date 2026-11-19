@@ -42,10 +42,10 @@ public sealed class WalledCityApproach_CityE00 : Card
         return menu.Run(
             // orig: R113+0x0860 (line 0); hint R113+0x08C6 (189D:0276) matched
             new MenuLine(_ => ToTheGateByDay(c),
-                () => OptionHint.Say(c.IsDaylight ? NoRisk : "You'll sleep until dawn.")),
+                () => OptionHint.Say(c.IsDaylight ? NoRisk : CardTexts.SleepUntilDawn)),
             // orig: R113+0x090C (line 1); hint R113+0x093C (189D:02EC) matched
             new MenuLine(_ => ToTheGateByNight(c),
-                () => OptionHint.Say(c.IsDaylight ? "You'll wait for night." : NoRisk)),
+                () => OptionHint.Say(c.IsDaylight ? CardTexts.WaitForNight : NoRisk)),
             // orig: R113+0x0982 (189D:0332) matched; hint R113+0x09DE
             new MenuLine(_ => TryTheWallByDay(c), () => OptionHint.Say(NoRisk)),
             // orig: R113+0x0A16 (189D:03C6) matched; hint R113+0x0A98

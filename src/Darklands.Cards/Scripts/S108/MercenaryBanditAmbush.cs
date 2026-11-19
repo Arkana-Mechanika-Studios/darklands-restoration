@@ -58,9 +58,9 @@ public sealed class MercenaryBanditAmbush : Card
             // orig: R108+0x3610 (line 1); hint R108+0x36BE (1B3A:069E) matched
             new MenuLine(p => TalkYourWayPast(c, p), () => TalkHint(c)),
             // orig: R108+0x3712 (line 2); hint R108+0x37B2 (1B3A:0792) matched
-            new MenuLine(p => FlushThemOut(c, p), () => OptionHint.Say("Of course the potion will work!"), () => PotionHint(c)),
+            new MenuLine(p => FlushThemOut(c, p), () => OptionHint.Say("exe:DS:4F7A"), () => PotionHint(c)),  // "Of course the potion will work!"
             // orig: R108+0x37EA (line 3); hint R108+0x3908 (1B3A:08E8) matched
-            new MenuLine(_ => PrayForPeacefulPassage(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForPeacefulPassage(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R108+0x3940 (1B3A:0920) matched; hint R108+0x3996
             new MenuLine(_ => Surrender(c), () => OptionHint.Say(SuccessAssured)),
             // orig: R108+0x39CE (line 5); hint R108+0x3AB0 (1B3A:0A90) matched
@@ -76,7 +76,7 @@ public sealed class MercenaryBanditAmbush : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>Throwing the potion: twice Perception plus 1 (slot 0) or plus 7 (slot 1), unclamped.</summary>
     // orig: R108+0x3BF2 (1B3A:0BD2) matched; slot 1 R108+0x3C18

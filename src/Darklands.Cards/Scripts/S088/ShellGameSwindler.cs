@@ -108,7 +108,7 @@ public sealed class ShellGameSwindler : Card
                         block = 4;
                         break;
                 }
-            }, OptionHint.Saying("It's only a groschen")),
+            }, OptionHint.Saying("exe:290E:0429")),  // "It's only a groschen"
             // orig: R088+0x0D48 (18EA:0228) matched; R088+0x0D5A (18EA:023A) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -125,7 +125,7 @@ public sealed class ShellGameSwindler : Card
                     return;
                 }
                 block = c.Random(100) % 2 != 0 ? 2 : 3;
-            }, OptionHint.Saying("The hand is quicker than the eye")),
+            }, OptionHint.Saying("exe:290E:043E")),  // "The hand is quicker than the eye"
             // orig: R088+0x0E24 (18EA:0304) matched; R088+0x0E86 (18EA:0366) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -136,7 +136,7 @@ public sealed class ShellGameSwindler : Card
                     return;
                 }
                 block = c.Random(100) % 2 != 0 ? 1 : 3;
-            }, OptionHint.Saying("The hand is quicker than the eye")),
+            }, OptionHint.Saying("exe:290E:043E")),  // "The hand is quicker than the eye"
             // orig: R088+0x0EB4 (18EA:0394) matched; R088+0x0F18 (18EA:03F8) matched; tests: CardSmokeTests
             new MenuLine(() =>
             {
@@ -147,7 +147,7 @@ public sealed class ShellGameSwindler : Card
                     return;
                 }
                 block = c.Random(100) % 2 != 0 ? 1 : 2;
-            }, OptionHint.Saying("The hand is quicker than the eye")));
+            }, OptionHint.Saying("exe:290E:043E")));  // "The hand is quicker than the eye"
 
         // orig: R088+0x0B20: music-start(DS:9C3D) after the loop
         c.PlayMusic(c.SavedMusic.Value);

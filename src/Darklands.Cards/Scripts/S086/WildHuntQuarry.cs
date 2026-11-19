@@ -50,7 +50,7 @@ public sealed class WildHuntQuarry : Card
         }
         return menu.Run(
             // orig: R086+0x0532 (1838:0532) matched; R086+0x05E0 (1838:05E0) matched; tests: CardSmokeTests
-            new MenuLine(() => RemainHidden(c), OptionHint.Saying("Endurance")),
+            new MenuLine(() => RemainHidden(c), OptionHint.Saying("exe:290E:04D9")),  // "Endurance"
             // orig: R086+0x060E (1838:060E) matched; R086+0x0614 (1838:0614) matched; tests: CardSmokeTests
             new MenuLine(() => FightTheHounds(c), OptionHint.Saying(CardTexts.EnterCombat)),
             // orig: R086+0x064C (1838:064C) matched; R086+0x0724 (1838:0724) matched; tests: CardSmokeTests

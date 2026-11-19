@@ -84,7 +84,7 @@ public sealed class MerchantHouseOffices : Card
             new MenuLine(_ => { ShowPicture(c, StreetPicture); c.Screen.Text(12); c.Next = c.IsDaylight ? 9 : 10; }, Unknown));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>The trapped office of this house is the one whose number is the place's number modulo 4.</summary>
     private bool AtTheTrappedOffice(CardContext c) => c.Here % 4 == _office;

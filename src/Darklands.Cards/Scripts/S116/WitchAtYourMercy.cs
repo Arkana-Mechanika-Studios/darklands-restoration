@@ -45,7 +45,7 @@ public sealed class WitchAtYourMercy : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>The leader eats her roots, stiffens and dies; she flies off laughing.</summary>
     // orig: R116+0x206E (1A1C:022E) matched; tests: CardSmokeTests

@@ -31,9 +31,9 @@ public sealed class CaravanUnderAttack : Card
 
         return menu.Run(
             // orig: R109+0x12D8 (192E:0378) matched; hint R109+0x14B4
-            new MenuLine(_ => ChargeIntoTheFray(c), () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => ChargeIntoTheFray(c), () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R109+0x14EC (192E:058C) matched; hint R109+0x15CE (the placeholder text-saint-template)
-            new MenuLine(_ => PrayForTheMerchants(c), () => OptionHint.Say("XXX Saint % success msg XXX.")),
+            new MenuLine(_ => PrayForTheMerchants(c), () => OptionHint.Say("exe:DS:4F5C")),  // "XXX Saint % success msg XXX."
             // orig: R109+0x1606 (192E:06A6) matched; hint R109+0x1658
             new MenuLine(_ => { c.Variables.Chosen[0] = c.Leader; ShowPicture(c, 145); c.Screen.Text(11); c.PassHours(2); c.LeaveForTheMap(); },
                 () => OptionHint.Say(SuccessAssured, c.Leader)),

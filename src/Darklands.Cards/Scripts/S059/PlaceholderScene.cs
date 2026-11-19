@@ -43,7 +43,7 @@ public abstract class PlaceholderScene : Card
             var leaderAssured = k is 0 or 7;
             lines[k] = new MenuLine(() => ShowFirstTextAndLeave(c, frame),
                 () => leaderAssured
-                    ? OptionHint.ChanceOf(100, c.Leader) with { Message = SuccessAssured }
+                    ? new OptionHint(100, SuccessAssured, c.Leader)
                     : OptionHint.Say(SuccessAssured));
         }
         c.Next = Number;

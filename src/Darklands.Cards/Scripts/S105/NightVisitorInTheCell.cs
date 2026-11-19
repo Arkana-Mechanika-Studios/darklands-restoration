@@ -32,7 +32,7 @@ public sealed class NightVisitorInTheCell : Card
             // orig: R105+0x2A1C (1AB2:027C) matched; hint R105+0x2A44
             new MenuLine(_ => KeepVirtue(c), () => Unknown(c)),
             // orig: R105+0x2A7C (1AB2:02DC) matched (only prays: the answer is not used); hint R105+0x2A98
-            new MenuLine(_ => c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]), () => OptionHint.Say("Select a person and a saint.", c.Variables.Chosen[0])),
+            new MenuLine(_ => c.InvokeSaint(c.MenuMember, c.CardSaints[c.MenuEntrySlot]), () => OptionHint.Say("exe:DS:4F2A", c.Variables.Chosen[0])),  // "Select a person and a saint."
             // DORMANT: lines 3..9 are never offered; each lets no time pass (R105+0x2AD0..04c8).
             new MenuLine(_ => c.PassHours(0), Assured),
             new MenuLine(_ => c.PassHours(0), Assured),
@@ -43,7 +43,7 @@ public sealed class NightVisitorInTheCell : Card
             new MenuLine(_ => c.PassHours(0), Assured));
     }
 
-    private static OptionHint Unknown(CardContext c) => OptionHint.Say("You can always encounter the unknown", c.Variables.Chosen[0]);
+    private static OptionHint Unknown(CardContext c) => OptionHint.Say("exe:DS:4F9A", c.Variables.Chosen[0]);  // "You can always encounter the unknown"
 
     private static OptionHint Assured() => OptionHint.Say(SuccessAssured);
 

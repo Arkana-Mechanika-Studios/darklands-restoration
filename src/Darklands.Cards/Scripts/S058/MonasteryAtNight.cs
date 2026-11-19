@@ -32,7 +32,7 @@ public sealed class MonasteryAtNight : Card
     // C: R058+0x06D4 etc. read R136+0x8690+0x1EDF (the word pair at ES:1EDF); the table
     //   entry just after it is "It is closed at night", which looks like what was meant, but the
     //   EXE bytes and the asm say 1EDF.
-    private const string HeraldryLabel = " Hÿeraldry";
+    private const string HeraldryLabel = "exe:290E:062E";
 
     public override int Number => CardNumber;
 

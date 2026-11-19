@@ -377,8 +377,14 @@ public sealed class TracingScreen(int option, bool probe) : ICardScreen
             {
                 if (options[i] != OptionState.Hidden)
                 {
-                    Log.Add($"hint {i}: {Say(hint(i))}");
+                    Log.Add($"hint {i}: {Say(DrawFree(() => hint(i), $"the hint of line {i}"))}");
                 }
+            }
+            if (Context is { } box)
+            {
+                // the box queries a view may ask at any moment (seam (a)3): they draw nothing either
+                DrawFree(() => box.PopupLines(saints: false), "the item box");
+                DrawFree(() => box.PopupLines(saints: true), "the saint box");
             }
         }
         if (hint is not null)
@@ -449,12 +455,34 @@ public sealed class TracingScreen(int option, bool probe) : ICardScreen
         return null;
     }
 
-    private static string Say(OptionHint h) => $"{h.Chance} '{h.Message}' {h.Member}";
+    // The hints that draw a random number in the original too, so a Shift hint there moves the generator in both programs: the
+    // crafts quarter at night (R050: LocalPrice's draw, made at every hint and choice) and the famine horseman's victim (R133+0x0424).
+    private static readonly HashSet<int> HintsThatDraw = [0x1A, 0x164];
+
+    // A hint or box query is a pure query: a view asks it whenever it likes (Shift held, a box opened), so it must not move the
+    // generator (audit item 1.17), except the original's own drawing hints above; any other query that draws ends the trace with an error.
+    private T DrawFree<T>(Func<T> query, string what)
+    {
+        if (Context is { } card && HintsThatDraw.Contains(card.State.CurrentCard))
+        {
+            return query();
+        }
+        var random = Context is { } c ? c.State.Random as Darklands.Core.Randomness.MscRandom ?? throw new InvalidOperationException("the card game draws from no MscRandom") : null;
+        var before = random?.State;
+        var result = query();
+        if (random?.State != before)
+        {
+            throw new InvalidOperationException($"{what} drew a random number");
+        }
+        return result;
+    }
+
+    private static string Say(OptionHint h) => $"{h.Chance} '{TestMessages.Words(h.Text)}' {h.Member}";
 
     public void Post(Darklands.Core.GameMessage message) => TestMessages.Post(this, message);
 
 
-    public void Tell(string message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {message}");
+    public void Tell(Darklands.Core.GameText message, int member = OptionHint.WholeParty) => Log.Add($"tell {member} {TestMessages.Words(message)}");
 
     public void PassTime(int hours) => Log.Add($"time {hours}");
 }

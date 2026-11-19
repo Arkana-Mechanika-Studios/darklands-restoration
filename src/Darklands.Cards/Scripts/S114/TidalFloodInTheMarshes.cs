@@ -39,7 +39,7 @@ public sealed class TidalFloodInTheMarshes : Card
             new MenuLine(p => BuildARaft(c, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyMaxSkill((int)Skill.Woodwise) * 2 + c.PartyMaxSkill((int)Skill.Artifice) / 3, 1, 99), OptionHint.WholeParty)),
             // orig: R114+0x246E (line 2); hint R114+0x24C0 (1A3F:0450) matched
-            new MenuLine(_ => Pray(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => Pray(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R114+0x24F8 (1A3F:0488) matched; hint R114+0x2500
             // DORMANT: lines 3 and 4 (other saints: cards 284 and 285) are never offered (card-option-flag-3/4 = 0).
             new MenuLine(_ => c.Next = 284, () => OptionHint.Say(NoRisk)),

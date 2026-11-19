@@ -36,8 +36,8 @@ public sealed class GuestOfTheCastleLord : Card
             new MenuLine(_ => Trade(c), () => ConversationHint(c)),
             // orig: R104+0x238C (1A35:03BC) matched (hint)
             new MenuLine(p => LearnAboutThePlace(c, menu, p), () => ConversationHint(c)),
-            new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("Select a person and a saint.")),
-            new MenuLine(_ => RebukeTheLord(c), () => OptionHint.Say("You can always encounter the unknown")),
+            new MenuLine(_ => PrayForInsight(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
+            new MenuLine(_ => RebukeTheLord(c), () => OptionHint.Say("exe:DS:4F9A")),  // "You can always encounter the unknown"
             // orig: R104+0x2626 (1A35:0656) matched (empty action); hint R104+0x2628 is an empty function too
             // DORMANT: line 4 is never offered (card-option-flag-4 = 0). UNCERTAIN: its hint returns whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }, Assured),

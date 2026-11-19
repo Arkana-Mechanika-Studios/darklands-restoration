@@ -44,7 +44,7 @@ public sealed class DwarfsPoisonMist : Card
             // DORMANT: line 3 is never offered. UNCERTAIN: its empty hint returns whatever is in AX/DX; a neutral hint is used.
             new MenuLine(_ => { }),
             // orig: R107+0x1550 (line 4); hint R107+0x165C (191F:07EC) matched
-            new MenuLine(_ => PrayForSalvation(c, menu), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForSalvation(c, menu), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // DORMANT: lines 5..9 are never offered; their actions R107+0x1694.. and hints
             // R107+0x1696.. are empty functions (hints returning AX/DX; neutral hints used).
             new MenuLine(_ => { }),
@@ -54,7 +54,7 @@ public sealed class DwarfsPoisonMist : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>Everybody loses 30 Endurance (and a point of its maximum), a point of Perception (and its maximum) and 5–8 Strength.</summary>
     private static void PoisonEverybody(CardContext c)

@@ -13,8 +13,9 @@ public sealed class WordTable
     private readonly int _pointers;
     private readonly int[] _offsets;
 
-    private WordTable(string name, int pointers, int first, int count, int[] offsets)
+    private WordTable(string name, int pointers, int first, int count, int[] offsets, bool near = false)
     {
+        IsNear = near;
         Name = name;
         _pointers = pointers;
         First = first;
@@ -32,7 +33,12 @@ public sealed class WordTable
     /// <summary>Whether <paramref name="k"/> is an entry of the table.</summary>
     public bool Contains(int k) => k >= First && k < First + Count;
 
-    internal bool IsFar => _offsets.Length == 0;
+    internal bool IsFar => !IsNear && _offsets.Length == 0;
+
+    /// <summary>A table of DGROUP near pointers (entry k is the string its word k points at).</summary>
+    internal bool IsNear { get; }
+
+    internal int NearPointer(int k) => _pointers + 2 * k;
 
     internal int Pointer(int k) => _pointers + 4 * k;
 
@@ -41,6 +47,8 @@ public sealed class WordTable
     internal static WordTable Far(string name, int pointers, int count, int first = 0) => new(name, pointers, first, count, []);
 
     internal static WordTable Data(string name, params int[] offsets) => new(name, 0, 0, offsets.Length, offsets);
+
+    internal static WordTable Near(string name, int pointers, int count) => new(name, pointers, 0, count, [], near: true);
 }
 
 /// <summary>
@@ -92,9 +100,13 @@ public sealed class OriginalWords(DarklandsExecutable exe)
     //   "pfs" (DS:3D65, R036+0x0BE7) (CampStay.Detail)
     public static readonly WordTable CampWords = WordTable.Data("camp-words", 0x3D5C, 0x3D63, 0x3D65);
 
+    // orig: grade-words DS:4FCE, 7 near pointers (DS:4E54 "very poor" .. DS:4E81 "superb"), read by chance-line R029+0x5B62 and the
+    //   Shift hint R043+0x27E6; the words round it (index 7 DS:6F43, -1 DS:0000, -2 DS:7461) are empty strings (GradeWord)
+    public static readonly WordTable GradeWords = WordTable.Near("grade-words", 0x4FCE, 7);
+
     /// <summary>Every table, for reports and tests.</summary>
     public static IReadOnlyList<WordTable> All { get; } =
-        [FameTitles, StandingWords, Directions, TownSizes, TownSizesTab, ShopNames, JobNames, SkillNames, RiskWords, CampWords];
+        [FameTitles, StandingWords, Directions, TownSizes, TownSizesTab, ShopNames, JobNames, SkillNames, RiskWords, CampWords, GradeWords];
 
     /// <summary>The words read from the player's EXE.</summary>
     public static OriginalWords Load(GameFiles files) => new(DarklandsExecutable.Load(files));
@@ -120,6 +132,13 @@ public sealed class OriginalWords(DarklandsExecutable exe)
     }
 
     /// <summary>
+    /// Grade word <paramref name="k"/> (grade-words[k]): "very poor" .. "superb" for 0..6; the entries next to the table (−2, −1, 7)
+    /// point at empty strings, so they say nothing.
+    /// </summary>
+    public string GradeWord(int k) => GradeWords.Contains(k) ? Text(GradeWords, k) : k is -2 or -1 or 7 ? "" :
+        throw new ArgumentOutOfRangeException(nameof(k), k, "Not an entry of grade-words or its empty neighbours.");
+
+    /// <summary>
     /// A camp member's detail as the camp screen shows it: "potion" and "s" for a count other than 1, a job's name, or the
     /// teacher's fee and "pfs"; nothing for none.
     /// </summary>
@@ -136,6 +155,11 @@ public sealed class OriginalWords(DarklandsExecutable exe)
         if (!table.Contains(k))
         {
             throw new ArgumentOutOfRangeException(nameof(k), k, $"Not an entry of the table {table.Name}.");
+        }
+        if (table.IsNear)
+        {
+            var near = exe.DataSegment(table.NearPointer(k), 2);
+            return (DarklandsExecutable.DataGroup, near[0] | near[1] << 8);
         }
         if (!table.IsFar)
         {

@@ -54,7 +54,7 @@ public sealed class LonelyMountainLake : Card
             // orig: R106+0x11CA (line 1); hint R106+0x135E (18B5:0B8E) asm
             new MenuLine(_ => SearchTheShore(c), Unknown),
             // orig: R106+0x1396 (line 2); hint R106+0x14B2 (18B5:0CE2) asm
-            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R106+0x14EA (18B5:0D1A) asm; hint R106+0x14FC
             // DORMANT: line 3 is never offered (card-option-flag-3 = 0).
             new MenuLine(_ => { c.PassHours(0); c.Next = CardContext.MapCard; }, () => OptionHint.Say(SuccessAssured)),
@@ -69,7 +69,7 @@ public sealed class LonelyMountainLake : Card
             new MenuLine(_ => c.Next = CardContext.MapCard, () => OptionHint.Say(NoRisk)));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>Three hours of watching show signs of the guardian; an alchemist recognises the Vulcans' brimstone.</summary>
     // orig: R106+0x0FF8 (18B5:0828) asm; tests: CardSmokeTests

@@ -61,6 +61,90 @@ public sealed class OriginalMessageTextTests
     }
 
     [Fact]
+    public void TheCardsKeysAreTheExtractorsAndSayWhatTheLiteralsSaid()
+    {
+        if (Text.Value is not { } text || Table.Value is not { } table)
+        {
+            return;
+        }
+        var cards = Path.Combine(FindRepositoryRoot(), "src", "Darklands.Cards");
+        var keys = Directory.EnumerateFiles(cards, "*.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+            .SelectMany(f => System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(f), "\"(exe:(?:DS|[0-9A-F]{4}):[0-9A-F]{4})\"")
+                .Select(m => m.Groups[1].Value))
+            .Distinct().Order(StringComparer.Ordinal).ToList();
+        Assert.Equal(38, keys.Count);
+        foreach (var key in keys)
+        {
+            var entry = table.Find(key);
+            Assert.True(entry is { Origin: StringOrigin.Known }, $"{key} is not a known string of the extractor");
+            Assert.Equal(entry!.Text, text.Text(GameText.Of(key)));
+        }
+        // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was checked against the literal it replaced
+        // (152 sites, scratch check of 2026-11-19), so this pins the 1.0 card hints.
+        var joined = string.Join('\n', keys.Select(k => k + "=" + Encoding.Latin1.GetString(GameTextCodec.Encode(text.Text(GameText.Of(k))))));
+        Assert.Equal("424CFEE3049642C6B54375116C66C92D19B440E77B275957098B510CEFD8CAE4",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(joined))));
+    }
+
+    [Fact]
+    public void TheChanceTextsAreTheOnes1Point0Formatted()
+    {
+        if (Text.Value is not { } text)
+        {
+            return;
+        }
+        var all = new List<string>();
+        foreach (var basic in new[] { 0, 1 })
+        {
+            for (var pct = 0; pct <= 100; pct++)
+            {
+                all.Add(text.Text(GameText.Of(GameTextIds.HintChance, ("chance", pct), ("basic", basic))));
+            }
+        }
+        foreach (var (low, high) in new[] { (0, 0), (5, 100), (37, 64), (-10, 140) })
+        {
+            all.Add(text.Text(GameText.Of(GameTextIds.ChanceRange, ("low", low), ("high", high), ("basic", 1))));
+        }
+        for (var low = -2; low <= 7; low++)
+        {
+            for (var high = -2; high <= 7; high++)
+            {
+                all.Add(text.Text(GameText.Of(GameTextIds.ChanceRange, ("low", low), ("high", high), ("basic", 0))));
+            }
+        }
+        // SHA-256 of the 306 texts joined by line feeds, as 1.0's CardScreen.ShowHint and CardContext.ChanceText built them
+        Assert.Equal("8F1CE5FD4CC0DB201F9A339E3F6B88EB48AB51B8D1B53EF45DE7E3917D0963F2",
+            Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(string.Join('\n', all)))));
+    }
+
+    [Fact]
+    public void TheRewritesOwnNoticesHaveWords()
+    {
+        if (Text.Value is not { } text)
+        {
+            return;
+        }
+        foreach (var id in OriginalMessageText.OwnIds)
+        {
+            var words = text.Text(GameText.Of(id, ("name", "X"), ("number", 7)));
+            Assert.NotEqual(id, words);
+            Assert.Contains(" ", words, StringComparison.Ordinal);
+        }
+        Assert.Equal("", text.Text(GameText.None));
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Darklands.slnx")))
+        {
+            dir = dir.Parent;
+        }
+        return dir?.FullName ?? throw new InvalidOperationException("repository root not found");
+    }
+
+    [Fact]
     public void AnUnknownIdIsShownAsItself()
     {
         if (Text.Value is not { } text)

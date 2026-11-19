@@ -218,7 +218,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: R043+0x29D0 (1F40): the message goes into the side window next to member `who` (-2 = the whole column): text centred in a 55-pixel column at x 3, y + 4 (y = 0x51 for the whole column, who * 0x28 + 1 for a member), then it waits for a key or the left button and eats the key
     // C: for the whole column it first clears the entire panel strip (3, 0, 0x36 x 0xC6) with the background sprite DS:A628 and centres the text in the middle at y 0x51; for one member the row (3, y, 0x36 x 0x26) with DS:A626.
     // DIVERGENCE: the text colour is the caller's (side-window->color = param-plus-8); ICardScreen.Tell has none, the text is drawn white. The original does not put the panel back afterwards (its callers redraw it); here the covered area is restored when the message is dismissed.
-    public void Tell(string message, int member = OptionHint.WholeParty) => Tell(ui, message, member);
+    public void Tell(GameText message, int member = OptionHint.WholeParty) => Tell(ui, ui.Assets.MessageText.Text(message), member);
 
     /// <summary>The side window's message (R043+0x29D0) on whatever screen is shown: the card screen, a member sheet, the creation sheet.</summary>
     public static void Tell(GameUi ui, string message, int member = OptionHint.WholeParty)
@@ -244,7 +244,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
 
     // orig: notice-display root 0000:24BC(text, ticks) (MessageBox.Show)
     // C: a framed box for the ticks, not the side window's wait for a key (Tell)
-    public void ShowMessage(string text, int ticks) => new MessageBox(ui).Show(text, ticks * 1000 / 60);
+    public void ShowMessage(GameText text, int ticks) => new MessageBox(ui).Show(ui.Assets.MessageText.Text(text), ticks * 1000 / 60);
 
     public void Post(GameMessage message) => SideWindowMessages.Show(ui, message);
 
@@ -458,8 +458,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         static uint Widen(byte v) => (uint)((v << 2) | (v >> 4));
     }
 
-    // orig: R043+0x27E6 (150B:1D56): nothing at Expert (difficulty-setting == 2); the side window (colour 15) gets the strip background, then the text: "The chance of success is " + N% (Basic) or a quality word (grade-words[pct / 20], "hopeless" for 0) for pct >= 0, "ERROR!!!" for pct == -2, otherwise the message the option's function put in text-bank-buffer; centred in a 50-pixel column at x 5, vertically centred in the strip (h - text height) / 2 and at least 0
-    // C: pct is clamped to 0..100 first (limit-to-range), so "excellent" (index 5) is the highest word an option can show (grade-words has "superb" at 6).
+    // orig: R043+0x27E6 (150B:1D56): nothing at Expert (difficulty-setting == 2); the side window (colour 15) gets the strip background, then the text (OptionHint.Describe: the chance sentence, "ERROR!!!" or the option function's message); centred in a 50-pixel column at x 5, vertically centred in the strip (h - text height) / 2 and at least 0
     private void ShowHint(OptionHint hint)
     {
         var state = context().State;
@@ -467,18 +466,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         {
             return;
         }
-        string text;
-        if (hint.Chance >= 0)
-        {
-            var pct = Math.Clamp(hint.Chance, 0, 100);
-            text = "The chance of success is " + (state.Difficulty == Difficulty.Basic
-                ? pct.ToString(System.Globalization.CultureInfo.InvariantCulture) + "%"
-                : pct != 0 ? CardContext.QualityWords[pct / 20] : "hopeless");
-        }
-        else
-        {
-            text = hint.Chance == -2 ? "ERROR!!!" : hint.Message;
-        }
+        var text = ui.Assets.MessageText.Text(hint.Describe(state.Difficulty));
         var (top, height) = hint.Member == OptionHint.WholeParty ? (1, 0xC6) : (hint.Member * 40 + 1, 0x26);
         SideWindowBackground(ui, hint.Member);
         var layout = new CardTextLayout(ui.Text);

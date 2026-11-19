@@ -162,7 +162,7 @@ public sealed class DragonBlightedLand : Card
                     menu[3] = OptionState.Shown;
                 }
             }, OptionHint.Saying(CardTexts.SelectSaint), c.SaintPopupHint),
-            new MenuLine(() => Fight(c), OptionHint.Saying("It is never easy to fight a dragon")));
+            new MenuLine(() => Fight(c), OptionHint.Saying("exe:290E:034F")));  // "It is never easy to fight a dragon"
     }
 
     /// <summary>Each item of the chosen types in every member's pack loses up to <paramref name="below"/> − 1 quality.</summary>

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Darklands.Cards;
+using Darklands.Core;
 using Darklands.Core.Rules;
 
 namespace Darklands.Simulation;
@@ -96,12 +97,12 @@ public sealed class UnknownCard(int number) : Card
         var info = CardTable.Find(number);
         if (info is not { } card)
         {
-            c.Screen.Tell($"Card {number} is not in the card table.");
+            c.Screen.Tell(GameText.Of(GameTextIds.CardNotInTable, ("number", number)));
             return c.State.PreviousCard;
         }
         c.Screen.Show(card.Name, PictureNames.Of(card.Picture));
         c.Screen.Text(0);
-        c.Screen.Tell($"{card.Name} has no script.");
+        c.Screen.Tell(GameText.Of(GameTextIds.CardHasNoScript, ("name", card.Name)));
         return c.State.PreviousCard;
     }
 }

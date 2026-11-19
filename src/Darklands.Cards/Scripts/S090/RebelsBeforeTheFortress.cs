@@ -113,7 +113,7 @@ public sealed class RebelsBeforeTheFortress : Card
             // orig: R090+0x1E92 (1999:0882); hint R090+0x1EA4 matched
             new MenuLine(() => { c.PassHours(24); c.Next = 0xBC; }, OptionHint.Saying(NoRisk)),
             // orig: R090+0x1EDC (1999:08CC); hint R090+0x1F2A ("Coward!", checked against asm) matched
-            new MenuLine(() => Desert(c), OptionHint.Saying("Coward!")),
+            new MenuLine(() => Desert(c), OptionHint.Saying("exe:DS:6237")),  // "Coward!"
             // orig: R090+0x1F52; R090+0x1F96 matched
             // DORMANT: lines 8 and 9 are hidden (flags 0); they would only let no time pass.
             new MenuLine(() => c.PassHours(0)),

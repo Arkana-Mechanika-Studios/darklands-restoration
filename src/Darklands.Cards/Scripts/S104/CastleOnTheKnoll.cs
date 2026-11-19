@@ -43,7 +43,7 @@ public sealed class CastleOnTheKnoll : Card
             new MenuLine(p => AskAtTheGate(c, menu, p), () => GateHint(c)),
             // orig: R104+0x1804 (line 1); hint R104+0x18E8 (1982:0448) matched
             new MenuLine(p => TalkToTheFarmers(c, p), () => FarmersHint(c)),
-            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForGuidance(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R104+0x19F2 (1982:0552) matched
             new MenuLine(_ => { c.PassHours(c.HoursUntil(18) + 6); c.Next = 244; }, Assured),
             // DORMANT: lines 4..8 are never offered (card-option-flag-4..8 = 0); each only lets no time pass.

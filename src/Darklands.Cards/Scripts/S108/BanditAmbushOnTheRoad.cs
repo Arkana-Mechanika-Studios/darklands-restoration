@@ -70,16 +70,16 @@ public sealed class BanditAmbushOnTheRoad : Card
             // orig: R108+0x26E2 (line 1); hint R108+0x2790 (1A3F:0720) matched
             new MenuLine(p => TalkYourWayPast(c, p), () => TalkHint(c, menu)),
             // orig: R108+0x27EA (line 2); hint R108+0x288A (1A3F:081A) matched
-            new MenuLine(p => FlushThemOut(c, p), () => OptionHint.Say("Of course the potion will work!"), () => PotionHint(c)),
+            new MenuLine(p => FlushThemOut(c, p), () => OptionHint.Say("exe:DS:4F7A"), () => PotionHint(c)),  // "Of course the potion will work!"
             // orig: R108+0x28C2 (line 3); hint R108+0x29EA (1A3F:097A) matched
-            new MenuLine(_ => PrayForPeacefulPassage(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => PrayForPeacefulPassage(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R108+0x2A22 (1A3F:09B2) matched; hint R108+0x2A78
             new MenuLine(_ => Surrender(c), () => OptionHint.Say(SuccessAssured)),
             // orig: R108+0x2AB0 (line 5); hint R108+0x2B9C (1A3F:0B2C) matched
             new MenuLine(p => SneakAway(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageEffectiveAgility() + c.PartyAverageSkill((int)Skill.Woodwise) / 2, 1, 99), OptionHint.WholeParty)),
             // orig: R108+0x2BD2 (1A3F:0B62) matched; hint R108+0x2BDC
-            new MenuLine(_ => Fight(c, true), () => OptionHint.Say("Enter Combat")),
+            new MenuLine(_ => Fight(c, true), () => OptionHint.Say("exe:DS:4FC0")),  // "Enter Combat"
             // orig: R108+0x2C14 (line 7); hint R108+0x2C9A (1A3F:0C2A) matched
             new MenuLine(p => ScoutThemOut(c, menu, p), () => OptionHint.ChanceOf(Math.Clamp(
                 c.PartyAverageEffectiveAgility() + c.PartyMaxSkill((int)Skill.Woodwise) / 2, 0, 99), OptionHint.WholeParty)),
@@ -89,7 +89,7 @@ public sealed class BanditAmbushOnTheRoad : Card
             new MenuLine(_ => { }));
     }
 
-    private static OptionHint Unknown() => OptionHint.Say("You can always encounter the unknown");
+    private static OptionHint Unknown() => OptionHint.Say("exe:DS:4F9A");  // "You can always encounter the unknown"
 
     /// <summary>The ambush is sprung: talk, pray, surrender or fight.</summary>
     private static void Ambushed(CardContext c, CardMenu menu)

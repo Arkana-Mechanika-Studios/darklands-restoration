@@ -82,7 +82,7 @@ public sealed class MaidenAtTheStake : Card
                 c.Screen.Text(0x0F);
                 c.PassHours(2);
                 GoOn(c);
-            }, OptionHint.Saying("Leaving her to die is hardly heroic")));
+            }, OptionHint.Saying("exe:290E:03B3")));  // "Leaving her to die is hardly heroic"
     }
 
     private static void GoOn(CardContext c)

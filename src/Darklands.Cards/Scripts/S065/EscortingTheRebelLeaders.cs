@@ -84,7 +84,7 @@ public sealed class EscortingTheRebelLeaders : Card
             new MenuLine(_ => Pray(c, Dispersed), OptionHint.Saying(CardTexts.SelectSaint), () => SaintHint(c)),
             new MenuLine(chance => ThrowAPotion(c, chance, Dispersed), OptionHint.Saying(CardTexts.SelectPotion), () => PotionHint(c)),
             new MenuLine(_ => Fight(c, Dispersed), OptionHint.Saying(CardTexts.EnterCombat)),
-            new MenuLine(_ => RunAway(c), OptionHint.Saying("Coward!")),
+            new MenuLine(_ => RunAway(c), OptionHint.Saying("exe:DS:5C89")),  // "Coward!"
             // DORMANT: lines 5..9 (card-option-flag-5..9 = 0): time passes, nothing else.
             // orig: R065+0x0746/078a/07ce/0812/0856, hints 0752/0796/07da/081e/0862
             new MenuLine(_ => c.PassHours(0), OptionHint.Saying(SuccessAssured)),

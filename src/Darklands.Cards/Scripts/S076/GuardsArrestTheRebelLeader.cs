@@ -33,7 +33,7 @@ public sealed class GuardsArrestTheRebelLeader : Card
         menu.Enable(0, 1);
         return menu.Run(
             new MenuLine(() => Fight(c, messengerComes), OptionHint.Saying(CardTexts.EnterCombat)),
-            new MenuLine(() => AbandonHim(c), OptionHint.Saying("Coward!")));
+            new MenuLine(() => AbandonHim(c), OptionHint.Saying("exe:DS:5F59")));  // "Coward!"
     }
 
     // orig: R076+0x01A6 (1838:01A6) matched; R076+0x032C (1838:032C) matched; tests: CardSmokeTests

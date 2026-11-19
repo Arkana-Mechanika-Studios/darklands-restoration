@@ -43,9 +43,9 @@ public sealed class PeatBog : Card
             // orig: R113+0x0FAC (line 2); hint R113+0x100E (18F0:048E) matched
             new MenuLine(p => StripAndPull(c, menu, p), () => HaulHint(c, 3, false)),
             // orig: R113+0x104A (line 3); hint R113+0x10DA (18F0:055A) matched
-            new MenuLine(_ => CallASaint(c), () => OptionHint.Say("Select a person and a saint.")),
+            new MenuLine(_ => CallASaint(c), () => OptionHint.Say("exe:DS:4F2A")),  // "Select a person and a saint."
             // orig: R113+0x1112 (line 4); hint R113+0x1204 (18F0:0684) matched
-            new MenuLine(p => UseAPotion(c, p), () => OptionHint.Say("Select a person and a potion."), () => PotionHint(c)),
+            new MenuLine(p => UseAPotion(c, p), () => OptionHint.Say("exe:DS:4F0C"), () => PotionHint(c)),  // "Select a person and a potion."
             // orig: R113+0x123C (line 5); hint R113+0x12E0 (18F0:0760) matched
             new MenuLine(_ => LeaveThemToTheirFate(c, menu), () => OptionHint.Say(SuccessAssured)),
             // DORMANT: lines 6..9 are never offered; each lets no time pass (R113+0x1318, 07dc, 0820, 0864).

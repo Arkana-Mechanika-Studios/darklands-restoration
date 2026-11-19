@@ -141,10 +141,10 @@ public sealed class CardMenuTests
             return;
         }
         var (c, _) = Context();
-        c.OptionHandlers[5] = () => OptionHint.Say("left over");
+        c.OptionHandlers[5] = () => OptionHint.Say("id:test.left-over");
         _ = new CardMenu(c, 1, resetsHandlers: false);
-        Assert.Equal("left over", c.OptionHandlers[5]!().Message);
+        Assert.Equal(Darklands.Core.GameText.Of("id:test.left-over"), c.OptionHandlers[5]!().Text);
         _ = new CardMenu(c, 1);
-        Assert.Equal(CardTexts.ScrewedUp, c.OptionHandlers[5]!().Message);
+        Assert.Equal(Darklands.Core.GameText.Of(CardTexts.ScrewedUp), c.OptionHandlers[5]!().Text);
     }
 }
