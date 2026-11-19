@@ -53,7 +53,10 @@ internal sealed class ScenarioDraws : IDisposable
         return _current;
     }
 
-    /// <summary>Opt-in (the generator fuzzer, GenFuzz): every scenario gets a scope, so its draws are counted (forcing unchanged).</summary>
+    /// <summary>Opt-in (the generator fuzzer, GenFuzz): every scenario gets a scope, so its draws are counted (forcing unchanged).
+    /// Per thread, like the scope itself: the tests run in parallel, and a fuzzer test that turned it on made another thread's
+    /// scenario without forced draws get a scope (ScenarioDrawsTests failed now and then on its Assert.Null).</summary>
+    [field: ThreadStatic]
     internal static bool Counting { get; set; }
 
     /// <summary>The draws of the last scenario whose scope ended on this thread (with <see cref="Counting"/>).</summary>
