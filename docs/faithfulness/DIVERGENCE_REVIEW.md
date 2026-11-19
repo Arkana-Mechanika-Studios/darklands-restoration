@@ -482,11 +482,11 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### other (4)
 
-- **D-c7cfbb** `other` - `src/Darklands.Content/WorldData.cs:45` `WorldData.Load`  
+- **D-c7cfbb** `other` - `src/Darklands.Content/WorldData.cs:53` `WorldData.Load`  
   original: `R043+0x0100` (1462:0100, matched)  
   divergence: the original reads one city record and one description (those of location-now) and keeps them as city-record / city-description; here every city is decoded and the working copy comes from GameState.City; the events.tmp file is the saved game's event list (Persistence).  
   recommendation: **justify** - Representation difference: the original reads one city record and keeps the location records in its heap and in locs.tmp; this program decodes all cities up front and restores fields through Persistence. Equivalent as long as GameState.City and the save restore give the same bytes (covered by the persistence tests).
-- **D-22b44f** `other` - `src/Darklands.Content/WorldData.cs:58` `WorldData.CreateLocations`  
+- **D-22b44f** `other` - `src/Darklands.Content/WorldData.cs:66` `WorldData.CreateLocations`  
   original: `R043+0x0100` (1462:0100, matched), `R136+0xE9EE` (2E38:10BE, data)  
   divergence: the original keeps the records in its own heap and writes them to locs.tmp when the card engine shuts down (cards-teardown R043+0x054E); a new game starts from the file here, a saved game restores the fields through Persistence.  
   recommendation: **justify** - Representation difference: the original reads one city record and keeps the location records in its heap and in locs.tmp; this program decodes all cities up front and restores fields through Persistence. Equivalent as long as GameState.City and the save restore give the same bytes (covered by the persistence tests).
