@@ -163,6 +163,7 @@ public static class SettingsFile
                     case "input": Section(name, value, settings, Input); break;
                     case "sdl": Section(name, value, settings, Sdl); break;
                     case "console": Section(name, value, settings, Console); break;
+                    case "text": Section(name, value, settings, Text); break;
                     default: Unknown(name); break;
                 }
             }
@@ -339,6 +340,16 @@ public static class SettingsFile
             else
             {
                 Unknown(key);
+            }
+        }
+
+        private void Text(string section, JsonProperty property, GameSettings settings)
+        {
+            var key = $"{section}.{property.Name}";
+            switch (property.Name)
+            {
+                case "languagePack": settings.LanguagePack = FilePath(key, property.Value); break;
+                default: Unknown(key); break;
             }
         }
 
@@ -556,6 +567,13 @@ public static class SettingsFile
           // The 8x16 text-screen font: a 4096-byte VGA BIOS font dump or its base64. "": a built-in font.
           // Command line: --text-font <file>; environment: DARKLANDS_TEXT_FONT.
           "textFont": "",
+
+          "text": {
+            // A translation pack: a folder with a pack.json naming its language and Fluent .ftl files under text/<language>/
+            // (docs/LOCALISATION.md). Not part of the original: it changes words only, the game plays the same. "": the original
+            // English text from your game files. Command line: --language-pack <folder>; environment: DARKLANDS_LANGUAGE_PACK.
+            "languagePack": ""
+          },
 
           // Where screenshots go. "": the current folder. Command line: --screenshots <folder>.
           "screenshotsFolder": "",

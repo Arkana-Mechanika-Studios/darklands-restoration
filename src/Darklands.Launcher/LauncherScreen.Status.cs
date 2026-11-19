@@ -23,13 +23,18 @@ internal sealed partial class LauncherScreen
         {
             return ShortProblem(folder, problem);
         }
-        return _model.Holds(folder, kind) ? null : kind == PackKind.Pictures ? "no PNG pictures in this folder." : "no OGG, WAV or MIDI sounds in this folder.";
+        return _model.Holds(folder, kind) ? null : kind switch
+        {
+            PackKind.Pictures => "no PNG pictures in this folder.",
+            PackKind.Sounds => "no OGG, WAV or MIDI sounds in this folder.",
+            _ => "no translation here (a pack.json with a language and .ftl files).",
+        };
     }
 
     /// <summary>A pack's problem as the row shows it: without "Audio pack:" (the row says it) and with the pack's own files named from its folder.</summary>
     internal static string ShortProblem(string folder, string problem)
     {
-        foreach (var prefix in new[] { "Audio pack: ", "HD pack: " })
+        foreach (var prefix in new[] { "Audio pack: ", "HD pack: ", "language pack: " })
         {
             if (problem.StartsWith(prefix, StringComparison.Ordinal))
             {
@@ -52,7 +57,12 @@ internal sealed partial class LauncherScreen
     {
         if (_model.PackOf(kind) is not { } folder)
         {
-            return (kind == PackKind.Pictures ? "None: the game's own pictures." : "None: the game's own music and sounds.", PaleCream);
+            return (kind switch
+            {
+                PackKind.Pictures => "None: the game's own pictures.",
+                PackKind.Sounds => "None: the game's own music and sounds.",
+                _ => "None: the original English text.",
+            }, PaleCream);
         }
         return PackProblem(kind) is { } problem ? (problem, PaleRed) : (PackSummary(kind, _model.Pack(folder)), Green);
     }
@@ -133,6 +143,7 @@ internal sealed partial class LauncherScreen
                 + "\nThe preview at the left approximates the game window.",
             Item.HdPack => $"Replacement pictures (PNG). ←/→: None or a pack of the packs folder; {browse}.",
             Item.AudioPack => $"Replacement music and sounds (OGG, WAV, MIDI). ←/→: None or a pack of the packs folder; {browse}.",
+            Item.LanguagePack => $"A translation of the game's words (a pack.json naming its language, Fluent .ftl files under text/<language>); the game plays the same. ←/→: None (the original English) or a pack of the packs folder; {browse}.",
             Item.SoundFont => _model.SoundFontFound is null && (_model.SoundFont is null || !File.Exists(_model.SoundFont))
                 ? $"Without one a pack's .mid music is skipped. Any General MIDI .sf2 works: put it in {SoundFontFolder} next to the program, drop it here, or Browse…. Free: {FreeSoundFont} by Frank Wen (MIT, 140 MB; on Linux fluid-soundfont-gm)."
                 : $"The SoundFont (.sf2) for the packs' .mid music. Enter or Browse…: another file; ←/→: the default (the {SoundFontFolder} folder next to the program).",

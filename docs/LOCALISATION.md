@@ -1,29 +1,36 @@
 # Localisation (translations)
 
-> **Status: designed, not built.** Nothing in this guide can be used yet. The game has no language setting, no
-> translation packs and no translation tools today. Localisation is planned for **version 1.1**, the first
-> release after 1.0. Everything below describes the plan, so that translators can prepare
-> and developers can see what is coming. Names, file layouts and examples are drafts and may change. This guide
-> will be rewritten as each part is built.
+> **Status: being built for version 1.1.** A first form of translation packs works in the development branch: the
+> program loads a pack and shows its words on the screens it covers (below). Card texts, the cards' own words and the
+> battle screen's messages are not translatable yet, there is no in-game language screen yet, and the file layout may
+> still change before 1.1. This guide is updated as each part is built.
 
 This guide is for would-be translators first ([how you can help now](#how-translators-can-help-now)), then for
 developers ([the plan in steps](#the-plan-for-developers)).
 
 ## What exists today
 
-* **No language or locale setting.** The game, the launcher and the console are in English. [SETTINGS.md](SETTINGS.md)
-  has no such key.
-* **No translation mechanism.** [PACKS.md](PACKS.md) describes picture packs and sound packs only; [MODS.md](MODS.md)
-  describes mods that add content. Neither replaces text.
-* **Fonts.** The game draws its text with the original fonts, which cover a limited set of characters. There is a
-  `textFont` setting (an 8x16 VGA font dump, see [SETTINGS.md](SETTINGS.md)) and a `console.font` setting for the
-  console, but they are not a language feature, and no font pack exists.
+* **A language pack setting.** `text.languagePack` in the settings file ([SETTINGS.md](SETTINGS.md)), `--language-pack
+  <folder>` on the command line, the environment variable `DARKLANDS_LANGUAGE_PACK`, and the **Language pack** row on
+  the launcher's Advanced tab (None, or a pack found in a `packs` folder, or a folder browsed for or dropped on the
+  window). None means the original English text, exactly as before.
+* **Translation packs** in [Project Fluent](https://projectfluent.org/) (`.ftl` files), read with the Linguini library
+  ([below](#how-a-translation-pack-looks)).
+* **What a pack translates now:** the screens' own words (menus, labels, lists, prompts, notices and hints: everything a
+  screen asks for by key), the entries of the original's word tables the screens show (months, canonical hours, fame
+  titles, standing words, directions, town sizes, shop names, job names, skill names, risk words, the character
+  sheet's labels), and the program's own notices (a damaged saved game, missing mods ...).
+* **Not yet:** card texts (`.MSG` files) and the words the cards put into them (`$MonthName`, shop and patron names
+  ...), the battle screen's messages, item, saint and place names, and the program start's messages. These keep the
+  original English for now.
+* **Fonts.** The game draws its text with the original fonts, which have no letters beyond the original's set (the
+  German edition's umlauts and ß are among them). A letter the font lacks is drawn as `?`. Font packs come later.
 
 ## The principle: Classic stays the reference
 
 With no translation pack, the game shows the original English text, exactly as it is in the player's own game files and
-in `DARKLAND.EXE` version 483.07. Localisation must never change that. Every step of the plan is checked against the
-original so that Classic stays exact.
+in `DARKLAND.EXE` version 483.07. Localisation must never change that, and a pack changes words only: never what the
+game does, never a saved game. Every step of the plan is checked against the original so that Classic stays exact.
 
 The project does not ship the game's original text. It is read at run time from the files the player already owns, as
 the pictures and sounds are today.
@@ -38,7 +45,7 @@ them in the normal way (a pull request).
 
 **(b) The game's own text.** Card texts from the `.MSG` files, the strings inside `DARKLAND.EXE`, and the names and
 descriptions in the data tables (items, saints, places and so on). A translation of this text is a derivative of the
-original game's text, so the project cannot distribute it. These translations will be separate, optional
+original game's text, so the project cannot distribute it. These translations are separate, optional
 **translation packs**, kept outside the repository and loaded like the other packs. Where a pack is hosted is up to
 its author.
 
@@ -46,66 +53,71 @@ its author.
 
 * **Text drawn into the original pictures** (title screens, some panels and signs). It can only be changed by replacing
   those pictures with a picture pack ([PACKS.md](PACKS.md)).
-* **Characters the original fonts lack.** Languages that need other characters will need **font packs**. Which
-  characters the original fonts cover is part of the groundwork (see the plan).
+* **Characters the original fonts lack.** Languages that need other characters will need **font packs**.
 * **Fixed screen space.** In Classic, the screens, buttons and menus have fixed sizes. A translation that is longer than
-  the English must be shortened or wrapped, and a wrapping routine for long translated words is part of the planned
-  work. Translators should expect to abbreviate; a translation can give a short form for the places where the full
-  text does not fit ([below](#fonts-layout-and-mouse-areas)).
+  the English must be shortened or wrapped. Translators should expect to abbreviate; each key will carry the width of
+  the box the original draws it in, and the pack checker will flag a translation that does not fit (planned).
 
 **Not supported as a base:** the original German release. It uses a different `DARKLAND.EXE`; only the English 483.07
-is supported. A German translation would be a translation pack on the English base like any other.
+is supported. A German translation is a translation pack on the English base like any other.
 
-## How text will be identified
+## How text is identified
 
-The game logic will stop producing English sentences. It will produce a **message id** plus arguments, and a separate
-layer turns that into text. In the original language, that text is built at run time from the player's files. Ids
-will be keys such as:
+The game logic does not produce English sentences. It produces a **text id** plus arguments, and the screens turn that
+into words: from the pack when it has the id, else from the player's own files. The ids are:
 
-| Key form | Meaning |
+| Key | Meaning |
 |---|---|
-| `exe:DS:offset` | a string inside `DARKLAND.EXE`, at an offset in its data segment |
-| `msg:FILE#block` | a card text: block number in a `.MSG` file |
-| record ids | entries of data tables (an item, a saint, a place) |
+| `exe:DS:XXXX` | a string inside `DARKLAND.EXE`, at offset `XXXX` of its data segment (each copy the original keeps has its own key) |
+| `exe:290E:XXXX` | a string of the EXE's far string segment |
+| `id:rw.…` | a sentence of the restoration's own (the original has no such text): `id:rw.save.damaged.1` |
+| `id:card.…`, `id:skill.changed` | a sentence the original builds from pieces: the chance of an option, a skill report |
+| `msg:FILE#block` | a card text: block number in a `.MSG` file (not translatable yet) |
 
-The exact key spelling is a draft.
+In a `.ftl` file a key is written as a Fluent identifier: lower case, `:` `.` `/` `#` `+` turned into `-`, `$` dropped.
+So `exe:DS:2FF2` is `exe-ds-2ff2` and `id:rw.save.damaged.1` is `id-rw-save-damaged-1`. Two keys never meet in one
+identifier.
 
-## How a translation pack will look (draft)
+**Arguments** become Fluent variables. A named one keeps its name (`{ $count }`, `{ $name }`). Many of the original's
+strings are C format strings (`%s holds the purse of %dfl, %dgr, %dpf (%lupf).`); their arguments are, in order,
+`{ $arg0 }`, `{ $arg1 }` …: the translation writes the sentence with those variables and needs no `%` codes.
 
-Translations use [Project Fluent](https://projectfluent.org/) (`.ftl` files). Which Fluent library for .NET to use
-has not been decided; it will be chosen after a trial.
+## How a translation pack looks
 
-Card texts get one `.ftl` file per `.MSG` file. A card's options are attributes named `.option-N`; a menu hotkey is a
-`.key` attribute. Placeholders in braces take the arguments the game passes.
-
-A possible folder layout:
+A pack is a folder:
 
 ```
 my-translation-pack/
-  pack.json            name, language code, author, base game version (483.07)
-  game/                translation of the game's own text (kind b)
-    exe.ftl            strings from DARKLAND.EXE
-    msg/
-      EXAMPLE.ftl      one file per .MSG file
-    tables.ftl         names and descriptions of data records
-  fonts/               optional: font pack for extra characters
-  pictures/            optional: replacements for pictures that contain text
+  pack.json            { "language": "de", "name": "Deutsch", "author": "…", "base": "483.07" }
+  text/
+    de/
+      exe.ftl          the EXE's strings and the word tables
+      ui.ftl           the restoration's own notices
+      msg/
+        CITYG04.ftl    card texts, one file per .MSG file (not read yet: card texts come next)
 ```
 
-A small illustration. **This is a draft: the ids and fields are invented to show the shape, not a real file.**
+`pack.json` must name the `language` (a language tag: `de`, `fr`, `pt-BR`; `qps` is the pseudo-locale); `name`,
+`author` and `base` (the game version translated: `483.07`, the only one supported) are optional. The Fluent files are
+under `text/<language>/`, the layout of the mods' text, so a language pack will also load unchanged as a cosmetic mod
+in 1.2. Every `.ftl` file there is read, in path order (the file names are free); a message id defined twice keeps the
+first. A key the pack does not have shows the original English, so a pack may be partial. What is wrong
+with a pack (a Fluent syntax error with its file and line, an unreadable manifest) is reported on the console's error
+output and in the launcher's line for the pack; the valid entries are still used.
+
+A small example. **The ids are real; the German is only an illustration.**
 
 ```
-# game/msg/EXAMPLE.ftl  (DRAFT, illustrative only)
-
-card-12 = You come to a crossroads. { $party } hesitates.
-    .option-1 = Take the road north.
-    .option-2 = Take the road east.
-    .key-1 = N
-    .key-2 = E
+# text/de/exe.ftl
+exe-ds-2ff2 = Verlassen
+exe-ds-2f71 = { $arg0 } verwaltet die Börse: { $arg1 } Gulden, { $arg2 } Groschen, { $arg3 } Pfennige.
+# the months (290E:1D43 points at 290E:0000 "January" ...)
+exe-290e-0000 = Januar
 ```
 
-Packs will be chosen the way the other packs are (a setting, a command-line option, a launcher row); none of that
-exists yet.
+The translator's template (planned) will give every key with the English and a comment saying what each argument
+is. The keys of a screen can also be found with the developer's inspector (a development build: hold F9 over a word; see
+[SETTINGS.md](SETTINGS.md)) or in the text extract of your own game files (planned for the translators' tools).
 
 ## Fonts, layout and mouse areas
 
@@ -169,7 +181,7 @@ need.
 Each step is checked against the original game, so that Classic output stays identical. A step is not done until that
 check passes.
 
-1. **Message ids out of the game logic.** Replace literal English strings in the rules with message ids and
+1. **Message ids out of the game logic.** (Done in 1.1 for the rules, the cards' hints and the screens.) Replace literal English strings in the rules with message ids and
    arguments. The English built from them must equal the old output exactly.
 2. **String-table extraction.** Read the strings of `DARKLAND.EXE` 483.07, the `.MSG` card texts and the data-table
    names from the player's files, and index them under the keys above. Record which characters the original fonts
@@ -178,7 +190,7 @@ check passes.
    [the section above](#fonts-layout-and-mouse-areas); mouse areas of flowing text read from the layout. Nothing
    visible changes: the original English must give the original's frames exactly. The 1.1 high-resolution fonts
    (same metrics) are built on this step.
-4. **Fluent overlay loader.** Load `.ftl` files from translation packs over the original-language text. A missing
+4. **Fluent overlay loader.** (First form built: packs, the setting, the launcher row; card texts next.) Load `.ftl` files from translation packs over the original-language text. A missing
    message falls back to the original text; the game never shows an empty string. The Fluent library is chosen
    after a trial, before this step. The wrapping routine for long words belongs here, and so do fonts with their own
    metrics.

@@ -204,9 +204,12 @@ internal static class LauncherHost
     {
         var pictures = Darklands.Rendering.HdPack.Load(folder);
         var sounds = Darklands.Audio.Packs.AudioPack.Load(folder);
-        var problem = sounds.Problems.Concat(pictures.Problems).FirstOrDefault(p => p.Contains(".json", StringComparison.Ordinal))
-            ?? sounds.Problems.FirstOrDefault(p => !p.Contains("SoundFont", StringComparison.Ordinal));
-        return new PackStatus(pictures.Count, sounds.Count, problem);
+        // a translation pack: read as the game reads it (its first Fluent error is the row's problem)
+        var language = Darklands.Localization.LanguagePack.IsPack(folder) ? Darklands.Localization.LanguagePack.Load(folder, out _) : null;
+        var problem = sounds.Problems.Concat(pictures.Problems).FirstOrDefault(p => p.Contains(".json", StringComparison.Ordinal) && language is null)
+            ?? sounds.Problems.FirstOrDefault(p => !p.Contains("SoundFont", StringComparison.Ordinal) && language is null)
+            ?? language?.Problems.Select(p => p.ToString()).FirstOrDefault();
+        return new PackStatus(pictures.Count, sounds.Count, problem, language?.Files ?? 0);
     }
 
     /// <summary>The project's releases on GitHub (each version's page is /tag/v&lt;version&gt;).</summary>

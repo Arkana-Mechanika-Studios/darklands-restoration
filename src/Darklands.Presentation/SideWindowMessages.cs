@@ -18,7 +18,7 @@ public sealed class SideWindowMessages(GameUi ui) : IGameMessages
     /// <summary>A rule's message on <paramref name="ui"/>'s screen, at once.</summary>
     public static void Show(GameUi ui, GameMessage message)
     {
-        var text = ui.Assets.MessageText.Text(message);
+        var text = ui.Words(new Darklands.Core.GameText(message.Id, message.Args));
         if (message.Kind == MessageKind.Notice)
         {
             new MessageBox(ui).Show(text, message.Ticks * 1000 / 60);

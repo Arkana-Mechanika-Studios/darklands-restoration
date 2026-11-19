@@ -96,9 +96,10 @@ public interface IFilterPreviews
 }
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
-public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
+/// <param name="Translations">The Fluent (.ftl) files of a translation pack (a pack.json naming a "language"); 0 for other packs.</param>
+public sealed record PackStatus(int Pictures, int Sounds, string? Problem, int Translations = 0)
 {
-    /// <summary>What a folder holds by its files alone: PNG files (pictures), OGG, WAV and MIDI files (sounds).</summary>
+    /// <summary>What a folder holds by its files alone: PNG files (pictures), OGG, WAV and MIDI files (sounds), .ftl files of a translation pack.</summary>
     public static PackStatus Count(string folder)
     {
         try
@@ -108,11 +109,36 @@ public sealed record PackStatus(int Pictures, int Sounds, string? Problem)
                 files.Count(e => string.Equals(e, ".png", StringComparison.OrdinalIgnoreCase)),
                 files.Count(e => string.Equals(e, ".ogg", StringComparison.OrdinalIgnoreCase) || string.Equals(e, ".wav", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(e, ".mid", StringComparison.OrdinalIgnoreCase) || string.Equals(e, ".midi", StringComparison.OrdinalIgnoreCase)),
-                null);
+                null,
+                LanguageOf(folder) is { } language && Directory.Exists(Path.Combine(folder, "text", language))
+                    ? Directory.EnumerateFiles(Path.Combine(folder, "text", language), "*.ftl", SearchOption.AllDirectories).Count()
+                    : 0);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
         {
             return new PackStatus(0, 0, e.Message);
+        }
+    }
+
+    /// <summary>The language the folder's pack.json names (a translation pack's manifest; its files are under text/&lt;language&gt;), or null.</summary>
+    private static string? LanguageOf(string folder)
+    {
+        var manifest = Path.Combine(folder, "pack.json");
+        if (!File.Exists(manifest))
+        {
+            return null;
+        }
+        try
+        {
+            using var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifest),
+                new System.Text.Json.JsonDocumentOptions { CommentHandling = System.Text.Json.JsonCommentHandling.Skip, AllowTrailingCommas = true });
+            return json.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object && json.RootElement.TryGetProperty("language", out var language)
+                && language.ValueKind == System.Text.Json.JsonValueKind.String && language.GetString() is { Length: > 0 } tag
+                && tag.IndexOfAny(Path.GetInvalidFileNameChars()) < 0 ? tag : null;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
         }
     }
 }

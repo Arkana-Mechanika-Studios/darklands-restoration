@@ -504,7 +504,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     private void OpenTeacherBox()
     {
         var canvas = ui.Canvas;
-        var lines = string.Join("\n", _stay.TeacherList().Select(skill => ui.Assets.Words.Text(OriginalWords.SkillNames, skill)));
+        var lines = string.Join("\n", _stay.TeacherList().Select(skill => ui.Word(OriginalWords.SkillNames, skill)));
         _teacherBox = canvas.Save(TeacherBoxX, TeacherBoxY, TeacherBoxWidth, 0x41);
         canvas.Fill(TeacherBoxX, TeacherBoxY, TeacherBoxWidth, 0x41, Palette.Blank);
         canvas.Outline(TeacherBoxX, TeacherBoxY, TeacherBoxWidth - 1, 0x40, 1);

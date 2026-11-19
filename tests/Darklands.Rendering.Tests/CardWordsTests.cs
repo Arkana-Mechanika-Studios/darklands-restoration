@@ -52,7 +52,7 @@ public sealed class CardWordsTests
         { "exe:DS:5DBD", "three days hence" }, { "exe:DS:5C5D", "Weapon Skills" }, { "exe:DS:5CC3", "Potions" },
         { "exe:DS:5CCB", "Alchemical Components" }, { "exe:DS:652F", "touch the " }, { "exe:DS:653A", "turn the stone" },
         { "exe:DS:6549", "heart" }, { "exe:DS:6511", "gold coins" },
-        { "exe:DS:6709", "Reinhard of OGronigen" }, { "exe:290E:049A", "You need a missile weapon" },
+        { "exe:DS:6709", "Reinhard of OGronigen" }, { "exe:DS:5B8F", "Deposit how many Florins?" }, { "exe:DS:5BBD", "Deposit how many Florins?" }, { "exe:290E:049A", "You need a missile weapon" },
         { "exe:DS:68AF", "spring" }, { "exe:DS:68B6", "lake" }, { "exe:DS:68BB", "cave" }, { "exe:DS:68C0", "shrine" },
         { "exe:DS:68C7", "mound" }, { "exe:DS:68CD", "pagan altar" }, { "exe:DS:68D9", "spring" }, { "exe:DS:68E0", "lake" },
         { "exe:DS:68E5", "cave" }, { "exe:DS:68EA", "shrine" }, { "exe:DS:68F1", "mound" }, { "exe:DS:68F7", "pagan altar" },

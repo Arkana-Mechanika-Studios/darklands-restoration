@@ -203,10 +203,10 @@ public sealed partial class CardContext
 
     // ---- text input, names ------------------------------------------------------------
 
-    /// <summary>The text box (R037 <c>text-prompt</c>: prompt, text to edit, longest length → the text entered), supplied by the presentation.</summary>
+    /// <summary>The text box (R037 <c>text-prompt</c>: the key of its question, text to edit, longest length → the text entered), supplied by the presentation (which words the key).</summary>
     public Func<string, string, int, string>? TextInput { get; set; }
 
-    /// <summary>Asks the player to edit a short text; without a text box the text is taken as it stands (Enter).</summary>
+    /// <summary>Asks the player to edit a short text (<paramref name="prompt"/>: the question's key, <c>exe:DS:5B8F</c>); without a text box the text is taken as it stands (Enter).</summary>
     // orig: thunk 09C0:20B7 text-prompt (R037 1462:43E6) R037+0x43E6 draft
     public string AskText(string prompt, string initial, int maxLength) => TextInput?.Invoke(prompt, initial, maxLength) ?? initial;
 

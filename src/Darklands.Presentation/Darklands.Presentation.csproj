@@ -7,6 +7,7 @@
     <ProjectReference Include="..\Darklands.Cards\Darklands.Cards.csproj" />
     <ProjectReference Include="..\Darklands.Persistence\Darklands.Persistence.csproj" />
     <ProjectReference Include="..\Darklands.Audio\Darklands.Audio.csproj" />
+    <ProjectReference Include="..\Darklands.Localization\Darklands.Localization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -82,27 +82,31 @@ internal sealed partial class LauncherScreen
         {
             SetSoundFont(path);
         }
-        else if (Directory.Exists(path) && (_model.Holds(path, PackKind.Pictures) || _model.Holds(path, PackKind.Sounds)))
+        else if (Directory.Exists(path) && new[] { PackKind.Pictures, PackKind.Sounds, PackKind.Language }.Any(k => _model.Holds(path, k)))
         {
-            // a folder of pictures, of sounds or of both: it becomes the pack of each kind it holds
-            foreach (var kind in new[] { PackKind.Sounds, PackKind.Pictures }.Where(k => _model.Holds(path, k)))
+            // a folder of pictures, of sounds, of translations or of several: it becomes the pack of each kind it holds
+            foreach (var kind in new[] { PackKind.Sounds, PackKind.Pictures, PackKind.Language }.Where(k => _model.Holds(path, k)))
             {
                 SetPack(kind, path);
             }
         }
         else
         {
-            _message = $"{path} holds neither Darklands (DARKLAND.EXE), Roland ROMs nor a pack (PNG pictures, OGG, WAV or MIDI sounds), and is not a SoundFont (.sf2).";
+            _message = $"{path} holds neither Darklands (DARKLAND.EXE), Roland ROMs nor a pack (PNG pictures, OGG, WAV or MIDI sounds, a translation), and is not a SoundFont (.sf2).";
         }
     }
 
-    private static Item PackItem(PackKind kind) => kind == PackKind.Pictures ? Item.HdPack : Item.AudioPack;
+    private static Item PackItem(PackKind kind) => kind switch { PackKind.Pictures => Item.HdPack, PackKind.Sounds => Item.AudioPack, _ => Item.LanguagePack };
 
     /// <summary>A pack row: ←/→ (or a click on ‹ ›) go through None and the packs found; Enter or its Browse… asks the system for a folder.</summary>
     private void ChoosePack(PackKind kind, int step, bool cycle)
     {
-        var what = kind == PackKind.Pictures ? "a picture (HD) pack: PNG files named after the game's pictures"
-            : "a sound pack: OGG or WAV files named after the game's music and effects";
+        var what = kind switch
+        {
+            PackKind.Pictures => "a picture (HD) pack: PNG files named after the game's pictures",
+            PackKind.Sounds => "a sound pack: OGG or WAV files named after the game's music and effects",
+            _ => "a translation pack: a pack.json naming its language and Fluent (.ftl) files under text/<language>",
+        };
         if (!cycle && _surface.PickFolder is null)
         {
             (_message, _messageColour) = ("No folder dialog here: drop the pack's folder on this window, or ←/→ for the packs found.", PaleCream);
@@ -118,7 +122,7 @@ internal sealed partial class LauncherScreen
                 }
                 else
                 {
-                    _message = $"{picked} holds no {(kind == PackKind.Pictures ? "PNG pictures" : "OGG or WAV sounds")}.";
+                    _message = $"{picked} holds no {kind switch { PackKind.Pictures => "PNG pictures", PackKind.Sounds => "OGG or WAV sounds", _ => "translation (a pack.json with a language and .ftl files)" }}.";
                 }
             }
             return;
@@ -131,7 +135,7 @@ internal sealed partial class LauncherScreen
     {
         if (IsFixed(PackItem(kind), out var by))
         {
-            _message = $"The {(kind == PackKind.Pictures ? "HD" : "audio")} pack is set by {by}.";
+            _message = $"The {kind switch { PackKind.Pictures => "HD", PackKind.Sounds => "audio", _ => "language" }} pack is set by {by}.";
             return;
         }
         _model.SetPack(kind, folder);
@@ -142,7 +146,9 @@ internal sealed partial class LauncherScreen
     /// <summary>A pack chosen: its state shows on the line under its row (and in full in the details box), not as a message.</summary>
     private void PackMessage(PackKind kind) => _message = null;
 
-    private string PackSummary(PackKind kind, PackStatus status) => kind == PackKind.Pictures
+    private string PackSummary(PackKind kind, PackStatus status) => kind == PackKind.Language
+        ? $"{status.Translations} translation file{(status.Translations == 1 ? "" : "s")}."
+        : kind == PackKind.Pictures
         ? $"{status.Pictures} picture{(status.Pictures == 1 ? "" : "s")}."
         : $"{status.Sounds} sound{(status.Sounds == 1 ? "" : "s")}{(_model.PackOf(kind) is { } f && File.Exists(Path.Combine(f, "audio.json")) ? ", audio.json read" : "")}.";
 

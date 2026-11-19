@@ -488,6 +488,8 @@ internal sealed partial class LauncherScreen
             y = Select(y, "SoundFont", SoundFontShown(), Item.SoundFont, "Browse…");
             y = Status(y, Item.SoundFont, SoundFontLine());
             y = Section("Start-up", "icon-startup", y);
+            // the translation pack: one row (the tab has no height for a status line; a broken pack shows (!) and its problem in the details)
+            y = Select(y, "Language pack", PackShown(PackKind.Language), Item.LanguagePack, "Browse…");
             y = Select(y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner, narrow: true);
             y = Select(y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro, narrow: true);
             y = Select(y, "Mouse wheel in menus", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel, narrow: true);
@@ -757,7 +759,8 @@ internal sealed partial class LauncherScreen
         {
             yield return (path, Cream);
         }
-        if (row is Item.HdPack or Item.AudioPack && PackProblem(row == Item.HdPack ? PackKind.Pictures : PackKind.Sounds) is { } problem)
+        if (row is Item.HdPack or Item.AudioPack or Item.LanguagePack
+            && PackProblem(row switch { Item.HdPack => PackKind.Pictures, Item.AudioPack => PackKind.Sounds, _ => PackKind.Language }) is { } problem)
         {
             yield return ("Problem: " + problem, PaleRed);
         }

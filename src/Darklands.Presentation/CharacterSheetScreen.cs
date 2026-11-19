@@ -963,7 +963,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     }
 
     // the open panels' labels: the far table R136+0xA4F7
-    private string FullLabel(int k) => ui.Assets.Words.Text(OriginalWords.SheetLabels, k);
+    private string FullLabel(int k) => ui.Word(OriginalWords.SheetLabels, k);
 
     /// <summary>The text of an open box: full names and values, the equipment, or a list.</summary>
     // orig: R031+0x2B14 (1462:2B14) draft (bytes match)

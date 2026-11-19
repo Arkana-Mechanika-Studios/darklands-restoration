@@ -113,6 +113,7 @@ internal sealed partial class LauncherScreen
         Discord,
         Notes,
         AudioPack,
+        LanguagePack,
         PackGuide,
         SoundFont,
         Report,
@@ -182,7 +183,7 @@ internal sealed partial class LauncherScreen
     public bool AdvancedShown => _advanced;
 
     /// <summary>The rows of the Advanced tab; the other settings rows are on General.</summary>
-    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys;
+    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.LanguagePack or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys;
 
     private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
 
@@ -199,7 +200,7 @@ internal sealed partial class LauncherScreen
 
     // Tab and the arrows go through General's rows, then Advanced's (its tab opens), then the buttons and the links
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.Banner, Item.Intro, Item.MouseWheel, Item.CardMenuKeys, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.LanguagePack, Item.Banner, Item.Intro, Item.MouseWheel, Item.CardMenuKeys, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
                 && (i != Item.PackGuide || _context.PackGuide is not null) && (i != Item.Report || _context.ReportProblem is not null));
 
@@ -306,7 +307,7 @@ internal sealed partial class LauncherScreen
     internal IReadOnlyList<(int X, int Y, int Width, int Height)> ControlAreas => [.. _hotspots.Select(h => (h.Area.X, h.Area.Y, h.Area.Width, h.Area.Height))];
 
     /// <summary>The rows a click only chooses: Enter or their Browse… / Change… button opens the system's dialog.</summary>
-    private static bool SelectedByClick(Item item) => item is Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Roms;
+    private static bool SelectedByClick(Item item) => item is Item.HdPack or Item.AudioPack or Item.LanguagePack or Item.SoundFont or Item.Roms;
 
     private LauncherChoice? Selected()
     {
@@ -335,7 +336,7 @@ internal sealed partial class LauncherScreen
             case LauncherKey.Left:
             case LauncherKey.Right:
                 var step = key.Key == LauncherKey.Left ? -1 : 1;
-                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys or Item.GameFolder)
+                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.LanguagePack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys or Item.GameFolder)
                 {
                     return Activate(_focus, step, cycle: true);
                 }
@@ -420,8 +421,8 @@ internal sealed partial class LauncherScreen
             case Item.Picture:
                 _model.StepFilter(step);
                 break;
-            case Item.HdPack or Item.AudioPack:
-                ChoosePack(item == Item.HdPack ? PackKind.Pictures : PackKind.Sounds, step, cycle);
+            case Item.HdPack or Item.AudioPack or Item.LanguagePack:
+                ChoosePack(item switch { Item.HdPack => PackKind.Pictures, Item.AudioPack => PackKind.Sounds, _ => PackKind.Language }, step, cycle);
                 break;
             case Item.SoundFont when cycle:
                 // left/right: back to the default (the SOUNDFONT folder)
@@ -567,6 +568,7 @@ internal sealed partial class LauncherScreen
             Item.Picture => "display.filter",
             Item.HdPack => "display.hdPack",
             Item.AudioPack => "sound.audioPack",
+            Item.LanguagePack => "text.languagePack",
             Item.SoundFont => "sound.soundFont",
             Item.Sound => "sound.card",
             Item.Roms => "sound.mt32Roms",

@@ -48,7 +48,7 @@ public sealed class BankNotesTests
         c.TextInput = (_, _, _) => "500";
         state.Party.Purse = Money.From(1000, 0, 0);
         state.Party.BankNotes = Money.From(32500, 3, 4);
-        Assert.True(BankingHouses.DepositFlorins(c));
+        Assert.True(BankingHouses.DepositFlorins(c, "exe:DS:5B8F"));
         Assert.Equal(Money.From(500, 0, 0), state.Party.Purse);
         Assert.Equal(unchecked((short)33000), state.Party.BankNotes.Florins);
         Assert.Equal((short)3, state.Party.BankNotes.Groschen);

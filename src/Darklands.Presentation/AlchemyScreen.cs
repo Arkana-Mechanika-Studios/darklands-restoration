@@ -331,7 +331,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         DrawSelectedFormula();
         canvas.CopyFrom(_back, 0xC3, 0x3C, 0x5A, 0x4C);
         // "%s risk - magic #%d" (DS:330E) with the risk word
-        ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:330E", ui.Assets.Words.Text(OriginalWords.RiskWords, f.RiskWord), f.MysticNumber), 0x55, 0xC6, 0x3F, MenuColor);
+        ScreenDrawing.Wrapped(ui, ui.Format("exe:DS:330E", ui.Word(OriginalWords.RiskWords, f.RiskWord), f.MysticNumber), 0x55, 0xC6, 0x3F, MenuColor);
         ui.Text.Draw(canvas, 0xC6, 0x56, ui.Words("exe:DS:3322"), MenuColor);  // "Ingredients:" (R033+0x094A's copy)
         var y = 0x5E;
         foreach (var ing in f.Slots)
