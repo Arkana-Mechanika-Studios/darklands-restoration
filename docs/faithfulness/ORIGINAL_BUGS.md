@@ -868,7 +868,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
   why: only the level SHOWN is drawn and has hot spots (R014+0x719E, R014+0x99F6): a member who is pending for order mode (DS:D6F1 / DS:D6ED) and has left the shown level opens order mode later, whenever he is drawn again (R014+0x0F58). Kept as the original (party-split audit row 22). Decision: never, display only: his order mode opens when he is drawn again.
   decision: never: display only: his order mode opens when he is drawn again
-- **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:73` `CampScreen.Stay`  
+- **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:68` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
 - **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:389` `DarklandsGame.LoadSavedGame`  

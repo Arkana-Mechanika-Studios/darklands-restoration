@@ -332,7 +332,7 @@ public sealed partial class BattleScreen : ITacticalView
             var ended = _battle.Battle.Result;
             if (ended is not (BattleResult.Running or BattleResult.FellIntoPit or BattleResult.TimedExit))
             {
-                new MessageBox(_ui).Show(BattleScreens.ResultText((int)ended), 0x96 * 1000 / 60);
+                new MessageBox(_ui).Show(BattleScreens.ResultText(_ui, (int)ended), 0x96 * 1000 / 60);
             }
             // C: R002+0x05C1: fight-recovery, then the buffers freed and (R002+0x0710) the able and unconscious lose their action and target
             _battle.RecoverAfterBattle();

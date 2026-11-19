@@ -1,3 +1,4 @@
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Events;
@@ -83,18 +84,14 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     /// <summary>The brush pictures of the boxes that open (index <see cref="Box.Picture"/>).</summary>
     private static readonly string[] Brushes = ["armbrs13", "armbrsh1", "armbrsh2", "armbrsh3", "armbrsh4", "armbrsh5"];
 
-    // orig: R136+0xA4F7 (attribute and skill labels of the open boxes)
-    private static readonly string[] FullLabels =
-    [
-        "Endurance", "Strength", "Agility", "Perception", "Intelligence", "Charisma", "Divine Favor", "Edged Wpns", "Impact Wpns",
-        "Flail Wpns", "Polearm Wpns", "Thrown Wpns", "Bow Weapons", "Missile Device", "Alchemy", "Religious Trng", "Virtue",
-        "Speak Common", "Speak Latin", "Read & Write", "Healing", "Artifice", "Stealth", "Streetwise", "Riding", "Woodwise",
-    ];
+    // orig: R136+0xA4F7 = 290E:1E67 (the attribute and skill labels of the open boxes): OriginalWords.SheetLabels
 
-    private static readonly string[] AttributeLabels = ["End", "Str", "Agl", "Per", "Int", "Chr", "DF"];
-    private static readonly string[] WeaponLabels = ["wEdg", "wImp", "wFll", "wPol", "wThr", "wBow", "wMsD"];
-    private static readonly string[] LearnedLabels = ["Alch", "Relg", "Virt", "SpkC", "SpkL", "R&W"];
-    private static readonly string[] OtherLabels = ["Heal", "Artf", "Stlh", "StrW", "Ride", "WdWs"];
+    // the box texts R031+0x39C6 load their own copies: the short labels of cases 3 (and the dormant 17), 4, 5, 7 and their value formats
+    private static readonly string[] AttributeLabels = ["exe:DS:2E2B", "exe:DS:2E2F", "exe:DS:2E33", "exe:DS:2E37", "exe:DS:2E3B", "exe:DS:2E3F", "exe:DS:2E43"];
+    private static readonly string[] AttributeLabels17 = ["exe:DS:2EF2", "exe:DS:2EF6", "exe:DS:2EFA", "exe:DS:2EFE", "exe:DS:2F02", "exe:DS:2F06", "exe:DS:2F0A"];
+    private static readonly string[] WeaponLabels = ["exe:DS:2E50", "exe:DS:2E55", "exe:DS:2E5A", "exe:DS:2E5F", "exe:DS:2E64", "exe:DS:2E69", "exe:DS:2E6E"];
+    private static readonly string[] LearnedLabels = ["exe:DS:2E78", "exe:DS:2E7D", "exe:DS:2E82", "exe:DS:2E87", "exe:DS:2E8C", "exe:DS:2E91"];
+    private static readonly string[] OtherLabels = ["exe:DS:2ECF", "exe:DS:2ED4", "exe:DS:2ED9", "exe:DS:2EDE", "exe:DS:2EE3", "exe:DS:2EE8"];
 
     /// <summary>The first visible line and the selected line of each list box, per member (kept between visits, as the game's table).</summary>
     private readonly int[,] _top = new int[19, Party.MaxMembers];
@@ -570,7 +567,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             //   then the quit question root 0000:13A0, which asks "Quit to DOS?" in the font the sheet runs with (3); after "no" the sheet goes on
             //   with Save Game and Load Saved Game offered again (vis10 session b25font-sheet-menu: the original's box in font 3)
             SaveAndLoad?.Invoke(1);
-            if (new MessageBox(ui).Ask("Quit to DOS?"))
+            if (new MessageBox(ui).Ask(ui.Words(ScreenTexts.QuitToDos)))
             {
                 throw new QuitGameException();
             }
@@ -1012,59 +1009,62 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             case 0:
                 c.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
                 t.Draw(c, b.X + 5, 3, m.Name, TextColor);
-                t.Draw(c, b.X + 0x82, b.Y + 3, _state.Party.LeaderIndex == _who ? "Leader" : "Not Leader", TextColor);
+                t.Draw(c, b.X + 0x82, b.Y + 3, ui.Words(_state.Party.LeaderIndex == _who ? "exe:DS:2DD1" : "exe:DS:2DD8"), TextColor);
                 break;
             case 1:
-                t.Draw(c, b.X + 5, b.Y + 3, "Age", TextColor);
-                t.Draw(c, b.X + 0x19, b.Y + 3, $"{m.Age:00}", TextColor);
-                t.Draw(c, b.X + 0x28, b.Y + 3, m.IsFemale ? "(F)" : "(M)", TextColor);
+                t.Draw(c, b.X + 5, b.Y + 3, ui.Words("exe:DS:2DE3"), TextColor);
+                t.Draw(c, b.X + 0x19, b.Y + 3, ui.Format("exe:DS:2DE7", m.Age), TextColor);
+                t.Draw(c, b.X + 0x28, b.Y + 3, ui.Words(m.IsFemale ? "exe:DS:2DF0" : "exe:DS:2DEC"), TextColor);
                 break;
             case 2:
                 c.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
-                string[] loads = ["Light Load", "Normal Load", "Heavy Load", "Overloaded"];
-                t.Draw(c, b.X + 0x0C, b.Y + 4, loads[MemberRules.EncumbranceBand(_state, _who)], TextColor);
-                // C: the load is a signed byte (record +0x35) and the limit Str + End in int.
-                t.Draw(c, b.X + 0x48, b.Y + 4, $"{(sbyte)m.Encumbrance:00}/{m[Attribute.Strength] + m[Attribute.Endurance]:00}", TextColor);
+                string[] loads = ["exe:DS:2DF4", "exe:DS:2DFF", "exe:DS:2E0B", "exe:DS:2E16"];
+                t.Draw(c, b.X + 0x0C, b.Y + 4, ui.Words(loads[MemberRules.EncumbranceBand(_state, _who)]), TextColor);
+                // C: the load is a signed byte (record +0x35) and the limit Str + End in int; "%02d/%02d" (DS:2E21) prints a negative load as "-5".
+                t.Draw(c, b.X + 0x48, b.Y + 4, ui.Format("exe:DS:2E21", (sbyte)m.Encumbrance, m[Attribute.Strength] + m[Attribute.Endurance]), TextColor);
                 break;
             case 3:
             case 17:
                 // DORMANT: case 17 (the same labels, values from y 0x20) is never drawn: the sheet draws boxes 0..16.
                 for (var j = 0; j < 7; j++)
                 {
-                    t.Draw(c, 0xED, 0x12 + j * 8, AttributeLabels[j], TextColor);
-                    t.Draw(c, 0xCA, (i == 3 ? 0x12 : 0x20) + j * 8, $"{m.Attributes[j]:00}/{m.AttributeMaximums[j]:00}", TextColor);
+                    t.Draw(c, 0xED, 0x12 + j * 8, ui.Words((i == 3 ? AttributeLabels : AttributeLabels17)[j]), TextColor);
+                    t.Draw(c, 0xCA, (i == 3 ? 0x12 : 0x20) + j * 8, ui.Format(i == 3 ? "exe:DS:2E46" : "exe:DS:2F0D", m.Attributes[j], m.AttributeMaximums[j]), TextColor);
                 }
                 break;
             case 4:
-                DrawSkillColumn(WeaponLabels, 0, 0x12, 0x10C);
+                DrawSkillColumn(WeaponLabels, "exe:DS:2E73", 0, 0x12, 0x10C);
                 break;
             case 5:
-                DrawSkillColumn(LearnedLabels, 7, 0x55, 0x10C);
+                DrawSkillColumn(LearnedLabels, "exe:DS:2E95", 7, 0x55, 0x10C);
                 break;
             case 6:
                 c.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);
-                string[] none = ["No Weapon", "No V:Armor", "No L:Armor", "No Shield", "No Msl Wpn"];
+                string[] none = ["exe:DS:2E9A", "exe:DS:2EA4", "exe:DS:2EAF", "exe:DS:2EBA", "exe:DS:2EC4"];
                 for (var slot = 0; slot < 5; slot++)
                 {
                     var code = Inventory.EquippedType(_state, _who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_state, _who, (EquipmentSlot)slot) : -1;
-                    t.Draw(c, b.X + 4, 0x58 + slot * 10, code != -1 ? _state.Item(code).ShortName : none[slot], TextColor);
+                    t.Draw(c, b.X + 4, 0x58 + slot * 10, code != -1 ? _state.Item(code).ShortName : ui.Words(none[slot]), TextColor);
                 }
                 DrawBoxText(2);
                 break;
             case 7:
-                DrawSkillColumn(OtherLabels, 13, 0x91, b.X + 3);
+                DrawSkillColumn(OtherLabels, "exe:DS:2EED", 13, 0x91, b.X + 3);
                 break;
         }
     }
 
-    private void DrawSkillColumn(string[] labels, int firstSkill, int top, int valueX)
+    private void DrawSkillColumn(string[] labels, string valueFormat, int firstSkill, int top, int valueX)
     {
         for (var j = 0; j < labels.Length; j++)
         {
-            ui.Text.Draw(Screen, 0x11D, top + j * 8, labels[j], TextColor);
-            ui.Text.Draw(Screen, valueX, top + j * 8, $"{Member.Skills[firstSkill + j]:00}", TextColor);
+            ui.Text.Draw(Screen, 0x11D, top + j * 8, ui.Words(labels[j]), TextColor);
+            ui.Text.Draw(Screen, valueX, top + j * 8, ui.Format(valueFormat, Member.Skills[firstSkill + j]), TextColor);
         }
     }
+
+    // the open panels' labels: the far table R136+0xA4F7
+    private string FullLabel(int k) => ui.Assets.Words.Text(OriginalWords.SheetLabels, k);
 
     /// <summary>The text of an open box: full names and values, the equipment, or a list.</summary>
     // orig: R031+0x2B14 (1462:2B14) draft (bytes match)
@@ -1080,21 +1080,21 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             case 3:
                 for (var j = 0; j < 7; j++)
                 {
-                    t.Draw(c, x + 0x2B, y + 5 + j * 8, FullLabels[j], TextColor);
-                    t.Draw(c, x + 8, y + 5 + j * 8, $"{m.Attributes[j]:00}/{m.AttributeMaximums[j]:00}", TextColor);
+                    t.Draw(c, x + 0x2B, y + 5 + j * 8, FullLabel(j), TextColor);
+                    t.Draw(c, x + 8, y + 5 + j * 8, ui.Format("exe:DS:2D5A", m.Attributes[j], m.AttributeMaximums[j]), TextColor);
                 }
                 break;
             case 4:
-                DrawFullSkills(b, 0x16, 7, 0, 7);
+                DrawFullSkills(b, "exe:DS:2D64", 0x16, 7, 0, 7);
                 break;
             case 5:
-                DrawFullSkills(b, 0x16, 14, 7, 6);
+                DrawFullSkills(b, "exe:DS:2D69", 0x16, 14, 7, 6);
                 break;
             case 7:
-                DrawFullSkills(b, 0x20, 20, 13, 6);
+                DrawFullSkills(b, "exe:DS:2DBD", 0x20, 20, 13, 6);
                 break;
             case 6:
-                string[] none = ["No Weapon", "No Vitals Armor", "No Limb Armor", "No Shield", "No Missile Weapon"];
+                string[] none = ["exe:DS:2D6E", "exe:DS:2D78", "exe:DS:2D88", "exe:DS:2D96", "exe:DS:2DA0"];
                 for (var slot = 0; slot < 5; slot++)
                 {
                     // C: the original indexes the item list with slot-item's result, −1 included, when the type is set but no stack matches.
@@ -1105,13 +1105,13 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     }
                     else
                     {
-                        t.Draw(c, x + 5, 0x58 + slot * 10, none[slot], TextColor);
+                        t.Draw(c, x + 5, 0x58 + slot * 10, ui.Words(none[slot]), TextColor);
                     }
                 }
                 if (_state.Events.OwnedBy(EventKinds.SkillBoost, _who) || _state.Events.OwnedBy(EventKinds.AttributeBoost, _who)
                     || _state.Events.OwnedBy(EventKinds.PotionBonus, _who))
                 {
-                    t.Draw(c, x + 5, 0x8A, "Enhc/Bless", TextColor);
+                    t.Draw(c, x + 5, 0x8A, ui.Words("exe:DS:2DB2"), TextColor);
                 }
                 break;
             case PackBox:
@@ -1133,7 +1133,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     if (_top[k, _who] + j < m.Pack.Count)
                     {
                         var st = m.Pack[_top[k, _who] + j];
-                        t.Draw(c, x + 9, j * 8 + y + 9, $"{_state.Item(st.Code & 0xFFF).Name} {st.Quality:00}q ({st.Count})", ListColor);
+                        t.Draw(c, x + 9, j * 8 + y + 9, ui.Format("exe:DS:2DC2", _state.Item(st.Code & 0xFFF).Name, st.Quality, st.Count), ListColor);  // "%Fs %02dq (%d)"
                     }
                 }
                 HighlightLine(k);
@@ -1150,12 +1150,12 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         }
     }
 
-    private void DrawFullSkills(Box b, int labelOffset, int firstLabel, int firstSkill, int count)
+    private void DrawFullSkills(Box b, string valueFormat, int labelOffset, int firstLabel, int firstSkill, int count)
     {
         for (var j = 0; j < count; j++)
         {
-            ui.Text.Draw(Screen, b.PanelX + labelOffset, b.PanelY + 5 + j * 8, FullLabels[firstLabel + j], TextColor);
-            ui.Text.Draw(Screen, b.PanelX + 8, b.PanelY + 5 + j * 8, $"{Member.Skills[firstSkill + j]:00}", TextColor);
+            ui.Text.Draw(Screen, b.PanelX + labelOffset, b.PanelY + 5 + j * 8, FullLabel(firstLabel + j), TextColor);
+            ui.Text.Draw(Screen, b.PanelX + 8, b.PanelY + 5 + j * 8, ui.Format(valueFormat, Member.Skills[firstSkill + j]), TextColor);
         }
     }
 

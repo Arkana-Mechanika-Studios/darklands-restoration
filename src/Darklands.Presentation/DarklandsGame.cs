@@ -410,7 +410,7 @@ public sealed class DarklandsGame
         var loaded = Saves.Load(name, World, running);
         var box = new MessageBox(_ui);
         box.Show(HotKeys.DifficultyText(_ui, loaded.State.Difficulty));
-        var shown = box.Open("Loading Game");
+        var shown = box.Open(_ui.Words("exe:DS:479E"));
         loaded.State.ClockSeed = Seed;
         Options.Music = loaded.Music;
         Options.SoundEffects = loaded.SoundEffects;
@@ -459,7 +459,7 @@ public sealed class DarklandsGame
     {
         // orig: R037+0x8B76 card-text-window->f10 = 3 first: the question is in font 3 from Alt-L too (GameUi.CardWindowFont)
         _ui.CardWindowFont = 3;
-        if (!new MessageBox(_ui).Ask("Loading is irreversable. Proceed?"))
+        if (!new MessageBox(_ui).Ask(_ui.Words("exe:DS:4825")))
         {
             return;
         }

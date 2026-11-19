@@ -146,19 +146,20 @@ public sealed class BattleScreens
     internal string SelectOrdinal(int k)
     {
         var p = Assets.Executable.Far(0x286B, 0x0267 + 4 * k, 4);
-        return "Select " + FarText(p[0] | p[1] << 8);
+        return _ui.Format("exe:DS:23DC", FarText(p[0] | p[1] << 8));  // "Select %Fs" (R022)
     }
 
     /// <summary>"BattleResults - victory" … (battle-entry, the box after the battle; result 8 "leave").</summary>
     // orig: battle-entry R002+0x0000 (0E76:0000) draft (the switch on DS:A893)
-    internal static string ResultText(int result) => "BattleResults - " + result switch
+    // C: "BattleResults - " (DS:10CB) and the result's word (DS:10DC victory, 10E4 retreat, 10EC defeat, 10F3 surrender, 10FD all dead, 1106 leave)
+    internal static string ResultText(GameUi ui, int result) => ui.Words("exe:DS:10CB") + result switch
     {
-        0 => "victory",
-        2 => "retreat",
-        3 => "defeat",
-        4 => "surrender",
-        5 => "all dead",
-        8 => "leave",
+        0 => ui.Words("exe:DS:10DC"),
+        2 => ui.Words("exe:DS:10E4"),
+        3 => ui.Words("exe:DS:10EC"),
+        4 => ui.Words("exe:DS:10F3"),
+        5 => ui.Words("exe:DS:10FD"),
+        8 => ui.Words("exe:DS:1106"),
         _ => "",
     };
 

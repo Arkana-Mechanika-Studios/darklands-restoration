@@ -26,6 +26,9 @@ public sealed partial class BattleScreen
         var m = tb.Menus;
         var exe = _assets.Executable;
         string S(int at) => exe.String(at);
+        // a menu string with its tick byte as the program writes it; a key label or title as it is
+        string Ticked(bool on, string id) => Tick(on) + _ui.Words(id)[1..];
+        string W(string id) => _ui.Words(id);
         static void Nothing()
         {
         }
@@ -45,20 +48,20 @@ public sealed partial class BattleScreen
         var options = _ui.Options;
         var difficulty = new List<MenuBar.SubItem>
         {
-            new(() => Tick(_state.Difficulty == Difficulty.Basic) + "Basic", true, "", 0, () => SetDifficulty(Difficulty.Basic)),
-            new(() => Tick(_state.Difficulty == Difficulty.Standard) + "Standard", true, "", 0, () => SetDifficulty(Difficulty.Standard)),
-            new(() => Tick(_state.Difficulty == Difficulty.Expert) + "Expert", true, "", 0, () => SetDifficulty(Difficulty.Expert)),
+            new(() => Ticked(_state.Difficulty == Difficulty.Basic, "exe:DS:0D2F"), true, "", 0, () => SetDifficulty(Difficulty.Basic)),
+            new(() => Ticked(_state.Difficulty == Difficulty.Standard, "exe:DS:0D36"), true, "", 0, () => SetDifficulty(Difficulty.Standard)),
+            new(() => Ticked(_state.Difficulty == Difficulty.Expert, "exe:DS:0D40"), true, "", 0, () => SetDifficulty(Difficulty.Expert)),
         };
         var game = new List<MenuBar.Item>
         {
-            new(() => Tick(false) + "Save Game", true, "\u000fS", SaveGame, State: () => m.SaveGame),
-            new(() => Tick(false) + "Load Saved Game", true, "\u000fL", LoadGame, State: () => m.LoadGame),
-            new(() => Tick(false) + "Difficulty", true, "\u000fD", Nothing, difficulty),
-            new(() => Tick(_state.ShowSaintlyChanges) + "Show Changes", true, "\u000fC", () => _hotKey?.Invoke(Keys.AltC)),
-            new(() => Tick(options.Music) + "Music", true, "\u000fM", () => _hotKey?.Invoke(Keys.AltM)),
-            new(() => Tick(options.SoundEffects) + "Sound FX", true, "\u000fF", () => _hotKey?.Invoke(Keys.AltF)),
-            new(() => Tick(false) + "Pause", true, "\u000fP", () => _hotKey?.Invoke(Keys.AltP)),
-            new(() => Tick(false) + "Quit to DOS", true, "\u000fQ", () => _hotKey?.Invoke(Keys.AltQ)),
+            new(() => Ticked(false, "exe:DS:0CBB"), true, W("exe:DS:0CC6"), SaveGame, State: () => m.SaveGame),
+            new(() => Ticked(false, "exe:DS:0CC9"), true, W("exe:DS:0CDA"), LoadGame, State: () => m.LoadGame),
+            new(() => Ticked(false, "exe:DS:0CDD"), true, W("exe:DS:0CE9"), Nothing, difficulty),
+            new(() => Ticked(_state.ShowSaintlyChanges, "exe:DS:0CEC"), true, W("exe:DS:0CFA"), () => _hotKey?.Invoke(Keys.AltC)),
+            new(() => Ticked(options.Music, "exe:DS:0CFD"), true, W("exe:DS:0D04"), () => _hotKey?.Invoke(Keys.AltM)),
+            new(() => Ticked(options.SoundEffects, "exe:DS:0D07"), true, W("exe:DS:0D11"), () => _hotKey?.Invoke(Keys.AltF)),
+            new(() => Ticked(false, "exe:DS:0D14"), true, W("exe:DS:0D1B"), () => _hotKey?.Invoke(Keys.AltP)),
+            new(() => Ticked(false, "exe:DS:0D1E"), true, W("exe:DS:0D2B"), () => _hotKey?.Invoke(Keys.AltQ)),
         };
         // C: every Orders text starts with its tick byte (font 1: 1 a tick, 2 none, both 6 pixels wide): 2, but Travel As Group's (DS:07AA) and
         // C: Travel Single File's (DS:07BC), which R016+0x0BD6 / R016+0x0CDC set to 1 for the mode turned on and every other writer (R002+0x0000,
@@ -66,50 +69,50 @@ public sealed partial class BattleScreen
         static string Tick(bool on) => on ? "" : "";
         var orders = new List<MenuBar.Item>
         {
-            O(OrdersItem.Resume, () => "Resume", "", Resume),
-            O(OrdersItem.Finished, () => "" + m.Giver + S(BattleScreens.FinishedText), "", () => tb.LeaveOrderMode()),
-            O(OrdersItem.EnemyInfo, () => "Enemy Info", " E", EnemyInfo),
-            O(OrdersItem.Walk, () => S(0x67C).TrimEnd(), " W", () => tb.ChooseOrder(1)),
-            O(OrdersItem.Flee, () => S(0x690).TrimEnd(), " F", () => tb.ChooseOrder(1, flee: true)),
-            O(OrdersItem.Halt, () => "Halt", " H", () => tb.Halt(tb.Battle.Leader)),
-            O(OrdersItem.Group, () => Tick(tb.MoveMode == 1) + "Travel As Group", " G", tb.ToggleGroup),
-            O(OrdersItem.SingleFile, () => Tick(tb.MoveMode == 2) + "Travel Single File", " Q", tb.ToggleSingleFile),
-            O(OrdersItem.UseDoor, () => "" + With(0x6AA, 8, m.DoorSuffix), " U", () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.UseStairs, () => "" + With(0x6BA, 10, m.StairsSuffix), " U", () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.OpenChest, () => "" + With(0x6CC, 10, m.ChestSuffix), " O", () => tb.OpenKey(tb.Selected)),
-            O(OrdersItem.PickLock, () => "" + With(0x6DE, 9, m.PickSuffix), " P", () => tb.PickKey(tb.Selected)),
-            O(OrdersItem.DissolveLock, () => "" + With(0x6F0, 13, m.DissolveSuffix), " D", () => tb.DissolveKey(tb.Selected)),
-            O(OrdersItem.DisarmTrap, () => S(m.DisarmText), " D", () => tb.DissolveKey(tb.Selected)),
-            O(OrdersItem.Surrender, () => "Surrender (All)", " S", Surrender),
+            O(OrdersItem.Resume, () => W("exe:DS:0D49"), W("exe:DS:0D51"), Resume),
+            O(OrdersItem.Finished, () => "" + m.Giver + S(BattleScreens.FinishedText), W("exe:DS:0D56"), () => tb.LeaveOrderMode()),
+            O(OrdersItem.EnemyInfo, () => W("exe:DS:0D58"), W("exe:DS:0D64"), EnemyInfo),
+            O(OrdersItem.Walk, () => S(0x67C).TrimEnd(), W("exe:DS:0D67"), () => tb.ChooseOrder(1)),
+            O(OrdersItem.Flee, () => S(0x690).TrimEnd(), W("exe:DS:0D6A"), () => tb.ChooseOrder(1, flee: true)),
+            O(OrdersItem.Halt, () => W("exe:DS:06A4"), W("exe:DS:0D6D"), () => tb.Halt(tb.Battle.Leader)),
+            O(OrdersItem.Group, () => Ticked(tb.MoveMode == 1, "exe:DS:07AA"), W("exe:DS:0D70"), tb.ToggleGroup),
+            O(OrdersItem.SingleFile, () => Ticked(tb.MoveMode == 2, "exe:DS:07BC"), W("exe:DS:0D73"), tb.ToggleSingleFile),
+            O(OrdersItem.UseDoor, () => "" + With(0x6AA, 8, m.DoorSuffix), W("exe:DS:0D76"), () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.UseStairs, () => "" + With(0x6BA, 10, m.StairsSuffix), W("exe:DS:0D79"), () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.OpenChest, () => "" + With(0x6CC, 10, m.ChestSuffix), W("exe:DS:0D7C"), () => tb.OpenKey(tb.Selected)),
+            O(OrdersItem.PickLock, () => "" + With(0x6DE, 9, m.PickSuffix), W("exe:DS:0D7F"), () => tb.PickKey(tb.Selected)),
+            O(OrdersItem.DissolveLock, () => "" + With(0x6F0, 13, m.DissolveSuffix), W("exe:DS:0D82"), () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.DisarmTrap, () => S(m.DisarmText), W("exe:DS:0D85"), () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.Surrender, () => W("exe:DS:0706"), W("exe:DS:0D88"), Surrender),
             // orig: R016+0x13CA (1EF8:13CA) matched (R016+0x13CA): R016+0x1590 with 9
-            O(OrdersItem.LootBodies, () => "Loot Bodies", " L", () => tb.ChoosePlace(PlaceAction.TakeLoot)),
-            O(OrdersItem.Exit, () => "" + With(0x726, 16, m.ExitSuffix), " X", tb.ExitKey),
-            O(OrdersItem.Cancel, () => "Cancel Giving Order", "", tb.CancelOrder),
+            O(OrdersItem.LootBodies, () => W("exe:DS:0718"), W("exe:DS:0D8B"), () => tb.ChoosePlace(PlaceAction.TakeLoot)),
+            O(OrdersItem.Exit, () => "" + With(0x726, 16, m.ExitSuffix), W("exe:DS:0D8E"), tb.ExitKey),
+            O(OrdersItem.Cancel, () => W("exe:DS:0D91"), W("exe:DS:0DA6"), tb.CancelOrder),
         };
         // orig: the Attack items' functions DS:97DB (R000+0x083E), each R016+0x156E(action), matched: R016+0x130A (0x12), R016+0x1314 (0x0A)
         // orig: R016+0x131E (6), R016+0x1328 (0x22), R016+0x136E (0x80), matched; the Throw item's own function does nothing
         var attack = new List<MenuBar.Item>
         {
-            new(() => "Throw", true, "T>", Nothing, State: () => m.Attack[(int)AttackItem.Throw], Subs: ThrowEntries),
-            A(AttackItem.Standard, () => "Std Attack ", "A", () => tb.ChooseOrder(0x12)),
-            A(AttackItem.Vulnerable, () => "Vulnerable", "V", () => tb.ChooseOrder(0x0A)),
-            A(AttackItem.Berserk, () => "Berserk", "B", () => tb.ChooseOrder(0x06)),
-            A(AttackItem.Parry, () => "Parry", "P", () => tb.ChooseOrder(0x22)),
-            A(AttackItem.Missile, () => "Use Missile", "M", () => tb.ChooseOrder(0x80)),
+            new(() => W("exe:DS:0DA9"), true, W("exe:DS:0DAF"), Nothing, State: () => m.Attack[(int)AttackItem.Throw], Subs: ThrowEntries),
+            A(AttackItem.Standard, () => W("exe:DS:0DB2"), W("exe:DS:0DBE"), () => tb.ChooseOrder(0x12)),
+            A(AttackItem.Vulnerable, () => W("exe:DS:0DC0"), W("exe:DS:0DCB"), () => tb.ChooseOrder(0x0A)),
+            A(AttackItem.Berserk, () => W("exe:DS:0DCD"), W("exe:DS:0DD5"), () => tb.ChooseOrder(0x06)),
+            A(AttackItem.Parry, () => W("exe:DS:0DD7"), W("exe:DS:0DDD"), () => tb.ChooseOrder(0x22)),
+            A(AttackItem.Missile, () => W("exe:DS:0DDF"), W("exe:DS:0DEB"), () => tb.ChooseOrder(0x80)),
         };
         var party = new List<MenuBar.Item>
         {
-            new(() => "Party Info", true, "\x0a", () => _owner.PartyInfo?.Invoke(), State: () => m.PartyInfo),
-            new(() => "Change Marching Order", true, "\u000fO", ChooseMarchingOrder, State: () => m.MarchingOrder),
+            new(() => W("exe:DS:0DEE"), true, "\x0a", () => _owner.PartyInfo?.Invoke(), State: () => m.PartyInfo),
+            new(() => W("exe:DS:0DF9"), true, W("exe:DS:0E0F"), ChooseMarchingOrder, State: () => m.MarchingOrder),
         };
         // C: the words before the item tables (the keyboard's Right with no item chosen) as outside a battle: MenuBar.BeforeGameItems
         MenuBar? bar = null;
         bar = new MenuBar(_ui,
         [
-            new("Game", true, game, BeforeItems: () => MenuBar.BeforeGameItems(_state)),
-            new("Orders", true, orders, () => m.OrdersMenu),
-            new("Attack", true, attack, () => m.AttackMenu),
-            new("Party", true, party, () => m.PartyMenu, () => bar!.DropdownRight),
+            new(W("exe:DS:0CA1"), true, game, BeforeItems: () => MenuBar.BeforeGameItems(_state)),
+            new(W("exe:DS:0CA6"), true, orders, () => m.OrdersMenu),
+            new(W("exe:DS:0CAD"), true, attack, () => m.AttackMenu),
+            new(W("exe:DS:0CB4"), true, party, () => m.PartyMenu, () => bar!.DropdownRight),
         ])
         {
             QuitToDos = () => _hotKey?.Invoke(Keys.AltQ),

@@ -299,7 +299,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     {
         FreeBuffer(state, "M");
         _buffersFreed = true;
-        if (new MessageBox(ui).Ask("Quit to DOS?"))
+        if (new MessageBox(ui).Ask(ui.Words(ScreenTexts.QuitToDos)))
         {
             throw new QuitGameException();
         }

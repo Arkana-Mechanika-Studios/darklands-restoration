@@ -285,11 +285,11 @@ public sealed class CharacterGeneratorScreen
         switch (outcome)
         {
             case CreationOutcome.EnterName:
-                _creation.SetName(new TextInputBox(_ui).Ask("Character Name:", CharacterCreation.MaxNameLength));
+                _creation.SetName(new TextInputBox(_ui).Ask(_ui.Words("exe:DS:44BC"), CharacterCreation.MaxNameLength));
                 DrawNameLine();
                 break;
             case CreationOutcome.EnterNickname:
-                _creation.SetNickname(new TextInputBox(_ui).Ask("Character Nickname:", CharacterCreation.MaxNicknameLength));
+                _creation.SetNickname(new TextInputBox(_ui).Ask(_ui.Words("exe:DS:44CC"), CharacterCreation.MaxNicknameLength));
                 DrawNameLine();
                 break;
             case CreationOutcome.Changed:
@@ -365,7 +365,7 @@ public sealed class CharacterGeneratorScreen
         switch (_creation.Stage)
         {
             case CreationStage.NameAndSex:
-                Help("Select character name", "and gender, then start", "childhood.");
+                Help(["exe:DS:44E8", "exe:DS:44FE", "exe:DS:4515"], ["exe:DS:4520", "exe:DS:4536", "exe:DS:454D"]);
                 Button(0x38, t[_creation.IsFemale ? CreationData.MakeHerAMan : CreationData.MakeHimAWoman]);
                 Button(0x2D, t[CreationData.BeginChildhood]);
                 Button(0x43, t[CreationData.SelectNewName]);
@@ -382,7 +382,7 @@ public sealed class CharacterGeneratorScreen
                 Screen.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
                 break;
             case CreationStage.ChildhoodAttributes:
-                Help("Use EPs to improve attr", "Select attribute and", "use + or - to change");
+                Help(["exe:DS:4558", "exe:DS:4570", "exe:DS:4585"], ["exe:DS:459A", "exe:DS:45B2", "exe:DS:45C7"]);
                 Button(0x2D, t[CreationData.DoneChangingAttributes]);
                 break;
             case CreationStage.Occupation:
@@ -397,11 +397,25 @@ public sealed class CharacterGeneratorScreen
                 Screen.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
                 break;
             case CreationStage.OccupationSkills:
-                Help("Use EPs to improve skills", "Select skill and use + or", "- to change");
+                Help(["exe:DS:45DC", "exe:DS:45F6", "exe:DS:4610"], ["exe:DS:461C", "exe:DS:4636", "exe:DS:4650"]);
                 Button(0x2D, t[CreationData.NextOccupation]);
                 Button(0x38, t[CreationData.BeginAdventuring]);
                 Button(0x43, t[CreationData.KillCharacter]);
                 break;
+        }
+    }
+
+    /// <summary>Help lines of the original's strings: each pass loads its own copies (the shadow at y + 1 first, then the ink).</summary>
+    private void Help(string[] shadow, string[] ink)
+    {
+        for (var i = 0; i < shadow.Length; i++)
+        {
+            var y = 0x12 + 8 * i;
+            Text.DrawCoded(Screen, 0x47, y + 1, _ui.Words(shadow[i]), Shadow);
+        }
+        for (var i = 0; i < ink.Length; i++)
+        {
+            Text.DrawCoded(Screen, 0x47, 0x12 + 8 * i, _ui.Words(ink[i]), Ink);
         }
     }
 
@@ -416,13 +430,14 @@ public sealed class CharacterGeneratorScreen
         }
     }
 
-    private static readonly string[] AttributeLabels = ["End", "Str", "Agl", "Per", "Int", "Chr", "DF "];
+    // the panel R037+0x5D98's own copies of the labels
+    private static readonly string[] AttributeLabels = ["exe:DS:4685", "exe:DS:4689", "exe:DS:468D", "exe:DS:4691", "exe:DS:4695", "exe:DS:4699", "exe:DS:469D"];
 
     private static readonly string[] SkillLabels =
     [
-        "wEdg", "wImp", "wFll", "wPol", "wThr", "wBow", "wMsD",
-        "Alch", "Relg", "Virt", "SpkC", "SpkL", "R&W",
-        "Heal", "Artf", "Stlh", "StrW", "Ride", "WdWs",
+        "exe:DS:46AB", "exe:DS:46B0", "exe:DS:46B5", "exe:DS:46BA", "exe:DS:46BF", "exe:DS:46C4", "exe:DS:46C9",
+        "exe:DS:46F1", "exe:DS:46F6", "exe:DS:46FB", "exe:DS:4700", "exe:DS:4705", "exe:DS:470A",
+        "exe:DS:4731", "exe:DS:4736", "exe:DS:473B", "exe:DS:4740", "exe:DS:4745", "exe:DS:474A",
     ];
 
     /// <summary>The right-hand panel (<c>R037+0x5D98</c>).</summary>
@@ -432,21 +447,21 @@ public sealed class CharacterGeneratorScreen
         var c = _creation;
         var entry = c.ShownEntry(s_hovered);
         CopyBack(0xC5, 0x57, 0x14, 9);
-        Text.Draw(Screen, 0xD8, 0x57, "EP", Shadow);
+        Text.Draw(Screen, 0xD8, 0x57, _ui.Words("exe:DS:465C"), Shadow);
         if (c.ShownExperience(entry) is { } ep)
         {
             Text.Draw(Screen, 0xC6, 0x57, Two(ep), Shadow);
         }
         CopyBack(0x10A, 4, 0x23, 9);
-        Text.Draw(Screen, 0x11E, 5, "Age", Shadow);
+        Text.Draw(Screen, 0x11E, 5, _ui.Words("exe:DS:467D"), Shadow);
         Text.Draw(Screen, 0x10C, 5, Two(c.Age), Shadow);
-        Text.Draw(Screen, 0x11E, 4, "Age", Ink);
+        Text.Draw(Screen, 0x11E, 4, _ui.Words("exe:DS:4681"), Ink);
         Text.Draw(Screen, 0x10C, 4, Two(c.Age), Ink);
 
         CopyBack(0xC5, 0x0F, 0x24, 0x3C);
         for (var i = 0; i < 7; i++)
         {
-            Text.Draw(Screen, 0xD8, 0x14 + 8 * i, AttributeLabels[i], Shadow);
+            Text.Draw(Screen, 0xD8, 0x14 + 8 * i, _ui.Words(AttributeLabels[i]), Shadow);
         }
         for (var i = 0; i < 6; i++)
         {
@@ -472,7 +487,7 @@ public sealed class CharacterGeneratorScreen
         CopyBack(0x113, top, labelWidth, labelHeight);
         for (var i = 0; i < count; i++)
         {
-            Text.Draw(Screen, 0x122, textTop + 8 * i, SkillLabels[first + i], Shadow);
+            Text.Draw(Screen, 0x122, textTop + 8 * i, _ui.Words(SkillLabels[first + i]), Shadow);
         }
         CopyBack(0xF5, top, 0x18, valueHeight);
         for (var i = 0; i < count; i++)

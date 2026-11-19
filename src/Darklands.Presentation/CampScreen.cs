@@ -34,17 +34,12 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     private const int TeacherBoxWidth = 0x49;
     private const int CtrlF1 = 0x5E00;
 
-    private static readonly string[] ActivityTexts =
-    [
-        "Relaxes", "Regain strength (gain {0})", "Pray for divine favor (gain {0})", "Make {0} {1}", "Earn {0} pf/day as {1}",
-        "Maintain camp, food", "Train or Study ({1})",
-    ];
+    // DS:3AC0[activity]: "Relaxes", "Regain strength (gain %1d)", "Pray for divine favor (gain %1d)", "Make %d %s", "Earn %d pf/day as %s",
+    //   "Maintain camp, food", "Train or Study (%s)"
+    private static readonly string[] ActivityTexts = ["exe:DS:3A2C", "exe:DS:3A34", "exe:DS:3A4F", "exe:DS:3A70", "exe:DS:3A7B", "exe:DS:3A90", "exe:DS:3AA4"];
 
-    private static readonly string[] MenuLines =
-    [
-        "J|ust Relax", "R|egain Strength", "P|ray for divine favor", "A|lchemy work", "E|arn a little money", "G|uard the camp",
-        "T|rain or study",
-    ];
+    // the activities' menu lines, the key letter after 0x8C in colour 12
+    private static readonly string[] MenuLines = ["exe:DS:3D69", "exe:DS:3D77", "exe:DS:3D8A", "exe:DS:3DA3", "exe:DS:3DB3", "exe:DS:3DCA", "exe:DS:3DDC"];
 
     /// <summary>The camp's music in the wild (other places have the inn's 9 or 10).</summary>
     private const int WildMusic = 0x15;
@@ -280,7 +275,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 return (y - 0xAA) / 9 == 0 ? Keys.ForCharacter('S') : Keys.Escape;
             case 2:
                 var row = (y - 0x2D) / 9;
-                return row < MenuLines.Length ? Keys.ForCharacter(MenuLines[row][0]) : Keys.None;
+                return row < MenuLines.Length ? Keys.ForCharacter(KeyLetter(MenuLines[row])) : Keys.None;
             case 3:
                 var member = (y - 0x2D) / 0x12;
                 return member < Party.MaxMembers && _state.Party.Slot(member).OccupiesSlot ? Keys.ForCharacter((char)('1' + member)) : Keys.None;
@@ -441,10 +436,12 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         ];
         for (var k = 0; k < MenuLines.Length; k++)
         {
-            var parts = MenuLines[k].Split('|');
-            ui.Text.Draw(ui.Canvas, MenuX, MenuTop + k * 9, ScreenDrawing.Hotkey(parts[0][0]) + parts[1], usable[k] ? lit : dim);
+            ui.Text.Draw(ui.Canvas, MenuX, MenuTop + k * 9, ui.Words(MenuLines[k]), usable[k] ? lit : dim);
         }
     }
+
+    // the key letter of a menu line: the letter after its colour code 0x8C and the space
+    private char KeyLetter(string line) => ui.Words(line) is { Length: > 2 } words ? words[2] : ' ';
 
     // orig: R036+0x1368 (1462:1368) draft (bytes match)
     // C: activity 6 formats DS:3AC0[6] with the detail alone; the others get (gain, detail) — printf ignores the unused argument.
@@ -461,9 +458,10 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             }
             var color = _chosenMember == i ? ChosenColor : PartyColor;
             var y = i * 0x12 + 0x30;
-            ui.Text.Draw(ui.Canvas, 0x49, y, m.ShortName + "...", color);
-            var text = string.Format(System.Globalization.CultureInfo.InvariantCulture, ActivityTexts[(int)_stay.Activity[i]],
-                _stay.Gain[i], ui.Assets.Words.Detail(_stay.Detail[i]));
+            ui.Text.Draw(ui.Canvas, 0x49, y, ui.Format("exe:DS:3FE7", m.ShortName), color);  // "%s..."
+            var activity = (int)_stay.Activity[i];
+            var detail = ui.Assets.Words.Detail(_stay.Detail[i]);
+            var text = activity == 6 ? ui.Format(ActivityTexts[activity], detail) : ui.Format(ActivityTexts[activity], _stay.Gain[i], detail);
             ScreenDrawing.Wrapped(ui, text, 0x50, 0x78, y, color, leading: 0);
         }
     }
@@ -476,30 +474,29 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         string text;
         if (Wild)
         {
-            text = $"You live off the land, but the lord may be upset if you are caught. After {_stay.Days} days the risk is {_stay.Risk / 5}";
+            text = ui.Format("exe:DS:3F4C", _stay.Days, _stay.Risk / 5);
         }
         else
         {
             var cost = _stay.DayCost();
             var price = _stay.LodgingPrice;
-            var at = $"You consider staying here today, at {price / 12}gr, {price % 12}pf.";
             var purse = _state.Party.Purse;
             if (cost > 0 && purse < Money.FromPfennigs(cost))
             {
-                text = at + "  But, you do not have enough money.   For the day you will:";
+                text = ui.Format("exe:DS:3DEE", price / 12, price % 12);
             }
             else
             {
+                // "... That will leave you with %dfl, %dgr, %dpf. ..." (DS:3E5A), with work "... With work that will leave you with ..." (DS:3ECE)
                 var left = cost > 0 ? purse.Subtract(0, 0, cost) : purse.Add(0, 0, -cost);
-                text = at + (cost > 0 ? "  That will leave you with " : "  With work that will leave you with ")
-                    + $"{left.Florins}fl, {left.Groschen}gr, {left.Pfennigs}pf.   For the day you will:";
+                text = ui.Format(cost > 0 ? "exe:DS:3E5A" : "exe:DS:3ECE", price / 12, price % 12, left.Florins, left.Groschen, left.Pfennigs);
             }
         }
         ui.Canvas.CopyFrom(_back, 0x50, 0x12, 0xE6, 0x1C);
         ScreenDrawing.Wrapped(ui, text, 0xDC, 0x50, 0x12, TextColor);
-        ui.Text.Draw(ui.Canvas, 0x4B, 0xA4, "You decide to...", TextColor);
-        ui.Text.Draw(ui.Canvas, 0x5F, 0xAC, ScreenDrawing.Hotkey('S') + "pend a day, doing the above", PartyColor);
-        ui.Text.Draw(ui.Canvas, 0x5F, 0xB5, ScreenDrawing.Hotkey('L') + "eave", PartyColor);
+        ui.Text.Draw(ui.Canvas, 0x4B, 0xA4, ui.Words("exe:DS:3FAD"), TextColor);
+        ui.Text.Draw(ui.Canvas, 0x5F, 0xAC, ui.Words("exe:DS:3FBE"), PartyColor);
+        ui.Text.Draw(ui.Canvas, 0x5F, 0xB5, ui.Words("exe:DS:3FDE"), PartyColor);
     }
 
     // orig: R036+0x1D24 and R036+0x1C3C (draft, bytes match)
