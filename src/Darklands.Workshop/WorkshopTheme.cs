@@ -61,7 +61,7 @@ internal static class WorkshopTheme
     public static IBrush Brush(Color c) => new SolidColorBrush(c);
 
     /// <summary>The UI font: the platform's (Segoe UI Variable on Windows), with the usual fallbacks.</summary>
-    public static readonly FontFamily UiFont = new("Segoe UI Variable Text, Segoe UI Variable, Segoe UI, Inter, Cantarell, Noto Sans, sans-serif");
+    public static readonly FontFamily UiFont = new("avares://DarklandsWorkshop/Assets/Fonts#Inter, Segoe UI Variable Text, Segoe UI, Cantarell, Noto Sans, sans-serif");
 
     /// <summary>The colour a chip's text takes (null: words, the text colour).</summary>
     public static Color? ChipColourOf(Darklands.Workshop.Text.TextToken token) => token.Kind switch

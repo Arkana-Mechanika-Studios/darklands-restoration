@@ -207,6 +207,16 @@ Team. https://github.com/AvaloniaUI/Avalonia, https://github.com/AvaloniaUI/Aval
 > COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 > OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+## Inter (the Workshop's text)
+
+The Workshop draws its words with Inter 4.1 by Rasmus Andersson (https://rsms.me/inter, https://github.com/rsms/inter),
+unmodified: the static fonts `src/Darklands.Workshop/Assets/Fonts/Inter-Regular.ttf`, `Inter-Medium.ttf`,
+`Inter-SemiBold.ttf` and `Inter-Bold.ttf` of the release (`extras/ttf/`). Copyright (c) 2016 The Inter Project Authors.
+Licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org): they may be used, embedded and
+redistributed with any software, and may not be sold by themselves. The full licence text is in
+`src/Darklands.Workshop/Assets/Fonts/Inter-OFL.txt` and is copied next to the Workshop (`Inter-OFL.txt`) in the build and
+publish output.
+
 ## Lucide (the Workshop's icons)
 
 The Workshop's line icons (`src/Darklands.Workshop/WorkshopIcons.cs`) are drawn after the Lucide icon set
