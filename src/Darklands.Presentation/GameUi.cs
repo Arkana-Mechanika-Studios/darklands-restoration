@@ -147,6 +147,7 @@ public sealed class GameUi
         var arguments = FluentArguments(text);
         // a translation's colour tags (<c12>M</c>ore: the menus' hot keys) as the program's colour characters
         var words = translated ? Darklands.Core.TextCodes.FromTags(Language!.Localizer.Get(text.Id, arguments)) : Assets.MessageText.Text(text);
+        Laid(words, text.Id);
         // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
         return ScreenTextPlane.Recording
             ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values), Values(arguments))
@@ -266,6 +267,29 @@ public sealed class GameUi
         _text = _cardText = null;
         return true;
     }
+
+    // the pack's laid-out texts as drawn, by their words (a pack with no layouts keeps none)
+    private readonly Dictionary<string, Darklands.Localization.SlotLayout> _laid = new(StringComparer.Ordinal);
+
+    private void Laid(string words, string key)
+    {
+        if (Language is { Layouts.Count: > 0 } pack && pack.Layouts.TryGetValue(key, out var layout) && words.Length > 0)
+        {
+            if (_laid.Count > 4096)
+            {
+                _laid.Clear();
+            }
+            _laid[words] = layout;
+        }
+    }
+
+    /// <summary>
+    /// The translation pack's layout of the screen text <paramref name="words"/> (the words its key gave), null when the pack has none
+    /// for it: the text is drawn where and as the original draws it.
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (screen layouts per language).
+    public Darklands.Localization.SlotLayout? LayoutOf(string words) =>
+        _laid.Count == 0 ? null : _laid.GetValueOrDefault(words);
 
     /// <summary>The translation pack's fonts by slot (empty: the game's fonts).</summary>
     public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();

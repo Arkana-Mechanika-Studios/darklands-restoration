@@ -50,6 +50,9 @@ public sealed class LanguagePack
     /// <summary>The pack's texts over no fallback: <see cref="ILocalizer.IsTranslated"/> says which keys it has.</summary>
     public FluentLocalizer Localizer { get; }
 
+    /// <summary>The pack's screen layouts by key (<see cref="SlotLayouts"/>; empty: every text where the original draws it).</summary>
+    public IReadOnlyDictionary<string, SlotLayout> Layouts { get; init; } = new Dictionary<string, SlotLayout>(StringComparer.Ordinal);
+
     /// <summary>The problems found while loading (an unreadable manifest, a Fluent syntax error with its file and line).</summary>
     public IReadOnlyList<LocalizationDiagnostic> Problems { get; }
 
@@ -133,8 +136,14 @@ public sealed class LanguagePack
             }
         }
         why = null;
+        // its screen layouts (layout.json): where its texts are drawn wider, on more lines or in another font
+        var layouts = SlotLayouts.Load(folder, out var layoutProblem);
+        if (layoutProblem is not null)
+        {
+            problems.Add(new LocalizationDiagnostic(SlotLayouts.FileName, 0, layoutProblem));
+        }
         return new LanguagePack(folder, language, manifest.Name ?? Path.GetFileName(Path.TrimEndingDirectorySeparator(folder)), manifest.Author,
-            manifest.Base, localizer, problems, files.Count, messages);
+            manifest.Base, localizer, problems, files.Count, messages) { Layouts = layouts };
     }
 
     private sealed record Manifest(string? Language, string? Name, string? Author, string? Base);

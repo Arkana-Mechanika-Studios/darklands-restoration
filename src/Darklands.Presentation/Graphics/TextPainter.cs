@@ -54,6 +54,38 @@ public sealed class TextPainter(FntFont font)
         return width;
     }
 
+    /// <summary>
+    /// <paramref name="text"/> broken at spaces into lines no wider than <paramref name="width"/> pixels, at most <paramref name="lines"/>
+    /// (the last keeps the rest): a translation pack's laid-out screen text (Localization.SlotLayouts).
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (screen layouts per language).
+    public IReadOnlyList<string> Wrap(string text, int width, int lines)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        var result = new List<string>();
+        var rest = text;
+        while (result.Count < lines - 1 && Measure(rest) > width)
+        {
+            var cut = -1;
+            for (var i = rest.IndexOf(' ', StringComparison.Ordinal); i > 0; i = rest.IndexOf(' ', i + 1))
+            {
+                if (Measure(rest[..i]) > width)
+                {
+                    break;
+                }
+                cut = i;
+            }
+            if (cut <= 0)
+            {
+                break;
+            }
+            result.Add(rest[..cut]);
+            rest = rest[(cut + 1)..];
+        }
+        result.Add(rest);
+        return result;
+    }
+
     public int Measure(string text) =>
         PackFont is null && Darklands.Core.TextCodes.FitsBytes(text) ? Measure(Encode(text)) : MeasureCodes(Darklands.Core.TextCodes.OfText(text));
 

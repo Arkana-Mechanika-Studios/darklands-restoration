@@ -70,13 +70,19 @@ public sealed class TextPreview(TextProject project)
         var arguments = box?.Arguments?.ToDictionary(a => a.Key, a => (object?)a.Value, StringComparer.Ordinal)
             ?? entry.Template.Variables.ToDictionary(v => v, v => (object?)"0", StringComparer.Ordinal);
         var words = TextCodes.FromTags(localizer.Get(entry.Key, arguments));
-        var painter = Painter(box is { Font: > 0 } ? box.Font : 1);
-        var measured = painter.Measure(words);
-        var room = box is { Room: > 0 } ? box.Room : 0;
+        // the pack's layout of the text (layout.json): its font, its width (else the room left after its move), its lines
+        var layout = project.Layouts.GetValueOrDefault(entry.Key);
+        var painter = Painter(layout is { Font: >= 1 and <= 3 } ? layout.Font : box is { Font: > 0 } ? box.Font : 1);
+        var room = box is { Room: > 0 } ? layout?.Width ?? box.Room - (layout?.Dx ?? 0) : layout?.Width ?? 0;
+        var lines = layout is null ? [words] : painter.Wrap(words, room > 0 ? room : Screen.Width, Math.Max(1, layout.Lines));
+        var measured = lines.Max(painter.Measure);
         var width = Math.Clamp(Math.Max(measured, room) + 6, 16, Screen.Width);
-        var height = painter.LineHeight + 6;
+        var height = painter.LineHeight * lines.Count + 6;
         var canvas = new Canvas(new Screen());
-        painter.Draw(canvas, 3, 3, words, Ink);
+        for (var k = 0; k < lines.Count; k++)
+        {
+            painter.Draw(canvas, 3, 3 + k * painter.LineHeight, lines[k], Ink);
+        }
         var argb = Picture(canvas, width, height, Palette256.DefaultVga.Entries.ToArray());
         if (room > 0 && room + 3 < width)
         {

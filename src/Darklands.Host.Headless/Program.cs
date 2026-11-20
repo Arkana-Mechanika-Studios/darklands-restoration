@@ -542,7 +542,7 @@ if (!string.IsNullOrEmpty(textBoxesFolder))
     Darklands.Localization.TextBoxes.Write(Path.Combine(textBoxesFolder, $"boxes-{Environment.ProcessId}.json"),
         Darklands.Platform.ScreenTextPlane.KeyedTexts().Select(e => new Darklands.Localization.TextBox(e.Key!, e.WidestDrawn,
             e.Room == Darklands.Platform.ScreenTextPlane.NoRoom ? -1 : e.Room, e.Windowed, e.Font,
-            e.Values?.ToDictionary(v => v.Key, v => v.Value, StringComparer.Ordinal)) { Screens = [.. e.Screens] }));
+            e.Values?.ToDictionary(v => v.Key, v => v.Value, StringComparer.Ordinal)) { Screens = [.. e.Screens], X = e.At?.X, Y = e.At?.Y }));
 }
 #endif
 if (game.ProgramExit is { } ended)

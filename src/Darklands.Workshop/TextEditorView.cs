@@ -1,3 +1,5 @@
+using SlotLayout = Darklands.Localization.SlotLayout;
+using SlotLayouts = Darklands.Localization.SlotLayouts;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
@@ -22,6 +24,10 @@ namespace Darklands.Workshop;
 internal sealed class TextEditorView : IWorkshopEditor
 {
     private readonly TextProject _project;
+
+    // a screen text's layout in the pack (layout.json): width, lines, font, move; shown under its preview
+    private readonly WrapPanel _layoutRow = new() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
+    private bool _layoutLoading;
     private readonly ReviewMarks _marks;
     private readonly Glossary _glossary;
     private readonly TextPreview _preview;
@@ -324,6 +330,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         _previewPanel.Children.Add(frame);
         _previewPanel.Children.Add(_bar);
         _previewPanel.Children.Add(_measure);
+        _previewPanel.Children.Add(_layoutRow);
         _previewPanel.Children.Add(_issues);
         _previewPane.Background = WorkshopTheme.Brush(WorkshopTheme.Side);
         _previewPane.BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line);
@@ -1063,6 +1070,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             _bar.Background = WorkshopTheme.Brush(WorkshopTheme.Line);
             _measure.Text = $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
         }
+        ShowLayout(result);
         if (result.Problem is { } problem)
         {
             _issues.Children.Add(Issue(problem, WorkshopTheme.Warn));
@@ -1145,6 +1153,78 @@ internal sealed class TextEditorView : IWorkshopEditor
                 run.Foreground = WorkshopTheme.Brush(colour);
             }
             inlines.Add(run);
+        }
+    }
+
+    // the layout row of a screen text: its width (the room it has, or the pack's), lines 1–3, font (its own or a slot), a move, and Reset;
+    // each change goes into the pack's layout.json (on Save) and the preview draws it at once
+    private void ShowLayout(PreviewResult result)
+    {
+        _layoutRow.Children.Clear();
+        _layoutRow.IsVisible = _current is { } entry && !result.CardText && result.Room > 0 && !entry.Key.StartsWith("msg:", StringComparison.Ordinal);
+        if (!_layoutRow.IsVisible)
+        {
+            return;
+        }
+        var key = _current!.Key;
+        var layout = _project.Layouts.GetValueOrDefault(key) ?? new SlotLayout();
+        _layoutLoading = true;
+        Control Field(string label, Control input)
+        {
+            ToolTip.SetTip(input, label);
+            return new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 4,
+                Margin = new Thickness(0, 0, 10, 4),
+                Children = { new TextBlock { Text = label, FontSize = 11.5, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint), VerticalAlignment = VerticalAlignment.Center }, input },
+            };
+        }
+        NumericUpDown Number(decimal value, decimal min, decimal max) =>
+            new() { Value = value, Minimum = min, Maximum = max, Increment = 1, FormatString = "0", Width = 118, FontSize = 12, Padding = new Thickness(6, 0), ButtonSpinnerLocation = Location.Left };
+        var width = Number(layout.Width ?? result.Room, 1, SlotLayouts.ScreenWidth);
+        var lines = new ComboBox { ItemsSource = new[] { "1", "2", "3" }, SelectedIndex = Math.Clamp(layout.Lines, 1, 3) - 1, FontSize = 12, MinWidth = 52 };
+        var font = new ComboBox { ItemsSource = new[] { "its own", "slot 1", "slot 2", "slot 3" }, SelectedIndex = Math.Clamp(layout.Font, 0, 3), FontSize = 12, MinWidth = 84 };
+        var dx = Number(layout.Dx, -SlotLayouts.MaxMove, SlotLayouts.MaxMove);
+        var dy = Number(layout.Dy, -SlotLayouts.MaxMove, SlotLayouts.MaxMove);
+        void Apply()
+        {
+            if (_layoutLoading)
+            {
+                return;
+            }
+            var w = (int)(width.Value ?? result.Room);
+            _project.SetLayout(key, new SlotLayout((int)(dx.Value ?? 0), (int)(dy.Value ?? 0), w == result.Room && layout.Width is null ? null : w,
+                lines.SelectedIndex + 1, font.SelectedIndex));
+            Changed?.Invoke();
+            ShowPreview();
+        }
+        width.ValueChanged += (_, _) => Apply();
+        dx.ValueChanged += (_, _) => Apply();
+        dy.ValueChanged += (_, _) => Apply();
+        lines.SelectionChanged += (_, _) => Apply();
+        font.SelectionChanged += (_, _) => Apply();
+        var reset = WorkshopTheme.Ghost(new TextBlock { Text = "Reset", FontSize = 12 }, "Draw this text where and as the original draws it");
+        reset.IsEnabled = !layout.IsOriginal;
+        reset.Click += (_, _) =>
+        {
+            _project.SetLayout(key, null);
+            Changed?.Invoke();
+            ShowPreview();
+        };
+        _layoutRow.Children.Add(new TextBlock { Text = "Layout", FontSize = 12, FontWeight = FontWeight.SemiBold, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 10, 4) });
+        _layoutRow.Children.Add(Field("Width", width));
+        _layoutRow.Children.Add(Field("Lines", lines));
+        _layoutRow.Children.Add(Field("Font", font));
+        _layoutRow.Children.Add(Field("Move x", dx));
+        _layoutRow.Children.Add(Field("y", dy));
+        _layoutRow.Children.Add(reset);
+        _layoutLoading = false;
+        // the layout's own problems (moves, widths past the room, off the screen, over another text): at once, as the check gives them
+        var boxes = _project.Boxes.ToDictionary(b => b.Key, StringComparer.Ordinal);
+        foreach (var (_, problem) in SlotLayouts.Validate(new Dictionary<string, SlotLayout>(StringComparer.Ordinal) { [key] = layout }, boxes))
+        {
+            _issues.Children.Add(Issue("Layout: " + problem, WorkshopTheme.Bad));
         }
     }
 

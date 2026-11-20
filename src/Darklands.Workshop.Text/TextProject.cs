@@ -74,6 +74,26 @@ public sealed class TextProject
 
     public IReadOnlyList<TextBox> Boxes { get; }
 
+    private Dictionary<string, SlotLayout>? _layouts;
+
+    /// <summary>The pack's screen layouts by key (layout.json), as edited; saved with the pack.</summary>
+    public Dictionary<string, SlotLayout> Layouts => _layouts ??= new Dictionary<string, SlotLayout>(SlotLayouts.Load(Folder, out _), StringComparer.Ordinal);
+
+    /// <summary>Sets (or with null or the original's, takes off) the layout of the screen text <paramref name="key"/>.</summary>
+    public void SetLayout(string key, SlotLayout? layout)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        if (layout is null || layout.IsOriginal)
+        {
+            Layouts.Remove(key);
+        }
+        else
+        {
+            Layouts[key] = layout;
+        }
+        Dirty = true;
+    }
+
     /// <summary>Every text, in the template's order.</summary>
     public IReadOnlyList<TextEntry> Entries { get; }
 
@@ -241,6 +261,10 @@ public sealed class TextProject
             var path = Path.Combine(TextFolder, name.Replace('/', Path.DirectorySeparatorChar));
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             System.IO.File.WriteAllText(path, text.ToString(), new UTF8Encoding(false));
+        }
+        if (_layouts is not null)
+        {
+            SlotLayouts.Save(Folder, _layouts);
         }
         Dirty = false;
     }

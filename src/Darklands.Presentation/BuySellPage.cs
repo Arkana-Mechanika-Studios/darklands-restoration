@@ -91,7 +91,13 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
         if (Darklands.Platform.ScreenTextPlane.Recording)
         {
             // the developer's text plane: the box of the line (L-7w; drawn letter by letter, so its pixels name no text)
-            Darklands.Platform.ScreenTextPlane.Drawn(text, ui.Text.Measure(text), Math.Max(0, Darklands.Platform.Screen.Width - x), false, ui.Text.Font.Index + 1);
+            Darklands.Platform.ScreenTextPlane.Drawn(text, ui.Text.Measure(text), Math.Max(0, Darklands.Platform.Screen.Width - x), false, ui.Text.Font.Index + 1, (x, y));
+        }
+        if (ui.LayoutOf(text) is { } layout)
+        {
+            // Not in the original: a translation pack's layout of this text (layout.json): moved, wider, on more lines, in another font
+            LaidOut(x, y, text, color, layout);
+            return;
         }
         if (ui.Text.PackFont is not null || text.Any(ch => ch > 0xFF && ch is < '' or > ''))
         {
@@ -109,6 +115,21 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
                 continue;
             }
             x += ui.Text.DrawCharacter(ui.Canvas, x, y, c, ink);
+        }
+    }
+
+    // a pack's laid-out text: from (x + dx, y + dy), in its font slot, wrapped at spaces onto at most its lines within its width (else
+    // the screen's edge), each line clipped there
+    private void LaidOut(int x, int y, string text, byte color, Darklands.Localization.SlotLayout layout)
+    {
+        var painter = layout.Font is >= 1 and <= 3 ? ui.Painter(layout.Font) : ui.Text;
+        x += layout.Dx;
+        y += layout.Dy;
+        var right = layout.Width is { } width ? x + width : Darklands.Platform.Screen.Width;
+        foreach (var line in painter.Wrap(text, right - x, Math.Max(1, layout.Lines)))
+        {
+            painter.DrawCodes(ui.Canvas, x, y, Darklands.Core.TextCodes.OfText(line), color, right: right);
+            y += painter.LineHeight;
         }
     }
 

@@ -19,6 +19,16 @@ public sealed record TextBox(
     /// <summary>The screens the text was drawn on (the translators' editor groups by them; empty: not recorded).</summary>
     [JsonPropertyName("screens")]
     public IReadOnlyList<string> Screens { get; init; } = [];
+
+    /// <summary>Where the text was first drawn, in game pixels (null: not recorded): the place a pack's layout moves (SlotLayouts).</summary>
+    [JsonPropertyName("x")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? X { get; init; }
+
+    /// <summary>The row the text was first drawn at (null: not recorded).</summary>
+    [JsonPropertyName("y")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Y { get; init; }
 }
 
 /// <summary>
@@ -57,6 +67,8 @@ public static class TextBoxes
                 Room = tighter ? b.Room : was.Room,
                 Windowed = tighter ? b.Windowed : was.Windowed,
                 Font = was.Font != 0 ? was.Font : b.Font,
+                X = was.X ?? b.X,
+                Y = was.Y ?? b.Y,
             };
         }
         return [.. byKey.Values.OrderBy(b => b.Key, StringComparer.Ordinal)];

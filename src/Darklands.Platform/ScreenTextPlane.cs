@@ -18,6 +18,9 @@ public static class ScreenTextPlane
     public readonly record struct Entry(string Text, string? Key, string? Arguments, int WidestDrawn, int Room = NoRoom, bool Windowed = false,
         int Font = 0, IReadOnlyList<KeyValuePair<string, string>>? Values = null)
     {
+        /// <summary>Where the text was first drawn (null: not said): a translation pack's layout moves it from there.</summary>
+        public (int X, int Y)? At { get; init; }
+
         /// <summary>The screens the text was drawn on (<see cref="ScreenOf"/>; empty when not asked).</summary>
         public IReadOnlyCollection<string> Screens { get; init; } = [];
     }
@@ -73,7 +76,7 @@ public static class ScreenTextPlane
     /// The id of <paramref name="text"/> as drawn <paramref name="width"/> pixels wide (0: not recording, empty, or the table full), with
     /// <paramref name="room"/> pixels for it (a window's when <paramref name="windowed"/>) in font slot <paramref name="font"/>.
     /// </summary>
-    public static int Drawn(string text, int width, int room = NoRoom, bool windowed = false, int font = 0)
+    public static int Drawn(string text, int width, int room = NoRoom, bool windowed = false, int font = 0, (int X, int Y)? at = null)
     {
         if (!Recording || text.Length == 0)
         {
@@ -90,13 +93,13 @@ public static class ScreenTextPlane
                     return 0;
                 }
                 id = Entries.Count;
-                Entries.Add(new Entry(text, key, arguments, width, room, windowed, font, values));
+                Entries.Add(new Entry(text, key, arguments, width, room, windowed, font, values) { At = at });
                 Ids[name] = id;
             }
             else
             {
                 var e = Entries[id];
-                if (e.WidestDrawn < width || room < e.Room || e.Font == 0)
+                if (e.WidestDrawn < width || room < e.Room || e.Font == 0 || e.At is null && at is not null)
                 {
                     Entries[id] = e with
                     {
@@ -104,6 +107,7 @@ public static class ScreenTextPlane
                         Room = Math.Min(e.Room, room),
                         Windowed = room < e.Room ? windowed : e.Windowed,
                         Font = e.Font == 0 ? font : e.Font,
+                        At = e.At ?? at,
                     };
                 }
             }
