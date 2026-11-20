@@ -377,5 +377,5 @@ public sealed class LootScreen
 
     /// <summary>"%Fs  (%3d) %2d-Qual": the item's name, the count, the quality.</summary>
     private string ItemLine(string format, ItemStack stack) =>
-        _page.Ui.Format(format, _page.Ui.ItemName(stack.Code & 0xFFF, _state.Item(stack.Code & 0xFFF).Name), stack.Count, stack.Quality);
+        _page.Ui.Format(format, _page.Ui.ItemNameArg(stack.Code & 0xFFF, _state.Item(stack.Code & 0xFFF).Name), stack.Count, stack.Quality);
 }

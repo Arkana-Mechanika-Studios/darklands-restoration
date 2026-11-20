@@ -145,7 +145,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
                 if (ing.Count != 0)
                 {
                     var have = stock[ing.Item & 0xFF];
-                    ui.Text.Draw(ui.Canvas, 0xCD, y, ui.Format("exe:DS:33E2", ing.Count, ui.ItemName(ing.Item, state.Item(ing.Item).Name), have), have < ing.Count ? MenuGreyed : MenuColor);  // "%d %Fs (%d)"
+                    ui.Text.Draw(ui.Canvas, 0xCD, y, ui.Format("exe:DS:33E2", ing.Count, ui.ItemNameArg(ing.Item, state.Item(ing.Item).Name), have), have < ing.Count ? MenuGreyed : MenuColor);  // "%d %Fs (%d)"
                 }
                 y += 8;
             }
@@ -339,7 +339,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             if (ing.Count != 0)
             {
                 var have = _bench.Stock(ing.Item);
-                ui.Text.Draw(canvas, 0xC8, y, ui.Format("exe:DS:332F", ing.Count, ui.ItemName(ing.Item, _state.Item(ing.Item).Name), have), have >= ing.Count ? MenuColor : MenuGreyed);  // "%d %Fs (%d)"
+                ui.Text.Draw(canvas, 0xC8, y, ui.Format("exe:DS:332F", ing.Count, ui.ItemNameArg(ing.Item, _state.Item(ing.Item).Name), have), have >= ing.Count ? MenuColor : MenuGreyed);  // "%d %Fs (%d)"
             }
             y += 8;
         }

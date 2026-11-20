@@ -82,7 +82,8 @@ public static class LanguagePackCheck
                 Add(Severity.Error, "no text of the game has this id (a typing mistake, or a text not translatable yet): it is not used");
                 continue;
             }
-            foreach (var extra in message.Variables.Except(english.Variables).Order(StringComparer.Ordinal))
+            // a name argument's forms ($arg0_acc, $arg0_gender: Core.DataName) go with the argument
+            foreach (var extra in message.Variables.Except(english.Variables).Where(v => !IsNameForm(v, english.Variables)).Order(StringComparer.Ordinal))
             {
                 Add(Severity.Error, $"uses ${extra}, which the screen does not give (it has {Names(english.Variables)})");
             }
@@ -131,6 +132,16 @@ public static class LanguagePackCheck
         variables.Count == 0 ? "none" : string.Join(", ", variables.Order(StringComparer.Ordinal).Select(v => "$" + v));
 
     private static string Quoted(IReadOnlyList<string> keys) => keys.Count == 0 ? "none" : string.Join(", ", keys.Select(k => "'" + k + "'"));
+
+    /// <summary>Whether <paramref name="variable"/> is a form of one of <paramref name="given"/> (<c>arg0_acc</c> of <c>arg0</c>).</summary>
+    // Not in the original: the 1.1 translations (the data files' names in sentences).
+    public static bool IsNameForm(string variable, IReadOnlySet<string> given)
+    {
+        ArgumentNullException.ThrowIfNull(variable);
+        ArgumentNullException.ThrowIfNull(given);
+        var cut = variable.LastIndexOf('_');
+        return cut > 0 && given.Contains(variable[..cut]) && Darklands.Core.DataName.Attributes.Contains(variable[(cut + 1)..]);
+    }
 
     /// <summary>The letters of a text the painter's font has no glyph for (the game's font: those its bytes cannot hold), once each, quoted.</summary>
     public static string Unshowable(int[] codes, TextPainter painter)

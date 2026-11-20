@@ -1025,7 +1025,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     if (_s.Top(k) + j < m.Pack.Count)
                     {
                         var st = m.Pack[_s.Top(k) + j];
-                        t.Draw(c, x + 9, j * 8 + y + 9, ui.Format("exe:DS:2DC2", ui.ItemName(st.Code & 0xFFF, _state.Item(st.Code & 0xFFF).Name), st.Quality, st.Count), ListColor);  // "%Fs %02dq (%d)"
+                        t.Draw(c, x + 9, j * 8 + y + 9, ui.Format("exe:DS:2DC2", ui.ItemNameArg(st.Code & 0xFFF, _state.Item(st.Code & 0xFFF).Name), st.Quality, st.Count), ListColor);  // "%Fs %02dq (%d)"
                     }
                 }
                 HighlightLine(k);

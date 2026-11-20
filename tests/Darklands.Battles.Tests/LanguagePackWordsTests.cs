@@ -101,4 +101,34 @@ public sealed class LanguagePackWordsTests : IDisposable
         Assert.Equal("Город", ui.PlaceName(first));
         Assert.Equal("Elsewhere", ui.PlaceName(new Darklands.Core.World.Location { Index = second.Index, Name = "Elsewhere" }));
     }
+
+    [Fact]
+    public void ANamesFormsGoIntoTheSentencesOfThePack()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var world = WorldData.Load(files);
+        // no pack: the sentence prints the name's words, as the original
+        var original = ui.Format("exe:DS:2DC2", ui.ItemNameArg(1, world.ItemName(1)), 20, 3);
+        Assert.Equal(ui.Format("exe:DS:2DC2", world.ItemName(1), 20, 3), original);
+
+        Directory.CreateDirectory(Path.Combine(_folder, "text", "ru"));
+        File.WriteAllText(Path.Combine(_folder, "pack.json"), """{ "language": "ru" }""");
+        File.WriteAllText(Path.Combine(_folder, "text", "ru", "tables.ftl"),
+            "lst-item-1-name = Нож\n    .acc = Ножа\n    .gender = m\nlst-item-2-name = Сабля\n");
+        File.WriteAllText(Path.Combine(_folder, "text", "ru", "exe.ftl"),
+            "exe-ds-2dc2 = { $arg0_acc } ({ $arg0_gender ->\n    [m] он\n   *[other] —\n}) { $arg1 }\n");
+        Assert.True(ui.UseLanguagePack(_folder, _ => { }));
+        Assert.Equal("Ножа (он) 20", ui.Format("exe:DS:2DC2", ui.ItemNameArg(1, world.ItemName(1)), 20, 3));
+        // a name without the form: its words; without a gender: the other variant
+        Assert.Equal("Сабля (—) 20", ui.Format("exe:DS:2DC2", ui.ItemNameArg(2, world.ItemName(2)), 20, 3));
+        // the check takes a form of an argument the screen gives, and only that
+        var given = new HashSet<string> { "arg0", "arg1" };
+        Assert.True(LanguagePackCheck.IsNameForm("arg0_acc", given));
+        Assert.False(LanguagePackCheck.IsNameForm("arg2_acc", given));
+        Assert.False(LanguagePackCheck.IsNameForm("arg0_colour", given));
+    }
 }

@@ -106,6 +106,21 @@ original's names: a saved game written with a pack is the same as one written wi
 place's, a battle's enemies) are translated while they are still the data file's; the party's names, which the player
 typed, are never translated.
 
+**A name's other forms.** A language that declines its nouns or makes words agree with them gives a name its forms as
+Fluent attributes: `nom`, `gen`, `dat`, `acc`, `ins`, `loc`, `voc`, `abl` (the cases a language needs) and `gender`:
+
+```
+lst-item-7-name = Кинжал
+    .acc = Кинжал
+    .gender = m
+```
+
+Where the game puts a name into a sentence (an item in a store's line, on the sheet's pack list, in alchemy), the sentence
+gets the name as `{ $arg0 }` and each form as `{ $arg0_acc }`, `{ $arg0_gender }` …, so a translated sentence can write
+`{ $arg0_gen }` or `{ $arg0_gender -> [f] … *[m] … }`. A name without a form gives its words for a case and nothing for the
+gender (the default variant). The pack check accepts the forms of an argument the sentence has; a pack that needs none
+writes plain names.
+
 ## How a translation pack looks
 
 A pack is a folder:

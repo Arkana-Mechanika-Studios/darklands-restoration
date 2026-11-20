@@ -187,6 +187,9 @@ public sealed class GameUi
     /// <summary>An item's name (<paramref name="original"/>: the data's) as the screens show it.</summary>
     public string ItemName(int code, string original) => Name(DataNames.Item(code), original);
 
+    /// <summary>An item's name as an argument of a sentence (<see cref="Darklands.Core.DataName"/>: its forms go with it).</summary>
+    public Darklands.Core.DataName ItemNameArg(int code, string original) => new(ItemName(code, original), DataNames.Item(code));
+
     /// <summary>An item's short name as the screens show it.</summary>
     public string ItemShortName(int code, string original) => Name(DataNames.ItemShort(code), original);
 
@@ -298,7 +301,9 @@ public sealed class GameUi
                 .Select(k => text.Args.TryGetValue(k.ToString(System.Globalization.CultureInfo.InvariantCulture), out var v) ? v : "")
                 .ToList();
             var pieces = Content.Formats.Text.Strings.OriginalFormat.Pieces(format, positional);
-            return pieces.Select((p, k) => (p, k)).ToDictionary(e => "arg" + e.k.ToString(System.Globalization.CultureInfo.InvariantCulture), e => (object?)e.p, StringComparer.Ordinal);
+            var arguments = pieces.Select((p, k) => (p, k)).ToDictionary(e => "arg" + e.k.ToString(System.Globalization.CultureInfo.InvariantCulture), e => (object?)e.p, StringComparer.Ordinal);
+            AddNameForms(arguments, positional);
+            return arguments;
         }
         var map = new Dictionary<string, object?>(text.Args.Count, StringComparer.Ordinal);
         foreach (var (name, value) in text.Args)
@@ -306,6 +311,29 @@ public sealed class GameUi
             map[name.Length > 0 && char.IsAsciiDigit(name[0]) ? "arg" + name : name] = value;
         }
         return map;
+    }
+
+    // Not in the original: the 1.1 translations. A name argument's other forms as $argN_<attribute> (DataName.Attributes): the pack's
+    //   attribute of the name, else its words (a case) or "" (the gender), so a sentence may always name them.
+    private void AddNameForms(Dictionary<string, object?> arguments, IReadOnlyList<object> positional)
+    {
+        if (Language is not { } pack)
+        {
+            return;
+        }
+        for (var k = 0; k < positional.Count; k++)
+        {
+            if (positional[k] is not Darklands.Core.DataName name)
+            {
+                continue;
+            }
+            var arg = "arg" + k.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            foreach (var attribute in Darklands.Core.DataName.Attributes)
+            {
+                var form = pack.Localizer.IsTranslated(name.Key) ? pack.Localizer.GetAttribute(name.Key, attribute) : null;
+                arguments[arg + "_" + attribute] = form is not null ? Darklands.Core.TextCodes.FromTags(form) : attribute == "gender" ? "" : name.Text;
+            }
+        }
     }
 
     /// <summary>
