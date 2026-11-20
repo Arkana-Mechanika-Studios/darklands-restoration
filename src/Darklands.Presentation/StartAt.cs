@@ -1,8 +1,6 @@
 using Darklands.Cards;
 using Darklands.Content;
 using Darklands.Core;
-using Darklands.Core.Economy;
-using Darklands.Core.Time;
 using Darklands.Simulation;
 
 namespace Darklands.Presentation;
@@ -152,43 +150,8 @@ public sealed class StartAt
     /// <summary>The start state: a Quick Start party (always the same), with the variant's changes and the card to start at.</summary>
     public GameState NewState(WorldData world, Func<uint>? clockSeed = null) => NewState(world, Variant, Card, clockSeed);
 
-    private static GameState NewState(WorldData world, int variant, int? card, Func<uint>? clockSeed = null)
-    {
-        ArgumentNullException.ThrowIfNull(world);
-        var state = NewGame.Quickstart(world, Seed, clockSeed ?? (() => Seed));
-        state.Data = world;
-        // as the screen previews: a purse to trade and give with
-        state.Party.Purse = Money.From(12, 5, 3);
-        // cards that return to a remembered card need one remembered (the game always has one): the city's main street
-        state.SavedCard = 6;
-        state.SavedCard2 = 6;
-        state.PreviousCard = 6;
-        switch (variant)
-        {
-            case 1:
-                Array.Fill(state.OptionFlags, 1);
-                break;
-            case 2:
-                state.Party.Purse = Money.From(300, 0, 0);
-                Array.Fill(state.OptionFlags, 1);
-                break;
-            case 3:
-                state.Date = state.Date with { Hour = 22 };
-                break;
-            case 4:
-                state.Date = state.Date with { Hour = 10 };
-                break;
-            case 5:
-                state.CurrentLocation = 3;
-                Array.Fill(state.OptionFlags, 1);
-                break;
-        }
-        if (card is { } number)
-        {
-            state.CurrentCard = number;
-        }
-        return state;
-    }
+    private static GameState NewState(WorldData world, int variant, int? card, Func<uint>? clockSeed = null) =>
+        NewGame.TranslationTest(world, Seed, variant, card, clockSeed);
 
     // the cards that show each card text file (as their first Show names it, or the card table does), found once
     private static Dictionary<string, List<int>>? _showing;

@@ -75,4 +75,47 @@ public static class NewGame
         state.CurrentCard = FirstCard;
         return state;
     }
+
+    /// <summary>
+    /// The start of a translation test (DarklandsRP --start-at, Presentation.StartAt): a Quick Start game with seed
+    /// <paramref name="seed"/>, its purse 12 fl 5 gr 3 pf (as the screen previews), the remembered cards the city's main street (the
+    /// game always has one), and the state variant <paramref name="variant"/>: 0 as it is, 1 the option flags set, 2 those and
+    /// 300 florins, 3 by night, 4 by day, 5 the option flags set in another city; at card <paramref name="card"/> when given.
+    /// </summary>
+    // Not in the original: the 1.1 Workshop's translation test.
+    public static GameState TranslationTest(WorldData world, uint seed, int variant, int? card, Func<uint>? clockSeed = null)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        var state = Quickstart(world, seed, clockSeed ?? (() => seed));
+        state.Data = world;
+        state.Party.Purse = Core.Economy.Money.From(12, 5, 3);
+        state.SavedCard = 6;
+        state.SavedCard2 = 6;
+        state.PreviousCard = 6;
+        switch (variant)
+        {
+            case 1:
+                Array.Fill(state.OptionFlags, 1);
+                break;
+            case 2:
+                state.Party.Purse = Core.Economy.Money.From(300, 0, 0);
+                Array.Fill(state.OptionFlags, 1);
+                break;
+            case 3:
+                state.Date = state.Date with { Hour = 22 };
+                break;
+            case 4:
+                state.Date = state.Date with { Hour = 10 };
+                break;
+            case 5:
+                state.CurrentLocation = 3;
+                Array.Fill(state.OptionFlags, 1);
+                break;
+        }
+        if (card is { } number)
+        {
+            state.CurrentCard = number;
+        }
+        return state;
+    }
 }
