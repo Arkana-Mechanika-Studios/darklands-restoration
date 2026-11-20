@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\OpeningTimer.txt" LogicalName="Darklands.Presentation.Resources.OpeningTimer.txt" />
+    <!-- the project's own pixel glyphs (Greek, Cyrillic, a few Latin) for the font-pack maker: our drawings, not the game's -->
+    <EmbeddedResource Include="Resources\PixelGlyphs.txt" LogicalName="Darklands.Presentation.Resources.PixelGlyphs.txt" />
   </ItemGroup>
 
   <PropertyGroup>
