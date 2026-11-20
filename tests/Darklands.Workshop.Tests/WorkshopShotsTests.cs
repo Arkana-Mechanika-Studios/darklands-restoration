@@ -24,8 +24,11 @@ public sealed class WorkshopShotsTests
         }
         var shots = Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOTS");
         var root = Path.Combine(Path.GetTempPath(), "dl-shots-" + Guid.NewGuid().ToString("N"));
-        // the packs in a neutral folder (the status line names it)
-        string Pack(string language) => Path.Combine(root, "Packs", language);
+        // the packs in a neutral folder (the status line names it): DARKLANDS_WORKSHOP_SHOTS_PACKS (a video's D:\Packs; the folders fr, el and ru must not exist), else a temporary one
+        var packs = Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOTS_PACKS") is { Length: > 0 } chosen ? chosen : Path.Combine(root, "Packs");
+        string Pack(string language) => Path.Combine(packs, language);
+        string[] languages = ["fr", "el", "ru"];
+        Assert.DoesNotContain(languages, l => Directory.Exists(Pack(l)));
         const string Card = "msg:$CITYC00#0";
         try
         {
@@ -107,7 +110,15 @@ public sealed class WorkshopShotsTests
         }
         finally
         {
-            Directory.Delete(root, recursive: true);
+            // only what the test made
+            foreach (var language in languages.Where(l => Directory.Exists(Pack(l))))
+            {
+                Directory.Delete(Pack(language), recursive: true);
+            }
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
         }
     }
 }
