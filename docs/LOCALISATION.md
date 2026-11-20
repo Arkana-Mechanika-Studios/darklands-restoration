@@ -304,8 +304,8 @@ exe-ds-2f71 = { $arg0 } ...
   do not fit, or a word is wider than the column);
 * notes: an argument the translation does not use; a card text the game shows in pages ("laid out in 2 pages").
 
-It ends with a count; the exit code is 1 when there are errors. The boxes come from `--text-boxes`, else from a
-`boxes.json` in the pack's folder (the template writes one when it was given boxes), else there are none (then no
+`boxes.json` in the pack's folder (the template writes one when it was given boxes), else from the boxes the program ships
+(below).
 width is checked).
 
 **The pseudo-locale** shows where a longer language will not fit, before any translation exists:
@@ -339,10 +339,10 @@ texts by them); the recorded sessions replayed with it (`tools/oracle/rerun_all.
 numbers (and the values a session drew), never the game's words. The keys of a screen can also be found with the
 developer's inspector (a development build: hold F9 over a word; see [SETTINGS.md](SETTINGS.md)).
 
-**The boxes the Workshop ships.** The Workshop carries the boxes of the last such run without the game's words (each
+**The boxes the program ships.** The program and the Workshop carry the boxes of the last such run without the game's words (each
 recorded argument replaced by filler of its length, so a translation is measured about as the screen drew it); a
 pack's own `boxes.json` wins over them. A developer regenerates them after the run with
-`DarklandsRP --text-boxes <the run's boxes folder> --strip-text-boxes src/Darklands.Workshop.Text/Resources/boxes.json`;
+`DarklandsRP --text-boxes <the run's boxes folder> --strip-text-boxes src/Darklands.Presentation/Resources/boxes.json`;
 a test checks that the file holds no text of the game's files.
 
 ## Font packs
