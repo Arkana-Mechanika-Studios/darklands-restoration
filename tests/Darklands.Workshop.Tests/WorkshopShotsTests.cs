@@ -104,6 +104,13 @@ public sealed class WorkshopShotsTests
                 var window = Open(Pack("fr"));
                 Choose(window, Card);
                 Shot(window, "2-card-text");
+                // the Rows view: the first option's field writes the option's words in place, its marker and indent kept
+                var fields = window.GetVisualDescendants().OfType<TranslationBox>().Where(b => b.IsEffectivelyVisible).ToList();
+                Assert.True(fields.Count > 3, $"{fields.Count} fields");
+                fields[1].Text = "assister à la messe.";
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                var chosen = (TextEntry)List(window).SelectedItem!;
+                Assert.Contains("<opt>...<indent>assister à la messe.<br><p><opt>", chosen.Translation, StringComparison.Ordinal);
                 Choose(window, leave.Key);
                 Shot(window, "3-screen-text");
                 window.RunCheckForTests();

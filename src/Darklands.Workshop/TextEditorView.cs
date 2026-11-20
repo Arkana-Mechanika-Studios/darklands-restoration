@@ -43,6 +43,18 @@ internal sealed class TextEditorView : IWorkshopEditor
     private readonly TextBlock _terms = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim) };
     private readonly Grid _editor = new() { ColumnDefinitions = new ColumnDefinitions("*,Auto"), RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*"), Margin = new Thickness(12, 0, 0, 0) };
     private readonly StackPanel _previewPanel = new() { Spacing = 4 };
+    // the Rows view of a card text (the default): the intro, the passages and each option in a field of its own
+    private readonly StackPanel _rowsPanel = new() { Spacing = 10 };
+    private readonly ScrollViewer _rowsScroll = new() { IsVisible = false };
+    private readonly TextBlock _rowsNote = new() { FontSize = 12, TextWrapping = TextWrapping.Wrap, IsVisible = false, Margin = new Thickness(0, 2, 0, 4) };
+    private readonly Button _rowsButton = new() { Content = "Rows" };
+    private readonly Button _rawButton = new() { Content = "Raw" };
+    private readonly Border _viewSwitch = new();
+    private readonly List<Control> _rawParts = [];
+    private List<CardRow> _rows = [];
+    private TranslationBox? _focusedRow;
+    private bool _raw;
+    private Panel? _chipsHome;
     private PreviewResult? _shown;
     private readonly Glossary _glossary;
     private TextEntry? _current;
@@ -182,8 +194,27 @@ internal sealed class TextEditorView : IWorkshopEditor
             _editor.Children.Add(c);
         }
         Put(new StackPanel { Spacing = 2, Children = { _key, _comment } }, 0, 0, 2);
-        Put(Heading("English"), 1);
-        Put(new Border
+        // the English heading, with the Rows | Raw switch of a card text
+        _viewSwitch.Child = new StackPanel { Orientation = Orientation.Horizontal, Children = { _rowsButton, _rawButton } };
+        _viewSwitch.Background = WorkshopTheme.Brush(WorkshopTheme.Surface);
+        _viewSwitch.CornerRadius = new CornerRadius(7);
+        _viewSwitch.Padding = new Thickness(2);
+        _viewSwitch.HorizontalAlignment = HorizontalAlignment.Left;
+        _viewSwitch.Margin = new Thickness(0, 4, 0, 4);
+        foreach (var b in new[] { _rowsButton, _rawButton })
+        {
+            b.Padding = new Thickness(12, 3);
+            b.FontSize = 12;
+            b.CornerRadius = new CornerRadius(5);
+            b.BorderThickness = new Thickness(0);
+            ToolTip.SetTip(b, b == _rowsButton ? "The intro and each option in a field of its own; line breaks and indents are written for you" : "The text as the pack's file holds it, its tags included");
+        }
+        _rowsButton.Click += (_, _) => SetRaw(false);
+        _rawButton.Click += (_, _) => SetRaw(true);
+        var englishHead = Heading("English");
+        Put(new StackPanel { Children = { _viewSwitch, _rowsNote, englishHead } }, 1);
+        _rawParts.Add(englishHead);
+        var englishBox = new Border
         {
             Background = WorkshopTheme.Brush(WorkshopTheme.Side),
             BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine),
@@ -192,12 +223,19 @@ internal sealed class TextEditorView : IWorkshopEditor
             Child = new ScrollViewer { Content = _english, Padding = new Thickness(10, 6) },
             MinHeight = 56,
             MaxHeight = 240,
-        }, 2);
+        };
+        Put(englishBox, 2);
         Put(_terms, 3);
         var translationHead = new DockPanel { Children = { Heading("Translation"), _chips } };
+        _chipsHome = translationHead;
         _chips.Margin = new Thickness(12, 4, 0, 0);
         Put(translationHead, 4);
         Put(_translation, 5);
+        _rawParts.AddRange([englishBox, translationHead, _translation]);
+        // the rows take the place of the English and the translation boxes
+        _rowsScroll.Content = _rowsPanel;
+        Put(_rowsScroll, 2);
+        Grid.SetRowSpan(_rowsScroll, 7);
         Put(new StackPanel { Spacing = 4, Children = { _chipHint, _choice } }, 6);
         var frame = new Border { Child = _picture, BorderBrush = WorkshopTheme.Brush(WorkshopTheme.GoldDark), BorderThickness = new Thickness(1), HorizontalAlignment = HorizontalAlignment.Left };
         _previewPanel.Children.Add(Heading("As the game draws it"));
@@ -331,8 +369,136 @@ internal sealed class TextEditorView : IWorkshopEditor
         _problems.Text = entry is null ? "" : string.Join("\n", entry.Problems.Select(p => $"{p.Severity}: {p.Message}"));
         _loading = false;
         ShowChips();
+        ShowRows();
         ShowPreview();
         ShowHints();
+    }
+
+    // ---------------------------------------------------------------- the Rows view of a card text
+    private void SetRaw(bool raw)
+    {
+        _raw = raw;
+        Show(_current);
+    }
+
+    // the card text's rows, or the raw boxes (a screen text, the Raw switch, or a translation whose lines are not the English's)
+    private void ShowRows()
+    {
+        var card = _current is not null && _current.Key.StartsWith("msg:", StringComparison.Ordinal);
+        _viewSwitch.IsVisible = card;
+        _rowsNote.IsVisible = false;
+        IReadOnlyList<CardRow>? rows = null;
+        IReadOnlyList<CardRow> english = [];
+        if (card && !_raw)
+        {
+            english = CardRows.Parse(_current!.English);
+            rows = CardRows.Against(english, _current.Translation);
+            if (rows is null)
+            {
+                _rowsNote.Text = "Your text's lines are not the English's (another number of options or passages): it is shown as written.";
+                _rowsNote.Foreground = WorkshopTheme.Brush(WorkshopTheme.Warn);
+                _rowsNote.IsVisible = true;
+            }
+        }
+        var rowsMode = rows is not null;
+        _rowsScroll.IsVisible = rowsMode;
+        foreach (var part in _rawParts)
+        {
+            part.IsVisible = !rowsMode;
+        }
+        Segment(_rowsButton, card && rowsMode || card && !_raw);
+        Segment(_rawButton, card && !rowsMode);
+        _rowsPanel.Children.Clear();
+        _focusedRow = null;
+        // the chips: above the rows (they go into the field the cursor is in), else beside the translation's heading
+        (_chips.Parent as Panel)?.Children.Remove(_chips);
+        // in the rows the line breaks, option markers and indents are written for the translator: only the names are offered
+        foreach (var chip in _chips.Children.OfType<Button>())
+        {
+            chip.IsVisible = !(rowsMode && chip.Content is string text && text.StartsWith('<'));
+        }
+        if (!rowsMode)
+        {
+            _chipsHome?.Children.Add(_chips);
+            return;
+        }
+        _rowsPanel.Children.Add(new DockPanel
+        {
+            Children =
+            {
+                new TextBlock { Text = "Insert", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint), VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(0, 3, 10, 0) },
+                _chips,
+            },
+        });
+        _rows = [.. rows!];
+        var option = 0;
+        var muted = WorkshopTheme.Brush(WorkshopTheme.Muted);
+        for (var i = 0; i < _rows.Count; i++)
+        {
+            var row = _rows[i];
+            var en = english[i];
+            var index = i;
+            var label = row.Kind switch
+            {
+                CardRowKind.Option => $"Option {++option}",
+                CardRowKind.Passage => $"Only when it applies · {row.Label}",
+                _ => i == 0 ? "Introduction" : "Introduction, continued",
+            };
+            var head = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            head.Children.Add(new TextBlock { Text = label, FontSize = 12, FontWeight = FontWeight.SemiBold, Foreground = muted });
+            if (row.Kind == CardRowKind.Option && row.Label.Length > 0)
+            {
+                head.Children.Add(new Border
+                {
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(6, 0),
+                    Background = WorkshopTheme.Brush(Color.FromArgb(0x29, 0x9B, 0x6E, 0xD2)),
+                    Child = new TextBlock { Text = row.Label, FontSize = 11, Foreground = WorkshopTheme.Brush(Color.Parse("#c7a6e8")) },
+                });
+            }
+            var englishText = new SelectableTextBlock { TextWrapping = TextWrapping.Wrap, FontSize = 13, Foreground = muted };
+            Paint(englishText, (en.Prefix.Contains("...", StringComparison.Ordinal) ? "… " : "") + (en.Field ?? CardRow.Unwrapped(en.Content)));
+            var box = new TranslationBox { MinHeight = row.Kind == CardRowKind.Option ? 34 : 64, MaxHeight = 220 };
+            _loading = true;
+            box.Text = row.Field ?? CardRow.Unwrapped(row.Content);
+            _loading = false;
+            ToolTip.SetTip(box, row.Field is null ? "This row has tags the fields do not show as lines: it is written as the file holds it." : null);
+            box.GotFocus += (_, _) => _focusedRow = box;
+            box.TextChanged += (_, _) =>
+            {
+                if (_loading || _current is null)
+                {
+                    return;
+                }
+                _rows[index] = _rows[index].Field is not null || _rows[index].Content.Length == 0 ? _rows[index].WithField(box.Text) : _rows[index] with { Content = box.Text };
+                var written = CardRows.Write(_rows);
+                _project.Set(_current, written);
+                _loading = true;
+                _translation.Text = written;
+                _loading = false;
+                Changed?.Invoke();
+                UpdateProgress();
+                ShowPreview();
+                ShowHints();
+            };
+            _rowsPanel.Children.Add(new StackPanel
+            {
+                Spacing = 4,
+                Children =
+                {
+                    head,
+                    new Border { Padding = new Thickness(10, 6), CornerRadius = new CornerRadius(6), Background = WorkshopTheme.Brush(Color.FromArgb(0x08, 0xFF, 0xFF, 0xFF)), Child = englishText },
+                    box,
+                },
+            });
+        }
+    }
+
+    // a segment of the Rows | Raw switch, on or off
+    private static void Segment(Button button, bool on)
+    {
+        button.Background = on ? WorkshopTheme.Brush(WorkshopTheme.Raised) : Brushes.Transparent;
+        button.Foreground = WorkshopTheme.Brush(on ? WorkshopTheme.Text : WorkshopTheme.Muted);
     }
 
     // the English's chips (tags, $Names, placeables) and the pack's own variables, each a button that puts it where the cursor is
@@ -365,11 +531,12 @@ internal sealed class TextEditorView : IWorkshopEditor
             ToolTip.SetTip(button, "Put it where the cursor is");
             button.Click += (_, _) =>
             {
-                var text = _translation.Text ?? "";
-                var at = Math.Clamp(_translation.CaretIndex, 0, text.Length);
-                _translation.Text = text.Insert(at, chip);
-                _translation.CaretIndex = at + chip.Length;
-                _translation.FocusText();
+                var target = _rowsScroll.IsVisible && _focusedRow is not null ? _focusedRow : _translation;
+                var text = target.Text ?? "";
+                var at = Math.Clamp(target.CaretIndex, 0, text.Length);
+                target.Text = text.Insert(at, chip);
+                target.CaretIndex = at + chip.Length;
+                target.FocusText();
             };
             _chips.Children.Add(button);
         }

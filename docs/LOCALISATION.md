@@ -243,6 +243,12 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   and your translation, written as the pack's file holds it (the same tags and placeables as the template). In the
   English, in your translation as you type and on the chips, each kind of tag has its colour: grey the line ends (`<br>`, `<p>`), blue the option lines
   and indents (`<opt>`, `<indent>`), green the `$Names` and arguments, red the colour tags.
+* **Card texts in rows.** A card text opens in its **Rows** view: the introduction, each passage that shows only when
+  its condition holds, and each option line in a field of its own, the English above each. You write only the words:
+  a new line is a line break, a blank line a new paragraph, and the option markers, the "…" lead-ins and the indents
+  are the English's, written for you. **Raw** shows the text as the pack's file holds it, its tags included (for
+  experts, and for a translation whose lines are not the English's: another number of options or passages opens there).
+  Both views write the same file, and the check judges it as always.
 * **As the game draws it:** the text in the game's font (your pack's font when it has one), by the game's own drawing
   code, in whole multiples of the game's pixels as large as the window allows: a card text's window beside your words, a
   screen text under them; a screen text on one line with its box's edge dotted and a bar (green: no wider than
