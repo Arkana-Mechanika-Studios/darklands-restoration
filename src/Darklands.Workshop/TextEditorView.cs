@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Darklands.Presentation;
 using Darklands.Workshop.Text;
 
@@ -19,25 +20,29 @@ internal sealed class TextEditorView : IWorkshopEditor
     private const string AllScreens = "(every screen)";
 
     private readonly TextProject _project;
-    private readonly ComboBox _screens = new() { MinWidth = 220 };
+    private readonly ComboBox _screens = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
     private readonly ComboBox _states = new() { ItemsSource = new[] { "every text", "untranslated", "translated", "with a problem" }, SelectedIndex = 0 };
-    private readonly TextBox _search = new() { Watermark = "search the English, the translation or the key", MinWidth = 260 };
+    private readonly TextBox _search = new() { Watermark = "search the English, the translation or the key" };
     private readonly ListBox _list = new();
-    private readonly TextBlock _progress = new() { VerticalAlignment = VerticalAlignment.Center };
-    private readonly TextBlock _key = new() { FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap };
-    private readonly TextBlock _comment = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.Gray };
-    private readonly TextBox _english = new() { IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 90 };
-    private readonly TextBox _translation = new() { AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 140 };
-    private readonly TextBlock _problems = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.Firebrick };
+    private readonly TextBlock _progress = new() { VerticalAlignment = VerticalAlignment.Center, FontSize = 12 };
+    private readonly TextBlock _key = new() { FontWeight = FontWeight.Bold, FontSize = 15, Foreground = WorkshopTheme.Brush(WorkshopTheme.Gold) };
+    private readonly TextBlock _comment = new() { TextWrapping = TextWrapping.Wrap, MaxLines = 3, TextTrimming = TextTrimming.CharacterEllipsis, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim) };
+    // the English, read only, its tags and names in their colours (the chips' colours)
+    private readonly SelectableTextBlock _english = new() { TextWrapping = TextWrapping.Wrap, Foreground = WorkshopTheme.Brush(WorkshopTheme.Ink), FontSize = 14 };
+    private readonly TextBox _translation = new() { AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, FontSize = 14, VerticalContentAlignment = VerticalAlignment.Top, MinHeight = 96, MaxHeight = 260 };
+    private readonly TextBlock _problems = new() { TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Left, Foreground = WorkshopTheme.Brush(WorkshopTheme.Problem) };
     private readonly Image _picture = new() { Stretch = Stretch.Fill, HorizontalAlignment = HorizontalAlignment.Left };
     private readonly Border _barFill = new() { Height = 10, HorizontalAlignment = HorizontalAlignment.Left };
-    private readonly Border _bar = new() { Height = 10, Background = Brushes.Gainsboro, HorizontalAlignment = HorizontalAlignment.Stretch };
-    private readonly TextBlock _measure = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly Border _bar = new() { Height = 10, Background = WorkshopTheme.Brush(WorkshopTheme.WoodLine), HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly TextBlock _measure = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12, HorizontalAlignment = HorizontalAlignment.Left };
     private readonly TextPreview _preview;
-    private readonly WrapPanel _chips = new();
-    private readonly TextBlock _chipHint = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.DarkGoldenrod };
+    private readonly WrapPanel _chips = new() { VerticalAlignment = VerticalAlignment.Center };
+    private readonly TextBlock _chipHint = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Gold) };
     private readonly StackPanel _choice = new() { Spacing = 4 };
-    private readonly TextBlock _terms = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.SteelBlue };
+    private readonly TextBlock _terms = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim) };
+    private readonly Grid _editor = new() { ColumnDefinitions = new ColumnDefinitions("*,Auto"), RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*"), Margin = new Thickness(12, 0, 0, 0) };
+    private readonly StackPanel _previewPanel = new() { Spacing = 4 };
+    private PreviewResult? _shown;
     private readonly Glossary _glossary;
     private TextEntry? _current;
     private bool _loading;
@@ -51,10 +56,10 @@ internal sealed class TextEditorView : IWorkshopEditor
         _bar.Child = _barFill;
         _screens.ItemsSource = new[] { AllScreens }.Concat(project.ByScreen().Select(g => g.Screen)).ToList();
         _screens.SelectedIndex = 0;
-        _list.ItemTemplate = new FuncDataTemplate<TextEntry>((entry, _) => new TextBlock
+        _list.ItemTemplate = new FuncDataTemplate<TextEntry>((entry, _) => Row(entry));
+        _list.Styles.Add(new Style(x => x.OfType<ListBoxItem>())
         {
-            Text = entry is null ? "" : Mark(entry) + "  " + entry.Key + "   " + Preview(entry.Translation ?? entry.English),
-            TextTrimming = TextTrimming.CharacterEllipsis,
+            Setters = { new Setter(ListBoxItem.PaddingProperty, new Thickness(6, 4)), new Setter(ListBoxItem.MinHeightProperty, 0.0) },
         });
         _screens.SelectionChanged += (_, _) => Fill();
         _states.SelectionChanged += (_, _) => Fill();
@@ -72,6 +77,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             }
         };
         View = Build();
+        _editor.SizeChanged += (_, _) => Place();
         Fill();
     }
 
@@ -134,45 +140,132 @@ internal sealed class TextEditorView : IWorkshopEditor
 
     private Control Build()
     {
-        var filters = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 6) };
+        var dim = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim);
+        var filters = new Grid { ColumnDefinitions = new ColumnDefinitions("*,6,Auto"), RowDefinitions = new RowDefinitions("Auto,6,Auto") };
         filters.Children.Add(_screens);
+        Grid.SetColumn(_states, 2);
         filters.Children.Add(_states);
+        Grid.SetRow(_search, 2);
+        Grid.SetColumnSpan(_search, 3);
         filters.Children.Add(_search);
+        var counters = new DockPanel { Margin = new Thickness(2, 8, 2, 6) };
+        var legend = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
+        foreach (var state in new[] { TextState.Translated, TextState.Problem, TextState.Untranslated })
+        {
+            legend.Children.Add(Dot(state));
+            legend.Children.Add(new TextBlock { Text = ShortName(state), FontSize = 11, Foreground = dim, Margin = new Thickness(0, 0, 6, 0), VerticalAlignment = VerticalAlignment.Center });
+        }
+        DockPanel.SetDock(legend, Dock.Right);
+        counters.Children.Add(legend);
+        counters.Children.Add(_progress);
         var left = new DockPanel();
         DockPanel.SetDock(filters, Dock.Top);
-        DockPanel.SetDock(_progress, Dock.Top);
-        _progress.Margin = new Thickness(2, 0, 0, 6);
+        DockPanel.SetDock(counters, Dock.Top);
         left.Children.Add(filters);
-        left.Children.Add(_progress);
-        left.Children.Add(_list);
+        left.Children.Add(counters);
+        left.Children.Add(new Border { Child = _list, BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine), BorderThickness = new Thickness(1) });
 
-        var right = new StackPanel { Spacing = 6, Margin = new Thickness(10, 0, 0, 0) };
-        right.Children.Add(_key);
-        right.Children.Add(_comment);
-        right.Children.Add(new TextBlock { Text = "English", FontWeight = FontWeight.SemiBold });
-        right.Children.Add(_english);
-        right.Children.Add(_terms);
-        right.Children.Add(new TextBlock { Text = "Translation", FontWeight = FontWeight.SemiBold });
-        right.Children.Add(_chips);
-        right.Children.Add(_translation);
-        right.Children.Add(_chipHint);
-        right.Children.Add(_choice);
-        right.Children.Add(new TextBlock { Text = "As the game draws it", FontWeight = FontWeight.SemiBold });
-        right.Children.Add(new Border { Child = _picture, BorderBrush = Brushes.Gray, BorderThickness = new Thickness(1), HorizontalAlignment = HorizontalAlignment.Left });
-        right.Children.Add(_bar);
-        right.Children.Add(_measure);
-        right.Children.Add(_problems);
+        Control Heading(string text) => new TextBlock { Text = text, FontWeight = FontWeight.SemiBold, Margin = new Thickness(0, 6, 0, 2), VerticalAlignment = VerticalAlignment.Center };
+        void Put(Control c, int row, int column = 0, int span = 1)
+        {
+            Grid.SetRow(c, row);
+            Grid.SetColumn(c, column);
+            Grid.SetColumnSpan(c, span);
+            _editor.Children.Add(c);
+        }
+        Put(new StackPanel { Spacing = 2, Children = { _key, _comment } }, 0, 0, 2);
+        Put(Heading("English"), 1);
+        Put(new Border
+        {
+            Background = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim),
+            BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(3),
+            Child = new ScrollViewer { Content = _english, Padding = new Thickness(10, 6) },
+            MinHeight = 56,
+            MaxHeight = 240,
+        }, 2);
+        Put(_terms, 3);
+        var translationHead = new DockPanel { Children = { Heading("Translation"), _chips } };
+        _chips.Margin = new Thickness(12, 4, 0, 0);
+        Put(translationHead, 4);
+        Put(_translation, 5);
+        Put(new StackPanel { Spacing = 4, Children = { _chipHint, _choice } }, 6);
+        var frame = new Border { Child = _picture, BorderBrush = WorkshopTheme.Brush(WorkshopTheme.GoldDark), BorderThickness = new Thickness(1), HorizontalAlignment = HorizontalAlignment.Left };
+        _previewPanel.Children.Add(Heading("As the game draws it"));
+        _previewPanel.Children.Add(frame);
+        _previewPanel.Children.Add(_bar);
+        _previewPanel.Children.Add(_measure);
+        _previewPanel.Children.Add(_problems);
+        _editor.Children.Add(_previewPanel);
 
-        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("3*,4,2*"), Margin = new Thickness(8) };
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("380,4,*"), Margin = new Thickness(8) };
         grid.Children.Add(left);
-        var splitter = new GridSplitter { ResizeDirection = GridResizeDirection.Columns };
+        var splitter = new GridSplitter { ResizeDirection = GridResizeDirection.Columns, Background = Brushes.Transparent };
         Grid.SetColumn(splitter, 1);
         grid.Children.Add(splitter);
-        var scroller = new ScrollViewer { Content = right };
-        Grid.SetColumn(scroller, 2);
-        grid.Children.Add(scroller);
+        Grid.SetColumn(_editor, 2);
+        grid.Children.Add(_editor);
         return grid;
     }
+
+    // a row of the list: the state's mark, the key, the text (its translation, else the English)
+    private static Control Row(TextEntry? entry)
+    {
+        if (entry is null)
+        {
+            return new TextBlock();
+        }
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("16,112,*") };
+        var dot = Dot(entry.State);
+        ToolTip.SetTip(dot, StateName(entry.State));
+        row.Children.Add(dot);
+        var key = new TextBlock { Text = entry.Key, FontSize = 11, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim), TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(key, 1);
+        row.Children.Add(key);
+        var text = new TextBlock
+        {
+            Text = Preview(entry.Translation ?? entry.English),
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = WorkshopTheme.Brush(entry.Translation is null ? WorkshopTheme.Untranslated : WorkshopTheme.Parchment),
+        };
+        Grid.SetColumn(text, 2);
+        row.Children.Add(text);
+        return row;
+    }
+
+    // the state's mark: a full green dot translated, a full red one with a problem, an empty ring not translated yet
+    private static Control Dot(TextState state) => new Avalonia.Controls.Shapes.Ellipse
+    {
+        Width = 9,
+        Height = 9,
+        VerticalAlignment = VerticalAlignment.Center,
+        HorizontalAlignment = HorizontalAlignment.Left,
+        Fill = state switch
+        {
+            TextState.Translated => WorkshopTheme.Brush(WorkshopTheme.Translated),
+            TextState.Problem => WorkshopTheme.Brush(WorkshopTheme.Problem),
+            _ => Brushes.Transparent,
+        },
+        Stroke = state == TextState.Untranslated ? WorkshopTheme.Brush(WorkshopTheme.Untranslated) : null,
+        StrokeThickness = 1.5,
+    };
+
+    private static string StateName(TextState state) => state switch
+    {
+        TextState.Translated => "translated",
+        TextState.Problem => "translated, with a problem the check found",
+        _ => "not translated yet",
+    };
+
+    // the legend's words, short enough to stand beside the counters
+    private static string ShortName(TextState state) => state switch
+    {
+        TextState.Translated => "done",
+        TextState.Problem => "problem",
+        _ => "to do",
+    };
 
     private IEnumerable<TextEntry> Visible()
     {
@@ -210,9 +303,10 @@ internal sealed class TextEditorView : IWorkshopEditor
 
     private void UpdateProgress(IReadOnlyList<TextEntry>? visible = null)
     {
-        var (done, all) = _project.Progress(visible ?? Visible());
+        var shown = (visible ?? Visible().ToList()).Count;
         var (total, every) = _project.Progress();
-        _progress.Text = $"{done} / {all} here, {total} / {every} in all";
+        var n = System.Globalization.CultureInfo.InvariantCulture;
+        _progress.Text = $"{total.ToString("N0", n)} of {every.ToString("N0", n)} translated · {shown.ToString("N0", n)} shown";
     }
 
     private void Show(TextEntry? entry)
@@ -220,9 +314,10 @@ internal sealed class TextEditorView : IWorkshopEditor
         _current = entry;
         _loading = true;
         _key.Text = entry?.Key ?? "";
-        _comment.Text = entry is null ? "" : string.Join("\n", entry.Template.Comments) + "\nShown on: " + string.Join(", ", entry.Screens);
+        _comment.Text = entry is null ? "" : "Shown on: " + string.Join(", ", entry.Screens) + "\n" + string.Join("\n", entry.Template.Comments.Skip(1).Prepend(Rest(entry)));
+        ToolTip.SetTip(_comment, entry is null ? null : string.Join("\n", entry.Template.Comments));
         // the English as a translator reads it: without the line break and indent a card text's value starts with in the file
-        _english.Text = entry is null ? "" : entry.English.TrimStart('\n').Replace("\n    ", "\n", StringComparison.Ordinal).TrimStart(' ');
+        Paint(_english, entry is null ? "" : entry.English.TrimStart('\n').Replace("\n    ", "\n", StringComparison.Ordinal).TrimStart(' '));
         _translation.Text = entry?.Translation ?? "";
         _translation.IsEnabled = entry is not null;
         _problems.Text = entry is null ? "" : string.Join("\n", entry.Problems.Select(p => $"{p.Severity}: {p.Message}"));
@@ -241,14 +336,24 @@ internal sealed class TextEditorView : IWorkshopEditor
             return;
         }
         var chips = TextTokens.Split(_current.English).Where(t => t.Kind != TokenKind.Words && !t.Text.StartsWith("{\"", StringComparison.Ordinal))
-            .Select(t => t.Text).Distinct(StringComparer.Ordinal).ToList();
+            .DistinctBy(t => t.Text, StringComparer.Ordinal).ToList();
         if (_current.Key.StartsWith("msg:", StringComparison.Ordinal))
         {
-            chips.AddRange(_project.Variables.Select(v => "$" + v.Name));
+            chips.AddRange(_project.Variables.Select(v => new TextToken(TokenKind.Name, "$" + v.Name)));
         }
-        foreach (var chip in chips)
+        foreach (var token in chips)
         {
-            var button = new Button { Content = chip, Padding = new Thickness(6, 1), Margin = new Thickness(0, 0, 4, 4), FontSize = 11 };
+            var chip = token.Text;
+            var button = new Button
+            {
+                Content = chip,
+                Padding = new Thickness(6, 1),
+                Margin = new Thickness(0, 0, 4, 4),
+                FontSize = 11,
+                Background = WorkshopTheme.Brush(WorkshopTheme.Parchment),
+                Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColourOf(token) ?? WorkshopTheme.Ink),
+                FontWeight = FontWeight.SemiBold,
+            };
             ToolTip.SetTip(button, "Put it where the cursor is");
             button.Click += (_, _) =>
             {
@@ -327,6 +432,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         if (_current is null)
         {
             _picture.Source = null;
+            _shown = null;
             _measure.Text = "";
             _barFill.Width = 0;
             return;
@@ -343,30 +449,29 @@ internal sealed class TextEditorView : IWorkshopEditor
             }
         }
         _picture.Source = bitmap;
-        _picture.Width = result.Width * 3;
-        _picture.Height = result.Height * 3;
+        _shown = result;
+        Place();
         if (result.CardText)
         {
             var spare = result.FootLimit - result.Foot;
             _barFill.Width = 0;
-            _bar.Background = result.Overflows ? Brushes.IndianRed : Brushes.MediumSeaGreen;
+            _bar.Background = WorkshopTheme.Brush(result.Overflows ? WorkshopTheme.Problem : WorkshopTheme.Translated);
             _measure.Text = result.Overflows
                 ? $"The text runs past the foot of the card's window by {result.Foot - result.FootLimit + 1} px (every passage shown)."
                 : $"{spare} px to spare above the foot of the card's window (every passage shown).";
         }
         else if (result.Room > 0)
         {
-            _bar.Background = Brushes.Gainsboro;
+            _bar.Background = WorkshopTheme.Brush(WorkshopTheme.WoodLine);
             var full = Math.Max(result.Room, result.Measured);
-            var total = _bar.Bounds.Width > 0 ? _bar.Bounds.Width : 300;
-            _barFill.Width = total * result.Measured / full;
-            _barFill.Background = result.Overflows ? Brushes.IndianRed : result.Measured > result.English ? Brushes.Goldenrod : Brushes.MediumSeaGreen;
+            _barFill.Width = _bar.Width * result.Measured / full;
+            _barFill.Background = WorkshopTheme.Brush(result.Overflows ? WorkshopTheme.Problem : result.Measured > result.English ? WorkshopTheme.Gold : WorkshopTheme.Translated);
             _measure.Text = $"{result.Measured} px of {result.Room} px of room (the English {result.English} px)" + (result.Overflows ? ": too wide" : "");
         }
         else
         {
             _barFill.Width = 0;
-            _bar.Background = Brushes.Gainsboro;
+            _bar.Background = WorkshopTheme.Brush(WorkshopTheme.WoodLine);
             _measure.Text = $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
         }
         if (result.Problem is { } problem)
@@ -375,12 +480,73 @@ internal sealed class TextEditorView : IWorkshopEditor
         }
     }
 
-    private static string Mark(TextEntry entry) => entry.State switch
+    // the preview's place and size: a card text's window beside the texts, a screen text's line under the translation; whole multiples
+    // of the game's pixels, as large as the room allows (at most four times)
+    private void Place()
     {
-        TextState.Translated => "✓",
-        TextState.Problem => "!",
-        _ => "·",
-    };
+        var room = _editor.Bounds;
+        var (width, height) = room.Width > 0 ? (room.Width, room.Height) : (820.0, 640.0);
+        if (_shown is not { } shown)
+        {
+            Grid.SetRow(_previewPanel, 7);
+            Grid.SetRowSpan(_previewPanel, 1);
+            Grid.SetColumn(_previewPanel, 0);
+            Grid.SetColumnSpan(_previewPanel, 2);
+            return;
+        }
+        int scale;
+        if (shown.CardText)
+        {
+            // the texts keep 330 px beside the card's window
+            scale = (int)Math.Clamp(Math.Min((width - 330) / shown.Width, (height - 120) / shown.Height), 1, 4);
+            Grid.SetRow(_previewPanel, 1);
+            Grid.SetRowSpan(_previewPanel, 8);
+            Grid.SetColumn(_previewPanel, 1);
+            Grid.SetColumnSpan(_previewPanel, 1);
+            _previewPanel.Margin = new Thickness(14, 0, 0, 0);
+        }
+        else
+        {
+            scale = (int)Math.Clamp((width - 4) / shown.Width, 1, 4);
+            Grid.SetRow(_previewPanel, 7);
+            Grid.SetRowSpan(_previewPanel, 1);
+            Grid.SetColumn(_previewPanel, 0);
+            Grid.SetColumnSpan(_previewPanel, 2);
+            _previewPanel.Margin = new Thickness(0, 4, 0, 0);
+        }
+        _picture.Width = shown.Width * scale;
+        _picture.Height = shown.Height * scale;
+        _bar.Width = _picture.Width + 2;
+        _measure.MaxWidth = _problems.MaxWidth = Math.Max(_bar.Width, 300);
+        if (!shown.CardText && shown.Room > 0)
+        {
+            _barFill.Width = _bar.Width * shown.Measured / Math.Max(shown.Room, shown.Measured);
+        }
+    }
+
+    // a text in the reader's box: words in ink, each tag, name and argument in its chip's colour
+    private static void Paint(SelectableTextBlock block, string text)
+    {
+        var inlines = block.Inlines ??= [];
+        inlines.Clear();
+        foreach (var token in TextTokens.Split(text))
+        {
+            var run = new Avalonia.Controls.Documents.Run(token.Text);
+            if (WorkshopTheme.ChipColourOf(token) is { } colour)
+            {
+                run.Foreground = WorkshopTheme.Brush(colour);
+                run.FontWeight = FontWeight.SemiBold;
+            }
+            inlines.Add(run);
+        }
+    }
+
+    // the template's first comment without its key (the key is the heading)
+    private static string Rest(TextEntry entry)
+    {
+        var first = entry.Template.Comments.FirstOrDefault() ?? "";
+        return first.StartsWith(entry.Key + " · ", StringComparison.Ordinal) ? first[(entry.Key.Length + 3)..] : first;
+    }
 
     private static string Preview(string value)
     {
