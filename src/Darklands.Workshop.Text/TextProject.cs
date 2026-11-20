@@ -106,7 +106,8 @@ public sealed class TextProject
         var pack = LanguagePack.Load(folder, out var why) ?? throw new InvalidDataException(why);
         var game = new GameFiles(gameFolder);
         var boxesFile = Path.Combine(folder, TranslatorCommands.BoxesFile);
-        var boxes = File.Exists(boxesFile) ? TextBoxes.Read(boxesFile) : [];
+        // the pack's own boxes, else the ones the Workshop ships
+        var boxes = File.Exists(boxesFile) ? TextBoxes.Read(boxesFile) : WorkshopBoxes.Default;
         var entries = TranslatorTemplate.Build(game, boxes).Select(m => new TextEntry(m)).ToList();
         var byId = entries.ToDictionary(e => e.Id, StringComparer.Ordinal);
         var others = new List<(string, FtlSource.Message)>();

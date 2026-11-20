@@ -105,6 +105,13 @@ var fromEdition = Option("--from-edition");
 var editionLanguage = Option("--edition-language") ?? "de";
 var editionVariables = Option("--edition-variables");
 var textBoxes = Option("--text-boxes");
+// a developer's step: the boxes of a run without the game's words, the ones the Workshop ships
+if (Option("--strip-text-boxes") is { } strippedBoxes)
+{
+    return textBoxes is null
+        ? Fail("--strip-text-boxes needs --text-boxes <the run's boxes folder>")
+        : Darklands.Presentation.TranslatorCommands.WriteStrippedBoxes(textBoxes, strippedBoxes, Console.Out);
+}
 // --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods
 var mods = new List<string>();
 while (Option("--mod") is { } mod)

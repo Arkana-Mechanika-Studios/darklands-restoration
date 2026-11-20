@@ -22,6 +22,7 @@ internal static class CommandLineUsage
           --edition-pack <folder> --from-edition <game folder> [--edition-language de] [--edition-variables <file.ftl>]
                                             write a pack of another edition's card texts there (yours, not to share) and check it
           --text-boxes <file or folder>     the texts' boxes for the two above (docs/LOCALISATION.md)
+          --strip-text-boxes <file>         (developers) write the boxes of --text-boxes without the game's words, then stop
           --soundfont <file>         the SoundFont for the pack's .mid music (default: the first .sf2 in SOUNDFONT next to the program)
           --hd-pack <folder>         replace the pictures
           --mod <folder or name>     play a mod; once per mod (docs/MODS.md)

@@ -86,6 +86,23 @@ public static class TranslatorCommands
         return at > 0 ? why[..at] : why;
     }
 
+    /// <summary>
+    /// Writes the boxes of <paramref name="boxes"/> without the game's words (TextBoxes.Strip) to <paramref name="output"/>: the boxes the
+    /// Workshop ships (a developer's step after the run of the recorded sessions); 0 when written.
+    /// </summary>
+    public static int WriteStrippedBoxes(string boxes, string output, TextWriter say)
+    {
+        ArgumentNullException.ThrowIfNull(say);
+        if (ReadBoxes(boxes, null, say) is not { Count: > 0 } found)
+        {
+            say.WriteLine($"{boxes}: no boxes");
+            return 1;
+        }
+        TextBoxes.Write(output, TextBoxes.Strip(found));
+        say.WriteLine($"{found.Count} boxes, without the game's words, in {output}");
+        return 0;
+    }
+
     /// <summary>Checks the pack in <paramref name="pack"/> against the game in <paramref name="gameFolder"/>; 0 when nothing stops its texts being used.</summary>
     public static int CheckPack(string gameFolder, string pack, string? boxes, TextWriter say)
     {

@@ -1,0 +1,4225 @@
+{
+  "base": "483.07",
+  "boxes": [
+    {
+      "key": "exe:290E:0021",
+      "english": 20,
+      "room": 170,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:004D",
+      "english": 43,
+      "room": 181,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0112",
+      "english": 61,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0122",
+      "english": 67,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0133",
+      "english": 86,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0148",
+      "english": 90,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:04D9",
+      "english": 48,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:04E3",
+      "english": 40,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:04EC",
+      "english": 32,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:04F4",
+      "english": 48,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:04FF",
+      "english": 55,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:050C",
+      "english": 44,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0515",
+      "english": 58,
+      "room": 133,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0522",
+      "english": 50,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:052D",
+      "english": 54,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0539",
+      "english": 47,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0544",
+      "english": 60,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0551",
+      "english": 56,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:055D",
+      "english": 56,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0569",
+      "english": 65,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0578",
+      "english": 38,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0580",
+      "english": 66,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:058F",
+      "english": 29,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0596",
+      "english": 63,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05A3",
+      "english": 54,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05AF",
+      "english": 57,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05BC",
+      "english": 36,
+      "room": 66,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05C4",
+      "english": 38,
+      "room": 66,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05CD",
+      "english": 35,
+      "room": 66,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05D5",
+      "english": 49,
+      "room": 66,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05E0",
+      "english": 29,
+      "room": 66,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:05E7",
+      "english": 42,
+      "room": 66,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:07D3",
+      "english": 37,
+      "room": 207,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:07FA",
+      "english": 82,
+      "room": 230,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0862",
+      "english": 82,
+      "room": 230,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B01",
+      "english": 30,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B08",
+      "english": 28,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen",
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B0E",
+      "english": 27,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen",
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B14",
+      "english": 26,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B1A",
+      "english": 28,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen",
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B20",
+      "english": 36,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B28",
+      "english": 41,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen",
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0B31",
+      "english": 32,
+      "room": 188,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CampScreen",
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0CCB",
+      "english": 37,
+      "room": 188,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:290E:0CDD",
+      "english": 32,
+      "room": 188,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:020A",
+      "english": 59,
+      "room": 160,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CardScreen",
+        "OverlandScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0216",
+      "english": 96,
+      "room": 178,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CardScreen",
+        "OverlandScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:06A4",
+      "english": 27,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0706",
+      "english": 76,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0718",
+      "english": 59,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:07AA",
+      "english": 79,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:07BC",
+      "english": 89,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CA1",
+      "english": 24,
+      "room": 253,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterGeneratorScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CA6",
+      "english": 32,
+      "room": 221,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterGeneratorScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CAD",
+      "english": 30,
+      "room": 181,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterGeneratorScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CB4",
+      "english": 25,
+      "room": 143,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterGeneratorScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CBB",
+      "english": 54,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CC6",
+      "english": 19,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CC9",
+      "english": 85,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CDA",
+      "english": 19,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CDD",
+      "english": 54,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CE9",
+      "english": 19,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CEC",
+      "english": 68,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CFA",
+      "english": 18,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0CFD",
+      "english": 32,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D04",
+      "english": 19,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D07",
+      "english": 48,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D11",
+      "english": 19,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D14",
+      "english": 33,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D1B",
+      "english": 18,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D1E",
+      "english": 57,
+      "room": 254,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D2B",
+      "english": 19,
+      "room": 166,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "ItemStoreScreen",
+        "OverlandScreen",
+        "PartyRosterScreen",
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D2F",
+      "english": 32,
+      "room": 141,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "OverlandScreen",
+        "PartyRosterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D36",
+      "english": 50,
+      "room": 141,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "OverlandScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D40",
+      "english": 35,
+      "room": 141,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen",
+        "BattleScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "OverlandScreen",
+        "PartyRosterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D49",
+      "english": 39,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D51",
+      "english": 13,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D56",
+      "english": 12,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D58",
+      "english": 54,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D64",
+      "english": 7,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D67",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D6A",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D6D",
+      "english": 9,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D70",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D73",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D79",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D7C",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D7F",
+      "english": 7,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D85",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D88",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D8B",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D8E",
+      "english": 8,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0D91",
+      "english": 96,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DA6",
+      "english": 13,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DA9",
+      "english": 28,
+      "room": 182,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DAF",
+      "english": 10,
+      "room": 128,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DB2",
+      "english": 50,
+      "room": 182,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DBE",
+      "english": 6,
+      "room": 128,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DC0",
+      "english": 50,
+      "room": 182,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DCB",
+      "english": 5,
+      "room": 128,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DCD",
+      "english": 36,
+      "room": 182,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DD5",
+      "english": 6,
+      "room": 128,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DD7",
+      "english": 26,
+      "room": 182,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DDD",
+      "english": 5,
+      "room": 128,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DDF",
+      "english": 51,
+      "room": 182,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DEB",
+      "english": 6,
+      "room": 128,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DEE",
+      "english": 46,
+      "room": 144,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "OverlandScreen",
+        "PartyRosterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0DF9",
+      "english": 105,
+      "room": 144,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "OverlandScreen",
+        "PartyRosterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:0E0F",
+      "english": 19,
+      "room": 36,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "BarterScreen",
+        "BattleScreen",
+        "CampScreen",
+        "CardScreen",
+        "CharacterSheetScreen",
+        "OverlandScreen",
+        "PartyRosterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2334",
+      "english": 50,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2345",
+      "english": 54,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:23DC",
+      "english": 63,
+      "room": 157,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnn"
+      },
+      "screens": [
+        "BattleScreen",
+        "MarchingOrderScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2707",
+      "english": 71,
+      "room": 166,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2715",
+      "english": 77,
+      "room": 169,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2725",
+      "english": 79,
+      "room": 170,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D5A",
+      "english": 30,
+      "room": 168,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00",
+        "arg1": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D64",
+      "english": 12,
+      "room": 90,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D69",
+      "english": 12,
+      "room": 90,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D6E",
+      "english": 45,
+      "room": 171,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D78",
+      "english": 71,
+      "room": 171,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D88",
+      "english": 65,
+      "room": 171,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2D96",
+      "english": 44,
+      "room": 171,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DA0",
+      "english": 80,
+      "room": 171,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DBD",
+      "english": 12,
+      "room": 90,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DC2",
+      "english": 114,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn nnnnn",
+        "arg1": "00",
+        "arg2": "000"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DD1",
+      "english": 33,
+      "room": 126,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DD8",
+      "english": 50,
+      "room": 126,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DE3",
+      "english": 16,
+      "room": 53,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DE7",
+      "english": 12,
+      "room": 33,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DEC",
+      "english": 12,
+      "room": 18,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DF0",
+      "english": 12,
+      "room": 18,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DF4",
+      "english": 50,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2DFF",
+      "english": 58,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E0B",
+      "english": 53,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E16",
+      "english": 53,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E21",
+      "english": 30,
+      "room": 175,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00",
+        "arg1": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E2B",
+      "english": 16,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E2F",
+      "english": 15,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E33",
+      "english": 15,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E37",
+      "english": 15,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E3B",
+      "english": 13,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E3F",
+      "english": 16,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E43",
+      "english": 12,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E46",
+      "english": 30,
+      "room": 118,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00",
+        "arg1": "00"
+      },
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E50",
+      "english": 22,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E55",
+      "english": 22,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E5A",
+      "english": 20,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E5F",
+      "english": 20,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E64",
+      "english": 23,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E69",
+      "english": 23,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E6E",
+      "english": 23,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E73",
+      "english": 12,
+      "room": 52,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CampScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E78",
+      "english": 21,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E7D",
+      "english": 19,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E82",
+      "english": 18,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E87",
+      "english": 21,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E8C",
+      "english": 22,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E91",
+      "english": 18,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E95",
+      "english": 12,
+      "room": 52,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CampScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2E9A",
+      "english": 45,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EA4",
+      "english": 49,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EAF",
+      "english": 50,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EBA",
+      "english": 44,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EC4",
+      "english": 46,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2ECF",
+      "english": 22,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2ED4",
+      "english": 20,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2ED9",
+      "english": 20,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EDE",
+      "english": 21,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EE3",
+      "english": 20,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EE8",
+      "english": 23,
+      "room": 35,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2EED",
+      "english": 12,
+      "room": 55,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "CampScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2F3A",
+      "english": 56,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2F4A",
+      "english": 80,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2F71",
+      "english": 217,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn",
+        "arg1": "0",
+        "arg2": "0",
+        "arg3": "0",
+        "arg4": "0000"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2FD5",
+      "english": 233,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn",
+        "arg1": "nnnnnnn",
+        "arg2": "nnnnn nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:2FF2",
+      "english": 120,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:300F",
+      "english": 29,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3018",
+      "english": 131,
+      "room": 198,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnn nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:302A",
+      "english": 114,
+      "room": 191,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:303E",
+      "english": 130,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "  000",
+        "arg1": "nnnnnnn nnnnn",
+        "arg2": "  0",
+        "arg3": "00"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3055",
+      "english": 159,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "  000",
+        "arg1": "nnnnnnnn nnnnn",
+        "arg2": " 00",
+        "arg3": " 00"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:307F",
+      "english": 222,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn",
+        "arg1": "0",
+        "arg2": "00",
+        "arg3": "0",
+        "arg4": "000"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:30C6",
+      "english": 209,
+      "room": 242,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nn",
+        "arg1": "nnnnnnnn",
+        "arg2": "nnnnn nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:30E3",
+      "english": 233,
+      "room": 242,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn",
+        "arg1": "nnnnnnn",
+        "arg2": "nnnnn nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3100",
+      "english": 120,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:311D",
+      "english": 29,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3126",
+      "english": 131,
+      "room": 198,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnn nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3138",
+      "english": 68,
+      "room": 191,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3142",
+      "english": 137,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "  000",
+        "arg1": "nnnnnnn nnnnnnn",
+        "arg2": "  0",
+        "arg3": "00"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3159",
+      "english": 158,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "  000",
+        "arg1": "nnnnnnnn nnnnn",
+        "arg2": " 00",
+        "arg3": " 00"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3172",
+      "english": 222,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn",
+        "arg1": "0",
+        "arg2": "00",
+        "arg3": "0",
+        "arg4": "000"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:31A2",
+      "english": 222,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn",
+        "arg1": "0",
+        "arg2": "00",
+        "arg3": "0",
+        "arg4": "000"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:31D2",
+      "english": 137,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "  000",
+        "arg1": "nnnnnnn nnnnnnn",
+        "arg2": "  0",
+        "arg3": "00"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:31E9",
+      "english": 132,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "000",
+        "arg1": "nnnnn nnnnnn",
+        "arg2": " 00",
+        "arg3": " 00"
+      },
+      "screens": [
+        "BarterScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3268",
+      "english": 79,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:327C",
+      "english": 82,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:32A3",
+      "english": 12,
+      "room": 113,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": " 0"
+      },
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3322",
+      "english": 56,
+      "room": 122,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:332F",
+      "english": 96,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0",
+        "arg1": "nnnnn nnnnnnnn",
+        "arg2": "000"
+      },
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3355",
+      "english": 12,
+      "room": 113,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": " 0"
+      },
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:33B8",
+      "english": 98,
+      "room": 220,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "000"
+      },
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:33D5",
+      "english": 56,
+      "room": 117,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:33E2",
+      "english": 99,
+      "room": 115,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0",
+        "arg1": "nnnnnnnnnn nnnn",
+        "arg2": "00"
+      },
+      "screens": [
+        "AlchemyScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:33EE",
+      "english": 100,
+      "room": 180,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3415",
+      "english": 73,
+      "room": 167,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3566",
+      "english": 75,
+      "room": 101,
+      "windowed": false,
+      "font": 2,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3579",
+      "english": 56,
+      "room": 161,
+      "windowed": false,
+      "font": 2,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3587",
+      "english": 124,
+      "room": 172,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:35A5",
+      "english": 124,
+      "room": 172,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:35C3",
+      "english": 140,
+      "room": 172,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:35E4",
+      "english": 74,
+      "room": 172,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:35F8",
+      "english": 97,
+      "room": 172,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3614",
+      "english": 43,
+      "room": 244,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:361E",
+      "english": 9,
+      "room": 222,
+      "windowed": false,
+      "font": 2,
+      "args": null,
+      "screens": [
+        "SaintPrayerScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3659",
+      "english": 11,
+      "room": 67,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3671",
+      "english": 91,
+      "room": 186,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3683",
+      "english": 80,
+      "room": 105,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3693",
+      "english": 53,
+      "room": 213,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:369E",
+      "english": 21,
+      "room": 236,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36A3",
+      "english": 23,
+      "room": 171,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36A8",
+      "english": 45,
+      "room": 245,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36B1",
+      "english": 36,
+      "room": 244,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36B8",
+      "english": 29,
+      "room": 183,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36BE",
+      "english": 46,
+      "room": 183,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36C8",
+      "english": 91,
+      "room": 187,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36DA",
+      "english": 80,
+      "room": 106,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36EA",
+      "english": 53,
+      "room": 214,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36F5",
+      "english": 21,
+      "room": 237,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36FA",
+      "english": 23,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:36FF",
+      "english": 45,
+      "room": 246,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3708",
+      "english": 36,
+      "room": 245,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:370F",
+      "english": 29,
+      "room": 184,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3715",
+      "english": 46,
+      "room": 184,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:374C",
+      "english": 12,
+      "room": 67,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3752",
+      "english": 34,
+      "room": 250,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnn"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:375A",
+      "english": 43,
+      "room": 253,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3765",
+      "english": 51,
+      "room": 253,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3771",
+      "english": 52,
+      "room": 253,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:377E",
+      "english": 54,
+      "room": 253,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0000"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:378A",
+      "english": 53,
+      "room": 188,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "000"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3795",
+      "english": 49,
+      "room": 188,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "00"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:37A0",
+      "english": 21,
+      "room": 178,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "n00"
+      },
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:37F6",
+      "english": 105,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3810",
+      "english": 101,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:383B",
+      "english": 182,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn",
+        "arg1": "0",
+        "arg2": "0",
+        "arg3": "0"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3863",
+      "english": 133,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3883",
+      "english": 29,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:388C",
+      "english": 96,
+      "room": 213,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:38A2",
+      "english": 110,
+      "room": 201,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:38B6",
+      "english": 98,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn",
+        "arg1": " 00",
+        "arg2": "00"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:38CA",
+      "english": 89,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:38EF",
+      "english": 182,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn",
+        "arg1": "0",
+        "arg2": "0",
+        "arg3": "0"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3917",
+      "english": 133,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3937",
+      "english": 29,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3940",
+      "english": 96,
+      "room": 233,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3956",
+      "english": 65,
+      "room": 201,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3960",
+      "english": 131,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn nnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3974",
+      "english": 131,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn nnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3988",
+      "english": 110,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnn nnnnnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3998",
+      "english": 131,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnn nnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "ItemStoreScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3D69",
+      "english": 48,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3D77",
+      "english": 74,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3D8A",
+      "english": 99,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3DA3",
+      "english": 63,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3DB3",
+      "english": 87,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3DCA",
+      "english": 73,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3DDC",
+      "english": 68,
+      "room": 112,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3FAD",
+      "english": 70,
+      "room": 245,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3FBE",
+      "english": 131,
+      "room": 225,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3FDE",
+      "english": 29,
+      "room": 225,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3FE7",
+      "english": 57,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnnn"
+      },
+      "screens": [
+        "CampScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:3FED",
+      "english": 83,
+      "room": 172,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "CardScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4056",
+      "english": 57,
+      "room": 159,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen",
+        "CardScreen",
+        "OverlandScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4204",
+      "english": 91,
+      "room": 195,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen",
+        "CardScreen",
+        "OverlandScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:44BC",
+      "english": 76,
+      "room": 195,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:44CC",
+      "english": 95,
+      "room": 195,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:44E8",
+      "english": 103,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:44FE",
+      "english": 101,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4515",
+      "english": 50,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4520",
+      "english": 103,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4536",
+      "english": 101,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:454D",
+      "english": 50,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4558",
+      "english": 103,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4570",
+      "english": 93,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4585",
+      "english": 86,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:459A",
+      "english": 103,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:45B2",
+      "english": 93,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:45C7",
+      "english": 86,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:45DC",
+      "english": 111,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:45F6",
+      "english": 108,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4610",
+      "english": 50,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:461C",
+      "english": 111,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4636",
+      "english": 108,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4650",
+      "english": 50,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:465C",
+      "english": 10,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:467D",
+      "english": 16,
+      "room": 34,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4681",
+      "english": 16,
+      "room": 34,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4685",
+      "english": 16,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4689",
+      "english": 15,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:468D",
+      "english": 15,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4691",
+      "english": 15,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4695",
+      "english": 13,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4699",
+      "english": 16,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:469D",
+      "english": 14,
+      "room": 104,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46AB",
+      "english": 22,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46B0",
+      "english": 22,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46B5",
+      "english": 20,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46BA",
+      "english": 20,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46BF",
+      "english": 23,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46C4",
+      "english": 23,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46C9",
+      "english": 23,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46F1",
+      "english": 21,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46F6",
+      "english": 19,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:46FB",
+      "english": 18,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4700",
+      "english": 21,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4705",
+      "english": 22,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:470A",
+      "english": 18,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4731",
+      "english": 22,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4736",
+      "english": 20,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:473B",
+      "english": 20,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4740",
+      "english": 21,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4745",
+      "english": 20,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:474A",
+      "english": 23,
+      "room": 30,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterGeneratorScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:479E",
+      "english": 63,
+      "room": 162,
+      "windowed": false,
+      "font": 3,
+      "args": null,
+      "screens": [
+        "LoadGameScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4815",
+      "english": 118,
+      "room": 122,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnnnnn",
+        "arg1": "0000",
+        "arg2": "0",
+        "arg3": "00",
+        "arg4": "00"
+      },
+      "screens": [
+        "LoadGameScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4C42",
+      "english": 128,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4C64",
+      "english": 141,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4C8A",
+      "english": 147,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4CAE",
+      "english": 29,
+      "room": 240,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4CC8",
+      "english": 169,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0",
+        "arg1": "00",
+        "arg2": "0"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4CF2",
+      "english": 87,
+      "room": 213,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D07",
+      "english": 122,
+      "room": 201,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnnnn"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D1B",
+      "english": 124,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnn nn n nnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D2F",
+      "english": 117,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnn nnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D54",
+      "english": 166,
+      "room": 247,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "0",
+        "arg1": "0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D7E",
+      "english": 87,
+      "room": 233,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D93",
+      "english": 65,
+      "room": 201,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4D9D",
+      "english": 126,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn nnnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4DB1",
+      "english": 121,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnn nnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4DC5",
+      "english": 126,
+      "room": 203,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn nnnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:4DD9",
+      "english": 126,
+      "room": 235,
+      "windowed": false,
+      "font": 1,
+      "args": {
+        "arg0": "nnnnnnn nnnnnnn",
+        "arg1": "  0",
+        "arg2": "00"
+      },
+      "screens": [
+        "LootScreen"
+      ]
+    }
+  ]
+}
