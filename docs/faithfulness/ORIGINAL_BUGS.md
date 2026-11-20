@@ -889,7 +889,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  
   original: `R034+0x0EE6` (1550:0006, matched)  
   why: OriginalBehaviour.FixPartyInfoBattleCycles - opened in a battle, the screen's background (R034+0x11BC) loads pics\ptystats.pic with its palette while the battle's cycles run (DS:07D8 = 1, slots 1, 2 and 4 over colours 16..30): nothing stops them (root 047C:040B) or clears DS:07D8, so the timer's frame work writes the battle's water and fire colours over the screen's at every step until it closes (the load screen stops them first, R037+0x8400..0x8426). Reproduced (the cycles run on); PartyInfoCyclesTests. Fixed (an evident display fix, every player game): the cycles held while the screen is open.
-- **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:138` `CardTextLayout.Lay`  
+- **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:147` `CardTextLayout.Lay`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
 - **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:309` `OverlandScreen.FreeBuffer`  
