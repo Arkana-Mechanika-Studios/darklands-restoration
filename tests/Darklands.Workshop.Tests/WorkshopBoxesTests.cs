@@ -10,7 +10,7 @@ namespace Darklands.Workshop.Tests;
 /// </summary>
 public sealed partial class WorkshopBoxesTests
 {
-    [GeneratedRegex(@"^(exe:(DS|[0-9A-F]{4}):[0-9A-F]{4}|id:[a-z0-9.-]+)$")]
+    [GeneratedRegex(@"^(exe:(DS|[0-9A-F]{4}):[0-9A-F]{4}|id:[a-z0-9.-]+|lst:(item|saint|formula)/\d+\.(name|short)|loc:\d+\.name|cty:\d+\.[a-z-]+|enm:(template|type)/\d+\.name)$")]
     private static partial Regex Key();
 
     [GeneratedRegex(@"^([A-Z][A-Za-z]*(Screen|Screens|Page|Box|Bar|Panel|Dialog|Window)|MenuBar|PartyPanel|Hourglass|StartUp|SideWindowMessages|OverlandDrawing|Cinematics)$")]
