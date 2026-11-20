@@ -187,6 +187,26 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
+## Avalonia and AvaloniaEdit (the Workshop)
+
+The Darklands Workshop (a download of its own, not the game) is built on Avalonia 11.3 (`Avalonia`, `Avalonia.Desktop`,
+`Avalonia.Themes.Fluent`) and its translation box on AvaloniaEdit 11.3 (`Avalonia.AvaloniaEdit`, a port of AvalonEdit),
+both under the MIT License: Copyright © The AvaloniaUI Project; AvalonEdit Copyright © AlphaSierraPapa for the SharpDevelop
+Team. https://github.com/AvaloniaUI/Avalonia, https://github.com/AvaloniaUI/AvaloniaEdit
+
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+> documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+> rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+> persons to whom the Software is furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+> Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+> WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+> COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+> OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 ## Original game data
 
 The game's data files (DARKLAND.EXE and its data, MicroProse 1992) are not included; the player
