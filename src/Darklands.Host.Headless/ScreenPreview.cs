@@ -10,10 +10,17 @@ using Darklands.Simulation;
 /// <summary>Debug: opens one of the trading screens on a Quickstart game, to look at it without playing to it.</summary>
 internal static class ScreenPreview
 {
-    public static void Run(IHost host, GameFiles files, string screen, uint seed)
+    public static void Run(IHost host, GameFiles files, string screen, uint seed, string? languagePack = null)
     {
         var world = WorldData.Load(files);
         var ui = new GameUi(host, new GameAssets(files));
+        if (languagePack is not null)
+        {
+            // a translation pack: the screen's words (and names) in its language
+            Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+            Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
+            ui.UseLanguagePack(languagePack, Console.Error.WriteLine);
+        }
         var state = NewGame.Quickstart(world, seed, () => seed);
         state.Data = world;
         state.Party.Purse = Money.From(12, 5, 3);

@@ -134,9 +134,9 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         void Draw()
         {
             ScreenDrawing.DrawBackground(ui, panel, state.Party, "alcscrn0");
-            ui.Text.Draw(ui.Canvas, 100, 9, f.Name, HeadingColor);
+            ui.Text.Draw(ui.Canvas, 100, 9, ui.FormulaName(f.Index, f.Name), HeadingColor);
             ui.Text.Draw(ui.Canvas, 100, 0x12, ui.Format("exe:DS:33B8", f.MysticNumber), HeadingColor);  // "Mystical Number - %d"
-            ScreenDrawing.Wrapped(ui, f.Name, 0x5F, 0x49, 0x3A, MenuColor);
+            ScreenDrawing.Wrapped(ui, ui.FormulaName(f.Index, f.Name), 0x5F, 0x49, 0x3A, MenuColor);
             ScreenDrawing.Wrapped(ui, f.Description, 0x5F, 0x49, 0x52, MenuColor);
             ui.Text.Draw(ui.Canvas, 0xCB, 0x39, ui.Words("exe:DS:33D5"), MenuColor);  // "Ingredients:" (the body R033+0x16FA's copy)
             var y = 0x41;
@@ -145,7 +145,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
                 if (ing.Count != 0)
                 {
                     var have = stock[ing.Item & 0xFF];
-                    ui.Text.Draw(ui.Canvas, 0xCD, y, ui.Format("exe:DS:33E2", ing.Count, state.Item(ing.Item).Name, have), have < ing.Count ? MenuGreyed : MenuColor);  // "%d %Fs (%d)"
+                    ui.Text.Draw(ui.Canvas, 0xCD, y, ui.Format("exe:DS:33E2", ing.Count, ui.ItemNameArg(ing.Item, state.Item(ing.Item).Name), have), have < ing.Count ? MenuGreyed : MenuColor);  // "%d %Fs (%d)"
                 }
                 y += 8;
             }
@@ -234,7 +234,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             return;
         }
         ui.Canvas.CopyFrom(_back, 0x55, 0x50, 0x6E, 0x54);
-        ScreenDrawing.Wrapped(ui, Selected.Formula.Name, 0x69, 0x58, 0x53, MenuColor);
+        ScreenDrawing.Wrapped(ui, ui.FormulaName(Selected.Formula.Index, Selected.Formula.Name), 0x69, 0x58, 0x53, MenuColor);
         ScreenDrawing.Wrapped(ui, Selected.Formula.Description, 0x69, 0x58, 0x6B, MenuColor);
     }
 
@@ -339,7 +339,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             if (ing.Count != 0)
             {
                 var have = _bench.Stock(ing.Item);
-                ui.Text.Draw(canvas, 0xC8, y, ui.Format("exe:DS:332F", ing.Count, _state.Item(ing.Item).Name, have), have >= ing.Count ? MenuColor : MenuGreyed);  // "%d %Fs (%d)"
+                ui.Text.Draw(canvas, 0xC8, y, ui.Format("exe:DS:332F", ing.Count, ui.ItemNameArg(ing.Item, _state.Item(ing.Item).Name), have), have >= ing.Count ? MenuColor : MenuGreyed);  // "%d %Fs (%d)"
             }
             y += 8;
         }

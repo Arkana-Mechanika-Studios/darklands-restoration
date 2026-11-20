@@ -1,8 +1,8 @@
 # Localisation (translations)
 
 > **Status: being built for version 1.1.** A first form of translation packs works in the development branch: the
-> program loads a pack and shows its words on the screens and in the card texts it covers (below). The battle screen's
-> messages and the names in the data tables are not translatable yet, there is no in-game language screen yet, and the
+> program loads a pack and shows its words on the screens and in the card texts it covers (below). There is no in-game
+> language screen yet, and the
 > file layout may still change before 1.1. This guide is updated as each part is built.
 
 This guide is for would-be translators first ([how you can help now](#how-translators-can-help-now)), then for
@@ -21,9 +21,14 @@ developers ([the plan in steps](#the-plan-for-developers)).
   titles, standing words, directions, town sizes, shop names, job names, skill names, risk words, the character
   sheet's labels), the program's own notices (a damaged saved game, missing mods ...), the **card texts** (the `.MSG`
   blocks, [written as below](#card-texts)) and the words the cards put into them (months, hours, lord titles, patron and
-  shop names, the cards' own words such as a physician's verdict).
-* **Not yet:** the battle screen's messages, item, saint and place names, and the program start's messages. These keep
-  the original English for now.
+  shop names, the cards' own words such as a physician's verdict), and the **names of the data files**
+  ([below](#names-of-the-data-files)): items, saints, formulae, places, cities and their buildings and people, enemies.
+* **The battle's words:** its messages (a split party, travelling as a group, a lock or trap's outcome, the surrender
+  question ...), its menus and the enemy panel's weapon, armour and shield types and quality words, under their `exe:`
+  keys; the battle's far texts (the type names, the ordinals of "Select …", the "cannot view" notice) as `exe:286B:XXXX`.
+  Without a pack the battle is the original's to the byte: the replays prove it.
+* **Not yet:** the descriptions in the data files (saints, formulae, places) and the program start's messages. These
+  keep the original English for now.
 * **Fonts.** Without a font pack the game draws a translation with the original fonts, which have no letters beyond the
   original's set (the German edition's umlauts and ß are among them); a letter they lack is drawn as `?`. A pack can bring
   fonts of its own with any letters ([font packs](#font-packs)).
@@ -71,11 +76,16 @@ into words: from the pack when it has the id, else from the player's own files. 
 
 | Key | Meaning |
 |---|---|
+| `exe:286B:XXXX` | a string of the battle's far segment (link frame 286B): its weapon, armour and shield type names, ordinals and notices |
 | `exe:DS:XXXX` | a string inside `DARKLAND.EXE`, at offset `XXXX` of its data segment (each copy the original keeps has its own key) |
 | `exe:290E:XXXX` | a string of the EXE's far string segment |
 | `id:rw.…` | a sentence of the restoration's own (the original has no such text): `id:rw.save.damaged.1` |
 | `id:card.…`, `id:skill.changed` | a sentence the original builds from pieces: the chance of an option, a skill report |
 | `msg:$FILE#block` | a card text: block number in a `.MSG` file (`msg:$ADDCH00#0`, Fluent id `msg-addch00-0`) |
+| `lst:item/n.name`, `.short` | an item's name and short name, by its code in `DARKLAND.LST` (`lst-item-42-name`); `lst:saint/n.…`, `lst:formula/n.…` the same for saints and formulae |
+| `cty:n.field` | a city's names in `DARKLAND.CTY`: `short`, `full`, `leader`, `ruler`, and its buildings (`church`, `market` … the names cards put in) |
+| `loc:n.name` | a place's name, by its index in `DARKLAND.LOC` |
+| `enm:type/n.name` | an enemy kind's name in `DARKLAND.ENM` (the battle's enemy panel) |
 
 In a `.ftl` file a key is written as a Fluent identifier: lower case, `:` `.` `/` `#` `+` turned into `-`, `$` dropped.
 So `exe:DS:2FF2` is `exe-ds-2ff2` and `id:rw.save.damaged.1` is `id-rw-save-damaged-1`. Two keys never meet in one
@@ -84,6 +94,33 @@ identifier.
 **Arguments** become Fluent variables. A named one keeps its name (`{ $count }`, `{ $name }`). Many of the original's
 strings are C format strings (`%s holds the purse of %dfl, %dgr, %dpf (%lupf).`); their arguments are, in order,
 `{ $arg0 }`, `{ $arg1 }` …: the translation writes the sentence with those variables and needs no `%` codes.
+
+## Names of the data files
+
+The names in the game's data files (items, saints, formulae, places, cities with their buildings and people, enemy
+kinds) are in the template's `tables.ftl`, each under its record and index (the keys above), the English from your own
+files and the field's width in the original's file in the comment. They are translated where the game shows them: the
+character sheet, the stores, barter and loot, alchemy, party information, the card option pop-ups, the saint prayer screen, the battle's enemy panel
+and its place notes, and the names cards
+put into their texts (`$cityChurch`, `$PlaceName`, `$LocName`, `$ItemName` ...). The rules and the saved games keep the
+original's names: a saved game written with a pack is the same as one written without. Names a save holds as text (a
+place's, a battle's enemies) are translated while they are still the data file's; the party's names, which the player
+typed, are never translated.
+
+**A name's other forms.** A language that declines its nouns or makes words agree with them gives a name its forms as
+Fluent attributes: `nom`, `gen`, `dat`, `acc`, `ins`, `loc`, `voc`, `abl` (the cases a language needs) and `gender`:
+
+```
+lst-item-7-name = Кинжал
+    .acc = Кинжал
+    .gender = m
+```
+
+Where the game puts a name into a sentence (an item in a store's line, on the sheet's pack list, in alchemy), the sentence
+gets the name as `{ $arg0 }` and each form as `{ $arg0_acc }`, `{ $arg0_gender }` …, so a translated sentence can write
+`{ $arg0_gen }` or `{ $arg0_gender -> [f] … *[m] … }`. A name without a form gives its words for a case and nothing for the
+gender (the default variant). The pack check accepts the forms of an argument the sentence has; a pack that needs none
+writes plain names.
 
 ## How a translation pack looks
 
@@ -96,6 +133,7 @@ my-translation-pack/
     de/
       exe.ftl          the EXE's strings and the word tables
       ui.ftl           the restoration's own notices
+      tables.ftl       the names of the data files (items, saints, places ...)
       msg/
         $CITYG04.ftl   card texts, one file per .MSG file (the file names are free; this one is the convention)
 ```

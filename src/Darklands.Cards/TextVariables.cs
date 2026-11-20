@@ -1,3 +1,4 @@
+using Darklands.Content;
 using Darklands.Content.Formats.Text.Strings;
 using Darklands.Core;
 using Darklands.Core.Rules;
@@ -176,7 +177,7 @@ public static class TextVariables
         {
             "PlaceName" => PlaceName(c),
             "PlaceDesc" => PlaceDescription(c),
-            "Inn" => Names(city, 14),
+            "Inn" => Names(c, city, 14),
             "He" => female ? "She" : "He",
             "he" => female ? "she" : "he",
             "his" => female ? "her" : "his",
@@ -187,23 +188,23 @@ public static class TextVariables
             "PlaceAttitude" => Standing(c),
             "Number1" => c.Variables.Numbers[0].ToString(System.Globalization.CultureInfo.InvariantCulture),
             "Number2" => c.Variables.Numbers[1].ToString(System.Globalization.CultureInfo.InvariantCulture),
-            "citySquare" => Names(city, 3),
-            "councilHall" => Names(city, 4),
-            "imperialMint" => Names(city, 9),
-            "cityBarracks" => Names(city, 11),
-            "university" => Names(city, 15),
-            "marketplace" => Names(city, 8),
-            "fortress" => Names(city, 5),
-            "pawnshop" => Names(city, 12),
-            "hospital" or "slum" => Names(city, 10),   // C: both names read the same field
-            "monastery" => Names(city, 13),
-            "cathedral" => Names(city, 6),
-            "cityChurch" => Names(city, 7),
-            "CityLordName" => Names(city, 0),
+            "citySquare" => Names(c, city, 3),
+            "councilHall" => Names(c, city, 4),
+            "imperialMint" => Names(c, city, 9),
+            "cityBarracks" => Names(c, city, 11),
+            "university" => Names(c, city, 15),
+            "marketplace" => Names(c, city, 8),
+            "fortress" => Names(c, city, 5),
+            "pawnshop" => Names(c, city, 12),
+            "hospital" or "slum" => Names(c, city, 10),   // C: both names read the same field
+            "monastery" => Names(c, city, 13),
+            "cathedral" => Names(c, city, 6),
+            "cityChurch" => Names(c, city, 7),
+            "CityLordName" => Names(c, city, 0),
             "CityLordTitle" => LordTitle(c, name),
-            "CityLocation" => Names(city, c.Variables.CityLocation),
+            "CityLocation" => Names(c, city, c.Variables.CityLocation),
             "LocName" => LocationName(c, c.Variables.Location),
-            "ItemName" => c.World.ItemName(c.Variables.Item),   // DIVERGENCE: an item code the list lacks gives "item N" (the original indexes item-definition-table unchecked)
+            "ItemName" => Shown(c, DataNames.Item(c.Variables.Item), c.World.ItemName(c.Variables.Item)),   // DIVERGENCE: an item code the list lacks gives "item N" (the original indexes item-definition-table unchecked)
             "NearestCity" => NearestCityName(c),
             "Direction" => DirectionFromHere(c),
             "Direction2" => DirectionBetweenLocations(c),
@@ -214,7 +215,7 @@ public static class TextVariables
             "Support4" => Support(c, 4),
             "Support5" => Support(c, 5),
             "Support6" => Support(c, 6),
-            "Government" => LocationRules.Query(state, here, 0x18) != 0 ? Names(city, 4) : Names(city, 5),
+            "Government" => LocationRules.Query(state, here, 0x18) != 0 ? Names(c, city, 4) : Names(c, city, 5),
             "CurrentBell" => c.Word(OriginalWords.BellNames, TimeOfDay.Band(state.Date.Hour)),
             "MonthName" => c.Word(OriginalWords.MonthNames, GameDate.Mod12(state.Date.Month)),   // DIVERGENCE: a month outside 0..11 wraps (the original reads past its table)
             "SabbatTime" => SabbatTime(c),
@@ -273,7 +274,18 @@ public static class TextVariables
     // orig: case 54 / 70 of R043+0x1316: locations[text-slot-place]->name
     // DIVERGENCE: an index outside the 414 locations gives "" (the original reads whatever the far table holds).
     private static string LocationName(CardContext c, int index) =>
-        index >= 0 && index < c.State.Locations.Count ? c.State.Locations[index].Name : "";
+        index >= 0 && index < c.State.Locations.Count ? PlaceShown(c, index) : "";
+
+    // Not in the original: the 1.1 translations. A name in the pack's language where it has one (no pack: the original's); a place's
+    //   name only while the saved one is still the data file's (a save keeps the original's bytes).
+    private static string Shown(CardContext c, string? key, string original) =>
+        key is not null && c.Translation?.Invoke(key) is { } translated ? translated : original;
+
+    private static string PlaceShown(CardContext c, int index)
+    {
+        var stored = c.State.Locations[index].Name;
+        return stored == c.World.FileLocationName(index) ? Shown(c, DataNames.Location(index), stored) : stored;
+    }
 
     // orig: case 0 of R043+0x1316
     // C: location-now < 0x5c is a signed compare: the wilderness (-1) takes the city branch and names the last loaded city record, not a place.
@@ -282,12 +294,12 @@ public static class TextVariables
         var here = c.State.CurrentLocation;
         if (here < Location.CityCount)
         {
-            return Names(c.State.City, -1);
+            return Names(c, c.State.City, -1);
         }
         // DIVERGENCE: a place past the location table (here >= 414) gives "" here; the original reads the far table's memory after its last record.
         //   (R043+0x133E: the far pointer es:[10BE + 4 x location-now], es = DS:7EE6, then the name at +0x26 of what it points to.) Not reached in play: every writer of location-now (DS:907E) stores -1, a constant
         //   below 414, a city index, a city record's +0x4A..+0x52 word (-1..91 in DARKLAND.CTY) or the result of a search over the 414 places (-1..413).
-        return here < c.State.Locations.Count ? c.State.Locations[here].Name : "";
+        return here < c.State.Locations.Count ? PlaceShown(c, here) : "";
     }
 
     // orig: case 1: strcpy(name, city-description); city-description is the DARKLAND.DSC record of the city loaded last (read together with the city record when the party arrives in a city)
@@ -318,7 +330,7 @@ public static class TextVariables
         var kind = risen ? city.OtherCityType : city.CityType;
         return kind switch
         {
-            0 => Names(city, risen ? 1 : 0),
+            0 => Names(c, city, risen ? 1 : 0),
             1 => c.Word(OriginalWords.LordTitles1, city.Ordinal % OriginalWords.LordTitles1.Count),
             2 => c.Word(OriginalWords.LordTitles2, city.Ordinal % OriginalWords.LordTitles2.Count),
             _ => name,
@@ -415,6 +427,9 @@ public static class TextVariables
     // C: _fstrcpy copies up to the first zero byte: a 32-byte field without one runs on into the next field. An index outside the 16 names reads other parts of the record.
     // DIVERGENCE: an index past the record's 16 names (the record ends at 0x6E + 16 x 0x20 = 0x26E) gives "" here; the original reads the memory after the record
     //   (city-record is the far block at DS:9785). Not reached in play: the callers pass 0..15 or -1, and $CityLocation's DS:ED52 is always 0 (see CardVariables.CityLocation).
+    private static string Names(CardContext c, Core.World.CityRecord city, int index) =>
+        Shown(c, DataNames.CityName(city.City, index), Names(city, index));
+
     private static string Names(Core.World.CityRecord city, int index)
     {
         var start = index < 0 ? 0 : NamesOffset + index * NameSize;

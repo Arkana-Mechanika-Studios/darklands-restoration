@@ -66,6 +66,11 @@ public sealed class WorldData : IGameData
     // DIVERGENCE: the original keeps the records in its own heap and writes them to locs.tmp when the card engine shuts down (cards-teardown R043+0x054E); a new game starts from the file here, a saved game restores the fields through Persistence.
     public List<Location> CreateLocations() => LocationRecords.Locations.Select(ToLocation).ToList();
 
+    /// <summary>The name place <paramref name="index"/> has in DARKLAND.LOC ("" for none): a saved place still named so may be shown translated.</summary>
+    // Not in the original: the 1.1 translations (the data files' names).
+    public string FileLocationName(int index) =>
+        LocationRecords.Find(index) is { } r ? ReadName(r.RawBytes, 0x26, 20) : "";
+
     public string ItemName(int code) => code >= 0 && code < Items.Items.Count ? Items.Items[code].Name : $"item {code}";
 
     /// <summary>A fresh copy of a city's record (<c>city-read</c>); an unknown number gives zeros (readers outside the file go through CityFile).</summary>

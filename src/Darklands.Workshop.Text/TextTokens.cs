@@ -89,7 +89,12 @@ public static partial class TextTokens
             }
         }
         var known = Chips(english ?? "").ToHashSet(StringComparer.Ordinal);
-        var unknown = left.Where(c => !known.Contains(c) && !(c.StartsWith('$') && packNames?.Contains(c[1..]) == true)).Distinct(StringComparer.Ordinal).ToList();
+        // a placeable naming only a name argument's forms ({ $arg0_acc }: the pack's forms of a data file's name) is the English's
+        var given = Darklands.Localization.FtlSource.Variables(english ?? "");
+        bool NameForms(string chip) => chip.StartsWith('{') && Darklands.Localization.FtlSource.Variables(chip) is { Count: > 0 } used
+            && used.All(v => Darklands.Presentation.LanguagePackCheck.IsNameForm(v, given));
+        var unknown = left.Where(c => !known.Contains(c) && !(c.StartsWith('$') && packNames?.Contains(c[1..]) == true) && !NameForms(c))
+            .Distinct(StringComparer.Ordinal).ToList();
         return (missing, unknown);
     }
 

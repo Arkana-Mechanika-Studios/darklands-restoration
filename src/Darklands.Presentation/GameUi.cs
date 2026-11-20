@@ -167,6 +167,73 @@ public sealed class GameUi
     }
 
     /// <summary>
+    /// A name of the data files (<see cref="DataNames"/>: an item, a saint, a place ...) as the screens show it: the translation pack's
+    /// words for its key when the pack has them, else <paramref name="original"/> (no pack: the original's, as always). With
+    /// <paramref name="english"/> given (a name a save keeps, such as a place's), only a name still equal to the data file's is translated.
+    /// </summary>
+    // Not in the original: the 1.1 translations (the data files' names); the rules and the saves keep the original's names.
+    public string Name(string key, string original, string? english = null)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(original);
+        if (Language is null && !ScreenTextPlane.Recording || english is not null && original != english)
+        {
+            return original;
+        }
+        var words = Language is { } pack && pack.Localizer.IsTranslated(key) ? Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(key)) : original;
+        return ScreenTextPlane.Recording ? ScreenTextPlane.Keyed(words, key) : words;
+    }
+
+    /// <summary>An item's name (<paramref name="original"/>: the data's) as the screens show it.</summary>
+    public string ItemName(int code, string original) => Name(DataNames.Item(code), original);
+
+    /// <summary>An item's name as an argument of a sentence (<see cref="Darklands.Core.DataName"/>: its forms go with it).</summary>
+    public Darklands.Core.DataName ItemNameArg(int code, string original) => new(ItemName(code, original), DataNames.Item(code));
+
+    /// <summary>An item's short name as the screens show it.</summary>
+    public string ItemShortName(int code, string original) => Name(DataNames.ItemShort(code), original);
+
+    /// <summary>A saint's name as the screens show it.</summary>
+    public string SaintName(int index, string original) => Name(DataNames.Saint(index), original);
+
+    /// <summary>A formula's name as the screens show it.</summary>
+    public string FormulaName(int index, string original) => Name(DataNames.Formula(index), original);
+
+    /// <summary>A place's name as the screens show it: translated while the saved name is still DARKLAND.LOC's (a save keeps the original's).</summary>
+    public string PlaceName(Darklands.Core.World.Location place)
+    {
+        ArgumentNullException.ThrowIfNull(place);
+        if (Language is null && !ScreenTextPlane.Recording)
+        {
+            return place.Name;
+        }
+        _world ??= WorldData.Load(Assets.Files);
+        return Name(DataNames.Location(place.Index), place.Name, _world.FileLocationName(place.Index));
+    }
+
+    private WorldData? _world;
+
+    /// <summary>
+    /// An enemy kind's name as the battle shows it (<paramref name="stored"/>: the battle's own copy, kept in a battle save): translated
+    /// when it is the name of one of DARKLAND.ENM's types, else as stored.
+    /// </summary>
+    public string EnemyName(string stored)
+    {
+        ArgumentNullException.ThrowIfNull(stored);
+        if (Language is null && !ScreenTextPlane.Recording)
+        {
+            return stored;
+        }
+        _enemyTypes ??= Assets.Files.Exists("DARKLAND.ENM")
+            ? Content.Formats.Battles.EnemyCatalogueDecoder.Decode(Assets.Files.Read("DARKLAND.ENM")).Types
+                .GroupBy(t => t.Name, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First().Index, StringComparer.Ordinal)
+            : [];
+        return _enemyTypes.TryGetValue(stored, out var index) ? Name(DataNames.EnemyType(index), stored) : stored;
+    }
+
+    private Dictionary<string, int>? _enemyTypes;
+
+    /// <summary>
     /// The translation pack in use (null: none, the original's English text from the player's files). Set before the game starts;
     /// a pack changes words only, never what the game does.
     /// </summary>
@@ -234,7 +301,9 @@ public sealed class GameUi
                 .Select(k => text.Args.TryGetValue(k.ToString(System.Globalization.CultureInfo.InvariantCulture), out var v) ? v : "")
                 .ToList();
             var pieces = Content.Formats.Text.Strings.OriginalFormat.Pieces(format, positional);
-            return pieces.Select((p, k) => (p, k)).ToDictionary(e => "arg" + e.k.ToString(System.Globalization.CultureInfo.InvariantCulture), e => (object?)e.p, StringComparer.Ordinal);
+            var arguments = pieces.Select((p, k) => (p, k)).ToDictionary(e => "arg" + e.k.ToString(System.Globalization.CultureInfo.InvariantCulture), e => (object?)e.p, StringComparer.Ordinal);
+            AddNameForms(arguments, positional);
+            return arguments;
         }
         var map = new Dictionary<string, object?>(text.Args.Count, StringComparer.Ordinal);
         foreach (var (name, value) in text.Args)
@@ -242,6 +311,29 @@ public sealed class GameUi
             map[name.Length > 0 && char.IsAsciiDigit(name[0]) ? "arg" + name : name] = value;
         }
         return map;
+    }
+
+    // Not in the original: the 1.1 translations. A name argument's other forms as $argN_<attribute> (DataName.Attributes): the pack's
+    //   attribute of the name, else its words (a case) or "" (the gender), so a sentence may always name them.
+    private void AddNameForms(Dictionary<string, object?> arguments, IReadOnlyList<object> positional)
+    {
+        if (Language is not { } pack)
+        {
+            return;
+        }
+        for (var k = 0; k < positional.Count; k++)
+        {
+            if (positional[k] is not Darklands.Core.DataName name)
+            {
+                continue;
+            }
+            var arg = "arg" + k.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            foreach (var attribute in Darklands.Core.DataName.Attributes)
+            {
+                var form = pack.Localizer.IsTranslated(name.Key) ? pack.Localizer.GetAttribute(name.Key, attribute) : null;
+                arguments[arg + "_" + attribute] = form is not null ? Darklands.Core.TextCodes.FromTags(form) : attribute == "gender" ? "" : name.Text;
+            }
+        }
     }
 
     /// <summary>

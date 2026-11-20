@@ -943,7 +943,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 for (var slot = 0; slot < 5; slot++)
                 {
                     var code = Inventory.EquippedType(_state, _s.Who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_state, _s.Who, (EquipmentSlot)slot) : -1;
-                    t.Draw(c, b.X + 4, 0x58 + slot * 10, code != -1 ? _state.Item(code).ShortName : ui.Words(none[slot]), TextColor);
+                    t.Draw(c, b.X + 4, 0x58 + slot * 10, code != -1 ? ui.ItemShortName(code, _state.Item(code).ShortName) : ui.Words(none[slot]), TextColor);
                 }
                 DrawBoxText(2);
                 break;
@@ -1000,7 +1000,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     var code = Inventory.EquippedType(_state, _s.Who, (EquipmentSlot)slot) != -1 ? Inventory.Equipped(_state, _s.Who, (EquipmentSlot)slot) : -1;
                     if (code != -1)
                     {
-                        t.Draw(c, x + 4, 0x58 + slot * 10, _state.Item(code).Name, TextColor);
+                        t.Draw(c, x + 4, 0x58 + slot * 10, ui.ItemName(code, _state.Item(code).Name), TextColor);
                     }
                     else
                     {
@@ -1025,7 +1025,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     if (_s.Top(k) + j < m.Pack.Count)
                     {
                         var st = m.Pack[_s.Top(k) + j];
-                        t.Draw(c, x + 9, j * 8 + y + 9, ui.Format("exe:DS:2DC2", _state.Item(st.Code & 0xFFF).Name, st.Quality, st.Count), ListColor);  // "%Fs %02dq (%d)"
+                        t.Draw(c, x + 9, j * 8 + y + 9, ui.Format("exe:DS:2DC2", ui.ItemNameArg(st.Code & 0xFFF, _state.Item(st.Code & 0xFFF).Name), st.Quality, st.Count), ListColor);  // "%Fs %02dq (%d)"
                     }
                 }
                 HighlightLine(k);
@@ -1033,11 +1033,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 _s.ListShown(m.Pack.Stacks);
                 break;
             case FormulaeBox:
-                DrawNames(m.Formulas.Order().Select(f => f < formulas.Count ? formulas[f].Name : "").ToList(), k);
+                DrawNames(m.Formulas.Order().Select(f => f < formulas.Count ? ui.FormulaName(formulas[f].Index, formulas[f].Name) : "").ToList(), k);
                 break;
             case SaintsBox:
                 // C: the original reads 17 of the 20 bytes of saint bits: saints 0..135.
-                DrawNames(m.Saints.Where(i => i < 136).Order().Select(i => i < saintNames.Count ? saintNames[i] : "").ToList(), k);
+                DrawNames(m.Saints.Where(i => i < 136).Order().Select(i => i < saintNames.Count ? ui.SaintName(i, saintNames[i]) : "").ToList(), k);
                 break;
         }
     }

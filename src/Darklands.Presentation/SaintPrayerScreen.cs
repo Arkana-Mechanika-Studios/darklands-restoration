@@ -346,12 +346,21 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     {
         var layout = new CardTextLayout(_text);
         var inBattle = InBattle?.Invoke() == true;
-        layout.Draw(_canvas, TextPainter.Encode(SaintName(saint)), 0x94, 4, 0x9A, new CardTextLayout.Settings
+        var nameSettings = new CardTextLayout.Settings
         {
             Color = TextColor,
             Spacing = 8,
             DropCap = inBattle ? null : b => DropCaps.Get(ui.Assets, b),
-        });
+        };
+        if (ui.Language is not null)
+        {
+            // Not in the original: the 1.1 translations. The name in the pack's words, by codes (the same layout); no pack: the bytes
+            layout.Draw(_canvas, Darklands.Core.TextCodes.OfText(ShownSaintName(saint)), 0x94, 4, 0x9A, nameSettings);
+        }
+        else
+        {
+            layout.Draw(_canvas, TextPainter.Encode(SaintName(saint)), 0x94, 4, 0x9A, nameSettings);
+        }
         _text.Draw(_canvas, 0x4C, 0xAD, ui.Words(ScreenTexts.SaintDay), TextColor);
         _text.Draw(_canvas, 0x62, 0xB5, ui.Words(ScreenTexts.SaintDayIs), TextColor);
         // DIVERGENCE (undefined-register): an unlisted slot's feast day is the AX the "is" drawing (root 047C:055A) leaves before the what-0
@@ -383,6 +392,15 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     }
 
     private Content.Formats.World.DarklandList? _list;
+
+    // the name as the pack gives it (a saint's, or slot -1's: the last formula's)
+    private string ShownSaintName(int saint)
+    {
+        var original = SaintName(saint);
+        return saint >= 0 ? ui.SaintName(saint, original)
+            : saint == -1 && _list!.Formulae.Count > 0 ? ui.FormulaName(_list.Formulae.Count - 1, original)
+            : original;
+    }
 
     // ---- the member list --------------------------------------------------------------
 

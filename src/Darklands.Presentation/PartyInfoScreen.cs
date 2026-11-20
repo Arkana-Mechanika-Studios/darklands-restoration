@@ -116,7 +116,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         var words = ui.Assets.Words;
         ui.Canvas.CopyFrom(_back, TownBoxX, TownBoxY, clearWidth, clearHeight);
         var place = state.Locations[town];
-        ScreenDrawing.Centered(ui, TownCenterX, 0x22, place.Name, TextColor);
+        ScreenDrawing.Centered(ui, TownCenterX, 0x22, ui.PlaceName(place), TextColor);
         ScreenDrawing.Centered(ui, TownCenterX, 0x2C, words.Text(sizeWords, PartyStanding.SizeClass(place.Size)), TextColor);
         ScreenDrawing.Centered(ui, TownCenterX, 0x36, ui.Words(rep) + words.Text(OriginalWords.StandingWords, PartyStanding.StandingBand(state, town)), TextColor);
         ScreenDrawing.Centered(ui, TownCenterX, 0x40, ui.Format(reputation, place.Reputation), TextColor);
@@ -147,7 +147,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         text.Draw(canvas, 0x98, 0x48, date.Day.ToString(Invariant), TextColor);
         if (state.InCity)
         {
-            text.Draw(canvas, 0x48, 0x6F, state.Here!.Name, TextColor);
+            text.Draw(canvas, 0x48, 0x6F, ui.PlaceName(state.Here!), TextColor);
         }
         else
         {
@@ -155,7 +155,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
             var town = state.Locations[near];
             var direction = PartyStanding.Direction(town.X, town.Y, state.MapPosition.X, state.MapPosition.Y);
             text.Draw(canvas, 0x46, 0x6F, ui.Format("exe:DS:3752", ui.Word(OriginalWords.Directions, direction)), TextColor);  // "%Fs of "
-            text.Draw(canvas, 0x48, 0x78, town.Name, TextColor);
+            text.Draw(canvas, 0x48, 0x78, ui.PlaceName(town), TextColor);
         }
         var purse = state.Party.Purse;
         // "%d Florins" (DS:375A), "%d Groschen", "%d Pfenniges", "(%ld) Total", the bank's "%d Florins" (DS:378A), "%d PhStone"

@@ -93,6 +93,13 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
             // the developer's text plane: the box of the line (L-7w; drawn letter by letter, so its pixels name no text)
             Darklands.Platform.ScreenTextPlane.Drawn(text, ui.Text.Measure(text), Math.Max(0, Darklands.Platform.Screen.Width - x), false, ui.Text.Font.Index + 1);
         }
+        if (ui.Text.PackFont is not null || text.Any(ch => ch > 0xFF && ch is < '' or > ''))
+        {
+            // Not in the original: the 1.1 translations. Letters the game's bytes cannot hold, or the pack's font, by codes (the same
+            //   colour rule, TextPainter.DrawCodes)
+            ui.Text.DrawCodes(ui.Canvas, x, y, Darklands.Core.TextCodes.OfText(text), color);
+            return;
+        }
         var ink = color;
         foreach (var c in TextPainter.Encode(text))
         {

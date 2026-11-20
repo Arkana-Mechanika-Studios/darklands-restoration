@@ -19,10 +19,12 @@ namespace Darklands.Content.Formats.Text.Strings;
 /// <item><c>snt:saint/n.desc</c> (DARKLAND.SNT); <c>alc:n.desc</c> (DARKLAND.ALC); <c>dsc:n.desc</c> (DARKLAND.DSC).</item>
 /// <item><c>cty:n.field</c> (DARKLAND.CTY), field = short, full, leader, ruler, political-center, town-hall, fortress,
 /// cathedral, church, market, imperial-mint, slum, barracks, pawnshop, monastery, inn, university.</item>
+/// <item><c>loc:n.name</c> (DARKLAND.LOC, the place names).</item>
 /// <item><c>enm:template/n.name</c>, <c>enm:template/n.image</c>, <c>enm:type/n.name</c> (DARKLAND.ENM).</item>
 /// <item><c>ban:n</c> entry n of BANNER.DAT (code page 437 bytes, held one byte per character like the other text).</item>
 /// <item><c>exe:DS:XXXX</c> the zero-terminated string at offset XXXX (4 uppercase hex digits) of DGROUP; <c>exe:290E:XXXX</c>
-/// the same in the far data segment at link frame 290E (where the creation, name and load-screen tables point).</item>
+/// the same in the far data segment at link frame 290E (where the creation, name and load-screen tables point);
+/// <c>exe:286B:XXXX</c> the strings of the battle's far segment the battle reads (its type names, ordinals and notices).</item>
 /// </list>
 /// Strings of the EXE are <see cref="StringOrigin.Known"/> when a pointer table the program reads points at them (or the offset is
 /// one the program cites), otherwise they come from a conservative scan for printable runs (<see cref="StringOrigin.Scanned"/>).
@@ -32,13 +34,29 @@ namespace Darklands.Content.Formats.Text.Strings;
 public static class OriginalTextExtractor
 {
     private const int FarSegment = 0x290E;
+
+    // the battle's far segment (link frame 286B): its pointer tables (offset, most entries; a table ends at its first pointer
+    //   elsewhere) and the strings it names directly (BattleScreens.FarText: the "cannot view" texts, the marching order notice)
+    private const int BattleSegment = 0x286B;
+
+    private static readonly (int Offset, int Count)[] BattlePointerTables =
+    [
+        (0x01CF, 10),   // the shield types (the enemy panel, BattleScreen TypeName)
+        (0x01F7, 28),   // the armour types
+        (0x0267, 4),    // the ordinals of "Select %Fs" (R022 051C)
+        (0x0277, 98),   // the weapon types
+    ];
+
+    private static readonly int[] BattleStrings = [0x0212, 0x0222, 0x0231];
+
+    private static readonly int[] BattlePlaceNotePointers = [0x01A8, 0x01AA, 0x01AC, 0x01AE, 0x01B0];
     private const int MinScanLength = 4;
     private const int MaxScanLength = 400;
 
     // DS offsets the program reads text from (battle texts, results, ...); a string starting there counts as known.
     private static readonly int[] KnownDataSegmentOffsets =
     [
-        0x0FD8, 0x06AA, 0x06BA, 0x06CC, 0x06DE, 0x06F0, 0x0726, 0x4FCE, 0x23B2,
+        0x0FD8, 0x06AA, 0x06BA, 0x06CC, 0x06DE, 0x06F0, 0x0726, 0x4FCE, 0x23B2, 0x067C, 0x0690,
         0x064A, 0x074A, 0x0788, 0x0768, 0x1776, 0x04C8, 0x04F8, 0x0518, 0x0540, 0x055A, 0x0570, 0x0582, 0x0590, 0x0644, 0x1BCA,
         0x05B2, 0x05C6, 0x05DC, 0x05F2, 0x060C, 0x0628,
         // the word lists of OriginalWords: town sizes (R034+0x0EE6, R034+0x144C), risk words (R033+0x094A), camp words (R036+0x08EC)
@@ -222,6 +240,19 @@ public static class OriginalTextExtractor
                 AddIfText(table, p + "university", c.UniversityName);
             }
         }
+        if (files.Exists("DARKLAND.LOC"))
+        {
+            // the place names (record +0x26, 20 bytes, zero-ended), as WorldData reads them
+            foreach (var l in new DarklandLocationsDecoder().Decode(files.Read("DARKLAND.LOC"), "DARKLAND.LOC").Locations)
+            {
+                var end = 0x26;
+                while (end < 0x26 + 20 && end < l.RawBytes.Length && l.RawBytes[end] != 0)
+                {
+                    end++;
+                }
+                AddIfText(table, $"loc:{N(l.Index)}.name", Darklands.Core.GameTextCodec.Decode(l.RawBytes.AsSpan(0x26, end - 0x26)));
+            }
+        }
         if (files.Exists("DARKLAND.ENM"))
         {
             var enemies = EnemyCatalogueDecoder.Decode(files.Read("DARKLAND.ENM"));
@@ -283,10 +314,81 @@ public static class OriginalTextExtractor
             table.Add($"exe:{FarSegment:X4}:{at:X4}", known.Contains(at) ? StringOrigin.Known : StringOrigin.Scanned, bytes);
         }
 
+        AddBattleSegment(exeBytes, table);
+
         var knownDs = new HashSet<int>(KnownDataSegmentOffsets);
+        // the battle panel's place notes (a doorway, stairs, a chest, the exit, the field left): word pointers at DS:01A8..01B0
+        foreach (var slot in BattlePlaceNotePointers)
+        {
+            try
+            {
+                var word = exe.DataSegment(slot, 2);
+                knownDs.Add(word[0] | word[1] << 8);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+            }
+        }
         foreach (var (at, bytes) in ScanRuns(offset => TryDs(exe, offset), 0x10000, knownDs))
         {
             table.Add($"exe:DS:{at:X4}", knownDs.Contains(at) ? StringOrigin.Known : StringOrigin.Scanned, bytes);
+        }
+    }
+
+    // Not in the original: the 1.1 translations (the battle's messages and names, exe:286B:XXXX). Only the strings the battle reads.
+    private static void AddBattleSegment(byte[] exeBytes, StringTable table)
+    {
+        ProgramData data;
+        try
+        {
+            data = ProgramData.Load(exeBytes, BattleSegment);
+        }
+        catch (InvalidDataException)
+        {
+            return;
+        }
+        var targets = new SortedSet<int>(BattleStrings);
+        foreach (var (offset, count) in BattlePointerTables)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                try
+                {
+                    var target = (ushort)data.Int16(BattleSegment, offset + 4 * i);
+                    if ((ushort)data.Int16(BattleSegment, offset + 4 * i + 2) != BattleSegment)
+                    {
+                        break;
+                    }
+                    targets.Add(target);
+                }
+                catch (InvalidDataException)
+                {
+                    break;
+                }
+            }
+        }
+        foreach (var at in targets)
+        {
+            var bytes = new List<byte>();
+            try
+            {
+                for (var k = 0; k < MaxScanLength; k++)
+                {
+                    var b = data.Bytes(BattleSegment, at + k, 1)[0];
+                    if (b == 0)
+                    {
+                        break;
+                    }
+                    bytes.Add(b);
+                }
+            }
+            catch (InvalidDataException)
+            {
+            }
+            if (bytes.Count > 0 && table.Find($"exe:{BattleSegment:X4}:{at:X4}") is null)
+            {
+                table.Add($"exe:{BattleSegment:X4}:{at:X4}", StringOrigin.Known, bytes.ToArray());
+            }
         }
     }
 

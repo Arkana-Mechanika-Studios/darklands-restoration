@@ -188,4 +188,30 @@ public sealed class OptionPopupTests
         var full = OptionPopupText.Build(c, saints: true, painter, darkPicture: false);
         Assert.Equal(2 * lineHeight, layout.MeasureHeight(full.Buffer, full.Width - 3, 0, full.States));
     }
+
+    /// <summary>
+    /// With a translation pack the box is also built as codes: the same text with the names as the pack gives them; the original's
+    /// names give the bytes' codes exactly, and no pack builds no codes (the bytes, as the original).
+    /// </summary>
+    [Fact]
+    public void WithAPackTheBoxIsBuiltAsCodesWithTheNamesTranslated()
+    {
+        if (Setup() is not var (c, painter))
+        {
+            return;
+        }
+        c.State.Difficulty = Difficulty.Standard;
+        var item = ItemOnlyFor(c, 2);
+        c.SetCardItems(item);
+        var model = c.PopupLines(false);
+        var plain = OptionPopupText.Build(model, c.World.ItemName, painter, darkPicture: false);
+        Assert.Null(plain.Codes);
+        var same = OptionPopupText.Build(model, c.World.ItemName, painter, darkPicture: false, codes: true);
+        Assert.Equal(TextCodes.OfBytes(plain.Text), same.Codes);
+        Assert.Equal(plain.Width, same.Width);
+        Assert.Equal(plain.Buffer.Select(TextCodes.OfByte), same.CodeBuffer!);
+        var translated = OptionPopupText.Build(model, k => k == item ? "Нож" : c.World.ItemName(k), painter, darkPicture: false, codes: true);
+        Assert.Equal(plain.States, translated.States);
+        Assert.Contains("Нож (", new string([.. translated.Codes!.Select(code => code < 0x10000 ? (char)code : '�')]));
+    }
 }

@@ -42,8 +42,8 @@ public sealed class OriginalTextExtractorTests
         Assert.Equal(table.Count, table.Entries.Select(e => e.Key).Distinct(StringComparer.Ordinal).Count());
         foreach (var e in table.Entries)
         {
-            Assert.Matches(@"^(msg:[^#]+#\d+|lst:(item|saint|formula)/\d+\.(name|short)|snt:saint/\d+\.desc|alc:\d+\.desc|dsc:\d+\.desc"
-                + @"|cty:\d+\.[a-z-]+|enm:(template|type)/\d+\.(name|image)|ban:\d+|exe:(DS|290E):[0-9A-F]{4})$", e.Key);
+            Assert.Matches(@"^(msg:[^#]+#\d+|lst:(item|saint|formula)/\d+\.(name|short)|snt:saint/\d+\.desc|alc:\d+\.desc|dsc:\d+\.desc|loc:\d+\.name"
+                + @"|cty:\d+\.[a-z-]+|enm:(template|type)/\d+\.(name|image)|ban:\d+|exe:(DS|290E|286B):[0-9A-F]{4})$", e.Key);
         }
     }
 

@@ -9,7 +9,7 @@ namespace Darklands.Presentation;
 
 /// <summary>
 /// The translator's template (docs/LOCALISATION.md, L-7w): every text a translation pack can translate today, in the pack's layout
-/// (<c>text/en/exe.ftl</c>, <c>text/en/ui.ftl</c>, <c>text/en/msg/&lt;FILE&gt;.ftl</c>), the English as each message's value and a
+/// (<c>text/en/exe.ftl</c>, <c>text/en/ui.ftl</c>, <c>text/en/tables.ftl</c> the data files' names, <c>text/en/msg/&lt;FILE&gt;.ftl</c>), the English as each message's value and a
 /// comment above it: the key, the text's box (the room the screens give it, from a boxes file) and what each argument is. Built
 /// from the player's own game files; the program holds none of the game's words.
 /// </summary>
@@ -62,6 +62,16 @@ public static class TranslatorTemplate
                     [string.Create(CultureInfo.InvariantCulture, $"{e.Key} · a card text: box: {height / lineHeight} lines of {width} px (to the foot of the card's window)")])
                 {
                     Screens = ["card " + file],
+                });
+            }
+            else if (DataNames.What(e.Key) is { } what)
+            {
+                // a name from the data files (tables.ftl): shown translated, saved as the original's
+                var box = byKey.GetValueOrDefault(e.Key);
+                messages.Add(new Message("tables.ftl", KeyMangling.ToFluentId(e.Key), e.Key, Escape(e.Text, placeablesAsWritten: false),
+                    [e.Key + " · " + what + (box is null ? "" : " · " + BoxWords(box))])
+                {
+                    Screens = box?.Screens ?? [],
                 });
             }
         }

@@ -455,14 +455,18 @@ public sealed partial class CardScreen
         //   card 0x37's potion line is 0x43 wide, the widest line in font 3 plus 6, vis10 session uncert-polit-popup-hint); 2ACA then sets
         //   font 1 for the height and the drawing.
         var saints = line.Kind == OptionKind.Saints;
-        var text = OptionPopupText.Build(c.OpenPopup(saints), saints ? k => OptionPopupText.SaintName(c, k) : c.World.ItemName, ui.CardWindowText,
-            _pictureName.StartsWith('x'));
+        // with a translation pack the box is built as codes too, its names in the pack's words (Not in the original: the 1.1 translations)
+        var translated = ui.Language is not null;
+        Func<int, string> entryName = saints
+            ? k => translated ? ui.Name(Content.DataNames.SaintShort(k), OptionPopupText.SaintName(c, k)) : OptionPopupText.SaintName(c, k)
+            : k => translated ? ui.ItemName(k, c.World.ItemName(k)) : c.World.ItemName(k);
+        var text = OptionPopupText.Build(c.OpenPopup(saints), entryName, ui.CardWindowText, _pictureName.StartsWith('x'), translated);
         var layout = new CardTextLayout(ui.Text);
         var w = text.Width;
         // C: measured on text-bank-buffer with the bytes after its zero: when the last listed member's last slot is empty (a hidden line at
         //   the text's end) wrapped-text-size reads on into the 0x14 the builder cut off and counts one more line, so the box is one line
         //   taller than its text (card 0x129, Hanse's one saint: y 103..112 empty in the original; vis10 visuals-fortress-saint)
-        var hi = layout.MeasureHeight(text.Buffer, w, 0, text.States) - 1 + 6;
+        var hi = (text.CodeBuffer is { } codes ? layout.MeasureHeight(codes, w, 0, text.States) : layout.MeasureHeight(text.Buffer, w, 0, text.States)) - 1 + 6;
         var y = line.Y + hi <= BoxBottom ? line.Y : BoxBottom - hi;
         var x = main.X - WindowX + main.Width;
         if (x + w > BoxRight)
@@ -475,12 +479,15 @@ public sealed partial class CardScreen
         _canvas.Recolor(x, y, w, hi, 5, _textColor);
         _canvas.Fill(x, y, w, hi, Palette.Blank);
         _canvas.Outline(x, y, w - 1, hi - 1, 1);
-        var lines = layout.Draw(_canvas, text.Text, x + 3, y + 3, w - 3, new CardTextLayout.Settings
+        var settings = new CardTextLayout.Settings
         {
             Options = text.States,
             Color = _textColor,
             Leading = 0,
-        });
+        };
+        var lines = text.Codes is { } drawn
+            ? layout.Draw(_canvas, drawn, x + 3, y + 3, w - 3, settings)
+            : layout.Draw(_canvas, text.Text, x + 3, y + 3, w - 3, settings);
         var box = new PopupBox(x, y, w, hi, under, new OptionLayout(lines, x + 3, w - 3), main.Width,
             line.Kind == OptionKind.Saints ? Cards.PopupBox.Saints : Cards.PopupBox.Items);
         main.Width = x - main.X;
