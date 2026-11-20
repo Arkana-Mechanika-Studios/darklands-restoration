@@ -62,6 +62,26 @@ public static class TextBoxes
         return [.. byKey.Values.OrderBy(b => b.Key, StringComparer.Ordinal)];
     }
 
+    /// <summary>
+    /// <paramref name="boxes"/> without the game's words: each recorded argument replaced by filler of its length (a letter or any other
+    /// character by <c>n</c>, a digit by <c>0</c>, a space kept), so a translation is still measured about as the screen drew it; keys,
+    /// widths, fonts and screens kept (the boxes the Workshop ships, docs/LOCALISATION.md).
+    /// </summary>
+    public static IReadOnlyList<TextBox> Strip(IEnumerable<TextBox> boxes)
+    {
+        ArgumentNullException.ThrowIfNull(boxes);
+        static string Filler(string value) =>
+            string.Concat(value.Select(c => c == ' ' ? ' ' : char.IsAsciiDigit(c) ? '0' : 'n'));
+        return [.. Merge(boxes).Select(b => b with
+        {
+            Arguments = b.Arguments?.ToDictionary(a => a.Key, a => Filler(a.Value), StringComparer.Ordinal),
+        })];
+    }
+
+    /// <summary>The boxes of a file's text (as <see cref="Write"/> writes it).</summary>
+    public static IReadOnlyList<TextBox> Parse(string json) =>
+        Merge(JsonSerializer.Deserialize<File>(json ?? "{}", Options)?.Boxes ?? []);
+
     /// <summary>Writes <paramref name="boxes"/> (merged) to <paramref name="path"/>.</summary>
     public static void Write(string path, IEnumerable<TextBox> boxes) =>
         System.IO.File.WriteAllText(path, JsonSerializer.Serialize(new File("483.07", Merge(boxes)), Options));

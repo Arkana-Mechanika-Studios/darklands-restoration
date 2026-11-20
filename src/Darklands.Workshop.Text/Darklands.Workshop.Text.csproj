@@ -8,6 +8,11 @@
     <ProjectReference Include="..\Darklands.Content\Darklands.Content.csproj" />
   </ItemGroup>
 
+  <!-- the boxes the Workshop ships: widths, fonts and screens, no word of the game (WorkshopBoxes) -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\boxes.json" LogicalName="Darklands.Workshop.Text.boxes.json" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
