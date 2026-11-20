@@ -71,4 +71,34 @@ public sealed class LanguagePackWordsTests : IDisposable
         Assert.Null(ui.Language);
         Assert.Contains(reports, r => r.Contains("the original text is shown", StringComparison.Ordinal));
     }
+
+    [Fact]
+    public void APackTranslatesTheDataFilesNamesWhereTheyAreShown()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
+        var world = WorldData.Load(files);
+        var places = world.CreateLocations();
+        var (first, second) = (places[0], places[1]);
+        Assert.Equal("Schwert", ui.ItemName(1, "Schwert"));   // no pack: the name given
+        Assert.Equal(first.Name, ui.PlaceName(first));
+
+        Directory.CreateDirectory(Path.Combine(_folder, "text", "ru"));
+        File.WriteAllText(Path.Combine(_folder, "pack.json"), """{ "language": "ru" }""");
+        File.WriteAllText(Path.Combine(_folder, "text", "ru", "tables.ftl"),
+            "lst-item-1-name = Меч\nlst-saint-0-name = Святой\nloc-0-name = Город\nloc-1-name = Другой\nlst-formula-2-name = Зелье\n");
+        Assert.True(ui.UseLanguagePack(_folder, _ => { }));
+
+        Assert.Equal("Меч", ui.ItemName(1, world.ItemName(1)));
+        Assert.Equal("Святой", ui.SaintName(0, "anything"));
+        Assert.Equal("Зелье", ui.FormulaName(2, "anything"));
+        // a key the pack lacks keeps the name given
+        Assert.Equal(world.ItemName(2), ui.ItemName(2, world.ItemName(2)));
+        // a place: translated while the save's name is the data file's; a name the save changed is shown as stored
+        Assert.Equal("Город", ui.PlaceName(first));
+        Assert.Equal("Elsewhere", ui.PlaceName(new Darklands.Core.World.Location { Index = second.Index, Name = "Elsewhere" }));
+    }
 }

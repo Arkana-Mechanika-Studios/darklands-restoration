@@ -19,6 +19,7 @@ namespace Darklands.Content.Formats.Text.Strings;
 /// <item><c>snt:saint/n.desc</c> (DARKLAND.SNT); <c>alc:n.desc</c> (DARKLAND.ALC); <c>dsc:n.desc</c> (DARKLAND.DSC).</item>
 /// <item><c>cty:n.field</c> (DARKLAND.CTY), field = short, full, leader, ruler, political-center, town-hall, fortress,
 /// cathedral, church, market, imperial-mint, slum, barracks, pawnshop, monastery, inn, university.</item>
+/// <item><c>loc:n.name</c> (DARKLAND.LOC, the place names).</item>
 /// <item><c>enm:template/n.name</c>, <c>enm:template/n.image</c>, <c>enm:type/n.name</c> (DARKLAND.ENM).</item>
 /// <item><c>ban:n</c> entry n of BANNER.DAT (code page 437 bytes, held one byte per character like the other text).</item>
 /// <item><c>exe:DS:XXXX</c> the zero-terminated string at offset XXXX (4 uppercase hex digits) of DGROUP; <c>exe:290E:XXXX</c>
@@ -220,6 +221,19 @@ public static class OriginalTextExtractor
                 AddIfText(table, p + "monastery", c.MonasteryName);
                 AddIfText(table, p + "inn", c.InnName);
                 AddIfText(table, p + "university", c.UniversityName);
+            }
+        }
+        if (files.Exists("DARKLAND.LOC"))
+        {
+            // the place names (record +0x26, 20 bytes, zero-ended), as WorldData reads them
+            foreach (var l in new DarklandLocationsDecoder().Decode(files.Read("DARKLAND.LOC"), "DARKLAND.LOC").Locations)
+            {
+                var end = 0x26;
+                while (end < 0x26 + 20 && end < l.RawBytes.Length && l.RawBytes[end] != 0)
+                {
+                    end++;
+                }
+                AddIfText(table, $"loc:{N(l.Index)}.name", Darklands.Core.GameTextCodec.Decode(l.RawBytes.AsSpan(0x26, end - 0x26)));
             }
         }
         if (files.Exists("DARKLAND.ENM"))

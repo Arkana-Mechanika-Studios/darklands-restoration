@@ -214,6 +214,13 @@ if (battleStep is not null)
     var numbers = battleStep[7..].Split(',').Select(v => int.Parse(v, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
     var files = OpenGame();
     var ui = new GameUi(host, new GameAssets(files));
+    if (languagePackStep is not null)
+    {
+        // a translation pack: the battle's words (and names) in its language
+        Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
+        Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
+        ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
+    }
     var state = Darklands.Simulation.NewGame.Quickstart(WorldData.Load(files), seed, () => seed);
     var groups = new List<(int, int, int)>();
     for (var k = 2; k + 2 < numbers.Length; k += 3)
@@ -318,11 +325,11 @@ if (screenStep is not null)
     var which = screenStep[7..];
     if (which is "barter" or "store" or "loot")
     {
-        ScreenPreview.Run(host, OpenGame(), which, seed);
+        ScreenPreview.Run(host, OpenGame(), which, seed, languagePackStep);
     }
     else
     {
-        DebugScreens.Run(host, OpenGame(), which, seed);
+        DebugScreens.Run(host, OpenGame(), which, seed, languagePackStep);
     }
     Console.WriteLine($"{host.ShotsTaken} screenshot(s) in {output}");
     return 0;

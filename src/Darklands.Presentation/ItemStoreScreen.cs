@@ -424,5 +424,5 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private string StoreLine(string format, StoredItem entry) => ItemLine(format, entry.Code, (sbyte)entry.Count, (sbyte)entry.Quality);   // the store keeps them as signed bytes
 
     /// <summary>"%Fs  (%3d) %2d-Qual" (or "...%2dq"): the item's name, the count, the quality.</summary>
-    private string ItemLine(string format, int code, int count, int quality) => page.Ui.Format(format, state.Item(code).Name, count, quality);
+    private string ItemLine(string format, int code, int count, int quality) => page.Ui.Format(format, page.Ui.ItemName(code, state.Item(code).Name), count, quality);
 }

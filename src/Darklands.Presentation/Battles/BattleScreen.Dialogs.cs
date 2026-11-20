@@ -181,6 +181,7 @@ public sealed partial class BattleScreen
         }
         var y = x + 0x20;
         var name = tb.Field.Forces.Kinds[c.Level < 0 ? 0 : c.Level].ElementAtOrDefault(tb.EnemyKindIndex(c.AnimationSlot))?.Name ?? "";
+        name = _ui.EnemyName(name);   // Not in the original: the 1.1 translations (cut below as the original cuts)
         while (name.Length > 0 && small.Measure(name) > 0x36)
         {
             name = name[..^1];

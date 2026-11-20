@@ -492,7 +492,7 @@ public sealed class BarterScreen
         var code = stack.Code & 0xFFF;
         // C: sprintf arguments right to left: quality, count, name, then price-to-sell (a flag-8 draw per line).
         var price = _s.SellPrice(stack);
-        return _page.Ui.Format(format, price, _state.Item(code).Name, stack.Count, stack.Quality);
+        return _page.Ui.Format(format, price, _page.Ui.ItemName(code, _state.Item(code).Name), stack.Count, stack.Quality);
     }
 
     /// <summary>"%5upf  %Fs  %3dq  %3dlbs" (shop-items-paint: "%3dpf ..."): the price, the name, the quality offered and the weight.</summary>
@@ -500,6 +500,6 @@ public sealed class BarterScreen
     private string ShopLine(string format, int code, int price)
     {
         var d = _state.Item(code);
-        return _page.Ui.Format(format, price, d.Name, _s.OfferedQuality(code), (sbyte)d.Weight);
+        return _page.Ui.Format(format, price, _page.Ui.ItemName(code, d.Name), _s.OfferedQuality(code), (sbyte)d.Weight);
     }
 }
