@@ -23,6 +23,7 @@ public sealed class ArchitectureRulesTests
     private const string Headless = "Darklands.Host.Headless";
     private const string Sdl = "DarklandsRP"; // Darklands.Host.Sdl builds the program players start
     private const string Localization = "Darklands.Localization";
+    private const string WorkshopText = "Darklands.Workshop.Text";
 
     /// <summary>The game: its model, rules, files and saved games. It knows nothing of screens, devices or hosts.</summary>
     private static readonly string[] Game = [Core, Persistence, Content, Cards, Simulation];
@@ -46,6 +47,8 @@ public sealed class ArchitectureRulesTests
         [Presentation] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Localization],
         [Headless] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Localization, Presentation],
         [Sdl] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Mt32, Rendering, DevConsole, DevTools, Launcher, Localization, Presentation],
+        // the Workshop's translators' editor without its window: the game's template, check, fonts and layout; nothing references it
+        [WorkshopText] = [Core, Persistence, Content, Cards, Simulation, Platform, Audio, Localization, Presentation],
     };
 
     /// <summary>The scan sees every use: no member or type token of the product code is left unresolved.</summary>
@@ -111,7 +114,7 @@ public sealed class ArchitectureRulesTests
     [Fact]
     public void TheGameResolvesNoText()
     {
-        string[] mayResolve = [Presentation, Headless, Sdl];
+        string[] mayResolve = [Presentation, Headless, Sdl, WorkshopText];
         foreach (var name in Dependencies.Products)
         {
             if (!mayResolve.Contains(name))

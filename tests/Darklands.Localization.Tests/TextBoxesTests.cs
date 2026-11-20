@@ -26,10 +26,11 @@ public sealed class TextBoxesTests
         Directory.CreateDirectory(folder);
         try
         {
-            TextBoxes.Write(Path.Combine(folder, "boxes-1.json"), [new TextBox("exe:DS:2FF2", 30, 70, true, 1, null)]);
-            TextBoxes.Write(Path.Combine(folder, "boxes-2.json"), [new TextBox("exe:DS:2FF2", 35, 60, false, 1, null)]);
+            TextBoxes.Write(Path.Combine(folder, "boxes-1.json"), [new TextBox("exe:DS:2FF2", 30, 70, true, 1, null) { Screens = ["BarterScreen"] }]);
+            TextBoxes.Write(Path.Combine(folder, "boxes-2.json"), [new TextBox("exe:DS:2FF2", 35, 60, false, 1, null) { Screens = ["LootScreen"] }]);
             var read = Assert.Single(TextBoxes.Read(folder));
-            Assert.Equal(new TextBox("exe:DS:2FF2", 35, 60, false, 1, null), read);
+            Assert.Equal(("exe:DS:2FF2", 35, 60, false, 1), (read.Key, read.English, read.Room, read.Windowed, read.Font));
+            Assert.Equal(["BarterScreen", "LootScreen"], read.Screens);
             Assert.DoesNotContain("Leave", File.ReadAllText(Path.Combine(folder, "boxes-1.json")), StringComparison.Ordinal);
         }
         finally

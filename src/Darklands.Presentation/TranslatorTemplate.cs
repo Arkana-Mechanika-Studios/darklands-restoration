@@ -25,6 +25,12 @@ public static class TranslatorTemplate
         /// <summary>The English's coloured parts in order (the menus' hot-key letters, fixed in the code): a translation keeps them.</summary>
         public IReadOnlyList<string> HotKeys { get; init; } = [];
 
+        /// <summary>
+        /// Where the text is shown: the screens the recorded sessions drew it on (the boxes), a card text's card ("card $ARMOR00");
+        /// empty: not seen in the recorded sessions.
+        /// </summary>
+        public IReadOnlyList<string> Screens { get; init; } = [];
+
         /// <summary>The variables the English value names (what a translation must keep).</summary>
         public IReadOnlySet<string> Variables => FtlSource.Variables(Value);
     }
@@ -53,14 +59,20 @@ public static class TranslatorTemplate
                 var block = assets.Messages(file).Blocks[int.Parse(e.Key.AsSpan(hash + 1), CultureInfo.InvariantCulture)];
                 var (width, height) = CardBox(block);
                 messages.Add(new Message("msg/" + file + ".ftl", KeyMangling.ToFluentId(e.Key), e.Key, CardValue(CardTextForm.ToWritten(e.Raw)),
-                    [string.Create(CultureInfo.InvariantCulture, $"{e.Key} · a card text: box: {height / lineHeight} lines of {width} px (to the foot of the card's window)")]));
+                    [string.Create(CultureInfo.InvariantCulture, $"{e.Key} · a card text: box: {height / lineHeight} lines of {width} px (to the foot of the card's window)")])
+                {
+                    Screens = ["card " + file],
+                });
             }
         }
         foreach (var id in OriginalMessageText.OwnIds.Order(StringComparer.Ordinal))
         {
             var english = OriginalMessageText.OwnWords(new Darklands.Core.GameText(id, new Placeholders()))!;
             var comment = id + (byKey.GetValueOrDefault(id) is { } box ? " · " + BoxWords(box) : "");
-            messages.Add(new Message("ui.ftl", KeyMangling.ToFluentId(id), id, Escape(english, placeablesAsWritten: true), [comment]));
+            messages.Add(new Message("ui.ftl", KeyMangling.ToFluentId(id), id, Escape(english, placeablesAsWritten: true), [comment])
+            {
+                Screens = byKey.GetValueOrDefault(id)?.Screens ?? [],
+            });
         }
         return messages;
     }
@@ -152,6 +164,7 @@ public static class TranslatorTemplate
         return new Message("exe.ftl", KeyMangling.ToFluentId(key), key, value.ToString(), [comment])
         {
             HotKeys = Darklands.Core.TextCodes.ColouredParts(english),
+            Screens = box?.Screens ?? [],
         };
     }
 

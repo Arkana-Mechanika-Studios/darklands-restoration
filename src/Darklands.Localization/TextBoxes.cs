@@ -14,7 +14,12 @@ public sealed record TextBox(
     [property: JsonPropertyName("room")] int Room,
     [property: JsonPropertyName("windowed")] bool Windowed,
     [property: JsonPropertyName("font")] int Font,
-    [property: JsonPropertyName("args")] IReadOnlyDictionary<string, string>? Arguments);
+    [property: JsonPropertyName("args")] IReadOnlyDictionary<string, string>? Arguments)
+{
+    /// <summary>The screens the text was drawn on (the translators' editor groups by them; empty: not recorded).</summary>
+    [JsonPropertyName("screens")]
+    public IReadOnlyList<string> Screens { get; init; } = [];
+}
 
 /// <summary>
 /// The boxes file (<c>boxes.json</c>, beside a translator's template): keys and numbers (and the arguments a session drew), never
@@ -46,6 +51,7 @@ public static class TextBoxes
             var tighter = b.Room < was.Room;
             byKey[b.Key] = was with
             {
+                Screens = [.. was.Screens.Union(b.Screens, StringComparer.Ordinal).Order(StringComparer.Ordinal)],
                 English = wider ? b.English : was.English,
                 Arguments = wider ? b.Arguments : was.Arguments,
                 Room = tighter ? b.Room : was.Room,

@@ -250,7 +250,8 @@ blocks the German edition does not have.)
 
 **Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
 environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to
-`<folder>/boxes-<process>.json` when it ends; the recorded sessions replayed with it (`tools/oracle/rerun_all.py
+`<folder>/boxes-<process>.json` when it ends, with the screens each text was drawn on (the translators' editor groups the
+texts by them); the recorded sessions replayed with it (`tools/oracle/rerun_all.py
 --headless <that build> --fights none --replay-only`) give the boxes of the screens they visit. The files hold keys and
 numbers (and the values a session drew), never the game's words. The keys of a screen can also be found with the
 developer's inspector (a development build: hold F9 over a word; see [SETTINGS.md](SETTINGS.md)).

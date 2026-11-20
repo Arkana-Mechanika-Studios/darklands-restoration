@@ -37,6 +37,7 @@
     <ProjectReference Include="..\..\src\Darklands.Presentation\Darklands.Presentation.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Rendering\Darklands.Rendering.csproj" />
     <ProjectReference Include="..\..\src\Darklands.Simulation\Darklands.Simulation.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Workshop.Text\Darklands.Workshop.Text.csproj" />
   </ItemGroup>
 
 </Project>
