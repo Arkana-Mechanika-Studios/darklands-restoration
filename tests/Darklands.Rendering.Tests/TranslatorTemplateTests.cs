@@ -111,7 +111,7 @@ public sealed class TranslatorTemplateTests
             Assert.Contains("40 px of room (cut at the window's edge", Of(plain.Id));
             Assert.Contains("the font has no 'ç'", Of(other.Id));
             Assert.Contains("option lines", Of(cards[0].Id));
-            Assert.Contains("runs past the foot of the card's window", Of(cards[1].Id));
+            Assert.Contains("note: " + cards[1].Id + ": laid out in", Of(cards[1].Id));
             Assert.All(findings.Where(f => f.Id.Length > 0), f => Assert.StartsWith("text/de/a.ftl:", f.Where));
         }
         finally

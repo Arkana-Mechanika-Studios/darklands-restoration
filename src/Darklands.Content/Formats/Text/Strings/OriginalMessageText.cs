@@ -51,7 +51,7 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         ["id:rw.save.impossible.1"] = _ => "This saved game holds values no game can have",
         ["id:rw.save.impossible.2"] = _ => "and cannot be loaded.",
         ["id:rw.notice.press-a-key"] = _ => "Press a key.",
-        ["id:rw.card.more"] = _ => "(more...)",
+        ["id:rw.card.more"] = _ => "(more ...)",
         ["id:rw.save.mods-missing.one"] = _ => "This game was saved with the mod",
         ["id:rw.save.mods-missing.many"] = _ => "This game was saved with the mods",
         ["id:rw.save.mods-missing.more"] = t => $"and {t.Word("count")} more",

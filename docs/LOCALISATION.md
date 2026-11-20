@@ -194,7 +194,7 @@ on the console's error output):
 `{` and `}` are Fluent's own: in a card text write them as `{"{"}` and `{"}"}` (the English texts hold none).
 
 **Long card texts.** A translation longer than the card's window can hold is shown in pages: each page but the last ends
-with a prompt at the foot of the text ("(more...)", `id:rw.card.more` in `ui.ftl`, translatable like any text), and a key
+with a prompt at the foot of the text ("(more ...)", `id:rw.card.more` in `ui.ftl`, translatable like any text), and a key
 or a click turns the page, as the press-to-continue of any card text. The option lines are together on the last page,
 with their keys and mouse areas as always; a last page of option lines only is ready to choose from at once. A page ends
 between lines, or at a space in a paragraph taller than a page, never inside a word; the passages are chosen first, so
