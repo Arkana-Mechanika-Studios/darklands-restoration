@@ -48,6 +48,7 @@ using Darklands.Rendering;
 //
 // Debug steps:
 //   card:<hex>                   starts a Quickstart game at that card (key:q still chooses Quickstart)
+//   startat:<card:$FILE#n|screen:Name>   (with languagepack:) the translation test's start (DarklandsRP --start-at): no start screen
 //   option:<n>                   the pointer onto line n of the card menu being chosen from (then key:enter chooses it)
 //   state:<name>                 writes the game being played as a saved game, <name>.sav in the output folder (the comment
 //                                "Darklands"; tools/oracle/lockstep.py compares it with the original's at the same point)
@@ -383,6 +384,13 @@ if (cardStep is not null)
     steps.Remove(cardStep);
     host = new ScriptedHost(steps, output);
 }
+// startat:<card:$FILE#n | screen:Name> (with languagepack:): the translation test's start, as DarklandsRP --start-at
+var startAtStep = steps.FirstOrDefault(s => s.StartsWith("startat:", StringComparison.Ordinal));
+if (startAtStep is not null)
+{
+    steps.Remove(startAtStep);
+    host = new ScriptedHost(steps, output);
+}
 List<string> commandLine = [.. resolved.CommandLine, .. TakeArguments(steps)];
 using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame(), soundStep, romsStep, wavStep, traceStep, commandLine);
 // the map's passes: mapclick's holds, and a click into the map's view stays down until a pass has read it (ScriptedHost.MapPass)
@@ -413,6 +421,18 @@ if (languagePackStep is not null)
         ScriptedHost.HdRenderer = new HdRenderer(HdPack.Empty);
         ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
     }
+}
+if (startAtStep is not null)
+{
+    if (languagePackStep is null)
+    {
+        Console.Error.WriteLine("startat: needs languagepack:<folder>");
+        return 2;
+    }
+    var at = game.ResolveStartAt(startAtStep[8..], out var startError);
+    Console.WriteLine(at is null ? "startat: " + startError : $"startat: {startAtStep[8..]}: card {at.Card}, screen {at.Screen ?? "-"}, variant {at.Variant}, {at.Steps.Count} steps{(at.Reached ? "" : ", " + at.Notice)}");
+    game.StartAt = at;
+    game.PlayOpening = false;
 }
 game.Options.Apply(resolved);
 // the game's own notes (a saved game's mods missing, a companion file it could not use) on the error output

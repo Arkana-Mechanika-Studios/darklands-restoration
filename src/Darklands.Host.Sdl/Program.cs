@@ -107,6 +107,8 @@ var fromEdition = Option("--from-edition");
 var editionLanguage = Option("--edition-language") ?? "de";
 var editionVariables = Option("--edition-variables");
 var textBoxes = Option("--text-boxes");
+// a translation test (the Workshop's Play in game): with a language pack only, never in normal play
+var startAt = Option("--start-at");
 // a developer's step: the boxes of a run without the game's words, the ones the Workshop ships
 if (Option("--strip-text-boxes") is { } strippedBoxes)
 {
@@ -147,6 +149,14 @@ var cli = new CommandLineOptions
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
 };
+if (startAt is not null && cli.LanguagePack is null)
+{
+    Console.Error.WriteLine("--start-at needs --language-pack <folder>: it starts a translation test of that pack");
+    Console.Error.WriteLine(CommandLineUsage.Text);
+    return 2;
+}
+// a translation test opens no launcher (the Workshop starts it)
+noLauncher |= startAt is not null;
 // what is left is the game folder; an unknown option (or one missing its value) is said so, not taken as the folder
 if (CommandLineUsage.Unknown(arguments) is { } unknown)
 {
@@ -220,7 +230,8 @@ if (folder is null && launch is null)
     return 1;
 }
 
-var title = "Darklands Restoration Project " + version;
+var title = "Darklands Restoration Project " + version
+    + (startAt is not null && cli.LanguagePack is { } tested ? " - translation test (" + Path.GetFileName(Path.TrimEndingDirectorySeparator(Path.GetFullPath(tested))) + ")" : "");
 var window = settings.Window ?? DisplayLayout.WindowSize(null, null);
 // a picture filter drawn by shaders (display.filter) asks for SDL's GPU renderer as the window opens
 var gpu = settings.Filter != PictureFilter.Sharp;
@@ -270,7 +281,7 @@ while (true)
     var start = new StartProgress();
     try
     {
-        return Play(host, settings, folder!, version, start, settingsPath, reports);
+        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt);
     }
     catch (Exception e) when (!start.Running && !noLauncher)
     {
@@ -312,7 +323,7 @@ ResolvedSettings? Resolve(GameSettings file)
 }
 
 // The game in the window, with its sound, console and saves; returns the program's exit code.
-static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports)
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt)
 {
     host.Renderer = null;
     host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
@@ -450,7 +461,23 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.KeyboardCardMenus = settings.CardMenuKeys;
     // the battle's edge scroll at ten steps a second at most, whatever the frame rate (the original's: a step each pass of its loop)
     game.Ui.EdgeScrollMilliseconds = 100;
-    var saves = SaveLocation.Choose(settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
+    // a translation test: its saves in the pack's own scratch folder (never the player's), the game at the text or screen asked for
+    if (startAt is not null && settings.LanguagePack is { } testedPack)
+    {
+        game.PlayOpening = false;
+        if (game.ResolveStartAt(startAt, out var startError) is not { } at)
+        {
+            Console.Error.WriteLine("--start-at: " + startError + "; the game starts as usual");
+        }
+        else
+        {
+            game.StartAt = at;
+            Console.Error.WriteLine($"--start-at {startAt}: {(at.Reached ? "at the text" : at.Notice)}");
+        }
+        game.SaveDirectory = Path.Combine(testedPack, ".workshop", "saves");
+        Directory.CreateDirectory(game.SaveDirectory);
+    }
+    var saves = SaveLocation.Choose(startAt is not null ? game.SaveDirectory : settings.SavesFolder, game.SaveDirectory, SaveLocation.UserFolder(), SaveLocation.CanWrite);
     if (saves.FellBack)
     {
         Directory.CreateDirectory(saves.Folder);

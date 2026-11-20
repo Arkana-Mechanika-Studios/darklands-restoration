@@ -156,6 +156,11 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // block (colour 0 when how == 1 else DS:EE59), press-to-continue(), key-buffer-clear()
     public void Text(int block, TextFrame frame = TextFrame.OnPicture)
     {
+        if (PlannedText())
+        {
+            _block = block;
+            return;
+        }
         ui.FlushKeys();
         PrepareWindow(frame);
         _block = block;
@@ -177,6 +182,10 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: card-choice-menu without card-option-lines (0x7D, 0x109, 0x10B) works on the box's entries, at the places the box had (KeepTheBoxsLayout).
     public int ChooseOnLastLayout(IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint)
     {
+        if (PlannedChoice(options) is { } planned)
+        {
+            return planned;
+        }
         ui.FlushKeys();
         _options = options;
         List<OptionArea> Enabled() => _lastAreas.Where(a => a.Option < options.Count && options[a.Option] == OptionState.Enabled).ToList();
@@ -259,6 +268,12 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: card-option-lines (draw, press-to-continue, fade), then whatever the card script calls (R061+0x2278: pass-hours(1)), then card-choice-menu
     public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Action? afterOptions)
     {
+        if (PlannedChoice(options) is { } planned)
+        {
+            _block = block;
+            afterOptions?.Invoke();
+            return planned;
+        }
         var areas = DrawOptionLines(block, options);
         afterOptions?.Invoke();
         ui.FlushKeys();
@@ -268,7 +283,52 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // orig: card-option-lines R043+0x0F2A with no card-choice-menu after it (card 0x16B, R134+0x1F26): the block drawn, press-to-continue
     //   (R043+0x10D0), the fade and the grey remap; vis10 session D-99119d: after the Enter the original's picture fades over 6 shots
     //   (183, 96, 165, 109, 135 and 44 palette entries changing) before the battle screen
-    public void OptionLines(int block) => DrawOptionLines(block, []);
+    public void OptionLines(int block)
+    {
+        if (PlannedText())
+        {
+            _block = block;
+            return;
+        }
+        DrawOptionLines(block, []);
+    }
+
+    /// <summary>
+    /// A translation test's steps to a card's passage (StartAt.Steps): each text passed over (-1) is not drawn, each menu takes its
+    /// planned choice without being drawn. A step the game does not offer as planned ends the plan: the card goes on as played.
+    /// </summary>
+    // Not in the original: the 1.1 Workshop's translation test (DarklandsRP --start-at); null in normal play.
+    public Queue<int>? Planned { get; set; }
+
+    private bool PlannedText()
+    {
+        if (Planned is not { Count: > 0 } plan)
+        {
+            return false;
+        }
+        if (plan.Peek() == -1)
+        {
+            plan.Dequeue();
+            return true;
+        }
+        plan.Clear();
+        return false;
+    }
+
+    private int? PlannedChoice(IReadOnlyList<OptionState> options)
+    {
+        if (Planned is not { Count: > 0 } plan)
+        {
+            return null;
+        }
+        var choice = plan.Dequeue();
+        if (choice >= 0 && choice < options.Count && options[choice] == OptionState.Enabled)
+        {
+            return choice;
+        }
+        plan.Clear();
+        return null;
+    }
 
     // orig: card-option-lines R043+0x0F2A: key-buffer-clear (root 0000:1384), DS:E959 = idx, R043+0x0F54(card-text-window, idx, 1, 2)
     private List<OptionArea> DrawOptionLines(int block, IReadOnlyList<OptionState> options)

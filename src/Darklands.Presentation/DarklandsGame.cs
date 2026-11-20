@@ -150,6 +150,23 @@ public sealed class DarklandsGame
     /// <summary>A debugging aid: the game starts with this saved game of the folder (as the start screen's load would), null: the start screen.</summary>
     public string? StartWithSave { get; set; }
 
+    /// <summary>
+    /// A translation test (DarklandsRP --start-at, with a language pack only): the game starts at that card text or screen on a
+    /// Quick Start party instead of the start screen, and plays on from there (null: the start screen, as the game does).
+    /// </summary>
+    // Not in the original: the 1.1 Workshop's translation test.
+    public StartAt? StartAt { get; set; }
+
+    // the translation test's start, taken by the first game played (Play): its planned steps and its first screen
+    private StartAt? _starting;
+
+    /// <summary>The start of a translation test at <paramref name="target"/> (<c>card:$FILE#n</c> or <c>screen:Name</c>; see <see cref="Presentation.StartAt"/>).</summary>
+    public StartAt? ResolveStartAt(string target, out string? error) =>
+        // the search's card runs on a world of their own (the game's stays as the files have it)
+        Presentation.StartAt.Resolve(target, WorldData.Load(_files), _cards.Cards,
+            _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE"))),
+            _ui.Assets, out error);
+
     /// <summary>Runs the program: the start-up, the opening, the start screen and the games it leads to, until the player quits.</summary>
     // DIVERGENCE: the original ends the program when the card loop ends (the 0x62 or -0x63 screen): it frees its buffers and exits to DOS; here the player comes back to the start screen, where Alt-Q leaves.
     public void Run()
@@ -181,7 +198,12 @@ public sealed class DarklandsGame
             {
                 return;
             }
-            if (StartWithSave is { } first)
+            if (StartAt is { } at)
+            {
+                StartAt = null;
+                StartTest(at);
+            }
+            else if (StartWithSave is { } first)
             {
                 if (LoadSavedGame(first, StartUpSession(), beforeNotice: () => LoadGameScreen.PaintBackdrop(_ui)) is { } given)
                 {
@@ -245,6 +267,90 @@ public sealed class DarklandsGame
             catch (QuitGameException)
             {
             }
+        }
+    }
+
+    // the translation test's start: character creation or the load screen as the start screen opens them, else the Quick Start party at
+    // the card or with the screen open (Play); after it the start screen, as after any game
+    private void StartTest(StartAt at)
+    {
+        switch (at.Screen)
+        {
+            case "CharacterGeneratorScreen":
+                if (new CharacterCreationScreen(_ui, World, Seed, PartyTicks) { MadeUpName = name => _cardVariables.Named[0] = name }.Run() is { } created)
+                {
+                    created.BattleFile = ProgramBattleFile();
+                    PlayFrom(created);
+                }
+                break;
+            case "LoadGameScreen":
+                if (new LoadGameScreen(_ui, Saves, LoadScreenTexts).Run(fromStartScreen: true, name => LoadSavedGame(name, StartUpSession())) is { } loaded)
+                {
+                    PlayFrom(loaded.State);
+                }
+                break;
+            default:
+                // the same clock as the search had, so the planned steps meet the same draws
+                var state = at.NewState(World);
+                state.BattleFile = ProgramBattleFile();
+                _starting = at;
+                PlayFrom(state);
+                break;
+        }
+    }
+
+    // the translation test's first screen, over the Quick Start party (the screen previews' stores and loot), then the game goes on
+    private void OpenFirst(StartAt at, GameState state, CardContext context, CardScreen screen, PartyPanel panel, BattleScreens battles)
+    {
+        screen.Planned = new Queue<int>(at.Steps);
+        if (at.Notice is { } notice)
+        {
+            new MessageBox(_ui).Notice([notice]);
+        }
+        var screens = context.Screens;
+        switch (at.Screen)
+        {
+            case "CharacterSheetScreen":
+                screens.CharacterSheet(0);
+                break;
+            case "PartyInfoScreen":
+                screens.PartyInfo();
+                break;
+            case "BarterScreen":
+                screens.Barter(1, null!, -1);
+                break;
+            case "ItemStoreScreen" when state.Here is { } here:
+                here.CacheHandle = state.ItemStores.Add([new(0x26, 20, 3), new(0x5F, 30, 1), new(3, 25, 1), new(40, 30, 2), new(0x10, 15, 1)]);
+                screens.ItemStore();
+                break;
+            case "LootScreen":
+                screens.Loot(
+                [
+                    new(4, state.Item(4).Type, 15, 4, (byte)state.Item(4).Weight),
+                    new(0x26, state.Item(0x26).Type, 20, 4, (byte)state.Item(0x26).Weight),
+                    new(0x2D, state.Item(0x2D).Type, 20, 4, (byte)state.Item(0x2D).Weight),
+                ], Core.Economy.Money.From(0, 1, 6));
+                break;
+            case "AlchemyScreen":
+                screens.Alchemy(0, 0);
+                break;
+            case "CampScreen":
+                screens.Camp(0);
+                break;
+            case "SaintPrayerScreen" when state.Party.Slots.Count > 0:
+                var saint = Enumerable.Range(0, 160).FirstOrDefault(state.Party.Slots[0].Saints.Contains);
+                new SaintPrayerScreen(_ui, panel).Pray(state, 0, saint, Core.Rules.PrayerMode.ForMember, Core.Rules.SaintEffects.Instance);
+                break;
+            case "PartyRosterScreen":
+                context.PartyRosterScreen?.Invoke(0);
+                break;
+            case "MarchingOrderScreen":
+                new MarchingOrderScreen(_ui, panel, battles.SelectOrdinal).Run(state);
+                break;
+            case "BattleScreen":
+                // the battles guide's street fight: battlefield 40, three of foe type 34
+                battles.Battle(new BattleRequest(40, 1234, [(34, 4, 3), (-1, 0, 0), (-1, 0, 0)]));
+                break;
         }
     }
 
@@ -777,6 +883,11 @@ public sealed class DarklandsGame
         Core.Rules.TimePassage.PartyPerished += Perished;
         try
         {
+            if (_starting is { } at)
+            {
+                _starting = null;
+                OpenFirst(at, state, context, screen, panel, battles);
+            }
             while (true)
             {
                 var card = state.CurrentCard;

@@ -30,6 +30,7 @@ internal sealed class WorkshopWindow : Window
     private readonly TextBlock _checkCount = new() { FontSize = 11.5, FontWeight = FontWeight.Medium, VerticalAlignment = VerticalAlignment.Center };
     private readonly Border _checkPill;
     private readonly Button _run = WorkshopTheme.Primary(WorkshopTheme.IconText("play", "Play in game", 13));
+    private readonly Button _runMenu = WorkshopTheme.Primary(WorkshopIcons.Make("chevron-down", 14));
     private readonly Button _glossaryButton = WorkshopTheme.Ghost(WorkshopTheme.IconText("book", "Glossary", 14), "The pack's terms and their translations");
     private readonly Button _more = WorkshopTheme.Ghost(WorkshopIcons.Make("more", 16), "More");
     private readonly ContentControl _crumb = new() { VerticalAlignment = VerticalAlignment.Center };
@@ -89,8 +90,18 @@ internal sealed class WorkshopWindow : Window
         _gameButton.Click += async (_, _) => await ChooseGame();
         _save.Click += (_, _) => _editor?.Save();
         _check.Click += (_, _) => RunCheck();
-        _run.Click += (_, _) => RunGame();
-        ToolTip.SetTip(_run, "Save, then start the game with this pack");
+        _run.Click += (_, _) => RunGame(atText: true);
+        ToolTip.SetTip(_run, "Save, then start the game with this pack at the text chosen (a Quick Start party; its saves stay in the pack's .workshop folder)");
+        var runMenu = new MenuFlyout();
+        var atText = new MenuItem { Header = "At this text", Icon = WorkshopIcons.Make("play", 15) };
+        atText.Click += (_, _) => RunGame(atText: true);
+        var fromStart = new MenuItem { Header = "From the start", Icon = WorkshopIcons.Make("gamepad", 15) };
+        fromStart.Click += (_, _) => RunGame(atText: false);
+        runMenu.Items.Add(atText);
+        runMenu.Items.Add(fromStart);
+        _runMenu.Flyout = runMenu;
+        _runMenu.Padding = new Thickness(6, 0);
+        ToolTip.SetTip(_runMenu, "Play at this text, or from the start");
         _glossaryButton.Click += async (_, _) =>
         {
             if (_editor is not null)
@@ -115,8 +126,11 @@ internal sealed class WorkshopWindow : Window
                 _crumb,
             },
         };
-        var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center, Children = { _gameButton, _packActions, _more, _run } };
+        var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center, Children = { _gameButton, _packActions, _more, _run, _runMenu } };
         _run.Margin = new Thickness(8, 0, 0, 0);
+        _run.CornerRadius = new CornerRadius(6, 0, 0, 6);
+        _runMenu.CornerRadius = new CornerRadius(0, 6, 6, 0);
+        _runMenu.Margin = new Thickness(-3, 0, 0, 0);
         var topBar = new DockPanel { Height = 44, Margin = new Thickness(12, 0) };
         DockPanel.SetDock(right, Dock.Right);
         topBar.Children.Add(right);
@@ -226,7 +240,6 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Pack variables…", "braces", () => _ = Variables(), pack));
         menu.Items.Add(Item("Font pack…", "type", () => _ = BuildFontPack(ask: false), pack));
-        menu.Items.Add(Item("Show in game", "play", () => _ = ShowInGame(), pack));
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
         return menu;
@@ -287,7 +300,7 @@ internal sealed class WorkshopWindow : Window
     private void UpdateState()
     {
         _where.Text = _project is null ? "" : $"Game {_game ?? "not found"} · Pack {_project.Folder}";
-        _packActions.IsVisible = _run.IsVisible = _project is not null;
+        _packActions.IsVisible = _run.IsVisible = _runMenu.IsVisible = _project is not null;
         _gameButton.IsVisible = _project is null;
         _gameButton.Content = WorkshopTheme.IconText("gamepad", _game ?? "Find the game…", 14);
         _gameButton.Foreground = WorkshopTheme.Brush(_game is null ? WorkshopTheme.Warn : WorkshopTheme.Muted);
@@ -515,7 +528,17 @@ internal sealed class WorkshopWindow : Window
 
     private static string Count(int n, string what) => n.ToString("N0", CultureInfo.InvariantCulture) + " " + what + (n == 1 ? "" : "s");
 
-    private void RunGame()
+    /// <summary>
+    /// Where the game's translation test starts for <paramref name="entry"/> (DarklandsRP --start-at): a card text's card and passage,
+    /// a screen text's screen; null for a text with neither (names, texts no session showed).
+    /// </summary>
+    internal static string? StartTarget(TextEntry entry) =>
+        entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? "card:" + entry.Key[4..]
+        : TextTitles.Section(entry) == "Screens" ? "screen:" + entry.Screens[0]
+        : null;
+
+    // the game with the pack: at the text chosen (a translation test, --start-at), or from the start
+    private void RunGame(bool atText)
     {
         if (_project is null || _editor is null)
         {
@@ -531,29 +554,21 @@ internal sealed class WorkshopWindow : Window
         var start = new ProcessStartInfo(program) { UseShellExecute = false };
         start.ArgumentList.Add("--language-pack");
         start.ArgumentList.Add(_project.Folder);
+        var target = atText && _editor.Current is { } current ? StartTarget(current) : null;
+        if (target is not null)
+        {
+            start.ArgumentList.Add("--start-at");
+            start.ArgumentList.Add(target);
+        }
         if (_game is not null)
         {
             start.ArgumentList.Add(_game);
         }
         Process.Start(start);
         UpdateState();
-    }
-
-    // the game with the pack, and the text's key in the clipboard: the developer's inspector (F9) names the text under the pointer
-    private async Task ShowInGame()
-    {
-        if (_editor?.CurrentKey is not { } key)
-        {
-            return;
-        }
-        if (Clipboard is { } clipboard)
-        {
-            await clipboard.SetTextAsync(key);
-        }
-        RunGame();
-        _status.Text = key.StartsWith("msg:", StringComparison.Ordinal)
-            ? $"The game runs with the pack; {key} is the card {key[4..key.IndexOf('#', StringComparison.Ordinal)]}'s text (the key is in the clipboard)."
-            : $"The game runs with the pack; the key {key} is in the clipboard (a developer build's inspector, F9, names the text under the pointer).";
+        _status.Text = target is not null ? $"The game starts at {target[(target.IndexOf(':', StringComparison.Ordinal) + 1)..]} (a Quick Start party; saves go to the pack's .workshop folder)."
+            : atText ? "This text is not on a card or a screen the game can open at: the game starts from the start."
+            : "The game starts from the start.";
     }
 
     private async Task<string?> PickFolder(string title)
