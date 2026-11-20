@@ -2,6 +2,160 @@
   "base": "483.07",
   "boxes": [
     {
+      "key": "enm:type/0.name",
+      "english": 41,
+      "room": 311,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "enm:type/3.name",
+      "english": 29,
+      "room": 305,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "enm:type/42.name",
+      "english": 20,
+      "room": 300,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "enm:type/43.name",
+      "english": 22,
+      "room": 301,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:0023",
+      "english": 46,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:002D",
+      "english": 41,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:004F",
+      "english": 47,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:00BE",
+      "english": 38,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:00C6",
+      "english": 50,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:0119",
+      "english": 45,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:017F",
+      "english": 34,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:01A8",
+      "english": 43,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:01F1",
+      "english": 50,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:286B:01FC",
+      "english": 52,
+      "room": 316,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
       "key": "exe:290E:0021",
       "english": 20,
       "room": 170,
@@ -530,6 +684,28 @@
       "screens": [
         "CardScreen",
         "OverlandScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:05C6",
+      "english": 106,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
+      ]
+    },
+    {
+      "key": "exe:DS:060C",
+      "english": 131,
+      "room": 222,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "BattleScreen"
       ]
     },
     {
@@ -1313,7 +1489,8 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "BattleScreen",
+        "CharacterSheetScreen"
       ]
     },
     {
@@ -2177,14 +2354,14 @@
     },
     {
       "key": "exe:DS:2F71",
-      "english": 217,
+      "english": 238,
       "room": 247,
       "windowed": false,
       "font": 1,
       "args": {
-        "arg0": "nnnnnnn",
-        "arg1": "0",
-        "arg2": "0",
+        "arg0": "nnnnnnnnn",
+        "arg1": "00",
+        "arg2": "00",
         "arg3": "0",
         "arg4": "0000"
       },
@@ -2244,12 +2421,12 @@
     },
     {
       "key": "exe:DS:302A",
-      "english": 114,
+      "english": 122,
       "room": 191,
       "windowed": false,
       "font": 1,
       "args": {
-        "arg0": "nnnnnnnn"
+        "arg0": "nnnnnnnnn"
       },
       "screens": [
         "BarterScreen"
@@ -2416,16 +2593,16 @@
     },
     {
       "key": "exe:DS:3172",
-      "english": 222,
+      "english": 236,
       "room": 247,
       "windowed": false,
       "font": 1,
       "args": {
-        "arg0": "nnnnnnnn",
-        "arg1": "0",
-        "arg2": "00",
+        "arg0": "nnnnnnnnn",
+        "arg1": "00",
+        "arg2": "0",
         "arg3": "0",
-        "arg4": "000"
+        "arg4": "0000"
       },
       "screens": [
         "BarterScreen"
@@ -3162,7 +3339,7 @@
     },
     {
       "key": "exe:DS:38EF",
-      "english": 182,
+      "english": 183,
       "room": 247,
       "windowed": false,
       "font": 1,
@@ -4099,7 +4276,7 @@
       "windowed": false,
       "font": 1,
       "args": {
-        "arg0": "nnnn nn n nnnn",
+        "arg0": "nnnnnn nnnnnn",
         "arg1": "  0",
         "arg2": "00"
       },
@@ -4219,6 +4396,2188 @@
       },
       "screens": [
         "LootScreen"
+      ]
+    },
+    {
+      "key": "loc:0.name",
+      "english": 45,
+      "room": 84,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:1.name",
+      "english": 46,
+      "room": 85,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:10.name",
+      "english": 41,
+      "room": 248,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:11.name",
+      "english": 42,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:12.name",
+      "english": 33,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:14.name",
+      "english": 48,
+      "room": 86,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:16.name",
+      "english": 55,
+      "room": 89,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:19.name",
+      "english": 40,
+      "room": 82,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:2.name",
+      "english": 51,
+      "room": 87,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:21.name",
+      "english": 44,
+      "room": 84,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:28.name",
+      "english": 25,
+      "room": 74,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:29.name",
+      "english": 31,
+      "room": 77,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:3.name",
+      "english": 42,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:30.name",
+      "english": 47,
+      "room": 85,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:32.name",
+      "english": 48,
+      "room": 86,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:36.name",
+      "english": 31,
+      "room": 77,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:38.name",
+      "english": 37,
+      "room": 80,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:39.name",
+      "english": 31,
+      "room": 77,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:4.name",
+      "english": 46,
+      "room": 85,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:41.name",
+      "english": 27,
+      "room": 75,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:42.name",
+      "english": 25,
+      "room": 74,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:43.name",
+      "english": 53,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:45.name",
+      "english": 41,
+      "room": 82,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:47.name",
+      "english": 50,
+      "room": 87,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:5.name",
+      "english": 32,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:52.name",
+      "english": 28,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:53.name",
+      "english": 31,
+      "room": 77,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:54.name",
+      "english": 52,
+      "room": 88,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:58.name",
+      "english": 39,
+      "room": 81,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:6.name",
+      "english": 33,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:63.name",
+      "english": 21,
+      "room": 72,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:64.name",
+      "english": 17,
+      "room": 248,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:66.name",
+      "english": 38,
+      "room": 81,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:67.name",
+      "english": 33,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:72.name",
+      "english": 37,
+      "room": 80,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:73.name",
+      "english": 32,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:74.name",
+      "english": 27,
+      "room": 75,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:77.name",
+      "english": 33,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:79.name",
+      "english": 28,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:8.name",
+      "english": 47,
+      "room": 85,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:85.name",
+      "english": 46,
+      "room": 85,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:86.name",
+      "english": 22,
+      "room": 73,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:87.name",
+      "english": 43,
+      "room": 83,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:88.name",
+      "english": 51,
+      "room": 87,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:89.name",
+      "english": 27,
+      "room": 75,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:90.name",
+      "english": 33,
+      "room": 78,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "loc:91.name",
+      "english": 29,
+      "room": 76,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "PartyInfoScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/0.name",
+      "english": 111,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/1.name",
+      "english": 116,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/10.name",
+      "english": 94,
+      "room": 220,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/11.name",
+      "english": 96,
+      "room": 220,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/12.name",
+      "english": 99,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/13.name",
+      "english": 113,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/14.name",
+      "english": 114,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/15.name",
+      "english": 118,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/16.name",
+      "english": 115,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/17.name",
+      "english": 116,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/18.name",
+      "english": 80,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/19.name",
+      "english": 109,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/2.name",
+      "english": 114,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/20.name",
+      "english": 108,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/21.name",
+      "english": 115,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/24.name",
+      "english": 94,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/25.name",
+      "english": 101,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/27.name",
+      "english": 75,
+      "room": 220,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/3.name",
+      "english": 82,
+      "room": 220,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "AlchemyScreen",
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/30.name",
+      "english": 104,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/4.name",
+      "english": 71,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/42.name",
+      "english": 104,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/48.name",
+      "english": 90,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/49.name",
+      "english": 111,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/5.name",
+      "english": 121,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/52.name",
+      "english": 110,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/54.name",
+      "english": 70,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/6.name",
+      "english": 95,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/63.name",
+      "english": 73,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/7.name",
+      "english": 119,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/8.name",
+      "english": 121,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:formula/9.name",
+      "english": 86,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/10.name",
+      "english": 65,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/10.short",
+      "english": 42,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/13.name",
+      "english": 77,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/13.short",
+      "english": 41,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/14.name",
+      "english": 22,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/14.short",
+      "english": 22,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/15.name",
+      "english": 20,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/15.short",
+      "english": 20,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/154.name",
+      "english": 77,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/154.short",
+      "english": 45,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/17.short",
+      "english": 38,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/18.name",
+      "english": 19,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/18.short",
+      "english": 19,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/20.name",
+      "english": 50,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/20.short",
+      "english": 34,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/21.name",
+      "english": 55,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/21.short",
+      "english": 34,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/24.name",
+      "english": 33,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/24.short",
+      "english": 33,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/26.name",
+      "english": 64,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/26.short",
+      "english": 36,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/27.name",
+      "english": 40,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/27.short",
+      "english": 35,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/29.short",
+      "english": 29,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/3.name",
+      "english": 51,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/3.short",
+      "english": 44,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/30.name",
+      "english": 41,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/30.short",
+      "english": 31,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/32.name",
+      "english": 69,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/32.short",
+      "english": 42,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/38.short",
+      "english": 29,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/40.name",
+      "english": 56,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/40.short",
+      "english": 37,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/42.name",
+      "english": 55,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/42.short",
+      "english": 34,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/43.name",
+      "english": 59,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/43.short",
+      "english": 35,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/44.name",
+      "english": 62,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/44.short",
+      "english": 32,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/45.short",
+      "english": 33,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/47.name",
+      "english": 46,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/47.short",
+      "english": 30,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/48.short",
+      "english": 40,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/49.name",
+      "english": 61,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/49.short",
+      "english": 38,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/5.name",
+      "english": 56,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/5.short",
+      "english": 45,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/51.name",
+      "english": 56,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/51.short",
+      "english": 35,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/52.short",
+      "english": 36,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/53.name",
+      "english": 63,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/53.short",
+      "english": 33,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/55.name",
+      "english": 67,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/55.short",
+      "english": 50,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/56.short",
+      "english": 47,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/8.name",
+      "english": 47,
+      "room": 172,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:item/8.short",
+      "english": 38,
+      "room": 120,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/0.name",
+      "english": 45,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/1.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/10.name",
+      "english": 92,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/100.name",
+      "english": 43,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/103.name",
+      "english": 58,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/11.name",
+      "english": 44,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/111.name",
+      "english": 50,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/112.name",
+      "english": 94,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/113.name",
+      "english": 74,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/114.name",
+      "english": 47,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/117.name",
+      "english": 59,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/119.name",
+      "english": 49,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/121.name",
+      "english": 58,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/122.name",
+      "english": 109,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/124.name",
+      "english": 101,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/125.name",
+      "english": 87,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/127.name",
+      "english": 99,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/128.name",
+      "english": 37,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/13.name",
+      "english": 52,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/131.name",
+      "english": 54,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/132.name",
+      "english": 57,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/133.name",
+      "english": 66,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/134.name",
+      "english": 54,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/15.name",
+      "english": 54,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/16.name",
+      "english": 58,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/17.name",
+      "english": 98,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/18.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/19.name",
+      "english": 53,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/2.name",
+      "english": 39,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/20.name",
+      "english": 48,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/21.name",
+      "english": 105,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/22.name",
+      "english": 68,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/23.name",
+      "english": 38,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/24.name",
+      "english": 51,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/26.name",
+      "english": 51,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/27.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/28.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/29.name",
+      "english": 48,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/3.name",
+      "english": 40,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/31.name",
+      "english": 40,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/32.name",
+      "english": 38,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/34.name",
+      "english": 44,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/35.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/36.name",
+      "english": 49,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/38.name",
+      "english": 39,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/40.name",
+      "english": 53,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/41.name",
+      "english": 97,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/42.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/43.name",
+      "english": 51,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/44.name",
+      "english": 56,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/46.name",
+      "english": 32,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/5.name",
+      "english": 43,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/50.name",
+      "english": 48,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/55.name",
+      "english": 44,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/57.name",
+      "english": 102,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/6.name",
+      "english": 42,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/66.name",
+      "english": 53,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/69.name",
+      "english": 45,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/7.name",
+      "english": 46,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/77.name",
+      "english": 77,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/82.name",
+      "english": 44,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
+      ]
+    },
+    {
+      "key": "lst:saint/9.name",
+      "english": 49,
+      "room": 249,
+      "windowed": false,
+      "font": 1,
+      "args": null,
+      "screens": [
+        "CharacterSheetScreen"
       ]
     }
   ]
