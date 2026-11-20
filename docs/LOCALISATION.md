@@ -177,7 +177,8 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 
 ## The Workshop's text editor
 
-`DarklandsWorkshop` (beside `DarklandsRP` in the release) is the translators' editor. It finds your game folder as the
+`DarklandsWorkshop` (a download of its own beside the game's; put it in the same folder as `DarklandsRP`) is the
+translators' editor. It finds your game folder as the
 launcher does (or **Game folder…**), and works on a pack folder you choose, outside the game's folder:
 
 * **New pack…** asks for the language tag, a name and your name, and makes the pack; **Open pack…** opens one.

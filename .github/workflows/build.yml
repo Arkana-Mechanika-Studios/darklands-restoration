@@ -55,7 +55,7 @@ jobs:
       - name: Publish ${{ matrix.rid }}
         run: dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=${{ matrix.rid }}
 
-      # the Workshop (the translators' editor) beside the game in the same package
+      # the Workshop (the translators' editor): a download of its own beside the game's package (the game's package is unchanged)
       - name: Publish the Workshop ${{ matrix.rid }}
         run: dotnet publish src/Darklands.Workshop -p:PublishProfile=${{ matrix.rid }}
 
@@ -67,12 +67,16 @@ jobs:
       # tar keeps DarklandsRP executable on Linux; a zip is the usual form on Windows
       - name: Pack (Linux)
         if: runner.os == 'Linux'
-        run: tar -czf DarklandsRP-${{ matrix.rid }}.tar.gz -C artifacts/${{ matrix.rid }} .
+        run: |
+          tar -czf DarklandsRP-${{ matrix.rid }}.tar.gz -C artifacts/${{ matrix.rid }} .
+          tar -czf DarklandsWorkshop-${{ matrix.rid }}.tar.gz -C artifacts/workshop-${{ matrix.rid }} .
 
       - name: Pack (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath DarklandsRP-${{ matrix.rid }}.zip
+        run: |
+          Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath DarklandsRP-${{ matrix.rid }}.zip
+          Compress-Archive -Path artifacts/workshop-${{ matrix.rid }}/* -DestinationPath DarklandsWorkshop-${{ matrix.rid }}.zip
 
       - uses: actions/upload-artifact@v7
         with:
@@ -80,4 +84,12 @@ jobs:
           path: |
             DarklandsRP-${{ matrix.rid }}.tar.gz
             DarklandsRP-${{ matrix.rid }}.zip
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: DarklandsWorkshop-${{ matrix.rid }}
+          path: |
+            DarklandsWorkshop-${{ matrix.rid }}.tar.gz
+            DarklandsWorkshop-${{ matrix.rid }}.zip
           if-no-files-found: error
