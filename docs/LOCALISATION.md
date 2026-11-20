@@ -235,7 +235,7 @@ packs you opened lately. The status line at the foot of the window names the gam
   problem the check found, an empty ring not translated yet. The counter reads "12 of 4,917 translated · 3 shown".
 * For the text chosen: its key, the template's comment (its box, what each argument is), where it is shown, the English,
   and your translation, written as the pack's file holds it (the same tags and placeables as the template). In the
-  English and on the chips, each kind of tag has its colour: grey the line ends (`<br>`, `<p>`), blue the option lines
+  English, in your translation as you type and on the chips, each kind of tag has its colour: grey the line ends (`<br>`, `<p>`), blue the option lines
   and indents (`<opt>`, `<indent>`), green the `$Names` and arguments, red the colour tags.
 * **As the game draws it:** the text in the game's font (your pack's font when it has one), by the game's own drawing
   code, in whole multiples of the game's pixels as large as the window allows: a card text's window beside your words, a

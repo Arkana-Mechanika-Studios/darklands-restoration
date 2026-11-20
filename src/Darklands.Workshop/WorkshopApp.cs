@@ -13,6 +13,11 @@ internal sealed class WorkshopApp : Application
         Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
         Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
         Styles.Add(new FluentTheme());
+        // the text editor's look (AvaloniaEdit: the translation box)
+        Styles.Add(new Avalonia.Markup.Xaml.Styling.StyleInclude(new Uri("avares://Darklands.Workshop/"))
+        {
+            Source = new Uri("avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml"),
+        });
         WorkshopTheme.Apply(this);
     }
 

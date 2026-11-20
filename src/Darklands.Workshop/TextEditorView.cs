@@ -29,7 +29,8 @@ internal sealed class TextEditorView : IWorkshopEditor
     private readonly TextBlock _comment = new() { TextWrapping = TextWrapping.Wrap, MaxLines = 3, TextTrimming = TextTrimming.CharacterEllipsis, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim) };
     // the English, read only, its tags and names in their colours (the chips' colours)
     private readonly SelectableTextBlock _english = new() { TextWrapping = TextWrapping.Wrap, Foreground = WorkshopTheme.Brush(WorkshopTheme.Ink), FontSize = 14 };
-    private readonly TextBox _translation = new() { AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, FontSize = 14, VerticalContentAlignment = VerticalAlignment.Top, MinHeight = 96, MaxHeight = 260 };
+    // the translation, its tags, names and arguments in their chips' colours as the translator types (AvaloniaEdit)
+    private readonly TranslationBox _translation = new() { MinHeight = 96, MaxHeight = 260 };
     private readonly TextBlock _problems = new() { TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Left, Foreground = WorkshopTheme.Brush(WorkshopTheme.Problem) };
     private readonly Image _picture = new() { Stretch = Stretch.Fill, HorizontalAlignment = HorizontalAlignment.Left };
     private readonly Border _barFill = new() { Height = 10, HorizontalAlignment = HorizontalAlignment.Left };
@@ -326,7 +327,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         // the English as a translator reads it: without the line break and indent a card text's value starts with in the file
         Paint(_english, entry is null ? "" : entry.English.TrimStart('\n').Replace("\n    ", "\n", StringComparison.Ordinal).TrimStart(' '));
         _translation.Text = entry?.Translation ?? "";
-        _translation.IsEnabled = entry is not null;
+        _translation.Editable = entry is not null;
         _problems.Text = entry is null ? "" : string.Join("\n", entry.Problems.Select(p => $"{p.Severity}: {p.Message}"));
         _loading = false;
         ShowChips();
@@ -368,7 +369,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 var at = Math.Clamp(_translation.CaretIndex, 0, text.Length);
                 _translation.Text = text.Insert(at, chip);
                 _translation.CaretIndex = at + chip.Length;
-                _translation.Focus();
+                _translation.FocusText();
             };
             _chips.Children.Add(button);
         }
