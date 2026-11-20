@@ -479,6 +479,11 @@ host.State = name =>
 //   (ScreenTextPlane) is kept from the start
 Darklands.Platform.ScreenTextPlane.Recording = true;
 var textBoxesFolder = Environment.GetEnvironmentVariable("DARKLANDS_TEXT_BOXES");
+if (!string.IsNullOrEmpty(textBoxesFolder))
+{
+    // the screen of each text too (the translators' editor groups the texts by screen)
+    Darklands.Platform.ScreenTextPlane.ScreenOf = Darklands.Presentation.ScreenNames.Current;
+}
 host.Inspect = (frame, x, y, step) =>
 {
     foreach (var line in Darklands.DevTools.Inspector.Describe(frame, x, y, new Darklands.DevTools.InspectedMoment(step, game.Ui.Inspect?.Invoke(x, y))))
@@ -503,7 +508,7 @@ if (!string.IsNullOrEmpty(textBoxesFolder))
     Darklands.Localization.TextBoxes.Write(Path.Combine(textBoxesFolder, $"boxes-{Environment.ProcessId}.json"),
         Darklands.Platform.ScreenTextPlane.KeyedTexts().Select(e => new Darklands.Localization.TextBox(e.Key!, e.WidestDrawn,
             e.Room == Darklands.Platform.ScreenTextPlane.NoRoom ? -1 : e.Room, e.Windowed, e.Font,
-            e.Values?.ToDictionary(v => v.Key, v => v.Value, StringComparer.Ordinal))));
+            e.Values?.ToDictionary(v => v.Key, v => v.Value, StringComparer.Ordinal)) { Screens = [.. e.Screens] }));
 }
 #endif
 if (game.ProgramExit is { } ended)

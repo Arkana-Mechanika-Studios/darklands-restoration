@@ -16,7 +16,21 @@ public static class ScreenTextPlane
     /// the font slot it was drawn in (0: not known), and the arguments by name (Fluent's: <c>arg0</c> ...) of its widest drawing.
     /// </summary>
     public readonly record struct Entry(string Text, string? Key, string? Arguments, int WidestDrawn, int Room = NoRoom, bool Windowed = false,
-        int Font = 0, IReadOnlyList<KeyValuePair<string, string>>? Values = null);
+        int Font = 0, IReadOnlyList<KeyValuePair<string, string>>? Values = null)
+    {
+        /// <summary>The screens the text was drawn on (<see cref="ScreenOf"/>; empty when not asked).</summary>
+        public IReadOnlyCollection<string> Screens { get; init; } = [];
+    }
+
+    /// <summary>
+    /// Names the screen a text is being drawn on (a developer build sets it: Presentation's ScreenNames); null: screens are not recorded.
+    /// Asked for a text's first draws only.
+    /// </summary>
+    public static Func<string?>? ScreenOf { get; set; }
+
+    private const int ScreenSamples = 24;
+
+    private static readonly Dictionary<int, (HashSet<string> Screens, int Samples)> ScreensOf = [];
 
     /// <summary>The room of a text drawn with no known room.</summary>
     public const int NoRoom = int.MaxValue;
@@ -93,6 +107,21 @@ public static class ScreenTextPlane
                     };
                 }
             }
+            if (ScreenOf is { } screenOf)
+            {
+                if (!ScreensOf.TryGetValue(id, out var seen))
+                {
+                    ScreensOf[id] = seen = (new HashSet<string>(StringComparer.Ordinal), 0);
+                }
+                if (seen.Samples < ScreenSamples)
+                {
+                    if (screenOf() is { } screen)
+                    {
+                        seen.Screens.Add(screen);
+                    }
+                    ScreensOf[id] = (seen.Screens, seen.Samples + 1);
+                }
+            }
             return id;
         }
     }
@@ -111,7 +140,8 @@ public static class ScreenTextPlane
     {
         lock (Gate)
         {
-            return Entries.Where(e => e.Key is not null).ToList();
+            return Entries.Select((e, id) => ScreensOf.TryGetValue(id, out var s) ? e with { Screens = [.. s.Screens.Order(StringComparer.Ordinal)] } : e)
+                .Where(e => e.Key is not null).ToList();
         }
     }
 }
