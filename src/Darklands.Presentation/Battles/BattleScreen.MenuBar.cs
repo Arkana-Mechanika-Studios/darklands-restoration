@@ -25,7 +25,8 @@ public sealed partial class BattleScreen
         var tb = _battle!;
         var m = tb.Menus;
         var exe = _assets.Executable;
-        string S(int at) => exe.String(at);
+        // the program's string at DS offset at, in the pack's words when it has them (no pack: the original's)
+        string S(int at) => _ui.Name("exe:DS:" + at.ToString("X4", System.Globalization.CultureInfo.InvariantCulture), exe.String(at));
         // a menu string with its tick byte as the program writes it; a key label or title as it is
         string Ticked(bool on, string id) => Tick(on) + _ui.Words(id)[1..];
         string W(string id) => _ui.Words(id);
@@ -36,6 +37,11 @@ public sealed partial class BattleScreen
         MenuBar.Item A(AttackItem item, Func<string> text, string key, Action run) => new(text, true, key, run, State: () => m.Attack[(int)item]);
         string With(int at, int pos, string suffix)
         {
+            if (S(at) is var shown && shown != exe.String(at))
+            {
+                // a translation: its words whole (the original's are cut at the place of the suffix)
+                return shown.TrimStart('\x01', '\x02').TrimEnd() + suffix;
+            }
             var t = S(at).TrimStart('\x01', '\x02').TrimEnd();
             var text = S(at).TrimStart('\x01', '\x02');
             return (text.Length > pos ? text[..pos] : t) + suffix;

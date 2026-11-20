@@ -1,8 +1,8 @@
 # Localisation (translations)
 
 > **Status: being built for version 1.1.** A first form of translation packs works in the development branch: the
-> program loads a pack and shows its words on the screens and in the card texts it covers (below). The battle screen's
-> messages are not translatable yet, there is no in-game language screen yet, and the
+> program loads a pack and shows its words on the screens and in the card texts it covers (below). There is no in-game
+> language screen yet, and the
 > file layout may still change before 1.1. This guide is updated as each part is built.
 
 This guide is for would-be translators first ([how you can help now](#how-translators-can-help-now)), then for
@@ -23,7 +23,11 @@ developers ([the plan in steps](#the-plan-for-developers)).
   blocks, [written as below](#card-texts)) and the words the cards put into them (months, hours, lord titles, patron and
   shop names, the cards' own words such as a physician's verdict), and the **names of the data files**
   ([below](#names-of-the-data-files)): items, saints, formulae, places, cities and their buildings and people, enemies.
-* **Not yet:** the battle screen's messages, the names in the card option pop-ups and the saint prayer screen, the
+* **The battle's words:** its messages (a split party, travelling as a group, a lock or trap's outcome, the surrender
+  question ...), its menus and the enemy panel's weapon, armour and shield types and quality words, under their `exe:`
+  keys; the battle's far texts (the type names, the ordinals of "Select …", the "cannot view" notice) as `exe:286B:XXXX`.
+  Without a pack the battle is the original's to the byte: the replays prove it.
+* **Not yet:** the names in the card option pop-ups and the saint prayer screen, the
   descriptions in the data files, and the program start's messages. These keep the original English for now.
 * **Fonts.** Without a font pack the game draws a translation with the original fonts, which have no letters beyond the
   original's set (the German edition's umlauts and ß are among them); a letter they lack is drawn as `?`. A pack can bring
@@ -72,6 +76,7 @@ into words: from the pack when it has the id, else from the player's own files. 
 
 | Key | Meaning |
 |---|---|
+| `exe:286B:XXXX` | a string of the battle's far segment (link frame 286B): its weapon, armour and shield type names, ordinals and notices |
 | `exe:DS:XXXX` | a string inside `DARKLAND.EXE`, at offset `XXXX` of its data segment (each copy the original keeps has its own key) |
 | `exe:290E:XXXX` | a string of the EXE's far string segment |
 | `id:rw.…` | a sentence of the restoration's own (the original has no such text): `id:rw.save.damaged.1` |

@@ -137,16 +137,16 @@ public sealed class BattleScreens
         new MessageBox(_ui).Show(CannotView(tb.Battle[who].Member?.Name ?? ""), 0x96 * 1000 / 60);
 
     /// <summary>"You can't view &lt;name&gt; at this time." (R136+0x7E72 + name + R136+0x7E82, R022 04E4).</summary>
-    internal string CannotView(string name) => FarText(0x0212) + name + FarText(0x0222);
+    internal string CannotView(string name) => FarWords(0x0212) + name + FarWords(0x0222);
 
     /// <summary>"Do you really want to surrender?" (a literal of R022 03E4, DS:23B2).</summary>
-    internal string SurrenderQuestion => Assets.Executable.String(0x23B2);
+    internal string SurrenderQuestion => _ui.Name("exe:DS:23B2", Assets.Executable.String(0x23B2));
 
     /// <summary>"Select first" … "Select fourth" (R022 051C: "Select %Fs" with the ordinals R136+0x7EC7[k]).</summary>
     internal string SelectOrdinal(int k)
     {
         var p = Assets.Executable.Far(0x286B, 0x0267 + 4 * k, 4);
-        return _ui.Format("exe:DS:23DC", FarText(p[0] | p[1] << 8));  // "Select %Fs" (R022)
+        return _ui.Format("exe:DS:23DC", FarWords(p[0] | p[1] << 8));  // "Select %Fs" (R022)
     }
 
     /// <summary>"BattleResults - victory" … (battle-entry, the box after the battle; result 8 "leave").</summary>
@@ -162,6 +162,11 @@ public sealed class BattleScreens
         8 => ui.Words("exe:DS:1106"),
         _ => "",
     };
+
+    /// <summary>A string of the battle's far segment in the words the screens show (the pack's for its key exe:286B:XXXX).</summary>
+    // Not in the original: the 1.1 translations (no pack: FarText).
+    internal string FarWords(int offset) =>
+        _ui.Name("exe:286B:" + offset.ToString("X4", System.Globalization.CultureInfo.InvariantCulture), FarText(offset));
 
     internal string FarText(int offset)
     {

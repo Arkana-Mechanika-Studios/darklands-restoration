@@ -189,7 +189,7 @@ public sealed partial class BattleScreen
         small.Draw(canvas, (0x36 - small.Measure(name)) / 2 + 3, y, name, 0x0E);
         y += 8;
         var expert = _state.Difficulty == Difficulty.Expert;
-        string Word(int v) => _assets.Executable.String(QualityWordAt(v));
+        string Word(int v) => _ui.Name("exe:DS:" + QualityWordAt(v).ToString("X4", System.Globalization.CultureInfo.InvariantCulture), _assets.Executable.String(QualityWordAt(v)));
         if (code[0] == 'E')
         {
             var plus = (c.Protection & 0x7F) > 0 ? "\x8e+\x8f" : "";
@@ -267,7 +267,9 @@ public sealed partial class BattleScreen
         }
         var bytes = exe.Far(seg, off, 40);
         var end = bytes.IndexOf((byte)0);
-        return Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]);
+        // Not in the original (the words only): the 1.1 translations, the type's key exe:286B:XXXX
+        return _ui.Name("exe:286B:" + off.ToString("X4", System.Globalization.CultureInfo.InvariantCulture),
+            Darklands.Core.GameTextCodec.Decode(end < 0 ? bytes : bytes[..end]));
     }
 
     /// <summary>Change Marching Order (Party menu, Alt-O): the members are picked in order with F1..F5 or clicks.</summary>

@@ -83,14 +83,17 @@ public sealed partial class BattleScreen
     public FurnitureShape? VaryFurniture(int tile, string set, int record) =>
         _tiles?.Vary(_assets.TileSets, set, tile, record) is { } f ? new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY) : null;
 
-    public void Message(int text, int ticks) => ShowMessage(_assets.Executable.String(text), ticks);
+    // Not in the original (the words only): the 1.1 translations; the message's key is its offset (no pack: the original's bytes)
+    public void Message(int text, int ticks) => ShowMessage(_ui.Name(DsKey(text), _assets.Executable.String(text)), ticks);
 
-    public void FarMessage(int text, int ticks) => ShowMessage(_owner.FarText(text), ticks);
+    public void FarMessage(int text, int ticks) => ShowMessage(_owner.FarWords(text), ticks);
+
+    private static string DsKey(int offset) => "exe:DS:" + offset.ToString("X4", System.Globalization.CultureInfo.InvariantCulture);
 
     public void Message(int text, int ticks, int member)
     {
         var c = _battle!.Battle[member];
-        ShowMessage((c.Member?.Name ?? "") + _assets.Executable.String(text), ticks);
+        ShowMessage((c.Member?.Name ?? "") + _ui.Name(DsKey(text), _assets.Executable.String(text)), ticks);
     }
 
     /// <summary>notice-display: the box over the battle for <paramref name="ticks"/> timer ticks, the battle's loop waiting meanwhile; then the box is gone.</summary>
