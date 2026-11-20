@@ -190,6 +190,15 @@ launcher does (or **Game folder…**), and works on a pack folder you choose, ou
   code, three times the game's pixels; a screen text on one line with its box's edge dotted and a bar (green: no wider than
   the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
   against the foot of the card's window. It follows your typing.
+* **Chips:** the English's tags, `$Names` and arguments (and your pack's own variables, for a card text) are buttons above
+  your translation; a click puts one where the cursor is. Below it, the editor names the chips you left out and any that
+  are not the English's. A translation that is a choice (a plural, a variable's `$sex` choice) shows one field a variant.
+* **Glossary…** keeps your pack's agreed terms (`glossary.tsv` in the pack's folder; the game does not read it). The
+  terms a text's English holds are listed above your translation, marked when your words do not use the agreed one.
+* **Pack variables…** edits your pack's own variables (the female and the male words of each), written to
+  `variables.ftl`.
+* **Show in game** starts the game with the pack and puts the text's key in the clipboard (a developer build's
+  inspector, F9, names the text under the pointer).
 * **Save** writes the pack's `.ftl` files in the template's layout (only the texts you translated; your pack's own
   variables and anything else in its files are kept). **Check** runs the game's pack check; double-click a finding to see
   its text. **Run the game with this pack** starts `DarklandsRP --language-pack` on it.

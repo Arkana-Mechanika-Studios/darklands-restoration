@@ -24,6 +24,9 @@ internal sealed class WorkshopWindow : Window
     private readonly Button _save = new() { Content = "Save" };
     private readonly Button _check = new() { Content = "Check" };
     private readonly Button _run = new() { Content = "Run the game with this pack" };
+    private readonly Button _show = new() { Content = "Show in game" };
+    private readonly Button _glossaryButton = new() { Content = "Glossary…" };
+    private readonly Button _variablesButton = new() { Content = "Pack variables…" };
     private string? _game;
     private TextProject? _project;
     private TextEditorView? _editor;
@@ -71,8 +74,25 @@ internal sealed class WorkshopWindow : Window
         _save.Click += (_, _) => _editor?.Save();
         _check.Click += (_, _) => RunCheck();
         _run.Click += (_, _) => RunGame();
+        _show.Click += async (_, _) => await ShowInGame();
+        _glossaryButton.Click += async (_, _) =>
+        {
+            if (_editor is not null)
+            {
+                await new GlossaryWindow(_editor.Glossary).ShowDialog(this);
+                _editor.Refresh();
+            }
+        };
+        _variablesButton.Click += async (_, _) =>
+        {
+            if (_editor is not null)
+            {
+                await new VariablesWindow(_editor.Project).ShowDialog(this);
+                _editor.Refresh();
+            }
+        };
         var bar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(8) };
-        foreach (var b in new[] { gameButton, newButton, openButton, _save, _check, _run })
+        foreach (var b in new[] { gameButton, newButton, openButton, _save, _check, _run, _show, _glossaryButton, _variablesButton })
         {
             bar.Children.Add(b);
         }
@@ -105,7 +125,7 @@ internal sealed class WorkshopWindow : Window
     private void UpdateState()
     {
         _where.Text = $"Game: {_game ?? "not found (choose its folder)"}" + (_project is null ? "" : $"    Pack: {_project.Folder}");
-        _save.IsEnabled = _check.IsEnabled = _run.IsEnabled = _project is not null;
+        _save.IsEnabled = _check.IsEnabled = _run.IsEnabled = _show.IsEnabled = _glossaryButton.IsEnabled = _variablesButton.IsEnabled = _project is not null;
         Title = "Darklands Workshop" + (_project is null ? "" : $" — {Path.GetFileName(_project.Folder)}{(_editor?.Dirty == true ? " *" : "")}");
     }
 
@@ -219,6 +239,23 @@ internal sealed class WorkshopWindow : Window
         }
         Process.Start(start);
         UpdateState();
+    }
+
+    // the game with the pack, and the text's key in the clipboard: the developer's inspector (F9) names the text under the pointer
+    private async Task ShowInGame()
+    {
+        if (_editor?.CurrentKey is not { } key)
+        {
+            return;
+        }
+        if (Clipboard is { } clipboard)
+        {
+            await clipboard.SetTextAsync(key);
+        }
+        RunGame();
+        _status.Text = key.StartsWith("msg:", StringComparison.Ordinal)
+            ? $"The game runs with the pack; {key} is the card {key[4..key.IndexOf('#', StringComparison.Ordinal)]}'s text (the key is in the clipboard)."
+            : $"The game runs with the pack; the key {key} is in the clipboard (a developer build's inspector, F9, names the text under the pointer).";
     }
 
     private async Task<string?> PickFolder(string title)

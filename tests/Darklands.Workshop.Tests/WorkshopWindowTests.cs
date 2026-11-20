@@ -28,7 +28,12 @@ public sealed class WorkshopWindowTests
         {
             var project = TextProject.Create(folder, "de", "Test", null, game);
             project.Set(project.Entries.First(e => e.Key == "exe:290E:0112"), "<c12> M</c>ehr Chargen");
+            var card = project.Entries.First(e => e.Key.StartsWith("msg:$OTHER00#0", StringComparison.Ordinal));
+            project.Set(card, "Übersetzt " + card.English);
             project.Save();
+            var glossary = Glossary.Load(folder);
+            glossary.Set(new GlossaryTerm("party", "Gruppe", ""));
+            glossary.Save(folder);
             using var session = HeadlessUnitTestSession.StartNew(typeof(HeadlessApp));
             var shown = await session.Dispatch(() =>
             {
@@ -37,7 +42,7 @@ public sealed class WorkshopWindowTests
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                 var list = window.GetVisualDescendants().OfType<ListBox>().First(l => l.ItemsSource is IEnumerable<TextEntry>);
                 // the menu text with its translation: the preview and the width bar beside it
-                list.SelectedItem = list.ItemsSource!.Cast<TextEntry>().First(e => e.Key == "exe:290E:0112");
+                list.SelectedItem = list.ItemsSource!.Cast<TextEntry>().First(e => e.Key == (Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_KEY") ?? "exe:290E:0112"));
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                 if (Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOT") is { Length: > 0 } shot)
                 {
