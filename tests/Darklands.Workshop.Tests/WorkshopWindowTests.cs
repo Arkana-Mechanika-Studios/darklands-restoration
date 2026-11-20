@@ -47,15 +47,16 @@ public sealed class WorkshopWindowTests
                 var window = new WorkshopWindow(new WorkshopSettings { GameFolder = game }, [folder]);
                 window.Show();
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
-                var list = window.GetVisualDescendants().OfType<ListBox>().First(l => l.ItemsSource is IEnumerable<TextEntry>);
                 // the menu text with its translation: the preview and the width bar beside it
-                list.SelectedItem = list.ItemsSource!.Cast<TextEntry>().First(e => e.Key == (Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_KEY") ?? "exe:290E:0112"));
+                var key = Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_KEY") ?? "exe:290E:0112";
+                window.Editor!.Select(key);
+                Assert.Equal(key, window.Editor.CurrentKey);
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                 if (Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOT") is { Length: > 0 } shot)
                 {
                     window.CaptureRenderedFrame()?.Save(shot);
                 }
-                var count = list.ItemCount;
+                var count = window.Editor.Project.Entries.Count;
                 window.Close();
                 return count;
             }, CancellationToken.None);

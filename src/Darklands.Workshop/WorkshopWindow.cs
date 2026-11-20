@@ -22,7 +22,6 @@ internal sealed class WorkshopWindow : Window
     private readonly WorkshopSettings _settings;
     private readonly TextBlock _where = new() { VerticalAlignment = VerticalAlignment.Center, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim) };
     private readonly ContentControl _centre = new();
-    private readonly TabControl _tabs = new() { Padding = new Thickness(0) };
     private readonly ListBox _findings = new() { Height = 100 };
     private readonly Expander _checkPanel = new() { IsVisible = false, HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(8, 0, 8, 4) };
     private readonly TextBlock _status = new() { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, FontSize = 12 };
@@ -258,7 +257,11 @@ internal sealed class WorkshopWindow : Window
     private void OnKey(object? sender, Avalonia.Input.KeyEventArgs e)
     {
         var ctrl = e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control);
-        if (ctrl && e.Key == Avalonia.Input.Key.S && _editor is not null)
+        if (_project is not null && _editor is not null && _editor.Key(e))
+        {
+            e.Handled = true;
+        }
+        else if (ctrl && e.Key == Avalonia.Input.Key.S && _editor is not null)
         {
             _editor.Save();
             _status.Text = "Saved " + DateTime.Now.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture) + ".";
@@ -315,9 +318,9 @@ internal sealed class WorkshopWindow : Window
         {
             _centre.Content = BuildStart();
         }
-        else if (_centre.Content != _tabs)
+        else if (_editor is not null && _centre.Content != _editor.View)
         {
-            _centre.Content = _tabs;
+            _centre.Content = _editor.View;
         }
         Title = "Darklands Workshop" + (_project is null ? "" : $" — {_project.Language} · {Path.GetFileName(_project.Folder)}{(_editor?.Dirty == true ? " (not saved)" : "")}");
     }
@@ -433,8 +436,6 @@ internal sealed class WorkshopWindow : Window
         _project = project;
         _editor = new TextEditorView(project);
         _editor.Changed += UpdateState;
-        _tabs.ItemsSource = new[] { new TabItem { Header = _editor.Title, Content = _editor.View, FontSize = 15 } };
-        _tabs.SelectedIndex = 0;
         _findings.ItemsSource = null;
         _checkPanel.IsVisible = false;
         _settings.Opened(project.Folder);
@@ -481,6 +482,9 @@ internal sealed class WorkshopWindow : Window
 
     private static string Sample(string letters) =>
         letters.Length <= 12 ? string.Join(" ", letters.Select(c => c.ToString())) : string.Join(" ", letters.Take(12).Select(c => c.ToString())) + " …";
+
+    /// <summary>The text editor of the pack open (the tests; null: none).</summary>
+    internal TextEditorView? Editor => _editor;
 
     /// <summary>Runs the check as its button does (the window's pictures in the tests).</summary>
     internal void RunCheckForTests() => RunCheck();

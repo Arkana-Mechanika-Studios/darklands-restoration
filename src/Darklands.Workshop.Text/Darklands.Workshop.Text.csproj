@@ -8,8 +8,9 @@
     <ProjectReference Include="..\Darklands.Content\Darklands.Content.csproj" />
   </ItemGroup>
 
-  <!-- the boxes the Workshop ships: widths, fonts and screens, no word of the game (WorkshopBoxes) -->
+  <!-- the cards' titles in the list: the card scripts' class names in words (TextTitles; made by a developer's tool from src) -->
   <ItemGroup>
+    <EmbeddedResource Include="Resources\card-titles.json" LogicalName="Darklands.Workshop.Text.card-titles.json" />
   </ItemGroup>
 
   <PropertyGroup>

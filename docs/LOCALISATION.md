@@ -235,16 +235,23 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   makes the pack in the program's `packs\<tag>` folder (**Browse…** for another). When the language has letters the
   game's fonts lack, **Build a matching font** is ticked: the pack gets the font in the game's pixel style at once.
   **Open folder…** (**Ctrl+O**) opens a pack from anywhere.
-* The list holds every text a pack can translate, grouped by where the game shows it: a screen, a card, or "not seen"
-  (a text no recorded session showed). Filter it by state (untranslated, translated, with a problem) and search the
-  English, your words or the key. Each row's mark is its state: a green dot translated, a red dot translated with a
-  problem the check found, an empty ring not translated yet. The counter reads "12 of 4,917 translated · 3 shown".
-* For the text chosen: its key, the template's comment (its box, what each argument is), where it is shown, the English,
-  and your translation, written as the pack's file holds it (the same tags and placeables as the template). In the
+* The list holds every text a pack can translate, in sections by where the game shows it (cards, screens, names, and
+  "not seen": a text no recorded session showed), and in each section by card or screen, under a plain title ("City
+  church by day", "Barter") with its share translated (a bar and "1/10"); a click folds a group open or shut. Each text
+  is named by its first words. Filter the list (**All**, **To do**, **Review**, **Problems**) and search the English,
+  your words or the key. Each row's mark is its state: a green dot translated, an amber dot marked for review, a red
+  dot translated with a problem the check found, an empty ring not translated yet. The counter reads "12 of 4,917
+  translated · 3 shown".
+* **Needs review** marks a translated text to look at again (yours to doubt, or a reviewer's to check). The marks are
+  kept in the pack's `workshop.json`, the Workshop's own file (the game does not read it), and saved with the pack.
+* For the text chosen: its title and first words above, then its kind, key and the template's comment (its box, what
+  each argument is), its state, the English, and your translation, written as the pack's file holds it (the same tags
+  and placeables as the template). In the
   English, in your translation as you type and on the chips, each kind of tag has its colour: grey the line ends (`<br>`, `<p>`), blue the option lines
   and indents (`<opt>`, `<indent>`), green the `$Names` and arguments, red the colour tags.
 * **Card texts in rows.** A card text opens in its **Rows** view: the introduction, each passage that shows only when
-  its condition holds, and each option line in a field of its own, the English above each. You write only the words:
+  its condition holds, and each option line (numbered) in a field of its own, the English on the left and yours on
+  the right. You write only the words:
   a new line is a line break, a blank line a new paragraph, and the option markers, the "…" lead-ins and the indents
   are the English's, written for you. **Raw** shows the text as the pack's file holds it, its tags included (for
   experts, and for a translation whose lines are not the English's: another number of options or passages opens there).
@@ -254,8 +261,8 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   screen text under them; a screen text on one line with its box's edge dotted and a bar (green: no wider than
   the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
   against the foot of the card's window. It follows your typing.
-* **Chips:** the English's tags, `$Names` and arguments (and your pack's own variables, for a card text) are buttons above
-  your translation; a click puts one where the cursor is. Below it, the editor names the chips you left out and any that
+* **Chips:** the English's tags, `$Names` and arguments (and your pack's own variables, for a card text) are buttons under
+  your translation (**Insert**); a click, or **Alt+1** to **Alt+9**, puts one where the cursor is. Below it, the editor names the chips you left out and any that
   are not the English's. A translation that is a choice (a plural, a variable's `$sex` choice) shows one field a variant.
 * **Glossary** keeps your pack's agreed terms (`glossary.tsv` in the pack's folder; the game does not read it). The
   terms a text's English holds are listed above your translation, marked when your words do not use the agreed one.
@@ -267,6 +274,10 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   variables and anything else in its files are kept). **Check** runs the game's pack check; its findings open below the
   editor (the panel folds away), and a double-click on one shows its text. **Run game** starts
   `DarklandsRP --language-pack` on it.
+
+**Keys.** **Ctrl+Enter** accepts the text (clears its review mark) and goes to the next untranslated one;
+**Ctrl+↓** and **Ctrl+↑** go to the next and the previous untranslated text; **F8** and **Shift+F8** to the next and the
+previous text with a problem; **Ctrl+F** to the search; **Ctrl+S** saves.
 
 A pack written by the Workshop is a plain pack: the game reads it as it is, and you can still edit its files by hand.
 
