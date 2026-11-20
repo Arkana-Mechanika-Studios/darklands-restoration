@@ -25,14 +25,18 @@ internal sealed class WorkshopWindow : Window
     private readonly TabControl _tabs = new() { Padding = new Thickness(0) };
     private readonly ListBox _findings = new() { Height = 100 };
     private readonly Expander _checkPanel = new() { IsVisible = false, HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(8, 0, 8, 4) };
-    private readonly TextBlock _status = new() { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
-    private readonly Button _save = Tool("Save", "Save the pack's files");
-    private readonly Button _check = Tool("Check", "Save, then run the game's own check of the pack");
-    private readonly Button _run = Tool("Run game", "Save, then start the game with this pack");
-    private readonly Button _show = Tool("Show in game", "Start the game with the pack; the text's key goes to the clipboard");
-    private readonly Button _glossaryButton = Tool("Glossary", "The pack's terms and their translations");
-    private readonly Button _variablesButton = Tool("Variables", "The pack's own variables ($him1 …), chosen by the character's sex");
-    private readonly Button _fontButton = Tool("Font pack…", "Build the letters your language needs in the game's pixel style, from your own game's fonts, into the pack");
+    private readonly TextBlock _status = new() { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, FontSize = 12 };
+    private readonly Button _save = WorkshopTheme.Ghost(WorkshopTheme.IconText("save", "Save", 14), "Save the pack's files (Ctrl+S)");
+    private readonly Button _check = WorkshopTheme.Ghost(new StackPanel(), "Save, then run the game's own check of the pack");
+    private readonly TextBlock _checkCount = new() { FontSize = 11.5, FontWeight = FontWeight.Medium, VerticalAlignment = VerticalAlignment.Center };
+    private readonly Border _checkPill;
+    private readonly Button _run = WorkshopTheme.Primary(WorkshopTheme.IconText("play", "Play in game", 13));
+    private readonly Button _glossaryButton = WorkshopTheme.Ghost(WorkshopTheme.IconText("book", "Glossary", 14), "The pack's terms and their translations");
+    private readonly Button _more = WorkshopTheme.Ghost(WorkshopIcons.Make("more", 16), "More");
+    private readonly ContentControl _crumb = new() { VerticalAlignment = VerticalAlignment.Center };
+    private readonly StackPanel _packActions = new() { Orientation = Orientation.Horizontal, Spacing = 2, VerticalAlignment = VerticalAlignment.Center };
+    private readonly Button _gameButton = WorkshopTheme.Ghost(new StackPanel(), "The folder of your Darklands");
+    private readonly StackPanel _keys = new() { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
     private string? _game;
     private TextProject? _project;
     private TextEditorView? _editor;
@@ -40,12 +44,27 @@ internal sealed class WorkshopWindow : Window
     public WorkshopWindow(WorkshopSettings settings, string[] args)
     {
         _settings = settings;
+        _checkPill = new Border
+        {
+            CornerRadius = new CornerRadius(9),
+            Padding = new Thickness(6, 0),
+            Height = 18,
+            Margin = new Thickness(4, 0, 0, 0),
+            Background = WorkshopTheme.Brush(Color.FromArgb(0x26, 0xE0, 0x56, 0x4E)),
+            Child = _checkCount,
+            IsVisible = false,
+        };
+        _checkCount.Foreground = WorkshopTheme.Brush(Color.Parse("#ef8a83"));
+        _check.Content = new StackPanel { Orientation = Orientation.Horizontal, Children = { WorkshopTheme.IconText("check-circle", "Check", 14), _checkPill } };
+        FontFamily = WorkshopTheme.UiFont;
+        FontSize = 13;
         Title = "Darklands Workshop";
         Icon = WorkshopTheme.Icon();
         Width = 1280;
         Height = 800;
-        Background = WorkshopTheme.Brush(WorkshopTheme.Wood);
-        Foreground = WorkshopTheme.Brush(WorkshopTheme.Parchment);
+        Background = WorkshopTheme.Brush(WorkshopTheme.Bg);
+        Foreground = WorkshopTheme.Brush(WorkshopTheme.Text);
+        KeyDown += OnKey;
         var gameArg = Array.IndexOf(args, "--game") is var g and >= 0 && g + 1 < args.Length ? args[g + 1] : null;
         _game = gameArg is not null && Darklands.Content.GameFiles.IsGameFolder(gameArg) ? gameArg : settings.FindGame();
         Content = Build();
@@ -66,27 +85,13 @@ internal sealed class WorkshopWindow : Window
         };
     }
 
-    private static Button Tool(string label, string tip)
-    {
-        var button = new Button { Content = label, Padding = new Thickness(10, 4), FontSize = 13 };
-        ToolTip.SetTip(button, tip);
-        return button;
-    }
-
-    private static Control Gap() => new Border { Width = 1, Margin = new Thickness(6, 4), Background = WorkshopTheme.Brush(WorkshopTheme.WoodLine) };
-
     private Control Build()
     {
-        var gameButton = Tool("Game…", "The folder of your Darklands (it holds DARKLAND.EXE)");
-        gameButton.Click += async (_, _) => await ChooseGame();
-        var newButton = Tool("New pack…", "Make a translation pack for a language");
-        newButton.Click += async (_, _) => await NewPack();
-        var openButton = Tool("Open pack…", "Open a translation pack (its folder holds pack.json)");
-        openButton.Click += async (_, _) => await OpenPack();
+        _gameButton.Click += async (_, _) => await ChooseGame();
         _save.Click += (_, _) => _editor?.Save();
         _check.Click += (_, _) => RunCheck();
         _run.Click += (_, _) => RunGame();
-        _show.Click += async (_, _) => await ShowInGame();
+        ToolTip.SetTip(_run, "Save, then start the game with this pack");
         _glossaryButton.Click += async (_, _) =>
         {
             if (_editor is not null)
@@ -95,21 +100,29 @@ internal sealed class WorkshopWindow : Window
                 _editor.Refresh();
             }
         };
-        _fontButton.Click += async (_, _) => await BuildFontPack(ask: false);
-        _variablesButton.Click += async (_, _) =>
+        _more.Click += (_, _) => MoreMenu().ShowAt(_more);
+        foreach (var c in new Control[] { _save, _check, _glossaryButton })
         {
-            if (_editor is not null)
-            {
-                await new VariablesWindow(_editor.Project).ShowDialog(this);
-                _editor.Refresh();
-            }
-        };
-        var bar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-        foreach (var c in new Control[] { gameButton, newButton, openButton, Gap(), _save, _check, Gap(), _run, _show, Gap(), _glossaryButton, _variablesButton, _fontButton })
-        {
-            bar.Children.Add(c);
+            _packActions.Children.Add(c);
         }
-        var top = new Border { Child = bar, Padding = new Thickness(8, 6), Background = WorkshopTheme.Brush(WorkshopTheme.WoodLight), BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine), BorderThickness = new Thickness(0, 0, 0, 1) };
+        var brand = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 10,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children =
+            {
+                new Border { Width = 22, Height = 22, CornerRadius = new CornerRadius(11), ClipToBounds = true, Child = new Image { Source = WorkshopTheme.Emblem, Stretch = Stretch.UniformToFill } },
+                _crumb,
+            },
+        };
+        var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center, Children = { _gameButton, _packActions, _more, _run } };
+        _run.Margin = new Thickness(8, 0, 0, 0);
+        var topBar = new DockPanel { Height = 44, Margin = new Thickness(12, 0) };
+        DockPanel.SetDock(right, Dock.Right);
+        topBar.Children.Add(right);
+        topBar.Children.Add(brand);
+        var top = new Border { Child = topBar, Background = WorkshopTheme.Brush(WorkshopTheme.Side), BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line), BorderThickness = new Thickness(0, 0, 0, 1) };
 
         _findings.Styles.Add(new Avalonia.Styling.Style(x => Avalonia.Styling.Selectors.OfType<ListBoxItem>(x))
         {
@@ -132,12 +145,16 @@ internal sealed class WorkshopWindow : Window
             },
         };
 
-        // the status line: the message on the left, the game folder and the pack on the right, never cut off
-        var statusLine = new DockPanel { Margin = new Thickness(10, 4) };
-        DockPanel.SetDock(_where, Dock.Right);
-        statusLine.Children.Add(_where);
+        // the status line, quiet: the message on the left; the shortcuts, the game folder and the pack on the right, never cut off
+        _status.Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint);
+        _where.FontSize = 12;
+        _where.Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint);
+        var statusRight = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 16, VerticalAlignment = VerticalAlignment.Center, Children = { _keys, _where } };
+        var statusLine = new DockPanel { Height = 26, Margin = new Thickness(12, 0) };
+        DockPanel.SetDock(statusRight, Dock.Right);
+        statusLine.Children.Add(statusRight);
         statusLine.Children.Add(_status);
-        var bottom = new Border { Child = statusLine, Background = WorkshopTheme.Brush(WorkshopTheme.WoodLight), BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine), BorderThickness = new Thickness(0, 1, 0, 0) };
+        var bottom = new Border { Child = statusLine, Background = WorkshopTheme.Brush(WorkshopTheme.Side), BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line), BorderThickness = new Thickness(0, 1, 0, 0) };
 
         var root = new DockPanel();
         DockPanel.SetDock(top, Dock.Top);
@@ -150,67 +167,150 @@ internal sealed class WorkshopWindow : Window
         return root;
     }
 
-    // the first-start page: find the game, then make or open a pack (the packs opened lately below)
+    // the start page: the banner, the packs found on this computer, the actions (StartPage)
     private Control BuildStart()
     {
-        var parchment = WorkshopTheme.Brush(WorkshopTheme.Parchment);
-        var dim = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim);
-        var gold = WorkshopTheme.Brush(WorkshopTheme.Gold);
-        var panel = new StackPanel { Spacing = 10, Width = 560 };
-        panel.Children.Add(new TextBlock { Text = "Darklands Workshop", FontSize = 30, FontWeight = FontWeight.SemiBold, Foreground = gold });
-        panel.Children.Add(new TextBlock { Text = "Translate the game's texts and see each one as the game draws it.", FontSize = 15, Foreground = dim, TextWrapping = TextWrapping.Wrap });
-
-        panel.Children.Add(new TextBlock { Text = "1   Your game", FontSize = 18, FontWeight = FontWeight.SemiBold, Foreground = parchment, Margin = new Thickness(0, 14, 0, 0) });
-        panel.Children.Add(new TextBlock
+        var packs = PackCatalog.Find(PackCatalog.PackFolders(AppContext.BaseDirectory, _game), _settings.RecentPacks);
+        var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault())
         {
-            Text = _game is null ? "Not found yet. Choose the folder that holds DARKLAND.EXE." : "Found: " + _game,
-            Foreground = _game is null ? WorkshopTheme.Brush(WorkshopTheme.Problem) : parchment,
-            TextWrapping = TextWrapping.Wrap,
-        });
-        var find = new Button { Content = _game is null ? "Find the game folder…" : "Choose another folder…", Padding = new Thickness(14, 6) };
-        find.Click += async (_, _) => await ChooseGame();
-        panel.Children.Add(find);
+            Open = Open,
+            NewPack = () => _ = NewPack(),
+            OpenFolder = () => _ = OpenPack(),
+            ChooseGame = () => _ = ChooseGame(),
+            Link = address => _ = Launcher.LaunchUriAsync(new Uri(address)),
+        };
+        _startPacks = packs;
+        _status.Text = packs.Count == 0 ? "No pack found yet."
+            : $"{packs.Count} pack{(packs.Count == 1 ? "" : "s")} · looking in the program's packs folder, the game's packs folder and the folders you opened";
+        return page.Build();
+    }
 
-        panel.Children.Add(new TextBlock { Text = "2   A translation pack", FontSize = 18, FontWeight = FontWeight.SemiBold, Foreground = parchment, Margin = new Thickness(0, 14, 0, 0) });
-        panel.Children.Add(new TextBlock { Text = "A pack is a folder of your own: the game's files are only read, never changed.", Foreground = dim, TextWrapping = TextWrapping.Wrap });
-        var newButton = new Button { Content = "New pack…", Padding = new Thickness(14, 6), IsEnabled = _game is not null };
-        newButton.Click += async (_, _) => await NewPack();
-        var openButton = new Button { Content = "Open pack…", Padding = new Thickness(14, 6), IsEnabled = _game is not null };
-        openButton.Click += async (_, _) => await OpenPack();
-        panel.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { newButton, openButton } });
+    private IReadOnlyList<PackSummary> _startPacks = [];
 
-        var recent = _settings.RecentPacks.Where(Directory.Exists).Take(5).ToList();
-        if (recent.Count > 0 && _game is not null)
+    // how many texts a pack can translate (the template's), for the packs' progress; 0 without a game
+    private int TemplateCount()
+    {
+        if (_game is null)
         {
-            panel.Children.Add(new TextBlock { Text = "Opened lately", Foreground = dim, Margin = new Thickness(0, 8, 0, 0) });
-            foreach (var folder in recent)
+            return 0;
+        }
+        if (_templateCount.Game != _game)
+        {
+            try
             {
-                var link = new Button { Content = folder, Background = Brushes.Transparent, BorderThickness = new Thickness(0), Foreground = gold, Padding = new Thickness(0, 2) };
-                link.Click += (_, _) => Open(folder);
-                panel.Children.Add(link);
+                _templateCount = (_game, TranslatorTemplate.Build(new Darklands.Content.GameFiles(_game), []).Count);
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
+            {
+                _templateCount = (_game, 0);
             }
         }
-        return new ScrollViewer
+        return _templateCount.Count;
+    }
+
+    private (string? Game, int Count) _templateCount;
+
+    // the menu of the actions that are not on the bar
+    private MenuFlyout MoreMenu()
+    {
+        var menu = new MenuFlyout();
+        MenuItem Item(string text, string icon, Action run, bool enabled = true, string? gesture = null)
         {
-            Content = new Border
-            {
-                Child = panel,
-                Padding = new Thickness(36, 28),
-                Margin = new Thickness(0, 40),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top,
-                Background = WorkshopTheme.Brush(WorkshopTheme.WoodLight),
-                BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(6),
-            },
-        };
+            var item = new MenuItem { Header = text, Icon = WorkshopIcons.Make(icon, 15), IsEnabled = enabled, InputGesture = gesture is null ? null : Avalonia.Input.KeyGesture.Parse(gesture) };
+            item.Click += (_, _) => run();
+            return item;
+        }
+        var pack = _project is not null;
+        menu.Items.Add(Item("New pack…", "plus", () => _ = NewPack(), _game is not null, "Ctrl+N"));
+        menu.Items.Add(Item("Open pack…", "folder", () => _ = OpenPack(), _game is not null, "Ctrl+O"));
+        menu.Items.Add(Item("All packs", "chevron-right", ClosePack, pack));
+        menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Pack variables…", "braces", () => _ = Variables(), pack));
+        menu.Items.Add(Item("Font pack…", "type", () => _ = BuildFontPack(ask: false), pack));
+        menu.Items.Add(Item("Show in game", "play", () => _ = ShowInGame(), pack));
+        menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
+        return menu;
+    }
+
+    private async Task Variables()
+    {
+        if (_editor is not null)
+        {
+            await new VariablesWindow(_editor.Project).ShowDialog(this);
+            _editor.Refresh();
+        }
+    }
+
+    // back to the start page (the pack saved)
+    private void ClosePack()
+    {
+        if (_editor?.Dirty == true)
+        {
+            _editor.Save();
+        }
+        _project = null;
+        _editor = null;
+        _checkPanel.IsVisible = false;
+        UpdateState();
+    }
+
+    private void OnKey(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        var ctrl = e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control);
+        if (ctrl && e.Key == Avalonia.Input.Key.S && _editor is not null)
+        {
+            _editor.Save();
+            _status.Text = "Saved " + DateTime.Now.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture) + ".";
+            e.Handled = true;
+        }
+        else if (ctrl && e.Key == Avalonia.Input.Key.N && _game is not null)
+        {
+            _ = NewPack();
+            e.Handled = true;
+        }
+        else if (ctrl && e.Key == Avalonia.Input.Key.O && _game is not null)
+        {
+            _ = OpenPack();
+            e.Handled = true;
+        }
+        else if (e.Key == Avalonia.Input.Key.Enter && _project is null && _startPacks.Count > 0 && FocusManager?.GetFocusedElement() is not TextBox)
+        {
+            Open(_settings.RecentPacks.FirstOrDefault(Directory.Exists) ?? _startPacks[0].Folder);
+            e.Handled = true;
+        }
     }
 
     private void UpdateState()
     {
-        _where.Text = $"Game: {_game ?? "not found"}" + (_project is null ? "" : $"     Pack: {_project.Folder}");
-        _save.IsEnabled = _check.IsEnabled = _run.IsEnabled = _show.IsEnabled = _glossaryButton.IsEnabled = _variablesButton.IsEnabled = _fontButton.IsEnabled = _project is not null;
+        _where.Text = _project is null ? "" : $"Game {_game ?? "not found"} · Pack {_project.Folder}";
+        _packActions.IsVisible = _run.IsVisible = _project is not null;
+        _gameButton.IsVisible = _project is null;
+        _gameButton.Content = WorkshopTheme.IconText("gamepad", _game ?? "Find the game…", 14);
+        _gameButton.Foreground = WorkshopTheme.Brush(_game is null ? WorkshopTheme.Warn : WorkshopTheme.Muted);
+        _crumb.Content = _project is null
+            ? new TextBlock { Text = "Darklands Workshop", FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center }
+            : Crumb(_project);
+        _keys.Children.Clear();
+        if (_project is null)
+        {
+            _keys.Children.Add(new TextBlock { Text = "Open the last pack", VerticalAlignment = VerticalAlignment.Center });
+            _keys.Children.Add(WorkshopTheme.Key("Enter"));
+            _keys.Children.Add(new TextBlock { Text = "  New pack", VerticalAlignment = VerticalAlignment.Center });
+            _keys.Children.Add(WorkshopTheme.Key("Ctrl"));
+            _keys.Children.Add(WorkshopTheme.Key("N"));
+        }
+        else
+        {
+            _keys.Children.Add(new TextBlock { Text = "Save", VerticalAlignment = VerticalAlignment.Center });
+            _keys.Children.Add(WorkshopTheme.Key("Ctrl"));
+            _keys.Children.Add(WorkshopTheme.Key("S"));
+        }
+        foreach (var t in _keys.Children.OfType<TextBlock>())
+        {
+            t.FontSize = 12;
+            t.Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint);
+        }
         if (_project is null)
         {
             _centre.Content = BuildStart();
@@ -220,6 +320,35 @@ internal sealed class WorkshopWindow : Window
             _centre.Content = _tabs;
         }
         Title = "Darklands Workshop" + (_project is null ? "" : $" — {_project.Language} · {Path.GetFileName(_project.Folder)}{(_editor?.Dirty == true ? " (not saved)" : "")}");
+    }
+
+    // "Packs › Français fr": the way back to the start page and the pack's language
+    private Control Crumb(TextProject project)
+    {
+        var back = WorkshopTheme.Ghost(new TextBlock { Text = "Packs", Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted) }, "All packs");
+        back.Padding = new Thickness(6, 3);
+        back.Click += (_, _) => ClosePack();
+        var language = Languages.Of(project.Language);
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 6,
+            Children =
+            {
+                back,
+                WorkshopIcons.Make("chevron-right", 14, WorkshopTheme.Brush(WorkshopTheme.Faint)),
+                new TextBlock { Text = language?.Native ?? project.Language, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center },
+                new Border
+                {
+                    CornerRadius = new CornerRadius(9),
+                    Padding = new Thickness(7, 0),
+                    Height = 18,
+                    Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock { Text = project.Language, FontSize = 11.5, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), VerticalAlignment = VerticalAlignment.Center },
+                },
+            },
+        };
     }
 
     private async Task ChooseGame()
@@ -255,18 +384,26 @@ internal sealed class WorkshopWindow : Window
             _status.Text = "Choose the game's folder first: the texts come from your own game files.";
             return;
         }
-        var dialog = new NewPackDialog();
-        if (await dialog.ShowDialog<bool>(this) && await PickFolder("An empty folder for the new pack (outside the game's folder)") is { } folder)
+        var dialog = new NewPackDialog(_game, Path.Combine(AppContext.BaseDirectory, "packs"), _settings.Author);
+        if (!await dialog.ShowDialog<bool>(this))
         {
-            try
+            return;
+        }
+        try
+        {
+            _settings.Author = dialog.Author ?? _settings.Author;
+            var project = TextProject.Create(dialog.Folder, dialog.LanguageTag, dialog.PackName, dialog.Author, _game);
+            if (dialog.BuildFont)
             {
-                Show(TextProject.Create(folder, dialog.Language, dialog.PackName, dialog.Author, _game));
-                await BuildFontPack(ask: true);
+                var (game, folder, language) = (_game, dialog.Folder, dialog.LanguageTag);
+                _status.Text = "Building the font…";
+                await Task.Run(() => FontNeeds.Build(game, folder, language));
             }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
-            {
-                _status.Text = e.Message;
-            }
+            Show(project);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            _status.Text = e.Message;
         }
     }
 
@@ -364,6 +501,8 @@ internal sealed class WorkshopWindow : Window
             ? "The game's check: no findings."
             : $"The game's check: {Count(errors, "error")} · {overflows.ToString("N0", CultureInfo.InvariantCulture)} too wide or too long · {Count(notes, "note")}";
         _checkPanel.Header = summary;
+        _checkCount.Text = errors.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        _checkPill.IsVisible = errors > 0;
         _checkPanel.IsVisible = true;
         _checkPanel.IsExpanded = findings.Count > 0;
         _status.Text = summary;
@@ -418,50 +557,6 @@ internal sealed class WorkshopWindow : Window
         var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = title, AllowMultiple = false });
         return folders.Count > 0 ? folders[0].TryGetLocalPath() : null;
     }
-}
-
-/// <summary>A new pack's language tag, name and author.</summary>
-internal sealed class NewPackDialog : Window
-{
-    private readonly TextBox _language = new() { Watermark = "a language tag: de, fr, pt-BR", Text = "" };
-    private readonly TextBox _name = new() { Watermark = "the pack's name" };
-    private readonly TextBox _author = new() { Watermark = "your name (optional)" };
-
-    public NewPackDialog()
-    {
-        Title = "New translation pack";
-        Width = 420;
-        SizeToContent = SizeToContent.Height;
-        Background = WorkshopTheme.Brush(WorkshopTheme.Wood);
-        var ok = new Button { Content = "Make the pack", IsDefault = true };
-        ok.Click += (_, _) =>
-        {
-            if (Language.Length > 0)
-            {
-                Close(true);
-            }
-        };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
-        cancel.Click += (_, _) => Close(false);
-        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Right };
-        buttons.Children.Add(ok);
-        buttons.Children.Add(cancel);
-        var panel = new StackPanel { Spacing = 8, Margin = new Thickness(12) };
-        panel.Children.Add(new TextBlock { Text = "Language" });
-        panel.Children.Add(_language);
-        panel.Children.Add(new TextBlock { Text = "Name" });
-        panel.Children.Add(_name);
-        panel.Children.Add(new TextBlock { Text = "Author" });
-        panel.Children.Add(_author);
-        panel.Children.Add(buttons);
-        Content = panel;
-    }
-
-    public string Language => (_language.Text ?? "").Trim();
-
-    public string PackName => string.IsNullOrWhiteSpace(_name.Text) ? Language : _name.Text.Trim();
-
-    public string? Author => string.IsNullOrWhiteSpace(_author.Text) ? null : _author.Text.Trim();
 }
 
 /// <summary>A question with two answers (true: the first).</summary>

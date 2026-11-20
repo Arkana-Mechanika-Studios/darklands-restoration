@@ -223,12 +223,18 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 ## The Workshop's text editor
 
 `DarklandsWorkshop` (a download of its own beside the game's; put it in the same folder as `DarklandsRP`) is the
-translators' editor. It finds your game folder as the
-launcher does (or **Game…**), and works on a pack folder you choose, outside the game's folder. With no pack open it
-starts on a short page: your game folder (found, or a button to find it), then **New pack…** and **Open pack…**, and the
-packs you opened lately. The status line at the foot of the window names the game folder and the pack.
+translators' editor. It finds your game folder as the launcher does (or the game folder button at the top right), and
+starts on its pack list: every translation pack it finds in the program's `packs` folder (the one the launcher lists),
+in the game folder's `packs` folder and among the packs you opened, each with its language, name, author, progress and
+when it last changed, the last one you opened first (**Enter** continues with it). Under the project's banner are the
+version ("Restoration 1.1.0", and the game program's version beside the Workshop when it differs) and the project's
+website, GitHub and Discord. **Packs** at the top left leads back to the list from a pack.
 
-* **New pack…** asks for the language tag, a name and your name, and makes the pack; **Open pack…** opens one.
+* **New pack** (**Ctrl+N**) asks for the language from a list of the usual ones (search by its own name, its English
+  name or its tag; **Other language…** takes any well-formed BCP 47 tag and its name), a pack name and your name, and
+  makes the pack in the program's `packs\<tag>` folder (**Browse…** for another). When the language has letters the
+  game's fonts lack, **Build a matching font** is ticked: the pack gets the font in the game's pixel style at once.
+  **Open folder…** (**Ctrl+O**) opens a pack from anywhere.
 * The list holds every text a pack can translate, grouped by where the game shows it: a screen, a card, or "not seen"
   (a text no recorded session showed). Filter it by state (untranslated, translated, with a problem) and search the
   English, your words or the key. Each row's mark is its state: a green dot translated, a red dot translated with a

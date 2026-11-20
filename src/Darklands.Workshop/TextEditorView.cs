@@ -185,7 +185,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         Put(Heading("English"), 1);
         Put(new Border
         {
-            Background = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim),
+            Background = WorkshopTheme.Brush(WorkshopTheme.Side),
             BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(3),
@@ -358,7 +358,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 Padding = new Thickness(6, 1),
                 Margin = new Thickness(0, 0, 4, 4),
                 FontSize = 11,
-                Background = WorkshopTheme.Brush(WorkshopTheme.Parchment),
+                Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
                 Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColourOf(token) ?? WorkshopTheme.Ink),
                 FontWeight = FontWeight.SemiBold,
             };

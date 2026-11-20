@@ -72,7 +72,9 @@ public sealed class WorkshopShotsTests
                 }
                 WorkshopWindow Open(string? pack)
                 {
-                    var window = new WorkshopWindow(new WorkshopSettings { GameFolder = game }, pack is null ? [] : [pack]) { Width = 1280, Height = 800 };
+                    // the packs opened lately: the start page lists them (the last one first)
+                    var settings = new WorkshopSettings { GameFolder = game, RecentPacks = [Pack("fr"), Pack("ru"), Pack("el")] };
+                    var window = new WorkshopWindow(settings, pack is null ? [] : [pack]) { Width = 1280, Height = 800 };
                     window.Show();
                     Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                     return window;
@@ -81,6 +83,17 @@ public sealed class WorkshopShotsTests
                 var empty = Open(null);
                 Shot(empty, "1-start");
                 empty.Close();
+
+                // the new pack dialog, a language picked from the list
+                var dialog = new NewPackDialog(game, Path.Combine(root, "program", "packs"), "Marta") { Width = 560 };
+                dialog.Show();
+                dialog.Pick("pol", "pl");
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Equal("pl", dialog.LanguageTag);
+                Assert.Equal("Polski", dialog.PackName);
+                Assert.True(dialog.BuildFont);
+                Shot(dialog, "0-new-pack");
+                dialog.Close();
 
                 var before = Open(Pack("fr"));
                 Choose(before, Card);

@@ -10,7 +10,7 @@ namespace Darklands.Launcher;
 /// </summary>
 internal sealed partial class LauncherScreen
 {
-    public const string DiscordLink = "https://discord.gg/HjzWvmHhqZ";
+    public const string DiscordLink = Darklands.Platform.ProjectLinks.Discord;
 
     private const int DesignWidth = 1280;
     private const int DesignHeight = 720;

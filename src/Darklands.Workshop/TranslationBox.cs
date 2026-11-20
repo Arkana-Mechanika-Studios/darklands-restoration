@@ -18,11 +18,11 @@ internal sealed class TranslationBox : Border
 {
     private readonly TextEditor _editor = new()
     {
-        FontFamily = new FontFamily("Segoe UI, Inter, DejaVu Sans, sans-serif"),
+        FontFamily = WorkshopTheme.UiFont,
         FontSize = 14,
         WordWrap = true,
         ShowLineNumbers = false,
-        Background = WorkshopTheme.Brush(WorkshopTheme.Parchment),
+        Background = WorkshopTheme.Brush(WorkshopTheme.Surface),
         Foreground = WorkshopTheme.Brush(WorkshopTheme.Ink),
         Padding = new Thickness(8, 6),
         HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
@@ -31,7 +31,7 @@ internal sealed class TranslationBox : Border
     public TranslationBox()
     {
         Child = _editor;
-        Background = WorkshopTheme.Brush(WorkshopTheme.Parchment);
+        Background = WorkshopTheme.Brush(WorkshopTheme.Surface);
         BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine);
         BorderThickness = new Thickness(1);
         CornerRadius = new CornerRadius(3);
