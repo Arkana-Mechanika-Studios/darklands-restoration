@@ -175,6 +175,23 @@ A name is letters and digits, and its case counts (`var-Him1` beside `var-him1`)
 the English block's `$Names` and the pack's own (a translation need not use them all); any other is an error, and so is a
 variable that uses anything but `$sex`. As Fluent requires, each variant of a choice is on a line of its own.
 
+## The Workshop's text editor
+
+`DarklandsWorkshop` (beside `DarklandsRP` in the release) is the translators' editor. It finds your game folder as the
+launcher does (or **Game folder…**), and works on a pack folder you choose, outside the game's folder:
+
+* **New pack…** asks for the language tag, a name and your name, and makes the pack; **Open pack…** opens one.
+* The list holds every text a pack can translate, grouped by where the game shows it: a screen, a card, or "not seen"
+  (a text no recorded session showed). Filter it by state (untranslated, translated, with a problem) and search the
+  English, your words or the key. The counts show how far the screen and the pack are.
+* For the text chosen: its key, the template's comment (its box, what each argument is), where it is shown, the English,
+  and your translation, written as the pack's file holds it (the same tags and placeables as the template).
+* **Save** writes the pack's `.ftl` files in the template's layout (only the texts you translated; your pack's own
+  variables and anything else in its files are kept). **Check** runs the game's pack check; double-click a finding to see
+  its text. **Run the game with this pack** starts `DarklandsRP --language-pack` on it.
+
+A pack written by the Workshop is a plain pack: the game reads it as it is, and you can still edit its files by hand.
+
 ## The translator's template and the pack check
 
 The program writes the template of your own game files, and checks a pack against them:

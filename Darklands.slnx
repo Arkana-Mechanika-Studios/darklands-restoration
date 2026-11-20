@@ -18,6 +18,7 @@
     <Project Path="src/Darklands.Rendering/Darklands.Rendering.csproj" />
     <Project Path="src/Darklands.Simulation/Darklands.Simulation.csproj" />
     <Project Path="src/Darklands.Workshop.Text/Darklands.Workshop.Text.csproj" />
+    <Project Path="src/Darklands.Workshop/Darklands.Workshop.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Darklands.Architecture.Tests/Darklands.Architecture.Tests.csproj" />

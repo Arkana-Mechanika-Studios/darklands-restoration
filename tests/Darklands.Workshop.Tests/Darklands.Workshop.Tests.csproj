@@ -20,6 +20,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Darklands.Workshop.Text\Darklands.Workshop.Text.csproj" />
+    <ProjectReference Include="..\..\src\Darklands.Workshop\Darklands.Workshop.csproj" />
+  </ItemGroup>
+
+  <!-- the Workshop's window drawn without a screen (its smoke test) -->
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Headless" Version="11.3.23" />
+    <PackageReference Include="Avalonia.Skia" Version="11.3.23" />
   </ItemGroup>
 
 </Project>

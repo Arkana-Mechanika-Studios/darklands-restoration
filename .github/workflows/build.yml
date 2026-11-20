@@ -55,6 +55,10 @@ jobs:
       - name: Publish ${{ matrix.rid }}
         run: dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=${{ matrix.rid }}
 
+      # the Workshop (the translators' editor) beside the game in the same package
+      - name: Publish the Workshop ${{ matrix.rid }}
+        run: dotnet publish src/Darklands.Workshop -p:PublishProfile=${{ matrix.rid }}
+
       # the developer's inspector never ships (DevTools is false in the publish profiles): the package must not hold it
       - name: No developer tools in the package
         shell: bash
