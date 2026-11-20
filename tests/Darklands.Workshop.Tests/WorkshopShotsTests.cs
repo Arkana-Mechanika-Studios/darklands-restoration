@@ -6,7 +6,7 @@ using Darklands.Workshop.Text;
 namespace Darklands.Workshop.Tests;
 
 /// <summary>
-/// The Workshop's window in its states, drawn without a screen at 1280x800: the start with no pack, a card text whose letters the game's
+/// The Workshop's window in its states, drawn without a screen at 1280x800 (or DARKLANDS_WORKSHOP_SHOTS_SIZE): the start with no pack, a card text whose letters the game's
 /// fonts lack (the hint to build the font pack), the same with the font pack built, a screen text with its preview and width bar, a
 /// check's results, and a Greek and a Russian card text (the font pack's other alphabets; Φ has no decorated capital, В takes B's).
 /// With DARKLANDS_WORKSHOP_SHOTS set, each is saved there as a picture (the before / after pictures of a change to the window);
@@ -23,6 +23,9 @@ public sealed class WorkshopShotsTests
             return;
         }
         var shots = Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOTS");
+        // the window's size: DARKLANDS_WORKSHOP_SHOTS_SIZE (as 1920x1080), else 1280x800
+        var size = (Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOTS_SIZE") ?? "1280x800").Split('x');
+        var (width, height) = (int.Parse(size[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(size[1], System.Globalization.CultureInfo.InvariantCulture));
         var root = Path.Combine(Path.GetTempPath(), "dl-shots-" + Guid.NewGuid().ToString("N"));
         // the packs in a neutral folder (the status line names it): DARKLANDS_WORKSHOP_SHOTS_PACKS (a video's D:\Packs; the folders fr, el and ru must not exist), else a temporary one
         var packs = Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOTS_PACKS") is { Length: > 0 } chosen ? chosen : Path.Combine(root, "Packs");
@@ -64,15 +67,12 @@ public sealed class WorkshopShotsTests
                         window.CaptureRenderedFrame()?.Save(Path.Combine(shots, name + ".png"));
                     }
                 }
-                ListBox List(Window window) => window.GetVisualDescendants().OfType<ListBox>().First(l => l.ItemsSource is IEnumerable<TextEntry>);
-                void Choose(Window window, string key)
-                {
-                    var list = List(window);
-                    list.SelectedItem = list.ItemsSource!.Cast<TextEntry>().First(e => e.Key == key);
-                }
+                void Choose(Window window, string key) => ((WorkshopWindow)window).Editor!.Select(key);
                 WorkshopWindow Open(string? pack)
                 {
-                    var window = new WorkshopWindow(new WorkshopSettings { GameFolder = game }, pack is null ? [] : [pack]) { Width = 1280, Height = 800 };
+                    // the packs opened lately: the start page lists them (the last one first)
+                    var settings = new WorkshopSettings { GameFolder = game, RecentPacks = [Pack("fr"), Pack("ru"), Pack("el")] };
+                    var window = new WorkshopWindow(settings, pack is null ? [] : [pack]) { Width = width, Height = height };
                     window.Show();
                     Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                     return window;
@@ -81,6 +81,17 @@ public sealed class WorkshopShotsTests
                 var empty = Open(null);
                 Shot(empty, "1-start");
                 empty.Close();
+
+                // the new pack dialog, a language picked from the list
+                var dialog = new NewPackDialog(game, Path.Combine(root, "program", "packs"), "Marta") { Width = 560 };
+                dialog.Show();
+                dialog.Pick("pol", "pl");
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Equal("pl", dialog.LanguageTag);
+                Assert.Equal("Polski", dialog.PackName);
+                Assert.True(dialog.BuildFont);
+                Shot(dialog, "0-new-pack");
+                dialog.Close();
 
                 var before = Open(Pack("fr"));
                 Choose(before, Card);
@@ -91,6 +102,13 @@ public sealed class WorkshopShotsTests
                 var window = Open(Pack("fr"));
                 Choose(window, Card);
                 Shot(window, "2-card-text");
+                // the Rows view: the first option's field writes the option's words in place, its marker and indent kept
+                var fields = window.GetVisualDescendants().OfType<TranslationBox>().Where(b => b.IsEffectivelyVisible).ToList();
+                Assert.True(fields.Count > 3, $"{fields.Count} fields");
+                fields[1].Text = "assister à la messe.";
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                var chosen = window.Editor!.Current!;
+                Assert.Contains("<opt>...<indent>assister à la messe.<br><p><opt>", chosen.Translation, StringComparison.Ordinal);
                 Choose(window, leave.Key);
                 Shot(window, "3-screen-text");
                 window.RunCheckForTests();
@@ -105,6 +123,8 @@ public sealed class WorkshopShotsTests
                     Shot(other, "5-card-text-" + language);
                     other.Close();
                 }
+                // the closed windows' last layout passes run while the application is there
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                 return 0;
             }, CancellationToken.None);
         }

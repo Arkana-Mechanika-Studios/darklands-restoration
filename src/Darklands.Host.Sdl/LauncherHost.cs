@@ -168,7 +168,7 @@ internal static class LauncherHost
     }
 
     /// <summary>The guide for pack makers on the web (a copy is docs/PACKS.md beside the program).</summary>
-    private const string PackGuide = "https://github.com/Arkana-Mechanika-Studios/darklands-restoration/blob/master/docs/PACKS.md";
+    private const string PackGuide = Darklands.Platform.ProjectLinks.PackGuide;
 
     /// <summary>The subfolders of the packs folders: next to the program (the release's example pack is there) and next to the game.</summary>
     internal static IReadOnlyList<string> PackFolders(string? gameFolder)
@@ -213,7 +213,7 @@ internal static class LauncherHost
     }
 
     /// <summary>The project's releases on GitHub (each version's page is /tag/v&lt;version&gt;).</summary>
-    private const string ReleasesPage = "https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases";
+    private const string ReleasesPage = Darklands.Platform.ProjectLinks.Releases;
 
     /// <summary>RELEASE_NOTES.md next to the program (the release's notes, copied there by the build), or nothing.</summary>
     private static string ReleaseNotes()

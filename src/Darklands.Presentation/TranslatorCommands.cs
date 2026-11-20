@@ -93,7 +93,7 @@ public static class TranslatorCommands
     public static int WriteStrippedBoxes(string boxes, string output, TextWriter say)
     {
         ArgumentNullException.ThrowIfNull(say);
-        if (ReadBoxes(boxes, null, say) is not { Count: > 0 } found)
+        if (ReadBoxes(boxes, null, say, shipped: false) is not { Count: > 0 } found)
         {
             say.WriteLine($"{boxes}: no boxes");
             return 1;
@@ -153,13 +153,14 @@ public static class TranslatorCommands
         return errors > 0 ? 1 : 0;
     }
 
-    // the boxes given, else a boxes.json in the pack's folder, else none; null when the given ones cannot be read
-    private static IReadOnlyList<TextBox>? ReadBoxes(string? given, string? pack, TextWriter say)
+    // the boxes given, else a boxes.json in the pack's folder, else the shipped ones (ShippedBoxes; none with shipped false); null
+    //   when the given ones cannot be read
+    private static IReadOnlyList<TextBox>? ReadBoxes(string? given, string? pack, TextWriter say, bool shipped = true)
     {
         var path = given ?? (pack is not null && File.Exists(Path.Combine(pack, BoxesFile)) ? Path.Combine(pack, BoxesFile) : null);
         if (path is null)
         {
-            return [];
+            return shipped ? ShippedBoxes.Default : [];
         }
         try
         {

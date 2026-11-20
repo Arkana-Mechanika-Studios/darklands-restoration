@@ -18,11 +18,11 @@ internal sealed class TranslationBox : Border
 {
     private readonly TextEditor _editor = new()
     {
-        FontFamily = new FontFamily("Segoe UI, Inter, DejaVu Sans, sans-serif"),
+        FontFamily = WorkshopTheme.UiFont,
         FontSize = 14,
         WordWrap = true,
         ShowLineNumbers = false,
-        Background = WorkshopTheme.Brush(WorkshopTheme.Parchment),
+        Background = WorkshopTheme.Brush(WorkshopTheme.Surface),
         Foreground = WorkshopTheme.Brush(WorkshopTheme.Ink),
         Padding = new Thickness(8, 6),
         HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
@@ -31,11 +31,11 @@ internal sealed class TranslationBox : Border
     public TranslationBox()
     {
         Child = _editor;
-        Background = WorkshopTheme.Brush(WorkshopTheme.Parchment);
+        Background = WorkshopTheme.Brush(WorkshopTheme.Surface);
         BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine);
         BorderThickness = new Thickness(1);
         CornerRadius = new CornerRadius(3);
-        _editor.TextArea.TextView.LineTransformers.Add(new ChipColours());
+        _editor.TextArea.TextView.LineTransformers.Add(_colours);
         _editor.TextArea.SelectionBrush = WorkshopTheme.Brush(Color.FromArgb(0x80, WorkshopTheme.Gold.R, WorkshopTheme.Gold.G, WorkshopTheme.Gold.B));
         _editor.TextArea.Caret.CaretBrush = WorkshopTheme.Brush(WorkshopTheme.Ink);
         _editor.TextChanged += (_, _) => TextChanged?.Invoke(this, EventArgs.Empty);
@@ -57,6 +57,39 @@ internal sealed class TranslationBox : Border
         set => _editor.CaretOffset = Math.Clamp(value, 0, _editor.Document.TextLength);
     }
 
+    /// <summary>
+    /// Whether a hot key (<c>&lt;c12&gt; M&lt;/c&gt;</c>) shows as the game draws it: the letter coloured and underlined, its tags
+    /// hidden but kept (the cursor steps over each; a deleted letter shows them again). Off: the tags as written (Raw).
+    /// </summary>
+    public bool HotKeys
+    {
+        get => _colours.HotKeys;
+        set
+        {
+            if (value == _colours.HotKeys)
+            {
+                return;
+            }
+            _colours.HotKeys = value;
+            var generators = _editor.TextArea.TextView.ElementGenerators;
+            if (value)
+            {
+                generators.Add(_hidden);
+            }
+            else
+            {
+                generators.Remove(_hidden);
+            }
+            _editor.TextArea.TextView.Redraw();
+        }
+    }
+
+    private readonly ChipColours _colours = new();
+    private readonly HiddenTags _hidden = new();
+
+    // a hot key: its opening tag (with the padding after it), the letters, its closing tag
+    private static readonly System.Text.RegularExpressions.Regex HotKey = new(@"(<c\d+>\s*)([^<\s][^<\n]*?)(</c>)", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     /// <summary>The text changed (typed, or set).</summary>
     public event EventHandler? TextChanged;
 
@@ -77,6 +110,8 @@ internal sealed class TranslationBox : Border
     // each line's tags, names and arguments in their chips' colours (TextTokens: the editor's chips)
     private sealed class ChipColours : DocumentColorizingTransformer
     {
+        public bool HotKeys { get; set; }
+
         protected override void ColorizeLine(DocumentLine line)
         {
             var text = CurrentContext.Document.GetText(line);
@@ -94,6 +129,46 @@ internal sealed class TranslationBox : Border
                 }
                 at += token.Text.Length;
             }
+            if (!HotKeys)
+            {
+                return;
+            }
+            var hot = WorkshopTheme.Brush(WorkshopTheme.ChipColour);
+            foreach (System.Text.RegularExpressions.Match m in HotKey.Matches(text))
+            {
+                var start = line.Offset + m.Groups[2].Index;
+                ChangeLinePart(start, start + m.Groups[2].Length, element =>
+                {
+                    element.TextRunProperties.SetForegroundBrush(hot);
+                    element.TextRunProperties.SetTextDecorations(TextDecorations.Underline);
+                });
+            }
         }
+    }
+
+    // a hot key's tags, hidden: each an empty element the cursor steps over
+    private sealed class HiddenTags : VisualLineElementGenerator
+    {
+        private (int Start, int Length)? Next(int offset)
+        {
+            var line = CurrentContext.Document.GetLineByOffset(offset);
+            var text = CurrentContext.Document.GetText(line);
+            foreach (System.Text.RegularExpressions.Match m in HotKey.Matches(text))
+            {
+                foreach (var g in new[] { m.Groups[1], m.Groups[3] })
+                {
+                    if (line.Offset + g.Index >= offset)
+                    {
+                        return (line.Offset + g.Index, g.Length);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public override int GetFirstInterestedOffset(int startOffset) => Next(startOffset) is { } next ? next.Start : -1;
+
+        public override VisualLineElement? ConstructElement(int offset) =>
+            Next(offset) is { } next && next.Start == offset ? new InlineObjectElement(next.Length, new Control { Width = 0, Height = 0 }) : null;
     }
 }

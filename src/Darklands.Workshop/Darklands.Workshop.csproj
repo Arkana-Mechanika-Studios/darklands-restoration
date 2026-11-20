@@ -29,4 +29,17 @@
     <InternalsVisibleTo Include="Darklands.Workshop.Tests" />
   </ItemGroup>
 
+  <!-- the project's branding on the start page: its emblem (the game's icon), the launcher's painting, rule and wordmark fonts
+       (linked, one source with the launcher) -->
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\emblem.png" />
+    <AvaloniaResource Include="..\Darklands.Host.Sdl\Resources\DarklandsRP.ico" Link="Assets\DarklandsRP.ico" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\background.png" Link="Assets\banner.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\fleuron.png" Link="Assets\fleuron.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\rule-left.png" Link="Assets\rule-left.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\rule-right.png" Link="Assets\rule-right.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\Grenze-Black.ttf" Link="Assets\Fonts\Grenze-Black.ttf" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\GrenzeGotisch-Black.ttf" Link="Assets\Fonts\GrenzeGotisch-Black.ttf" />
+  </ItemGroup>
+
 </Project>
