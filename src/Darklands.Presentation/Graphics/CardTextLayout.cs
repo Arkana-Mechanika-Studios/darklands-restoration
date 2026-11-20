@@ -115,6 +115,15 @@ public sealed class CardTextLayout(TextPainter painter)
             y += DropCapSize - spacing;
             cursor = 1;
         }
+        else if (settings.DropCap is not null && text.Length > 0 && text.DrawPlainCapital(canvas, x, y, settings.DropCap))
+        {
+            // Not in the original: a translation's first capital with no decorated picture (Ф, Ж, Ψ ...) drawn at twice the font's pixels
+            //   in a square of the pictures' own colours, the text beside it as beside a decorated one
+            lineX = x + DropCapSize;
+            lineWidth = width - DropCapSize;
+            y += DropCapSize - spacing;
+            cursor = 1;
+        }
         var lineStart = cursor;
 
         void CloseArea(int extra)
@@ -468,6 +477,12 @@ public sealed class CardTextLayout(TextPainter painter)
         /// <summary>The letter whose decorated capital the text starts with (0: none).</summary>
         byte DropCapLetter();
 
+        /// <summary>
+        /// Draws the text's first letter at twice the font's pixels in a square of the decorated capitals' colours when it is a capital
+        /// with no picture of its own (the Unicode path; the game's bytes never: false).
+        /// </summary>
+        bool DrawPlainCapital(Canvas canvas, int x, int y, Func<byte, Content.Formats.Graphics.IndexedImage?> dropCap);
+
         /// <summary>The width of text[from .. from+count) as it is, control codes included (the indent's measure).</summary>
         int MeasureRaw(int from, int count);
 
@@ -489,6 +504,8 @@ public sealed class CardTextLayout(TextPainter painter)
 
         public byte DropCapLetter() => (byte)At(0);
 
+        public bool DrawPlainCapital(Canvas canvas, int x, int y, Func<byte, Content.Formats.Graphics.IndexedImage?> dropCap) => false;
+
         public int MeasureRaw(int from, int count) => painter.Measure(Raw(text, from, count));
 
         public int MeasureLine(int from, int count) => painter.Measure(Printable(text, from, count));
@@ -509,6 +526,51 @@ public sealed class CardTextLayout(TextPainter painter)
         // a letter outside A-Z takes its Latin capital's picture (É: E; В: B; Α: A), else none (the game has pictures for A-Z only)
         public byte DropCapLetter() => Fonts.PixelFontBuilder.DropCapOf(At(0));
 
+        // Not in the original: the 1.1 translations' first capitals outside the game's pictures
+        public bool DrawPlainCapital(Canvas canvas, int x, int y, Func<byte, Content.Formats.Graphics.IndexedImage?> dropCap)
+        {
+            var code = At(0);
+            if (DropCapLetter() != 0 || code is < 0x80 or > 0xFFFF || !char.IsUpper((char)code) || !painter.CodeFont.Has(code)
+                || PlainCapitalColours(dropCap) is not var (edge, field, ink))
+            {
+                return false;
+            }
+            // the letter's pixels, and where its ink is
+            var scratch = new Canvas(new Darklands.Platform.Screen());
+            var advance = painter.DrawCodes(scratch, 0, 0, [code], 1);
+            var (minX, minY, maxX, maxY) = (int.MaxValue, int.MaxValue, -1, -1);
+            for (var py = 0; py < painter.LineHeight + 4; py++)
+            {
+                for (var px = 0; px < advance + 2; px++)
+                {
+                    if (scratch[px, py] != 0)
+                    {
+                        (minX, minY, maxX, maxY) = (Math.Min(minX, px), Math.Min(minY, py), Math.Max(maxX, px), Math.Max(maxY, py));
+                    }
+                }
+            }
+            if (maxX < 0)
+            {
+                return false;
+            }
+            const int Square = DropCapSize - 1;
+            canvas.Fill(x, y, Square, Square, edge);
+            canvas.Fill(x + 1, y + 1, Square - 2, Square - 2, field);
+            var (w, h) = (maxX - minX + 1, maxY - minY + 1);
+            var (left, top) = (x + (Square - 2 * w) / 2, y + (Square - 2 * h) / 2);
+            for (var py = minY; py <= maxY; py++)
+            {
+                for (var px = minX; px <= maxX; px++)
+                {
+                    if (scratch[px, py] != 0)
+                    {
+                        canvas.Fill(left + 2 * (px - minX), top + 2 * (py - minY), 2, 2, ink);
+                    }
+                }
+            }
+            return true;
+        }
+
         public int MeasureRaw(int from, int count) =>
             from >= 0 && from < text.Length && count > 0 ? painter.MeasureCodes(text.AsSpan(from, Math.Min(count, text.Length - from))) : 0;
 
@@ -516,6 +578,28 @@ public sealed class CardTextLayout(TextPainter painter)
 
         public void DrawLine(Canvas canvas, int x, int y, int from, int count, byte color, TextMode mode) =>
             painter.DrawCodes(canvas, x, y, PrintableCodes(text, from, count), color, mode);
+    }
+
+    // the decorated capitals' colours (their pictures' own): the edge (a corner's colour), the field (the commonest of the rest) and
+    // the letter (the next); null when there are no pictures
+    private static (byte Edge, byte Field, byte Ink)? PlainCapitalColours(Func<byte, Content.Formats.Graphics.IndexedImage?> dropCap)
+    {
+        var counts = new int[256];
+        byte edge = 0;
+        for (var letter = (byte)'A'; letter <= (byte)'Z'; letter++)
+        {
+            if (dropCap(letter) is not { } picture)
+            {
+                return null;
+            }
+            edge = picture.Pixels[0];
+            foreach (var pixel in picture.Pixels)
+            {
+                counts[pixel]++;
+            }
+        }
+        var order = Enumerable.Range(0, 256).Where(i => i != 0 && i != edge && counts[i] > 0).OrderByDescending(i => counts[i]).ToList();
+        return order.Count < 2 ? null : (edge, (byte)order[0], (byte)order[1]);
     }
 
     private static int[] PrintableCodes(int[] text, int from, int count)

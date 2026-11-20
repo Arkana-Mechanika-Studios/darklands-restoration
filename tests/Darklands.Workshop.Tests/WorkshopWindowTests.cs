@@ -7,6 +7,7 @@ using Darklands.Workshop.Text;
 namespace Darklands.Workshop.Tests;
 
 /// <summary>The Workshop's window without a screen (W-0): it opens a pack and lists its texts; a picture of it when asked.</summary>
+[Collection(WorkshopWindowTests.Collection)]
 public sealed class WorkshopWindowTests
 {
     /// <summary>The headless application (Skia drawing, so a frame can be captured).</summary>
@@ -15,6 +16,12 @@ public sealed class WorkshopWindowTests
         public static AppBuilder BuildAvaloniaApp() =>
             AppBuilder.Configure<WorkshopApp>().UseSkia().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false });
     }
+
+    /// <summary>The window tests' collection: one at a time, as Avalonia runs one application a process.</summary>
+    public const string Collection = "the Workshop's window";
+
+    /// <summary>The one headless session the window tests share (Avalonia sets its application up once a process).</summary>
+    public static readonly Lazy<HeadlessUnitTestSession> Session = new(() => HeadlessUnitTestSession.StartNew(typeof(HeadlessApp)));
 
     [Fact]
     public async Task TheWindowOpensAPackAndListsItsTexts()
@@ -34,7 +41,7 @@ public sealed class WorkshopWindowTests
             var glossary = Glossary.Load(folder);
             glossary.Set(new GlossaryTerm("party", "Gruppe", ""));
             glossary.Save(folder);
-            using var session = HeadlessUnitTestSession.StartNew(typeof(HeadlessApp));
+            var session = Session.Value;
             var shown = await session.Dispatch(() =>
             {
                 var window = new WorkshopWindow(new WorkshopSettings { GameFolder = game }, [folder]);

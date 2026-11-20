@@ -179,30 +179,37 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 
 `DarklandsWorkshop` (a download of its own beside the game's; put it in the same folder as `DarklandsRP`) is the
 translators' editor. It finds your game folder as the
-launcher does (or **Game folder…**), and works on a pack folder you choose, outside the game's folder:
+launcher does (or **Game…**), and works on a pack folder you choose, outside the game's folder. With no pack open it
+starts on a short page: your game folder (found, or a button to find it), then **New pack…** and **Open pack…**, and the
+packs you opened lately. The status line at the foot of the window names the game folder and the pack.
 
 * **New pack…** asks for the language tag, a name and your name, and makes the pack; **Open pack…** opens one.
 * The list holds every text a pack can translate, grouped by where the game shows it: a screen, a card, or "not seen"
   (a text no recorded session showed). Filter it by state (untranslated, translated, with a problem) and search the
-  English, your words or the key. The counts show how far the screen and the pack are.
+  English, your words or the key. Each row's mark is its state: a green dot translated, a red dot translated with a
+  problem the check found, an empty ring not translated yet. The counter reads "12 of 4,917 translated · 3 shown".
 * For the text chosen: its key, the template's comment (its box, what each argument is), where it is shown, the English,
-  and your translation, written as the pack's file holds it (the same tags and placeables as the template).
+  and your translation, written as the pack's file holds it (the same tags and placeables as the template). In the
+  English and on the chips, each kind of tag has its colour: grey the line ends (`<br>`, `<p>`), blue the option lines
+  and indents (`<opt>`, `<indent>`), green the `$Names` and arguments, red the colour tags.
 * **As the game draws it:** the text in the game's font (your pack's font when it has one), by the game's own drawing
-  code, three times the game's pixels; a screen text on one line with its box's edge dotted and a bar (green: no wider than
+  code, in whole multiples of the game's pixels as large as the window allows: a card text's window beside your words, a
+  screen text under them; a screen text on one line with its box's edge dotted and a bar (green: no wider than
   the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
   against the foot of the card's window. It follows your typing.
 * **Chips:** the English's tags, `$Names` and arguments (and your pack's own variables, for a card text) are buttons above
   your translation; a click puts one where the cursor is. Below it, the editor names the chips you left out and any that
   are not the English's. A translation that is a choice (a plural, a variable's `$sex` choice) shows one field a variant.
-* **Glossary…** keeps your pack's agreed terms (`glossary.tsv` in the pack's folder; the game does not read it). The
+* **Glossary** keeps your pack's agreed terms (`glossary.tsv` in the pack's folder; the game does not read it). The
   terms a text's English holds are listed above your translation, marked when your words do not use the agreed one.
-* **Pack variables…** edits your pack's own variables (the female and the male words of each), written to
+* **Variables** edits your pack's own variables (the female and the male words of each), written to
   `variables.ftl`.
 * **Show in game** starts the game with the pack and puts the text's key in the clipboard (a developer build's
   inspector, F9, names the text under the pointer).
 * **Save** writes the pack's `.ftl` files in the template's layout (only the texts you translated; your pack's own
-  variables and anything else in its files are kept). **Check** runs the game's pack check; double-click a finding to see
-  its text. **Run the game with this pack** starts `DarklandsRP --language-pack` on it.
+  variables and anything else in its files are kept). **Check** runs the game's pack check; its findings open below the
+  editor (the panel folds away), and a double-click on one shows its text. **Run game** starts
+  `DarklandsRP --language-pack` on it.
 
 A pack written by the Workshop is a plain pack: the game reads it as it is, and you can still edit its files by hand.
 
@@ -338,9 +345,14 @@ project's own pixel drawings fitted to each font's rows. `charts/` holds a chart
 (four times the pixels, the letters in order in a .txt) for judging them. Such a font has the game's metrics for the
 game's letters, so English text in it draws exactly as the game draws it.
 
+The Workshop builds the same pack for you: **Font pack…** in its toolbar writes it into the pack open (Latin, and Greek or
+Cyrillic for the languages written in them), shows the charts, and the preview uses the new letters at once. When a new
+pack's language has letters the game's fonts lack (French à, Polish ł, any Greek or Russian letter ...), the Workshop
+offers to build it, and until then the preview names the letters it draws as `?`.
+
 **Decorated capitals.** A card text starts with a decorated capital; the game has pictures for A–Z only. A first letter
-outside A–Z takes the picture of its Latin letter (É: E, В: B, Α: A); a letter with no such letter (Φ, Ж) starts the text
-without one.
+outside A–Z takes the picture of its Latin letter (É: E, В: B, Α: A); a capital with no such letter (Φ, Ж, Ψ) is drawn
+at twice the font's pixels in a square of the pictures' own colours, the text beside it as beside a decorated one.
 
 **The text path.** Without a pack, and for every text that the original's bytes can hold, the game keeps the original's
 drawing exactly (Classic). A translation with other letters, or any text in a pack's font, takes the Unicode path: the

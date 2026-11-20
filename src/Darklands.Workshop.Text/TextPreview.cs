@@ -29,6 +29,18 @@ public sealed class TextPreview(TextProject project)
     private readonly GameAssets _assets = new(project.Game);
     private readonly Dictionary<int, TextPainter> _painters = [];
     private IReadOnlyDictionary<int, IFont>? _fonts;
+    private Rgb24[]? _cardPalette;
+
+    /// <summary>Reads the pack's fonts again (after the Workshop built its font pack).</summary>
+    public void ReloadFonts()
+    {
+        _fonts = null;
+        _painters.Clear();
+    }
+
+    /// <summary>The hint for letters the font has no glyph for (null: none lacking).</summary>
+    public static string? LackingHint(string lacking) =>
+        lacking.Length == 0 ? null : $"The game's fonts lack {lacking}: drawn as '?'. Build the font pack (Font pack… in the toolbar).";
 
     /// <summary>The picture of <paramref name="entry"/> with <paramref name="value"/> (a Fluent value as written; null: the English).</summary>
     public PreviewResult Render(TextEntry entry, string? value)
@@ -64,7 +76,7 @@ public sealed class TextPreview(TextProject project)
         var height = painter.LineHeight + 6;
         var canvas = new Canvas(new Screen());
         painter.Draw(canvas, 3, 3, words, Ink);
-        var argb = Picture(canvas, width, height);
+        var argb = Picture(canvas, width, height, Palette256.DefaultVga.Entries.ToArray());
         if (room > 0 && room + 3 < width)
         {
             // the box's right edge, a dotted line
@@ -73,7 +85,8 @@ public sealed class TextPreview(TextProject project)
                 argb[y * width + room + 3] = 0xFFFF4040u;
             }
         }
-        return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, null, false);
+        var lacking = LackingHint(LanguagePackCheck.Unshowable(TextCodes.OfText(words), painter));
+        return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false);
     }
 
     // a card text: laid out in its block as the card screen does (every passage shown), against the foot of the card's window
@@ -118,7 +131,11 @@ public sealed class TextPreview(TextProject project)
         // the card window (from its left edge) with the window's foot marked
         var left = CardScreen.WindowX;
         var pictureWidth = Screen.Width - left;
-        var whole = Picture(canvas, Screen.Width, Screen.Height);
+        var whole = Picture(canvas, Screen.Width, Screen.Height, CardPalette());
+        if (LackingHint(LanguagePackCheck.Unshowable(codes, painter)) is { } lacking)
+        {
+            problem = problem is null ? lacking : problem + "\n" + lacking;
+        }
         var argb = new uint[pictureWidth * Screen.Height];
         for (var row = 0; row < Screen.Height; row++)
         {
@@ -134,9 +151,28 @@ public sealed class TextPreview(TextProject project)
         return new PreviewResult(pictureWidth, Screen.Height, argb, 0, width, 0, problem, true, foot, limit);
     }
 
-    private static uint[] Picture(Canvas canvas, int width, int height)
+    // the card's colours: the VGA colours, the decorated capitals' own colours from their picture (as a card's picture brings them)
+    private Rgb24[] CardPalette()
     {
-        var palette = Palette256.DefaultVga;
+        if (_cardPalette is null)
+        {
+            _cardPalette = Palette256.DefaultVga.Entries.ToArray();
+            if (_assets.PictureExists("Illmcaps"))
+            {
+                var caps = _assets.Picture("Illmcaps");
+                foreach (var index in caps.Image.Pixels.ToArray().Distinct().Where(i => i != 0 && i != Ink))
+                {
+                    _cardPalette[index] = caps.Palette[index];
+                }
+                // a card picture's colour 5 is black (the capitals' black; the VGA colours have magenta there)
+                _cardPalette[5] = new Rgb24(0, 0, 0);
+            }
+        }
+        return _cardPalette;
+    }
+
+    private static uint[] Picture(Canvas canvas, int width, int height, Rgb24[] palette)
+    {
         var argb = new uint[width * height];
         for (var y = 0; y < height; y++)
         {

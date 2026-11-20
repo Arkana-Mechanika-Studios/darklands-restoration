@@ -4,10 +4,17 @@ using Avalonia.Themes.Fluent;
 
 namespace Darklands.Workshop;
 
-/// <summary>The Workshop's application: the Fluent theme, its one window.</summary>
+/// <summary>The Workshop's application: the Fluent theme in the Workshop's colours, its one window.</summary>
 internal sealed class WorkshopApp : Application
 {
-    public override void Initialize() => Styles.Add(new FluentTheme());
+    public override void Initialize()
+    {
+        // a pack's fonts are read as the game's hosts read them (font packs, docs/LOCALISATION.md)
+        Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+        Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
+        Styles.Add(new FluentTheme());
+        WorkshopTheme.Apply(this);
+    }
 
     public override void OnFrameworkInitializationCompleted()
     {
