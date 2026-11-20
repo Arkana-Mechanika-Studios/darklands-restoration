@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Darklands.Workshop.Text\Darklands.Workshop.Text.csproj" />
+    <!-- a pack's fonts: the PNG reader and the TrueType rasteriser the game's hosts use -->
+    <ProjectReference Include="..\Darklands.Rendering\Darklands.Rendering.csproj" />
   </ItemGroup>
 
   <ItemGroup>

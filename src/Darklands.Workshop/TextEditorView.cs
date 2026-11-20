@@ -29,12 +29,20 @@ internal sealed class TextEditorView : IWorkshopEditor
     private readonly TextBox _english = new() { IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 90 };
     private readonly TextBox _translation = new() { AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 140 };
     private readonly TextBlock _problems = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.Firebrick };
+    private readonly Image _picture = new() { Stretch = Stretch.Fill, HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly Border _barFill = new() { Height = 10, HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly Border _bar = new() { Height = 10, Background = Brushes.Gainsboro, HorizontalAlignment = HorizontalAlignment.Stretch };
+    private readonly TextBlock _measure = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly TextPreview _preview;
     private TextEntry? _current;
     private bool _loading;
 
     public TextEditorView(TextProject project)
     {
         _project = project;
+        _preview = new TextPreview(project);
+        RenderOptions.SetBitmapInterpolationMode(_picture, Avalonia.Media.Imaging.BitmapInterpolationMode.None);
+        _bar.Child = _barFill;
         _screens.ItemsSource = new[] { AllScreens }.Concat(project.ByScreen().Select(g => g.Screen)).ToList();
         _screens.SelectedIndex = 0;
         _list.ItemTemplate = new FuncDataTemplate<TextEntry>((entry, _) => new TextBlock
@@ -53,6 +61,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 _project.Set(_current, _translation.Text);
                 Changed?.Invoke();
                 UpdateProgress();
+                ShowPreview();
             }
         };
         View = Build();
@@ -120,6 +129,10 @@ internal sealed class TextEditorView : IWorkshopEditor
         right.Children.Add(_english);
         right.Children.Add(new TextBlock { Text = "Translation", FontWeight = FontWeight.SemiBold });
         right.Children.Add(_translation);
+        right.Children.Add(new TextBlock { Text = "As the game draws it", FontWeight = FontWeight.SemiBold });
+        right.Children.Add(new Border { Child = _picture, BorderBrush = Brushes.Gray, BorderThickness = new Thickness(1), HorizontalAlignment = HorizontalAlignment.Left });
+        right.Children.Add(_bar);
+        right.Children.Add(_measure);
         right.Children.Add(_problems);
 
         var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("3*,4,2*"), Margin = new Thickness(8) };
@@ -186,6 +199,61 @@ internal sealed class TextEditorView : IWorkshopEditor
         _translation.IsEnabled = entry is not null;
         _problems.Text = entry is null ? "" : string.Join("\n", entry.Problems.Select(p => $"{p.Severity}: {p.Message}"));
         _loading = false;
+        ShowPreview();
+    }
+
+    // the text as the game draws it (TextPreview: the game's painter and layout), three times the game's pixels, and its width bar
+    private void ShowPreview()
+    {
+        if (_current is null)
+        {
+            _picture.Source = null;
+            _measure.Text = "";
+            _barFill.Width = 0;
+            return;
+        }
+        var result = _preview.Render(_current, _current.Translation);
+        var bitmap = new Avalonia.Media.Imaging.WriteableBitmap(new PixelSize(result.Width, result.Height), new Vector(96, 96),
+            Avalonia.Platform.PixelFormat.Bgra8888, Avalonia.Platform.AlphaFormat.Opaque);
+        using (var frame = bitmap.Lock())
+        {
+            for (var row = 0; row < result.Height; row++)
+            {
+                var line = Array.ConvertAll(result.Argb[(row * result.Width)..((row + 1) * result.Width)], v => unchecked((int)v));
+                System.Runtime.InteropServices.Marshal.Copy(line, 0, frame.Address + row * frame.RowBytes, result.Width);
+            }
+        }
+        _picture.Source = bitmap;
+        _picture.Width = result.Width * 3;
+        _picture.Height = result.Height * 3;
+        if (result.CardText)
+        {
+            var spare = result.FootLimit - result.Foot;
+            _barFill.Width = 0;
+            _bar.Background = result.Overflows ? Brushes.IndianRed : Brushes.MediumSeaGreen;
+            _measure.Text = result.Overflows
+                ? $"The text runs past the foot of the card's window by {result.Foot - result.FootLimit + 1} px (every passage shown)."
+                : $"{spare} px to spare above the foot of the card's window (every passage shown).";
+        }
+        else if (result.Room > 0)
+        {
+            _bar.Background = Brushes.Gainsboro;
+            var full = Math.Max(result.Room, result.Measured);
+            var total = _bar.Bounds.Width > 0 ? _bar.Bounds.Width : 300;
+            _barFill.Width = total * result.Measured / full;
+            _barFill.Background = result.Overflows ? Brushes.IndianRed : result.Measured > result.English ? Brushes.Goldenrod : Brushes.MediumSeaGreen;
+            _measure.Text = $"{result.Measured} px of {result.Room} px of room (the English {result.English} px)" + (result.Overflows ? ": too wide" : "");
+        }
+        else
+        {
+            _barFill.Width = 0;
+            _bar.Background = Brushes.Gainsboro;
+            _measure.Text = $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
+        }
+        if (result.Problem is { } problem)
+        {
+            _measure.Text += "\n" + problem;
+        }
     }
 
     private static string Mark(TextEntry entry) => entry.State switch

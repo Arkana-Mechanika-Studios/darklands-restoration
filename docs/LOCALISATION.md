@@ -186,6 +186,10 @@ launcher does (or **Game folder…**), and works on a pack folder you choose, ou
   English, your words or the key. The counts show how far the screen and the pack are.
 * For the text chosen: its key, the template's comment (its box, what each argument is), where it is shown, the English,
   and your translation, written as the pack's file holds it (the same tags and placeables as the template).
+* **As the game draws it:** the text in the game's font (your pack's font when it has one), by the game's own drawing
+  code, three times the game's pixels; a screen text on one line with its box's edge dotted and a bar (green: no wider than
+  the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
+  against the foot of the card's window. It follows your typing.
 * **Save** writes the pack's `.ftl` files in the template's layout (only the texts you translated; your pack's own
   variables and anything else in its files are kept). **Check** runs the game's pack check; double-click a finding to see
   its text. **Run the game with this pack** starts `DarklandsRP --language-pack` on it.

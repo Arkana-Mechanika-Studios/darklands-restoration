@@ -36,7 +36,8 @@ public sealed class WorkshopWindowTests
                 window.Show();
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                 var list = window.GetVisualDescendants().OfType<ListBox>().First(l => l.ItemsSource is IEnumerable<TextEntry>);
-                list.SelectedIndex = list.ItemCount > 0 ? 0 : -1;
+                // the menu text with its translation: the preview and the width bar beside it
+                list.SelectedItem = list.ItemsSource!.Cast<TextEntry>().First(e => e.Key == "exe:290E:0112");
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
                 if (Environment.GetEnvironmentVariable("DARKLANDS_WORKSHOP_SHOT") is { Length: > 0 } shot)
                 {
