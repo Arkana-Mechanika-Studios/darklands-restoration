@@ -268,28 +268,29 @@ public sealed class GameUi
         return true;
     }
 
-    // the pack's laid-out texts as drawn, by their words (a pack with no layouts keeps none)
-    private readonly Dictionary<string, Darklands.Localization.SlotLayout> _laid = new(StringComparer.Ordinal);
+    // the keys of the pack's laid-out texts as drawn, by their words (a pack with no layouts keeps none)
+    private readonly Dictionary<string, string> _laid = new(StringComparer.Ordinal);
 
     private void Laid(string words, string key)
     {
-        if (Language is { Layouts.Count: > 0 } pack && pack.Layouts.TryGetValue(key, out var layout) && words.Length > 0)
+        if (Language is { Layouts.Count: > 0 } pack && words.Length > 0 && pack.Layouts.Values.Any(slots => slots.ContainsKey(key)))
         {
             if (_laid.Count > 4096)
             {
                 _laid.Clear();
             }
-            _laid[words] = layout;
+            _laid[words] = key;
         }
     }
 
     /// <summary>
-    /// The translation pack's layout of the screen text <paramref name="words"/> (the words its key gave), null when the pack has none
-    /// for it: the text is drawn where and as the original draws it.
+    /// The translation pack's layout of the screen text <paramref name="words"/> (the words its key gave) on <paramref name="screen"/>,
+    /// null when the pack has none for it there: the text is drawn where and as the original draws it.
     /// </summary>
     // Not in the original: the 1.1 translation packs (screen layouts per language).
-    public Darklands.Localization.SlotLayout? LayoutOf(string words) =>
-        _laid.Count == 0 ? null : _laid.GetValueOrDefault(words);
+    public Darklands.Localization.SlotLayout? LayoutOf(string words, string screen) =>
+        _laid.Count == 0 || !_laid.TryGetValue(words, out var key) ? null
+        : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key);
 
     /// <summary>The translation pack's fonts by slot (empty: the game's fonts).</summary>
     public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();

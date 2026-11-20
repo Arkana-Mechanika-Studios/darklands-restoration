@@ -70,10 +70,11 @@ public sealed class TextPreview(TextProject project)
         var arguments = box?.Arguments?.ToDictionary(a => a.Key, a => (object?)a.Value, StringComparer.Ordinal)
             ?? entry.Template.Variables.ToDictionary(v => v, v => (object?)"0", StringComparer.Ordinal);
         var words = TextCodes.FromTags(localizer.Get(entry.Key, arguments));
-        // the pack's layout of the text (layout.json): its font, its width (else the room left after its move), its lines
-        var layout = project.Layouts.GetValueOrDefault(entry.Key);
+        // the pack's layout of the text (interface/layout.json): its font, its width (else the room left after its move), its lines
+        var layout = project.LayoutOf(entry);
         var painter = Painter(layout is { Font: >= 1 and <= 3 } ? layout.Font : box is { Font: > 0 } ? box.Font : 1);
-        var room = box is { Room: > 0 } ? layout?.Width ?? box.Room - (layout?.Dx ?? 0) : layout?.Width ?? 0;
+        var moved = (layout?.X ?? box?.X ?? 0) - (box?.X ?? 0);
+        var room = box is { Room: > 0 } ? layout?.Width ?? box.Room - moved : layout?.Width ?? 0;
         var lines = layout is null ? [words] : painter.Wrap(words, room > 0 ? room : Screen.Width, Math.Max(1, layout.Lines));
         var measured = lines.Max(painter.Measure);
         var width = Math.Clamp(Math.Max(measured, room) + 6, 16, Screen.Width);

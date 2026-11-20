@@ -262,15 +262,28 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
   against the foot of the card's window. It follows your typing.
 * **Layout** (under a screen text's preview) changes where your pack draws that text, when its words need more room than
-  the English. The changes go into the pack's `layout.json`, which the game reads. You can set:
+  the English. You can set:
   * **Width:** a wider box, but no wider than the room the text has.
   * **Lines:** 1 to 3; the text breaks at spaces.
   * **Font:** another of the pack's font slots, for example a narrower one.
-  * **Move:** up to 16 pixels each way.
+  * **Move:** up to 16 pixels each way, from where the original draws the text.
 
-  **Reset** puts the text back where and as the original draws it. The check reports a layout that moves too far, runs off
-  the screen, or covers another text of the same screen. Texts with no layout, and the game without a pack, are drawn
-  exactly as the original draws them. Screens are added one by one: today the item store, barter and loot screens.
+  **Reset** puts the text back where and as the original draws it.
+
+  **Clicks and highlights follow the layout.** A menu line or list row answers the pointer and lights up where it is
+  drawn, and the place it left answers nothing.
+
+  **The file.** The changes go into the pack's `interface/layout.json`, by screen, then text key:
+  `{"screens": {"BarterScreen": {"exe:DS:2FF2": {"y": 35, "width": 200, "lines": 2}}}}`. It holds plain places and sizes in game
+  pixels: `x`, `y`, `width`, `lines`, and `font` (0, or a slot from 1 to 3). This is the place and form the mod spec reserves
+  for interface layouts (docs/modding/SPEC-DRAFT.md).
+
+  **The check.** It holds a translation pack to the language-pack limits: the room the text had, a move of at most 16
+  pixels, 1 to 3 lines. It reports a layout that breaks them, runs off the screen, or covers another text of the same
+  screen. An interface mod will have looser limits on the same file.
+
+  Texts with no layout, and the game without a pack, are drawn exactly as the original draws them. Screens are added one by
+  one: today the item store, barter and loot screens.
 * **Hot keys.** A menu's coloured key letter (`<c12> M</c>ore batches`) shows as the game draws it, the letter coloured
   and underlined, in the list, the English and your translation; its tags are kept in the text (the cursor steps over
   them, and deleting the letter shows them again). A screen text with one has a **Text** | **Raw** switch: **Raw**

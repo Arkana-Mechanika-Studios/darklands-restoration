@@ -39,6 +39,13 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
 
     private Pic? _picture;
 
+    /// <summary>The screen the page is drawn for (BarterScreen, ItemStoreScreen, LootScreen): a translation pack lays its texts out per screen.</summary>
+    public string Screen { get; set; } = "";
+
+    /// <summary>The page's laid-out texts (a translation pack's interface/layout.json): the hit tests and highlights follow them.</summary>
+    // Not in the original: the 1.1 translation packs (screen layouts per language).
+    public LaidOutAreas Laid { get; } = new();
+
     public Canvas Canvas => ui.Canvas;
 
     /// <summary>The barter screen's list of the codes for sale (DS:86A2, see <see cref="GameUi.BarterListing"/>).</summary>
@@ -53,6 +60,7 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     {
         // C: image-paint-palette(1, "pics\\buysell.pic", palette-now) draws into the back page; palette-load; gfx-rect-copy(backdrop-window, 0x3C, 0, 0x104, 0xC8, screen-window, 0x3C, 0).
         _picture = ui.Assets.Picture("buysell");
+        Laid.Clear();
         ui.Canvas.UsePalette(_picture);
         Restore(0x3C, 0, 0x104, 0xC8);
         if (drawParty)
@@ -93,7 +101,8 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
             // the developer's text plane: the box of the line (L-7w; drawn letter by letter, so its pixels name no text)
             Darklands.Platform.ScreenTextPlane.Drawn(text, ui.Text.Measure(text), Math.Max(0, Darklands.Platform.Screen.Width - x), false, ui.Text.Font.Index + 1, (x, y));
         }
-        if (ui.LayoutOf(text) is { } layout)
+        Laid.Plain(x, y);
+        if (ui.LayoutOf(text, Screen) is { } layout)
         {
             // Not in the original: a translation pack's layout of this text (layout.json): moved, wider, on more lines, in another font
             LaidOut(x, y, text, color, layout);
@@ -122,21 +131,33 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     // the screen's edge), each line clipped there
     private void LaidOut(int x, int y, string text, byte color, Darklands.Localization.SlotLayout layout)
     {
+        var original = new LaidOutAreas.Box(x, y, Math.Max(1, ui.Text.Measure(text)), RowHeight);
         var painter = layout.Font is >= 1 and <= 3 ? ui.Painter(layout.Font) : ui.Text;
-        x += layout.Dx;
-        y += layout.Dy;
+        x = layout.X ?? x;
+        y = layout.Y ?? y;
         var right = layout.Width is { } width ? x + width : Darklands.Platform.Screen.Width;
-        foreach (var line in painter.Wrap(text, right - x, Math.Max(1, layout.Lines)))
+        var lines = painter.Wrap(text, right - x, Math.Max(1, layout.Lines));
+        var top = y;
+        foreach (var line in lines)
         {
             painter.DrawCodes(ui.Canvas, x, y, Darklands.Core.TextCodes.OfText(line), color, right: right);
             y += painter.LineHeight;
         }
+        // where it answers the pointer and lights up: its drawn box
+        Laid.Laid(original, new LaidOutAreas.Box(x, top, Math.Max(1, Math.Min(right - x, lines.Max(painter.Measure))), y - top));
     }
 
     /// <summary>Replaces colour <paramref name="from"/> by <paramref name="to"/> in a rectangle.</summary>
     // orig: gfx-rect-recolour(screen-window, x, y, w, h, from, to) — graphics driver thunk root 047C:04DC (asm driver)
-    public void Recolor(int x, int y, int width, int height, byte from, byte to) =>
+    public void Recolor(int x, int y, int width, int height, byte from, byte to)
+    {
         ui.Canvas.Recolor(x, y, width, height, from, to);
+        // a laid-out text lights up where it is drawn (nothing laid out: nothing more)
+        foreach (var drawn in Laid.DrawnIn(new LaidOutAreas.Box(x, y, width, height)))
+        {
+            ui.Canvas.Recolor(drawn.X, drawn.Y, drawn.Width, drawn.Height, from, to);
+        }
+    }
 
     /// <summary>A highlight on: <see cref="Ink"/> becomes <see cref="Lit"/>.</summary>
     public void Light(int x, int y, int width, int height = RowHeight) => Recolor(x, y, width, height, Ink, Lit);
@@ -182,10 +203,12 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     public int MenuStep(ref int lit, IReadOnlyList<int> keys, int leaveHeight)
     {
         var mouse = ui.Mouse;
-        var over = MenuLineAt(mouse.X, mouse.Y) is not null;
+        // the pointer as the original's tests see it: a laid-out line answers where it is drawn (LaidOutAreas)
+        var (mx, my) = Laid.Map(mouse.X, mouse.Y);
+        var over = MenuLineAt(mx, my) is not null;
         if (!mouse.Left && over)
         {
-            var row = (mouse.Y - MenuY) / 8;
+            var row = (my - MenuY) / 8;
             if (row != lit)
             {
                 Recolor(MenuX, lit * 8 + MenuY, 0x96, 8, Lit, Ink);
@@ -196,7 +219,7 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
         else if (mouse.Left && over)
         {
             WaitForRelease();
-            return MenuKey((ui.Mouse.Y - MenuY) / 8, keys);
+            return MenuKey((Laid.Map(ui.Mouse.X, ui.Mouse.Y).Y - MenuY) / 8, keys);
         }
         else if (!mouse.Left && lit != -1)
         {
@@ -207,10 +230,18 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     }
 
     /// <summary>The left button is held now with the pointer where <paramref name="at"/> says (the loop's `(mouse-button-state &amp; 1) &amp;&amp; …` tests).</summary>
-    public bool Held(Func<int, int, bool> at) => ui.Mouse.Left && at(ui.Mouse.X, ui.Mouse.Y);
+    public bool Held(Func<int, int, bool> at)
+    {
+        var (x, y) = Laid.Map(ui.Mouse.X, ui.Mouse.Y);
+        return ui.Mouse.Left && at(x, y);
+    }
 
     /// <summary>The row <paramref name="at"/> gives for the pointer while the left button is held, or null.</summary>
-    public int? HeldRow(Func<int, int, int?> at) => ui.Mouse.Left ? at(ui.Mouse.X, ui.Mouse.Y) : null;
+    public int? HeldRow(Func<int, int, int?> at)
+    {
+        var (x, y) = Laid.Map(ui.Mouse.X, ui.Mouse.Y);
+        return ui.Mouse.Left ? at(x, y) : null;
+    }
 
     /// <summary>`while (mouse-button-state &amp; 1);`: the button is waited out.</summary>
     public void WaitForRelease() => ui.WaitForButtonRelease();

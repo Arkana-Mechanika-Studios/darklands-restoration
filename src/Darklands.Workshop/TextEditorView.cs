@@ -1,5 +1,6 @@
 using SlotLayout = Darklands.Localization.SlotLayout;
 using SlotLayouts = Darklands.Localization.SlotLayouts;
+using LayoutProfile = Darklands.Localization.LayoutProfile;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
@@ -1166,8 +1167,11 @@ internal sealed class TextEditorView : IWorkshopEditor
         {
             return;
         }
-        var key = _current!.Key;
-        var layout = _project.Layouts.GetValueOrDefault(key) ?? new SlotLayout();
+        var entry2 = _current!;
+        var layout = _project.LayoutOf(entry2) ?? new SlotLayout();
+        // its place as the original draws it (recorded sessions): a move is kept as a place (the format's), shown as a move from there
+        var box = _project.Boxes.FirstOrDefault(b => b.Key == entry2.Key);
+        var placed = box is { X: not null, Y: not null };
         _layoutLoading = true;
         Control Field(string label, Control input)
         {
@@ -1185,8 +1189,14 @@ internal sealed class TextEditorView : IWorkshopEditor
         var width = Number(layout.Width ?? result.Room, 1, SlotLayouts.ScreenWidth);
         var lines = new ComboBox { ItemsSource = new[] { "1", "2", "3" }, SelectedIndex = Math.Clamp(layout.Lines, 1, 3) - 1, FontSize = 12, MinWidth = 52 };
         var font = new ComboBox { ItemsSource = new[] { "its own", "slot 1", "slot 2", "slot 3" }, SelectedIndex = Math.Clamp(layout.Font, 0, 3), FontSize = 12, MinWidth = 84 };
-        var dx = Number(layout.Dx, -SlotLayouts.MaxMove, SlotLayouts.MaxMove);
-        var dy = Number(layout.Dy, -SlotLayouts.MaxMove, SlotLayouts.MaxMove);
+        var most = LayoutProfile.LanguagePack.MaxMove ?? 16;
+        var dx = Number(placed ? (layout.X ?? box!.X!.Value) - box!.X!.Value : 0, -most, most);
+        var dy = Number(placed ? (layout.Y ?? box!.Y!.Value) - box!.Y!.Value : 0, -most, most);
+        dx.IsEnabled = dy.IsEnabled = placed;
+        if (!placed)
+        {
+            ToolTip.SetTip(dx, "No recorded session says where the original draws this text: it cannot be moved yet");
+        }
         void Apply()
         {
             if (_layoutLoading)
@@ -1194,8 +1204,9 @@ internal sealed class TextEditorView : IWorkshopEditor
                 return;
             }
             var w = (int)(width.Value ?? result.Room);
-            _project.SetLayout(key, new SlotLayout((int)(dx.Value ?? 0), (int)(dy.Value ?? 0), w == result.Room && layout.Width is null ? null : w,
-                lines.SelectedIndex + 1, font.SelectedIndex));
+            var (mx, my) = ((int)(dx.Value ?? 0), (int)(dy.Value ?? 0));
+            _project.SetLayout(entry2, new SlotLayout(placed && mx != 0 ? box!.X + mx : null, placed && my != 0 ? box!.Y + my : null,
+                w == result.Room && layout.Width is null ? null : w, lines.SelectedIndex + 1, font.SelectedIndex));
             Changed?.Invoke();
             ShowPreview();
         }
@@ -1208,7 +1219,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         reset.IsEnabled = !layout.IsOriginal;
         reset.Click += (_, _) =>
         {
-            _project.SetLayout(key, null);
+            _project.SetLayout(entry2, null);
             Changed?.Invoke();
             ShowPreview();
         };
@@ -1222,7 +1233,8 @@ internal sealed class TextEditorView : IWorkshopEditor
         _layoutLoading = false;
         // the layout's own problems (moves, widths past the room, off the screen, over another text): at once, as the check gives them
         var boxes = _project.Boxes.ToDictionary(b => b.Key, StringComparer.Ordinal);
-        foreach (var (_, problem) in SlotLayouts.Validate(new Dictionary<string, SlotLayout>(StringComparer.Ordinal) { [key] = layout }, boxes))
+        var only = entry2.Screens.Take(1).ToDictionary(s => s, _ => new Dictionary<string, SlotLayout>(StringComparer.Ordinal) { [entry2.Key] = layout }, StringComparer.Ordinal);
+        foreach (var (_, _, problem) in SlotLayouts.Validate(only, boxes, LayoutProfile.LanguagePack))
         {
             _issues.Children.Add(Issue("Layout: " + problem, WorkshopTheme.Bad));
         }

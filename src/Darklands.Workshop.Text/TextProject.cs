@@ -74,22 +74,36 @@ public sealed class TextProject
 
     public IReadOnlyList<TextBox> Boxes { get; }
 
-    private Dictionary<string, SlotLayout>? _layouts;
+    private Dictionary<string, Dictionary<string, SlotLayout>>? _layouts;
 
-    /// <summary>The pack's screen layouts by key (layout.json), as edited; saved with the pack.</summary>
-    public Dictionary<string, SlotLayout> Layouts => _layouts ??= new Dictionary<string, SlotLayout>(SlotLayouts.Load(Folder, out _), StringComparer.Ordinal);
+    /// <summary>The pack's screen layouts by screen, then slot (interface/layout.json), as edited; saved with the pack.</summary>
+    public Dictionary<string, Dictionary<string, SlotLayout>> Layouts => _layouts ??= SlotLayouts.Load(Folder, out _);
 
-    /// <summary>Sets (or with null or the original's, takes off) the layout of the screen text <paramref name="key"/>.</summary>
-    public void SetLayout(string key, SlotLayout? layout)
+    /// <summary>The layout of the screen text <paramref name="entry"/> (on the first of its screens that has one; null: the original's).</summary>
+    public SlotLayout? LayoutOf(TextEntry entry)
     {
-        ArgumentNullException.ThrowIfNull(key);
-        if (layout is null || layout.IsOriginal)
+        ArgumentNullException.ThrowIfNull(entry);
+        return entry.Screens.Select(s => Layouts.GetValueOrDefault(s)?.GetValueOrDefault(entry.Key)).FirstOrDefault(l => l is not null);
+    }
+
+    /// <summary>Sets (or with null or the original's, takes off) the layout of the screen text <paramref name="entry"/> on each of its screens.</summary>
+    public void SetLayout(TextEntry entry, SlotLayout? layout)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        foreach (var screen in entry.Screens)
         {
-            Layouts.Remove(key);
-        }
-        else
-        {
-            Layouts[key] = layout;
+            if (!Layouts.TryGetValue(screen, out var slots))
+            {
+                Layouts[screen] = slots = new Dictionary<string, SlotLayout>(StringComparer.Ordinal);
+            }
+            if (layout is null || layout.IsOriginal)
+            {
+                slots.Remove(entry.Key);
+            }
+            else
+            {
+                slots[entry.Key] = layout;
+            }
         }
         Dirty = true;
     }

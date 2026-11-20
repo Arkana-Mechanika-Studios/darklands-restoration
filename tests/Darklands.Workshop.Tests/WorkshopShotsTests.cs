@@ -41,7 +41,7 @@ public sealed class WorkshopShotsTests
             var leave = fr.Entries.First(e => e.Key == "exe:DS:2FF2");
             fr.Set(leave, "Quitter la boutique et revenir plus tard");
             // its layout in the pack: two lines of 130 px (the Layout row under the preview)
-            fr.SetLayout(leave.Key, new Darklands.Localization.SlotLayout(Width: 130, Lines: 2));
+            fr.SetLayout(leave, new Darklands.Localization.SlotLayout(Width: 130, Lines: 2));
             var menu = fr.Entries.First(e => e.Key == "exe:290E:0112");
             fr.Set(menu, "<c12> W</c>eitere Chargen");
             fr.Save();
