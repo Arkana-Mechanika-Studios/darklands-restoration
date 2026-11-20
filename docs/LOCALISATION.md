@@ -131,6 +131,7 @@ A card text is one Fluent message per block. Its control codes are written as ta
 | `<indent>` | the rest of the line, and its following lines, start here (the hanging indent after "...") |
 | `<if-1>` … `<endif>` | a passage the card shows or leaves out by its condition 1 (`<if-2>` the block's second passage, condition 2 …) |
 | `<x19>` | any other code byte, by its number |
+| `<lt>`, `<gt>` | a `<` or `>` of the text itself |
 
 `$Names` (`$ChosenOneName`, `$MonthName`) stay as written: the game puts the words in. A line break in the `.ftl` file and the
 spaces round it count as one space, or as nothing next to a tag, so a long text may be wrapped freely. As Fluent requires,
@@ -153,6 +154,26 @@ on the console's error output):
 * the same `$Names` and the same `<xNN>` bytes (in any order, any number of times).
 
 `{` and `}` are Fluent's own: in a card text write them as `{"{"}` and `{"}"}` (the English texts hold none).
+
+**A pack's own variables.** A language may need words the English `$Names` do not give, such as a pronoun in each of its
+grammatical cases. A pack defines them in its `.ftl` files as `var-<name>` messages, chosen by the chosen character's sex
+(`$sex` is `female` or `male`); its card texts may then use `$<name>` beside the English block's `$Names`:
+
+```
+# text/de/ui.ftl  (German: the dative pronoun)
+var-him1 =
+    { $sex ->
+        [female] ihr
+       *[male] ihm
+    }
+
+# text/de/msg/$ARMOR00.ftl
+msg-armor00-12 = ... Ihr gebt $ChosenOneName $him1 ...
+```
+
+A name is letters and digits, and its case counts (`var-Him1` beside `var-him1`). The check allows in a card text exactly
+the English block's `$Names` and the pack's own (a translation need not use them all); any other is an error, and so is a
+variable that uses anything but `$sex`. As Fluent requires, each variant of a choice is on a line of its own.
 
 ## The translator's template and the pack check
 
@@ -213,6 +234,19 @@ DarklandsRP <game folder> --pseudo-language-pack <folder>   [--text-boxes <file 
 writes a `qps` pack of every text a third longer, its vowels marked (a → ä, o → ö, u → ü, so a text from the pack is seen at
 once and the game's fonts draw it), its tags, `$Names`, arguments and hot keys kept, and lists with the check where it
 does not fit. Play with it (`--language-pack <folder>`) to see the screens in it.
+
+**Another edition's texts.** If you own another edition of the game (the German one), the program can make a pack of
+its card texts for your own use, to see a long language on the screens:
+
+```
+DarklandsRP <game folder> --edition-pack <folder> --from-edition <the other edition's folder> [--edition-language de]
+```
+
+It takes each block by its key (the same `.MSG` file and block), keeps those that keep the English block's structure,
+says how many were left out and why, and checks the pack. Such a pack holds that edition's text: it is yours, not one to
+share. `--edition-variables <file.ftl>` adds a file of the pack's own variables (above). (The German edition's card texts,
+with its fifteen pronoun variables: 3,159 of 3,753 blocks taken; the others use other `$Names` or option lines, or are
+blocks the German edition does not have.)
 
 **Collecting the boxes** (developers): a development build of the headless host (`DevTools=true`) run with the
 environment variable `DARKLANDS_TEXT_BOXES=<folder>` writes the box of every keyed text it draws to

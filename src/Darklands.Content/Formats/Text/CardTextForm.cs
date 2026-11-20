@@ -96,6 +96,15 @@ public static class CardTextForm
                 }
                 var name = written[(i + 1)..end];
                 byte code;
+                if (name is "lt" or "gt")
+                {
+                    // a text's own angle bracket (the German edition writes some): text, not a code
+                    pendingBreak = false;
+                    text.Append(name == "lt" ? '<' : '>');
+                    lastWasTag = false;
+                    i = end;
+                    continue;
+                }
                 if (Darklands.Core.TextCodes.TagAt(written, i, out var colour, out _))
                 {
                     // a colour tag (<c12> ... </c>): the original's colour byte
@@ -154,7 +163,7 @@ public static class CardTextForm
             if (run.Count > 0)
             {
                 // Fluent's own braces, should a text ever hold one, as string literals
-                written.Append(Darklands.Core.TextCodes.ToTags(Darklands.Core.GameTextCodec.Decode([.. run])).Replace("{", "\u0001").Replace("}", "{\"}\"}").Replace("\u0001", "{\"{\"}"));
+                written.Append(Darklands.Core.TextCodes.ToTags(Darklands.Core.GameTextCodec.Decode([.. run]).Replace("<", "\u0002").Replace(">", "<gt>").Replace("\u0002", "<lt>")).Replace("{", "\u0001").Replace("}", "{\"}\"}").Replace("\u0001", "{\"{\"}"));
                 run.Clear();
             }
         }
@@ -223,7 +232,14 @@ public static class CardTextForm
     /// The option lines and the conditional passages must be the original's, in order (the menu chooses by line, the game counts the
     /// passages); the <c>$Names</c> and the other code bytes the same sets.
     /// </summary>
-    public static string? Check(string translation, ReadOnlySpan<byte> original)
+    public static string? Check(string translation, ReadOnlySpan<byte> original) => Check(translation, original, null);
+
+    /// <summary>
+    /// <see cref="Check(string, ReadOnlySpan{byte})"/> for a pack with its own variables <paramref name="packNames"/> (docs/LOCALISATION.md):
+    /// the translation may use the original's <c>$Names</c> and the pack's, and no other (it need not use all the original's).
+    /// Null <paramref name="packNames"/>: the same names as the original's.
+    /// </summary>
+    public static string? Check(string translation, ReadOnlySpan<byte> original, IReadOnlySet<string>? packNames)
     {
         if (ToBytes(translation, out var problem) is null)
         {
@@ -239,7 +255,16 @@ public static class CardTextForm
         {
             return $"its conditional passages ({string.Join(" ", got.Conditions.Select(c => "<if-" + c + ">"))}) are not the original's ({string.Join(" ", want.Conditions.Select(c => "<if-" + c + ">"))}), in order";
         }
-        if (!got.Names.SetEquals(want.Names))
+        if (packNames is not null)
+        {
+            var unknown = got.Names.Where(n => !want.Names.Contains(n) && !packNames.Contains(n[1..])).Order(StringComparer.Ordinal).ToList();
+            if (unknown.Count > 0)
+            {
+                return $"its $Names ({string.Join(" ", unknown)}) are neither the original's ({string.Join(" ", want.Names.Order(StringComparer.Ordinal))}) " +
+                    "nor the pack's own (var-...)";
+            }
+        }
+        else if (!got.Names.SetEquals(want.Names))
         {
             return $"its $Names ({string.Join(" ", got.Names.Order(StringComparer.Ordinal))}) are not the original's ({string.Join(" ", want.Names.Order(StringComparer.Ordinal))})";
         }

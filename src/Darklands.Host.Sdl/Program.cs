@@ -100,6 +100,10 @@ Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfF
 var translatorTemplate = Option("--translator-template");
 var checkLanguagePack = Option("--check-language-pack");
 var pseudoLanguagePack = Option("--pseudo-language-pack");
+var editionPack = Option("--edition-pack");
+var fromEdition = Option("--from-edition");
+var editionLanguage = Option("--edition-language") ?? "de";
+var editionVariables = Option("--edition-variables");
 var textBoxes = Option("--text-boxes");
 // --mod <folder or name>, once per mod (docs/MODS.md): replaces the settings file's mods
 var mods = new List<string>();
@@ -147,7 +151,7 @@ var reports = ReportHost.Start(settingsPath, version, args, logIt: !soundCheck);
 new CrashHandler(reports, CrashHandler.ShowWithSdl, Console.Error.WriteLine).Install();
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
-if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null && pseudoLanguagePack is null)
+if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null && pseudoLanguagePack is null && editionPack is null)
 {
     settingsPath = SettingsFile.WriteFirstRunTemplate(Console.Error.WriteLine);
     reports.SettingsFile = settingsPath;
@@ -166,7 +170,7 @@ if (Resolve(fileSettings) is not { } settings)
     return 1;
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
-if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLanguagePack is not null)
+if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLanguagePack is not null || editionPack is not null)
 {
     if (folder is null)
     {
@@ -175,6 +179,9 @@ if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLan
     }
     return translatorTemplate is not null ? Darklands.Presentation.TranslatorCommands.WriteTemplate(folder, translatorTemplate, textBoxes, Console.Out)
         : pseudoLanguagePack is not null ? Darklands.Presentation.TranslatorCommands.WritePseudoPack(folder, pseudoLanguagePack, textBoxes, Console.Out)
+        : editionPack is not null ? (fromEdition is null
+            ? Fail("--edition-pack needs --from-edition <the other edition's game folder>")
+            : Darklands.Presentation.TranslatorCommands.WriteEditionPack(folder, fromEdition, editionLanguage, editionPack, textBoxes, Console.Out, editionVariables))
         : Darklands.Presentation.TranslatorCommands.CheckPack(folder, checkLanguagePack!, textBoxes, Console.Out);
 }
 NoteRun();
@@ -532,6 +539,13 @@ static void ForgetFirstRun(string settingsPath)
     catch (Exception e) when (e is IOException or UnauthorizedAccessException)
     {
     }
+}
+
+// a command line that cannot run: said on the error output, exit code 2 (as an unknown option)
+static int Fail(string message)
+{
+    Console.Error.WriteLine(message);
+    return 2;
 }
 
 /// <summary>
