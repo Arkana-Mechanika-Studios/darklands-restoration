@@ -462,10 +462,12 @@ internal sealed class TextEditorView : IWorkshopEditor
         {
             var spare = result.FootLimit - result.Foot;
             _barFill.Width = 0;
-            _bar.Background = WorkshopTheme.Brush(result.Overflows ? WorkshopTheme.Problem : WorkshopTheme.Translated);
+            _bar.Background = WorkshopTheme.Brush(result.Overflows ? WorkshopTheme.Problem : result.Pages > 1 ? WorkshopTheme.Gold : WorkshopTheme.Translated);
             _measure.Text = result.Overflows
                 ? $"The text runs past the foot of the card's window by {result.Foot - result.FootLimit + 1} px (every passage shown)."
-                : $"{spare} px to spare above the foot of the card's window (every passage shown).";
+                : result.Pages > 1
+                    ? $"Too long for one window: the game shows it in {result.Pages} pages (shown one under another; every passage shown)."
+                    : $"{spare} px to spare above the foot of the card's window (every passage shown).";
         }
         else if (result.Room > 0)
         {

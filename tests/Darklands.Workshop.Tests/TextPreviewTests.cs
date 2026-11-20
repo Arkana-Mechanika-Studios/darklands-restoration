@@ -50,7 +50,10 @@ public sealed class TextPreviewTests
 
             var card = project.Entries.First(e => e.Key.StartsWith("msg:", StringComparison.Ordinal) && e.English.Contains("<opt>", StringComparison.Ordinal));
             Assert.False(preview.Render(card, null).Overflows);
-            Assert.True(preview.Render(card, string.Concat(Enumerable.Repeat("Ein langer Satz, der immer weiter geht. ", 80)) + card.English).Overflows);
+            // a text too long for the window: the game shows it in pages (CardPaging), so it does not overflow
+            var paged = preview.Render(card, string.Concat(Enumerable.Repeat("Ein langer Satz, der immer weiter geht. ", 80)) + card.English);
+            Assert.False(paged.Overflows);
+            Assert.True(paged.Pages > 1, $"{paged.Pages} page(s)");
         }
         finally
         {

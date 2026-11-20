@@ -356,8 +356,8 @@ public static class PixelFontBuilder
         // punctuation of the languages: mirrored, doubled or widened from the font's own
         Add('¿', Turned(Get('?'), m));
         Add('¡', Turned(Get('!'), m));
-        Add('«', Join(Get('<'), Get('<'), overlap: 2));
-        Add('»', Join(Get('>'), Get('>'), overlap: 2));
+        Add('«', Join(Get('<'), Get('<'), overlap: 0));   // two chevrons side by side (overlapped they read as one '<')
+        Add('»', Join(Get('>'), Get('>'), overlap: 0));
         Add('…', Join(Join(Get('.'), Get('.'), overlap: 0), Get('.'), overlap: 0));
         Add('–', Get('-')?.Copy());
         Add('—', Join(Get('-'), Get('-'), overlap: 1));

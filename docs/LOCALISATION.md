@@ -193,6 +193,13 @@ on the console's error output):
 
 `{` and `}` are Fluent's own: in a card text write them as `{"{"}` and `{"}"}` (the English texts hold none).
 
+**Long card texts.** A translation longer than the card's window can hold is shown in pages: each page but the last ends
+with a prompt at the foot of the text ("(more ...)", `id:rw.card.more` in `ui.ftl`, translatable like any text), and a key
+or a click turns the page, as the press-to-continue of any card text. The option lines are together on the last page,
+with their keys and mouse areas as always; a last page of option lines only is ready to choose from at once. A page ends
+between lines, or at a space in a paragraph taller than a page, never inside a word; the passages are chosen first, so
+none is split. Only a pack's text is ever paged: without a pack the game is the original's.
+
 **A pack's own variables.** A language may need words the English `$Names` do not give, such as a pronoun in each of its
 grammatical cases. A pack defines them in its `.ftl` files as `var-<name>` messages, chosen by the chosen character's sex
 (`$sex` is `female` or `male`); its card texts may then use `$<name>` beside the English block's `$Names`:
@@ -293,9 +300,9 @@ exe-ds-2f71 = { $arg0 } ...
   original's, a character the game's font cannot draw (the fonts have the game's ä ö ü Ä Ö Ü ß; other letters need a font
   pack);
 * overflows: a text wider than its box (measured in the font the screen draws it in, with the arguments a session drew
-  it with), a card text that runs past the foot of the card's window (laid out with every passage shown and the `$Names`
-  as written);
-* notes: an argument the translation does not use.
+  it with), a card text that runs past the foot of the card's window and cannot be shown in pages (its option lines alone
+  do not fit, or a word is wider than the column);
+* notes: an argument the translation does not use; a card text the game shows in pages ("laid out in 2 pages").
 
 It ends with a count; the exit code is 1 when there are errors. The boxes come from `--text-boxes`, else from a
 `boxes.json` in the pack's folder (the template writes one when it was given boxes), else there are none (then no

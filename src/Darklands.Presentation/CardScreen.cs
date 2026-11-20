@@ -160,7 +160,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         PrepareWindow(frame);
         _block = block;
         _mode = Mode.Text;
-        DrawBlock(block, frame == TextFrame.BlankPage ? Palette.Black : _textColor, []);
+        DrawPages(block, frame == TextFrame.BlankPage ? Palette.Black : _textColor, [], frame);
         WaitToContinue();
         ui.FlushKeys();
     }
@@ -278,8 +278,12 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         _block = block;
         _options = options;
         _mode = Mode.Options;
-        var areas = DrawBlock(block, _textColor, options);
-        WaitToContinue();
+        _lastPageOptionsOnly = false;
+        var areas = DrawPages(block, _textColor, options, TextFrame.OnPicture);
+        if (!(_pageCount > 1 && _lastPageOptionsOnly))
+        {
+            WaitToContinue();
+        }
         GreyThePicture(areas, animate: true);
         _mode = Mode.OptionsFaded;
         return areas;
@@ -394,6 +398,17 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             OptionMode = TextMode.Xor,
             DropCap = DropCap,
         };
+        // a pack's text that runs past the foot of the card's window: in pages (Not in the original: the 1.1 translations)
+        if (ui.Language is not null && (codes is not null || translated is not null))
+        {
+            var expanded = codes is not null ? TextVariables.Expand(codes, c) : Darklands.Core.TextCodes.OfBytes(TextVariables.Expand(translated!, c));
+            if (Paging(expanded, b, settings) is { } paging)
+            {
+                return DrawPage(paging, b, settings, layout);
+            }
+        }
+        _pageCount = 1;
+        _lastPageOptionsOnly = false;
         // a translation with letters the game's bytes cannot hold, or in the pack's font, is laid out by codes (the same loop, L-6b)
         var areas = codes is not null
             ? layout.Draw(_canvas, TextVariables.Expand(codes, c), WindowX + b.X + 5, b.Y + 5, b.Width - 10, settings)
@@ -404,6 +419,70 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     }
 
     private Content.Formats.Graphics.IndexedImage? DropCap(byte letter) => DropCaps.Get(ui.Assets, letter);
+
+    // ---------------------------------------------------------------- pages (Not in the original: the 1.1 translations)
+    // A pack's card text too long for the card's window is shown in pages: each but the last ends with the "more" prompt and waits as
+    // press-to-continue does (its keys: the same), the option lines are on the last page (their numbers, states and areas the
+    // original's). Without a pack, or a text that fits, the block is drawn as before.
+    private int _page;
+    private int _pageCount = 1;
+
+    // the last page holds only option lines (drawn by xor until the picture fades): its press-to-continue has nothing to read
+    private bool _lastPageOptionsOnly;
+
+    private static int Bottom => TextAreaY + TextAreaHeight;
+
+    private CardTextLayout.Settings PageSettings(CardTextLayout.Settings s, bool first, bool last) => new()
+    {
+        Options = last ? s.Options : [],
+        Conditions = [],
+        Color = s.Color,
+        OptionColor = last ? s.OptionColor : null,
+        OptionMode = s.OptionMode,
+        DropCap = first ? s.DropCap : null,
+    };
+
+    // the pages of a block's expanded text, or null when it fits or cannot be paged (laid out as the pack check lays it out)
+    private CardPaging? Paging(int[] expanded, MessageBlock b, CardTextLayout.Settings settings) =>
+        CardPaging.ForBlock(ui.CardText, b, expanded, settings.Conditions, settings.Options, settings.DropCap);
+
+    private List<OptionArea> DrawPage(CardPaging paging, MessageBlock b, CardTextLayout.Settings settings, CardTextLayout layout)
+    {
+        _pageCount = paging.Pages.Count;
+        var k = Math.Clamp(_page, 0, _pageCount - 1);
+        var last = k == _pageCount - 1;
+        _lastPageOptionsOnly = last && paging.Pages[k].Length > 0 && CardTextLayout.IsOptionMarker(paging.Pages[k][0]);
+        var areas = layout.Draw(_canvas, paging.Pages[k], WindowX + b.X + 5, b.Y + 5, b.Width - 10, PageSettings(settings, k == 0, last));
+        if (!last)
+        {
+            // the prompt at the foot of the block's column, on the right
+            var words = Darklands.Core.TextCodes.OfText(ui.Words(MorePrompt));
+            var w = ui.CardText.MeasureCodes(words);
+            ui.CardText.DrawCodes(_canvas, WindowX + b.X + b.Width - 5 - w, Bottom - ui.CardText.LineHeight - 1, words, settings.Color);
+        }
+        _choosing = new OptionLayout(areas, WindowX + b.X + 5, b.Width - 10);
+        return _lastAreas = areas;
+    }
+
+    /// <summary>The "more" prompt at the foot of a page of a long translation (ui.ftl).</summary>
+    public const string MorePrompt = "id:rw.card.more";
+
+    // draws the block's pages one after another, each waiting as press-to-continue does, and returns the last's option areas
+    private List<OptionArea> DrawPages(int block, byte color, IReadOnlyList<OptionState> options, TextFrame frame)
+    {
+        _page = 0;
+        var areas = DrawBlock(block, color, options);
+        while (_page < _pageCount - 1)
+        {
+            WaitToContinue();
+            // the key that turned the page is not the next page's (key-buffer-clear, as card-text-block clears around its wait)
+            ui.FlushKeys();
+            _page++;
+            PrepareWindow(frame);
+            areas = DrawBlock(block, color, options);
+        }
+        return areas;
+    }
 
     /// <summary>
     /// After reading, the picture fades: its colours 0x20..0x7F turn grey, its colours
