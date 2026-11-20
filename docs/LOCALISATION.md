@@ -345,9 +345,14 @@ project's own pixel drawings fitted to each font's rows. `charts/` holds a chart
 (four times the pixels, the letters in order in a .txt) for judging them. Such a font has the game's metrics for the
 game's letters, so English text in it draws exactly as the game draws it.
 
+The Workshop builds the same pack for you: **Font pack…** in its toolbar writes it into the pack open (Latin, and Greek or
+Cyrillic for the languages written in them), shows the charts, and the preview uses the new letters at once. When a new
+pack's language has letters the game's fonts lack (French à, Polish ł, any Greek or Russian letter ...), the Workshop
+offers to build it, and until then the preview names the letters it draws as `?`.
+
 **Decorated capitals.** A card text starts with a decorated capital; the game has pictures for A–Z only. A first letter
-outside A–Z takes the picture of its Latin letter (É: E, В: B, Α: A); a letter with no such letter (Φ, Ж) starts the text
-without one.
+outside A–Z takes the picture of its Latin letter (É: E, В: B, Α: A); a capital with no such letter (Φ, Ж, Ψ) is drawn
+at twice the font's pixels in a square of the pictures' own colours, the text beside it as beside a decorated one.
 
 **The text path.** Without a pack, and for every text that the original's bytes can hold, the game keeps the original's
 drawing exactly (Classic). A translation with other letters, or any text in a pack's font, takes the Unicode path: the

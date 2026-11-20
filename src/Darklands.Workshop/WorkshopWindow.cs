@@ -32,6 +32,7 @@ internal sealed class WorkshopWindow : Window
     private readonly Button _show = Tool("Show in game", "Start the game with the pack; the text's key goes to the clipboard");
     private readonly Button _glossaryButton = Tool("Glossary", "The pack's terms and their translations");
     private readonly Button _variablesButton = Tool("Variables", "The pack's own variables ($him1 …), chosen by the character's sex");
+    private readonly Button _fontButton = Tool("Font pack…", "Build the letters your language needs in the game's pixel style, from your own game's fonts, into the pack");
     private string? _game;
     private TextProject? _project;
     private TextEditorView? _editor;
@@ -94,6 +95,7 @@ internal sealed class WorkshopWindow : Window
                 _editor.Refresh();
             }
         };
+        _fontButton.Click += async (_, _) => await BuildFontPack(ask: false);
         _variablesButton.Click += async (_, _) =>
         {
             if (_editor is not null)
@@ -103,7 +105,7 @@ internal sealed class WorkshopWindow : Window
             }
         };
         var bar = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-        foreach (var c in new Control[] { gameButton, newButton, openButton, Gap(), _save, _check, Gap(), _run, _show, Gap(), _glossaryButton, _variablesButton })
+        foreach (var c in new Control[] { gameButton, newButton, openButton, Gap(), _save, _check, Gap(), _run, _show, Gap(), _glossaryButton, _variablesButton, _fontButton })
         {
             bar.Children.Add(c);
         }
@@ -208,7 +210,7 @@ internal sealed class WorkshopWindow : Window
     private void UpdateState()
     {
         _where.Text = $"Game: {_game ?? "not found"}" + (_project is null ? "" : $"     Pack: {_project.Folder}");
-        _save.IsEnabled = _check.IsEnabled = _run.IsEnabled = _show.IsEnabled = _glossaryButton.IsEnabled = _variablesButton.IsEnabled = _project is not null;
+        _save.IsEnabled = _check.IsEnabled = _run.IsEnabled = _show.IsEnabled = _glossaryButton.IsEnabled = _variablesButton.IsEnabled = _fontButton.IsEnabled = _project is not null;
         if (_project is null)
         {
             _centre.Content = BuildStart();
@@ -259,6 +261,7 @@ internal sealed class WorkshopWindow : Window
             try
             {
                 Show(TextProject.Create(folder, dialog.Language, dialog.PackName, dialog.Author, _game));
+                await BuildFontPack(ask: true);
             }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
             {
@@ -302,6 +305,45 @@ internal sealed class WorkshopWindow : Window
         _status.Text = "Opened " + Path.GetFileName(project.Folder) + ".";
         UpdateState();
     }
+
+    // the font pack from the player's own fonts, for the pack's language: offered when a new pack's language has letters the game's
+    // fonts lack (ask), built at once from the toolbar; the preview uses it at once, and the build's glyph charts are shown
+    private async Task BuildFontPack(bool ask)
+    {
+        if (_project is null || _editor is null || _game is null)
+        {
+            return;
+        }
+        var lacking = FontNeeds.LackedByTheGame(_game, _project.Language);
+        if (ask && (lacking.Length == 0 || FontNeeds.HasFontPack(_project.Folder)))
+        {
+            return;
+        }
+        if (ask)
+        {
+            var question = new QuestionDialog("A font for your language",
+                $"The game's fonts have no {Sample(lacking)}. The Workshop can build them in the game's own pixel style from your game's fonts, "
+                + "into your pack (its fonts folder); players get them with the pack. The preview uses them at once.",
+                "Build the font pack", "Not now");
+            if (!await question.ShowDialog<bool>(this))
+            {
+                _status.Text = "No font pack: letters the game's fonts lack are drawn as '?'. Font pack… builds it.";
+                return;
+            }
+        }
+        var (game, folder, language) = (_game, _project.Folder, _project.Language);
+        _status.Text = "Building the font pack…";
+        var counts = await Task.Run(() => FontNeeds.Build(game, folder, language));
+        _editor.FontsChanged();
+        _status.Text = $"Font pack built for {language} ({FontNeeds.Scripts(language)}): {string.Join(", ", counts.Select((n, i) => $"font {i + 1} {n} letters"))}.";
+        if (FontNeeds.Charts(folder) is { Count: > 0 } charts)
+        {
+            await new ChartsWindow(charts).ShowDialog(this);
+        }
+    }
+
+    private static string Sample(string letters) =>
+        letters.Length <= 12 ? string.Join(" ", letters.Select(c => c.ToString())) : string.Join(" ", letters.Take(12).Select(c => c.ToString())) + " …";
 
     /// <summary>Runs the check as its button does (the window's pictures in the tests).</summary>
     internal void RunCheckForTests() => RunCheck();
@@ -420,4 +462,52 @@ internal sealed class NewPackDialog : Window
     public string PackName => string.IsNullOrWhiteSpace(_name.Text) ? Language : _name.Text.Trim();
 
     public string? Author => string.IsNullOrWhiteSpace(_author.Text) ? null : _author.Text.Trim();
+}
+
+/// <summary>A question with two answers (true: the first).</summary>
+internal sealed class QuestionDialog : Window
+{
+    public QuestionDialog(string title, string text, string yes, string no)
+    {
+        Title = title;
+        Width = 480;
+        SizeToContent = SizeToContent.Height;
+        Background = WorkshopTheme.Brush(WorkshopTheme.Wood);
+        var ok = new Button { Content = yes, IsDefault = true };
+        ok.Click += (_, _) => Close(true);
+        var cancel = new Button { Content = no, IsCancel = true };
+        cancel.Click += (_, _) => Close(false);
+        Content = new StackPanel
+        {
+            Spacing = 14,
+            Margin = new Thickness(18),
+            Children =
+            {
+                new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap },
+                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Right, Children = { ok, cancel } },
+            },
+        };
+    }
+}
+
+/// <summary>The font pack's glyph charts (the card texts' font, each script), drawn without smoothing.</summary>
+internal sealed class ChartsWindow : Window
+{
+    public ChartsWindow(IReadOnlyList<string> charts)
+    {
+        Title = "The font pack's letters";
+        Width = 900;
+        Height = 640;
+        Background = WorkshopTheme.Brush(WorkshopTheme.Wood);
+        var panel = new StackPanel { Spacing = 8, Margin = new Thickness(14) };
+        foreach (var chart in charts)
+        {
+            panel.Children.Add(new TextBlock { Text = Path.GetFileNameWithoutExtension(chart), FontWeight = FontWeight.SemiBold, Foreground = WorkshopTheme.Brush(WorkshopTheme.Gold) });
+            var bitmap = new Avalonia.Media.Imaging.Bitmap(chart);
+            var image = new Image { Source = bitmap, Width = bitmap.PixelSize.Width, Height = bitmap.PixelSize.Height, HorizontalAlignment = HorizontalAlignment.Left };
+            RenderOptions.SetBitmapInterpolationMode(image, Avalonia.Media.Imaging.BitmapInterpolationMode.None);
+            panel.Children.Add(image);
+        }
+        Content = new ScrollViewer { Content = panel, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
+    }
 }

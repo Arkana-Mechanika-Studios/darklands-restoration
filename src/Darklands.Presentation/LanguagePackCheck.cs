@@ -132,8 +132,8 @@ public static class LanguagePackCheck
 
     private static string Quoted(IReadOnlyList<string> keys) => keys.Count == 0 ? "none" : string.Join(", ", keys.Select(k => "'" + k + "'"));
 
-    // the letters of a text the painter's font has no glyph for (the game's font: those its bytes cannot hold), once each
-    private static string Unshowable(int[] codes, TextPainter painter)
+    /// <summary>The letters of a text the painter's font has no glyph for (the game's font: those its bytes cannot hold), once each, quoted.</summary>
+    public static string Unshowable(int[] codes, TextPainter painter)
     {
         var lacking = new List<int>();
         foreach (var code in codes)

@@ -112,6 +112,13 @@ internal sealed class TextEditorView : IWorkshopEditor
         Changed?.Invoke();
     }
 
+    /// <summary>Reads the pack's fonts again and draws the text again (after a font pack was built).</summary>
+    public void FontsChanged()
+    {
+        _preview.ReloadFonts();
+        Show(_current);
+    }
+
     public IReadOnlyList<LanguagePackCheck.Finding> Check()
     {
         var findings = _project.Check();
