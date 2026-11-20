@@ -341,6 +341,13 @@ if (steps.Count > 0 && steps[0].StartsWith("saint:", StringComparison.Ordinal))
     var files = OpenGame();
     var world = WorldData.Load(files);
     var ui = new GameUi(host, new GameAssets(files));
+    if (languagePackStep is not null)
+    {
+        // a translation pack: the saint screen's words (and names) in its language
+        Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
+        Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
+        ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
+    }
     var state = Darklands.Simulation.NewGame.Quickstart(world, seed);
     var panel = new PartyPanel(ui.Assets);
     ui.Canvas.Fill(0, 0, Canvas.Width, Canvas.Height, Palette.Blank);

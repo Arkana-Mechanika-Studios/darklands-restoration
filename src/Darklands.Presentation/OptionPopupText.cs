@@ -22,6 +22,16 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
     /// <summary>The text with its zero and <see cref="Tail"/>: text-bank-buffer as the box's size and drawing read it.</summary>
     public byte[] Buffer => [.. Text, 0, .. Tail];
 
+    /// <summary>
+    /// The same text as codes (the Unicode text path, <see cref="TextCodes"/>): with a translation pack, the names in its words and
+    /// letters; null without one (the bytes, as the original).
+    /// </summary>
+    // Not in the original: the 1.1 translations (the data files' names in the pop-ups).
+    public int[]? Codes { get; init; }
+
+    /// <summary><see cref="Codes"/> with its zero and the tail, as <see cref="Buffer"/>.</summary>
+    public int[]? CodeBuffer => Codes is null ? null : [.. Codes, 0, .. Tail.Select(TextCodes.OfByte)];
+
     /// <summary>Five members times four slots.</summary>
     public const int Lines = 20;
 
@@ -46,26 +56,40 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
         Build(c.PopupLines(saints), saints ? k => SaintName(c, k) : c.World.ItemName, painter, darkPicture);
 
     /// <summary>Lays out a box the rules decided (<see cref="CardContext.PopupLines"/>); <paramref name="entryName"/> names an item or saint.</summary>
-    public static OptionPopupText Build(PopupModel model, Func<int, string> entryName, TextPainter painter, bool darkPicture)
+    public static OptionPopupText Build(PopupModel model, Func<int, string> entryName, TextPainter painter, bool darkPicture) =>
+        Build(model, entryName, painter, darkPicture, codes: false);
+
+    /// <summary>
+    /// <see cref="Build(PopupModel, Func{int, string}, TextPainter, bool)"/>, and with <paramref name="codes"/> the text as codes too
+    /// (<see cref="Codes"/>: the names as <paramref name="entryName"/> gives them, measured by codes).
+    /// </summary>
+    // Not in the original: the 1.1 translations; without codes the bytes and widths are the original's.
+    public static OptionPopupText Build(PopupModel model, Func<int, string> entryName, TextPainter painter, bool darkPicture, bool codes)
     {
         ArgumentNullException.ThrowIfNull(model);
         ArgumentNullException.ThrowIfNull(entryName);
+        ArgumentNullException.ThrowIfNull(painter);
         var text = new List<byte>();
+        var codeText = new List<int>();
         byte[] name = [];
+        int[] codeName = [];
         var widest = -1;
         foreach (var member in model.Members)
         {
             if (member.Status == CharacterStatus.Able)
             {
                 name = [NameColor, .. TextPainter.Encode(member.ShortName), DefaultColor, (byte)'\n'];
+                codeName = TextCodes.OfBytes(name);
                 widest = Math.Max(widest, painter.Measure(member.ShortName));
             }
             var lines = new List<byte>();
+            var codeLines = new List<int>();
             foreach (var entry in member.Lines)
             {
                 if (entry.Kind == PopupLineKind.Blank)
                 {
                     lines.AddRange([Option, (byte)'\n']);
+                    codeLines.AddRange(TextCodes.OfBytes([Option, (byte)'\n']));
                     continue;
                 }
                 var line = new List<byte> { Option, (byte)' ', entry.Kind switch
@@ -75,24 +99,35 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
                     PopupLineKind.Usable => darkPicture ? (byte)0x8F : (byte)0x80,
                     _ => NotUsableColor,
                 } };
-                line.AddRange(TextPainter.Encode(entryName(entry.Entry)));
+                var codeLine = TextCodes.OfBytes(line.ToArray()).ToList();
+                var words = entryName(entry.Entry);
+                line.AddRange(TextPainter.Encode(words));
+                codeLine.AddRange(TextCodes.OfText(words));
                 if (entry.Count >= 0)
                 {
-                    line.AddRange(TextPainter.Encode($" ({entry.Count.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)})"));
+                    var count = $" ({entry.Count.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)})";
+                    line.AddRange(TextPainter.Encode(count));
+                    codeLine.AddRange(TextCodes.OfText(count));
                 }
                 line.Add((byte)'\n');
-                widest = Math.Max(widest, painter.Measure(line.ToArray()));
+                codeLine.Add('\n');
+                widest = Math.Max(widest, codes ? painter.MeasureCodes(codeLine.ToArray()) : painter.Measure(line.ToArray()));
                 lines.AddRange(line);
+                codeLines.AddRange(codeLine);
             }
             if (member.Listed)
             {
                 text.AddRange(name);
                 text.AddRange(lines);
                 text.Add(Paragraph);
+                codeText.AddRange(codeName);
+                codeText.AddRange(codeLines);
+                codeText.Add(Paragraph);
             }
             else
             {
                 text.AddRange(lines);
+                codeText.AddRange(codeLines);
             }
         }
         byte[] tail = [];
@@ -102,8 +137,9 @@ public sealed record OptionPopupText(byte[] Text, OptionState[] States, int Widt
             //   empty slot) and the string's own zero stay behind the new end
             tail = text.Count >= 2 ? [text[^1], 0] : [];
             text.RemoveRange(Math.Max(0, text.Count - 2), Math.Min(2, text.Count));
+            codeText.RemoveRange(Math.Max(0, codeText.Count - 2), Math.Min(2, codeText.Count));
         }
-        return new OptionPopupText([.. text], model.States, widest + 6, tail);
+        return new OptionPopupText([.. text], model.States, widest + 6, tail) { Codes = codes ? [.. codeText] : null };
     }
 
     // orig: R136+0x114F4, the second name list of the saints in darkland.lst (filled by world-read R043+0x0100): the short names

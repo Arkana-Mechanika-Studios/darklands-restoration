@@ -48,6 +48,8 @@ public static class OriginalTextExtractor
     ];
 
     private static readonly int[] BattleStrings = [0x0212, 0x0222, 0x0231];
+
+    private static readonly int[] BattlePlaceNotePointers = [0x01A8, 0x01AA, 0x01AC, 0x01AE, 0x01B0];
     private const int MinScanLength = 4;
     private const int MaxScanLength = 400;
 
@@ -315,6 +317,18 @@ public static class OriginalTextExtractor
         AddBattleSegment(exeBytes, table);
 
         var knownDs = new HashSet<int>(KnownDataSegmentOffsets);
+        // the battle panel's place notes (a doorway, stairs, a chest, the exit, the field left): word pointers at DS:01A8..01B0
+        foreach (var slot in BattlePlaceNotePointers)
+        {
+            try
+            {
+                var word = exe.DataSegment(slot, 2);
+                knownDs.Add(word[0] | word[1] << 8);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+            }
+        }
         foreach (var (at, bytes) in ScanRuns(offset => TryDs(exe, offset), 0x10000, knownDs))
         {
             table.Add($"exe:DS:{at:X4}", knownDs.Contains(at) ? StringOrigin.Known : StringOrigin.Scanned, bytes);

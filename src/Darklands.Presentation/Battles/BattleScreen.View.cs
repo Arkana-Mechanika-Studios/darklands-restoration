@@ -88,6 +88,9 @@ public sealed partial class BattleScreen
 
     public void FarMessage(int text, int ticks) => ShowMessage(_owner.FarWords(text), ticks);
 
+    // the note's words in the pack's language when it has them (Not in the original: the 1.1 translations; no pack: the original's)
+    private string PlaceNoteWords(int offset) => _ui.Name(DsKey(offset), _assets.Executable.String(offset));
+
     private static string DsKey(int offset) => "exe:DS:" + offset.ToString("X4", System.Globalization.CultureInfo.InvariantCulture);
 
     public void Message(int text, int ticks, int member)
@@ -322,7 +325,7 @@ public sealed partial class BattleScreen
                 : null;
         }
         _placeNotes[i] = at is { } pointer
-            ? _assets.Executable.String(System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(_assets.Executable.DataSegment(pointer, 2)))
+            ? PlaceNoteWords(System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(_assets.Executable.DataSegment(pointer, 2)))
             : null;
         _orderLetters[i] = null;
         RowLetterDrawn(i);

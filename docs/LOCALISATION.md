@@ -27,8 +27,8 @@ developers ([the plan in steps](#the-plan-for-developers)).
   question ...), its menus and the enemy panel's weapon, armour and shield types and quality words, under their `exe:`
   keys; the battle's far texts (the type names, the ordinals of "Select …", the "cannot view" notice) as `exe:286B:XXXX`.
   Without a pack the battle is the original's to the byte: the replays prove it.
-* **Not yet:** the names in the card option pop-ups and the saint prayer screen, the
-  descriptions in the data files, and the program start's messages. These keep the original English for now.
+* **Not yet:** the descriptions in the data files (saints, formulae, places) and the program start's messages. These
+  keep the original English for now.
 * **Fonts.** Without a font pack the game draws a translation with the original fonts, which have no letters beyond the
   original's set (the German edition's umlauts and ß are among them); a letter they lack is drawn as `?`. A pack can bring
   fonts of its own with any letters ([font packs](#font-packs)).
@@ -100,7 +100,8 @@ strings are C format strings (`%s holds the purse of %dfl, %dgr, %dpf (%lupf).`)
 The names in the game's data files (items, saints, formulae, places, cities with their buildings and people, enemy
 kinds) are in the template's `tables.ftl`, each under its record and index (the keys above), the English from your own
 files and the field's width in the original's file in the comment. They are translated where the game shows them: the
-character sheet, the stores, barter and loot, alchemy, party information, the battle's enemy panel, and the names cards
+character sheet, the stores, barter and loot, alchemy, party information, the card option pop-ups, the saint prayer screen, the battle's enemy panel
+and its place notes, and the names cards
 put into their texts (`$cityChurch`, `$PlaceName`, `$LocName`, `$ItemName` ...). The rules and the saved games keep the
 original's names: a saved game written with a pack is the same as one written without. Names a save holds as text (a
 place's, a battle's enemies) are translated while they are still the data file's; the party's names, which the player
