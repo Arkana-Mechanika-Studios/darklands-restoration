@@ -140,7 +140,7 @@ public sealed class BattleScreens
     internal string CannotView(string name) => FarWords(0x0212) + name + FarWords(0x0222);
 
     /// <summary>"Do you really want to surrender?" (a literal of R022 03E4, DS:23B2).</summary>
-    internal string SurrenderQuestion => _ui.Name("exe:DS:23B2", Assets.Executable.String(0x23B2));
+    internal string SurrenderQuestion => _ui.Name("exe:DS:" + 0x23B2.ToString("X4", System.Globalization.CultureInfo.InvariantCulture), Assets.Executable.String(0x23B2));
 
     /// <summary>"Select first" … "Select fourth" (R022 051C: "Select %Fs" with the ordinals R136+0x7EC7[k]).</summary>
     internal string SelectOrdinal(int k)
