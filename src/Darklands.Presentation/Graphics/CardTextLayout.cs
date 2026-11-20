@@ -451,7 +451,8 @@ public sealed class CardTextLayout(TextPainter painter)
     // C: the width of the part of the line before the 0x1D marker is text-width-px of a copy of the raw bytes, control codes included (their glyph-width is whatever the driver gives them, TextPainter.Advance: the font's own widths for the codes it holds). Checked against the original by direct calls (tools/oracle/text_calls.py, batch 34): with font 0 (slot 1), whose table starts at code 0, leaving the codes out moved the indented lines of 26 texts.
     // C: glyph-width (drv+0x11A9) gives a code outside the font's first..last range no width: fonts 1 and 2 start at 0x1F, so in the card
     //   window's font the control codes take no room; font 0 starts at code 0 and gives them the widths of its table. checked against asm
-    private static bool IsOptionMarker(int c) => c is PlainOption or ItemOption or SaintOption or BattleOption;
+    /// <summary>Whether a code marks an option line (plain, item, saint, battle).</summary>
+    public static bool IsOptionMarker(int c) => c is PlainOption or ItemOption or SaintOption or BattleOption;
 
     private static bool IsControl(int c) =>
         c is Paragraph or PlainOption or ItemOption or SaintOption or BattleOption or Indent or 0x0D

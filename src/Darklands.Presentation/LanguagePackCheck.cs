@@ -178,8 +178,19 @@ public static class LanguagePackCheck
         var translated = Foot(assets, painter, block, codes);
         if (translated >= bottom && translated > english)
         {
-            add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
-                $"runs past the foot of the card's window (every passage shown, the $Names as written; the English ends at row {english})"));
+            // a text in pages (CardPaging: the game shows a pack's long text so) is a note; one that cannot be paged (its option lines
+            //   alone do not fit, or a word is wider than the column) runs past the foot
+            var conditions = Enumerable.Repeat(true, 32).ToList();
+            if (Graphics.CardPaging.ForBlock(painter, block, codes, conditions, [], letter => DropCaps.Get(assets, letter)) is { } paging)
+            {
+                add(Severity.Note, string.Create(CultureInfo.InvariantCulture,
+                    $"laid out in {paging.Pages.Count} pages (every passage shown, the $Names as written): the game shows it page by page"));
+            }
+            else
+            {
+                add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
+                    $"runs past the foot of the card's window (every passage shown, the $Names as written; the English ends at row {english})"));
+            }
         }
     }
 

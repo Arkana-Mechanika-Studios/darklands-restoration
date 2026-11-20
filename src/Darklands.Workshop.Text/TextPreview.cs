@@ -1,3 +1,4 @@
+using Darklands.Content.Formats.Text.Strings;
 using Darklands.Content;
 using Darklands.Content.Formats.Graphics;
 using Darklands.Content.Formats.Text;
@@ -15,7 +16,7 @@ namespace Darklands.Workshop.Text;
 /// marked; a card text laid out in its block with the game's own layout, every passage shown, against the foot of the card's window.
 /// </summary>
 public sealed record PreviewResult(int Width, int Height, uint[] Argb, int Measured, int Room, int English, string? Problem, bool CardText,
-    int Foot = 0, int FootLimit = 0)
+    int Foot = 0, int FootLimit = 0, int Pages = 1)
 {
     /// <summary>The words do not fit: wider than the box, or past the card window's foot.</summary>
     public bool Overflows => CardText ? Foot >= FootLimit : Room > 0 && Measured > Room;
@@ -128,14 +129,20 @@ public sealed class TextPreview(TextProject project)
             }
         }
         var limit = y + height;
+        if (LackingHint(LanguagePackCheck.Unshowable(codes, painter)) is { } missing)
+        {
+            problem = problem is null ? missing : problem + "\n" + missing;
+        }
+        // a text too long for the window: the game shows it in pages (CardPaging); the pages one under another, each labelled
+        if (foot >= limit && CardPaging.ForBlock(painter, block, codes, Enumerable.Repeat(true, 32).ToList(), [], letter => DropCaps.Get(_assets, letter))
+            is { } paging)
+        {
+            return Pages(paging, block, painter, x, y, width, limit, problem);
+        }
         // the card window (from its left edge) with the window's foot marked
         var left = CardScreen.WindowX;
         var pictureWidth = Screen.Width - left;
         var whole = Picture(canvas, Screen.Width, Screen.Height, CardPalette());
-        if (LackingHint(LanguagePackCheck.Unshowable(codes, painter)) is { } lacking)
-        {
-            problem = problem is null ? lacking : problem + "\n" + lacking;
-        }
         var argb = new uint[pictureWidth * Screen.Height];
         for (var row = 0; row < Screen.Height; row++)
         {
@@ -169,6 +176,57 @@ public sealed class TextPreview(TextProject project)
             }
         }
         return _cardPalette;
+    }
+
+    private const int Gap = 4;
+
+    // the pages of a long text, each the card window as the game draws it (the "more" prompt at the foot of each but the last, "page
+    //   1/2" at its top left), one under another
+    private PreviewResult Pages(CardPaging paging, MessageBlock block, TextPainter painter, int x, int y, int width, int limit, string? problem)
+    {
+        var left = CardScreen.WindowX;
+        var pictureWidth = Screen.Width - left;
+        var n = paging.Pages.Count;
+        var height = n * Screen.Height + (n - 1) * Gap;
+        var argb = new uint[pictureWidth * height];
+        Array.Fill(argb, 0xFF806040u);
+        var label = Painter(1);
+        var foot = 0;
+        for (var k = 0; k < n; k++)
+        {
+            var canvas = new Canvas(new Screen());
+            var last = k == n - 1;
+            new CardTextLayout(painter).Draw(canvas, paging.Pages[k], x, y, width, new CardTextLayout.Settings
+            {
+                Color = Ink,
+                OptionColor = Ink,
+                DropCap = k == 0 ? letter => DropCaps.Get(_assets, letter) : null,
+            });
+            if (last)
+            {
+                foot = CardPaging.Foot(canvas);
+            }
+            else
+            {
+                var more = OriginalMessageText.OwnWords(GameText.Of(CardScreen.MorePrompt)) ?? "";
+                painter.Draw(canvas, left + block.X + block.Width - 5 - painter.Measure(more), CardPaging.WindowFoot - painter.LineHeight - 1, more, Ink);
+            }
+            label.Draw(canvas, left + 2, 1, $"page {k + 1}/{n}", 14);
+            var whole = Picture(canvas, Screen.Width, Screen.Height, CardPalette());
+            var top = k * (Screen.Height + Gap);
+            for (var row = 0; row < Screen.Height; row++)
+            {
+                Array.Copy(whole, row * Screen.Width + left, argb, (top + row) * pictureWidth, pictureWidth);
+            }
+            if (limit < Screen.Height)
+            {
+                for (var column = 0; column < pictureWidth; column += 2)
+                {
+                    argb[(top + limit) * pictureWidth + column] = 0xFFFF4040u;
+                }
+            }
+        }
+        return new PreviewResult(pictureWidth, height, argb, 0, width, 0, problem, true, foot, limit, n);
     }
 
     private static uint[] Picture(Canvas canvas, int width, int height, Rgb24[] palette)
