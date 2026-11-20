@@ -272,12 +272,26 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   terms a text's English holds are listed above your translation, marked when your words do not use the agreed one.
 * **Variables** edits your pack's own variables (the female and the male words of each), written to
   `variables.ftl`.
-* **Show in game** starts the game with the pack and puts the text's key in the clipboard (a developer build's
-  inspector, F9, names the text under the pointer).
+* **Play in game** saves, then starts the game with the pack **at the text chosen**, as a translation test. A Quick Start
+  party, always the same one, starts at the card of a card text, at the text's own passage, or with the screen of a
+  screen text open (sheet, store, barter, loot, alchemy, party info, prayer, roster, camp, map, battle, character
+  creation …). The game stays playable from there.
+  * **Reaching a later passage.** The Workshop runs the card without a display beforehand, trying its menu's choices
+    (up to 6 menus deep, following it into the next card when that card shows the same texts) on a few plausible states
+    (the Quick Start's, the option flags set, a rich purse, night, day, another city). It then replays the choices that
+    lead there.
+  * **A passage that needs story state.** A passage none of these reach (a quest given, being wanted in the city …) opens
+    at the card's start with a short notice; the Workshop's preview shows every passage.
+  * **Saves** go to the pack's own `.workshop\saves` folder, never your games' (zip the pack without `.workshop` to share
+    it).
+  * **The window's title** says it is a translation test.
+  * The small menu beside the button has **From the start** (the title screen, as usual).
+  * **On the command line** it is `DarklandsRP --language-pack <pack> --start-at card:$CITYC00#4` (or
+    `screen:BarterScreen`), accepted only with a language pack.
 * **Save** writes the pack's `.ftl` files in the template's layout (only the texts you translated; your pack's own
   variables and anything else in its files are kept). **Check** runs the game's pack check; its findings open below the
-  editor (the panel folds away), and a double-click on one shows its text. **Run game** starts
-  `DarklandsRP --language-pack` on it.
+  editor (the panel folds away), and a double-click on one shows its text. **Play in game** starts
+  `DarklandsRP --language-pack` on it (at the text chosen, above).
 
 **Keys.** **Ctrl+Enter** accepts the text (clears its review mark) and goes to the next untranslated one;
 **Ctrl+↓** and **Ctrl+↑** go to the next and the previous untranslated text; **F8** and **Shift+F8** to the next and the

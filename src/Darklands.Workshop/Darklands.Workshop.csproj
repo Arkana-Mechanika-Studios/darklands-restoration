@@ -33,6 +33,8 @@
        (linked, one source with the launcher) -->
   <ItemGroup>
     <AvaloniaResource Include="Assets\emblem.png" />
+    <AvaloniaResource Include="Assets\Fonts\Inter-*.ttf" />
+    <None Include="Assets\Fonts\Inter-OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Link="Inter-OFL.txt" />
     <AvaloniaResource Include="..\Darklands.Host.Sdl\Resources\DarklandsRP.ico" Link="Assets\DarklandsRP.ico" />
     <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\background.png" Link="Assets\banner.png" />
     <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\fleuron.png" Link="Assets\fleuron.png" />
