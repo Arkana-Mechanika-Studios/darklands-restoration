@@ -101,6 +101,8 @@ var translatorTemplate = Option("--translator-template");
 var checkLanguagePack = Option("--check-language-pack");
 var pseudoLanguagePack = Option("--pseudo-language-pack");
 var editionPack = Option("--edition-pack");
+var makeFontPack = Option("--make-font-pack");
+var fontScripts = Option("--scripts") ?? "latin";
 var fromEdition = Option("--from-edition");
 var editionLanguage = Option("--edition-language") ?? "de";
 var editionVariables = Option("--edition-variables");
@@ -158,7 +160,7 @@ var reports = ReportHost.Start(settingsPath, version, args, logIt: !soundCheck);
 new CrashHandler(reports, CrashHandler.ShowWithSdl, Console.Error.WriteLine).Install();
 var firstRun = settingsPath is null;
 GameSettings fileSettings = new();
-if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null && pseudoLanguagePack is null && editionPack is null)
+if (settingsPath is null && !soundCheck && translatorTemplate is null && checkLanguagePack is null && pseudoLanguagePack is null && editionPack is null && makeFontPack is null)
 {
     settingsPath = SettingsFile.WriteFirstRunTemplate(Console.Error.WriteLine);
     reports.SettingsFile = settingsPath;
@@ -177,14 +179,15 @@ if (Resolve(fileSettings) is not { } settings)
     return 1;
 }
 var folder = FindGameFolder(settings.GameFolder, settingsPath);
-if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLanguagePack is not null || editionPack is not null)
+if (translatorTemplate is not null || checkLanguagePack is not null || pseudoLanguagePack is not null || editionPack is not null || makeFontPack is not null)
 {
     if (folder is null)
     {
         Console.Error.WriteLine("The game's files were not found: give the game folder (DarklandsRP <game folder> ...).");
         return 1;
     }
-    return translatorTemplate is not null ? Darklands.Presentation.TranslatorCommands.WriteTemplate(folder, translatorTemplate, textBoxes, Console.Out)
+    return makeFontPack is not null ? Darklands.Presentation.TranslatorCommands.MakeFontPack(folder, makeFontPack, fontScripts, Console.Out)
+        : translatorTemplate is not null ? Darklands.Presentation.TranslatorCommands.WriteTemplate(folder, translatorTemplate, textBoxes, Console.Out)
         : pseudoLanguagePack is not null ? Darklands.Presentation.TranslatorCommands.WritePseudoPack(folder, pseudoLanguagePack, textBoxes, Console.Out)
         : editionPack is not null ? (fromEdition is null
             ? Fail("--edition-pack needs --from-edition <the other edition's game folder>")

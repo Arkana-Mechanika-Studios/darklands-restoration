@@ -159,6 +159,12 @@ public static class TextCodes
         return parts;
     }
 
+    /// <summary>
+    /// The menus' hot keys of a program string: its coloured parts that are a single letter (a menu marks its key's letter so); a coloured
+    /// word or phrase (an error message's) is no key.
+    /// </summary>
+    public static IReadOnlyList<string> HotKeys(string text) => [.. ColouredParts(text).Where(p => p.Length == 1)];
+
     /// <summary>Whether a colour tag starts at <paramref name="at"/>: its colour (0x7F for <c>&lt;/c&gt;</c>) and length.</summary>
     public static bool TagAt(string text, int at, out int colour, out int length)
     {

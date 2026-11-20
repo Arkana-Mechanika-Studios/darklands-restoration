@@ -156,14 +156,14 @@ public static class TranslatorTemplate
         {
             comment += "; " + string.Join(", ", described);
         }
-        if (Darklands.Core.TextCodes.ColouredParts(english) is { Count: > 0 } keys)
+        if (Darklands.Core.TextCodes.HotKeys(english) is { Count: > 0 } keys)
         {
             // every menu of the template's texts tests its keys in the code, whatever the text says (L-6b survey of the screens)
             comment += "; hot key " + string.Join(", ", keys.Select(k => "<c..>" + k + "</c>")) + ": the menu's key is fixed in the code, keep that letter coloured";
         }
         return new Message("exe.ftl", KeyMangling.ToFluentId(key), key, value.ToString(), [comment])
         {
-            HotKeys = Darklands.Core.TextCodes.ColouredParts(english),
+            HotKeys = Darklands.Core.TextCodes.HotKeys(english),
             Screens = box?.Screens ?? [],
         };
     }

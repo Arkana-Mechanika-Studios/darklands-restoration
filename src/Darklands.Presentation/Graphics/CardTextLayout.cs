@@ -105,8 +105,8 @@ public sealed class CardTextLayout(TextPainter painter)
         var color = settings.Color;
         var mode = TextMode.Copy;
 
-        if (settings.DropCap is { } dropCap && text.Length > 0 && text.At(0) is > '@' and < '[' &&
-            dropCap((byte)text.At(0)) is { } cap)
+        if (settings.DropCap is { } dropCap && text.Length > 0 && text.DropCapLetter() is > (byte)'@' and < (byte)'[' &&
+            dropCap(text.DropCapLetter()) is { } cap)
         {
             // C: the letter is a saved driver picture (gfx-rect-save at start-up) drawn with gfx-picture-draw: colour 0 transparent, its black is colour 5.
             canvas.Draw(cap, x, y, transparent: true);
@@ -465,6 +465,9 @@ public sealed class CardTextLayout(TextPainter painter)
 
         int Advance(int code);
 
+        /// <summary>The letter whose decorated capital the text starts with (0: none).</summary>
+        byte DropCapLetter();
+
         /// <summary>The width of text[from .. from+count) as it is, control codes included (the indent's measure).</summary>
         int MeasureRaw(int from, int count);
 
@@ -484,6 +487,8 @@ public sealed class CardTextLayout(TextPainter painter)
 
         public int Advance(int code) => painter.Advance((byte)code);
 
+        public byte DropCapLetter() => (byte)At(0);
+
         public int MeasureRaw(int from, int count) => painter.Measure(Raw(text, from, count));
 
         public int MeasureLine(int from, int count) => painter.Measure(Printable(text, from, count));
@@ -500,6 +505,9 @@ public sealed class CardTextLayout(TextPainter painter)
         public int At(int i) => i >= 0 && i < text.Length ? text[i] : 0;
 
         public int Advance(int code) => painter.AdvanceCode(code);
+
+        // a letter outside A-Z takes its Latin capital's picture (É: E; В: B; Α: A), else none (the game has pictures for A-Z only)
+        public byte DropCapLetter() => Fonts.PixelFontBuilder.DropCapOf(At(0));
 
         public int MeasureRaw(int from, int count) =>
             from >= 0 && from < text.Length && count > 0 ? painter.MeasureCodes(text.AsSpan(from, Math.Min(count, text.Length - from))) : 0;

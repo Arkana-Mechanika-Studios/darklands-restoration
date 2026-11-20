@@ -323,6 +323,25 @@ option lines, invisible on the picture until it fades, may show faintly in the w
 left in English) is measured and laid out again, and the pack check measures in it. A letter neither the pack's font
 nor the original's has is drawn as `?`.
 
+**Pixel fonts in the game's own style.** The program makes such a pack from your own `FONTS.FNT`:
+
+```
+DarklandsRP <game folder> --make-font-pack <folder> [--scripts latin,greek,cyrillic]
+```
+
+It writes `fonts/slot1..3` (the game's three fonts) into the folder, usually your language pack's. Every glyph of the
+game's fonts is kept as it is. Accented Latin letters (Latin-1 and Latin Extended-A: French, Spanish, Portuguese,
+Italian, Polish, Czech, Hungarian, the Nordic languages ...) are made by putting the accent onto the font's own letter,
+in two rows where the letter leaves room above it, else in one; a capital gives up a row for its accent, as the game's
+own Ä Ö Ü do. Greek and Cyrillic letters that look like Latin ones (А, Ο ...) are the font's own; the others are the
+project's own pixel drawings fitted to each font's rows. `charts/` holds a chart of every glyph of each font and script
+(four times the pixels, the letters in order in a .txt) for judging them. Such a font has the game's metrics for the
+game's letters, so English text in it draws exactly as the game draws it.
+
+**Decorated capitals.** A card text starts with a decorated capital; the game has pictures for A–Z only. A first letter
+outside A–Z takes the picture of its Latin letter (É: E, В: B, Α: A); a letter with no such letter (Φ, Ж) starts the text
+without one.
+
 **The text path.** Without a pack, and for every text that the original's bytes can hold, the game keeps the original's
 drawing exactly (Classic). A translation with other letters, or any text in a pack's font, takes the Unicode path: the
 same layout (the card texts' word wrap, passages, option lines and indents are the same loop), with the letters as

@@ -107,7 +107,7 @@ public static class LanguagePackCheck
             if (english.HotKeys.Count > 0)
             {
                 // every menu of these texts tests its keys in the code (the hot key's letter is fixed): the coloured letters must stay
-                var keys = Darklands.Core.TextCodes.ColouredParts(words);
+                var keys = Darklands.Core.TextCodes.HotKeys(words);
                 if (!keys.SequenceEqual(english.HotKeys, StringComparer.OrdinalIgnoreCase))
                 {
                     Add(Severity.Error, $"its coloured hot keys ({Quoted(keys)}) are not the English's ({Quoted(english.HotKeys)}): the menu's keys are " +

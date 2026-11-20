@@ -103,6 +103,29 @@ public static class TranslatorCommands
         return 0;
     }
 
+    /// <summary>
+    /// Writes a font pack in the game's own pixel style into <paramref name="folder"/> (fonts/slot1..3, and glyph charts in charts/),
+    /// made from the player's FONTS.FNT with the letters of <paramref name="scripts"/> (latin, greek, cyrillic); 0 when written.
+    /// </summary>
+    public static int MakeFontPack(string gameFolder, string folder, string scripts, TextWriter say)
+    {
+        ArgumentNullException.ThrowIfNull(say);
+        var chosen = (Fonts.FontScripts)0;
+        foreach (var name in scripts.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (!Enum.TryParse<Fonts.FontScripts>(name, ignoreCase: true, out var script))
+            {
+                say.WriteLine($"--scripts: {name} is not latin, greek or cyrillic");
+                return 2;
+            }
+            chosen |= script;
+        }
+        var counts = Fonts.FontPackMaker.Make(new GameFiles(gameFolder), folder, chosen);
+        say.WriteLine($"font pack: {string.Join(", ", counts.Select((c, i) => $"slot {i + 1} {c} glyphs"))} in {Path.Combine(folder, Darklands.Presentation.FontPack.Folder)}; " +
+            $"charts in {Path.Combine(folder, "charts")}");
+        return 0;
+    }
+
     /// <summary>Checks the pack in <paramref name="pack"/> against the game in <paramref name="gameFolder"/>; 0 when nothing stops its texts being used.</summary>
     public static int CheckPack(string gameFolder, string pack, string? boxes, TextWriter say)
     {

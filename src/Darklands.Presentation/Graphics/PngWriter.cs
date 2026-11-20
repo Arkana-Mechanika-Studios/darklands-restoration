@@ -55,6 +55,39 @@ public static class PngWriter
         Chunk(file, "IEND", []);
     }
 
+    /// <summary>A picture with its alpha (a font pack's glyphs: a pixel is ink where it is opaque).</summary>
+    // Not in the original: the 1.1 font packs.
+    public static void WriteRgba(ReadOnlySpan<uint> argb, int width, int height, string path)
+    {
+        using var file = File.Create(path);
+        file.Write([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+        var header = new byte[13];
+        WriteBigEndian(header, 0, width);
+        WriteBigEndian(header, 4, height);
+        header[8] = 8;          // bit depth
+        header[9] = 6;          // truecolour with alpha
+        Chunk(file, "IHDR", header);
+        using var raw = new MemoryStream();
+        using (var z = new ZLibStream(raw, CompressionLevel.Optimal, leaveOpen: true))
+        {
+            var row = new byte[1 + width * 4];
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var colour = argb[y * width + x];
+                    row[1 + x * 4] = (byte)(colour >> 16);
+                    row[2 + x * 4] = (byte)(colour >> 8);
+                    row[3 + x * 4] = (byte)colour;
+                    row[4 + x * 4] = (byte)(colour >> 24);
+                }
+                z.Write(row);
+            }
+        }
+        Chunk(file, "IDAT", raw.ToArray());
+        Chunk(file, "IEND", []);
+    }
+
     private static void Chunk(Stream output, string type, byte[] data)
     {
         var length = new byte[4];

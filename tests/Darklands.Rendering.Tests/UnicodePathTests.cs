@@ -86,6 +86,9 @@ public sealed class UnicodePathTests
         var template = TranslatorTemplate.Build(files, []);
         var more = template.Single(m => m.Key == "exe:290E:0112");
         Assert.Equal(["M"], more.HotKeys);
+        // a coloured phrase (an error message's) is no hot key: its words may change
+        var message = template.Single(m => m.Key == "exe:DS:4FCE");
+        Assert.Empty(message.HotKeys);
         Assert.Contains("<c12> M</c>", more.Value, StringComparison.Ordinal);
         var fewer = template.Single(m => m.Key == "exe:290E:0122");
         var folder = Path.Combine(Path.GetTempPath(), "dl-hotkeys-" + Guid.NewGuid().ToString("N"));
