@@ -125,6 +125,49 @@ public sealed class TextProject
         return new TextProject(folder, pack.Language, game, boxes, entries, others);
     }
 
+    /// <summary>The file a new pack variable goes to.</summary>
+    public const string VariablesFile = "variables.ftl";
+
+    /// <summary>The pack's own card-text variables (docs/LOCALISATION.md): name, the female and the male words (empty when not a $sex choice).</summary>
+    public IReadOnlyList<(string Name, string Female, string Male)> Variables =>
+        [.. _others.Where(o => o.Message.Id.StartsWith(LanguagePack.VariablePrefix, StringComparison.Ordinal))
+            .Select(o => (o.Message.Id[LanguagePack.VariablePrefix.Length..], FluentChoice.Read(o.Message.Value)))
+            .Select(v => (v.Item1,
+                v.Item2?.Variants.FirstOrDefault(x => x.Key == "female").Words ?? "",
+                v.Item2?.Variants.FirstOrDefault(x => x.Key == "male").Words ?? ""))];
+
+    /// <summary>Sets the pack variable <paramref name="name"/> (letters and digits) to its female and male words; a new one goes to variables.ftl.</summary>
+    public void SetVariable(string name, string female, string male)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        if (!name.All(char.IsAsciiLetterOrDigit))
+        {
+            throw new ArgumentException("A variable's name is letters and digits only (him1).", nameof(name));
+        }
+        var id = LanguagePack.VariablePrefix + name;
+        var value = FluentChoice.Write("sex", [new("female", female, false), new("male", male, true)]);
+        var at = _others.FindIndex(o => o.Message.Id == id);
+        var message = new FtlSource.Message(id, 0, new HashSet<string>(["sex"], StringComparer.Ordinal)) { Value = value };
+        if (at >= 0)
+        {
+            _others[at] = (_others[at].File, message);
+        }
+        else
+        {
+            _others.Add((VariablesFile, message));
+        }
+        Dirty = true;
+    }
+
+    /// <summary>Removes the pack variable <paramref name="name"/>.</summary>
+    public void RemoveVariable(string name)
+    {
+        if (_others.RemoveAll(o => o.Message.Id == LanguagePack.VariablePrefix + name) > 0)
+        {
+            Dirty = true;
+        }
+    }
+
     /// <summary>The text <paramref name="id"/> (null: none).</summary>
     public TextEntry? Find(string id) => _byId.GetValueOrDefault(id);
 

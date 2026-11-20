@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The Darklands Workshop (decision 13): the modders' and translators' tools, Avalonia; its first editor the translators' text
+       editor (Darklands.Workshop.Text). New code, outside the game: nothing references it, and the game never loads Avalonia. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>DarklandsWorkshop</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.23" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.23" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.23" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darklands.Workshop.Text\Darklands.Workshop.Text.csproj" />
+    <!-- a pack's fonts: the PNG reader and the TrueType rasteriser the game's hosts use -->
+    <ProjectReference Include="..\Darklands.Rendering\Darklands.Rendering.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Darklands.Workshop.Tests" />
+  </ItemGroup>
+
+</Project>

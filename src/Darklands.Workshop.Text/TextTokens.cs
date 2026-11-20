@@ -70,6 +70,29 @@ public static partial class TextTokens
     /// <summary>The text of <paramref name="tokens"/> (their texts one after another).</summary>
     public static string Join(IEnumerable<TextToken> tokens) => string.Concat(tokens.Select(t => t.Text));
 
+    /// <summary>
+    /// The chips of <paramref name="english"/> that <paramref name="translation"/> leaves out (each as often as missing), and the chips of
+    /// the translation the English does not have (a pack's own <c>$name</c> in <paramref name="packNames"/> is not one): the editor's hint
+    /// as the translator types (the game's check decides).
+    /// </summary>
+    public static (IReadOnlyList<string> Missing, IReadOnlyList<string> Unknown) Compare(string english, string translation, IReadOnlySet<string>? packNames = null)
+    {
+        static List<string> Chips(string value) =>
+            [.. Split(value).Where(t => t.Kind != TokenKind.Words && !(t.Kind == TokenKind.Placeable && t.Text.StartsWith("{\"", StringComparison.Ordinal))).Select(t => t.Text)];
+        var left = Chips(translation ?? "");
+        var missing = new List<string>();
+        foreach (var chip in Chips(english ?? ""))
+        {
+            if (!left.Remove(chip))
+            {
+                missing.Add(chip);
+            }
+        }
+        var known = Chips(english ?? "").ToHashSet(StringComparer.Ordinal);
+        var unknown = left.Where(c => !known.Contains(c) && !(c.StartsWith('$') && packNames?.Contains(c[1..]) == true)).Distinct(StringComparer.Ordinal).ToList();
+        return (missing, unknown);
+    }
+
     // the brace that closes the placeable opened at start (nested braces and quoted strings counted), or -1
     private static int Close(string value, int start)
     {
