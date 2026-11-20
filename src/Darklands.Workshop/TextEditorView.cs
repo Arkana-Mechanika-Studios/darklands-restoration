@@ -38,7 +38,7 @@ internal sealed class TextEditorView : IWorkshopEditor
     private readonly Border _sidebar = new();
 
     // the text
-    private readonly TextBlock _title = new() { FontSize = 20, FontWeight = FontWeight.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis };
+    private readonly TextBlock _title = new() { FontSize = 20, FontWeight = FontWeight.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis, TextWrapping = TextWrapping.Wrap, MaxLines = 2 };
     private readonly TextBlock _meta = new() { FontSize = 12, TextTrimming = TextTrimming.CharacterEllipsis };
     private readonly Border _state = new() { CornerRadius = new CornerRadius(10), Padding = new Thickness(8, 1), VerticalAlignment = VerticalAlignment.Center };
     private readonly Button _review = WorkshopTheme.Outline(new TextBlock());
@@ -68,6 +68,7 @@ internal sealed class TextEditorView : IWorkshopEditor
     private List<CardRow> _rows = [];
     private TranslationBox? _focusedRow;
     private bool _raw;
+    private bool _stacked;
     private TextEntry? _current;
     private bool _loading;
     private bool _filling;
@@ -88,7 +89,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             .OrderBy(g => Array.IndexOf(order, g.Section)).ThenBy(g => g.Section == "Cards" ? g.Title : g.Key, StringComparer.Ordinal)];
         _filters = new[] { "All", "To do", "Review", "Problems" }.Select((label, i) =>
         {
-            var b = new Button { Content = label, FontSize = 12, Padding = new Thickness(6, 3), CornerRadius = new CornerRadius(5), BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
+            var b = new Button { Content = label, FontSize = 11.5, Padding = new Thickness(0, 3), CornerRadius = new CornerRadius(5), BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
             b.Click += (_, _) => SetFilter(i);
             return b;
         }).ToArray();
@@ -351,9 +352,23 @@ internal sealed class TextEditorView : IWorkshopEditor
     // the widths: a wider sidebar and a larger preview on a large window
     private void Layout()
     {
-        var wide = _root.Bounds.Width >= 1600;
-        _root.ColumnDefinitions[0].Width = new GridLength(wide ? 340 : 296);
-        _root.ColumnDefinitions[2].Width = new GridLength(_previewPane.IsVisible ? wide ? 580 : 330 : 0);
+        // the card's preview pane holds the card's window at twice the game's pixels at least (readable at 1280 x 800)
+        var width = _root.Bounds.Width;
+        var wide = width >= 1600;
+        var side = wide ? 340 : 264;
+        var twice = _shown is { CardText: true } shown ? shown.Width * 2 + 34 : 0;
+        var pane = _previewPane.IsVisible ? Math.Max(wide ? 580 : 552, twice) : 0;
+        _root.ColumnDefinitions[0].Width = new GridLength(side);
+        _root.ColumnDefinitions[2].Width = new GridLength(pane);
+        var stacked = pane > 0 && width - side - pane < 760;
+        if (stacked != _stacked)
+        {
+            _stacked = stacked;
+            if (_current is not null && _current.Key.StartsWith("msg:", StringComparison.Ordinal) && !_raw)
+            {
+                ShowContent();
+            }
+        }
         Place();
     }
 
@@ -389,13 +404,39 @@ internal sealed class TextEditorView : IWorkshopEditor
 
     private IEnumerable<TextEntry> Visible() => _groups.SelectMany(g => g.Entries).Where(Matches);
 
-    private string TitleOf(TextEntry e)
+    private string TitleOf(TextEntry e) => Plain(MarkedTitleOf(e));
+
+    // the title with its hot key marked (drawn coloured)
+    private string MarkedTitleOf(TextEntry e)
     {
         if (!_titles.TryGetValue(e, out var title))
         {
-            title = _titles[e] = TextTitles.FirstWords(e.English);
+            title = _titles[e] = TextTitles.Marked(e.English);
         }
         return title;
+    }
+
+    private static string Plain(string marked) =>
+        marked.Replace(TextTitles.HotStart.ToString(), "", StringComparison.Ordinal).Replace(TextTitles.HotEnd.ToString(), "", StringComparison.Ordinal);
+
+    // a marked title's runs: the hot key coloured and underlined, as the game draws it
+    private static IEnumerable<Avalonia.Controls.Documents.Run> HotRuns(string marked)
+    {
+        var parts = marked.Split(TextTitles.HotStart);
+        if (parts[0].Length > 0)
+        {
+            yield return new Avalonia.Controls.Documents.Run(parts[0]);
+        }
+        foreach (var part in parts.Skip(1))
+        {
+            var end = part.IndexOf(TextTitles.HotEnd, StringComparison.Ordinal);
+            var hot = end < 0 ? part : part[..end];
+            yield return new Avalonia.Controls.Documents.Run(hot) { Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColour), TextDecorations = TextDecorations.Underline };
+            if (end >= 0 && end + 1 < part.Length)
+            {
+                yield return new Avalonia.Controls.Documents.Run(part[(end + 1)..]);
+            }
+        }
     }
 
     private void Fill()
@@ -426,7 +467,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                     foreach (var e in shown)
                     {
                         var hash = e.Key.IndexOf('#', StringComparison.Ordinal);
-                        items.Add(new SideItem(2, TitleOf(e), e.Key.StartsWith("msg:", StringComparison.Ordinal) ? "#" + e.Key[(hash + 1)..] : "", e, group.Key, 0, 0, false));
+                        items.Add(new SideItem(2, MarkedTitleOf(e), e.Key.StartsWith("msg:", StringComparison.Ordinal) ? "#" + e.Key[(hash + 1)..] : "", e, group.Key, 0, 0, false));
                     }
                 }
             }
@@ -526,7 +567,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 line.Children.Add(dot);
                 line.Children.Add(new TextBlock
                 {
-                    Text = item.Title,
+                    Inlines = [.. HotRuns(item.Title)],
                     Margin = new Thickness(10, 0, 0, 0),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     VerticalAlignment = VerticalAlignment.Center,
@@ -606,11 +647,13 @@ internal sealed class TextEditorView : IWorkshopEditor
         }
         var (_, group) = TextTitles.Group(entry);
         var card = entry.Key.StartsWith("msg:", StringComparison.Ordinal);
-        _title.Inlines = new Avalonia.Controls.Documents.InlineCollection
-        {
-            new Avalonia.Controls.Documents.Run(card ? group : TitleOf(entry)),
-            new Avalonia.Controls.Documents.Run(card ? " · " + TitleOf(entry) : "") { FontWeight = FontWeight.Normal, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted) },
-        };
+        _title.Inlines = card
+            ? new Avalonia.Controls.Documents.InlineCollection
+            {
+                new Avalonia.Controls.Documents.Run(group),
+                new Avalonia.Controls.Documents.Run(" · " + TitleOf(entry)) { FontWeight = FontWeight.Normal, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted) },
+            }
+            : [.. HotRuns(MarkedTitleOf(entry))];
         _meta.Inlines = new Avalonia.Controls.Documents.InlineCollection
         {
             new Avalonia.Controls.Documents.Run((card ? "Card text" : TextTitles.Section(entry) == "Names" ? group + " · a name" : group) + " · "),
@@ -619,8 +662,11 @@ internal sealed class TextEditorView : IWorkshopEditor
         };
         ToolTip.SetTip(_meta, string.Join("\n", entry.Template.Comments.Append("Shown on: " + string.Join(", ", entry.Screens))));
         ShowState();
-        _viewSwitch.IsVisible = card;
-        _switchHint.IsVisible = card;
+        // a screen text's switch: its hot key as the game draws it, or its tags (Raw)
+        var hot = !card && (HotKeyTag.IsMatch(entry.English) || HotKeyTag.IsMatch(entry.Translation ?? ""));
+        _viewSwitch.IsVisible = card || hot;
+        _switchHint.IsVisible = card || hot;
+        _rowsButton.Content = WorkshopTheme.IconText(card ? "list" : "type", card ? "Rows" : "Text", 13);
         ShowChips();
         ShowContent();
         ShowPreview();
@@ -675,9 +721,12 @@ internal sealed class TextEditorView : IWorkshopEditor
             note = rows is null ? "Your text's lines are not the English's (another number of options or passages): it is shown as written." : null;
         }
         var rowsMode = rows is not null;
-        Segment(_rowsButton, card && !_raw && rowsMode);
-        Segment(_rawButton, card && !rowsMode);
-        _switchHint.Text = rowsMode ? "Line breaks, “…” and indents are added for you." : note ?? "The text as the pack's file holds it, its tags included.";
+        Segment(_rowsButton, card ? !_raw && rowsMode : !_raw);
+        Segment(_rawButton, card ? !rowsMode : _raw);
+        _switchHint.Text = rowsMode ? "Line breaks, “…” and indents are added for you."
+            : !card && !_raw ? "The hot key is drawn as the game draws it; its colour tags are kept (Raw shows them)."
+            : note ?? "The text as the pack's file holds it, its tags included.";
+        _translation.HotKeys = !card && !_raw;
         _switchHint.Foreground = WorkshopTheme.Brush(note is null ? WorkshopTheme.Faint : WorkshopTheme.Warn);
         foreach (var chip in _chips.Children.OfType<Button>())
         {
@@ -687,7 +736,10 @@ internal sealed class TextEditorView : IWorkshopEditor
         if (rowsMode)
         {
             _rows = [.. rows!];
-            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("24,*,*"), ColumnSpacing = 12, RowSpacing = 8 };
+            // side by side (English left, yours right); stacked (yours under the English) when the column is narrow beside the preview
+            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions(_stacked ? "24,*" : "24,*,*"), ColumnSpacing = 12, RowSpacing = 8 };
+            var yours = _stacked ? 1 : 2;
+            var span = _stacked ? 1 : 2;
             var r = 0;
             void Add(Control c, int column, int span = 1)
             {
@@ -698,8 +750,15 @@ internal sealed class TextEditorView : IWorkshopEditor
             }
             void NextRow() => grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             NextRow();
-            Add(new TextBlock { Text = "English", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint) }, 1);
-            Add(new TextBlock { Text = language, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint) }, 2);
+            if (_stacked)
+            {
+                Add(new TextBlock { Text = "English, your " + language + " under each line", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint) }, 1);
+            }
+            else
+            {
+                Add(new TextBlock { Text = "English", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint) }, 1);
+                Add(new TextBlock { Text = language, FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint) }, 2);
+            }
             var option = 0;
             var lastKind = (CardRowKind?)null;
             for (var i = 0; i < _rows.Count; i++)
@@ -717,7 +776,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 {
                     r++;
                     NextRow();
-                    Add(new TextBlock { Text = section, FontSize = 12, FontWeight = FontWeight.SemiBold, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), Margin = new Thickness(0, 6, 0, -2) }, 1, 2);
+                    Add(new TextBlock { Text = section, FontSize = 12, FontWeight = FontWeight.SemiBold, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), Margin = new Thickness(0, 6, 0, -2) }, 1, span);
                 }
                 lastKind = row.Kind;
                 r++;
@@ -728,7 +787,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 }
                 var englishText = new SelectableTextBlock { TextWrapping = TextWrapping.Wrap, FontSize = 13, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted) };
                 var lead = en.Prefix.Contains("...", StringComparison.Ordinal) ? "… " : "";
-                Paint(englishText, lead + (en.Field ?? CardRow.Unwrapped(en.Content)));
+                Paint(englishText, lead + (en.Field ?? CardRow.Unwrapped(en.Content)), hotKeys: true);
                 var englishCell = new StackPanel { Orientation = Orientation.Horizontal };
                 var englishBox = new Border
                 {
@@ -744,7 +803,12 @@ internal sealed class TextEditorView : IWorkshopEditor
                     DockPanel.SetDock(withBadge.Children[0], Dock.Right);
                 }
                 Add(englishBox, 1);
-                var box = new TranslationBox { MinHeight = row.Kind == CardRowKind.Option ? 34 : 64, MaxHeight = 260 };
+                if (_stacked)
+                {
+                    r++;
+                    NextRow();
+                }
+                var box = new TranslationBox { MinHeight = row.Kind == CardRowKind.Option ? 34 : 64, MaxHeight = 260, HotKeys = true };
                 _loading = true;
                 box.Text = row.Field ?? CardRow.Unwrapped(row.Content);
                 _loading = false;
@@ -763,13 +827,13 @@ internal sealed class TextEditorView : IWorkshopEditor
                     _loading = false;
                     Written(written);
                 };
-                Add(box, 2);
+                Add(box, yours);
             }
             _content.Children.Add(grid);
         }
         else
         {
-            Paint(_english, entry.English.TrimStart('\n').Replace("\n    ", "\n", StringComparison.Ordinal).TrimStart(' '));
+            Paint(_english, entry.English.TrimStart('\n').Replace("\n    ", "\n", StringComparison.Ordinal).TrimStart(' '), hotKeys: !card && !_raw);
             _english.Foreground = WorkshopTheme.Brush(WorkshopTheme.Text);
             _loading = true;
             _translation.Text = entry.Translation ?? "";
@@ -1035,7 +1099,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             return;
         }
         var room = shown.CardText
-            ? (_root.ColumnDefinitions[2].Width.Value > 0 ? _root.ColumnDefinitions[2].Width.Value : 330) - 32
+            ? (_root.ColumnDefinitions[2].Width.Value > 0 ? _root.ColumnDefinitions[2].Width.Value : 552) - 32
             : Math.Max(300, _root.Bounds.Width - _root.ColumnDefinitions[0].Width.Value - 48);
         var scale = (int)Math.Clamp(room / shown.Width, 1, 4);
         _picture.Width = shown.Width * scale;
@@ -1049,10 +1113,30 @@ internal sealed class TextEditorView : IWorkshopEditor
     }
 
     // a text in the reader's box: words in the text's colour, each tag, name and argument in its chip's colour
-    private static void Paint(SelectableTextBlock block, string text)
+    private static readonly System.Text.RegularExpressions.Regex HotKeyTag = new(@"<c\d+>\s*([^<\s][^<\n]*?)</c>", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    private static void Paint(SelectableTextBlock block, string text, bool hotKeys = false)
     {
         var inlines = block.Inlines ??= [];
         inlines.Clear();
+        if (hotKeys)
+        {
+            // a hot key as the game draws it: the letter coloured (underlined), its tags left out
+            var at = 0;
+            foreach (System.Text.RegularExpressions.Match m in HotKeyTag.Matches(text))
+            {
+                PaintTokens(inlines, text[at..m.Index]);
+                inlines.Add(new Avalonia.Controls.Documents.Run(m.Groups[1].Value) { Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColour), TextDecorations = TextDecorations.Underline });
+                at = m.Index + m.Length;
+            }
+            PaintTokens(inlines, text[at..]);
+            return;
+        }
+        PaintTokens(inlines, text);
+    }
+
+    private static void PaintTokens(Avalonia.Controls.Documents.InlineCollection inlines, string text)
+    {
         foreach (var token in TextTokens.Split(text))
         {
             var run = new Avalonia.Controls.Documents.Run(token.Text);

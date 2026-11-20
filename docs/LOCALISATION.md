@@ -251,7 +251,7 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   and indents (`<opt>`, `<indent>`), green the `$Names` and arguments, red the colour tags.
 * **Card texts in rows.** A card text opens in its **Rows** view: the introduction, each passage that shows only when
   its condition holds, and each option line (numbered) in a field of its own, the English on the left and yours on
-  the right. You write only the words:
+  the right (on a narrower window, yours under each English line, so the card's preview keeps twice the game's pixels). You write only the words:
   a new line is a line break, a blank line a new paragraph, and the option markers, the "…" lead-ins and the indents
   are the English's, written for you. **Raw** shows the text as the pack's file holds it, its tags included (for
   experts, and for a translation whose lines are not the English's: another number of options or passages opens there).
@@ -261,6 +261,10 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   screen text under them; a screen text on one line with its box's edge dotted and a bar (green: no wider than
   the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
   against the foot of the card's window. It follows your typing.
+* **Hot keys.** A menu's coloured key letter (`<c12> M</c>ore batches`) shows as the game draws it, the letter coloured
+  and underlined, in the list, the English and your translation; its tags are kept in the text (the cursor steps over
+  them, and deleting the letter shows them again). A screen text with one has a **Text** | **Raw** switch: **Raw**
+  shows the tags as the pack's file holds them.
 * **Chips:** the English's tags, `$Names` and arguments (and your pack's own variables, for a card text) are buttons under
   your translation (**Insert**); a click, or **Alt+1** to **Alt+9**, puts one where the cursor is. Below it, the editor names the chips you left out and any that
   are not the English's. A translation that is a choice (a plural, a variable's `$sex` choice) shows one field a variant.

@@ -67,14 +67,27 @@ public static class TextTitles
         return words.Length == 0 ? screen : words[..1].ToUpperInvariant() + words[1..].ToLowerInvariant();
     }
 
+    /// <summary>Where a title's hot key (a menu's coloured letter) starts, in <see cref="Marked"/>'s titles.</summary>
+    public const char HotStart = '';
+
+    /// <summary>Where a title's hot key ends, in <see cref="Marked"/>'s titles.</summary>
+    public const char HotEnd = '';
+
     /// <summary>A text's own title: its first words, cut at a word near <paramref name="length"/> letters.</summary>
-    public static string FirstWords(string english, int length = 40)
+    public static string FirstWords(string english, int length = 40) =>
+        Marked(english, length).Replace(HotStart.ToString(), "", StringComparison.Ordinal).Replace(HotEnd.ToString(), "", StringComparison.Ordinal);
+
+    /// <summary>
+    /// A text's own title as <see cref="FirstWords"/> gives it, a menu's hot key (<c>&lt;c12&gt; M&lt;/c&gt;ore</c>) between
+    /// <see cref="HotStart"/> and <see cref="HotEnd"/> (the Workshop draws that letter as the game does: coloured).
+    /// </summary>
+    public static string Marked(string english, int length = 40)
     {
         ArgumentNullException.ThrowIfNull(english);
         var rows = CardRows.Parse(english);
         var text = rows.Count > 0 && rows[0].Kind != CardRowKind.Option ? CardRow.ToField(rows[0].Content) : CardRow.ToField(english);
         // a menu's hot key (<c12> M</c>ore: the letter, its padding left out), the game's control codes ({"\u0002"}) and placeables ({ $arg0 })
-        text = System.Text.RegularExpressions.Regex.Replace(text, @"<c\d+>\s*([^<\s]+)</c>", "$1");
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"<c\d+>\s*([^<\s]+)</c>", HotStart + "$1" + HotEnd);
         text = System.Text.RegularExpressions.Regex.Replace(text, @"\{\s*""\\u[0-9A-Fa-f]{4}""\s*\}", "");
         text = System.Text.RegularExpressions.Regex.Replace(text, @"\{\s*(\$\w+)\s*\}", "$1");
         text = System.Text.RegularExpressions.Regex.Replace(text, "<[^>]+>", " ");
@@ -84,6 +97,8 @@ public static class TextTitles
             return text;
         }
         var cut = text.LastIndexOf(' ', length);
-        return text[..(cut > length / 2 ? cut : length)].TrimEnd(',', ';', ':', '.') + "…";
+        var title = text[..(cut > length / 2 ? cut : length)].TrimEnd(',', ';', ':', '.');
+        // a hot key the cut halved: closed
+        return title + (title.LastIndexOf(HotStart) > title.LastIndexOf(HotEnd) ? HotEnd.ToString() : "") + "…";
     }
 }
