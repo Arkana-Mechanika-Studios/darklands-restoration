@@ -2339,7 +2339,9 @@
       "args": null,
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 35
     },
     {
       "key": "exe:DS:2F4A",
@@ -2350,7 +2352,9 @@
       "args": null,
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 27
     },
     {
       "key": "exe:DS:2F71",
@@ -2367,7 +2371,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:2FD5",
@@ -2382,7 +2388,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 18
     },
     {
       "key": "exe:DS:2FF2",
@@ -2393,7 +2401,9 @@
       "args": null,
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 51
     },
     {
       "key": "exe:DS:300F",
@@ -2404,7 +2414,9 @@
       "args": null,
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 59
     },
     {
       "key": "exe:DS:3018",
@@ -2417,7 +2429,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 122,
+      "y": 69
     },
     {
       "key": "exe:DS:302A",
@@ -2430,7 +2444,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 129,
+      "y": 131
     },
     {
       "key": "exe:DS:303E",
@@ -2446,7 +2462,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:3055",
@@ -2462,7 +2480,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:307F",
@@ -2479,7 +2499,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:30C6",
@@ -2494,7 +2516,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 78,
+      "y": 18
     },
     {
       "key": "exe:DS:30E3",
@@ -2509,7 +2533,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 78,
+      "y": 18
     },
     {
       "key": "exe:DS:3100",
@@ -2520,7 +2546,9 @@
       "args": null,
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 51
     },
     {
       "key": "exe:DS:311D",
@@ -2531,7 +2559,9 @@
       "args": null,
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 59
     },
     {
       "key": "exe:DS:3126",
@@ -2544,7 +2574,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 122,
+      "y": 69
     },
     {
       "key": "exe:DS:3138",
@@ -2557,7 +2589,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 129,
+      "y": 131
     },
     {
       "key": "exe:DS:3142",
@@ -2573,7 +2607,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:3159",
@@ -2589,7 +2625,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:3172",
@@ -2606,7 +2644,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:31A2",
@@ -2623,7 +2663,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:31D2",
@@ -2639,7 +2681,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:31E9",
@@ -2655,7 +2699,9 @@
       },
       "screens": [
         "BarterScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:3268",
@@ -3232,7 +3278,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 27
     },
     {
       "key": "exe:DS:3810",
@@ -3243,7 +3291,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 35
     },
     {
       "key": "exe:DS:383B",
@@ -3259,7 +3309,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:3863",
@@ -3270,7 +3322,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 43
     },
     {
       "key": "exe:DS:3883",
@@ -3281,7 +3335,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 51
     },
     {
       "key": "exe:DS:388C",
@@ -3292,7 +3348,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 107,
+      "y": 69
     },
     {
       "key": "exe:DS:38A2",
@@ -3305,7 +3363,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 119,
+      "y": 131
     },
     {
       "key": "exe:DS:38B6",
@@ -3320,7 +3380,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:38CA",
@@ -3335,7 +3397,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:38EF",
@@ -3351,7 +3415,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:3917",
@@ -3362,7 +3428,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 43
     },
     {
       "key": "exe:DS:3937",
@@ -3373,7 +3441,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 51
     },
     {
       "key": "exe:DS:3940",
@@ -3384,7 +3454,9 @@
       "args": null,
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 87,
+      "y": 69
     },
     {
       "key": "exe:DS:3956",
@@ -3397,7 +3469,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 119,
+      "y": 131
     },
     {
       "key": "exe:DS:3960",
@@ -3412,7 +3486,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:3974",
@@ -3427,7 +3503,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:3988",
@@ -3442,7 +3520,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:3998",
@@ -3457,7 +3537,9 @@
       },
       "screens": [
         "ItemStoreScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:3D69",
@@ -4195,7 +4277,9 @@
       "args": null,
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 27
     },
     {
       "key": "exe:DS:4C64",
@@ -4206,7 +4290,9 @@
       "args": null,
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 35
     },
     {
       "key": "exe:DS:4C8A",
@@ -4217,7 +4303,9 @@
       "args": null,
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 43
     },
     {
       "key": "exe:DS:4CAE",
@@ -4228,7 +4316,9 @@
       "args": null,
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 80,
+      "y": 51
     },
     {
       "key": "exe:DS:4CC8",
@@ -4243,7 +4333,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:4CF2",
@@ -4254,7 +4346,9 @@
       "args": null,
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 107,
+      "y": 69
     },
     {
       "key": "exe:DS:4D07",
@@ -4267,7 +4361,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 119,
+      "y": 131
     },
     {
       "key": "exe:DS:4D1B",
@@ -4282,7 +4378,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:4D2F",
@@ -4297,7 +4395,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:4D54",
@@ -4312,7 +4412,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 73,
+      "y": 9
     },
     {
       "key": "exe:DS:4D7E",
@@ -4323,7 +4425,9 @@
       "args": null,
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 87,
+      "y": 69
     },
     {
       "key": "exe:DS:4D93",
@@ -4336,7 +4440,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 119,
+      "y": 131
     },
     {
       "key": "exe:DS:4D9D",
@@ -4351,7 +4457,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:4DB1",
@@ -4366,7 +4474,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "exe:DS:4DC5",
@@ -4381,7 +4491,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 117,
+      "y": 147
     },
     {
       "key": "exe:DS:4DD9",
@@ -4396,7 +4508,9 @@
       },
       "screens": [
         "LootScreen"
-      ]
+      ],
+      "x": 85,
+      "y": 85
     },
     {
       "key": "loc:0.name",
