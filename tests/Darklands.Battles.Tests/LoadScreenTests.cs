@@ -175,12 +175,12 @@ public sealed class LoadScreenTests
     }
 
     /// <summary>
-    /// The Interface switch (GameUi.ComfortInterface): Comfort shows the list one line a saved game below the buttons, the newest
-    /// (by this computer's clock: the file's time) marked, with the real date and time beside the game's, and the highlighted game's
-    /// details above; its keys, rows and loading are the original's. Classic (the default, the oracle's) draws the original's list.
+    /// The Interface switch (GameUi.ComfortInterface): Comfort shows every saved game on one line, the newest first (by the file's
+    /// time), its comment and the real date it was saved in one column, the buttons narrowed to short labels; its keys, rows and
+    /// loading are the original's. Classic (the default, the oracle's) draws the original's screen.
     /// </summary>
     [Fact]
-    public void TheComfortListShowsAGameALineWithTheNewestMarkedAndClassicIsTheOriginal()
+    public void TheComfortListShowsAGameALineTheNewestFirstAndClassicIsTheOriginal()
     {
         if (GameFolder.Files is not { } files || Copy(files, "DKSAVE1.SAV", "DKSAVE2.SAV", "DKSAVE3.SAV") is not { } folder)
         {
@@ -189,10 +189,10 @@ public sealed class LoadScreenTests
         File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE1.SAV"), new DateTime(2026, 11, 20, 18, 5, 0));
         File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE2.SAV"), new DateTime(2026, 11, 21, 19, 23, 0));
         File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE3.SAV"), new DateTime(2026, 11, 19, 8, 0, 0));
-        Assert.Equal("DKSAVE2.SAV", folder.Newest());
         Assert.Equal(new DateTime(2026, 11, 21, 19, 23, 0), folder.SavedAt("DKSAVE2.SAV"));
+        var labels = Content.Formats.Saves.LoadScreenTexts.Decode(files.Read("DARKLAND.EXE"));
 
-        (byte[] Pixels, uint[] Palette, GameUi Ui) Shown(bool? comfort, params int[] keys)
+        (byte[] Pixels, uint[] Palette, string? Loaded) Shown(bool? comfort, params int[] keys)
         {
             var host = new KeyHost(keys);
             var ui = new GameUi(host, new GameAssets(files));
@@ -200,35 +200,35 @@ public sealed class LoadScreenTests
             {
                 ui.ComfortInterface = on;
             }
-            Assert.Null(new LoadGameScreen(ui, folder, ["", "", ""]).Run(fromStartScreen: false, _ => null));
-            return (host.Last!, host.LastPalette!, ui);
+            string? loaded = null;
+            new LoadGameScreen(ui, folder, labels).Run(fromStartScreen: true, name => { loaded = name; return null; });
+            return (host.Last!, host.LastPalette!, loaded);
         }
         var original = Shown(null);
         var classic = Shown(false);
         var comfort = Shown(true);
-        Assert.False(original.Ui.ComfortInterface);
         Assert.Equal(original.Pixels, classic.Pixels);
         Assert.NotEqual(classic.Pixels, comfort.Pixels);
+
+        // the first row: the original's first file (DKSAVE1), the comfort list's newest (DKSAVE2); the original's keys move on them
+        Assert.Equal("DKSAVE1.SAV", Shown(false, Key('l')).Loaded);
+        Assert.Equal("DKSAVE2.SAV", Shown(true, Key('l')).Loaded);
+        Assert.Equal("DKSAVE1.SAV", Shown(true, Keys.Down, Keys.Down, Keys.Up, Key('l')).Loaded);
+        Assert.Equal("DKSAVE3.SAV", Shown(true, Keys.End, Key('l')).Loaded);
+
+        // one line a game: three rows of text from y 0x15, ten pixels apart; the dates in one column (their first ink within a glyph's
+        //   own blank column of each other), right of the comments
         int At(byte[] p, int x, int y) => p[y * Screen.Width + x];
-        // the newest's mark (a small diamond at the second row's left, colour 0x10): only there, only in Comfort
-        var markY = 0x61 + 10 + 1 + 2 + 1;
-        Assert.Equal(0x10, At(comfort.Pixels, 0x45, markY));
-        Assert.NotEqual(0x10, At(comfort.Pixels, 0x45, markY - 10));
-        Assert.NotEqual(0x10, At(classic.Pixels, 0x45, markY));
-        // the rows' text in the wide list, nothing of the original's list where its rows were (below the details' box)
+        bool Ink(byte[] p, int x, int y) => At(p, x, y) is 0x10 or 0x12;
+        var firstDate = new List<int>();
         for (var row = 0; row < 3; row++)
         {
-            var y0 = 0x61 + row * 10;
-            Assert.Contains(Enumerable.Range(y0, 10).SelectMany(y => Enumerable.Range(0x48, 0xF0).Select(x => At(comfort.Pixels, x, y))), c => c is 0x10 or 0x12);
+            var rows = Enumerable.Range(0x15 + row * 10, 10).ToArray();
+            Assert.Contains(rows, y => Enumerable.Range(0x80, 0xB8).Any(x => Ink(comfort.Pixels, x, y)));
+            firstDate.Add(Enumerable.Range(0xF8, 0x40).First(x => rows.Any(y => Ink(comfort.Pixels, x, y))));
         }
-        Assert.DoesNotContain(Enumerable.Range(0x5E, 0x40).SelectMany(y => Enumerable.Range(0xC6, 0x70).Select(x => At(classic.Pixels, x, y))), c => c is 0x12);
-
-        // the original's keys on it: Down twice, Up once is the second row (DKSAVE2) as in Classic, and L loads that game
-        string? loaded = null;
-        var host2 = new KeyHost(Keys.Down, Keys.Down, Keys.Up, Key('l'));
-        var ui2 = new GameUi(host2, new GameAssets(files)) { ComfortInterface = true };
-        new LoadGameScreen(ui2, folder, ["", "", ""]).Run(fromStartScreen: false, name => { loaded = name; return null; });
-        Assert.Equal("DKSAVE2.SAV", loaded);
+        Assert.True(firstDate.Max() - firstDate.Min() <= 2, string.Join(", ", firstDate));
+        Assert.DoesNotContain(Enumerable.Range(0x15 + 3 * 10, 0x60).SelectMany(y => Enumerable.Range(0x90, 0xA8).Select(x => At(comfort.Pixels, x, y))), c => c is 0x12);
 
         if (Environment.GetEnvironmentVariable("DARKLANDS_LOADLIST_SHOTS") is { Length: > 0 } shots)
         {

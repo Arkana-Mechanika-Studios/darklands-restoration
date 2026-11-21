@@ -59,10 +59,11 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         ["id:rw.save.mods-missing.one-end.2"] = _ => "without it. Press a key.",
         ["id:rw.save.mods-missing.many-end.1"] = _ => "which are not loaded now. It goes on",
         ["id:rw.save.mods-missing.many-end.2"] = _ => "without them. Press a key.",
-        // the load screen's comfort list (the Interface switch on Comfort): the real date and time a game was saved, and the newest's mark
+        // the load screen's comfort list (the Interface switch on Comfort): the real date and time a game was saved, short in the list
+        //   (day, month: its number and its English short name, time) and whole under the buttons
+        ["id:rw.save.list.saved-short"] = t => $"{t.Word("day")} {t.Word("monthName")} {t.Word("time")}",
         ["id:rw.save.list.saved-at"] = t => $"{t.Word("date")} {t.Word("time")}",
-        ["id:rw.save.list.saved"] = _ => "Saved",
-        ["id:rw.save.list.newest"] = _ => "The newest saved game",
+        ["id:rw.save.list.saved"] = _ => "Saved on",
     };
 
     /// <summary>The words of one of the rewrite's own notices (null for any other id): they need no EXE.</summary>

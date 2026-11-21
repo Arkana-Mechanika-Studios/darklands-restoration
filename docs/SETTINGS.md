@@ -267,12 +267,13 @@ interface exactly, screen for screen; the replays and the comparisons with the o
 the comfort features, which change how orders are given and what a screen shows of them, never what the game decides (the saved
 games are the same, and the original game loads them):
 
-* **The saved games' list** (the load screen, Alt-L): a list the width of the screen below the buttons, one line a saved game:
-  its comment, its place and the game's date and hour, and the real date and time it was saved (the file's time on this
-  computer: the saved game itself holds only the game's date). The newest is marked with a small diamond. Above it, beside the
-  buttons, the highlighted game's details (its comment in full, its place and date, when it was saved, "The newest saved game").
-  The keys, the nine rows, the scrolling, the mouse and the buttons are the original's. A translation's words are fitted: a
-  comment too long for its line is cut where the place begins (the details show it whole).
+* **The saved games' list** (the load screen, Alt-L): every saved game on one line, the newest first. The buttons are narrowed
+  to short labels ("Load Game", "Delete Game", "Main Menu", whose M works as well as R; a translation keeps its own labels and the
+  buttons narrow only as far as they allow), and the list box is widened to them, fifteen rows instead of nine. A line holds the
+  game's comment and, in one column at the right, the real date and time it was saved ("21 Nov 19:23": the file's time on this
+  computer; the saved game itself holds only the game's date). Under the buttons, the highlighted game's place, the game's date
+  and hour, and the whole real date ("Saved on 2026-11-21 19:23"). The keys, the scrolling, the highlight, the mouse and loading
+  are the original's. A comment too long for its line is cut before the date column.
 * **Walking on** (the overland map): tap a direction key twice (two presses within 0.35 s, the key let go in between), or press
   it once with Shift, and the party walks on that way without the key held. It walks by the map's own command, the key a player
   would press, one a pass ([COMMANDS.md](COMMANDS.md)), so the rules, the time and the encounters are those of a held key. It

@@ -613,7 +613,7 @@ public static class SettingsFile
           "mods": [],
 
           // The Interface switch: how the same orders are given and what the screens show of them. "comfort": the comfort
-          // features (the load list one line a game, the newest marked, with the real date and time it was saved; on the map, a
+          // features (the load list one line a game, the newest first, with the real date and time it was saved; on the map, a
           // direction key tapped twice, or pressed with Shift, walks on until something stops it); "classic": the 1992 game's
           // interface exactly. The game plays the same either way. Command line: --interface classic|comfort.
           "interface": {

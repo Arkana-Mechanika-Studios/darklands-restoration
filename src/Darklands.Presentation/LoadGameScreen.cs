@@ -20,7 +20,6 @@ namespace Darklands.Presentation;
 // handling; nothing here needs them.
 public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<string> labels)
 {
-    private const int Rows = 9;
     private const int ButtonsX = 0x52;
     private const byte LabelColor = 8;
     private const byte LabelHighlight = 9;
@@ -37,7 +36,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     private int _firstShownIndex;
     private int _cursorRow;
     private int _rowsShown;
-    private readonly string[] _names = new string[Rows];
+    private readonly string[] _names = new string[ComfortRows];
     private bool _fromStart;
     private SavedScreen _page = null!;
     private Pic? _button;
@@ -73,10 +72,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                 {
                     if (lit != -1)
                     {
-                        ui.Recolor(0x45, lit * 15 + 0x2F, 0x80, 8, LabelHighlight, LabelColor);
+                        ui.Recolor(0x45, lit * 15 + 0x2F, LabelWidth, 8, LabelHighlight, LabelColor);
                     }
                     lit = row;
-                    ui.Recolor(0x45, row * 15 + 0x2F, 0x80, 8, LabelColor, LabelHighlight);
+                    ui.Recolor(0x45, row * 15 + 0x2F, LabelWidth, 8, LabelColor, LabelHighlight);
                 }
             }
             else if (action is { IsLeftClick: true } click && InButtons(ui.Laid.Map(click.X, click.Y).X, ui.Laid.Map(click.X, click.Y).Y))
@@ -106,7 +105,8 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             {
                 key = action.Value.Key;
             }
-            if (key == Keys.Escape || _fromStart && Keys.IsLetter(key, 'r'))
+            // the comfort screen's short English "Main Menu" takes M as well
+            if (key == Keys.Escape || _fromStart && (Keys.IsLetter(key, 'r') || Comfort && Keys.IsLetter(key, 'm') && ComfortLabel(2) != Label(2)))
             {
                 return null;
             }
@@ -120,64 +120,109 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     private const int LoadKey = 0x264C;
     private const int DeleteKey = 0x2044;
 
-    private static bool InButtons(int x, int y) => x > 0x44 && x < 0xC6 && y > 0x2D && y < 0x5A;
+    private bool InButtons(int x, int y) => x > 0x44 && x < ButtonsRight && y > 0x2D && y < 0x5A;
+
+    // the buttons' right end: the picture's (0xc6), or the comfort screen's narrowed plates'
+    private int ButtonsRight => Comfort ? _plateRight : 0xC6;
+
+    // the width of a button label's hover highlight: the original's 0x80, or as far as the narrowed plates
+    private int LabelWidth => Comfort ? _plateRight - 0x47 : 0x80;
 
     // the list's place: the original's (0xc3 < x < 0x140, 0x14 < y < 0xa5, rows of 16 from y 0x14), or the comfort list's
     private bool InList(int x, int y) => Comfort
-        ? x > WideLeft && x < WideRight && y > WideTop + 1 && y < WideBottom - 1
+        ? x > _panelLeft && x < PanelRight && y > PanelTop + 1 && y < PanelBottom - 1
         : x > 0xC3 && x < 0x140 && y > 0x14 && y < 0xA5;
 
-    private int RowAt(int y) => Comfort ? Math.Max(0, y - WideRowsTop) / WideRowHeight : (y - 0x14) / 16;
+    private int RowAt(int y) => Comfort ? Math.Max(0, y - RowsTop) / RowHeight : (y - 0x14) / 16;
 
-    // ---- The comfort list (the Interface switch on Comfort, GameUi.ComfortInterface). Not in the original. ----
-    // The picture's list box (0xc3..0x13c x 0x11..0xb1, a black line between two grey ones) is taken away; in its place a box of
-    // details over the buttons' right (the highlighted game's comment, place and date, when it was saved, and whether it is the
-    // newest) and, below the buttons, a list the width of the screen, one line a saved game: the newest's mark, its comment, its
-    // place and date, and the real date and time it was saved. Nine rows as the original's, so its keys, its scrolling and its
-    // highlight are the original's. Classic draws the original's list.
+    // ---- The comfort screen (the Interface switch on Comfort, GameUi.ComfortInterface). Not in the original. ----
+    // Every saved game on one line, the newest first. The three buttons are narrowed to their labels (the short English ones, "Load
+    // Game", "Delete Game", "Main Menu", or a translation's own), each plate keeping its own right edge; the picture's list box is
+    // widened to the left up to them, its full height, fifteen rows of ten pixels: the comment, and at the right, in one column, the
+    // real date and time the game was saved (the file's time). Under the buttons, the highlighted game's place and game date and its
+    // whole real date. The keys, the scrolling, the highlight and the loading are the original's. Classic draws the original's screen.
 
     private bool Comfort => ui.ComfortInterface;
 
-    // the wide list's frame (its black lines) and rows
-    private const int WideLeft = 0x40;
-    private const int WideRight = 0x13B;
-    private const int WideTop = 0x5E;
-    private const int WideBottom = 0xC2;
-    private const int WideRowsTop = 0x61;
-    private const int WideRowHeight = 10;
-    // the details' frame
-    private const int DetailsLeft = 0xC3;
-    private const int DetailsRight = 0x13B;
-    private const int DetailsTop = 0x11;
-    private const int DetailsBottom = 0x58;
+    private const int ClassicRows = 9;
+    private const int ComfortRows = 15;
+
+    /// <summary>The rows the list shows: the original's nine, or fifteen on the comfort screen.</summary>
+    private int Rows => Comfort ? ComfortRows : ClassicRows;
+
+    // the widened panel (its black lines: the picture box's top, right and bottom ones) and its rows
+    private const int PanelRight = 0x13B;
+    private const int PanelTop = 0x11;
+    private const int PanelBottom = 0xB1;
+    private const int RowsTop = 0x15;
+    private const int RowHeight = 10;
+    private int _plateRight = 0xBE;
+    private int _panelLeft = 0xC3;
+
+    // the date column's left edge (one column for every row, as wide as the widest date of the folder)
+    private int _dateX;
+
+    // the details under the buttons
+    private const int DetailsTop = 0x63;
     private const int DetailsLine = 9;
 
-    private string? _newest;
+    /// <summary>The saved games the comfort list shows, the newest first (by the file's time), then by name.</summary>
+    private IReadOnlyList<string> ComfortOrder() =>
+        [.. folder.Names().OrderByDescending(n => folder.SavedAt(n) ?? DateTime.MinValue).ThenBy(n => n, StringComparer.OrdinalIgnoreCase)];
 
-    // the picture's list box taken away (each of its lines replaced by the backdrop beside it), then the two boxes' frames drawn
+    /// <summary>A button's label on the comfort screen: the original's English label made short, a translation's as it is.</summary>
+    private string ComfortLabel(int i)
+    {
+        var label = Label(i);
+        if (label.Contains("eturn to Main Menu", StringComparison.Ordinal))
+        {
+            // the hot letter's colour codes kept: "Main Menu", M besides R
+            var code = label.IndexOf('R', StringComparison.Ordinal);
+            return code < 0 ? label : label[..code] + "M" + label[(code + 1)..].Replace("eturn to Main Menu", "ain Menu", StringComparison.Ordinal);
+        }
+        return label.Replace(" Saved Game", " Game", StringComparison.Ordinal);
+    }
+
+    // the picture of the comfort screen: the plates narrowed, the list box widened to them
     private void ComfortBackdrop()
     {
         var c = ui.Canvas;
         var black = c[0xC3, 0x64];
         var grey = c[0xC2, 0x64];
-        for (var y = 0x0E; y <= 0xB5; y++)
+        _plateRight = Math.Min(0xBE, ButtonsX + Enumerable.Range(0, 3).Max(i => ui.Text.Measure(ComfortLabel(i))) + 12);
+        _panelLeft = _plateRight + 8;
+        // the plates (rows 0x2c..0x38, 0x3b..0x47, 0x4a..0x56): each one's last six columns at its new end
+        for (var plate = 0; plate < 3; plate++)
         {
-            for (var k = 0; k < 3; k++)
+            for (var y = 0x2C + plate * 15; y <= 0x38 + plate * 15; y++)
             {
-                c[0xC2 + k, y] = c[0xBF + k, y];
-                c[0x13A + k, y] = c[0x137 + k, y];
+                for (var x = 0; x < 6; x++)
+                {
+                    c[_plateRight - 6 + x, y] = c[0xB8 + x, y];
+                }
             }
         }
-        for (var x = 0xBF; x < Canvas.Width; x++)
+        // beyond them: the gap before the panel from the picture's backdrop between the plates' end and the box (0xbe..0xc1), the
+        //   panel's inside the box's own inside (0xc5..0x139) drawn wider, column for column, so its shading runs on unbroken
+        var picture = c.SaveScreen().Pixels;
+        byte Picture(int x, int y) => picture[y * Canvas.Width + x];
+        for (var y = PanelTop - 2; y <= PanelBottom + 2; y++)
         {
-            for (var k = 0; k < 3; k++)
+            for (var x = _plateRight; x < _panelLeft - 1; x++)
             {
-                c[x, 0x10 + k] = c[x, 0x13 + k];
-                c[x, 0xB0 + k] = c[x, 0xB3 + k];
+                c[x, y] = Picture(0xBE + (x - _plateRight) % 4, y);
             }
         }
-        Frame(DetailsLeft, DetailsTop, DetailsRight, DetailsBottom, black, grey);
-        Frame(WideLeft, WideTop, WideRight, WideBottom, black, grey);
+        var inside = _panelLeft + 2;
+        for (var y = PanelTop + 2; y <= PanelBottom - 2; y++)
+        {
+            for (var x = inside; x <= 0x139; x++)
+            {
+                c[x, y] = Picture(0xC5 + (x - inside) * (0x139 - 0xC5) / (0x139 - inside), y);
+            }
+        }
+        Frame(_panelLeft, PanelTop, PanelRight, PanelBottom, black, grey);
+        _dateX = PanelRight - 4 - folder.Names().Select(n => ui.Text.Measure(ShortSavedAt(folder.SavedAt(n)))).DefaultIfEmpty(0).Max();
     }
 
     // a box as the picture draws its own: a black line with a grey one on each side
@@ -196,32 +241,32 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         ui.Text.Draw(ui.Canvas, x, y, text, LineColor, right);
     }
 
-    private string SavedAtText(DateTime? at) => at is { } t
-        ? ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved-at",
-            ("date", t.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)),
-            ("time", t.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture))))
+    private static readonly System.Globalization.CultureInfo Invariant = System.Globalization.CultureInfo.InvariantCulture;
+
+    // the real date and time a game was saved, short (the list: "21 Nov 19:23") or whole (the details: "2026-11-21 19:23")
+    private string ShortSavedAt(DateTime? at) => at is { } t
+        ? ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved-short", ("day", t.Day.ToString(Invariant)), ("month", t.Month.ToString(Invariant)),
+            ("monthName", t.ToString("MMM", Invariant)), ("time", t.ToString("HH:mm", Invariant))))
         : "";
 
-    private void DrawWideList()
+    private string SavedAtText(DateTime? at) => at is { } t
+        ? ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved-at", ("date", t.ToString("yyyy-MM-dd", Invariant)), ("time", t.ToString("HH:mm", Invariant))))
+        : "";
+
+    private void DrawComfortList()
     {
-        ui.Canvas.CopyFrom(_page, WideLeft + 2, WideTop + 2, WideRight - WideLeft - 3, WideBottom - WideTop - 3);
+        ui.Canvas.CopyFrom(_page, _panelLeft + 2, PanelTop + 2, PanelRight - _panelLeft - 3, PanelBottom - PanelTop - 3);
         _rowsShown = 0;
-        var names = folder.Names();
-        _newest = folder.Newest();
+        var names = ComfortOrder();
         if (names.Count == 0)
         {
-            // as the original's: no row, no highlight; the details box empty
+            // as the original's: no row, no highlight
             DrawDetails();
             ui.Present();
             return;
         }
-        var skip = 0;
-        foreach (var name in names)
+        foreach (var name in names.Skip(_firstShownIndex))
         {
-            if (skip++ < _firstShownIndex)
-            {
-                continue;
-            }
             if (++_rowsShown > Rows)
             {
                 _rowsShown--;
@@ -229,27 +274,16 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             }
             _names[_rowsShown - 1] = name;
             var s = folder.Summary(name);
-            var y = WideRowsTop + (_rowsShown - 1) * WideRowHeight + 1;
-            // from the right: the real date and time, the place and the game's date, then the comment in what is left
-            var right = WideRight - 4;
-            var saved = SavedAtText(folder.SavedAt(name));
-            var savedX = right - ui.Text.Measure(saved);
-            Shadowed(savedX, y, saved);
-            var line = ui.Format(ScreenTexts.SavedGameLine, s.Place, s.Year, s.Month + 1, s.Day, s.Hour);
-            var lineX = Math.Max(WideLeft + 0x30, savedX - 10 - ui.Text.Measure(line));
-            Shadowed(lineX, y, line, savedX - 6);
-            var commentRight = lineX - 8;
+            var y = RowsTop + (_rowsShown - 1) * RowHeight + 1;
+            var commentRight = _dateX - 6;
             if (ui.Options.CleanDrawing && folder.IsModded(name))
             {
-                Shadowed(lineX - 7, y, ModMark);
+                // a modded game's mark at the comment's right end, as the original list's at its first line's
+                Shadowed(_dateX - 9, y, ModMark);
                 commentRight -= 6;
             }
-            Shadowed(WideLeft + 9, y, s.Comment, commentRight);
-            if (name == _newest)
-            {
-                // the newest's mark: a small diamond before its comment
-                NewestMark(WideLeft + 4, y + 2);
-            }
+            Shadowed(_panelLeft + 4, y, s.Comment, commentRight);
+            Shadowed(_dateX, y, ShortSavedAt(folder.SavedAt(name)));
         }
         if (_saveCount <= _cursorRow)
         {
@@ -258,37 +292,45 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         Highlight(true);
     }
 
-    private void NewestMark(int x, int y)
-    {
-        var c = ui.Canvas;
-        foreach (var (color, d) in new[] { (LineShadow, 1), (LineColor, 0) })
-        {
-            c.Fill(x + 1 + d, y + d, 1, 3, color);
-            c.Fill(x + d, y + 1 + d, 3, 1, color);
-        }
-    }
-
-    // the details of the highlighted game: its comment, place and date, when it was saved, and whether it is the newest
+    // under the buttons, the highlighted game: its place and the game's date and hour, and the real date and time it was saved,
+    //   from the left of the labels' text
     private void DrawDetails()
     {
-        var x = DetailsLeft + 4;
-        var right = DetailsRight - 3;
-        ui.Canvas.CopyFrom(_page, DetailsLeft + 2, DetailsTop + 2, DetailsRight - DetailsLeft - 3, DetailsBottom - DetailsTop - 3);
+        var x = ButtonsX + ui.Text.Measure(" ");
+        var right = _panelLeft - 6;
+        ui.Canvas.CopyFrom(_page, 0x44, DetailsTop - 1, right - 0x44 + 2, 5 * DetailsLine);
         if (_cursorRow < 0 || _cursorRow >= _rowsShown || _names[_cursorRow] is not { } name)
         {
             return;
         }
         var s = folder.Summary(name);
-        var y = DetailsTop + 5;
-        Shadowed(x, y, s.Comment, right);
-        Shadowed(x, y + DetailsLine, ui.Format(ScreenTexts.SavedGameLine, s.Place, s.Year, s.Month + 1, s.Day, s.Hour), right);
-        Shadowed(x, y + 3 * DetailsLine, ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved")), right);
-        Shadowed(x, y + 4 * DetailsLine, SavedAtText(folder.SavedAt(name)), right);
-        if (name == _newest)
+        // the place, then the game's date and hour (the original's line without its place)
+        Shadowed(x, DetailsTop, s.Place, right);
+        Shadowed(x, DetailsTop + DetailsLine, ui.Format(ScreenTexts.SavedGameLine, "", s.Year, s.Month + 1, s.Day, s.Hour).Trim(), right);
+        Shadowed(x, DetailsTop + 2 * DetailsLine + 4, ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved")), right);
+        Shadowed(x, DetailsTop + 3 * DetailsLine + 4, SavedAtText(folder.SavedAt(name)), right);
+    }
+
+    // a pressed button (buttncr2 at x0, y): on the comfort screen narrowed as the plates, what it would cover right of them kept
+    private void DrawPressed(Pic button, int x0, int y)
+    {
+        if (!Comfort)
         {
-            NewestMark(x, y + 6 * DetailsLine + 2);
-            Shadowed(x + 6, y + 6 * DetailsLine, ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.newest")), right);
+            ui.Canvas.Draw(button.Image, x0, y);
+            return;
         }
+        var c = ui.Canvas;
+        var keep = c.Save(_plateRight, y, Canvas.Width - _plateRight, button.Image.Height);
+        c.Draw(button.Image, x0, y);
+        var edge = x0 + button.Image.Width - 6;
+        for (var row = y; row < y + button.Image.Height; row++)
+        {
+            for (var x = 0; x < 6; x++)
+            {
+                c[_plateRight - 6 + x, row] = c[edge + x, row];
+            }
+        }
+        c.Restore(keep);
     }
 
     // orig: R037+0x83FE: image-paint-palette(1, "pics\\loadscrn.pic"), DS:E88A = image-read("pics\\buttnCR2.pic"), backdrop-window-colour = 8,
@@ -330,15 +372,18 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // orig: R037+0x8B0E: colour 8; s[0] at (0x52, 0x2f), s[1] at (0x52, 0x3e), from the start screen s[2] at (0x52, 0x4d)
     private void DrawLabels()
     {
-        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x2F, Label(0), LabelColor);
-        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3E, Label(1), LabelColor);
+        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x2F, Shown(0), LabelColor);
+        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3E, Shown(1), LabelColor);
         if (_fromStart)
         {
-            ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x4D, Label(2), LabelColor);
+            ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x4D, Shown(2), LabelColor);
         }
     }
 
     private string Label(int i) => i < labels.Count ? labels[i] : "";
+
+    // a button's label as drawn: the original's, or the comfort screen's short one
+    private string Shown(int i) => Comfort ? ComfortLabel(i) : Label(i);
 
     /// <summary>The list of saved games from the first shown, nine at most, and the cursor's highlight.</summary>
     // orig: R037+0x8896 (1C7D:06E6): the list area (0xc3, 0x14, 0x7d x 0x91) from the page, then for each saves\*.sav
@@ -353,7 +398,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         if (Comfort)
         {
-            DrawWideList();
+            DrawComfortList();
             return;
         }
         ui.Canvas.CopyFrom(_page, 0xC3, 0x14, 0x7D, 0x91);
@@ -407,8 +452,8 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         if (Comfort)
         {
-            var y = WideRowsTop + _cursorRow * WideRowHeight;
-            ui.Recolor(WideLeft + 2, y, WideRight - WideLeft - 3, WideRowHeight, on ? LineColor : LineHighlight, on ? LineHighlight : LineColor);
+            var y = RowsTop + _cursorRow * RowHeight;
+            ui.Recolor(_panelLeft + 2, y, PanelRight - _panelLeft - 3, RowHeight, on ? LineColor : LineHighlight, on ? LineHighlight : LineColor);
             if (on)
             {
                 DrawDetails();
@@ -504,7 +549,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                 // orig: DS:8C52 = limit-to-range(0, 9999, DS:8C4C - 9); DS:8C50 = limit-to-range(0, DS:8C4C, 8);
                 // C: with fewer than nine games the cursor is put one past them; the list puts it back on the last row.
                 _firstShownIndex = Math.Clamp(_saveCount - Rows, 0, 9999);
-                _cursorRow = Math.Clamp(8, 0, Math.Max(_saveCount, 0));
+                _cursorRow = Math.Clamp(Rows - 1, 0, Math.Max(_saveCount, 0));
                 DrawList();
                 break;
         }
@@ -522,9 +567,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         if (_button is { } button)
         {
-            ui.Canvas.Draw(button.Image, 0x42, 0x2C);
+            DrawPressed(button, 0x42, 0x2C);
         }
-        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x30, Label(0), LabelColor);
+        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x30, Shown(0), LabelColor);
         ui.PresentPressedButton();
         var loaded = load(_names[_cursorRow]);
         if (loaded is null)
@@ -543,12 +588,12 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // C: there is no test that a row is shown: with an empty list the name is a stale one (whose file is gone).
     private void Delete()
     {
-        ui.Recolor(0x45, 0x2F, 0x80, 0x2D, LabelHighlight, LabelColor);
+        ui.Recolor(0x45, 0x2F, LabelWidth, 0x2D, LabelHighlight, LabelColor);
         if (_button is { } button)
         {
-            ui.Canvas.Draw(button.Image, 0x41, 0x3B);
+            DrawPressed(button, 0x41, 0x3B);
         }
-        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Label(1), LabelColor);
+        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Shown(1), LabelColor);
         ui.PresentPressedButton();
         if (new MessageBox(ui).Ask(ui.Words(ScreenTexts.DeleteThisGame)))
         {
@@ -558,9 +603,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             }
             DrawList();
         }
-        ui.Canvas.CopyFrom(_page, 0x41, 0x3B, 0x82, 0xE);
-        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Label(1), LabelColor);
-        ui.Recolor(0x45, 0x3E, 0x80, 8, LabelColor, LabelHighlight);
+        ui.Canvas.CopyFrom(_page, 0x41, 0x3B, Comfort ? _plateRight - 0x41 : 0x82, 0xE);
+        ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Shown(1), LabelColor);
+        ui.Recolor(0x45, 0x3E, LabelWidth, 8, LabelColor, LabelHighlight);
         ui.Present();
     }
 

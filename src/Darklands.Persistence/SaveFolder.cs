@@ -76,11 +76,6 @@ public sealed class SaveFolder(string path)
         }
     }
 
-    /// <summary>The saved game written last by this computer's clock (<see cref="SavedAt"/>), or null with none.</summary>
-    public string? Newest() =>
-        Names().Select(n => (Name: n, At: SavedAt(n))).Where(n => n.At is not null).OrderByDescending(n => n.At).ThenBy(n => n.Name, StringComparer.OrdinalIgnoreCase)
-            .Select(n => n.Name).FirstOrDefault();
-
     /// <summary>
     /// Whether the saved game belongs to a modded game: its companion file is there and is its own (<see cref="ModdedSaves.IsCompanionOf"/>).
     /// False for a plain saved game, and for a companion file left from an earlier save of that name.
