@@ -349,6 +349,7 @@ public static class SettingsFile
             switch (property.Name)
             {
                 case "languagePack": settings.LanguagePack = FilePath(key, property.Value); break;
+                case "fontPack": settings.FontPack = FilePath(key, property.Value); break;
                 default: Unknown(key); break;
             }
         }
@@ -572,7 +573,11 @@ public static class SettingsFile
             // A translation pack: a folder with a pack.json naming its language and Fluent .ftl files under text/<language>/
             // (docs/LOCALISATION.md). Not part of the original: it changes words only, the game plays the same. "": the original
             // English text from your game files. Command line: --language-pack <folder>; environment: DARKLANDS_LANGUAGE_PACK.
-            "languagePack": ""
+            "languagePack": "",
+            // A font pack: a folder with a pack.json saying "fonts": true and its fonts in fonts/ (the game's text drawn in them at the
+            // window's resolution: high-resolution text, English included; the program ships "HD fonts" in its packs folder). Not part
+            // of the original. "": the game's fonts. Command line: --font-pack <folder>; environment: DARKLANDS_FONT_PACK.
+            "fontPack": ""
           },
 
           // Where screenshots go. "": the current folder. Command line: --screenshots <folder>.

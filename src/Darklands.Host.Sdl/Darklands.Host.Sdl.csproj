@@ -89,6 +89,13 @@
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\PACKS.md" Link="docs\PACKS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\audio-pack-example\**\*" Link="packs\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- the "HD fonts" font pack (docs/LOCALISATION.md): the game's text in DejaVu Sans Mono and EB Garamond at the window's resolution;
+         its pack.json and slot files from docs/hd-fonts-pack, the fonts the repository already has (THIRD_PARTY_NOTICES.md) -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\hd-fonts-pack\**\*" Link="packs\hd-fonts\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Resources\DejaVuSansMono.ttf" Link="packs\hd-fonts\fonts\DejaVuSansMono.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\EBGaramond12-Regular.ttf" Link="packs\hd-fonts\fonts\EBGaramond12-Regular.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\OFL.txt" Link="packs\hd-fonts\fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the mod makers' guide (docs/MODS.md) and the example mod (mods/wayside-shrine), beside the program in the build and in every

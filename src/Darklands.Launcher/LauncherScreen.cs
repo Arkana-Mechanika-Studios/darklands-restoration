@@ -114,6 +114,7 @@ internal sealed partial class LauncherScreen
         Notes,
         AudioPack,
         LanguagePack,
+        FontPack,
         PackGuide,
         SoundFont,
         Report,
@@ -183,7 +184,7 @@ internal sealed partial class LauncherScreen
     public bool AdvancedShown => _advanced;
 
     /// <summary>The rows of the Advanced tab; the other settings rows are on General.</summary>
-    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.LanguagePack or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys;
+    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.LanguagePack or Item.FontPack or Item.Banner or Item.Intro or Item.MouseWheel or Item.CardMenuKeys;
 
     private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
 

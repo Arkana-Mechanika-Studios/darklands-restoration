@@ -40,7 +40,7 @@ internal sealed class LauncherModel
     private static readonly double[] WindowScaleFactors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack, string? FontPack) _initial;
     private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
@@ -60,6 +60,7 @@ internal sealed class LauncherModel
         AudioPack = string.IsNullOrWhiteSpace(s.AudioPack) ? null : s.AudioPack;
         SoundFont = string.IsNullOrWhiteSpace(s.SoundFont) ? null : s.SoundFont;
         LanguagePack = string.IsNullOrWhiteSpace(s.LanguagePack) ? null : s.LanguagePack;
+        FontPack = string.IsNullOrWhiteSpace(s.FontPack) ? null : s.FontPack;
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
         MouseWheel = s.MouseWheel ?? true;
@@ -73,7 +74,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys, LanguagePack);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys, LanguagePack, FontPack);
         _automatic = GameFolder;
     }
 
@@ -113,11 +114,15 @@ internal sealed class LauncherModel
     /// <summary>The translation pack's folder (docs/LOCALISATION.md); null: none, the original English text.</summary>
     public string? LanguagePack { get; set; }
 
+    /// <summary>The font pack's folder (the game's text in its fonts, high resolution); null: none, the game's fonts.</summary>
+    public string? FontPack { get; set; }
+
     /// <summary>The picture pack's, the sound pack's or the translation pack's folder.</summary>
     public string? PackOf(PackKind kind) => kind switch
     {
         PackKind.Pictures => HdPack,
         PackKind.Sounds => AudioPack,
+        PackKind.Fonts => FontPack,
         _ => LanguagePack,
     };
 
@@ -130,6 +135,9 @@ internal sealed class LauncherModel
                 break;
             case PackKind.Sounds:
                 AudioPack = folder;
+                break;
+            case PackKind.Fonts:
+                FontPack = folder;
                 break;
             default:
                 LanguagePack = folder;
@@ -154,6 +162,7 @@ internal sealed class LauncherModel
     {
         PackKind.Pictures => Pack(folder).Pictures > 0,
         PackKind.Sounds => Pack(folder).Sounds > 0,
+        PackKind.Fonts => Pack(folder).Fonts > 0,
         _ => Pack(folder).Translations > 0,
     };
 
@@ -297,6 +306,10 @@ internal sealed class LauncherModel
         {
             changes["text.languagePack"] = LanguagePack?.Replace('\\', '/') ?? "";
         }
+        if (FontPack != _initial.FontPack)
+        {
+            changes["text.fontPack"] = FontPack?.Replace('\\', '/') ?? "";
+        }
         if (SoundFont != _initial.SoundFont)
         {
             changes["sound.soundFont"] = SoundFont?.Replace('\\', '/') ?? "";
@@ -338,6 +351,7 @@ internal sealed class LauncherModel
         s.AudioPack = AudioPack;
         s.SoundFont = SoundFont;
         s.LanguagePack = LanguagePack;
+        s.FontPack = FontPack;
         s.Banner = Banner;
         s.Intro = Intro;
         s.MouseWheel = MouseWheel;
@@ -388,4 +402,7 @@ internal enum PackKind
 
     /// <summary>A translation pack (pack.json with a "language", Fluent files).</summary>
     Language,
+
+    /// <summary>A font pack (pack.json with "fonts": true, its fonts in fonts/): the game's text in high resolution.</summary>
+    Fonts,
 }

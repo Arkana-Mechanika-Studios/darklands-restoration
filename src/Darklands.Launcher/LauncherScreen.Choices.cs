@@ -82,10 +82,10 @@ internal sealed partial class LauncherScreen
         {
             SetSoundFont(path);
         }
-        else if (Directory.Exists(path) && new[] { PackKind.Pictures, PackKind.Sounds, PackKind.Language }.Any(k => _model.Holds(path, k)))
+        else if (Directory.Exists(path) && new[] { PackKind.Pictures, PackKind.Sounds, PackKind.Language, PackKind.Fonts }.Any(k => _model.Holds(path, k)))
         {
             // a folder of pictures, of sounds, of translations or of several: it becomes the pack of each kind it holds
-            foreach (var kind in new[] { PackKind.Sounds, PackKind.Pictures, PackKind.Language }.Where(k => _model.Holds(path, k)))
+            foreach (var kind in new[] { PackKind.Sounds, PackKind.Pictures, PackKind.Language, PackKind.Fonts }.Where(k => _model.Holds(path, k)))
             {
                 SetPack(kind, path);
             }
@@ -96,7 +96,7 @@ internal sealed partial class LauncherScreen
         }
     }
 
-    private static Item PackItem(PackKind kind) => kind switch { PackKind.Pictures => Item.HdPack, PackKind.Sounds => Item.AudioPack, _ => Item.LanguagePack };
+    private static Item PackItem(PackKind kind) => kind switch { PackKind.Pictures => Item.HdPack, PackKind.Sounds => Item.AudioPack, PackKind.Fonts => Item.FontPack, _ => Item.LanguagePack };
 
     /// <summary>A pack row: ←/→ (or a click on ‹ ›) go through None and the packs found; Enter or its Browse… asks the system for a folder.</summary>
     private void ChoosePack(PackKind kind, int step, bool cycle)
@@ -122,7 +122,7 @@ internal sealed partial class LauncherScreen
                 }
                 else
                 {
-                    _message = $"{picked} holds no {kind switch { PackKind.Pictures => "PNG pictures", PackKind.Sounds => "OGG or WAV sounds", _ => "translation (a pack.json with a language and .ftl files)" }}.";
+                    _message = $"{picked} holds no {kind switch { PackKind.Pictures => "PNG pictures", PackKind.Sounds => "OGG or WAV sounds", PackKind.Fonts => "fonts (a pack.json saying \"fonts\": true, fonts/slotN.json)", _ => "translation (a pack.json with a language and .ftl files)" }}.";
                 }
             }
             return;

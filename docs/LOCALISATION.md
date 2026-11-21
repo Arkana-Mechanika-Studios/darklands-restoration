@@ -475,6 +475,25 @@ drawing exactly (Classic). A translation with other letters, or any text in a pa
 same layout (the card texts' word wrap, passages, option lines and indents are the same loop), with the letters as
 Unicode and the control codes as tokens.
 
+### Font packs: high-resolution text, English included
+
+A **font pack** brings only fonts: its `pack.json` says `"fonts": true` and names no language (or `"en"`), and its fonts are in
+`fonts/` as above. The game's text, the original English included, is then drawn in them, at the window's resolution with
+TrueType fonts. The program ships one, **HD fonts**, in its `packs/hd-fonts` folder: DejaVu Sans Mono for the screens and EB
+Garamond for the card window.
+
+* **How to choose one.** The launcher's **Fonts** row (Advanced tab), `--font-pack <folder>`, or `text.fontPack` in the
+  settings file.
+* **With a translation.** A font pack combines with a translation pack: the translation's own fonts win for their slots, and
+  the font pack's fill the rest.
+* **Without a pack.** The game draws as the original does.
+
+```
+pack.json            { "name": "HD fonts", "fonts": true }
+fonts/slot1.json     { "ttf": "DejaVuSansMono.ttf", "size": 7 }
+fonts/slot3.json     { "ttf": "EBGaramond12-Regular.ttf", "size": 9 }
+```
+
 ### Chinese, Japanese and Korean
 
 These languages need a **TrueType font** and the **high-resolution display**. The game's 320×200 pixels cannot draw Hangul or

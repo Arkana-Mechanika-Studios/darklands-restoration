@@ -16,6 +16,7 @@ internal static class CommandLineUsage
           --no-audio                 no sound at all
           --audio-pack <folder>      replace the music and sounds (docs/PACKS.md)
           --language-pack <folder>   a translation pack (docs/LOCALISATION.md)
+          --font-pack <folder>       a font pack: the game's text in its fonts, at the window's resolution (the "HD fonts" pack)
           --start-at card:<$FILE#n> | screen:<name>    (with --language-pack) a translation test: start at that card text or screen
                                             on a Quick Start party; saves go to the pack's .workshop\saves
           --translator-template <folder>    write the translator's template of your game there, then stop

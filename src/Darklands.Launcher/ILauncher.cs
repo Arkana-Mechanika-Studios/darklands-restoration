@@ -97,7 +97,8 @@ public interface IFilterPreviews
 
 /// <summary>A folder as a pack: how many pictures and sounds it replaces, and what could not be read (a broken manifest ...).</summary>
 /// <param name="Translations">The Fluent (.ftl) files of a translation pack (a pack.json naming a "language"); 0 for other packs.</param>
-public sealed record PackStatus(int Pictures, int Sounds, string? Problem, int Translations = 0)
+/// <param name="Fonts">The font slots of a font pack (a pack.json saying "fonts": true, no language); 0 for other packs.</param>
+public sealed record PackStatus(int Pictures, int Sounds, string? Problem, int Translations = 0, int Fonts = 0)
 {
     /// <summary>What a folder holds by its files alone: PNG files (pictures), OGG, WAV and MIDI files (sounds), .ftl files of a translation pack.</summary>
     public static PackStatus Count(string folder)
@@ -112,6 +113,9 @@ public sealed record PackStatus(int Pictures, int Sounds, string? Problem, int T
                 null,
                 LanguageOf(folder) is { } language && Directory.Exists(Path.Combine(folder, "text", language))
                     ? Directory.EnumerateFiles(Path.Combine(folder, "text", language), "*.ftl", SearchOption.AllDirectories).Count()
+                    : 0,
+                LanguageOf(folder) is null && File.Exists(Path.Combine(folder, "pack.json")) && Directory.Exists(Path.Combine(folder, "fonts"))
+                    ? Directory.EnumerateFiles(Path.Combine(folder, "fonts"), "slot?.json").Count()
                     : 0);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
