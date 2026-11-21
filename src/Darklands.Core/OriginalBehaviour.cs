@@ -52,7 +52,7 @@ public sealed class OriginalBehaviour
     /// stores in CACHE.TMP) or end the program in play (the game since the last save lost, as a load crash loses it) are fixed, every
     /// other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here, and besides them only the evident display fixes the user chose for every player
-    /// game (<see cref="FixRosterFigurePreview"/>, <see cref="FixPartyInfoBattleCycles"/>).
+    /// game (<see cref="FixRosterFigurePreview"/>, <see cref="FixPartyInfoBattleCycles"/>, <see cref="FixSheetSkillValueColumn"/>).
     /// </summary>
     public static OriginalBehaviour DataSafe => new()
     {
@@ -60,7 +60,7 @@ public sealed class OriginalBehaviour
         FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true, FixCombatAcrossLevels = true, FixWalkingOnOwnLevel = true,
         FixGhostPartySlot = true, FixDamagedSavedGame = true,
         FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
-        FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true,
+        FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true, FixSheetSkillValueColumn = true,
     };
 
     /// <summary>
@@ -175,6 +175,15 @@ public sealed class OriginalBehaviour
     //   (palette-load, root 0410:0364) and nothing stops the cycles (root 047C:040B) or clears DS:07D8, so the timer's frame work
     //   (root 047C:000A -> 047C:042A) writes the battle's ranges at their next steps. The load screen stops them (R037+0x8400..0x8426)
     public bool FixPartyInfoBattleCycles { get; set; }
+
+    /// <summary>
+    /// The character sheet's closed skill boxes print the values of the third group (Healing to Woodwise) three pixels left of the
+    /// two groups above (x 0x109, the box's x + 3, where the others print at 0x10C), so its column of numbers stands out of line.
+    /// Fixed (an evident display fix, every player game, GitHub issue 4): at 0x10C as the others.
+    /// </summary>
+    // orig: R031+0x39C6 box 7 prints "%02d" (DS:2EED) at the box's x + 3; boxes 4 and 5 at 0x10C (DS:2E73, DS:2E95); measured: the
+    //   original's own sheet frame of vis10 comm-inn (live) is byte-identical to the Faithful C#'s
+    public bool FixSheetSkillValueColumn { get; set; }
 
     /// <summary>
     /// A saved game whose two party slots name one character record: the load reads the record into the first slot only, the second

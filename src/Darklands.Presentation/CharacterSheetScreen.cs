@@ -950,7 +950,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 DrawBoxText(2);
                 break;
             case 7:
-                DrawSkillColumn(OtherLabels, "exe:DS:2EED", 13, 0x91, b.X + 3);
+                // BUG: OriginalBehaviour.FixSheetSkillValueColumn - the third group's values (Healing to Woodwise) are printed at the
+                //   box's x + 3 (0x109), three pixels left of the two groups above (0x10C, DS:2E73 / DS:2E95's columns), so their column
+                //   stands out of line. Reproduced (the original's frame of vis10 comm-inn is byte-identical to the Faithful C#'s);
+                //   CharacterSheetSkillColumnTests. Fixed (an evident display fix, every player game, GitHub issue 4): at 0x10C.
+                DrawSkillColumn(OtherLabels, "exe:DS:2EED", 13, 0x91, _state.Behaviour.FixSheetSkillValueColumn ? 0x10C : b.X + 3);
                 break;
         }
     }

@@ -17,8 +17,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | travel | 4 | 0 | 4 |
 | battles | 68 | 32 | 36 |
 | persistence | 2 | 2 | 0 |
-| screens/presentation | 14 | 8 | 6 |
-| total | 279 | 73 | 206 |
+| screens/presentation | 15 | 9 | 6 |
+| total | 280 | 74 | 206 |
 
 ## Core logic (265)
 
@@ -860,9 +860,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
-## Presentation and host (14)
+## Presentation and host (15)
 
-### screens/presentation (14)
+### screens/presentation (15)
 
 - **B-a480f8** `bug`, no fix flag - `src/Darklands.Presentation/Battles/BattleScreen.Drawing.cs:50` `BattleScreen.RecordScreenPlaces`  
   original: `R014+0x0F58` (0E76:0F58, draft), `R016+0x0A2C` (1EF8:0A2C, draft)  
@@ -871,6 +871,9 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-2a4a58** `bug`, no fix flag - `src/Darklands.Presentation/CampScreen.cs:68` `CampScreen.Stay`  
   original: `R036+0x0082` (1462:0082, draft), `R036+0x082C` (1462:082C, draft)  
   why: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save, comm-camp-save); kept (not data-damaging: no save is lost or changed)
+- **B-c26daf** `bug`, flag `FixSheetSkillValueColumn` - `src/Darklands.Presentation/CharacterSheetScreen.cs:953` `CharacterSheetScreen.DrawBoxText`  
+  original: `R031+0x39C6` (1462:39C6, draft), `R031+0x39A0` (1462:39A0, draft)  
+  why: OriginalBehaviour.FixSheetSkillValueColumn - the third group's values (Healing to Woodwise) are printed at the box's x + 3 (0x109), three pixels left of the two groups above (0x10C, DS:2E73 / DS:2E95's columns), so their column stands out of line. Reproduced (the original's frame of vis10 comm-inn is byte-identical to the Faithful C#'s); CharacterSheetSkillColumnTests. Fixed (an evident display fix, every player game, GitHub issue 4): at 0x10C.
 - **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:496` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
