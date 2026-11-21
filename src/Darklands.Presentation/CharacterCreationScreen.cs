@@ -172,6 +172,8 @@ public sealed class CharacterCreationScreen
 
     public GameState? Run()
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = _ui.OnScreen("CharacterCreationScreen");
         // orig: R037+0x9DB2 case 'C': party-random-seed = BIOS ticks; the city was drawn at start-up (root 03A1) from the same clock
         // orig: party-random-seed (DS:9C4A) is the BIOS tick word at the click (R037+0x9FD9), not time(0)'s: names are drawn from it (made-up-name) and the saved game holds it
         var seed = _seed();
@@ -197,7 +199,7 @@ public sealed class CharacterCreationScreen
         while (true)
         {
             var action = _ui.WaitForAction();
-            var key = action.IsLeftClick ? Click(action.X, action.Y) : action.Key;
+            var key = action.IsLeftClick ? Click(_ui.Laid.Map(action.X, action.Y).X, _ui.Laid.Map(action.X, action.Y).Y) : action.Key;
             if (key == Keys.None)
             {
                 continue;
@@ -402,9 +404,9 @@ public sealed class CharacterCreationScreen
     private void Select(int row, bool wrap)
     {
         var count = _roster.Characters.Count;
-        Screen.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, SelectedName, NameColor);
+        _ui.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, SelectedName, NameColor);
         Shared.Selected = !wrap ? row : row < 0 ? count - 1 : row >= count ? 0 : row;
-        Screen.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, NameColor, SelectedName);
+        _ui.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, NameColor, SelectedName);
         if (wrap)
         {
             DrawFigure();
@@ -520,7 +522,7 @@ public sealed class CharacterCreationScreen
         {
             Shared.Selected = 0;
         }
-        Screen.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, NameColor, SelectedName);
+        _ui.Recolor(0xC6, Shared.Selected * 8 + 0x16, 0x71, 8, NameColor, SelectedName);
     }
 
     /// <summary>The party column row of the one slot a command changed (none when <paramref name="slot"/> is -1).</summary>

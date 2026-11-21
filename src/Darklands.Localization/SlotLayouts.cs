@@ -45,6 +45,9 @@ public static class SlotLayouts
     /// <summary>The file in a pack's folder.</summary>
     public const string FileName = "interface/layout.json";
 
+    /// <summary>How a problem that is a warning starts: the layout may cover another text of the screen (if both are drawn at once).</summary>
+    public const string MayCover = "it may cover";
+
     /// <summary>The screen's size in game pixels.</summary>
     public const int ScreenWidth = 320, ScreenHeight = 200;
 
@@ -172,7 +175,8 @@ public static class SlotLayouts
                         && !Overlap(Area(box, null, lineHeight), Area(other, null, lineHeight))
                         && Overlap(area, Area(other, slots.GetValueOrDefault(other.Key), lineHeight)))
                     {
-                        Add($"it overlaps {other.Key}");
+                        // a text of the same screen, not always drawn with it (another page, a menu's): a warning, not an error
+                        Add($"{MayCover} {other.Key} if drawn at the same time");
                     }
                 }
             }

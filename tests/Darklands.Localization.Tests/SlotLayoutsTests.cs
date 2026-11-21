@@ -53,7 +53,7 @@ public sealed class SlotLayoutsTests
         Assert.Contains(Problems("a", new SlotLayout(Lines: 4)), p => p.Contains("1 to 3", StringComparison.Ordinal));
         Assert.Contains(Problems("a", new SlotLayout(Width: 120)), p => p.Contains("of room", StringComparison.Ordinal));
         // two lines reach the next text's row
-        Assert.Contains(Problems("a", new SlotLayout(Lines: 2)), p => p == "it overlaps b");
+        Assert.Contains(Problems("a", new SlotLayout(Lines: 2)), p => p == "it may cover b if drawn at the same time");
         Assert.Contains(Problems("c", new SlotLayout(Lines: 2)), p => p == "it runs off the screen");
         // a text whose place no session recorded cannot be moved
         Assert.Contains(Problems("d", new SlotLayout(Y: 10)), p => p.Contains("cannot be moved", StringComparison.Ordinal));

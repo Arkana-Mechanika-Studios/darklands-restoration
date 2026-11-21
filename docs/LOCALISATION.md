@@ -279,14 +279,17 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   for interface layouts (docs/modding/SPEC-DRAFT.md).
 
   **The check.** It holds a translation pack to the language-pack limits: the room the text had, a move of at most 16
-  pixels, 1 to 3 lines. It reports a layout that breaks them, runs off the screen, or covers another text of the same
-  screen. An interface mod will have looser limits on the same file.
+  pixels, 1 to 3 lines. It reports a layout that breaks them or runs off the screen as an error. A layout that may cover
+  another text of the same screen gets a warning: that text may be on another page of the screen, or in a menu, and not drawn
+  with it. Texts whose places no recorded session has (some buttons' labels) are not checked for this; look at the game. An
+  interface mod will have looser limits on the same file.
 
   **Embossed headings.** An embossed heading is two texts, a pixel apart: its shadow and its face (for example the party
   information screen's title). Translate both. A layout given to one is given to the other, a pixel apart.
 
   Texts with no layout, and the game without a pack, are drawn exactly as the original draws them. Screens are added one by
-  one: today the item store, barter, loot, alchemy, character sheet, party information and prayer screens.
+  one: today the item store, barter, loot, alchemy, character sheet, party information, prayer, party roster, marching
+  order and character creation screens.
 * **Hot keys.** A menu's coloured key letter (`<c12> M</c>ore batches`) shows as the game draws it, the letter coloured
   and underlined, in the list, the English and your translation; its tags are kept in the text (the cursor steps over
   them, and deleting the letter shows them again). A screen text with one has a **Text** | **Raw** switch: **Raw**

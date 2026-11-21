@@ -143,7 +143,8 @@ public static class LanguagePackCheck
         // a language pack's limits (LayoutProfile.LanguagePack: the room the text had, 16 px, 1-3 lines)
         foreach (var (screen, key, problem) in SlotLayouts.Validate(pack.Layouts, box, LayoutProfile.LanguagePack, Painter(1).LineHeight))
         {
-            findings.Add(new Finding(Severity.Error, SlotLayouts.FileName, idOf.GetValueOrDefault(key, key), $"{screen}: {problem}"));
+            findings.Add(new Finding(problem.StartsWith(SlotLayouts.MayCover, StringComparison.Ordinal) ? Severity.Overflow : Severity.Error,
+                SlotLayouts.FileName, idOf.GetValueOrDefault(key, key), $"{screen}: {problem}"));
         }
         return findings;
     }

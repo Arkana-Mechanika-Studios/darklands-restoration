@@ -31,6 +31,8 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
     /// <summary>Asks for the first, the second ... member of the marching order with a box each; F1..F5 or a click on a party row picks; the frames go lit and unlit as in the original.</summary>
     public void Run(GameState state)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("MarchingOrderScreen");
         var canvas = ui.Canvas;
         var sprites = ui.Assets.CommonSprites;
         for (var i = 0; i < Party.MaxMembers; i++)
@@ -50,6 +52,7 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
         bool TakeReleases()
         {
             (releases, releaseX, releaseY) = ui.TakeLeftReleases();
+            (releaseX, releaseY) = ui.Laid.Map(releaseX, releaseY);
             return releases > 0;
         }
         for (var k = 0; k < choice.Prompts; k++)

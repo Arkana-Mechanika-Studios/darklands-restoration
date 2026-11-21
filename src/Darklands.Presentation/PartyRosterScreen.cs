@@ -87,6 +87,8 @@ public sealed class PartyRosterScreen
     //   it passes control to the function.
     public void Run(GameState state, int callerWord)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = _ui.OnScreen("PartyRosterScreen");
         _state = state;
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the roster's lines
         using var wheel = _ui.UseSelectionList(static () => true);
@@ -110,7 +112,7 @@ public sealed class PartyRosterScreen
                 var action = _ui.PollFrame();
                 if (action is { IsLeftClick: true } click)
                 {
-                    key = Click(click.X, click.Y);
+                    key = Click(_ui.Laid.Map(click.X, click.Y).X, _ui.Laid.Map(click.X, click.Y).Y);
                 }
                 else if (action is { IsKey: true } pressed)
                 {
@@ -163,9 +165,9 @@ public sealed class PartyRosterScreen
             var row = (y - 0x14) / 8;
             if (Menu.Count > row)
             {
-                Screen.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
+                _ui.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
                 Menu.Selected = row;
-                Screen.Recolor(0xC6, (row << 3) + 0x16, 0x71, 8, NameColor, Highlight);
+                _ui.Recolor(0xC6, (row << 3) + 0x16, 0x71, 8, NameColor, Highlight);
                 if (FixedPreview)
                 {
                     ShowPreview();
@@ -246,7 +248,7 @@ public sealed class PartyRosterScreen
     //   roster-figure, rows 1-4: the original's screen is the C#'s at 0 px).
     private int Arrow(bool up)
     {
-        Screen.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
+        _ui.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
         if (up)
         {
             InnRoster.SelectPrevious(Menu);
@@ -255,7 +257,7 @@ public sealed class PartyRosterScreen
         {
             InnRoster.SelectNext(Menu);
         }
-        Screen.Recolor(0xC6, 8 * Menu.Selected + 0x16, 0x71, 8, NameColor, Highlight);
+        _ui.Recolor(0xC6, 8 * Menu.Selected + 0x16, 0x71, 8, NameColor, Highlight);
         CopyBack(0x46, 0xA5, 0x23, 0x23);
         if (FixedPreview)
         {

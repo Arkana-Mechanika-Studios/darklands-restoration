@@ -74,6 +74,8 @@ public sealed class CharacterGeneratorScreen
 
     public Character? Run()
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = _ui.OnScreen("CharacterGeneratorScreen");
         // orig: R037+0x4664 sets state 0 and resets (R037+0x675A) before drawing
         _creation.Reset();
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): the step's lines
@@ -95,7 +97,8 @@ public sealed class CharacterGeneratorScreen
                 _ui.Idle();
                 continue;
             }
-            var key = a.IsLeftClick ? Click(a.X, a.Y) : a.IsRightClick ? RightClick(a.X, a.Y) : a.Key;
+            var (lx, ly) = _ui.Laid.Map(a.X, a.Y);
+            var key = a.IsLeftClick ? Click(lx, ly) : a.IsRightClick ? RightClick(lx, ly) : a.Key;
             if (key == Keys.Escape)
             {
                 // orig: R037+0x4664: Esc goes back a step or leaves
@@ -188,16 +191,16 @@ public sealed class CharacterGeneratorScreen
     private int SelectRow(int row, int x, int width, int actionKey = Plus)
     {
         var keyGiven = _creation.Cursor == row ? actionKey : Keys.None;
-        Screen.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Selected, Shadow);
+        _ui.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Selected, Shadow);
         _creation.SelectRow(row);
-        Screen.Recolor(x, row * 8 + 0x14, width, 8, Shadow, Selected);
+        _ui.Recolor(x, row * 8 + 0x14, width, 8, Shadow, Selected);
         return keyGiven;
     }
 
     /// <summary>The mouse over the list highlights the row (and describes it in the lists).</summary>
     private void Hover()
     {
-        var mouse = _ui.Mouse;
+        var mouse = _ui.LaidMouse;
         if (mouse.Left || mouse.X <= 0x40 || mouse.X >= 0xAE || mouse.Y <= 0x2D || mouse.Y >= 0xC7)
         {
             return;
@@ -209,10 +212,10 @@ public sealed class CharacterGeneratorScreen
         }
         if (s_hovered != -1)
         {
-            Screen.Recolor(0x41, s_hovered * RowHeight + 0x2F, 0x6C, RowHeight, Highlight, Ink);
+            _ui.Recolor(0x41, s_hovered * RowHeight + 0x2F, 0x6C, RowHeight, Highlight, Ink);
         }
         s_hovered = row;
-        Screen.Recolor(0x41, row * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
+        _ui.Recolor(0x41, row * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
         if (_creation.Stage is CreationStage.FamilyBackground or CreationStage.Occupation && row < _creation.Choices.Count)
         {
             DrawPanel();
@@ -313,13 +316,13 @@ public sealed class CharacterGeneratorScreen
         {
             return;
         }
-        Screen.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Selected, Shadow);
+        _ui.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Selected, Shadow);
         _creation.MoveCursor(step);
         if (step < 0 && _creation.Stage == CreationStage.OccupationSkills)
         {
             DrawPanel();
         }
-        Screen.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Shadow, Selected);
+        _ui.Recolor(x, _creation.Cursor * 8 + 0x14, width, 8, Shadow, Selected);
     }
 
     // ----- drawing -----
@@ -379,7 +382,7 @@ public sealed class CharacterGeneratorScreen
                 {
                     Button(ListTop + i * RowHeight, _creation.Tables.Backgrounds[i].Name);
                 }
-                Screen.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
+                _ui.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
                 break;
             case CreationStage.ChildhoodAttributes:
                 Help(["exe:DS:4558", "exe:DS:4570", "exe:DS:4585"], ["exe:DS:459A", "exe:DS:45B2", "exe:DS:45C7"]);
@@ -394,7 +397,7 @@ public sealed class CharacterGeneratorScreen
                 {
                     Button(ListTop + i * RowHeight, _creation.Tables.Occupations[_creation.Choices[i]].Name);
                 }
-                Screen.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
+                _ui.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
                 break;
             case CreationStage.OccupationSkills:
                 Help(["exe:DS:45DC", "exe:DS:45F6", "exe:DS:4610"], ["exe:DS:461C", "exe:DS:4636", "exe:DS:4650"]);
@@ -470,7 +473,7 @@ public sealed class CharacterGeneratorScreen
         Text.Draw(Screen, 0xC9, 0x44, Two(c.Attributes[(int)Core.Characters.Attribute.DivineFavor]), Shadow);
         if (c.Stage == CreationStage.ChildhoodAttributes)
         {
-            Screen.Recolor(0xC5, c.Cursor * 8 + 0x14, 0x26, 8, Shadow, Selected);
+            _ui.Recolor(0xC5, c.Cursor * 8 + 0x14, 0x26, 8, Shadow, Selected);
         }
 
         SkillBlock(entry, 0, 7, 0x0F, 0x3C, 0x3F, 0x14, 0x28);
@@ -478,7 +481,7 @@ public sealed class CharacterGeneratorScreen
         SkillBlock(entry, 13, 6, 0x86, 0x36, 0x34, 0x8E, 0x34);
         if (c.Stage == CreationStage.OccupationSkills)
         {
-            Screen.Recolor(0xF6, c.Cursor * 8 + 0x14, 0x44, 8, Shadow, Selected);
+            _ui.Recolor(0xF6, c.Cursor * 8 + 0x14, 0x44, 8, Shadow, Selected);
         }
     }
 
@@ -570,7 +573,7 @@ public sealed class CharacterGeneratorScreen
             closing = _ui.WaitForActionWithoutBar();
         }
         DrawAll();
-        if (closing.IsLeftClick && _ui.Mouse.Left)
+        if (closing.IsLeftClick && _ui.LaidMouse.Left)
         {
             _pending = closing;
         }

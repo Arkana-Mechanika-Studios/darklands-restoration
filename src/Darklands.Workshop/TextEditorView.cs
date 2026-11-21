@@ -1236,7 +1236,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         var only = entry2.Screens.Take(1).ToDictionary(s => s, _ => new Dictionary<string, SlotLayout>(StringComparer.Ordinal) { [entry2.Key] = layout }, StringComparer.Ordinal);
         foreach (var (_, _, problem) in SlotLayouts.Validate(only, boxes, LayoutProfile.LanguagePack))
         {
-            _issues.Children.Add(Issue("Layout: " + problem, WorkshopTheme.Bad));
+            _issues.Children.Add(Issue("Layout: " + problem, problem.StartsWith(SlotLayouts.MayCover, StringComparison.Ordinal) ? WorkshopTheme.Warn : WorkshopTheme.Bad));
         }
     }
 
