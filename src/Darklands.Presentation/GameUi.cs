@@ -265,8 +265,15 @@ public sealed class GameUi
         }
         // its fonts (fonts/slotN.json, the Unicode text path): every text of their slots is drawn in them
         PackFonts = FontPack.Load(folder, report);
+        // its own decorated capitals (capitals/*.png): a card text's first letter takes its picture first
+        PackCapitals = Graphics.PackCapitals.Load(folder, Assets);
+        foreach (var problem in PackCapitals.Problems)
+        {
+            report($"language pack: {problem}");
+        }
         report($"language pack: {pack.Name} ({pack.Language}), {pack.Files} file(s)" +
-            (PackFonts.Count > 0 ? $", fonts for slot(s) {string.Join(", ", PackFonts.Keys.Order())}" : ""));
+            (PackFonts.Count > 0 ? $", fonts for slot(s) {string.Join(", ", PackFonts.Keys.Order())}" : "") +
+            (PackCapitals.Letters.Count > 0 ? $", {PackCapitals.Letters.Count} capital(s)" : ""));
         Language = pack;
         LanguageReport = report;
         _text = _cardText = null;
@@ -419,11 +426,16 @@ public sealed class GameUi
     /// <summary>The translation pack's fonts by slot (empty: the game's fonts).</summary>
     public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();
 
+    /// <summary>The translation pack's own decorated capitals (null: no pack, the game's only).</summary>
+    // Not in the original: the 1.1 translations' capitals.
+    public Graphics.PackCapitals? PackCapitals { get; private set; }
+
     /// <summary>A painter of font slot <paramref name="slot"/>: the game's font, with the pack's for that slot when it has one.</summary>
     public TextPainter Painter(int slot) => new(Assets.Font(slot))
     {
         PackFont = PackFonts.GetValueOrDefault(slot),
         Layouts = _layouts,
+        Capitals = PackCapitals is { Letters.Count: > 0 } capitals ? capitals.Get : null,
         // a Chinese or Japanese pack's lines also break between characters (LineBreaks); every other: the game's own places
         BreakAfter = Graphics.LineBreaks.For(Language?.Language),
     };

@@ -51,11 +51,34 @@ public sealed class TextPreview(TextProject project)
     private IReadOnlyDictionary<int, IFont>? _fonts;
     private Rgb24[]? _cardPalette;
 
-    /// <summary>Reads the pack's fonts again (after the Workshop built its font pack).</summary>
+    private PackCapitals? _capitals;
+
+    /// <summary>Reads the pack's fonts and capitals again (after the Workshop built its font pack, or a capital was imported).</summary>
     public void ReloadFonts()
     {
         _fonts = null;
+        _capitals = null;
         _painters.Clear();
+    }
+
+    /// <summary>The pack's own decorated capitals (capitals/*.png), as the game reads them.</summary>
+    public PackCapitals Capitals => _capitals ??= PackCapitals.Load(project.Folder, _assets);
+
+    /// <summary>
+    /// The capital a card text starting with <paramref name="code"/> gets, as the game draws it (the pack's picture, the game's, its
+    /// look-alike's, or the letter in a box): 20×20 ARGB in the card's colours.
+    /// </summary>
+    public uint[] Capital(int code)
+    {
+        var canvas = new Canvas(new Screen());
+        var painter = Painter(3);
+        new CardTextLayout(painter).Draw(canvas, [code, ' ', 'x'], 0, 0, 200, new CardTextLayout.Settings
+        {
+            Color = Ink,
+            DropCap = letter => DropCaps.Get(_assets, letter),
+        });
+        var whole = Picture(canvas, Screen.Width, Screen.Height, CardPalette());
+        return Crop(whole, 1, 0, 0, PackCapitals.Size, PackCapitals.Size);
     }
 
     /// <summary>The hint for letters the font has no glyph for (null: none lacking).</summary>
@@ -89,6 +112,7 @@ public sealed class TextPreview(TextProject project)
         {
             PackFont = _fonts.GetValueOrDefault(slot),
             BreakAfter = LineBreaks.For(project.Language),
+            Capitals = Capitals.Letters.Count > 0 ? Capitals.Get : null,
         };
     }
 

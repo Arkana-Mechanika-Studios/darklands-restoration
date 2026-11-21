@@ -292,6 +292,13 @@ public sealed class TextPainter(FntFont font)
     // Not in the original: the 1.1 translations (Chinese, Japanese, Korean).
     public Func<int, int, bool>? BreakAfter { get; init; }
 
+    /// <summary>
+    /// The translation pack's own decorated capitals (<see cref="PackCapitals"/>): a card text whose first letter has one takes it
+    /// before the game's; null (no pack): only the game's.
+    /// </summary>
+    // Not in the original: the 1.1 translations' capitals.
+    public Func<int, Content.Formats.Graphics.IndexedImage?>? Capitals { get; init; }
+
     public int Draw(Canvas canvas, int x, int y, string text, byte color, int right = int.MaxValue)
     {
         if (Layouts is { } layouts && layouts.TryDraw(this, canvas, x, y, text, color, right, out var end))

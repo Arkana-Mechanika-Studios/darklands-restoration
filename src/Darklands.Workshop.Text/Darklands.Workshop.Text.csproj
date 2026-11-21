@@ -13,6 +13,11 @@
     <EmbeddedResource Include="Resources\card-titles.json" LogicalName="Darklands.Workshop.Text.card-titles.json" />
   </ItemGroup>
 
+  <!-- the Workshop's version (Directory.Build.props), read by WorkshopVersion -->
+  <ItemGroup>
+    <AssemblyMetadata Include="WorkshopVersion" Value="$(WorkshopVersion)" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

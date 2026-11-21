@@ -95,6 +95,7 @@ var noLauncher = arguments.Remove("--no-launcher");
 var soundCheck = arguments.Remove("--sound-test");
 // a pack's fonts' pictures are read with the program's PNG reader (font packs, docs/LOCALISATION.md)
 Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+Darklands.Presentation.Graphics.PackCapitals.ReadImage = path => { var image = Darklands.Rendering.PngCodec.Read(path); return (image.Width, image.Height, image.Argb); };
 Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
 // the translators' commands (docs/LOCALISATION.md): they write or check, then stop
 var translatorTemplate = Option("--translator-template");

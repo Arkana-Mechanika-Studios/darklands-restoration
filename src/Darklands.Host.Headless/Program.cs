@@ -213,6 +213,7 @@ void UsePacks(GameUi ui)
     }
     // the fonts' pictures read with the program's PNG reader (font packs)
     Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
+    Darklands.Presentation.Graphics.PackCapitals.ReadImage = path => { var image = PngCodec.Read(path); return (image.Width, image.Height, image.Argb); };
     Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
     if (languagePackStep is not null)
     {

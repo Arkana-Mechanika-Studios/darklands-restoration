@@ -46,9 +46,20 @@ public static class LanguagePackCheck
         var findings = new List<Finding>();
         // the pack's own fonts (fonts/slotN.json): a text of their slot is measured in them
         var packFonts = FontPack.Load(pack.Folder, problem => findings.Add(new Finding(Severity.Error, FontPack.Folder, "", problem)));
+        // its own capitals (capitals/*.png): a card text is laid out beside the picture its first letter takes
+        var capitals = PackCapitals.Load(pack.Folder, assets);
+        foreach (var problem in capitals.Problems)
+        {
+            findings.Add(new Finding(Severity.Error, PackCapitals.Folder, "", problem));
+        }
         TextPainter Painter(int slot) => painters.TryGetValue(slot, out var p)
             ? p
-            : painters[slot] = font?.Invoke(slot) ?? new TextPainter(assets.Font(slot)) { PackFont = packFonts.GetValueOrDefault(slot), BreakAfter = LineBreaks.For(pack.Language) };
+            : painters[slot] = font?.Invoke(slot) ?? new TextPainter(assets.Font(slot))
+            {
+                PackFont = packFonts.GetValueOrDefault(slot),
+                BreakAfter = LineBreaks.For(pack.Language),
+                Capitals = capitals.Letters.Count > 0 ? capitals.Get : null,
+            };
         foreach (var problem in pack.Problems)
         {
             findings.Add(new Finding(Severity.Error, problem.Line > 0 ? $"{problem.Source}:{problem.Line}" : problem.Source, "", problem.Message));
@@ -193,6 +204,13 @@ public static class LanguagePackCheck
         if (Unshowable(codes, painter) is { Length: > 0 } lacking)
         {
             add(Severity.Error, $"the font has no {lacking}: drawn as '?' (a font pack can add letters)");
+        }
+        // its first letter with no decorated capital (none of the game's, of its Latin look-alike, nor the pack's): drawn in a box
+        if (codes.Length > 0 && codes[0] is var first and > 0x7F and <= 0xFFFF && char.IsUpper((char)first) && Fonts.PixelFontBuilder.DropCapOf(first) == 0
+            && painter.Capitals?.Invoke(first) is null)
+        {
+            add(Severity.Note, $"starts with '{char.ConvertFromUtf32(first)}', which has no decorated capital: drawn as the letter in a box " +
+                $"(a pack's own picture: {PackCapitals.Folder}/{PackCapitals.FileNameOf(first)})");
         }
         var bottom = CardScreen.TextArea.Y + CardScreen.TextArea.Height;
         var english = Foot(assets, painter, block, Darklands.Core.TextCodes.OfBytes(block.Text));

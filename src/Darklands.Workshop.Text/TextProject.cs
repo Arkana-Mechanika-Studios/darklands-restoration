@@ -184,21 +184,23 @@ public sealed class TextProject
 
     private bool _styleChanged;
 
-    // the style into pack.json, its other fields as they are
-    private void SaveStyle()
+    // the style and the Workshop's version (WorkshopVersion: the one that last wrote the pack) into pack.json, its other fields as they are
+    private void SaveManifest()
     {
-        if (!_styleChanged)
-        {
-            return;
-        }
         var path = Path.Combine(Folder, LanguagePack.ManifestName);
         var manifest = (File.Exists(path) ? System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path)) as System.Text.Json.Nodes.JsonObject : null)
             ?? new System.Text.Json.Nodes.JsonObject();
-        if (_style is null)
+        var written = manifest[WorkshopVersion.ManifestField] is System.Text.Json.Nodes.JsonValue w && w.TryGetValue<string>(out var by) ? by : null;
+        if (!_styleChanged && written == WorkshopVersion.Current)
+        {
+            return;
+        }
+        manifest[WorkshopVersion.ManifestField] = WorkshopVersion.Current;
+        if (_styleChanged && _style is null)
         {
             manifest.Remove("style");
         }
-        else
+        else if (_styleChanged)
         {
             manifest["style"] = _style;
         }
@@ -211,7 +213,7 @@ public sealed class TextProject
     {
         ArgumentException.ThrowIfNullOrEmpty(language);
         Directory.CreateDirectory(Path.Combine(folder, LanguagePack.TextFolder(language)));
-        var manifest = new Dictionary<string, string> { ["language"] = language, ["name"] = name, ["base"] = "483.07" };
+        var manifest = new Dictionary<string, string> { ["language"] = language, ["name"] = name, ["base"] = "483.07", [WorkshopVersion.ManifestField] = WorkshopVersion.Current };
         if (author is { Length: > 0 })
         {
             manifest["author"] = author;
@@ -373,7 +375,7 @@ public sealed class TextProject
         {
             SlotLayouts.Save(Folder, _layouts);
         }
-        SaveStyle();
+        SaveManifest();
         Dirty = false;
     }
 

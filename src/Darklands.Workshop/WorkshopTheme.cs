@@ -60,6 +60,25 @@ internal static class WorkshopTheme
 
     public static IBrush Brush(Color c) => new SolidColorBrush(c);
 
+    /// <summary>The Beta badge (WorkshopVersion.IsBeta), its version in the tip; hidden in a release.</summary>
+    public static Control BetaBadge()
+    {
+        var badge = new Border
+        {
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(6, 0),
+            Height = 18,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            Background = Brush(AccentSoft),
+            BorderBrush = Brush(Color.FromArgb(0x80, Accent.R, Accent.G, Accent.B)),
+            BorderThickness = new Thickness(1),
+            IsVisible = Darklands.Workshop.Text.WorkshopVersion.IsBeta,
+            Child = new TextBlock { Text = "Beta", FontSize = 11, FontWeight = FontWeight.SemiBold, Foreground = Brush(Accent), VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center },
+        };
+        ToolTip.SetTip(badge, $"Workshop {Darklands.Workshop.Text.WorkshopVersion.Current}: a beta. Packs you save record this version; please report what goes wrong (… menu, Report a problem).");
+        return badge;
+    }
+
     /// <summary>The UI font: the platform's (Segoe UI Variable on Windows), with the usual fallbacks.</summary>
     public static readonly FontFamily UiFont = new("avares://DarklandsWorkshop/Assets/Fonts#Inter, Segoe UI Variable Text, Segoe UI, Cantarell, Noto Sans, sans-serif");
 

@@ -105,7 +105,16 @@ public sealed class CardTextLayout(TextPainter painter)
         var color = settings.Color;
         var mode = TextMode.Copy;
 
-        if (settings.DropCap is { } dropCap && text.Length > 0 && text.DropCapLetter() is > (byte)'@' and < (byte)'[' &&
+        if (settings.DropCap is not null && text.Length > 0 && painter.Capitals is { } capitals && capitals(text.FirstCode()) is { } own)
+        {
+            // Not in the original: a translation pack's own capital of the first letter (PackCapitals), drawn as the game's pictures are
+            canvas.Draw(own, x, y, transparent: true);
+            lineX = x + DropCapSize;
+            lineWidth = width - DropCapSize;
+            y += DropCapSize - spacing;
+            cursor = 1;
+        }
+        else if (settings.DropCap is { } dropCap && text.Length > 0 && text.DropCapLetter() is > (byte)'@' and < (byte)'[' &&
             dropCap(text.DropCapLetter()) is { } cap)
         {
             // C: the letter is a saved driver picture (gfx-rect-save at start-up) drawn with gfx-picture-draw: colour 0 transparent, its black is colour 5.
@@ -482,6 +491,9 @@ public sealed class CardTextLayout(TextPainter painter)
         /// <summary>The letter whose decorated capital the text starts with (0: none).</summary>
         byte DropCapLetter();
 
+        /// <summary>The text's first character as a code point (a pack's own capital is looked up by it).</summary>
+        int FirstCode();
+
         /// <summary>
         /// Draws the text's first letter at twice the font's pixels in a square of the decorated capitals' colours when it is a capital
         /// with no picture of its own (the Unicode path; the game's bytes never: false).
@@ -509,6 +521,8 @@ public sealed class CardTextLayout(TextPainter painter)
 
         public byte DropCapLetter() => (byte)At(0);
 
+        public int FirstCode() => text.Length > 0 ? Darklands.Core.TextCodes.OfByte(text[0]) : 0;
+
         public bool DrawPlainCapital(Canvas canvas, int x, int y, Func<byte, Content.Formats.Graphics.IndexedImage?> dropCap) => false;
 
         public int MeasureRaw(int from, int count) => painter.Measure(Raw(text, from, count));
@@ -530,6 +544,8 @@ public sealed class CardTextLayout(TextPainter painter)
 
         // a letter outside A-Z takes its Latin capital's picture (É: E; В: B; Α: A), else none (the game has pictures for A-Z only)
         public byte DropCapLetter() => Fonts.PixelFontBuilder.DropCapOf(At(0));
+
+        public int FirstCode() => At(0);
 
         // Not in the original: the 1.1 translations' first capitals outside the game's pictures
         public bool DrawPlainCapital(Canvas canvas, int x, int y, Func<byte, Content.Formats.Graphics.IndexedImage?> dropCap)
