@@ -240,9 +240,185 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Pack variables…", "braces", () => _ = Variables(), pack));
         menu.Items.Add(Item("Font pack…", "type", () => _ = BuildFontPack(ask: false), pack));
+        menu.Items.Add(Item("Notes for translators and AI…", "book", () => _ = Notes(), pack));
+        menu.Items.Add(Item("Export texts…", "arrow-right", () => _ = Export(), pack, "Ctrl+E"));
+        menu.Items.Add(Item("Import texts…", "folder", () => _ = Import(), pack, "Ctrl+I"));
+        menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Copy for AI (this card or screen)", "chat", () => _ = CopyForAi(), pack));
+        menu.Items.Add(Item("Paste result", "check", () => _ = PasteResult(), pack));
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
         return menu;
+    }
+
+    // the pack's notes for translators and AI (pack.json "style")
+    private async Task Notes()
+    {
+        if (_editor is not null && await new NotesDialog(_editor.Project).ShowDialog<bool>(this))
+        {
+            _editor.Save();
+            UpdateState();
+        }
+    }
+
+    // the whole-file export: the dialog, then where to write the file
+    private async Task Export()
+    {
+        if (_editor is null || _project is null)
+        {
+            return;
+        }
+        if (await new ExportDialog(_editor.Project, _editor.Current).ShowDialog<ExportChoice?>(this) is not { } choice)
+        {
+            return;
+        }
+        var name = $"{_editor.Project.Language}-texts.{choice.Format}";
+        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Export texts",
+            SuggestedFileName = name,
+            DefaultExtension = choice.Format,
+        });
+        if (file?.TryGetLocalPath() is not { } path)
+        {
+            return;
+        }
+        var count = WriteExport(_editor.Project, _editor.Glossary, choice, path);
+        _status.Text = $"Exported {count:N0} texts to {path}.";
+    }
+
+    /// <summary>
+    /// The request Copy for AI puts on the clipboard: the instruction header and the chosen text's group (its card, its screen) as the
+    /// export's JSON, ready to paste into an AI chat; null without a chosen text.
+    /// </summary>
+    internal string? AiRequest()
+    {
+        if (_editor?.Current is not { } current)
+        {
+            return null;
+        }
+        var key = TextTitles.Group(current).Key;
+        var group = _editor.Project.Entries.Where(e => TextTitles.Group(e).Key == key).ToList();
+        var items = TextExport.Items(_editor.Project, group, _editor.Glossary);
+        return "Please translate these texts as the instructions say, and answer with the same JSON, each \"translation\" filled in.\n\n```json\n"
+            + TextExport.Json(_editor.Project, items) + "```\n";
+    }
+
+    // Copy for AI: the request on the clipboard (nothing is sent anywhere)
+    private async Task CopyForAi()
+    {
+        if (AiRequest() is { } request && Clipboard is { } clipboard)
+        {
+            await clipboard.SetTextAsync(request);
+            _status.Text = "Copied for AI: paste it into a chat, then copy the answer and choose Paste result.";
+        }
+    }
+
+    // Paste result: the AI's answer from the clipboard, through the import
+    private async Task PasteResult()
+    {
+        if (Clipboard is { } clipboard && await Avalonia.Input.Platform.ClipboardExtensions.TryGetTextAsync(clipboard) is { Length: > 0 } answer)
+        {
+            ImportText(answer, null, "the clipboard");
+        }
+        else
+        {
+            _status.Text = "The clipboard holds no text: copy the AI's answer first.";
+        }
+    }
+
+    // the whole-file import: a file the export wrote (JSON, CSV), translated; then the check and the summary
+    private async Task Import()
+    {
+        if (_editor is null)
+        {
+            return;
+        }
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Import texts",
+            AllowMultiple = false,
+            FileTypeFilter = [new FilePickerFileType("Exported texts (JSON, CSV, XLIFF)") { Patterns = ["*.json", "*.csv", "*.xlf", "*.xliff", "*.txt"] }],
+        });
+        if (files.Count == 0 || files[0].TryGetLocalPath() is not { } path)
+        {
+            return;
+        }
+        ImportText(File.ReadAllText(path), Path.GetExtension(path), Path.GetFileName(path));
+    }
+
+    /// <summary>Imports <paramref name="text"/> (a file's or the clipboard's), runs the check and shows the summary (returned for the tests).</summary>
+    internal ImportSummaryWindow? ImportText(string text, string? extension, string name)
+    {
+        if (_editor is null)
+        {
+            return null;
+        }
+        IReadOnlyList<ImportedText> read;
+        try
+        {
+            read = TextImport.Read(text, extension);
+        }
+        catch (System.Text.Json.JsonException e)
+        {
+            _status.Text = $"{name}: not a file of texts the Workshop can read ({e.Message}).";
+            return null;
+        }
+        var editor = _editor;
+        var result = TextImport.Apply(editor.Project, editor.Marks, read);
+        editor.Save();
+        RunCheck();
+        editor.Refresh();
+        var summary = new ImportSummaryWindow(name, result, editor.Project.Entries, editor.ListTitle,
+            key =>
+            {
+                editor.Select(key);
+                Activate();
+            },
+            key =>
+            {
+                TextImport.Use(editor.Project, editor.Marks, result, key);
+                editor.Save();
+                RunCheck();
+                editor.Refresh();
+            },
+            () =>
+            {
+                TextImport.Undo(editor.Project, editor.Marks, result);
+                editor.Save();
+                RunCheck();
+                editor.Refresh();
+                _status.Text = $"The import of {name} is undone.";
+            });
+        summary.Show(this);
+        _status.Text = $"{name}: {result.Imported.Count:N0} texts imported, marked for review.";
+        return summary;
+    }
+
+    /// <summary>Writes the export <paramref name="choice"/> of <paramref name="project"/> to <paramref name="path"/>; the number of entries written.</summary>
+    internal static int WriteExport(TextProject project, Glossary glossary, ExportChoice choice, string path)
+    {
+        var items = TextExport.Items(project, choice.Entries, glossary, choice.Rows);
+        var text = choice.Format switch
+        {
+            "csv" => TextExport.Csv(project, items),
+            "xlf" => TextXliff.Write(project, items),
+            _ => TextExport.Json(project, items),
+        };
+        File.WriteAllText(path, text, new System.Text.UTF8Encoding(false));
+        return items.Count;
+    }
+
+    /// <summary>Opens the export dialog without waiting (the window's pictures in the tests).</summary>
+    internal ExportDialog? ShowExportForTests()
+    {
+        if (_editor is null)
+        {
+            return null;
+        }
+        var dialog = new ExportDialog(_editor.Project, _editor.Current);
+        dialog.Show(this);
+        return dialog;
     }
 
     private async Task Variables()
@@ -272,6 +448,16 @@ internal sealed class WorkshopWindow : Window
         var ctrl = e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control);
         if (_project is not null && _editor is not null && _editor.Key(e))
         {
+            e.Handled = true;
+        }
+        else if (ctrl && e.Key == Avalonia.Input.Key.I && _editor is not null)
+        {
+            _ = Import();
+            e.Handled = true;
+        }
+        else if (ctrl && e.Key == Avalonia.Input.Key.E && _editor is not null)
+        {
+            _ = Export();
             e.Handled = true;
         }
         else if (ctrl && e.Key == Avalonia.Input.Key.S && _editor is not null)

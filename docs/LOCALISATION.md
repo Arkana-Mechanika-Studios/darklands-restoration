@@ -327,6 +327,43 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
 **Ctrl+↓** and **Ctrl+↑** go to the next and the previous untranslated text; **F8** and **Shift+F8** to the next and the
 previous text with a problem; **Ctrl+F** to the search; **Ctrl+S** saves.
 
+**Exporting texts** (… › Export texts…, Ctrl+E) writes a file of texts for another tool: a spreadsheet, a CAT tool or an AI
+chat. The Workshop sends nothing anywhere.
+
+* **Which texts:** all untranslated, everything, those marked for review, those with problems, or the chosen text's group (a
+  card, a screen).
+* **Format:** JSON (for AI chats and scripts), CSV (for spreadsheets, UTF-8) or XLIFF 2.0 (for CAT tools and DeepL). In
+  XLIFF, one unit a text: its context is in the unit's notes, and its `$Names`, `{…}` placeables and tags are inline codes
+  the tools keep apart from the words. Import reads all three.
+* **Card texts:** in their rows (`msg:$CITYC00#0/intro`, `…/option3`), without the tags the Rows view adds for you; or raw.
+
+Each text comes with its context: where the game shows it, the English, the room it has, what it must keep (`$Names`, the
+hot-key letter) and its glossary terms.
+
+**The instruction header.** The file starts with a short instruction: translate into the pack's language, keep the
+placeholders, stay within the room, use the glossary. It then gives the pack's **Notes for translators and AI** (… menu;
+pack.json `"style"`). With no notes it gives the Workshop's default: medieval Germany, the party addressed as "you". So a file
+pasted into an AI chat gives a usable answer.
+
+**Importing texts** (… › Import texts…, Ctrl+I) reads such a file back, translated: JSON, CSV, or an AI chat's answer with a
+fenced JSON block among its words.
+
+* **Card texts** are rebuilt from their rows (the markers, the "…" and the indents put back).
+* **Review marks.** Every text it sets is marked **needs review**.
+* **Reviewed texts are never overwritten.** A text you already reviewed (translated, not marked) keeps your words.
+* **The summary.** The game's check runs on everything, then the summary lists:
+  * how many texts came in;
+  * how many are too long (past their box, or a card text shown in pages);
+  * how many are broken (a lost `$Name`, a changed hot key);
+  * how many were not imported (an unknown key, or a reviewed text kept).
+
+  Each line opens its text. A kept text has **Use**, which takes the file's words. **Undo import** puts every text and its
+  mark back.
+
+**Copy for AI** (… menu) puts a request on the clipboard: the instruction header and the chosen text's card or screen, as JSON.
+Paste it into an AI chat, copy its answer, and choose **Paste result**: it goes through the same import and summary. The
+Workshop calls no AI service itself.
+
 A pack written by the Workshop is a plain pack: the game reads it as it is, and you can still edit its files by hand.
 
 ## The translator's template and the pack check

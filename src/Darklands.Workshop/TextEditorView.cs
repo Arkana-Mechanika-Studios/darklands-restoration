@@ -155,6 +155,12 @@ internal sealed class TextEditorView : IWorkshopEditor
     public TextProject Project => _project;
 
     /// <summary>Shows the current text again (after the glossary or the variables changed).</summary>
+    /// <summary>The pack's review marks as the editor keeps them (an import marks its texts here).</summary>
+    internal ReviewMarks Marks => _marks;
+
+    /// <summary>A text's title as the list shows it (its first words).</summary>
+    internal string ListTitle(TextEntry entry) => TitleOf(entry);
+
     public void Refresh()
     {
         Show(_current);
