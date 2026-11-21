@@ -48,7 +48,7 @@ public static class LanguagePackCheck
         var packFonts = FontPack.Load(pack.Folder, problem => findings.Add(new Finding(Severity.Error, FontPack.Folder, "", problem)));
         TextPainter Painter(int slot) => painters.TryGetValue(slot, out var p)
             ? p
-            : painters[slot] = font?.Invoke(slot) ?? new TextPainter(assets.Font(slot)) { PackFont = packFonts.GetValueOrDefault(slot) };
+            : painters[slot] = font?.Invoke(slot) ?? new TextPainter(assets.Font(slot)) { PackFont = packFonts.GetValueOrDefault(slot), BreakAfter = LineBreaks.For(pack.Language) };
         foreach (var problem in pack.Problems)
         {
             findings.Add(new Finding(Severity.Error, problem.Line > 0 ? $"{problem.Source}:{problem.Line}" : problem.Source, "", problem.Message));

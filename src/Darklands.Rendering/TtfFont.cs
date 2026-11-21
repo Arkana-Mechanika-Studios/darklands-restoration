@@ -7,7 +7,7 @@ namespace Darklands.Rendering;
 
 /// <summary>
 /// A font pack's TrueType / OpenType font (docs/LOCALISATION.md, font packs; L-6b set 2), <c>fonts/slotN.json</c>:
-/// <code>{ "ttf": "MyFont.ttf", "size": 8, "spacing": 0, "lineSpacing": 1 }</code>
+/// <code>{ "ttf": "MyFont.ttf", "size": 8, "spacing": 0, "lineSpacing": 1 }</code> (with <c>"index"</c>: which font of a collection, a .ttc)
 /// <c>size</c> is the line's height (ascent to descent) in the game's 320-wide pixels. Its metrics are whole game pixels (an advance
 /// rounded), so the game's layout is the same loop; the game's frame gets each glyph at 1x (its coverage at half or more), the host
 /// draws it again at the window's scale (<see cref="Raster"/>, <see cref="TextGlyphs"/>). No hinting and no complex-script shaping
@@ -25,14 +25,16 @@ public sealed unsafe class TtfFont : IScalableFont
     private readonly Dictionary<int, (int Advance, int Width, bool[] Mask)?> _glyphs = [];
     private readonly Dictionary<(int Code, double ScaleX, double ScaleY), (int, int, int, int, byte[])> _rasters = [];
 
-    private TtfFont(byte[] file, float size, int spacing, int lineSpacing)
+    private TtfFont(byte[] file, float size, int spacing, int lineSpacing, int index = 0)
     {
         _data = GCHandle.Alloc(file, GCHandleType.Pinned);
         var data = (byte*)_data.AddrOfPinnedObject();
-        if (StbTrueType.stbtt_InitFont(_info, data, StbTrueType.stbtt_GetFontOffsetForIndex(data, 0)) == 0)
+        // a font collection (.ttc: Noto Sans CJK's languages in one file) holds several fonts; "index" picks one (0: the first)
+        var offset = StbTrueType.stbtt_GetFontOffsetForIndex(data, index);
+        if (offset < 0 || StbTrueType.stbtt_InitFont(_info, data, offset) == 0)
         {
             _data.Free();
-            throw new InvalidDataException("not a TrueType or OpenType font");
+            throw new InvalidDataException(offset < 0 ? $"the font collection has no font {index}" : "not a TrueType or OpenType font");
         }
         _size = size;
         _spacing = spacing;
@@ -167,7 +169,8 @@ public sealed unsafe class TtfFont : IScalableFont
             }
             int Number(string key, int fallback) => root.TryGetProperty(key, out var n) && n.TryGetInt32(out var i) ? i : fallback;
             problem = null;
-            return new TtfFont(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(json) ?? "", file)), (float)size, Number("spacing", 0), Number("lineSpacing", 1));
+            return new TtfFont(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(json) ?? "", file)), (float)size, Number("spacing", 0), Number("lineSpacing", 1),
+                Number("index", 0));
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or InvalidDataException)
         {

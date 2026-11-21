@@ -390,7 +390,13 @@ public sealed class GameUi
     public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();
 
     /// <summary>A painter of font slot <paramref name="slot"/>: the game's font, with the pack's for that slot when it has one.</summary>
-    public TextPainter Painter(int slot) => new(Assets.Font(slot)) { PackFont = PackFonts.GetValueOrDefault(slot), Layouts = _layouts };
+    public TextPainter Painter(int slot) => new(Assets.Font(slot))
+    {
+        PackFont = PackFonts.GetValueOrDefault(slot),
+        Layouts = _layouts,
+        // a Chinese or Japanese pack's lines also break between characters (LineBreaks); every other: the game's own places
+        BreakAfter = Graphics.LineBreaks.For(Language?.Language),
+    };
 
     /// <summary>Where a translation the screens cannot use while playing is told (the pack's report; null: nowhere).</summary>
     public Action<string>? LanguageReport { get; set; }

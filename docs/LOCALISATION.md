@@ -475,6 +475,31 @@ drawing exactly (Classic). A translation with other letters, or any text in a pa
 same layout (the card texts' word wrap, passages, option lines and indents are the same loop), with the letters as
 Unicode and the control codes as tokens.
 
+### Chinese, Japanese and Korean
+
+These languages need a **TrueType font** and the **high-resolution display**. The game's 320×200 pixels cannot draw Hangul or
+Han characters legibly, and the Workshop's pixel fonts cannot hold them. Its **Font pack…** says so instead of building one.
+
+**The font.** Put the font in the pack's `fonts/` folder and name it in each slot. A font collection (`.ttc`) holds several
+fonts, and `"index"` picks one. Noto Sans CJK Regular (SIL Open Font License; keep its licence beside it) has Japanese at 0,
+Korean at 1, Simplified Chinese at 2, Traditional Chinese at 3 and Hong Kong at 4:
+
+```
+fonts/slot1.json   { "ttf": "NotoSansCJK-Regular.ttc", "index": 1, "size": 9, "lineSpacing": 1 }
+fonts/slot3.json   { "ttf": "NotoSansCJK-Regular.ttc", "index": 1, "size": 10, "lineSpacing": 2 }
+```
+
+With a TrueType font in the pack, the game draws its text at the window's resolution: a CJK pack is always played in high
+resolution. The taller lines (`size` and `lineSpacing`) are the card's layout's: a card text that no longer fits its window
+is shown in pages.
+
+**Line breaking.**
+* **Chinese and Japanese** are written without spaces: a line breaks between any two of their characters. A line never
+  starts with a closing mark (、。，」）…, small kana, ー) and never ends with an opening one (「（…). A run of Latin
+  letters or digits keeps together and breaks at its spaces.
+* **Korean** breaks at its spaces, as the game does.
+* **Every other language** breaks only at the game's own places: spaces, hyphens and line ends.
+
 ## Fonts, layout and mouse areas
 
 A translation changes the length of the text, and a font pack can change the width of the letters. Both move where

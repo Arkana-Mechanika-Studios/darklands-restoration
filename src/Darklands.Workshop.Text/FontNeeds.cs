@@ -49,6 +49,18 @@ public static class FontNeeds
     /// <summary>The primary subtag of a language tag (pt-BR: pt).</summary>
     public static string Primary(string language) => language.Split('-', '_')[0];
 
+    /// <summary>
+    /// Whether <paramref name="language"/> is written in Chinese, Japanese or Korean: its letters need a TrueType font (Noto Sans CJK ...)
+    /// and the high-resolution display, not the pixel fonts the Workshop builds.
+    /// </summary>
+    public static bool IsCjk(string language) => Primary(language).ToLowerInvariant() is "zh" or "ja" or "ko" or "yue";
+
+    /// <summary>What a Chinese, Japanese or Korean pack needs for its letters (the Workshop's hint and its Font pack… answer).</summary>
+    public const string CjkFontHint =
+        "Chinese, Japanese and Korean need a TrueType font, such as Noto Sans CJK (SIL Open Font License), and the high-resolution display: "
+        + "put the font in the pack's fonts folder and name it in fonts/slot1.json to slot3.json (docs/LOCALISATION.md). "
+        + "The Workshop's pixel fonts cannot hold these letters.";
+
     /// <summary>The scripts a font pack for <paramref name="language"/> holds: Latin always, Greek or Cyrillic for their languages.</summary>
     public static FontScripts Scripts(string language)
     {

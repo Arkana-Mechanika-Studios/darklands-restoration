@@ -66,21 +66,29 @@ public sealed class TextPainter(FntFont font)
         var rest = text;
         while (result.Count < lines - 1 && Measure(rest) > width)
         {
+            // the last place that fits: a space (dropped), or between two characters the language lets break (both kept)
             var cut = -1;
-            for (var i = rest.IndexOf(' ', StringComparison.Ordinal); i > 0; i = rest.IndexOf(' ', i + 1))
+            var keep = false;
+            for (var i = 1; i < rest.Length; i++)
             {
+                var space = rest[i] == ' ';
+                var between = !space && BreakAfter is { } breaks && breaks(rest[i - 1], rest[i]);
+                if (!space && !between)
+                {
+                    continue;
+                }
                 if (Measure(rest[..i]) > width)
                 {
                     break;
                 }
-                cut = i;
+                (cut, keep) = (i, between);
             }
             if (cut <= 0)
             {
                 break;
             }
             result.Add(rest[..cut]);
-            rest = rest[(cut + 1)..];
+            rest = rest[(keep ? cut : cut + 1)..];
         }
         result.Add(rest);
         return result;
@@ -276,6 +284,13 @@ public sealed class TextPainter(FntFont font)
     /// </summary>
     // Not in the original: the 1.1 translation packs (screen layouts per language).
     public ITextLayouts? Layouts { get; init; }
+
+    /// <summary>
+    /// Where a line may also break, by the translation pack's language (<see cref="LineBreaks.For"/>: between two Chinese or Japanese
+    /// characters); null: only at the game's own places (a space, a hyphen, the line's end).
+    /// </summary>
+    // Not in the original: the 1.1 translations (Chinese, Japanese, Korean).
+    public Func<int, int, bool>? BreakAfter { get; init; }
 
     public int Draw(Canvas canvas, int x, int y, string text, byte color, int right = int.MaxValue)
     {

@@ -465,6 +465,12 @@ internal sealed class WorkshopWindow : Window
         {
             return;
         }
+        if (FontNeeds.IsCjk(_project.Language))
+        {
+            // Chinese, Japanese, Korean: a TrueType font, not pixel fonts (the guide says how); nothing is built or asked
+            _status.Text = FontNeeds.CjkFontHint;
+            return;
+        }
         var lacking = FontNeeds.LackedByTheGame(_game, _project.Language);
         if (ask && (lacking.Length == 0 || FontNeeds.HasFontPack(_project.Folder)))
         {
