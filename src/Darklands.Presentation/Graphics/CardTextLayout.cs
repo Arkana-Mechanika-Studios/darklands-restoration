@@ -152,6 +152,8 @@ public sealed class CardTextLayout(TextPainter painter)
         //   left there: lines and option lines of another text, drawn and given hot spots); here the text ends at its end. Found by the direct calls of
         //   text-paint-wrapped (tools/oracle/text_calls.py, batch 34: card $situa00 block 4 ends with 0x13). Also the original bug B-fe596a.
         int At(int i) => text.At(i);
+        // Not in the original: the 1.1 translations: a break the language allows after the character at i (none: the original's places only)
+        bool BreaksAfter(int i) => painter.BreakAfter is { } breaks && At(i) > 0 && At(i + 1) > 0 && breaks(At(i), At(i + 1));
 
         var more = true;
         while (more)
@@ -248,8 +250,8 @@ public sealed class CardTextLayout(TextPainter painter)
                 CloseArea(settings.Leading + spacing);
             }
 
-            // Break the line after the last space or hyphen that fits.
-            while (At(cursor) is not ' ' and not 0 and not '\n' and not '-' &&
+            // Break the line after the last space or hyphen that fits (or, in Chinese or Japanese, between two characters: LineBreaks).
+            while (At(cursor) is not ' ' and not 0 and not '\n' and not '-' && !BreaksAfter(cursor) &&
                    start < cursor && cursor > lineStart)
             {
                 cursor--;
@@ -269,7 +271,7 @@ public sealed class CardTextLayout(TextPainter painter)
                 cursor = rest;
             }
 
-            if (At(cursor) == '-')
+            if (At(cursor) == '-' || BreaksAfter(cursor))
             {
                 count++;
             }
@@ -349,6 +351,8 @@ public sealed class CardTextLayout(TextPainter painter)
         where T : struct, ITextSource
     {
         int At(int i) => text.At(i);
+        // Not in the original: the 1.1 translations: a break the language allows after the character at i (none: the original's places only)
+        bool BreaksAfter(int i) => painter.BreakAfter is { } breaks && At(i) > 0 && At(i + 1) > 0 && breaks(At(i), At(i + 1));
         var spacing = painter.LineHeight;
         var y = 0;
         var indentPending = false;
@@ -411,12 +415,12 @@ public sealed class CardTextLayout(TextPainter painter)
                 cursor--;
                 count--;
             }
-            while (At(cursor) is not ' ' and not 0 and not '\n' and not '-' && cursor > 0)
+            while (At(cursor) is not ' ' and not 0 and not '\n' and not '-' && !BreaksAfter(cursor) && cursor > 0)
             {
                 count--;
                 cursor--;
             }
-            if (At(cursor) == '-')
+            if (At(cursor) == '-' || BreaksAfter(cursor))
             {
                 count++;
             }

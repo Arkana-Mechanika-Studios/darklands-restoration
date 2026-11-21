@@ -29,6 +29,7 @@ using Darklands.Rendering;
 //                                shot also saves <name>.hd.png, the frame with the replacements at hdscale:<n> (default 4) x 320x200,
 //                                and <name>.assets.txt, the asset names on the screen (the names a pack's PNG files take)
 //   languagepack:<folder>        a translation pack (docs/LOCALISATION.md; also from --settings): the screens' words in its language
+//   fontpack:<folder>            a font pack (pack.json "fonts": true; also from --settings): the text in its fonts
 //
 // Game steps:
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
@@ -200,6 +201,33 @@ if (audioPackStep is not null)
     ScriptedHost.ReplacementSound = pack;
 }
 var languagePackStep = TakeStep("languagepack:") ?? resolved.LanguagePack;
+// a font pack (fontpack:<folder> or the settings file's text.fontPack): its fonts for the slots the translation pack has none for
+var fontPackStep = TakeStep("fontpack:") ?? resolved.FontPack;
+// the packs on a game's screens: the translation pack's words, the translation's and the font pack's fonts; with a TrueType font each
+//   shot also saves <name>.hd.png with its glyphs at hdscale (the renderer's text layer)
+void UsePacks(GameUi ui)
+{
+    if (languagePackStep is null && fontPackStep is null)
+    {
+        return;
+    }
+    // the fonts' pictures read with the program's PNG reader (font packs)
+    Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
+    Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
+    if (languagePackStep is not null)
+    {
+        ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
+    }
+    if (fontPackStep is not null)
+    {
+        ui.UseFontPack(fontPackStep, Console.Error.WriteLine);
+    }
+    if (ui.PackFonts.Values.Any(f => f is Darklands.Platform.IScalableFont) && ScriptedHost.HdRenderer is null)
+    {
+        ScriptedHost.HdRenderer = new HdRenderer(HdPack.Empty);
+        ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
 var host = new ScriptedHost(steps, output);
 var battleStep = steps.FirstOrDefault(s => s.StartsWith("battle:", StringComparison.Ordinal));
 if (battleStep is not null)
@@ -215,13 +243,8 @@ if (battleStep is not null)
     var numbers = battleStep[7..].Split(',').Select(v => int.Parse(v, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
     var files = OpenGame();
     var ui = new GameUi(host, new GameAssets(files));
-    if (languagePackStep is not null)
-    {
-        // a translation pack: the battle's words (and names) in its language
-        Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
-        Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
-        ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
-    }
+    // a translation pack (the battle's words and names) and a font pack
+    UsePacks(ui);
     var state = Darklands.Simulation.NewGame.Quickstart(WorldData.Load(files), seed, () => seed);
     var groups = new List<(int, int, int)>();
     for (var k = 2; k + 2 < numbers.Length; k += 3)
@@ -326,11 +349,11 @@ if (screenStep is not null)
     var which = screenStep[7..];
     if (which is "barter" or "store" or "loot")
     {
-        ScreenPreview.Run(host, OpenGame(), which, seed, languagePackStep);
+        ScreenPreview.Run(host, OpenGame(), which, seed, UsePacks);
     }
     else
     {
-        DebugScreens.Run(host, OpenGame(), which, seed, languagePackStep);
+        DebugScreens.Run(host, OpenGame(), which, seed, UsePacks);
     }
     Console.WriteLine($"{host.ShotsTaken} screenshot(s) in {output}");
     return 0;
@@ -342,15 +365,10 @@ if (steps.Count > 0 && steps[0].StartsWith("saint:", StringComparison.Ordinal))
     var files = OpenGame();
     var world = WorldData.Load(files);
     var ui = new GameUi(host, new GameAssets(files));
-    if (languagePackStep is not null)
-    {
-        // a translation pack: the saint screen's words (and names) in its language
-        Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
-        Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
-        ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
-    }
+    // a translation pack (the saint screen's words and names) and a font pack
+    UsePacks(ui);
     var state = Darklands.Simulation.NewGame.Quickstart(world, seed);
-    var panel = new PartyPanel(ui.Assets);
+    var panel = new PartyPanel(ui);
     ui.Canvas.Fill(0, 0, Canvas.Width, Canvas.Height, Palette.Blank);
     panel.Draw(ui.Canvas, state.Party);
     var mode = spec.Length > 2 ? Darklands.Core.Rules.PrayerMode.ForParty : Darklands.Core.Rules.PrayerMode.ForMember;
@@ -408,20 +426,9 @@ var game = new DarklandsGame(host, OpenGame())
     QuickstartCard = cardStep is null ? null : Convert.ToInt32(cardStep[5..], 16),
     StartWithSave = loadStep?[5..],
 };
-// a translation pack (languagepack:<folder> or the settings file's text.languagePack) changes the screens' words only
-if (languagePackStep is not null)
-{
-    // its fonts' pictures read with the program's PNG reader (font packs)
-    Darklands.Presentation.FontPack.ReadImage = PngCodec.ReadAlpha;
-    Darklands.Presentation.FontPack.LoadScalable = json => (TtfFont.Load(json, out var why), why);
-    game.Ui.UseLanguagePack(languagePackStep, Console.Error.WriteLine);
-    // a TrueType font of the pack: each shot also saves <name>.hd.png with its glyphs at hdscale (the renderer's text layer)
-    if (game.Ui.PackFonts.Values.Any(f => f is Darklands.Platform.IScalableFont) && ScriptedHost.HdRenderer is null)
-    {
-        ScriptedHost.HdRenderer = new HdRenderer(HdPack.Empty);
-        ScriptedHost.HdScale = hdScaleStep is null ? 4 : int.Parse(hdScaleStep, System.Globalization.CultureInfo.InvariantCulture);
-    }
-}
+// a translation pack (languagepack:<folder> or the settings file's text.languagePack) changes the screens' words only; a font pack
+//   (fontpack:) their fonts
+UsePacks(game.Ui);
 if (startAtStep is not null)
 {
     if (languagePackStep is null)

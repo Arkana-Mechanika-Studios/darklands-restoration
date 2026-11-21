@@ -84,7 +84,16 @@ public sealed class LanguagePack
     public IReadOnlyList<(string File, FtlSource.Message Message)> Messages { get; }
 
     /// <summary>Whether <paramref name="folder"/> holds a manifest that names a language (a translation pack, not another kind of pack).</summary>
-    public static bool IsPack(string folder) => ReadManifest(folder, out _) is { Language: not null };
+    public static bool IsPack(string folder) => ReadManifest(folder, out _) is { Language: not null } or { Fonts: true };
+
+    /// <summary>
+    /// Whether the folder holds a font-only pack: <c>{"fonts": true}</c> with no language (or <c>"en"</c>) and no translations: the
+    /// game's English drawn in its fonts (high-resolution text for English players).
+    /// </summary>
+    public static bool IsFontPack(string folder) => ReadManifest(folder, out _) is { Fonts: true, Language: null or "en" };
+
+    /// <summary>Whether this pack only brings fonts (<see cref="IsFontPack"/>).</summary>
+    public bool FontsOnly { get; private init; }
 
     /// <summary>Loads the pack in <paramref name="folder"/>; null when the folder holds no translation pack (its reason in <paramref name="why"/>).</summary>
     public static LanguagePack? Load(string folder, out string? why)
@@ -100,16 +109,18 @@ public sealed class LanguagePack
         {
             return null;
         }
-        if (manifest.Language is not { Length: > 0 } language)
+        var fontsOnly = manifest.Fonts && manifest.Language is null or "en";
+        if (manifest.Language is not { Length: > 0 } && !fontsOnly)
         {
             why = $"{Path.Combine(folder, ManifestName)}: no \"language\": not a translation pack";
             return null;
         }
+        var language = manifest.Language is { Length: > 0 } named ? named : "en";
         // the pack's texts as written (a qps pack is made already transformed: PseudoLocale's own letters are not the game fonts')
         var localizer = new FluentLocalizer(language, OriginalTable.Empty, null, pseudoTransform: false);
         var problems = new List<LocalizationDiagnostic>();
         var text = Path.Combine(folder, TextFolder(language));
-        if (!Directory.Exists(text))
+        if (!Directory.Exists(text) && !fontsOnly)
         {
             problems.Add(new LocalizationDiagnostic(ManifestName, 0, $"no {TextFolder(language).Replace('\\', '/')} folder: nothing to translate with"));
         }
@@ -143,10 +154,10 @@ public sealed class LanguagePack
             problems.Add(new LocalizationDiagnostic(SlotLayouts.FileName, 0, layoutProblem));
         }
         return new LanguagePack(folder, language, manifest.Name ?? Path.GetFileName(Path.TrimEndingDirectorySeparator(folder)), manifest.Author,
-            manifest.Base, localizer, problems, files.Count, messages) { Layouts = layouts };
+            manifest.Base, localizer, problems, files.Count, messages) { Layouts = layouts, FontsOnly = fontsOnly };
     }
 
-    private sealed record Manifest(string? Language, string? Name, string? Author, string? Base);
+    private sealed record Manifest(string? Language, string? Name, string? Author, string? Base, bool Fonts = false);
 
     private static Manifest? ReadManifest(string folder, out string? why)
     {
@@ -168,7 +179,8 @@ public sealed class LanguagePack
                     ? v.GetString()
                     : null;
             why = null;
-            return new Manifest(Text("language"), Text("name"), Text("author"), Text("base"));
+            var fonts = json.RootElement.ValueKind == JsonValueKind.Object && json.RootElement.TryGetProperty("fonts", out var f) && f.ValueKind == JsonValueKind.True;
+            return new Manifest(Text("language"), Text("name"), Text("author"), Text("base"), fonts);
         }
         catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
         {

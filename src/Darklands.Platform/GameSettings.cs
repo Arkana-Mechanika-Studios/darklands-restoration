@@ -41,6 +41,9 @@ public sealed class GameSettings
     /// <summary>A translation pack's folder (docs/LOCALISATION.md; not part of the game). Null: the original English text.</summary>
     public string? LanguagePack { get; set; }
 
+    /// <summary>A font pack's folder (pack.json {"fonts": true}: the game's text in its fonts, high resolution; docs/LOCALISATION.md). Null: none.</summary>
+    public string? FontPack { get; set; }
+
     /// <summary>A folder of replacement music and battle effects (an audio pack; not part of the game). Null: the game's own sound.</summary>
     public string? AudioPack { get; set; }
 

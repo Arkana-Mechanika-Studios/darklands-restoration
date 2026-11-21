@@ -490,8 +490,14 @@ internal sealed partial class LauncherScreen
             y = Section("Start-up", "icon-startup", y);
             // the translation pack: one row (the tab has no height for a status line; a broken pack shows (!) and its problem in the details)
             y = Select(y, "Language pack", PackShown(PackKind.Language), Item.LanguagePack, "Browse…");
-            y = Select(y, "Original start-up screen", _model.Banner ? "Yes" : "No", Item.Banner, narrow: true);
-            y = Select(y, "Opening animation", _model.Intro ? "Yes" : "No", Item.Intro, narrow: true);
+            y = Select(y, "Fonts", PackShown(PackKind.Fonts), Item.FontPack, "Browse…");
+            // the start-up screen and the opening side by side: one row (the font pack's row takes the other)
+            var bannerEnd = layout.Select + v.Len(92);   // Yes or No
+            Select(y, "Start-up screen", _model.Banner ? "Yes" : "No", Item.Banner,
+                at: layout with { SelectEnd = bannerEnd, Right = bannerEnd + v.Len(8) });
+            var introLabel = bannerEnd + v.Len(30);
+            y = Select(y, "Opening", _model.Intro ? "Yes" : "No", Item.Intro,
+                at: layout with { Label = introLabel, Select = introLabel + text.Measure("Opening") + v.Len(14), SelectEnd = layout.Right });
             y = Select(y, "Mouse wheel in menus", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel, narrow: true);
             y = Select(y, "Card menu keys anywhere", _model.CardMenuKeys ? "Yes" : "No", Item.CardMenuKeys, narrow: true);
         }
@@ -759,8 +765,8 @@ internal sealed partial class LauncherScreen
         {
             yield return (path, Cream);
         }
-        if (row is Item.HdPack or Item.AudioPack or Item.LanguagePack
-            && PackProblem(row switch { Item.HdPack => PackKind.Pictures, Item.AudioPack => PackKind.Sounds, _ => PackKind.Language }) is { } problem)
+        if (row is Item.HdPack or Item.AudioPack or Item.LanguagePack or Item.FontPack
+            && PackProblem(row switch { Item.HdPack => PackKind.Pictures, Item.AudioPack => PackKind.Sounds, Item.FontPack => PackKind.Fonts, _ => PackKind.Language }) is { } problem)
         {
             yield return ("Problem: " + problem, PaleRed);
         }

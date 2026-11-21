@@ -35,6 +35,9 @@ public sealed class CommandLineOptions
     /// <summary>--language-pack: a translation pack's folder.</summary>
     public string? LanguagePack { get; set; }
 
+    /// <summary>--font-pack: a font pack's folder (the game's text in its fonts, high resolution).</summary>
+    public string? FontPack { get; set; }
+
     public bool NoBanner { get; set; }
 
     public bool NoIntro { get; set; }
@@ -94,6 +97,8 @@ public sealed class CommandLineOptions
         By("sound.audioPack", Given(environment("DARKLANDS_AUDIO_PACK")), "DARKLANDS_AUDIO_PACK");
         By("text.languagePack", Given(LanguagePack), "--language-pack");
         By("text.languagePack", Given(environment("DARKLANDS_LANGUAGE_PACK")), "DARKLANDS_LANGUAGE_PACK");
+        By("text.fontPack", Given(FontPack), "--font-pack");
+        By("text.fontPack", Given(environment("DARKLANDS_FONT_PACK")), "DARKLANDS_FONT_PACK");
         By("startup.banner", NoBanner, "--no-banner");
         By("startup.intro", NoIntro, "--no-intro");
         By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");
@@ -147,6 +152,9 @@ public sealed class ResolvedSettings
 
     /// <summary>The translation pack's folder; null: none (the original English text).</summary>
     public string? LanguagePack { get; private init; }
+
+    /// <summary>The font pack's folder; null: none (the game's fonts, or the translation pack's).</summary>
+    public string? FontPack { get; private init; }
 
     public ConfigDrkSettings? ConfigDrk { get; private init; }
 
@@ -243,6 +251,7 @@ public sealed class ResolvedSettings
             AudioPack = FirstGiven(cli.AudioPack, "DARKLANDS_AUDIO_PACK", file.AudioPack),
             SoundFont = FirstGiven(cli.SoundFont, null, file.SoundFont),
             LanguagePack = FirstGiven(cli.LanguagePack, "DARKLANDS_LANGUAGE_PACK", file.LanguagePack),
+            FontPack = FirstGiven(cli.FontPack, "DARKLANDS_FONT_PACK", file.FontPack),
             ConfigDrk = file.ConfigDrk,
             Mods = cli.Mods.Count > 0 ? cli.Mods.ToList() : file.Mods?.Where(m => !string.IsNullOrWhiteSpace(m)).ToList() ?? [],
             ModsFromCommandLine = cli.Mods.Count > 0,

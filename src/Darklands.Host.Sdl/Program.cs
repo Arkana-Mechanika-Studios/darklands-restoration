@@ -133,6 +133,7 @@ var cli = new CommandLineOptions
     Mt32Roms = Option("--mt32-roms"),
     AudioPack = Option("--audio-pack"),
     LanguagePack = Option("--language-pack"),
+    FontPack = Option("--font-pack"),
     SoundFont = Option("--soundfont"),
     NoBanner = arguments.Remove("--no-banner"),
     NoIntro = arguments.Remove("--no-intro"),
@@ -372,9 +373,18 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
         Behaviour = Darklands.Core.OriginalBehaviour.DataSafe,
     };
     // a translation pack changes the screens' words only (docs/LOCALISATION.md)
-    if (settings.LanguagePack is { } languagePack)
+    // a font pack (text.fontPack, --font-pack): its fonts for the slots the translation pack has none for (Not in the original)
+    var fontPack = settings.FontPack;
+    if (settings.LanguagePack is { } languagePack || fontPack is not null)
     {
-        game.Ui.UseLanguagePack(languagePack, Console.Error.WriteLine);
+        if (settings.LanguagePack is { } translation)
+        {
+            game.Ui.UseLanguagePack(translation, Console.Error.WriteLine);
+        }
+        if (fontPack is not null)
+        {
+            game.Ui.UseFontPack(fontPack, Console.Error.WriteLine);
+        }
         // a TrueType font of the pack: its glyphs are drawn again at the window's resolution (the renderer's text layer)
         if (game.Ui.PackFonts.Values.Any(f => f is Darklands.Platform.IScalableFont))
         {

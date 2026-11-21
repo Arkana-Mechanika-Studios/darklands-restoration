@@ -57,10 +57,18 @@ public sealed class TextPreview(TextProject project)
         return entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? Card(entry, localizer.Get(entry.Key)) : Line(entry, localizer);
     }
 
+    // the hint for letters the fonts lack: a Chinese, Japanese or Korean pack's is a TrueType font's, not the pixel font pack's
+    private string? Lacking(string lacking) =>
+        lacking.Length == 0 ? null : FontNeeds.IsCjk(project.Language) ? $"The fonts lack {lacking}: drawn as '?'. {FontNeeds.CjkFontHint}" : LackingHint(lacking);
+
     private TextPainter Painter(int slot)
     {
         _fonts ??= FontPack.Load(project.Folder, _ => { });
-        return _painters.TryGetValue(slot, out var p) ? p : _painters[slot] = new TextPainter(_assets.Font(slot)) { PackFont = _fonts.GetValueOrDefault(slot) };
+        return _painters.TryGetValue(slot, out var p) ? p : _painters[slot] = new TextPainter(_assets.Font(slot))
+        {
+            PackFont = _fonts.GetValueOrDefault(slot),
+            BreakAfter = LineBreaks.For(project.Language),
+        };
     }
 
     // a screen text: its words with the arguments a session drew it with, on one line in its font, the box's edge marked
@@ -93,7 +101,7 @@ public sealed class TextPreview(TextProject project)
                 argb[y * width + room + 3] = 0xFFFF4040u;
             }
         }
-        var lacking = LackingHint(LanguagePackCheck.Unshowable(TextCodes.OfText(words), painter));
+        var lacking = Lacking(LanguagePackCheck.Unshowable(TextCodes.OfText(words), painter));
         return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false);
     }
 
@@ -136,7 +144,7 @@ public sealed class TextPreview(TextProject project)
             }
         }
         var limit = y + height;
-        if (LackingHint(LanguagePackCheck.Unshowable(codes, painter)) is { } missing)
+        if (Lacking(LanguagePackCheck.Unshowable(codes, painter)) is { } missing)
         {
             problem = problem is null ? missing : problem + "\n" + missing;
         }

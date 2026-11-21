@@ -209,7 +209,11 @@ internal static class LauncherHost
         var problem = sounds.Problems.Concat(pictures.Problems).FirstOrDefault(p => p.Contains(".json", StringComparison.Ordinal) && language is null)
             ?? sounds.Problems.FirstOrDefault(p => !p.Contains("SoundFont", StringComparison.Ordinal) && language is null)
             ?? language?.Problems.Select(p => p.ToString()).FirstOrDefault();
-        return new PackStatus(pictures.Count, sounds.Count, problem, language?.Files ?? 0);
+        // a font pack (pack.json "fonts": true, no language): its font slots
+        var fonts = Darklands.Localization.LanguagePack.IsFontPack(folder) && Directory.Exists(Path.Combine(folder, "fonts"))
+            ? Directory.EnumerateFiles(Path.Combine(folder, "fonts"), "slot?.json").Count()
+            : 0;
+        return new PackStatus(pictures.Count, sounds.Count, problem, language is { FontsOnly: false } ? language.Files : 0, fonts);
     }
 
     /// <summary>The project's releases on GitHub (each version's page is /tag/v&lt;version&gt;).</summary>
