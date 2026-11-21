@@ -34,6 +34,17 @@ public sealed class StartPageDataTests
     public void ATagIsCheckedAsBcp47(string tag, bool wellFormed) => Assert.Equal(wellFormed, Languages.IsWellFormed(tag));
 
     [Fact]
+    public void TheMakersGuidesComeWithTheWorkshopAndItLooksForTheGameBesideOrAbove()
+    {
+        // in a release: DarklandsRP/Workshop/docs (the game's own docs folder keeps the players' guides only)
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", "LOCALISATION.md")));
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", "modding", "README.md")));
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "Inter-OFL.txt")));
+        Assert.Equal(Darklands.Platform.PackLayout.GameProgramFolder(AppContext.BaseDirectory), WorkshopApp.GameProgramFolder);
+        Assert.Equal(Path.Combine(WorkshopApp.GameProgramFolder, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP"), WorkshopApp.GameProgram);
+    }
+
+    [Fact]
     public void ThePacksAreFoundOnceEachTheNewestFirst()
     {
         var root = Path.Combine(Path.GetTempPath(), "dl-catalog-" + Guid.NewGuid().ToString("N"));
@@ -52,7 +63,8 @@ public sealed class StartPageDataTests
                 return path;
             }
             var fr = Pack(Path.Combine("packs", "fr"), "fr", "Français", new DateTime(2026, 11, 1));
-            var ru = Pack(Path.Combine("packs", "ru"), "ru", "Русский", new DateTime(2026, 11, 18));
+            // the release's layout (packs/languages) and a loose pack (fr, as in 1.0) are both found
+            var ru = Pack(Path.Combine("packs", "languages", "ru"), "ru", "Русский", new DateTime(2026, 11, 18));
             var other = Pack("elsewhere", "el", "Ελληνικά", new DateTime(2026, 10, 1));
             Directory.CreateDirectory(Path.Combine(root, "packs", "not-a-pack"));
             var found = PackCatalog.Find([Path.Combine(root, "packs")], [other, fr]);

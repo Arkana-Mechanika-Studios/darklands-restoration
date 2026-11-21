@@ -35,6 +35,14 @@
     <AvaloniaResource Include="Assets\emblem.png" />
     <AvaloniaResource Include="Assets\Fonts\Inter-*.ttf" />
     <None Include="Assets\Fonts\Inter-OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Link="Inter-OFL.txt" />
+  </ItemGroup>
+
+  <!-- the translators' and modders' guides beside the Workshop (in a release: DarklandsRP/Workshop/docs), with the players' guides
+       they link to (copies of the game's docs folder's, so their links hold in the Workshop's own download) -->
+  <ItemGroup>
+    <None Include="..\..\docs\LOCALISATION.md" Link="docs\LOCALISATION.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\PACKS.md;..\..\docs\MODS.md;..\..\docs\SETTINGS.md;..\..\docs\REPORTING.md" Link="docs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\modding\*.md" Link="docs\modding\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <AvaloniaResource Include="..\Darklands.Host.Sdl\Resources\DarklandsRP.ico" Link="Assets\DarklandsRP.ico" />
     <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\background.png" Link="Assets\banner.png" />
     <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\fleuron.png" Link="Assets\fleuron.png" />

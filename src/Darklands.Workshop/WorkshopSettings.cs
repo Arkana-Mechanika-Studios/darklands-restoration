@@ -55,7 +55,7 @@ internal sealed class WorkshopSettings
         {
             return local;
         }
-        return GameFolderSearch.Find(GameFolderSearch.Candidates(AppContext.BaseDirectory), GameFiles.IsGameFolder)?.Folder;
+        return GameFolderSearch.Find(GameFolderSearch.Candidates(WorkshopApp.GameProgramFolder), GameFiles.IsGameFolder)?.Folder;
     }
 
     /// <summary>Puts <paramref name="pack"/> first in the recent packs (ten kept).</summary>

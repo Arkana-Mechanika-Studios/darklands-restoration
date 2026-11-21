@@ -38,21 +38,24 @@ never needs to (see "Rights" below).
 
 ## Where the files go
 
-The release comes with the program (`DarklandsRP.exe`), a `docs` folder (these guides), a `packs` folder with a small
-example sound pack and a `mods` folder with a small example mod.
+The release comes with the program (`DarklandsRP.exe`), a `docs` folder (the players' guides), a `packs` folder with a
+folder per kind (the "HD fonts" font pack, an empty folder for translations, a small example sound pack) and a `mods`
+folder with a small example mod. These guides come with the Workshop, in `Workshop/docs`.
 
 ```text
 DarklandsRP.exe
 darklands.settings.json      (written on the first run)
 packs/
-  audio-pack-example/        (comes with the release)
-  my-first-pack/             (yours)
+  fonts/hd-fonts/            (comes with the release)
+  languages/                 (translations)
+  audio/audio-pack-example/  (comes with the release)
+  my-first-pack/             (yours: a pack may also sit straight in packs)
 mods/
   wayside-shrine/            (comes with the release)
 SOUNDFONT/                   (optional: your own .sf2 file for MIDI music)
 ```
 
-* **Packs:** one folder per pack inside `packs`. The launcher finds it there. A `packs` folder in the game folder, or next
+* **Packs:** one folder per pack inside `packs` (in its kind's folder, or straight in `packs`). The launcher finds it there. A `packs` folder in the game folder, or next
   to it, is looked in too. A pack can also live anywhere else if you browse to it or name its folder explicitly.
 * **Mods:** one folder per mod, with a `mod.json` inside, in a `mods` folder next to the program (or in or beside the game folder).
 * **SoundFont:** a `.sf2` file in the `SOUNDFONT` folder, or chosen in the launcher ([AUDIO.md](AUDIO.md)).

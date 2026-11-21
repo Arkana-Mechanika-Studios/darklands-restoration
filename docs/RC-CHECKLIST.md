@@ -244,7 +244,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **J2 Picture pack.** Do: set a pack with a few PNGs, start. Compare: the replaced pictures show only where the
   original shows them, text and menus stay on top, fades follow the palette; the game plays the same. Proven by: `HdPackTests`, `HdRendererTests`
   (headless shots); the look: UNPROVEN.
-* [ ] **J3 Sound pack.** Do: use `packs/audio-pack-example`. Compare: tones replace the pieces; Alt-P pauses them; a battle
+* [ ] **J3 Sound pack.** Do: use `packs/audio/audio-pack-example`. Compare: tones replace the pieces; Alt-P pauses them; a battle
   ends them; timing does not change. Proven by: `PackAudioTests` (the game's calls reach the drivers unchanged; pause and mute), `LauncherPackTests` (the example pack reads clean); how it sounds: UNPROVEN.
 * [ ] **J4 Broken pack.** Do: a missing folder, a bad PNG, an unknown name. Compare: a console line and the game's own
   picture or sound. Proven by: `PackAudioTests`, `HdPackTests`, `LauncherPackTests` (the problem is reported and the rest still loads).

@@ -45,7 +45,7 @@ my-sound-pack/
   pack.json             (optional: SoundFont, music per card)
 ```
 
-The example in [`docs/audio-pack-example`](../audio-pack-example) (in a release: `packs/audio-pack-example` next to the
+The example in [`docs/audio-pack-example`](../audio-pack-example) (in a release: `packs/audio/audio-pack-example` next to the
 program) is a working pack of two generated test tones. Its `music/travel-2.ogg` replaces a travel piece, and its
 `effects/battle-swing.wav` replaces the sound of a missed swing. It also shows the `audio.json` form. Choose it in the
 launcher's "Audio pack" row, create a party and listen to the creation screen's music; in a battle, a missed blow chirps.

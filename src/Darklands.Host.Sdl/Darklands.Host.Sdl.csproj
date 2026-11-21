@@ -83,19 +83,23 @@
           Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md')" />
   </ItemGroup>
 
-  <!-- the pack makers' guide (docs/PACKS.md) and the example sound pack (packs/audio-pack-example, generated tones), beside the
-       program in the build and in every release; the launcher offers the packs folder's packs -->
+  <!-- the release's packs folder (docs/PACKS.md, Darklands.Platform.PackLayout): one subfolder per kind, the launcher offers their
+       packs (and loose packs in packs itself). The pack makers' guide (docs/PACKS.md) and the example sound pack
+       (packs/audio/audio-pack-example, generated tones), beside the program in the build and in every release -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\PACKS.md" Link="docs\PACKS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\audio-pack-example\**\*" Link="packs\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)"
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\audio-pack-example\**\*" Link="packs\audio\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <!-- the "HD fonts" font pack (docs/LOCALISATION.md): the game's text in DejaVu Sans Mono and EB Garamond at the window's resolution;
-         its pack.json and slot files from docs/hd-fonts-pack, the fonts the repository already has (THIRD_PARTY_NOTICES.md) -->
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\hd-fonts-pack\**\*" Link="packs\hd-fonts\%(RecursiveDir)%(Filename)%(Extension)"
+    <!-- the "HD fonts" font pack (docs/LOCALISATION.md), packs/fonts/hd-fonts: the game's text in DejaVu Sans Mono and EB Garamond at
+         the window's resolution; its pack.json and slot files from docs/hd-fonts-pack, the fonts the repository already has
+         (THIRD_PARTY_NOTICES.md) -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\hd-fonts-pack\**\*" Link="packs\fonts\hd-fonts\%(RecursiveDir)%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="Resources\DejaVuSansMono.ttf" Link="packs\hd-fonts\fonts\DejaVuSansMono.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\EBGaramond12-Regular.ttf" Link="packs\hd-fonts\fonts\EBGaramond12-Regular.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\OFL.txt" Link="packs\hd-fonts\fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Resources\DejaVuSansMono.ttf" Link="packs\fonts\hd-fonts\fonts\DejaVuSansMono.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\EBGaramond12-Regular.ttf" Link="packs\fonts\hd-fonts\fonts\EBGaramond12-Regular.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\OFL.txt" Link="packs\fonts\hd-fonts\fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- the language packs' folder, empty but for its README (docs/packs-languages-README.txt): where a downloaded translation goes -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\packs-languages-README.txt" Link="packs\languages\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the mod makers' guide (docs/MODS.md) and the example mod (mods/wayside-shrine), beside the program in the build and in every
@@ -106,12 +110,10 @@
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- the modding guides (docs/modding), the settings reference they link to and the localisation plan, beside the program in
-       the build and in every release -->
+  <!-- the settings reference, beside the program in the build and in every release (the modding guides and the localisation
+       guide are the Workshop's: Workshop/docs, Darklands.Workshop.csproj) -->
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\modding\*.md" Link="docs\modding\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\SETTINGS.md" Link="docs\SETTINGS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\LOCALISATION.md" Link="docs\LOCALISATION.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the guide to reporting a problem (docs/REPORTING.md), beside the program in the build and in every release -->

@@ -225,9 +225,11 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 
 ## The Workshop's text editor
 
-`DarklandsWorkshop` (a download of its own beside the game's; put it in the same folder as `DarklandsRP`) is the
-translators' editor. It finds your game folder as the launcher does (or the game folder button at the top right), and
-starts on its pack list: every translation pack it finds in the program's `packs` folder (the one the launcher lists),
+`DarklandsWorkshop` (a download of its own beside the game's: its archive holds a `Workshop` folder; unzip it into the
+`DarklandsRP` folder, so it is `DarklandsRP/Workshop`, and it finds the game one folder up; beside `DarklandsRP` works
+too) is the translators' editor. It finds your game folder as the launcher does (or the game folder button at the top
+right), and starts on its pack list: every translation pack it finds in the game program's `packs` folder (the one the
+launcher lists: its `languages`, `fonts` and `audio` folders and packs put straight in it),
 in the game folder's `packs` folder and among the packs you opened, each with its language, name, author, progress and
 when it last changed, the last one you opened first (**Enter** continues with it). Under the project's banner are the
 versions ("Workshop 1.1.0-beta.1 · Restoration 1.0.0", and the game program's version when it differs) and the
@@ -252,7 +254,7 @@ exists. To make the next beta: raise `WorkshopVersion`, write its notes file, me
 
 * **New pack** (**Ctrl+N**) asks for the language from a list of the usual ones (search by its own name, its English
   name or its tag; **Other language…** takes any well-formed BCP 47 tag and its name), a pack name and your name, and
-  makes the pack in the program's `packs\<tag>` folder (**Browse…** for another). When the language has letters the
+  makes the pack in the game program's `packs/languages/<tag>` folder (**Browse…** for another). When the language has letters the
   game's fonts lack, **Build a matching font** is ticked: the pack gets the font in the game's pixel style at once.
   **Open folder…** (**Ctrl+O**) opens a pack from anywhere.
 * The list holds every text a pack can translate, in sections by where the game shows it (cards, screens, names, and
@@ -542,7 +544,7 @@ Unicode and the control codes as tokens.
 
 A **font pack** brings only fonts: its `pack.json` says `"fonts": true` and names no language (or `"en"`), and its fonts are in
 `fonts/` as above. The game's text, the original English included, is then drawn in them, at the window's resolution with
-TrueType fonts. The program ships one, **HD fonts**, in its `packs/hd-fonts` folder: DejaVu Sans Mono for the screens and EB
+TrueType fonts. The program ships one, **HD fonts**, in its `packs/fonts/hd-fonts` folder: DejaVu Sans Mono for the screens and EB
 Garamond for the card window.
 
 * **How to choose one.** The launcher's **Fonts** row (Advanced tab), `--font-pack <folder>`, or `text.fontPack` in the

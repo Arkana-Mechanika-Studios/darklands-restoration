@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Darklands.Platform;
 using Darklands.Presentation;
 using Darklands.Workshop.Text;
 
@@ -183,7 +184,7 @@ internal sealed class WorkshopWindow : Window
     // the start page: the banner, the packs found on this computer, the actions (StartPage)
     private Control BuildStart()
     {
-        var packs = PackCatalog.Find(PackCatalog.PackFolders(AppContext.BaseDirectory, _game), _settings.RecentPacks);
+        var packs = PackCatalog.Find(PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game), _settings.RecentPacks);
         var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault())
         {
             Open = Open,
@@ -637,7 +638,7 @@ internal sealed class WorkshopWindow : Window
             _status.Text = "Choose the game's folder first: the texts come from your own game files.";
             return;
         }
-        var dialog = new NewPackDialog(_game, Path.Combine(AppContext.BaseDirectory, "packs"), _settings.Author);
+        var dialog = new NewPackDialog(_game, PackLayout.KindFolder(WorkshopApp.GameProgramFolder, PackLayout.Languages), _settings.Author);
         if (!await dialog.ShowDialog<bool>(this))
         {
             return;
@@ -788,10 +789,10 @@ internal sealed class WorkshopWindow : Window
             return;
         }
         _editor.Save();
-        var program = Path.Combine(AppContext.BaseDirectory, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
+        var program = WorkshopApp.GameProgram;
         if (!File.Exists(program))
         {
-            _status.Text = $"The game's program is not beside the Workshop ({program}).";
+            _status.Text = $"The game's program is not in the folder above the Workshop's, nor beside it ({program}).";
             return;
         }
         var start = new ProcessStartInfo(program) { UseShellExecute = false };

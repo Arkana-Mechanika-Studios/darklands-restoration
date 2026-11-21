@@ -8,12 +8,22 @@ public sealed class LauncherPackTests : IDisposable
     public void Dispose() => Directory.Delete(_root, recursive: true);
 
     [Fact]
-    public void TheExamplePackShipsBesideTheProgramAndReadsCleanly()
+    public void TheReleasesPacksShipBesideTheProgramInTheirKindsFolders()
     {
-        var example = Path.Combine(AppContext.BaseDirectory, "packs", "audio-pack-example");
-        Assert.Contains(example, LauncherHost.PackFolders(null));
+        var example = Path.Combine(AppContext.BaseDirectory, "packs", "audio", "audio-pack-example");
+        var hd = Path.Combine(AppContext.BaseDirectory, "packs", "fonts", "hd-fonts");
+        var found = LauncherHost.PackFolders(null);
+        Assert.Contains(example, found);
+        Assert.Contains(hd, found);
         Assert.Equal(new Launcher.PackStatus(0, 3, null), LauncherHost.DescribePack(example));
-        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", "PACKS.md")));
+        Assert.True(LauncherHost.DescribePack(hd).Fonts > 0);
+        // the languages folder: empty but for its README
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "packs", "languages", "README.txt")));
+        // the players' guides beside the program (the makers' guides are the Workshop's: Workshop/docs)
+        foreach (var guide in new[] { "PACKS.md", "MODS.md", "SETTINGS.md", "REPORTING.md" })
+        {
+            Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", guide)), guide);
+        }
     }
 
     [Fact]

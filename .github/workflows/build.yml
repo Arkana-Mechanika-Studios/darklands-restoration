@@ -55,7 +55,9 @@ jobs:
       - name: Publish ${{ matrix.rid }}
         run: dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=${{ matrix.rid }}
 
-      # the Workshop (the translators' editor): a download of its own beside the game's package (the game's package is unchanged)
+      # the Workshop (the translators' editor): a download of its own beside the game's package, published into
+      # artifacts/workshop-<rid>/Workshop: its archive's root is the Workshop folder, so unzipped into the game's folder it lands
+      # in DarklandsRP/Workshop (docs/PACKS.md, "The release's folders")
       - name: Publish the Workshop ${{ matrix.rid }}
         run: dotnet publish src/Darklands.Workshop -p:PublishProfile=${{ matrix.rid }}
 
@@ -69,14 +71,14 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           tar -czf DarklandsRP-${{ matrix.rid }}.tar.gz -C artifacts/${{ matrix.rid }} .
-          tar -czf DarklandsWorkshop-${{ matrix.rid }}.tar.gz -C artifacts/workshop-${{ matrix.rid }} .
+          tar -czf DarklandsWorkshop-${{ matrix.rid }}.tar.gz -C artifacts/workshop-${{ matrix.rid }} Workshop
 
       - name: Pack (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath DarklandsRP-${{ matrix.rid }}.zip
-          Compress-Archive -Path artifacts/workshop-${{ matrix.rid }}/* -DestinationPath DarklandsWorkshop-${{ matrix.rid }}.zip
+          Compress-Archive -Path artifacts/workshop-${{ matrix.rid }}/Workshop -DestinationPath DarklandsWorkshop-${{ matrix.rid }}.zip
 
       - uses: actions/upload-artifact@v7
         with:

@@ -218,7 +218,7 @@ internal sealed class StartPage
         // the Workshop's own version (WorkshopVersion), then the Restoration's this build is of (Directory.Build.props)
         var own = Clean(typeof(StartPage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
         var words = "Workshop " + Darklands.Workshop.Text.WorkshopVersion.Current + " · Restoration " + own;
-        var program = Path.Combine(AppContext.BaseDirectory, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
+        var program = WorkshopApp.GameProgram;
         if (File.Exists(program) && Clean(FileVersionInfo.GetVersionInfo(program).ProductVersion) is { Length: > 0 } game && game != own)
         {
             words += " · game " + game;

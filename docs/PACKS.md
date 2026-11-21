@@ -22,10 +22,30 @@ Packs are not part of the original game. With no pack set, the game looks and so
 Problems (a missing folder, an unknown name, a broken file) are written to the console at the start; whatever cannot
 be used keeps the game's own picture or sound.
 
+### The release's folders
+
+```text
+DarklandsRP/
+  DarklandsRP.exe, DarklandsRP Launcher.exe, …   (the program; DarklandsRP and DarklandsRP-Launcher on Linux)
+  LICENSE, THIRD_PARTY_NOTICES.md, OFL.txt
+  docs/            SETTINGS, PACKS (this guide), MODS, REPORTING
+  packs/
+    fonts/         hd-fonts (comes with the release)
+    languages/     translations (empty but for a README)
+    audio/         audio-pack-example (comes with the release)
+  mods/            wayside-shrine (comes with the release)
+  SOUNDFONT/, MT32_ROMS/
+  Workshop/        the Darklands Workshop, if you downloaded it: DarklandsWorkshop.exe, its guides in Workshop/docs
+```
+
+The Workshop (the translators' and modders' editor) is a download of its own whose archive holds the `Workshop` folder:
+unzip it into the `DarklandsRP` folder and it lands there, finding the game one folder up.
+
 ### Choosing a pack in the launcher
 
-Put each pack in a folder of its own inside a `packs` folder: next to the program (the release's example is there),
-in the game folder, or next to the game folder. The launcher's "HD pack" and "Audio pack" rows then go through None and
+Put each pack in a folder of its own inside a `packs` folder, in the subfolder of its kind (`packs/fonts`,
+`packs/languages`, `packs/audio`; a picture pack, or any pack, may also sit straight in `packs`, as in release 1.0): next
+to the program (the release's packs are there), in the game folder, or next to the game folder. The launcher's "HD pack" and "Audio pack" rows then go through None and
 the packs found with ← and →; Enter (or a click) browses for a folder anywhere else, and a pack's folder dropped on the
 launcher window is taken as the pack of each kind it holds. The row shows the pack's name, marked (!) when it cannot be
 read as one; with the row chosen, the help line says how many pictures or sounds it replaces and whether its `audio.json` was read,
@@ -202,12 +222,30 @@ shows (the previous section); files named by `pack.json` are not reported as unk
 
 ### The example pack
 
-[`docs/audio-pack-example`](audio-pack-example) (in a release: `packs/audio-pack-example` next to the program)
+[`docs/audio-pack-example`](audio-pack-example) (in a release: `packs/audio/audio-pack-example` next to the program)
 replaces the map's travel pieces (also heard while creating the party)
 with a soft generated drone and the battle's missed swing with a short generated chirp. It holds no music of the
 game: both files are test tones made with ffmpeg from a formula. Choose it in the launcher's "Audio pack" row (or
-start with `--audio-pack packs/audio-pack-example`, or set `sound.audioPack`) and create a party: the creation
+start with `--audio-pack packs/audio/audio-pack-example`, or set `sound.audioPack`) and create a party: the creation
 screen's music is the drone; in a battle, a missed blow chirps.
+
+## Language packs
+
+A language pack (a translation) changes the game's words, and only its words: the game plays the same.
+
+**To install one**, unzip it into `packs/languages`, so that its `pack.json` is in a folder of its own there
+(`packs/languages/de/pack.json`). In the launcher's Advanced tab, the "Language pack" row then offers it with ← and →
+(Enter browses for one elsewhere); None is the original English. The choice is the settings file's `text.languagePack`
+([SETTINGS.md](SETTINGS.md)); `--language-pack <folder>` names one for a single run. A translation into letters the
+game's fonts lack brings its own fonts.
+
+A **font pack** draws the game's text, English included, in TrueType fonts at the window's resolution: the release's
+`packs/fonts/hd-fonts` ("HD fonts") is one, chosen in the "Font pack" row (`text.fontPack`). It goes with a language
+pack, whose own fonts win.
+
+To **make** a translation, use the Darklands Workshop (above: its `Workshop` folder); its guide, `LOCALISATION.md`, is in
+`Workshop/docs` and in the repository's [`docs/LOCALISATION.md`](LOCALISATION.md). The Workshop makes new packs in
+`packs/languages`.
 
 ### Trying a pack without playing
 

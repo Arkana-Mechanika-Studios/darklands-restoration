@@ -151,7 +151,7 @@ The full licence text, with these copyright lines, is in `src/Darklands.Launcher
 launcher in the build and publish output.
 
 EB Garamond 12 (`EBGaramond12-Regular.ttf`) is also the card window's font of the "HD fonts" font pack the program ships
-(`packs/hd-fonts/fonts/`, unmodified, with `OFL.txt` beside it). DejaVu Sans Mono (above) is its screens' font there, unmodified.
+(`packs/fonts/hd-fonts/fonts/`, unmodified, with `OFL.txt` beside it). DejaVu Sans Mono (above) is its screens' font there, unmodified.
 
 ## The launcher's art
 

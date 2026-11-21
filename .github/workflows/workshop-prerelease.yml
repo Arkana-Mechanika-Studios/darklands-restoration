@@ -59,11 +59,12 @@ jobs:
         run: dotnet publish src/Darklands.Workshop -p:PublishProfile=${{ matrix.rid }}
       - name: Pack (Linux)
         if: runner.os == 'Linux'
-        run: tar -czf DarklandsWorkshop-${{ needs.check.outputs.version }}-${{ matrix.rid }}.tar.gz -C artifacts/workshop-${{ matrix.rid }} .
+        # the archive's root is the Workshop folder: unzipped into the game's folder, it lands in DarklandsRP/Workshop
+        run: tar -czf DarklandsWorkshop-${{ needs.check.outputs.version }}-${{ matrix.rid }}.tar.gz -C artifacts/workshop-${{ matrix.rid }} Workshop
       - name: Pack (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path artifacts/workshop-${{ matrix.rid }}/* -DestinationPath DarklandsWorkshop-${{ needs.check.outputs.version }}-${{ matrix.rid }}.zip
+        run: Compress-Archive -Path artifacts/workshop-${{ matrix.rid }}/Workshop -DestinationPath DarklandsWorkshop-${{ needs.check.outputs.version }}-${{ matrix.rid }}.zip
       - uses: actions/upload-artifact@v7
         with:
           name: DarklandsWorkshop-${{ matrix.rid }}
