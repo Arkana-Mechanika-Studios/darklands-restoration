@@ -116,6 +116,11 @@ public sealed class WorkshopShotsTests
                 window.RunCheckForTests();
                 Choose(window, menu.Key);
                 Shot(window, "4-check");
+                // the whole-file export, the church card chosen (its group: the city church by day)
+                Choose(window, Card);
+                var export = window.ShowExportForTests()!;
+                Shot(export, "6-export");
+                export.Close();
                 window.Close();
 
                 foreach (var language in new[] { "el", "ru" })

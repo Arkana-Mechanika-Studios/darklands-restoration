@@ -147,6 +147,65 @@ public sealed class TextProject
     /// <summary>The folder of the pack's text files.</summary>
     public string TextFolder => Path.Combine(Folder, LanguagePack.TextFolder(Language));
 
+    private string? _style;
+    private bool _styleRead;
+
+    /// <summary>
+    /// The pack's notes for translators and AI (pack.json "style": the style an export's instruction header asks for; null or empty:
+    /// the Workshop's default, TextExport.DefaultStyle). Saved into pack.json with the pack.
+    /// </summary>
+    public string? Style
+    {
+        get
+        {
+            if (!_styleRead)
+            {
+                _styleRead = true;
+                try
+                {
+                    var manifest = System.Text.Json.Nodes.JsonNode.Parse(System.IO.File.ReadAllText(Path.Combine(Folder, LanguagePack.ManifestName)));
+                    _style = manifest?["style"]?.GetValue<string>();
+                }
+                catch (Exception e) when (e is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or FormatException)
+                {
+                    _style = null;
+                }
+            }
+            return _style;
+        }
+        set
+        {
+            _styleRead = true;
+            _style = string.IsNullOrWhiteSpace(value) ? null : value;
+            _styleChanged = true;
+            Dirty = true;
+        }
+    }
+
+    private bool _styleChanged;
+
+    // the style into pack.json, its other fields as they are
+    private void SaveStyle()
+    {
+        if (!_styleChanged)
+        {
+            return;
+        }
+        var path = Path.Combine(Folder, LanguagePack.ManifestName);
+        var manifest = (File.Exists(path) ? System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path)) as System.Text.Json.Nodes.JsonObject : null)
+            ?? new System.Text.Json.Nodes.JsonObject();
+        if (_style is null)
+        {
+            manifest.Remove("style");
+        }
+        else
+        {
+            manifest["style"] = _style;
+        }
+        File.WriteAllText(path, manifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
+        _styleChanged = false;
+    }
+
     /// <summary>Makes a new pack in <paramref name="folder"/> (its <c>pack.json</c>) and opens it.</summary>
     public static TextProject Create(string folder, string language, string name, string? author, string gameFolder)
     {
@@ -307,6 +366,7 @@ public sealed class TextProject
         {
             SlotLayouts.Save(Folder, _layouts);
         }
+        SaveStyle();
         Dirty = false;
     }
 

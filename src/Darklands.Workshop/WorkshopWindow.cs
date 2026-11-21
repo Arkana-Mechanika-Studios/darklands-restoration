@@ -240,9 +240,67 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Pack variables…", "braces", () => _ = Variables(), pack));
         menu.Items.Add(Item("Font pack…", "type", () => _ = BuildFontPack(ask: false), pack));
+        menu.Items.Add(Item("Notes for translators and AI…", "book", () => _ = Notes(), pack));
+        menu.Items.Add(Item("Export texts…", "arrow-right", () => _ = Export(), pack, "Ctrl+E"));
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
         return menu;
+    }
+
+    // the pack's notes for translators and AI (pack.json "style")
+    private async Task Notes()
+    {
+        if (_editor is not null && await new NotesDialog(_editor.Project).ShowDialog<bool>(this))
+        {
+            _editor.Save();
+            UpdateState();
+        }
+    }
+
+    // the whole-file export: the dialog, then where to write the file
+    private async Task Export()
+    {
+        if (_editor is null || _project is null)
+        {
+            return;
+        }
+        if (await new ExportDialog(_editor.Project, _editor.Current).ShowDialog<ExportChoice?>(this) is not { } choice)
+        {
+            return;
+        }
+        var name = $"{_editor.Project.Language}-texts.{choice.Format}";
+        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Export texts",
+            SuggestedFileName = name,
+            DefaultExtension = choice.Format,
+        });
+        if (file?.TryGetLocalPath() is not { } path)
+        {
+            return;
+        }
+        var count = WriteExport(_editor.Project, _editor.Glossary, choice, path);
+        _status.Text = $"Exported {count:N0} texts to {path}.";
+    }
+
+    /// <summary>Writes the export <paramref name="choice"/> of <paramref name="project"/> to <paramref name="path"/>; the number of entries written.</summary>
+    internal static int WriteExport(TextProject project, Glossary glossary, ExportChoice choice, string path)
+    {
+        var items = TextExport.Items(project, choice.Entries, glossary, choice.Rows);
+        File.WriteAllText(path, choice.Format == "csv" ? TextExport.Csv(project, items) : TextExport.Json(project, items), new System.Text.UTF8Encoding(false));
+        return items.Count;
+    }
+
+    /// <summary>Opens the export dialog without waiting (the window's pictures in the tests).</summary>
+    internal ExportDialog? ShowExportForTests()
+    {
+        if (_editor is null)
+        {
+            return null;
+        }
+        var dialog = new ExportDialog(_editor.Project, _editor.Current);
+        dialog.Show(this);
+        return dialog;
     }
 
     private async Task Variables()
@@ -272,6 +330,11 @@ internal sealed class WorkshopWindow : Window
         var ctrl = e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control);
         if (_project is not null && _editor is not null && _editor.Key(e))
         {
+            e.Handled = true;
+        }
+        else if (ctrl && e.Key == Avalonia.Input.Key.E && _editor is not null)
+        {
+            _ = Export();
             e.Handled = true;
         }
         else if (ctrl && e.Key == Avalonia.Input.Key.S && _editor is not null)
