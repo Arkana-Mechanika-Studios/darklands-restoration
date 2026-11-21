@@ -344,6 +344,25 @@ placeholders, stay within the room, use the glossary. It then gives the pack's *
 pack.json `"style"`). With no notes it gives the Workshop's default: medieval Germany, the party addressed as "you". So a file
 pasted into an AI chat gives a usable answer.
 
+**Importing texts** (… › Import texts…, Ctrl+I) reads such a file back, translated: JSON, CSV, or an AI chat's answer with a
+fenced JSON block among its words.
+
+* **Card texts** are rebuilt from their rows (the markers, the "…" and the indents put back).
+* **Review marks.** Every text it sets is marked **needs review**.
+* **Reviewed texts are never overwritten.** A text you already reviewed (translated, not marked) keeps your words.
+* **The summary.** The game's check runs on everything, then the summary lists:
+  * how many texts came in;
+  * how many are too long (past their box, or a card text shown in pages);
+  * how many are broken (a lost `$Name`, a changed hot key);
+  * how many were not imported (an unknown key, or a reviewed text kept).
+
+  Each line opens its text. A kept text has **Use**, which takes the file's words. **Undo import** puts every text and its
+  mark back.
+
+**Copy for AI** (… menu) puts a request on the clipboard: the instruction header and the chosen text's card or screen, as JSON.
+Paste it into an AI chat, copy its answer, and choose **Paste result**: it goes through the same import and summary. The
+Workshop calls no AI service itself.
+
 A pack written by the Workshop is a plain pack: the game reads it as it is, and you can still edit its files by hand.
 
 ## The translator's template and the pack check

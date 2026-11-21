@@ -121,6 +121,27 @@ public sealed class WorkshopShotsTests
                 var export = window.ShowExportForTests()!;
                 Shot(export, "6-export");
                 export.Close();
+                // Copy for AI, an AI's answer (one option without its $Money1, one far too long), Paste result: the import's summary
+                window.Editor!.Marks.Set(Card, true);
+                var request = window.AiRequest()!;
+                if (shots is { Length: > 0 })
+                {
+                    File.WriteAllText(Path.Combine(shots, "copy-for-ai.txt"), request);
+                }
+                var body = request[(request.IndexOf("```json", StringComparison.Ordinal) + 7)..request.LastIndexOf("```", StringComparison.Ordinal)];
+                var answer = System.Text.Json.Nodes.JsonNode.Parse(body)!;
+                foreach (var text in answer["texts"]!.AsArray())
+                {
+                    var key = text!["key"]!.GetValue<string>();
+                    text["translation"] = key.EndsWith("/option4", StringComparison.Ordinal) ? "donner vertueusement de votre bourse."
+                        : key.EndsWith("/option5", StringComparison.Ordinal) ? string.Concat(Enumerable.Repeat("demander asile et protection au prêtre de la paroisse, ", 9))
+                        : key.EndsWith("/option1", StringComparison.Ordinal) ? "assister à la messe avec $Moneyy."
+                        : key.EndsWith("/option2", StringComparison.Ordinal) ? "aller à confesse."
+                        : "";
+                }
+                var summary = window.ImportText("Voici :\n```json\n" + answer.ToJsonString() + "\n```", null, "the clipboard")!;
+                Shot(summary, "7-import");
+                summary.Close();
                 window.Close();
 
                 foreach (var language in new[] { "el", "ru" })
