@@ -90,6 +90,33 @@ public sealed class TextProject
     public void SetLayout(TextEntry entry, SlotLayout? layout)
     {
         ArgumentNullException.ThrowIfNull(entry);
+        // an embossed heading is two texts a pixel apart (its shadow and its face, two keys): the twin takes the same layout, a pixel apart
+        if (TwinOf(entry) is { } twin && Boxes.FirstOrDefault(b => b.Key == entry.Key) is { X: { } x, Y: { } y } box
+            && Boxes.FirstOrDefault(b => b.Key == twin.Key) is { X: { } tx, Y: { } ty })
+        {
+            SetOne(twin, layout is null ? null : layout with { X = layout.X + (tx - x), Y = layout.Y + (ty - y) });
+        }
+        SetOne(entry, layout);
+    }
+
+    /// <summary>
+    /// The other half of an embossed heading (its shadow, or its face): a text of the same screen, as wide, drawn a pixel to the side
+    /// and a pixel up or down (null: none).
+    /// </summary>
+    public TextEntry? TwinOf(TextEntry entry)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        if (Boxes.FirstOrDefault(b => b.Key == entry.Key) is not { X: { } x, Y: { } y } box)
+        {
+            return null;
+        }
+        var twin = Boxes.FirstOrDefault(o => o.Key != box.Key && o.English == box.English && o.X is { } ox && o.Y is { } oy
+            && Math.Abs(ox - x) == 1 && Math.Abs(oy - y) == 1 && o.Screens.Intersect(box.Screens, StringComparer.Ordinal).Any());
+        return twin is null ? null : Entries.FirstOrDefault(e => e.Key == twin.Key);
+    }
+
+    private void SetOne(TextEntry entry, SlotLayout? layout)
+    {
         foreach (var screen in entry.Screens)
         {
             if (!Layouts.TryGetValue(screen, out var slots))

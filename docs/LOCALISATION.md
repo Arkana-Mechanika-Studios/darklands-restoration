@@ -282,8 +282,11 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   pixels, 1 to 3 lines. It reports a layout that breaks them, runs off the screen, or covers another text of the same
   screen. An interface mod will have looser limits on the same file.
 
+  **Embossed headings.** An embossed heading is two texts, a pixel apart: its shadow and its face (for example the party
+  information screen's title). Translate both. A layout given to one is given to the other, a pixel apart.
+
   Texts with no layout, and the game without a pack, are drawn exactly as the original draws them. Screens are added one by
-  one: today the item store, barter and loot screens.
+  one: today the item store, barter, loot, alchemy, character sheet, party information and prayer screens.
 * **Hot keys.** A menu's coloured key letter (`<c12> M</c>ore batches`) shows as the game draws it, the letter coloured
   and underlined, in the list, the English and your translation; its tags are kept in the text (the cursor steps over
   them, and deleting the letter shows them again). A screen text with one has a **Text** | **Raw** switch: **Raw**
