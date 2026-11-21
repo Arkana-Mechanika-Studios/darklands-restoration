@@ -17,6 +17,8 @@ public static class ScreenNames
     };
 
     /// <summary>The screen of the current drawing (null: none found).</summary>
+    private static readonly HashSet<string> Overlays = new(StringComparer.Ordinal) { "MenuBar", "MessageBox", "SaveGameDialog", "TextInputBox" };
+
     public static string? Current()
     {
         // a screen on the stack wins over the helper it draws through (a shop page's line belongs to the barter, store or loot screen)
@@ -33,6 +35,11 @@ public static class ScreenNames
                 continue;
             }
             var name = type.Name;
+            // an overlay over a screen (the menu bar, a message box, the save dialog, a text input): its own texts, laid out on their own
+            if (Overlays.Contains(name))
+            {
+                return name;
+            }
             if (name.EndsWith("Screen", StringComparison.Ordinal) || name.EndsWith("Screens", StringComparison.Ordinal))
             {
                 return name;

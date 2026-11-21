@@ -29,6 +29,8 @@ public sealed class SaveGameDialog(GameUi ui, SaveFolder folder)
     //   in the card window's font 1 (root 0000:001E, GameUi.CardWindowFont), from the Game menu in font 3 (local/batch/batpal)
     public string? Run(GameState state, TacticalBattle? battle = null)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("SaveGameDialog");
         var comment = new TextInputBox(ui).Ask(ui.Words(ScreenTexts.SaveGameComment), CommentLength, OriginalSaves.DefaultComment);
         if (comment.Length == 0)
         {

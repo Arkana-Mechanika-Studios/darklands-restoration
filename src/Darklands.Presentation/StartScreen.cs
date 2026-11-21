@@ -31,11 +31,13 @@ public sealed class StartScreen(GameUi ui)
     // C: a click is judged by y only; x does not matter. If a key is waiting it replaces the click's code in the same pass.
     public StartChoice Run()
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("StartScreen");
         Draw();
         while (true)
         {
             var action = ui.WaitForAction();
-            var choice = action.IsLeftClick ? ChoiceAt(action.Y) : ChoiceFor(action.Key);
+            var choice = action.IsLeftClick ? ChoiceAt(ui.Laid.Map(action.X, action.Y).Y) : ChoiceFor(action.Key);
             if (choice is { } chosen)
             {
                 if (chosen == StartChoice.Quit)
