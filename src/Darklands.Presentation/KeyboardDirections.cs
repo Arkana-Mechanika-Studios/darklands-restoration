@@ -20,6 +20,26 @@ public sealed class KeyboardDirections
     private int _lastBits;
     private long _lastMake = long.MinValue / 2;
 
+    // Not in the original: the comfort interface's double tap (OverlandScreen's walking on), read from the same make codes; the
+    //   interrupt's own bytes above are untouched by it
+    private int _tapBits;
+    private long _tapAt = long.MinValue / 2;
+    private int _doubleTap;
+
+    /// <summary>The most time between the two make codes of a double tap (the key let go in between).</summary>
+    public const int DoubleTapMilliseconds = 350;
+
+    /// <summary>
+    /// The bits of a direction key pressed twice within <see cref="DoubleTapMilliseconds"/>, let go in between (a key held down makes
+    /// no second make here: its repeats are ignored), then 0 until the next double tap. The comfort interface's (GameUi.ComfortInterface).
+    /// </summary>
+    public int TakeDoubleTap()
+    {
+        var tap = _doubleTap;
+        _doubleTap = 0;
+        return tap;
+    }
+
     /// <summary>DS:0880: the held key's horizontal direction (negative left, positive right, 0 none).</summary>
     public int X { get; private set; }
 
@@ -78,6 +98,15 @@ public sealed class KeyboardDirections
                 return;
             }
             _held = bits;
+            if (bits == _tapBits && milliseconds - _tapAt <= DoubleTapMilliseconds)
+            {
+                _doubleTap = bits;
+                _tapAt = long.MinValue / 2;
+            }
+            else
+            {
+                (_tapBits, _tapAt) = (bits, milliseconds);
+            }
             var ticks = (long)(milliseconds / BiosTickMilliseconds);
             var size = bits == _lastBits && ticks - _lastMake < 5 ? 0x7F : 0x5A;
             _lastBits = bits;

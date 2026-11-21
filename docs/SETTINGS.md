@@ -273,6 +273,14 @@ games are the same, and the original game loads them):
   buttons, the highlighted game's details (its comment in full, its place and date, when it was saved, "The newest saved game").
   The keys, the nine rows, the scrolling, the mouse and the buttons are the original's. A translation's words are fitted: a
   comment too long for its line is cut where the place begins (the details show it whole).
+* **Walking on** (the overland map): tap a direction key twice (two presses within 0.35 s, the key let go in between), or press
+  it once with Shift, and the party walks on that way without the key held. It walks by the map's own command, the key a player
+  would press, one a pass ([COMMANDS.md](COMMANDS.md)), so the rules, the time and the encounters are those of a held key. It
+  stops at any other key or a click (which then does what it always does), at a step that does not walk on (blocked ground, a
+  city or place reached, an encounter, a card or event), at a message on the map, at nightfall, and at the map's edge. In the
+  original the map's keys are only the plain direction keys (with or without Shift the BIOS gives the same codes, and its
+  keyboard handler ignores Shift), so Shift with a direction did nothing of its own there. A recording of it (the keys, their
+  presses and releases, the clock) plays back the same walk.
 
 `interface` is a section so that a later settings screen can give a feature its own key beside `mode`; there is none yet.
 
