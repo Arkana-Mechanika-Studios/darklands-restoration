@@ -40,6 +40,11 @@ public static class TextImport
         {
             return Csv(text);
         }
+        // XLIFF 2.0 (a CAT tool's or DeepL's), by its extension or its root
+        if (extension is ".xlf" or ".xliff" || text.TrimStart().StartsWith("<?xml", StringComparison.Ordinal) || text.TrimStart().StartsWith("<xliff", StringComparison.Ordinal))
+        {
+            return TextXliff.Read(text);
+        }
         // an AI's answer: the JSON may sit in a fenced block among other words
         var start = text.IndexOf("```json", StringComparison.OrdinalIgnoreCase);
         if (start >= 0)

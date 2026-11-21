@@ -27,7 +27,7 @@ internal sealed class ExportDialog : Window
     private readonly RadioButton _group = new() { GroupName = "which" };
     private readonly RadioButton _json = new() { GroupName = "format", IsChecked = true };
     private readonly RadioButton _csv = new() { GroupName = "format" };
-    private readonly RadioButton _xliff = new() { GroupName = "format", IsEnabled = false };
+    private readonly RadioButton _xliff = new() { GroupName = "format" };
     private readonly RadioButton _rows = new() { GroupName = "cards", IsChecked = true };
     private readonly RadioButton _raw = new() { GroupName = "cards" };
     private readonly TextBlock _count = new() { FontSize = 12.5, VerticalAlignment = VerticalAlignment.Center };
@@ -51,7 +51,7 @@ internal sealed class ExportDialog : Window
         _group.IsEnabled = groupTitle is not null;
         Set(_json, "JSON    for AI chats and scripts (one object a text)");
         Set(_csv, "CSV     for spreadsheets (UTF-8, one row a text)");
-        Set(_xliff, "XLIFF 2.0    for CAT tools and DeepL (the next set)");
+        Set(_xliff, "XLIFF 2.0    for CAT tools and DeepL (one unit a text, $Names and tags as inline codes)");
         Set(_rows, "rows (introduction, each passage and option)");
         Set(_raw, "raw (as the pack's file holds it, with tags)");
         foreach (var r in new[] { _untranslated, _everything, _review, _problems, _group, _rows, _raw })
@@ -60,7 +60,7 @@ internal sealed class ExportDialog : Window
         }
         var export = WorkshopTheme.Primary(new TextBlock { Text = "Export…" });
         export.IsDefault = true;
-        export.Click += (_, _) => Close(new ExportChoice(Chosen(), _csv.IsChecked == true ? "csv" : "json", _rows.IsChecked == true));
+        export.Click += (_, _) => Close(new ExportChoice(Chosen(), _csv.IsChecked == true ? "csv" : _xliff.IsChecked == true ? "xlf" : "json", _rows.IsChecked == true));
         var cancel = WorkshopTheme.Outline(new TextBlock { Text = "Cancel" });
         cancel.IsCancel = true;
         cancel.Click += (_, _) => Close(null);

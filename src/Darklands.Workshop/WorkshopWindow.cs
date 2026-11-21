@@ -338,7 +338,7 @@ internal sealed class WorkshopWindow : Window
         {
             Title = "Import texts",
             AllowMultiple = false,
-            FileTypeFilter = [new FilePickerFileType("Exported texts (JSON, CSV)") { Patterns = ["*.json", "*.csv", "*.txt"] }],
+            FileTypeFilter = [new FilePickerFileType("Exported texts (JSON, CSV, XLIFF)") { Patterns = ["*.json", "*.csv", "*.xlf", "*.xliff", "*.txt"] }],
         });
         if (files.Count == 0 || files[0].TryGetLocalPath() is not { } path)
         {
@@ -399,7 +399,13 @@ internal sealed class WorkshopWindow : Window
     internal static int WriteExport(TextProject project, Glossary glossary, ExportChoice choice, string path)
     {
         var items = TextExport.Items(project, choice.Entries, glossary, choice.Rows);
-        File.WriteAllText(path, choice.Format == "csv" ? TextExport.Csv(project, items) : TextExport.Json(project, items), new System.Text.UTF8Encoding(false));
+        var text = choice.Format switch
+        {
+            "csv" => TextExport.Csv(project, items),
+            "xlf" => TextXliff.Write(project, items),
+            _ => TextExport.Json(project, items),
+        };
+        File.WriteAllText(path, text, new System.Text.UTF8Encoding(false));
         return items.Count;
     }
 

@@ -332,8 +332,9 @@ chat. The Workshop sends nothing anywhere.
 
 * **Which texts:** all untranslated, everything, those marked for review, those with problems, or the chosen text's group (a
   card, a screen).
-* **Format:** JSON (for AI chats and scripts) or CSV (for spreadsheets, UTF-8). XLIFF 2.0 (for CAT tools and DeepL) is
-  planned.
+* **Format:** JSON (for AI chats and scripts), CSV (for spreadsheets, UTF-8) or XLIFF 2.0 (for CAT tools and DeepL). In
+  XLIFF, one unit a text: its context is in the unit's notes, and its `$Names`, `{…}` placeables and tags are inline codes
+  the tools keep apart from the words. Import reads all three.
 * **Card texts:** in their rows (`msg:$CITYC00#0/intro`, `…/option3`), without the tags the Rows view adds for you; or raw.
 
 Each text comes with its context: where the game shows it, the English, the room it has, what it must keep (`$Names`, the
