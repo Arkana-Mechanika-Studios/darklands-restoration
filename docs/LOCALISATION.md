@@ -289,7 +289,8 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
 
   Texts with no layout, and the game without a pack, are drawn exactly as the original draws them. Screens are added one by
   one: today the item store, barter, loot, alchemy, character sheet, party information, prayer, party roster, marching
-  order and character creation screens, the menu bar, message boxes, the start, load and save screens.
+  order and character creation screens, the menu bar, message boxes, the start, load and save screens, the camp, the
+  overland map and the battle screen.
 * **Hot keys.** A menu's coloured key letter (`<c12> M</c>ore batches`) shows as the game draws it, the letter coloured
   and underlined, in the list, the English and your translation; its tags are kept in the text (the cursor steps over
   them, and deleting the letter shows them again). A screen text with one has a **Text** | **Raw** switch: **Raw**
