@@ -48,6 +48,8 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     /// <summary>The alchemy screen for <paramref name="member"/>; <paramref name="place"/> (the camp mode) goes into the brew.</summary>
     public void Use(GameState state, int member, int place)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var screen = ui.OnScreen("AlchemyScreen");
         _state = state;
         _currentBatch = 0;
         _listRow = 0;
@@ -127,6 +129,8 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     /// <summary>The formula page of the character sheet's list: names, mystic number, description and ingredients. Esc or a click leaves.</summary>
     public void ShowFormula(GameState state, int member, int formula)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var screen = ui.OnScreen("AlchemyScreen");
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none on the formula page (it opens over the sheet's list)
         using var wheel = ui.UseSelectionList(null);
         var f = formulas[formula];
@@ -159,7 +163,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             // replaces that Esc (a key other than Esc keeps the page open); tests: ScreenInputTests
             // orig: R033+0x174B: after the bar `if (DS:9C46) { DS:9C46 = 0; picture DS:335C reloaded and shown, the panel, the drawing again; key = 0 }`
             var key = 0;
-            if (ui.Mouse.Left)
+            if (ui.LaidMouse.Left)
             {
                 key = Keys.Escape;
                 ui.WaitForButtonRelease();
@@ -223,7 +227,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     }
 
     private void HighlightRow(bool on) =>
-        ui.Canvas.Recolor(ListX + 1, _listRow * RowHeight + ListTop, 0x5A, RowHeight, on ? ListColor : ListHighlight, on ? ListHighlight : ListColor);
+        ui.Recolor(ListX + 1, _listRow * RowHeight + ListTop, 0x5A, RowHeight, on ? ListColor : ListHighlight, on ? ListHighlight : ListColor);
 
     // orig: R033+0x1018 (1462:1018) draft (bytes match)
     /// <summary>The chosen formula's full name and description in the book.</summary>
@@ -381,7 +385,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
     private int MouseStep()
     {
         var key = 0;
-        var mouse = ui.Mouse;
+        var mouse = ui.LaidMouse;
         var bottom = _formulaPage ? 0x46 : 0x36;
         var right = _formulaPage ? 0xB4 : 0xAA;
         var overMenu = mouse.X > 0x46 && mouse.X < right && mouse.Y > MenuTop && mouse.Y < bottom;
@@ -390,15 +394,15 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             var k = (mouse.Y - MenuTop) / 8;
             if (k != _hoverRow)
             {
-                ui.Canvas.Recolor(0x46, _hoverRow * 8 + MenuTop, 0x6E, 8, MenuHover, MenuColor);
+                ui.Recolor(0x46, _hoverRow * 8 + MenuTop, 0x6E, 8, MenuHover, MenuColor);
                 _hoverRow = k;
-                ui.Canvas.Recolor(0x46, k * 8 + MenuTop, 0x6E, 8, MenuColor, MenuHover);
+                ui.Recolor(0x46, k * 8 + MenuTop, 0x6E, 8, MenuColor, MenuHover);
             }
         }
         else if (mouse.Left && overMenu)
         {
             ui.WaitForButtonRelease();
-            var line = (ui.Mouse.Y - MenuTop) / 8;
+            var line = (ui.LaidMouse.Y - MenuTop) / 8;
             key = _formulaPage
                 ? line switch
                 {
@@ -417,28 +421,28 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         }
         else if (!_formulaPage && !mouse.Left && _hoverRow != -1)
         {
-            ui.Canvas.Recolor(0x46, _hoverRow * 8 + MenuTop, 0xB4, 8, MenuHover, MenuColor);
+            ui.Recolor(0x46, _hoverRow * 8 + MenuTop, 0xB4, 8, MenuHover, MenuColor);
             _hoverRow = -1;
         }
         if (_formulaPage)
         {
             return key;
         }
-        mouse = ui.Mouse;
+        mouse = ui.LaidMouse;
         if (mouse.Left && mouse.X > ListX && mouse.X < 0x11A && mouse.Y > ListTop && mouse.Y < 0xB5)
         {
             var y = mouse.Y;
             ui.WaitForButtonRelease();
             PickRow(y);
         }
-        mouse = ui.Mouse;
+        mouse = ui.LaidMouse;
         if (mouse.Left && mouse.Y > 0x1D && mouse.Y < 0x26 && mouse.X > ListX && mouse.X < 0x11A)
         {
             ui.TakeLeftReleases();
             ui.WaitForButtonRelease();
             key = Keys.Up;
         }
-        mouse = ui.Mouse;
+        mouse = ui.LaidMouse;
         if (mouse.Left && mouse.Y > 0xB5 && mouse.Y < 0xBE && mouse.X > ListX && mouse.X < 0x11A)
         {
             ui.TakeLeftReleases();

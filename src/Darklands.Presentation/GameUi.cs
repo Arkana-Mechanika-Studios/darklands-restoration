@@ -147,7 +147,7 @@ public sealed class GameUi
         var arguments = FluentArguments(text);
         // a translation's colour tags (<c12>M</c>ore: the menus' hot keys) as the program's colour characters
         var words = translated ? Darklands.Core.TextCodes.FromTags(Language!.Localizer.Get(text.Id, arguments)) : Assets.MessageText.Text(text);
-        Laid(words, text.Id);
+        RememberLaid(words, text.Id);
         // the developer's text plane remembers the key of the words (ScreenTextPlane, off unless the inspector is on)
         return ScreenTextPlane.Recording
             ? ScreenTextPlane.Keyed(words, text.Id, text.Args.Count == 0 ? null : string.Join(", ", text.Args.Values), Values(arguments))
@@ -164,6 +164,10 @@ public sealed class GameUi
         var words = key is not null && Language is { } pack && pack.Localizer.IsTranslated(key)
             ? Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(key))
             : Assets.Words.Text(table, k);
+        if (key is not null)
+        {
+            RememberLaid(words, key);
+        }
         return key is not null && ScreenTextPlane.Recording ? ScreenTextPlane.Keyed(words, key) : words;
     }
 
@@ -182,6 +186,7 @@ public sealed class GameUi
             return original;
         }
         var words = Language is { } pack && pack.Localizer.IsTranslated(key) ? Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(key)) : original;
+        RememberLaid(words, key);
         return ScreenTextPlane.Recording ? ScreenTextPlane.Keyed(words, key) : words;
     }
 
@@ -268,10 +273,99 @@ public sealed class GameUi
         return true;
     }
 
+    // the screens open, innermost last (OnScreen): their names and their laid-out texts
+    private readonly List<(string Name, LaidOutAreas Laid)> _screens = [];
+    private static readonly LaidOutAreas NothingLaid = new();
+    private TextLayouts? _layoutsField;
+    private TextLayouts _layouts => _layoutsField ??= new TextLayouts(this);
+
+    /// <summary>
+    /// A screen opens (<paramref name="name"/>, as the boxes name it: AlchemyScreen ...) until the result is disposed: a translation pack's
+    /// layouts of that screen apply to the texts drawn meanwhile, and its hit tests and highlights follow them (<see cref="Pointer"/>,
+    /// <see cref="Recolor"/>).
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (screen layouts per language).
+    public IDisposable OnScreen(string name)
+    {
+        var laid = new LaidOutAreas();
+        _screens.Add((name, laid));
+        return new ScreenScope(this, laid);
+    }
+
+    private sealed class ScreenScope(GameUi ui, LaidOutAreas laid) : IDisposable
+    {
+        public void Dispose() => ui._screens.RemoveAll(s => ReferenceEquals(s.Laid, laid));
+    }
+
+    /// <summary>The innermost screen open (null: none said).</summary>
+    public string? ScreenOpen => _screens.Count == 0 ? null : _screens[^1].Name;
+
+    /// <summary>The laid-out texts of the innermost screen open (none: every point and highlight the original's).</summary>
+    public LaidOutAreas Laid => _screens.Count == 0 ? NothingLaid : _screens[^1].Laid;
+
+    /// <summary>The pointer as the screen's hit tests take it: a laid-out text answers where it is drawn (<see cref="LaidOutAreas.Map"/>).</summary>
+    public (int X, int Y) Pointer => Laid.Map(Mouse.X, Mouse.Y);
+
+    /// <summary>The mouse as the screen's hit tests take it: its place through <see cref="Pointer"/>, its buttons as they are.</summary>
+    public MouseState LaidMouse
+    {
+        get
+        {
+            var mouse = Mouse;
+            var (x, y) = Laid.Map(mouse.X, mouse.Y);
+            return mouse with { X = x, Y = y };
+        }
+    }
+
+    /// <summary>A highlight: <paramref name="from"/> becomes <paramref name="to"/> in the box, and in the drawn box of a laid-out text whose place it is.</summary>
+    public void Recolor(int x, int y, int width, int height, byte from, byte to)
+    {
+        Canvas.Recolor(x, y, width, height, from, to);
+        foreach (var drawn in Laid.DrawnIn(new LaidOutAreas.Box(x, y, width, height)))
+        {
+            Canvas.Recolor(drawn.X, drawn.Y, drawn.Width, drawn.Height, from, to);
+        }
+    }
+
+    // the painters' layouts: a text of the innermost screen open that the pack lays out is drawn so, and its place kept for the hit tests
+    private sealed class TextLayouts(GameUi ui) : ITextLayouts
+    {
+        public bool TryDraw(TextPainter painter, Canvas canvas, int x, int y, string text, byte color, int right, out int end)
+        {
+            end = x;
+            if (ui._screens.Count == 0 || ui.ScreenOpen is not { } screen || ui.LayoutOf(text, screen) is not { } layout)
+            {
+                if (ui._screens.Count > 0)
+                {
+                    ui.Laid.Plain(x, y);
+                }
+                return false;
+            }
+            if (ScreenTextPlane.Recording)
+            {
+                ScreenTextPlane.Drawn(text, painter.Measure(text), Math.Max(0, Platform.Screen.Width - x), false, painter.Font.Index + 1, (x, y));
+            }
+            var original = new LaidOutAreas.Box(x, y, Math.Max(1, painter.Measure(text)), painter.LineHeight - 1);
+            var laidPainter = layout.Font is >= 1 and <= 3 ? ui.Painter(layout.Font) : painter;
+            x = layout.X ?? x;
+            y = layout.Y ?? y;
+            var edge = layout.Width is { } width ? x + width : Math.Min(right == int.MaxValue ? Platform.Screen.Width : right + 1, Platform.Screen.Width);
+            var lines = laidPainter.Wrap(text, edge - x, Math.Max(1, layout.Lines));
+            var top = y;
+            foreach (var line in lines)
+            {
+                end = laidPainter.DrawCodes(canvas, x, y, Darklands.Core.TextCodes.OfText(line), color, right: edge - 1);
+                y += laidPainter.LineHeight;
+            }
+            ui.Laid.Laid(original, new LaidOutAreas.Box(x, top, Math.Max(1, Math.Min(edge - x, lines.Max(laidPainter.Measure))), y - top));
+            return true;
+        }
+    }
+
     // the keys of the pack's laid-out texts as drawn, by their words (a pack with no layouts keeps none)
     private readonly Dictionary<string, string> _laid = new(StringComparer.Ordinal);
 
-    private void Laid(string words, string key)
+    private void RememberLaid(string words, string key)
     {
         if (Language is { Layouts.Count: > 0 } pack && words.Length > 0 && pack.Layouts.Values.Any(slots => slots.ContainsKey(key)))
         {
@@ -296,7 +390,7 @@ public sealed class GameUi
     public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();
 
     /// <summary>A painter of font slot <paramref name="slot"/>: the game's font, with the pack's for that slot when it has one.</summary>
-    public TextPainter Painter(int slot) => new(Assets.Font(slot)) { PackFont = PackFonts.GetValueOrDefault(slot) };
+    public TextPainter Painter(int slot) => new(Assets.Font(slot)) { PackFont = PackFonts.GetValueOrDefault(slot), Layouts = _layouts };
 
     /// <summary>Where a translation the screens cannot use while playing is told (the pack's report; null: nowhere).</summary>
     public Action<string>? LanguageReport { get; set; }
