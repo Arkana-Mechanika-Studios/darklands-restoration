@@ -788,8 +788,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "CardScreen",
-        "OverlandScreen"
+        "MessageBox"
       ],
       "x": 160,
       "y": 50
@@ -802,8 +801,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "CardScreen",
-        "OverlandScreen"
+        "MessageBox"
       ],
       "x": 142,
       "y": 97
@@ -816,7 +814,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 118
@@ -829,7 +827,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 118
@@ -842,7 +840,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 54
@@ -855,7 +853,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 126
@@ -868,7 +866,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 134
@@ -881,7 +879,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 62
@@ -894,7 +892,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 70
@@ -907,17 +905,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterGeneratorScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 67,
       "y": 3
@@ -930,17 +918,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterGeneratorScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 99,
       "y": 3
@@ -953,17 +931,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterGeneratorScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 139,
       "y": 3
@@ -976,17 +944,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterGeneratorScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 177,
       "y": 3
@@ -999,16 +957,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 14
@@ -1021,16 +970,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 14
@@ -1043,16 +983,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 22
@@ -1065,16 +996,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 22
@@ -1087,16 +1009,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 30
@@ -1109,16 +1022,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 30
@@ -1131,16 +1035,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 38
@@ -1153,16 +1048,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 38
@@ -1175,16 +1061,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 46
@@ -1197,16 +1074,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 46
@@ -1219,16 +1087,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 54
@@ -1241,16 +1100,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 54
@@ -1263,16 +1113,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 62
@@ -1285,16 +1126,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 62
@@ -1307,16 +1139,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 66,
       "y": 70
@@ -1329,16 +1152,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "ItemStoreScreen",
-        "OverlandScreen",
-        "PartyRosterScreen",
-        "SaintPrayerScreen"
+        "MenuBar"
       ],
       "x": 154,
       "y": 70
@@ -1351,14 +1165,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "OverlandScreen",
-        "PartyRosterScreen"
+        "MenuBar"
       ],
       "x": 179,
       "y": 30
@@ -1371,12 +1178,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "OverlandScreen"
+        "MenuBar"
       ],
       "x": 179,
       "y": 38
@@ -1389,12 +1191,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BarterScreen",
-        "BattleScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "OverlandScreen",
-        "PartyRosterScreen"
+        "MenuBar"
       ],
       "x": 179,
       "y": 46
@@ -1407,7 +1204,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 14
@@ -1420,7 +1217,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 14
@@ -1433,7 +1230,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 22
@@ -1446,7 +1243,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 30
@@ -1459,7 +1256,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 30
@@ -1472,7 +1269,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 38
@@ -1485,7 +1282,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 46
@@ -1498,7 +1295,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 54
@@ -1511,7 +1308,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 62
@@ -1524,7 +1321,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 70
@@ -1537,7 +1334,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 78
@@ -1550,7 +1347,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 94
@@ -1563,7 +1360,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 102
@@ -1576,7 +1373,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 110
@@ -1589,7 +1386,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 126
@@ -1602,7 +1399,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 134
@@ -1615,7 +1412,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 142
@@ -1628,7 +1425,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 98,
       "y": 150
@@ -1641,7 +1438,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 232,
       "y": 150
@@ -1654,7 +1451,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 138,
       "y": 14
@@ -1667,7 +1464,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 192,
       "y": 14
@@ -1680,7 +1477,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 138,
       "y": 22
@@ -1693,7 +1490,8 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "BattleScreen",
+        "MenuBar"
       ],
       "x": 192,
       "y": 22
@@ -1706,7 +1504,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 138,
       "y": 30
@@ -1720,7 +1518,8 @@
       "args": null,
       "screens": [
         "BattleScreen",
-        "CharacterSheetScreen"
+        "CharacterSheetScreen",
+        "MenuBar"
       ],
       "x": 192,
       "y": 30
@@ -1733,7 +1532,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 138,
       "y": 38
@@ -1747,7 +1546,8 @@
       "args": null,
       "screens": [
         "BattleScreen",
-        "CharacterSheetScreen"
+        "CharacterSheetScreen",
+        "MenuBar"
       ],
       "x": 192,
       "y": 38
@@ -1760,7 +1560,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 138,
       "y": 46
@@ -1774,7 +1574,8 @@
       "args": null,
       "screens": [
         "BattleScreen",
-        "CharacterSheetScreen"
+        "CharacterSheetScreen",
+        "MenuBar"
       ],
       "x": 192,
       "y": 46
@@ -1787,7 +1588,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "MenuBar"
       ],
       "x": 138,
       "y": 54
@@ -1800,7 +1601,8 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen"
+        "BattleScreen",
+        "MenuBar"
       ],
       "x": 192,
       "y": 54
@@ -1813,14 +1615,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "OverlandScreen",
-        "PartyRosterScreen"
+        "MenuBar"
       ],
       "x": 176,
       "y": 14
@@ -1833,14 +1628,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "OverlandScreen",
-        "PartyRosterScreen"
+        "MenuBar"
       ],
       "x": 176,
       "y": 22
@@ -1853,14 +1641,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "AlchemyScreen",
-        "BarterScreen",
-        "BattleScreen",
-        "CampScreen",
-        "CardScreen",
-        "CharacterSheetScreen",
-        "OverlandScreen",
-        "PartyRosterScreen"
+        "MenuBar"
       ],
       "x": 284,
       "y": 22
@@ -1902,7 +1683,7 @@
       },
       "screens": [
         "BattleScreen",
-        "MarchingOrderScreen"
+        "MessageBox"
       ],
       "x": 163,
       "y": 96
@@ -1915,7 +1696,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "CardScreen"
+        "MessageBox"
       ],
       "x": 154,
       "y": 96
@@ -1928,7 +1709,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "CardScreen"
+        "MessageBox"
       ],
       "x": 151,
       "y": 96
@@ -1941,7 +1722,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "CardScreen"
+        "MessageBox"
       ],
       "x": 150,
       "y": 96
@@ -3216,7 +2997,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "SaintPrayerScreen"
+        "MessageBox"
       ],
       "x": 140,
       "y": 96
@@ -3229,7 +3010,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "SaintPrayerScreen"
+        "MessageBox"
       ],
       "x": 153,
       "y": 96
@@ -4164,7 +3945,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "CardScreen"
+        "MessageBox"
       ],
       "x": 148,
       "y": 96
@@ -4177,9 +3958,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen",
-        "CardScreen",
-        "OverlandScreen"
+        "MessageBox"
       ],
       "x": 161,
       "y": 97
@@ -4192,9 +3971,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "BattleScreen",
-        "CardScreen",
-        "OverlandScreen"
+        "TextInputBox"
       ],
       "x": 125,
       "y": 90
@@ -4207,7 +3984,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "CharacterGeneratorScreen"
+        "TextInputBox"
       ],
       "x": 125,
       "y": 90
@@ -4220,7 +3997,7 @@
       "font": 1,
       "args": null,
       "screens": [
-        "CharacterGeneratorScreen"
+        "TextInputBox"
       ],
       "x": 125,
       "y": 90
@@ -4844,7 +4621,7 @@
       "font": 3,
       "args": null,
       "screens": [
-        "LoadGameScreen"
+        "MessageBox"
       ],
       "x": 158,
       "y": 96
