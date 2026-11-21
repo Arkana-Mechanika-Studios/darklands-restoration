@@ -297,6 +297,13 @@ public sealed class TextProject
     {
         ArgumentNullException.ThrowIfNull(entry);
         translation = string.IsNullOrWhiteSpace(translation) ? null : translation;
+        // a card text whose rows are all empty (only its markers, lead-ins and indents: a row box given the cursor, or emptied) is no
+        // translation
+        if (translation is not null && entry.Key.StartsWith("msg:", StringComparison.Ordinal)
+            && CardRows.Parse(translation).All(r => string.IsNullOrWhiteSpace(r.Content)))
+        {
+            translation = null;
+        }
         if (entry.Translation != translation)
         {
             entry.Translation = translation;

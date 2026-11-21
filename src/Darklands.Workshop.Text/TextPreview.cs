@@ -18,6 +18,15 @@ namespace Darklands.Workshop.Text;
 public sealed record PreviewResult(int Width, int Height, uint[] Argb, int Measured, int Room, int English, string? Problem, bool CardText,
     int Foot = 0, int FootLimit = 0, int Pages = 1)
 {
+    /// <summary>
+    /// Output pixels per game pixel of <see cref="Argb"/> (<see cref="Width"/> times it by <see cref="Height"/> times it): 1, or more
+    /// when a pack's TrueType font draws the text (its glyphs drawn again at that resolution, as the game draws them at the window's).
+    /// </summary>
+    public int Scale { get; init; } = 1;
+
+    /// <summary>The text has no translation yet: the picture is the English (in the pack's fonts, as the game would draw it).</summary>
+    public bool Untranslated { get; init; }
+
     /// <summary>The words do not fit: wider than the box, or past the card window's foot.</summary>
     public bool Overflows => CardText ? Foot >= FootLimit : Room > 0 && Measured > Room;
 }
@@ -27,6 +36,16 @@ public sealed record PreviewResult(int Width, int Height, uint[] Argb, int Measu
 public sealed class TextPreview(TextProject project)
 {
     private const byte Ink = 15;
+
+    /// <summary>
+    /// How a scalable (TrueType) font's glyphs on a frame are drawn again at <c>scale</c> output pixels per game pixel: the whole
+    /// screen's ARGB (0: nothing there), as the game's text layer draws them at the window's resolution; set by the Workshop (the
+    /// layer is Rendering's); null: such glyphs are shown at the game's 320x200 only.
+    /// </summary>
+    public static Func<Screen, int, uint[]?>? DrawScalable { get; set; }
+
+    /// <summary>The preview's resolution for a TrueType font's text (its largest on-screen scale).</summary>
+    public const int HighScale = 4;
     private readonly GameAssets _assets = new(project.Game);
     private readonly Dictionary<int, TextPainter> _painters = [];
     private IReadOnlyDictionary<int, IFont>? _fonts;
@@ -47,6 +66,7 @@ public sealed class TextPreview(TextProject project)
     public PreviewResult Render(TextEntry entry, string? value)
     {
         ArgumentNullException.ThrowIfNull(entry);
+        var untranslated = value is null;
         value ??= entry.English;
         var localizer = new FluentLocalizer(project.Language, OriginalTable.Empty, null, pseudoTransform: false);
         var problems = localizer.AddOverlay("preview", FtlSource.Write(entry.Id, value) + "\n");
@@ -54,7 +74,8 @@ public sealed class TextPreview(TextProject project)
         {
             return Empty(problems[0].Message, entry.Key.StartsWith("msg:", StringComparison.Ordinal));
         }
-        return entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? Card(entry, localizer.Get(entry.Key)) : Line(entry, localizer);
+        var result = entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? Card(entry, localizer.Get(entry.Key)) : Line(entry, localizer);
+        return untranslated ? result with { Untranslated = true } : result;
     }
 
     // the hint for letters the fonts lack: a Chinese, Japanese or Korean pack's is a TrueType font's, not the pixel font pack's
@@ -88,21 +109,19 @@ public sealed class TextPreview(TextProject project)
         var width = Math.Clamp(Math.Max(measured, room) + 6, 16, Screen.Width);
         var height = painter.LineHeight * lines.Count + 6;
         var canvas = new Canvas(new Screen());
-        for (var k = 0; k < lines.Count; k++)
+        for (var line = 0; line < lines.Count; line++)
         {
-            painter.Draw(canvas, 3, 3 + k * painter.LineHeight, lines[k], Ink);
+            painter.Draw(canvas, 3, 3 + line * painter.LineHeight, lines[line], Ink);
         }
-        var argb = Picture(canvas, width, height, Palette256.DefaultVga.Entries.ToArray());
+        var k = ScaleOf(painter);
+        var argb = Crop(Picture(canvas, Palette256.DefaultVga.Entries.ToArray(), k), k, 0, 0, width, height);
         if (room > 0 && room + 3 < width)
         {
             // the box's right edge, a dotted line
-            for (var y = 0; y < height; y += 2)
-            {
-                argb[y * width + room + 3] = 0xFFFF4040u;
-            }
+            VerticalDots(argb, width * k, height * k, (room + 3) * k, k);
         }
         var lacking = Lacking(LanguagePackCheck.Unshowable(TextCodes.OfText(words), painter));
-        return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false);
+        return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false) { Scale = k };
     }
 
     // a card text: laid out in its block as the card screen does (every passage shown), against the foot of the card's window
@@ -157,20 +176,13 @@ public sealed class TextPreview(TextProject project)
         // the card window (from its left edge) with the window's foot marked
         var left = CardScreen.WindowX;
         var pictureWidth = Screen.Width - left;
-        var whole = Picture(canvas, Screen.Width, Screen.Height, CardPalette());
-        var argb = new uint[pictureWidth * Screen.Height];
-        for (var row = 0; row < Screen.Height; row++)
-        {
-            Array.Copy(whole, row * Screen.Width + left, argb, row * pictureWidth, pictureWidth);
-        }
+        var k = ScaleOf(painter);
+        var argb = Crop(Picture(canvas, CardPalette(), k), k, left, 0, pictureWidth, Screen.Height);
         if (limit < Screen.Height)
         {
-            for (var column = 0; column < pictureWidth; column += 2)
-            {
-                argb[limit * pictureWidth + column] = 0xFFFF4040u;
-            }
+            HorizontalDots(argb, pictureWidth * k, limit * k, k);
         }
-        return new PreviewResult(pictureWidth, Screen.Height, argb, 0, width, 0, problem, true, foot, limit);
+        return new PreviewResult(pictureWidth, Screen.Height, argb, 0, width, 0, problem, true, foot, limit) { Scale = k };
     }
 
     // the card's colours: the VGA colours, the decorated capitals' own colours from their picture (as a card's picture brings them)
@@ -203,19 +215,20 @@ public sealed class TextPreview(TextProject project)
         var pictureWidth = Screen.Width - left;
         var n = paging.Pages.Count;
         var height = n * Screen.Height + (n - 1) * Gap;
-        var argb = new uint[pictureWidth * height];
+        var k = ScaleOf(painter);
+        var argb = new uint[pictureWidth * k * height * k];
         Array.Fill(argb, 0xFF806040u);
         var label = Painter(1);
         var foot = 0;
-        for (var k = 0; k < n; k++)
+        for (var p = 0; p < n; p++)
         {
             var canvas = new Canvas(new Screen());
-            var last = k == n - 1;
-            new CardTextLayout(painter).Draw(canvas, paging.Pages[k], x, y, width, new CardTextLayout.Settings
+            var last = p == n - 1;
+            new CardTextLayout(painter).Draw(canvas, paging.Pages[p], x, y, width, new CardTextLayout.Settings
             {
                 Color = Ink,
                 OptionColor = Ink,
-                DropCap = k == 0 ? letter => DropCaps.Get(_assets, letter) : null,
+                DropCap = p == 0 ? letter => DropCaps.Get(_assets, letter) : null,
             });
             if (last)
             {
@@ -226,23 +239,102 @@ public sealed class TextPreview(TextProject project)
                 var more = OriginalMessageText.OwnWords(GameText.Of(CardScreen.MorePrompt)) ?? "";
                 painter.Draw(canvas, left + block.X + block.Width - 5 - painter.Measure(more), CardPaging.WindowFoot - painter.LineHeight - 1, more, Ink);
             }
-            label.Draw(canvas, left + 2, 1, $"page {k + 1}/{n}", 14);
-            var whole = Picture(canvas, Screen.Width, Screen.Height, CardPalette());
-            var top = k * (Screen.Height + Gap);
-            for (var row = 0; row < Screen.Height; row++)
-            {
-                Array.Copy(whole, row * Screen.Width + left, argb, (top + row) * pictureWidth, pictureWidth);
-            }
+            label.Draw(canvas, left + 2, 1, $"page {p + 1}/{n}", 14);
+            var page = Crop(Picture(canvas, CardPalette(), k), k, left, 0, pictureWidth, Screen.Height);
+            var top = p * (Screen.Height + Gap) * k;
+            Array.Copy(page, 0, argb, top * pictureWidth * k, page.Length);
             if (limit < Screen.Height)
             {
-                for (var column = 0; column < pictureWidth; column += 2)
+                HorizontalDots(argb, pictureWidth * k, top + limit * k, k);
+            }
+        }
+        return new PreviewResult(pictureWidth, height, argb, 0, width, 0, problem, true, foot, limit, n) { Scale = k };
+    }
+
+    // a painter's resolution: a TrueType font's text at the high scale (when the Workshop can draw it so), else the game's pixels
+    private static int ScaleOf(TextPainter painter) => painter.PackFont is IScalableFont && DrawScalable is not null ? HighScale : 1;
+
+    // the whole screen at k output pixels per game pixel: its pixels enlarged, and a TrueType font's glyphs drawn again over them at
+    //   that resolution (as the game's text layer draws them over the scaled frame)
+    private static uint[] Picture(Canvas canvas, Rgb24[] palette, int k)
+    {
+        var one = Picture(canvas, Screen.Width, Screen.Height, palette);
+        if (k == 1)
+        {
+            return one;
+        }
+        var wide = Screen.Width * k;
+        var argb = new uint[wide * Screen.Height * k];
+        for (var y = 0; y < Screen.Height * k; y++)
+        {
+            for (var x = 0; x < wide; x++)
+            {
+                argb[y * wide + x] = one[y / k * Screen.Width + x / k];
+            }
+        }
+        for (var i = 0; i < 256; i++)
+        {
+            var c = i == 0 ? Paper : palette[i];
+            canvas.Screen.Palette[i] = (uint)c.R << 16 | (uint)c.G << 8 | c.B;
+        }
+        if (DrawScalable?.Invoke(canvas.Screen, k) is { } layer && layer.Length == argb.Length)
+        {
+            for (var i = 0; i < argb.Length; i++)
+            {
+                if (layer[i] != 0)
                 {
-                    argb[(top + limit) * pictureWidth + column] = 0xFFFF4040u;
+                    argb[i] = layer[i];
                 }
             }
         }
-        return new PreviewResult(pictureWidth, height, argb, 0, width, 0, problem, true, foot, limit, n);
+        return argb;
     }
+
+    // a part of a whole screen's picture at k (its place and size in game pixels)
+    private static uint[] Crop(uint[] whole, int k, int left, int top, int width, int height)
+    {
+        var (wide, w) = (Screen.Width * k, width * k);
+        var argb = new uint[w * height * k];
+        for (var row = 0; row < height * k; row++)
+        {
+            Array.Copy(whole, (top * k + row) * wide + left * k, argb, row * w, w);
+        }
+        return argb;
+    }
+
+    private const uint Mark = 0xFFFF4040u;
+
+    // a dotted line across the picture at output row y (a game pixel's dots, half its height thick)
+    private static void HorizontalDots(uint[] argb, int width, int y, int k)
+    {
+        for (var row = y; row < y + Math.Max(1, k / 2) && (row + 1) * width <= argb.Length; row++)
+        {
+            for (var column = 0; column < width; column++)
+            {
+                if (column / k % 2 == 0)
+                {
+                    argb[row * width + column] = Mark;
+                }
+            }
+        }
+    }
+
+    // a dotted line down the picture at output column x
+    private static void VerticalDots(uint[] argb, int width, int height, int x, int k)
+    {
+        for (var row = 0; row < height; row++)
+        {
+            for (var column = x; column < Math.Min(width, x + Math.Max(1, k / 2)); column++)
+            {
+                if (row / k % 2 == 0)
+                {
+                    argb[row * width + column] = Mark;
+                }
+            }
+        }
+    }
+
+    private static readonly Rgb24 Paper = new(36, 28, 20);
 
     private static uint[] Picture(Canvas canvas, int width, int height, Rgb24[] palette)
     {
@@ -252,7 +344,7 @@ public sealed class TextPreview(TextProject project)
             for (var x = 0; x < width; x++)
             {
                 var index = canvas.Screen.Pixels[y * Screen.Width + x];
-                var c = index == 0 ? new Rgb24(36, 28, 20) : palette[index];
+                var c = index == 0 ? Paper : palette[index];
                 argb[y * width + x] = 0xFF000000u | (uint)c.R << 16 | (uint)c.G << 8 | c.B;
             }
         }
