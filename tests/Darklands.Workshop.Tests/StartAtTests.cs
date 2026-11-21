@@ -60,11 +60,11 @@ public sealed class StartAtTests(ITestOutputHelper output)
             {
                 output.WriteLine("  " + line);
             }
-            // the counts of 2026-11-20 (3,766 targets: 1,269 at their passage, 2,181 at their card's start, 12 screens, 304 in files no
+            // the counts of 2026-11-21 (3,768 targets: 1,269 at their passage, 2,181 at their card's start, 14 screens with the overlays, 304 in files no
             // card shows within its first two menus): a change to the search or the cards may raise them, not lower them
             Assert.True(passage >= 1265, $"{passage} card texts at their passage");
             Assert.True(failed.Count <= 304, $"{failed.Count} not openable");
-            Assert.Equal(12, screens);
+            Assert.True(screens >= 14, $"{screens} screen texts' screens");
         }
         finally
         {

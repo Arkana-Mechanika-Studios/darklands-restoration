@@ -54,6 +54,38 @@ public sealed class TextPainter(FntFont font)
         return width;
     }
 
+    /// <summary>
+    /// <paramref name="text"/> broken at spaces into lines no wider than <paramref name="width"/> pixels, at most <paramref name="lines"/>
+    /// (the last keeps the rest): a translation pack's laid-out screen text (Localization.SlotLayouts).
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (screen layouts per language).
+    public IReadOnlyList<string> Wrap(string text, int width, int lines)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        var result = new List<string>();
+        var rest = text;
+        while (result.Count < lines - 1 && Measure(rest) > width)
+        {
+            var cut = -1;
+            for (var i = rest.IndexOf(' ', StringComparison.Ordinal); i > 0; i = rest.IndexOf(' ', i + 1))
+            {
+                if (Measure(rest[..i]) > width)
+                {
+                    break;
+                }
+                cut = i;
+            }
+            if (cut <= 0)
+            {
+                break;
+            }
+            result.Add(rest[..cut]);
+            rest = rest[(cut + 1)..];
+        }
+        result.Add(rest);
+        return result;
+    }
+
     public int Measure(string text) =>
         PackFont is null && Darklands.Core.TextCodes.FitsBytes(text) ? Measure(Encode(text)) : MeasureCodes(Darklands.Core.TextCodes.OfText(text));
 
@@ -238,8 +270,19 @@ public sealed class TextPainter(FntFont font)
         return x;
     }
 
+    /// <summary>
+    /// The screen that lays out texts (GameUi: a translation pack's interface/layout.json on the screen open); null: every text is
+    /// drawn where it is asked to be.
+    /// </summary>
+    // Not in the original: the 1.1 translation packs (screen layouts per language).
+    public ITextLayouts? Layouts { get; init; }
+
     public int Draw(Canvas canvas, int x, int y, string text, byte color, int right = int.MaxValue)
     {
+        if (Layouts is { } layouts && layouts.TryDraw(this, canvas, x, y, text, color, right, out var end))
+        {
+            return end;
+        }
         if (PackFont is not null || !Darklands.Core.TextCodes.FitsBytes(text))
         {
             return DrawText(canvas, x, y, Darklands.Core.TextCodes.OfText(text), text, color, right);
@@ -252,7 +295,7 @@ public sealed class TextPainter(FntFont font)
         // the developer's text plane (ScreenTextPlane): which text, by which key, each letter's pixels are; the pixels are the same. Its
         //   room: to the window's last column, else to the screen's right edge (the box a translation must fit, L-7w)
         var windowed = right != int.MaxValue;
-        _text = ScreenTextPlane.Drawn(text, Measure(bytes), Math.Max(0, (windowed ? right + 1 : Screen.Width) - x), windowed, font.Index + 1);
+        _text = ScreenTextPlane.Drawn(text, Measure(bytes), Math.Max(0, (windowed ? right + 1 : Screen.Width) - x), windowed, font.Index + 1, (x, y));
         try
         {
             return Draw(canvas, x, y, bytes, color, right);
@@ -271,7 +314,7 @@ public sealed class TextPainter(FntFont font)
             return DrawCodes(canvas, x, y, codes, color, TextMode.Copy, right);
         }
         var windowed = right != int.MaxValue;
-        _text = ScreenTextPlane.Drawn(text, MeasureCodes(codes), Math.Max(0, (windowed ? right + 1 : Screen.Width) - x), windowed, font.Index + 1);
+        _text = ScreenTextPlane.Drawn(text, MeasureCodes(codes), Math.Max(0, (windowed ? right + 1 : Screen.Width) - x), windowed, font.Index + 1, (x, y));
         try
         {
             return DrawCodes(canvas, x, y, codes, color, TextMode.Copy, right);
@@ -387,4 +430,15 @@ internal sealed class OriginalFont(TextPainter painter) : IFont
         var bits = row[0] << 8 | (row.Length > 1 ? row[1] : 0);
         return (bits & (0x8000 >> x)) != 0;
     }
+}
+
+/// <summary>Who lays out the screen texts a painter draws (GameUi, for a translation pack's interface/layout.json).</summary>
+// Not in the original: the 1.1 translation packs (screen layouts per language).
+public interface ITextLayouts
+{
+    /// <summary>
+    /// Draws <paramref name="text"/> as its layout on the screen open says (true, the x after it in <paramref name="end"/>), or does
+    /// nothing (false: the painter draws it where it was asked to).
+    /// </summary>
+    bool TryDraw(TextPainter painter, Canvas canvas, int x, int y, string text, byte color, int right, out int end);
 }

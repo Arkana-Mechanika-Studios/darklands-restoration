@@ -100,6 +100,8 @@ public sealed partial class BattleScreen : ITacticalView
     // orig: battle-entry R002+0x0000 (0E76:0000) draft; its loop is fight-input R014+0x3166 (0E76:3166) draft
     public int Run(BattleRequest request)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = _ui.OnScreen("BattleScreen");
         // C: DS:07D6 counted on outside the battle (root 047C:000A runs at every timer callback of the program)
         var keys = _owner.CursorKeys;
         var timerTicks = _ui.Timer.Ticks;

@@ -115,7 +115,20 @@ public static class LanguagePackCheck
                         "fixed in the code, so keep those letters coloured (<c12>M</c>)");
                 }
             }
-            if (b is { Room: >= 0 })
+            if (b is { Room: >= 0 } && pack.Layouts.Values.Select(s => s.GetValueOrDefault(english.Key)).FirstOrDefault(l => l is not null) is { } layout)
+            {
+                // the pack's layout of the text (interface/layout.json): its font, its width (else the room left after its move), its lines
+                var laidPainter = layout.Font is >= 1 and <= 3 ? Painter(layout.Font) : painter;
+                var room = layout.Width ?? b.Room - ((layout.X ?? b.X ?? 0) - (b.X ?? 0));
+                var lines = laidPainter.Wrap(words, room, Math.Max(1, layout.Lines));
+                var widest = lines.Max(laidPainter.Measure);
+                if (widest > room)
+                {
+                    Add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
+                        $"{widest} px wide on {lines.Count} line(s) of its layout, {room} px of room (the English {b.English} px)"));
+                }
+            }
+            else if (b is { Room: >= 0 })
             {
                 var width = painter.Measure(words);
                 if (width > b.Room)
@@ -124,6 +137,14 @@ public static class LanguagePackCheck
                         $"{width} px wide, {b.Room} px of room ({(b.Windowed ? "cut at the window's edge" : "runs off the screen")}; the English {b.English} px)"));
                 }
             }
+        }
+        // the pack's layouts themselves: moves, lines, fonts, widths past the room, off the screen, over another text
+        var idOf = template.GroupBy(m => m.Key, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First().Id, StringComparer.Ordinal);
+        // a language pack's limits (LayoutProfile.LanguagePack: the room the text had, 16 px, 1-3 lines)
+        foreach (var (screen, key, problem) in SlotLayouts.Validate(pack.Layouts, box, LayoutProfile.LanguagePack, Painter(1).LineHeight))
+        {
+            findings.Add(new Finding(problem.StartsWith(SlotLayouts.MayCover, StringComparison.Ordinal) ? Severity.Overflow : Severity.Error,
+                SlotLayouts.FileName, idOf.GetValueOrDefault(key, key), $"{screen}: {problem}"));
         }
         return findings;
     }

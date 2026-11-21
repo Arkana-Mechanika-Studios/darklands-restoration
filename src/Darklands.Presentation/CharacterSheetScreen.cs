@@ -137,6 +137,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     //   member box skips it
     public void Show(GameState state, int who)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var screen = ui.OnScreen("CharacterSheetScreen");
         _state = state;
         _s.Begin(state, who);
         // orig: member-sheet-screen's guard: status 0 or 5 leaves at once
@@ -175,7 +177,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             // orig: R031+0x0124 draft, checked against the asm: R031+0x019D tests the button's state (the pointer where it is now),
             // acts, then waits the button out (R031+0x06BE; a click on the member's own row returns at R031+0x08E1 without waiting);
             // then the menu bar and a waiting key in the same pass; tests: ScreenInputTests
-            var mouse = ui.Mouse;
+            var mouse = ui.LaidMouse;
             if (mouse.Left)
             {
                 if (Click(mouse.X, mouse.Y))
@@ -216,7 +218,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             {
                 // orig: the scroll's up arrow: `while (mouse-button-state & 1) { step; R030+0x3096(200); }` (R031+0x0286, R031+0x036A): the
                 // button is tested before each step, and the 200 ms wait follows every step, the last one too
-                while (ui.Mouse.Left)
+                while (ui.LaidMouse.Left)
                 {
                     if (_s.ArrowUp() == Simulation.SheetStep.Scrolled)
                     {
@@ -232,7 +234,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             else if (_s.IsOpen && b.IsList && b.PanelX <= x && b.PanelW + b.PanelX >= x && b.PanelH + b.PanelY - 14 <= y && b.PanelH + b.PanelY >= y)
             {
                 // orig: the down arrow (R031+0x03E8, R031+0x04FD): the same loop; the end of the list breaks out before the wait
-                while (ui.Mouse.Left)
+                while (ui.LaidMouse.Left)
                 {
                     var step = _s.ArrowDown(b.Lines);
                     if (step == Simulation.SheetStep.None)
@@ -404,8 +406,8 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                         break;
                     case Simulation.SheetStep.Moved:
                         var lineY = _s.Selected(_s.Cursor) * 8 + b.PanelY;
-                        Screen.Recolor(b.PanelX + 5, lineY + 1, b.PanelW - 15, 8, ListSelected, ListColor);
-                        Screen.Recolor(b.PanelX + 5, lineY + 9, b.PanelW - 15, 8, ListColor, ListSelected);
+                        ui.Recolor(b.PanelX + 5, lineY + 1, b.PanelW - 15, 8, ListSelected, ListColor);
+                        ui.Recolor(b.PanelX + 5, lineY + 9, b.PanelW - 15, 8, ListColor, ListSelected);
                         break;
                 }
                 return;
@@ -561,11 +563,11 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         {
             return;
         }
-        Screen.Recolor(b.PanelX + 8, b.PanelY + _s.Selected(k) * 8 + 9, b.PanelW - 15, 8, ListSelected, ListColor);
+        ui.Recolor(b.PanelX + 8, b.PanelY + _s.Selected(k) * 8 + 9, b.PanelW - 15, 8, ListSelected, ListColor);
         _s.SelectLine(line);
-        Screen.Recolor(b.PanelX + 8, b.PanelY + _s.Selected(k) * 8 + 9, b.PanelW - 15, 8, ListColor, ListSelected);
+        ui.Recolor(b.PanelX + 8, b.PanelY + _s.Selected(k) * 8 + 9, b.PanelW - 15, 8, ListColor, ListSelected);
         ScreenDrawing.WaitForRelease(ui);
-        var (mx, my) = (ui.Mouse.X, ui.Mouse.Y);
+        var (mx, my) = (ui.LaidMouse.X, ui.LaidMouse.Y);
         var index = line + _s.Top(k);
         if (mx > PartyPanel.Width)
         {
@@ -657,9 +659,9 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private void MoveSelection(int step, int xOffset)
     {
         var b = Current;
-        Screen.Recolor(b.PanelX + xOffset, _s.Selected(_s.Cursor) * 8 + b.PanelY + 9, b.PanelW - 15, 8, ListSelected, ListColor);
+        ui.Recolor(b.PanelX + xOffset, _s.Selected(_s.Cursor) * 8 + b.PanelY + 9, b.PanelW - 15, 8, ListSelected, ListColor);
         _s.Select(step);
-        Screen.Recolor(b.PanelX + xOffset, _s.Selected(_s.Cursor) * 8 + b.PanelY + 9, b.PanelW - 15, 8, ListColor, ListSelected);
+        ui.Recolor(b.PanelX + xOffset, _s.Selected(_s.Cursor) * 8 + b.PanelY + 9, b.PanelW - 15, 8, ListColor, ListSelected);
     }
 
     /// <summary>The n-th known formula (by formula number).</summary>
@@ -1066,6 +1068,6 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private void HighlightLine(int k)
     {
         var b = Boxes[k];
-        Screen.Recolor(b.PanelX + 8, _s.Selected(k) * 8 + b.PanelY + 9, b.PanelW - 15, 8, ListColor, ListSelected);
+        ui.Recolor(b.PanelX + 8, _s.Selected(k) * 8 + b.PanelY + 9, b.PanelW - 15, 8, ListColor, ListSelected);
     }
 }

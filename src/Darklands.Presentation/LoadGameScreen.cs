@@ -52,6 +52,8 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // C: the mouse tests read the button state, then wait for its release and take y after it; the hover tests the row each pass.
     public LoadedGame? Run(bool fromStartScreen, Func<string, LoadedGame?> load)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("LoadGameScreen");
         _fromStart = fromStartScreen;
         SetUp();
         Draw();
@@ -62,7 +64,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         while (true)
         {
             var action = ui.PollFrame();
-            var mouse = ui.Mouse;
+            var mouse = ui.LaidMouse;
             var key = Keys.None;
             if (action is null && (mouse.Buttons & MouseButtons.Left) == 0 && InButtons(mouse.X, mouse.Y))
             {
@@ -71,16 +73,16 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                 {
                     if (lit != -1)
                     {
-                        ui.Canvas.Recolor(0x45, lit * 15 + 0x2F, 0x80, 8, LabelHighlight, LabelColor);
+                        ui.Recolor(0x45, lit * 15 + 0x2F, 0x80, 8, LabelHighlight, LabelColor);
                     }
                     lit = row;
-                    ui.Canvas.Recolor(0x45, row * 15 + 0x2F, 0x80, 8, LabelColor, LabelHighlight);
+                    ui.Recolor(0x45, row * 15 + 0x2F, 0x80, 8, LabelColor, LabelHighlight);
                 }
             }
-            else if (action is { IsLeftClick: true } click && InButtons(click.X, click.Y))
+            else if (action is { IsLeftClick: true } click && InButtons(ui.Laid.Map(click.X, click.Y).X, ui.Laid.Map(click.X, click.Y).Y))
             {
                 ScreenDrawing.WaitForRelease(ui);
-                key = ((ui.Mouse.Y - 0x2D) / 15) switch
+                key = ((ui.LaidMouse.Y - 0x2D) / 15) switch
                 {
                     0 => LoadKey,
                     1 => DeleteKey,
@@ -89,10 +91,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                     _ => Keys.None,
                 };
             }
-            else if (action is { IsLeftClick: true } pick && pick.X > 0xC3 && pick.X < 0x140 && pick.Y > 0x14 && pick.Y < 0xA5)
+            else if (action is { IsLeftClick: true } pick && ui.Laid.Map(pick.X, pick.Y) is var (px, py) && px > 0xC3 && px < 0x140 && py > 0x14 && py < 0xA5)
             {
                 ScreenDrawing.WaitForRelease(ui);
-                var row = (ui.Mouse.Y - 0x14) / 16;
+                var row = (ui.LaidMouse.Y - 0x14) / 16;
                 if (_rowsShown > row)
                 {
                     Highlight(false);
@@ -227,11 +229,11 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         if (on)
         {
-            ui.Canvas.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineColor, LineHighlight);
+            ui.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineColor, LineHighlight);
         }
         else
         {
-            ui.Canvas.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineHighlight, LineColor);
+            ui.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineHighlight, LineColor);
         }
         ui.Present();
     }
@@ -352,7 +354,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // C: there is no test that a row is shown: with an empty list the name is a stale one (whose file is gone).
     private void Delete()
     {
-        ui.Canvas.Recolor(0x45, 0x2F, 0x80, 0x2D, LabelHighlight, LabelColor);
+        ui.Recolor(0x45, 0x2F, 0x80, 0x2D, LabelHighlight, LabelColor);
         if (_button is { } button)
         {
             ui.Canvas.Draw(button.Image, 0x41, 0x3B);
@@ -369,7 +371,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         ui.Canvas.CopyFrom(_page, 0x41, 0x3B, 0x82, 0xE);
         ui.Text.DrawCoded(ui.Canvas, ButtonsX, 0x3F, Label(1), LabelColor);
-        ui.Canvas.Recolor(0x45, 0x3E, 0x80, 8, LabelColor, LabelHighlight);
+        ui.Recolor(0x45, 0x3E, 0x80, 8, LabelColor, LabelHighlight);
         ui.Present();
     }
 

@@ -53,6 +53,8 @@ public sealed class MessageBox(GameUi ui)
     // repeated inline in R037+0x8ED4 and R037+0x2ACE
     public SavedRegion Open(string text, byte textColor = TextColor)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("MessageBox");
         var saved = Draw(text, Centred, textColor);
         ui.Present();
         return saved;
@@ -166,6 +168,8 @@ public sealed class MessageBox(GameUi ui)
     //   drawn with the pause box's boxes and read the same way (any key, no hot keys).
     public void Notice(IReadOnlyList<string> lines)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("MessageBox");
         // the boxes stop above the screen's bottom: at most six lines
         if (lines.Count > MaxNoticeLines)
         {

@@ -71,6 +71,8 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     //   comm-camp-save); kept (not data-damaging: no save is lost or changed)
     public void Stay(GameState state, int mode)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("CampScreen");
         SaveAndLoad?.Invoke(2);
         // orig: R036+0x0082: DS:9C3D = music-start(5); `if (mode == 1) music-start(0x15); else if (roll-below(2)) music-start(9); else music-start(10);`
         ui.SaveMusic();
@@ -105,6 +107,8 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     /// </summary>
     public void CampInTheWild(GameState state, int dailyRisk)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("CampScreen");
         _dailyPoachingRisk = dailyRisk;
         // orig: R036+0x000B: the release count cleared and one waiting key thrown away
         ui.TakeLeftReleases();
@@ -141,32 +145,32 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         {
             var key = 0;
             var (released, rx, ry) = ui.TakeLeftReleases();
-            var mouse = ui.Mouse;
+            var mouse = ui.LaidMouse;
             var inTeacherBox = _teacherBox is not null && mouse.X > 0xF5 && mouse.X < 0x13E && mouse.Y > 0x30 && mouse.Y < 0x71;
             if (inTeacherBox && released == 0)
             {
                 var row = (mouse.Y - 0x30) / 9;
                 if (row != teacherHover)
                 {
-                    ui.Canvas.Recolor(0xF6, teacherHover * 9 + 0x30, 0x48, 9, 9, 8);
+                    ui.Recolor(0xF6, teacherHover * 9 + 0x30, 0x48, 9, 9, 8);
                     teacherHover = row;
-                    ui.Canvas.Recolor(0xF6, row * 9 + 0x30, 0x48, 9, 8, 9);
+                    ui.Recolor(0xF6, row * 9 + 0x30, 0x48, 9, 8, 9);
                 }
             }
             else if (inTeacherBox)
             {
                 // orig: R036+0x02AB the wait, then the row of the pointer after it (R036+0x02B2)
                 ui.WaitForButtonRelease();
-                key = TeacherKey((ui.Mouse.Y - 0x30) / 9);
+                key = TeacherKey((ui.LaidMouse.Y - 0x30) / 9);
             }
             else if (released == 0 && AreaAt(mouse.X, mouse.Y) == 1)
             {
                 var row = (mouse.Y - 0xAA) / 9;
                 if (row != menuHover)
                 {
-                    ui.Canvas.Recolor(0x47, menuHover * 9 + 0xAC, 0xED, 8, ChosenColor, PartyColor);
+                    ui.Recolor(0x47, menuHover * 9 + 0xAC, 0xED, 8, ChosenColor, PartyColor);
                     menuHover = row;
-                    ui.Canvas.Recolor(0x47, row * 9 + 0xAC, 0xED, 8, PartyColor, ChosenColor);
+                    ui.Recolor(0x47, row * 9 + 0xAC, 0xED, 8, PartyColor, ChosenColor);
                     menu = 1;
                 }
             }
@@ -177,9 +181,9 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 {
                     CloseTeacherBox();
                     var lit = Wild ? (byte)8 : (byte)10;
-                    ui.Canvas.Recolor(0xCE, menuHover * 9 + 0x2F, 0x65, 8, ChosenColor, lit);
+                    ui.Recolor(0xCE, menuHover * 9 + 0x2F, 0x65, 8, ChosenColor, lit);
                     menuHover = row;
-                    ui.Canvas.Recolor(0xCE, row * 9 + 0x2F, 0x65, 8, lit, ChosenColor);
+                    ui.Recolor(0xCE, row * 9 + 0x2F, 0x65, 8, lit, ChosenColor);
                     if (row == 6 && _stay.TeachersHere)
                     {
                         OpenTeacherBox();
@@ -199,11 +203,11 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
                 CloseTeacherBox();
                 if (menu == 1)
                 {
-                    ui.Canvas.Recolor(0x47, menuHover * 9 + 0xAC, 0xED, 8, ChosenColor, PartyColor);
+                    ui.Recolor(0x47, menuHover * 9 + 0xAC, 0xED, 8, ChosenColor, PartyColor);
                 }
                 else
                 {
-                    ui.Canvas.Recolor(0xCE, menuHover * 9 + 0x2F, 0x65, 8, PartyColor, ChosenColor);
+                    ui.Recolor(0xCE, menuHover * 9 + 0x2F, 0x65, 8, PartyColor, ChosenColor);
                 }
                 menuHover = -1;
             }

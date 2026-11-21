@@ -202,6 +202,8 @@ public sealed class MenuBar
     // C: hotkey-table F10 (DS:9C26 = 1, DS:9C2F = 0, DS:9C3C = DS:9C41 = -1) starts the keyboard mode; GameUi passes F10 here.
     public void Run(bool keyboard)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = _ui.OnScreen("MenuBar");
         if (_running)
         {
             return;
@@ -288,7 +290,7 @@ public sealed class MenuBar
     {
         if (!_keyboard)
         {
-            return (_ui.Mouse.X, _ui.Mouse.Y);
+            return _ui.Pointer;
         }
         if (_unfold == 3)
         {
@@ -656,5 +658,5 @@ public sealed class MenuBar
     public Action? QuitToDos { get; set; }
 
     private void Recolor(int x, int y, int width, int height, byte from, byte to) =>
-        _canvas.Recolor(WindowX + x, y, width, height, from, to);
+        _ui.Recolor(WindowX + x, y, width, height, from, to);
 }

@@ -74,6 +74,8 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     // orig: saint-prayer-party R034+0x0000 / saint-prayer R034+0x0102
     public PrayerOutcome Pray(GameState state, int member, int saint, PrayerMode mode, ISaintEffects effects)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("SaintPrayerScreen");
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none on the saint's page (it opens over the sheet's list)
         using var wheel = ui.UseSelectionList(null);
         // orig: saint-prayer-party always, saint-prayer `if (DS:907A != 1)`: DS:9C3D = music-start(5); music-start(13)
@@ -147,7 +149,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         {
             var key = 0;
             var fromMouse = false;
-            var mouse = ui.Mouse;
+            var mouse = ui.LaidMouse;
             var (mx, my) = (mouse.X, mouse.Y);
             var inBox = _box is not null && mx > 250 && mx < 310 && my > 142 && my < 192;
             var inMenu = mx > 148 && mx < 318 && my > 158 && my < 190;
@@ -169,7 +171,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 // C: the row is a slot number, not a list position: with an empty slot before a member, the list
                 //   and the slots disagree, as in the original.
                 ui.WaitForButtonRelease();
-                var slot = Math.Clamp((ui.Mouse.Y - 142) / BoxRow, 0, 4);
+                var slot = Math.Clamp((ui.LaidMouse.Y - 142) / BoxRow, 0, 4);
                 if (slot < party.Slots.Count && party.Slots[slot].OccupiesSlot)
                 {
                     CloseMemberList();
@@ -205,7 +207,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 // C: the row after the release, (y − 158) / 8 truncated toward zero: a row outside 0..3 gives no key
                 ui.WaitForButtonRelease();
                 fromMouse = true;
-                key = ((ui.Mouse.Y - 158) / MenuStep) switch
+                key = ((ui.LaidMouse.Y - 158) / MenuStep) switch
                 {
                     0 => 0x324D,   // M
                     1 => 0x264C,   // L
@@ -218,7 +220,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             {
                 CloseMemberList();
             }
-            mouse = ui.Mouse;
+            mouse = ui.LaidMouse;
             if (mouse.Left && mouse.X < 60 && mouse.Y / 40 == prayer.Member)
             {
                 CloseMemberList();
@@ -443,7 +445,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
     {
         if (y >= 0)
         {
-            _canvas.Recolor(x, y, width, height, from, to);
+            ui.Recolor(x, y, width, height, from, to);
         }
     }
 }

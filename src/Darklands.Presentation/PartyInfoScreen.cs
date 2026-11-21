@@ -42,6 +42,8 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     /// <summary>The F6 party information screen: the pointer over the small map names the nearest town, Tab and Shift-Tab step through the towns, any other key or the left button leaves.</summary>
     public void Show(GameState state)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("PartyInfoScreen");
         // orig: R034+0x0F2D: pointer-shape-set(0, 0, DS:9C42) before the screen is drawn (GameUi.PointerHotSpot: F6 on the map leaves the
         //   map's (5, 0) behind); tests: PointerHotSpotTests
         (ui.PointerHotSpot, ui.PointerShape) = ((0, 0), null);
@@ -56,7 +58,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         var shown = -2;
         while (true)
         {
-            var mouse = ui.Mouse;
+            var mouse = ui.LaidMouse;
             if (mouse.X > MapLeft && mouse.X < MapRight && mouse.Y > MapTop && mouse.Y < MapBottom)
             {
                 // C: the nearest town is sought at (x - 3, y + 3) of the map, as the original.
@@ -77,7 +79,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
             // the button is a level test: held, the screen closes, Tab or not); tests: ScreenInputTests
             // C: hosts may not deliver Shift-Tab as 0x0F00 (the BIOS code); then only Tab steps.
             var key = ui.PollKeyOnly();
-            if ((key == 0 || key == Keys.Tab || key == ShiftTab) && !ui.Mouse.Left)
+            if ((key == 0 || key == Keys.Tab || key == ShiftTab) && !ui.LaidMouse.Left)
             {
                 if (key != 0)
                 {

@@ -85,6 +85,8 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // (1000), or the camp ambush
     public int Travel(GameState state, Func<int, bool>? eventStarted = null)
     {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("OverlandScreen");
         ui.Redraw = () => UseMapPalette(state);   // orig: the `redraw` label of R030+0x0C44 (key handler) after a character sheet or the party information: pictures reloaded, season palette, panel
         try
         {

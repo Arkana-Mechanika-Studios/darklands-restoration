@@ -74,6 +74,67 @@ public sealed class TextProject
 
     public IReadOnlyList<TextBox> Boxes { get; }
 
+    private Dictionary<string, Dictionary<string, SlotLayout>>? _layouts;
+
+    /// <summary>The pack's screen layouts by screen, then slot (interface/layout.json), as edited; saved with the pack.</summary>
+    public Dictionary<string, Dictionary<string, SlotLayout>> Layouts => _layouts ??= SlotLayouts.Load(Folder, out _);
+
+    /// <summary>The layout of the screen text <paramref name="entry"/> (on the first of its screens that has one; null: the original's).</summary>
+    public SlotLayout? LayoutOf(TextEntry entry)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        return entry.Screens.Select(s => Layouts.GetValueOrDefault(s)?.GetValueOrDefault(entry.Key)).FirstOrDefault(l => l is not null);
+    }
+
+    /// <summary>Sets (or with null or the original's, takes off) the layout of the screen text <paramref name="entry"/> on each of its screens.</summary>
+    public void SetLayout(TextEntry entry, SlotLayout? layout)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        // an embossed heading is two texts a pixel apart (its shadow and its face, two keys): the twin takes the same layout, a pixel apart
+        if (TwinOf(entry) is { } twin && Boxes.FirstOrDefault(b => b.Key == entry.Key) is { X: { } x, Y: { } y } box
+            && Boxes.FirstOrDefault(b => b.Key == twin.Key) is { X: { } tx, Y: { } ty })
+        {
+            SetOne(twin, layout is null ? null : layout with { X = layout.X + (tx - x), Y = layout.Y + (ty - y) });
+        }
+        SetOne(entry, layout);
+    }
+
+    /// <summary>
+    /// The other half of an embossed heading (its shadow, or its face): a text of the same screen, as wide, drawn a pixel to the side
+    /// and a pixel up or down (null: none).
+    /// </summary>
+    public TextEntry? TwinOf(TextEntry entry)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        if (Boxes.FirstOrDefault(b => b.Key == entry.Key) is not { X: { } x, Y: { } y } box)
+        {
+            return null;
+        }
+        var twin = Boxes.FirstOrDefault(o => o.Key != box.Key && o.English == box.English && o.X is { } ox && o.Y is { } oy
+            && Math.Abs(ox - x) == 1 && Math.Abs(oy - y) == 1 && o.Screens.Intersect(box.Screens, StringComparer.Ordinal).Any());
+        return twin is null ? null : Entries.FirstOrDefault(e => e.Key == twin.Key);
+    }
+
+    private void SetOne(TextEntry entry, SlotLayout? layout)
+    {
+        foreach (var screen in entry.Screens)
+        {
+            if (!Layouts.TryGetValue(screen, out var slots))
+            {
+                Layouts[screen] = slots = new Dictionary<string, SlotLayout>(StringComparer.Ordinal);
+            }
+            if (layout is null || layout.IsOriginal)
+            {
+                slots.Remove(entry.Key);
+            }
+            else
+            {
+                slots[entry.Key] = layout;
+            }
+        }
+        Dirty = true;
+    }
+
     /// <summary>Every text, in the template's order.</summary>
     public IReadOnlyList<TextEntry> Entries { get; }
 
@@ -241,6 +302,10 @@ public sealed class TextProject
             var path = Path.Combine(TextFolder, name.Replace('/', Path.DirectorySeparatorChar));
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             System.IO.File.WriteAllText(path, text.ToString(), new UTF8Encoding(false));
+        }
+        if (_layouts is not null)
+        {
+            SlotLayouts.Save(Folder, _layouts);
         }
         Dirty = false;
     }
