@@ -48,8 +48,9 @@ public sealed class LaidOutAreas
         {
             if (drawn.Contains(x, y))
             {
-                // the middle of its original place: the original's tests are strict at their edges
-                return (original.X + original.Width / 2, original.Y + original.Height / 2);
+                // just inside its original place (its first letters, its row's middle): the original's tests are strict at their edges,
+                // and a long text's middle may lie past the menu's
+                return (original.X + Math.Min(4, original.Width - 1), original.Y + original.Height / 2);
             }
         }
         foreach (var (original, _) in _laid.Values)

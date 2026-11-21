@@ -64,7 +64,8 @@ public sealed class LaidOutHitTests
         // the alchemy screen's batch menu (AlchemyScreen.MouseStep: over the menu when 0x46 < x < 0xAA and 0x24 < y < 0x36; line (y - 0x24) / 8):
         // its line 1 moved 8 px left and given two lines of 90 px
         static int? Line(int x, int y) => x > 0x46 && x < 0xAA && y > 0x24 && y < 0x36 ? (y - 0x24) / 8 : null;
-        var original = new LaidOutAreas.Box(0x50, 0x24 + 8, 70, 8);
+        // a long translation: its original box runs past the menu's right edge (its middle is not on the menu)
+        var original = new LaidOutAreas.Box(0x50, 0x24 + 8, 200, 8);
         var drawn = new LaidOutAreas.Box(0x48, 0x24 + 8, 90, 18);
         var laid = new LaidOutAreas();
         laid.Laid(original, drawn);
