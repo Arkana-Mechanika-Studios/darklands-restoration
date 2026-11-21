@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>DarklandsWorkshop</AssemblyName>
+    <!-- the project's emblem with a gold quill on a red seal (the user's choice of three, 2026-11-21): the program's and the window's icon -->
+    <ApplicationIcon>Assets\DarklandsWorkshop.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
@@ -35,6 +37,18 @@
     <AvaloniaResource Include="Assets\emblem.png" />
     <AvaloniaResource Include="Assets\Fonts\Inter-*.ttf" />
     <None Include="Assets\Fonts\Inter-OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Link="Inter-OFL.txt" />
+    <AvaloniaResource Include="Assets\DarklandsWorkshop.ico" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\background.png" Link="Assets\banner.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\fleuron.png" Link="Assets\fleuron.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\rule-left.png" Link="Assets\rule-left.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\rule-right.png" Link="Assets\rule-right.png" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\Grenze-Black.ttf" Link="Assets\Fonts\Grenze-Black.ttf" />
+    <AvaloniaResource Include="..\Darklands.Launcher\Resources\GrenzeGotisch-Black.ttf" Link="Assets\Fonts\GrenzeGotisch-Black.ttf" />
+  </ItemGroup>
+
+  <!-- on Linux, the icon as a PNG beside the program, for the desktop menu's entry (install-desktop-entries beside DarklandsRP) -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' != '' and $(RuntimeIdentifier.StartsWith('linux'))">
+    <None Include="Assets\DarklandsWorkshop.png" Link="DarklandsWorkshop.png" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the translators' and modders' guides beside the Workshop (in a release: DarklandsRP/Workshop/docs), with the players' guides
@@ -43,13 +57,6 @@
     <None Include="..\..\docs\LOCALISATION.md" Link="docs\LOCALISATION.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\docs\PACKS.md;..\..\docs\MODS.md;..\..\docs\SETTINGS.md;..\..\docs\REPORTING.md" Link="docs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\docs\modding\*.md" Link="docs\modding\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <AvaloniaResource Include="..\Darklands.Host.Sdl\Resources\DarklandsRP.ico" Link="Assets\DarklandsRP.ico" />
-    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\background.png" Link="Assets\banner.png" />
-    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\fleuron.png" Link="Assets\fleuron.png" />
-    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\rule-left.png" Link="Assets\rule-left.png" />
-    <AvaloniaResource Include="..\Darklands.Launcher\Resources\art\rule-right.png" Link="Assets\rule-right.png" />
-    <AvaloniaResource Include="..\Darklands.Launcher\Resources\Grenze-Black.ttf" Link="Assets\Fonts\Grenze-Black.ttf" />
-    <AvaloniaResource Include="..\Darklands.Launcher\Resources\GrenzeGotisch-Black.ttf" Link="Assets\Fonts\GrenzeGotisch-Black.ttf" />
   </ItemGroup>
 
 </Project>

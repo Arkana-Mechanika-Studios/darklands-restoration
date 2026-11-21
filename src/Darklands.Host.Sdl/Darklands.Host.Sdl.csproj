@@ -37,6 +37,9 @@
          THIRD_PARTY_NOTICES.md), next to the program in a Linux publish: it is loaded before the system's, so systems without
          SDL3 (Ubuntu 24.04 and older) run the game -->
     <None Include="Native/linux-x64/libSDL3.so.0" Link="libSDL3.so.0" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- the icon as a PNG (the 256-pixel picture of DarklandsRP.ico) for the desktop menu's entry, which install-desktop-entries
+         (beside the program, from src/Darklands.Host.Launcher/linux) writes into ~/.local/share/applications -->
+    <None Include="Resources/DarklandsRP.png" Link="DarklandsRP.png" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -147,8 +150,8 @@
       <LauncherForWindows Condition="'$(RuntimeIdentifier)' == '' or $(RuntimeIdentifier.StartsWith('win'))">true</LauncherForWindows>
     </PropertyGroup>
     <Exec Condition="'$(LauncherForWindows)' == 'true'" Command="dotnet build &quot;$(LauncherProject)&quot; -c Release -nologo -v q -o &quot;$(PublishDir).&quot;" />
-    <Copy Condition="'$(LauncherForWindows)' != 'true'" SourceFiles="$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\DarklandsRP-Launcher" DestinationFolder="$(PublishDir)" />
-    <Exec Condition="'$(LauncherForWindows)' != 'true' and !$([MSBuild]::IsOSPlatform('Windows'))" Command="chmod +x &quot;$(PublishDir)DarklandsRP-Launcher&quot;" />
+    <Copy Condition="'$(LauncherForWindows)' != 'true'" SourceFiles="$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\DarklandsRP-Launcher;$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\install-desktop-entries" DestinationFolder="$(PublishDir)" />
+    <Exec Condition="'$(LauncherForWindows)' != 'true' and !$([MSBuild]::IsOSPlatform('Windows'))" Command="chmod +x &quot;$(PublishDir)DarklandsRP-Launcher&quot; &quot;$(PublishDir)install-desktop-entries&quot;" />
   </Target>
 
 </Project>

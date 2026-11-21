@@ -248,7 +248,7 @@ internal static class WorkshopTheme
     /// <summary>The Workshop's window icon: the project's emblem.</summary>
     public static WindowIcon Icon()
     {
-        using var stream = AssetLoader.Open(new Uri("avares://DarklandsWorkshop/Assets/DarklandsRP.ico"));
+        using var stream = AssetLoader.Open(new Uri("avares://DarklandsWorkshop/Assets/DarklandsWorkshop.ico"));
         return new WindowIcon(stream);
     }
 }

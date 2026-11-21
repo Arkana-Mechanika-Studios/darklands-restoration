@@ -45,6 +45,23 @@ public sealed class StartPageDataTests
     }
 
     [Fact]
+    public void TheWorkshopsIconIsItsOwnFrom16To256Pixels()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Directory.Build.props")))
+        {
+            dir = dir.Parent;
+        }
+        Assert.NotNull(dir);
+        var ico = File.ReadAllBytes(Path.Combine(dir.FullName, "src", "Darklands.Workshop", "Assets", "DarklandsWorkshop.ico"));
+        var game = File.ReadAllBytes(Path.Combine(dir.FullName, "src", "Darklands.Host.Sdl", "Resources", "DarklandsRP.ico"));
+        Assert.Equal([0, 0, 1, 0], ico[..4]);
+        var sizes = Enumerable.Range(0, BitConverter.ToUInt16(ico, 4)).Select(i => ico[6 + i * 16] == 0 ? 256 : ico[6 + i * 16]).ToArray();
+        Assert.Equal([16, 24, 32, 48, 64, 128, 256], sizes);
+        Assert.NotEqual(game, ico);
+    }
+
+    [Fact]
     public void ThePacksAreFoundOnceEachTheNewestFirst()
     {
         var root = Path.Combine(Path.GetTempPath(), "dl-catalog-" + Guid.NewGuid().ToString("N"));

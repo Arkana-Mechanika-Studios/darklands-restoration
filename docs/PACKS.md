@@ -26,7 +26,9 @@ be used keeps the game's own picture or sound.
 
 ```text
 DarklandsRP/
-  DarklandsRP.exe, DarklandsRP Launcher.exe, …   (the program; DarklandsRP and DarklandsRP-Launcher on Linux)
+  DarklandsRP.exe, DarklandsRP Launcher.exe, …   (the program; on Linux DarklandsRP, DarklandsRP-Launcher, DarklandsRP.png
+                                                  and install-desktop-entries, which adds the game and the Workshop to the
+                                                  desktop's menu)
   LICENSE, THIRD_PARTY_NOTICES.md, OFL.txt
   docs/            SETTINGS, PACKS (this guide), MODS, REPORTING
   packs/
