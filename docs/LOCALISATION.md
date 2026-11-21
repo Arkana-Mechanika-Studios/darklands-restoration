@@ -237,9 +237,10 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   **Open folder…** (**Ctrl+O**) opens a pack from anywhere.
 * The list holds every text a pack can translate, in sections by where the game shows it (cards, screens, names, and
   "not seen": a text no recorded session showed), and in each section by card or screen, under a plain title ("City
-  church by day", "Barter") with its share translated (a bar and "1/10"); a click folds a group open or shut. Each text
-  is named by its first words. Filter the list (**All**, **To do**, **Review**, **Problems**) and search the English,
-  your words or the key. Each row's mark is its state: a green dot translated, an amber dot marked for review, a red
+  church by day", "Barter") with its share translated (a bar and "1/10"); a click folds a group open or shut (the chosen text's group too). Each text
+  is named by its first words. Filter the list (**All**, **To do**, **Done**: the texts your pack translates, **Review**,
+  **Problems**) and search the English, your words or the key. A pack with translations opens at **Done**, on its first
+  translated text; a new pack at **To do**. Each row's mark is its state: a green dot translated, an amber dot marked for review, a red
   dot translated with a problem the check found, an empty ring not translated yet. The counter reads "12 of 4,917
   translated · 3 shown".
 * **Needs review** marks a translated text to look at again (yours to doubt, or a reviewer's to check). The marks are
@@ -260,7 +261,11 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   code, in whole multiples of the game's pixels as large as the window allows: a card text's window beside your words, a
   screen text under them; a screen text on one line with its box's edge dotted and a bar (green: no wider than
   the English, amber: wider but inside the box, red: too wide), a card text laid out in its block with every passage shown
-  against the foot of the card's window. It follows your typing.
+  against the foot of the card's window. It follows your typing. A pack's TrueType font is drawn at four times the
+  game's resolution, as the game draws it at the window's. A text not translated yet shows the English, in your pack's
+  fonts as the game would draw it; when that runs past the card's foot (a wider font than the game's), the bar says so
+  in amber: it is your translation that is measured. A text is translated once one of its rows has words: giving a row
+  the cursor, or emptying every row, leaves it (or makes it again) not translated.
 * **Layout** (under a screen text's preview) changes where your pack draws that text, when its words need more room than
   the English. You can set:
   * **Width:** a wider box, but no wider than the room the text has.
@@ -295,8 +300,9 @@ website, GitHub and Discord. **Packs** at the top left leads back to the list fr
   and underlined, in the list, the English and your translation; its tags are kept in the text (the cursor steps over
   them, and deleting the letter shows them again). A screen text with one has a **Text** | **Raw** switch: **Raw**
   shows the tags as the pack's file holds them.
-* **Chips:** the English's tags, `$Names` and arguments (and your pack's own variables, for a card text) are buttons under
-  your translation (**Insert**); a click, or **Alt+1** to **Alt+9**, puts one where the cursor is. Below it, the editor names the chips you left out and any that
+* **Chips:** the English's tags, `$Names` and arguments are buttons under your translation (**Insert**); a click, or
+  **Alt+1** to **Alt+9**, puts one where the cursor is. Your pack's own variables (`$his1` …, for a card text) are behind
+  one chip, **Pack variables (n)**, whose menu lists them. Below it, the editor names the chips you left out and any that
   are not the English's. A translation that is a choice (a plural, a variable's `$sex` choice) shows one field a variant.
 * **Glossary** keeps your pack's agreed terms (`glossary.tsv` in the pack's folder; the game does not read it). The
   terms a text's English holds are listed above your translation, marked when your words do not use the agreed one.

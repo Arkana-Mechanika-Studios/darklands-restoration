@@ -41,6 +41,9 @@ internal sealed class TextEditorView : IWorkshopEditor
     private int _filter = 1;
     private readonly ListBox _list = new() { Background = Brushes.Transparent };
     private readonly HashSet<string> _open = new(StringComparer.Ordinal);
+
+    // the groups the translator folded (the current text's group among them: folded all the same)
+    private readonly HashSet<string> _folded = new(StringComparer.Ordinal);
     private readonly TextBlock _progress = new() { FontSize = 12 };
     private readonly Border _sidebar = new();
 
@@ -94,9 +97,18 @@ internal sealed class TextEditorView : IWorkshopEditor
             .GroupBy(e => (Section: TextTitles.Section(e), Group: TextTitles.Group(e)))
             .Select(g => (g.Key.Section, g.Key.Group.Key, g.Key.Group.Title, g.ToList()))
             .OrderBy(g => Array.IndexOf(order, g.Section)).ThenBy(g => g.Section == "Cards" ? g.Title : g.Key, StringComparer.Ordinal)];
-        _filters = new[] { "All", "To do", "Review", "Problems" }.Select((label, i) =>
+        // All, To do, Done (the pack's translated texts), Review, Problems
+        _filters = new[] { "All", "To do", "Done", "Review", "Problems" }.Select((label, i) =>
         {
             var b = new Button { Content = label, FontSize = 11.5, Padding = new Thickness(0, 3), CornerRadius = new CornerRadius(5), BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
+            ToolTip.SetTip(b, label switch
+            {
+                "To do" => "Texts not translated yet",
+                "Done" => "Texts this pack translates",
+                "Review" => "Translated texts marked “needs review”",
+                "Problems" => "Texts the last check found a problem in",
+                _ => "Every text",
+            });
             b.Click += (_, _) => SetFilter(i);
             return b;
         }).ToArray();
@@ -109,7 +121,7 @@ internal sealed class TextEditorView : IWorkshopEditor
         _list.SelectionChanged += (_, _) => Chosen();
         _translation.TextChanged += (_, _) =>
         {
-            if (!_loading && _current is not null)
+            if (!_loading && _current is not null && _translation.Text != (_current.Translation ?? ""))
             {
                 Written(_translation.Text);
             }
@@ -119,6 +131,11 @@ internal sealed class TextEditorView : IWorkshopEditor
         _review.Click += (_, _) => ToggleReview();
         View = Build();
         _root.SizeChanged += (_, _) => Layout();
+        // a pack with translations opens at its work (Done, its first translated text); a new one at To do
+        if (project.Entries.Any(e => e.Translation is not null))
+        {
+            _filter = 2;
+        }
         Fill();
         if (Visible().FirstOrDefault() is { } first)
         {
@@ -158,6 +175,18 @@ internal sealed class TextEditorView : IWorkshopEditor
     /// <summary>The pack's review marks as the editor keeps them (an import marks its texts here).</summary>
     internal ReviewMarks Marks => _marks;
 
+    /// <summary>The list's items as shown (tests: a group's heading clicked, its texts listed or not).</summary>
+    internal IReadOnlyList<SideItem> Listed => _list.ItemsSource as IReadOnlyList<SideItem> ?? [];
+
+    /// <summary>Clicks an item of the list (tests).</summary>
+    internal void Click(SideItem item) => _list.SelectedItem = item;
+
+    /// <summary>The list's filter: 0 All, 1 To do, 2 Done, 3 Review, 4 Problems.</summary>
+    internal int Filter => _filter;
+
+    /// <summary>The chips under the text (tests).</summary>
+    internal IEnumerable<Button> Chips => _chips.Children.OfType<Button>();
+
     /// <summary>A text's title as the list shows it (its first words).</summary>
     internal string ListTitle(TextEntry entry) => TitleOf(entry);
 
@@ -195,6 +224,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             _search.Text = "";
         }
         _open.Add(TextTitles.Group(entry).Key);
+        _folded.Remove(TextTitles.Group(entry).Key);
         Fill();
         if (_list.ItemsSource is IEnumerable<SideItem> items && items.FirstOrDefault(i => i.Entry == entry) is { } item)
         {
@@ -228,7 +258,7 @@ internal sealed class TextEditorView : IWorkshopEditor
                 _search.SelectAll();
                 return true;
             case >= Avalonia.Input.Key.D1 and <= Avalonia.Input.Key.D9 when e.KeyModifiers.HasFlag(KeyModifiers.Alt):
-                var names = _chips.Children.OfType<Button>().Where(b => b.IsVisible).ToList();
+                var names = _chips.Children.OfType<Button>().Where(b => b.IsVisible && b.Tag is string).ToList();
                 var k = e.Key - Avalonia.Input.Key.D1;
                 if (k < names.Count)
                 {
@@ -245,10 +275,12 @@ internal sealed class TextEditorView : IWorkshopEditor
     private Control Build()
     {
         // the sidebar: search, filters, the list, the progress
-        var segment = new Avalonia.Controls.Primitives.UniformGrid { Columns = 4 };
-        foreach (var f in _filters)
+        // five filters, each as wide as its word needs (Problems the widest)
+        var segment = new Grid { ColumnDefinitions = new ColumnDefinitions("0.8*,1*,1*,1.25*,1.5*") };
+        for (var i = 0; i < _filters.Length; i++)
         {
-            segment.Children.Add(f);
+            Grid.SetColumn(_filters[i], i);
+            segment.Children.Add(_filters[i]);
         }
         var head = new StackPanel
         {
@@ -387,7 +419,7 @@ internal sealed class TextEditorView : IWorkshopEditor
     }
 
     // ---------------------------------------------------------------- the sidebar
-    private sealed record SideItem(int Kind, string Title, string Detail, TextEntry? Entry, string Group, int Done, int Total, bool Open);
+    internal sealed record SideItem(int Kind, string Title, string Detail, TextEntry? Entry, string Group, int Done, int Total, bool Open);
 
     private void SetFilter(int filter)
     {
@@ -404,8 +436,9 @@ internal sealed class TextEditorView : IWorkshopEditor
         var ok = _filter switch
         {
             1 => e.State == TextState.Untranslated,
-            2 => InReview(e),
-            3 => e.State == TextState.Problem,
+            2 => e.Translation is not null,
+            3 => InReview(e),
+            4 => e.State == TextState.Problem,
             _ => true,
         };
         if (ok && _search.Text is { Length: > 0 } q)
@@ -474,7 +507,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             items.Add(new SideItem(0, section.Key.ToUpperInvariant(), $"{Count(all.Count(e => e.Translation is not null))} of {Count(all.Count)}", null, "", 0, 0, false));
             foreach (var (group, shown) in shownGroups)
             {
-                var open = _open.Contains(group.Key) || searching || _current is not null && group.Entries.Contains(_current);
+                var open = !_folded.Contains(group.Key) && (_open.Contains(group.Key) || searching || _current is not null && group.Entries.Contains(_current));
                 items.Add(new SideItem(1, group.Title, "", null, group.Key, group.Entries.Count(e => e.Translation is not null), group.Entries.Count, open));
                 if (open)
                 {
@@ -487,10 +520,8 @@ internal sealed class TextEditorView : IWorkshopEditor
             }
         }
         _list.ItemsSource = items;
-        if (_current is not null && items.FirstOrDefault(i => i.Entry == _current) is { } item)
-        {
-            _list.SelectedItem = item;
-        }
+        // the current text chosen in the list; none when its group is folded (so its heading can be clicked again)
+        _list.SelectedItem = _current is not null && items.FirstOrDefault(i => i.Entry == _current) is { } item ? item : null;
         _filling = false;
         UpdateProgress();
     }
@@ -515,8 +546,15 @@ internal sealed class TextEditorView : IWorkshopEditor
                 Show(entry);
                 break;
             case SideItem { Kind: 1 } group:
-                if (!_open.Remove(group.Group))
+                // folds an open group (the current text's too), opens a folded one
+                if (group.Open)
                 {
+                    _open.Remove(group.Group);
+                    _folded.Add(group.Group);
+                }
+                else
+                {
+                    _folded.Remove(group.Group);
                     _open.Add(group.Group);
                 }
                 Fill();
@@ -830,7 +868,8 @@ internal sealed class TextEditorView : IWorkshopEditor
                 box.GotFocus += (_, _) => _focusedRow = box;
                 box.TextChanged += (_, _) =>
                 {
-                    if (_loading || _current is null)
+                    // the box's words unchanged (it was only given the cursor): nothing is written
+                    if (_loading || _current is null || box.Text == (_rows[index].Field ?? CardRow.Unwrapped(_rows[index].Content)))
                     {
                         return;
                     }
@@ -924,17 +963,26 @@ internal sealed class TextEditorView : IWorkshopEditor
         }
         var chips = TextTokens.Split(_current.English).Where(t => t.Kind != TokenKind.Words && !t.Text.StartsWith("{\"", StringComparison.Ordinal))
             .DistinctBy(t => t.Text, StringComparer.Ordinal).ToList();
-        if (_current.Key.StartsWith("msg:", StringComparison.Ordinal))
-        {
-            chips.AddRange(_project.Variables.Select(v => new TextToken(TokenKind.Name, "$" + v.Name)));
-        }
         foreach (var token in chips)
         {
-            var chip = token.Text;
-            var button = new Button
+            _chips.Children.Add(Chip(token));
+        }
+        // the pack's own variables ($his1 ...): behind one chip, its menu theirs (not a row of chips on every card)
+        if (_current.Key.StartsWith("msg:", StringComparison.Ordinal)
+            && _project.Variables.Select(v => "$" + v.Name).Where(v => chips.All(c => c.Text != v)).ToList() is { Count: > 0 } variables)
+        {
+            var panel = new WrapPanel { MaxWidth = 360, Margin = new Thickness(4) };
+            var menu = new Flyout { Content = panel, Placement = PlacementMode.TopEdgeAlignedLeft };
+            foreach (var v in variables)
             {
-                Content = chip,
-                Tag = chip,
+                var chip = Chip(new TextToken(TokenKind.Name, v));
+                chip.Margin = new Thickness(0, 0, 6, 6);
+                chip.Click += (_, _) => menu.Hide();
+                panel.Children.Add(chip);
+            }
+            var more = new Button
+            {
+                Content = $"Pack variables ({variables.Count}) ▾",
                 Padding = new Thickness(7, 1),
                 Margin = new Thickness(0, 0, 6, 0),
                 FontSize = 12,
@@ -942,12 +990,34 @@ internal sealed class TextEditorView : IWorkshopEditor
                 BorderThickness = new Thickness(1),
                 BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line2),
                 Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
-                Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColourOf(token) ?? WorkshopTheme.Text),
+                Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted),
+                Flyout = menu,
             };
-            ToolTip.SetTip(button, "Put it where the cursor is");
-            button.Click += (_, _) => InsertChip(chip);
-            _chips.Children.Add(button);
+            ToolTip.SetTip(more, "The pack's own variables (variables.json): pick one to put it where the cursor is");
+            _chips.Children.Add(more);
         }
+    }
+
+    // a chip: a name, argument or tag of the English that a click puts where the cursor is
+    private Button Chip(TextToken token)
+    {
+        var chip = token.Text;
+        var button = new Button
+        {
+            Content = chip,
+            Tag = chip,
+            Padding = new Thickness(7, 1),
+            Margin = new Thickness(0, 0, 6, 0),
+            FontSize = 12,
+            CornerRadius = new CornerRadius(5),
+            BorderThickness = new Thickness(1),
+            BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line2),
+            Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
+            Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColourOf(token) ?? WorkshopTheme.Text),
+        };
+        ToolTip.SetTip(button, "Put it where the cursor is");
+        button.Click += (_, _) => InsertChip(chip);
+        return button;
     }
 
     private void InsertChip(string chip)
@@ -1036,14 +1106,16 @@ internal sealed class TextEditorView : IWorkshopEditor
             return;
         }
         var result = _preview.Render(_current, _current.Translation);
-        var bitmap = new Avalonia.Media.Imaging.WriteableBitmap(new PixelSize(result.Width, result.Height), new Vector(96, 96),
+        // its pixels (a TrueType font's text at a higher resolution: Scale output pixels a game pixel)
+        var (pw, ph) = (result.Width * result.Scale, result.Height * result.Scale);
+        var bitmap = new Avalonia.Media.Imaging.WriteableBitmap(new PixelSize(pw, ph), new Vector(96, 96),
             Avalonia.Platform.PixelFormat.Bgra8888, Avalonia.Platform.AlphaFormat.Opaque);
         using (var frame = bitmap.Lock())
         {
-            for (var row = 0; row < result.Height; row++)
+            for (var row = 0; row < ph; row++)
             {
-                var line = Array.ConvertAll(result.Argb[(row * result.Width)..((row + 1) * result.Width)], v => unchecked((int)v));
-                System.Runtime.InteropServices.Marshal.Copy(line, 0, frame.Address + row * frame.RowBytes, result.Width);
+                var line = Array.ConvertAll(result.Argb[(row * pw)..((row + 1) * pw)], v => unchecked((int)v));
+                System.Runtime.InteropServices.Marshal.Copy(line, 0, frame.Address + row * frame.RowBytes, pw);
             }
         }
         _picture.Source = bitmap;
@@ -1054,9 +1126,13 @@ internal sealed class TextEditorView : IWorkshopEditor
         {
             var spare = result.FootLimit - result.Foot;
             _barFill.Width = 0;
-            state = result.Overflows ? WorkshopTheme.Bad : result.Pages > 1 ? WorkshopTheme.Warn : WorkshopTheme.Ok;
+            // the English of a text not translated yet, in the pack's fonts: not the pack's fault, and not what will be measured
+            var english = result.Untranslated;
+            state = result.Overflows && !english ? WorkshopTheme.Bad : result.Overflows || result.Pages > 1 ? WorkshopTheme.Warn : WorkshopTheme.Ok;
             _bar.Background = WorkshopTheme.Brush(state);
-            _measure.Text = result.Overflows
+            _measure.Text = result.Overflows && english
+                ? $"Not translated yet: the English, drawn in this pack's font, runs {result.Foot - result.FootLimit + 1} px past the foot of the card's window. Your translation is what is measured."
+                : result.Overflows
                 ? $"Runs past the foot of the card's window by {result.Foot - result.FootLimit + 1} px (every passage shown)."
                 : result.Pages > 1
                     ? $"Too long for one window: the game shows it in {result.Pages} pages (every passage shown)."

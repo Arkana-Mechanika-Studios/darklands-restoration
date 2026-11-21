@@ -12,6 +12,9 @@ internal sealed class WorkshopApp : Application
         // a pack's fonts are read as the game's hosts read them (font packs, docs/LOCALISATION.md)
         Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
         Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
+        // a TrueType font's text in the preview: drawn again at a higher resolution, by the game's own text layer
+        Darklands.Workshop.Text.TextPreview.DrawScalable = (screen, scale) =>
+            new Darklands.Rendering.TextLayer().Item(screen, new Darklands.Platform.DisplayRectangle(0, 0, Darklands.Platform.Screen.Width * scale, Darklands.Platform.Screen.Height * scale))?.Texture.Argb;
         Styles.Add(new FluentTheme());
         // the text editor's look (AvaloniaEdit: the translation box)
         Styles.Add(new Avalonia.Markup.Xaml.Styling.StyleInclude(new Uri("avares://Darklands.Workshop/"))
