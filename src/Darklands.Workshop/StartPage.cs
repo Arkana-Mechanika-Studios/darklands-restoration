@@ -184,6 +184,7 @@ internal sealed class StartPage
             Children =
             {
                 new TextBlock { Text = "Workshop · translations and packs", FontSize = 12.5, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted) },
+                WorkshopTheme.BetaBadge(),
                 new TextBlock { Text = Versions(), FontSize = 12.5, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint) },
             },
         });
@@ -214,10 +215,10 @@ internal sealed class StartPage
     public static string Versions()
     {
         static string Clean(string? v) => (v ?? "").Split('+')[0].Trim();
-        // the Workshop's own version (the same build's as the game's: Directory.Build.props)
+        // the Workshop's own version (WorkshopVersion), then the Restoration's this build is of (Directory.Build.props)
         var own = Clean(typeof(StartPage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
-        var words = "Restoration " + own;
-        var program = Path.Combine(AppContext.BaseDirectory, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
+        var words = "Workshop " + Darklands.Workshop.Text.WorkshopVersion.Current + " · Restoration " + own;
+        var program = WorkshopApp.GameProgram;
         if (File.Exists(program) && Clean(FileVersionInfo.GetVersionInfo(program).ProductVersion) is { Length: > 0 } game && game != own)
         {
             words += " · game " + game;

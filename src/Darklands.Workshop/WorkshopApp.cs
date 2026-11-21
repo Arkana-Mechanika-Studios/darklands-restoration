@@ -7,10 +7,22 @@ namespace Darklands.Workshop;
 /// <summary>The Workshop's application: the Fluent theme in the Workshop's colours, its one window.</summary>
 internal sealed class WorkshopApp : Application
 {
+    /// <summary>
+    /// The game program's folder: in a release the Workshop is in the <c>Workshop</c> folder inside the game's, so the one above;
+    /// in a developer's build or the tests, its own when DarklandsRP is beside it (Darklands.Platform.PackLayout.GameProgramFolder).
+    /// Its packs folder is where the Workshop lists and makes packs; its DarklandsRP is the program "Play in game" starts.
+    /// </summary>
+    public static string GameProgramFolder { get; } = Darklands.Platform.PackLayout.GameProgramFolder(AppContext.BaseDirectory);
+
+    /// <summary>The game's program (DarklandsRP.exe on Windows, DarklandsRP elsewhere) in <see cref="GameProgramFolder"/>.</summary>
+    public static string GameProgram => Path.Combine(GameProgramFolder, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
+
     public override void Initialize()
     {
         // a pack's fonts are read as the game's hosts read them (font packs, docs/LOCALISATION.md)
         Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+        // a pack's own decorated capitals (capitals/*.png), as the game reads them
+        Darklands.Presentation.Graphics.PackCapitals.ReadImage = path => { var image = Darklands.Rendering.PngCodec.Read(path); return (image.Width, image.Height, image.Argb); };
         Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
         // a TrueType font's text in the preview: drawn again at a higher resolution, by the game's own text layer
         Darklands.Workshop.Text.TextPreview.DrawScalable = (screen, scale) =>

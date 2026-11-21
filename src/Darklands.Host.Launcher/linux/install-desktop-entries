@@ -1,0 +1,47 @@
+#!/bin/sh
+# Adds Darklands to the desktop's application menu (the freedesktop.org menus of GNOME, KDE, Xfce, the Steam Deck's desktop
+# mode ...) for this user: a "Darklands Restoration Project" entry that opens the launcher, and, when the Workshop is in
+# the Workshop folder beside this script, a "Darklands Workshop" entry. The entries point to this folder: run the script
+# again after moving it. Nothing is written outside ~/.local/share/applications. --remove takes the entries away.
+set -e
+here=$(cd "$(dirname "$0")" && pwd)
+apps="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+game="$apps/darklandsrp.desktop"
+workshop="$apps/darklands-workshop.desktop"
+
+if [ "$1" = "--remove" ]; then
+  rm -f "$game" "$workshop"
+  echo "Removed the Darklands entries from $apps."
+  exit 0
+fi
+
+mkdir -p "$apps"
+cat > "$game" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Darklands Restoration Project
+Comment=Darklands (1992), restored: the launcher, whose Play starts the game
+Exec="$here/DarklandsRP-Launcher"
+Path=$here
+Icon=$here/DarklandsRP.png
+Terminal=false
+Categories=Game;RolePlaying;
+EOF
+echo "Added $game"
+
+if [ -f "$here/Workshop/DarklandsWorkshop" ]; then
+  cat > "$workshop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Darklands Workshop
+Comment=Translate and mod Darklands
+Exec="$here/Workshop/DarklandsWorkshop"
+Path=$here/Workshop
+Icon=$here/Workshop/DarklandsWorkshop.png
+Terminal=false
+Categories=Development;Translation;
+EOF
+  echo "Added $workshop"
+else
+  rm -f "$workshop"
+fi

@@ -99,7 +99,7 @@ AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
 
 A pack replaces pictures (PNG files) or music and battle sounds (OGG, WAV or General MIDI files) without changing how the game plays.
 Put a pack's folder in the `packs` folder next to the program and choose it in the launcher's "HD pack" or "Audio pack"
-row (or drop the folder on the launcher). A pack (or a mod) can also give music to a card of the game. MIDI music needs a General MIDI SoundFont (`.sf2`) of your own, in a `SOUNDFONT` folder next to the program or chosen in the launcher's "SoundFont" row; none is included. The release comes with a small example, `packs/audio-pack-example` (generated
+row (or drop the folder on the launcher). A pack (or a mod) can also give music to a card of the game. MIDI music needs a General MIDI SoundFont (`.sf2`) of your own, in a `SOUNDFONT` folder next to the program or chosen in the launcher's "SoundFont" row; none is included. The release comes with a small example, `packs/audio/audio-pack-example` (generated
 test tones). How to make your own, with the names of all the game's music and sounds: [`docs/PACKS.md`](docs/PACKS.md),
 also beside the program and linked from the launcher ("how to make a pack").
 
@@ -188,13 +188,20 @@ A release for Linux x64 (also the Steam Deck: desktop mode and Steam as a non-St
 dotnet publish src/Darklands.Host.Sdl -p:PublishProfile=linux-x64
 ```
 
-The Linux release ships SDL 3.4.20 as `libSDL3.so.0` beside the program, built on Ubuntu 22.04 from SDL's source release (`src/Darklands.Host.Sdl/Native/linux-x64`, made by `tools/linux/build_sdl3.sh` in an `ubuntu:22.04` container), so it runs on Ubuntu 22.04 and later, Debian 12 and later and SteamOS, including systems that have no SDL3 of their own such as Ubuntu 24.04. The copy beside the program is loaded first; without it the program uses the system's `libSDL3.so.0` (SDL 3.2 or later: Debian 13 / Ubuntu 25.04 and later `libsdl3-0`, Fedora `SDL3`, Arch and SteamOS `sdl3`; the Steam Linux Runtime has it). Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
+The Linux release ships SDL 3.4.20 as `libSDL3.so.0` beside the program, built on Ubuntu 22.04 from SDL's source release (`src/Darklands.Host.Sdl/Native/linux-x64`, made by `tools/linux/build_sdl3.sh` in an `ubuntu:22.04` container), so it runs on Ubuntu 22.04 and later, Debian 12 and later and SteamOS, including systems that have no SDL3 of their own such as Ubuntu 24.04. The copy beside the program is loaded first; without it the program uses the system's `libSDL3.so.0` (SDL 3.2 or later: Debian 13 / Ubuntu 25.04 and later `libsdl3-0`, Fedora `SDL3`, Arch and SteamOS `sdl3`; the Steam Linux Runtime has it). Pack it with `tar` so `DarklandsRP` stays executable (or `chmod +x DarklandsRP`). `./install-desktop-entries` (beside the program)
+adds the game, and the Workshop when it is in the `Workshop` folder, to the desktop's application menu with their icons
+(`DarklandsRP.png`, `Workshop/DarklandsWorkshop.png`); `--remove` takes them away. Without a game folder named, the program looks in Steam's libraries (including the Deck's SD card), Heroic's installed games, the usual GOG/Lutris folders and Wine prefixes (`~/.wine`, `WINEPREFIX`, Lutris, Heroic, Bottles, Proton) before asking. The workflow `.github/workflows/build.yml` builds, tests and publishes both systems.
 
 The launcher shows the release notes: write `releases/<version>/release-notes.md` (beside the repository) before
 publishing, and the build puts it next to the program as `RELEASE_NOTES.md`; without it the launcher only links to the
 release's page, `releases/tag/v<version>` on GitHub, so tag each release `v<version>`.
 
 The version is set once, in `Directory.Build.props` (`DarklandsRP --version` prints it).
+
+The release's folders (docs/PACKS.md, "The release's folders"): the program, `docs`, `packs/fonts` (HD fonts),
+`packs/languages`, `packs/audio` (the example), `mods`, `SOUNDFONT` and `MT32_ROMS`. The Workshop
+(`dotnet publish src/Darklands.Workshop -p:PublishProfile=win-x64`) is published into `artifacts/workshop-win-x64/Workshop`
+and archived with that `Workshop` folder as its root, so it unzips into the game's folder.
 
 ### How it is made
 

@@ -48,7 +48,8 @@ public sealed class TextExportTests
             Assert.Contains("\"language\": \"fr\"", File.ReadAllText(Path.Combine(folder, "pack.json")), StringComparison.Ordinal);
 
             var csv = TextExport.Csv(reopened, items).Split("\r\n");
-            Assert.StartsWith("# Darklands translation", csv[0], StringComparison.Ordinal);
+            Assert.StartsWith("# written by Darklands Workshop ", csv[0], StringComparison.Ordinal);
+            Assert.StartsWith("# Darklands translation", csv[1], StringComparison.Ordinal);
             var header = Array.FindIndex(csv, l => !l.StartsWith('#'));
             Assert.Equal(string.Join(",", TextExport.CsvColumns), csv[header]);
             // a cell with a comma is quoted

@@ -174,6 +174,73 @@ public sealed class LoadScreenTests
         Assert.Equal(Shown(battleCycles: false), Shown(battleCycles: true));
     }
 
+    /// <summary>
+    /// The Interface switch (GameUi.ComfortInterface): Comfort shows every saved game on one line, the newest first (by the file's
+    /// time), its comment and the real date it was saved in one column, the buttons narrowed to short labels; its keys, rows and
+    /// loading are the original's. Classic (the default, the oracle's) draws the original's screen.
+    /// </summary>
+    [Fact]
+    public void TheComfortListShowsAGameALineTheNewestFirstAndClassicIsTheOriginal()
+    {
+        if (GameFolder.Files is not { } files || Copy(files, "DKSAVE1.SAV", "DKSAVE2.SAV", "DKSAVE3.SAV") is not { } folder)
+        {
+            return;
+        }
+        File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE1.SAV"), new DateTime(2026, 11, 20, 18, 5, 0));
+        File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE2.SAV"), new DateTime(2026, 11, 21, 19, 23, 0));
+        File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE3.SAV"), new DateTime(2026, 11, 19, 8, 0, 0));
+        Assert.Equal(new DateTime(2026, 11, 21, 19, 23, 0), folder.SavedAt("DKSAVE2.SAV"));
+        var labels = Content.Formats.Saves.LoadScreenTexts.Decode(files.Read("DARKLAND.EXE"));
+
+        (byte[] Pixels, uint[] Palette, string? Loaded) Shown(bool? comfort, params int[] keys)
+        {
+            var host = new KeyHost(keys);
+            var ui = new GameUi(host, new GameAssets(files));
+            if (comfort is { } on)
+            {
+                ui.ComfortInterface = on;
+            }
+            string? loaded = null;
+            new LoadGameScreen(ui, folder, labels).Run(fromStartScreen: true, name => { loaded = name; return null; });
+            return (host.Last!, host.LastPalette!, loaded);
+        }
+        var original = Shown(null);
+        var classic = Shown(false);
+        var comfort = Shown(true);
+        Assert.Equal(original.Pixels, classic.Pixels);
+        Assert.NotEqual(classic.Pixels, comfort.Pixels);
+
+        // the first row: the original's first file (DKSAVE1), the comfort list's newest (DKSAVE2); the original's keys move on them
+        Assert.Equal("DKSAVE1.SAV", Shown(false, Key('l')).Loaded);
+        Assert.Equal("DKSAVE2.SAV", Shown(true, Key('l')).Loaded);
+        Assert.Equal("DKSAVE1.SAV", Shown(true, Keys.Down, Keys.Down, Keys.Up, Key('l')).Loaded);
+        Assert.Equal("DKSAVE3.SAV", Shown(true, Keys.End, Key('l')).Loaded);
+
+        // one line a game: three rows of text from y 0x15, ten pixels apart; the dates in one column (their first ink within a glyph's
+        //   own blank column of each other), right of the comments
+        int At(byte[] p, int x, int y) => p[y * Screen.Width + x];
+        bool Ink(byte[] p, int x, int y) => At(p, x, y) is 0x10 or 0x12;
+        var firstDate = new List<int>();
+        for (var row = 0; row < 3; row++)
+        {
+            var rows = Enumerable.Range(0x15 + row * 10, 10).ToArray();
+            Assert.Contains(rows, y => Enumerable.Range(0x80, 0xB8).Any(x => Ink(comfort.Pixels, x, y)));
+            firstDate.Add(Enumerable.Range(0xF8, 0x40).First(x => rows.Any(y => Ink(comfort.Pixels, x, y))));
+        }
+        Assert.True(firstDate.Max() - firstDate.Min() <= 2, string.Join(", ", firstDate));
+        Assert.DoesNotContain(Enumerable.Range(0x15 + 3 * 10, 0x60).SelectMany(y => Enumerable.Range(0x90, 0xA8).Select(x => At(comfort.Pixels, x, y))), c => c is 0x12);
+
+        if (Environment.GetEnvironmentVariable("DARKLANDS_LOADLIST_SHOTS") is { Length: > 0 } shots)
+        {
+            Directory.CreateDirectory(shots);
+            foreach (var (name, shown) in new[] { ("load-classic", classic), ("load-comfort", comfort) })
+            {
+                File.WriteAllBytes(Path.Combine(shots, name + ".idx"), shown.Pixels);
+                File.WriteAllBytes(Path.Combine(shots, name + ".pal"), shown.Palette.SelectMany(BitConverter.GetBytes).ToArray());
+            }
+        }
+    }
+
     private static int Key(char c) => Keys.ForCharacter(c);
 
     /// <summary>A copy of some of the player's saved games in a new temporary folder.</summary>

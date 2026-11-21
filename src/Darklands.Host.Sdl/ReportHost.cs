@@ -57,6 +57,7 @@ internal static class ReportHost
             ("SoundFont", s.SoundFont ?? "default"),
             ("HD pack", s.HdPack ?? "none"),
             ("Language pack", s.LanguagePack ?? "none"),
+            ("Language pack written by", s.LanguagePack is { } pack ? Darklands.Localization.LanguagePack.WorkshopOf(pack) is { } writer ? "Darklands Workshop " + writer : "not said" : "none"),
             ("Mods", s.Mods.Count == 0 ? "none (Classic)" : string.Join(", ", s.Mods)),
             ("Game command line", s.CommandLine.Count == 0 ? "none" : string.Join(' ', s.CommandLine)),
             ("Saves folder setting", s.SavesFolder ?? "default"),

@@ -142,6 +142,7 @@ public static class TextExport
             ["instructions"] = new JsonArray([.. Instructions(project).Select(l => JsonValue.Create(l))]),
             ["source"] = "en",
             ["target"] = project.Language,
+            [WorkshopVersion.ManifestField] = WorkshopVersion.Current,
             ["texts"] = texts,
         };
         return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n";
@@ -156,6 +157,7 @@ public static class TextExport
         ArgumentNullException.ThrowIfNull(project);
         ArgumentNullException.ThrowIfNull(items);
         var csv = new StringBuilder();
+        csv.Append("# written by ").Append(WorkshopVersion.Label).Append("\r\n");
         foreach (var line in Instructions(project))
         {
             csv.Append("# ").Append(line).Append("\r\n");

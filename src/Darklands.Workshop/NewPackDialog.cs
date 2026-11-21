@@ -9,8 +9,8 @@ namespace Darklands.Workshop;
 
 /// <summary>
 /// A new translation pack (W-0 polish, the approved design): its language from a searchable list of the evident ones (each by its
-/// own name, its English name and its tag) or another, checked as a BCP 47 tag; its name and author; where it goes (the program's
-/// packs folder by default, where the launcher lists packs); and, when the language has letters the game's fonts lack, the matching
+/// own name, its English name and its tag) or another, checked as a BCP 47 tag; its name and author; where it goes (the game's
+/// packs/languages folder by default, where the launcher lists packs); and, when the language has letters the game's fonts lack, the matching
 /// font in the game's pixel style.
 /// </summary>
 // Not in the original: the 1.1 Workshop.
@@ -127,7 +127,7 @@ internal sealed class NewPackDialog : Window
                 names,
                 Label("Location"),
                 location,
-                new TextBlock { Text = "The launcher lists the packs in the program's packs folder.", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint), Margin = new Thickness(0, 6, 0, 0) },
+                new TextBlock { Text = "The launcher lists the packs in the game's packs folder (packs/languages).", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Faint), Margin = new Thickness(0, 6, 0, 0) },
                 _fontBox,
                 _problem,
             },

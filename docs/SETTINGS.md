@@ -57,11 +57,12 @@ not meant for players.
 | `startup.intro` | true | `--no-intro` | the opening animation |
 | `startup.commandLine` | `[]` | `-- <words>` | the game's own DOS command line (`-Q`, `-O`, `-A<letter>`), a list of words or one string |
 | `textFont` | built-in | `--text-font`; `DARKLANDS_TEXT_FONT` | 4096-byte VGA BIOS 8x16 font dump, or its base64 |
-| `text.languagePack` | none | `--language-pack <folder>`; `DARKLANDS_LANGUAGE_PACK` | a translation pack: a folder with a `pack.json` naming its language and Fluent `.ftl` files under `text/<language>/` ([LOCALISATION.md](LOCALISATION.md)); not part of the original: it changes words only, the game plays the same; the launcher's Advanced tab has its row |
-| `text.fontPack` | none | `--font-pack <folder>`; `DARKLANDS_FONT_PACK` | a font pack: a folder with a `pack.json` saying `"fonts": true` and its fonts in `fonts/` ([LOCALISATION.md](LOCALISATION.md)): the game's text, English included, drawn in them at the window's resolution; it combines with a translation pack (whose own fonts win for their slots); the program ships one, "HD fonts" (DejaVu Sans Mono and EB Garamond); not part of the original; the launcher's Advanced tab has its row |
+| `text.languagePack` | none | `--language-pack <folder>`; `DARKLANDS_LANGUAGE_PACK` | a translation pack: a folder with a `pack.json` naming its language and Fluent `.ftl` files under `text/<language>/`, installed in `packs/languages` ([PACKS.md](PACKS.md#language-packs); making one: [LOCALISATION.md](LOCALISATION.md), in a release `Workshop/docs`); not part of the original: it changes words only, the game plays the same; the launcher's Advanced tab has its row |
+| `text.fontPack` | none | `--font-pack <folder>`; `DARKLANDS_FONT_PACK` | a font pack: a folder with a `pack.json` saying `"fonts": true` and its fonts in `fonts/` ([PACKS.md](PACKS.md#language-packs)): the game's text, English included, drawn in them at the window's resolution; it combines with a translation pack (whose own fonts win for their slots); the program ships one, "HD fonts" in `packs/fonts/hd-fonts` (DejaVu Sans Mono and EB Garamond); not part of the original; the launcher's Advanced tab has its row |
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
+| `interface.mode` | `"comfort"` | `--interface classic\|comfort` | the Interface switch (below): `comfort`, the comfort features; `classic`, the 1992 game's interface exactly; the game plays the same either way |
 | `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
 | `sdl.library` | the copy next to the program (`SDL3.dll` on Windows, `libSDL3.so.0` on Linux, both shipped), else the system's | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
@@ -257,6 +258,33 @@ pointer over a line the keys are the original's. Everything is made of a player'
 so the game plays the same. The launcher shows it on its Advanced tab, under Start-up: "Card menu keys anywhere";
 `--no-card-menu-keys` turns it off for one run.
 
+### The Interface switch
+
+One of the three switches of the restoration (Rules: what the game decides; Presentation: what is seen and heard; Interface: how
+the same orders are given). `interface.mode` is `"comfort"` (the default) or `"classic"`; the launcher shows it on its Advanced
+tab ("Interface: Comfort / Classic"); `--interface classic` (or `comfort`) sets it for one run. **Classic** is the original
+interface exactly, screen for screen; the replays and the comparisons with the original game play Classic. **Comfort** turns on
+the comfort features, which change how orders are given and what a screen shows of them, never what the game decides (the saved
+games are the same, and the original game loads them):
+
+* **The saved games' list** (the load screen, Alt-L): every saved game on one line, the newest first. The buttons are narrowed
+  to short labels ("Load Game", "Delete Game", "Main Menu", whose M works as well as R; a translation keeps its own labels and the
+  buttons narrow only as far as they allow), and the list box is widened to them, fifteen rows instead of nine. A line holds the
+  game's comment and, in one column at the right, the real date and time it was saved ("21 Nov 19:23": the file's time on this
+  computer; the saved game itself holds only the game's date). Under the buttons, the highlighted game's place, the game's date
+  and hour, and the whole real date ("Saved on 2026-11-21 19:23"). The keys, the scrolling, the highlight, the mouse and loading
+  are the original's. A comment too long for its line is cut before the date column.
+* **Walking on** (the overland map): tap a direction key twice (two presses within 0.35 s, the key let go in between), or press
+  it once with Shift, and the party walks on that way without the key held. It walks by the map's own command, the key a player
+  would press, one a pass ([COMMANDS.md](COMMANDS.md)), so the rules, the time and the encounters are those of a held key. It
+  stops at any other key or a click (which then does what it always does), at a step that does not walk on (blocked ground, a
+  city or place reached, an encounter, a card or event), at a message on the map, at nightfall, and at the map's edge. In the
+  original the map's keys are only the plain direction keys (with or without Shift the BIOS gives the same codes, and its
+  keyboard handler ignores Shift), so Shift with a direction did nothing of its own there. A recording of it (the keys, their
+  presses and releases, the clock) plays back the same walk.
+
+`interface` is a section so that a later settings screen can give a feature its own key beside `mode`; there is none yet.
+
 ### Keys on other layouts
 
 The game takes the characters your keyboard layout prints, as DOS did with its keyboard driver: on AZERTY Shift with the `=` key is
@@ -320,5 +348,6 @@ is sent anywhere; see [REPORTING.md](REPORTING.md).
     "configDrk": { "card": "sbpro2", "port": "0x220", "irq": 7, "dma": 1 },
   },
   "startup": { "intro": false, "commandLine": ["-Q"] },
+  "interface": { "mode": "classic" },
 }
 ```

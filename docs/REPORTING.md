@@ -23,7 +23,7 @@ https://github.com/Arkana-Mechanika-Studios/darklands-restoration/issues/new/cho
 
 | File | What |
 |---|---|
-| `report.txt` | version, commit, system, .NET, screen and sound settings, packs and mods, the game program's version and SHA-256, why the report was made (crash or you), the error with its stack, your words, the list of files and what was left out |
+| `report.txt` | version, commit, system, .NET, screen and sound settings, packs and mods (and the Workshop version that wrote the language pack), the game program's version and SHA-256, why the report was made (crash or you), the error with its stack, your words, the list of files and what was left out |
 | `logs\` | the log of this run and of the one before (everything the program printed, and the console's lines) |
 | `settings\darklands.settings.json` | your settings file |
 | `screenshot.png` | the last frame, when there is one |

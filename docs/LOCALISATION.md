@@ -128,7 +128,8 @@ A pack is a folder:
 
 ```
 my-translation-pack/
-  pack.json            { "language": "de", "name": "Deutsch", "author": "…", "base": "483.07" }
+  pack.json            { "language": "de", "name": "Deutsch", "author": "…", "base": "483.07", "workshop": "1.1.0-beta.1" }
+  capitals/            optional: the pack's own decorated capitals, one 20×20 PNG a letter (U+0416.png, Ж.png)
   text/
     de/
       exe.ftl          the EXE's strings and the word tables
@@ -139,7 +140,9 @@ my-translation-pack/
 ```
 
 `pack.json` must name the `language` (a language tag: `de`, `fr`, `pt-BR`; `qps` is the pseudo-locale); `name`,
-`author` and `base` (the game version translated: `483.07`, the only one supported) are optional. The Fluent files are
+`author` and `base` (the game version translated: `483.07`, the only one supported) are optional; `workshop` is the
+Workshop version that last saved the pack (it writes it; the game reads it only to say it in a problem report). The game
+ignores every field it does not know, so a newer Workshop may add one. The Fluent files are
 under `text/<language>/`, the layout of the mods' text, so a language pack will also load unchanged as a cosmetic mod
 in 1.2. Every `.ftl` file there is read, in path order (the file names are free); a message id defined twice keeps the
 first. A key the pack does not have shows the original English, so a pack may be partial. What is wrong
@@ -222,17 +225,36 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 
 ## The Workshop's text editor
 
-`DarklandsWorkshop` (a download of its own beside the game's; put it in the same folder as `DarklandsRP`) is the
-translators' editor. It finds your game folder as the launcher does (or the game folder button at the top right), and
-starts on its pack list: every translation pack it finds in the program's `packs` folder (the one the launcher lists),
+`DarklandsWorkshop` (a download of its own beside the game's: its archive holds a `Workshop` folder; unzip it into the
+`DarklandsRP` folder, so it is `DarklandsRP/Workshop`, and it finds the game one folder up; beside `DarklandsRP` works
+too) is the translators' editor. It finds your game folder as the launcher does (or the game folder button at the top
+right), and starts on its pack list: every translation pack it finds in the game program's `packs` folder (the one the
+launcher lists: its `languages`, `fonts` and `audio` folders and packs put straight in it),
 in the game folder's `packs` folder and among the packs you opened, each with its language, name, author, progress and
 when it last changed, the last one you opened first (**Enter** continues with it). Under the project's banner are the
-version ("Restoration 1.1.0", and the game program's version beside the Workshop when it differs) and the project's
-website, GitHub and Discord. **Packs** at the top left leads back to the list from a pack.
+versions ("Workshop 1.1.0-beta.1 · Restoration 1.0.0", and the game program's version when it differs) and the
+project's website, GitHub and Discord. **Packs** at the top left leads back to the list from a pack.
+
+**The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
+now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the
+start page and beside the pack's name, and says so in the title bar ("Darklands Workshop 1.1.0-beta.1 (Beta)"). The
+version is recorded:
+* in every pack the Workshop saves: `pack.json`'s `"workshop"` (an older Workshop's pack is stamped when saved again);
+* in every export: the JSON's `"workshop"` field, the CSV's first comment line (`# written by Darklands Workshop …`), the
+  XLIFF file's note of category `workshop` (imports skip them);
+* in a problem report: the game's report says which Workshop wrote the language pack in use ("Language pack written
+  by"), and the Workshop's own (**… › Report a problem…**: the same zip as the game's, made beside the program, its
+  folder and the report form opened; nothing is sent) says the Workshop's version and the open pack's.
+
+A Workshop beta is published as a GitHub **pre-release** of its own (tag `workshop-v1.1.0-beta.1`), apart from the
+game's releases, by the workflow `workshop pre-release` (`.github/workflows/workshop-prerelease.yml`). It runs only by
+hand (Actions › Run workflow), with the version typed again; it refuses a version that is not the build's, one with no
+`-beta.N`, one without its notes (`docs/workshop-releases/<version>.md`, a short list of what changed) and a tag that
+exists. To make the next beta: raise `WorkshopVersion`, write its notes file, merge, then run the workflow.
 
 * **New pack** (**Ctrl+N**) asks for the language from a list of the usual ones (search by its own name, its English
   name or its tag; **Other language…** takes any well-formed BCP 47 tag and its name), a pack name and your name, and
-  makes the pack in the program's `packs\<tag>` folder (**Browse…** for another). When the language has letters the
+  makes the pack in the game program's `packs/languages/<tag>` folder (**Browse…** for another). When the language has letters the
   game's fonts lack, **Build a matching font** is ticked: the pack gets the font in the game's pixel style at once.
   **Open folder…** (**Ctrl+O**) opens a pack from anywhere.
 * The list holds every text a pack can translate, in sections by where the game shows it (cards, screens, names, and
@@ -522,7 +544,7 @@ Unicode and the control codes as tokens.
 
 A **font pack** brings only fonts: its `pack.json` says `"fonts": true` and names no language (or `"en"`), and its fonts are in
 `fonts/` as above. The game's text, the original English included, is then drawn in them, at the window's resolution with
-TrueType fonts. The program ships one, **HD fonts**, in its `packs/hd-fonts` folder: DejaVu Sans Mono for the screens and EB
+TrueType fonts. The program ships one, **HD fonts**, in its `packs/fonts/hd-fonts` folder: DejaVu Sans Mono for the screens and EB
 Garamond for the card window.
 
 * **How to choose one.** The launcher's **Fonts** row (Advanced tab), `--font-pack <folder>`, or `text.fontPack` in the
@@ -561,6 +583,23 @@ is shown in pages.
   letters or digits keeps together and breaks at its spaces.
 * **Korean** breaks at its spaces, as the game does.
 * **Every other language** breaks only at the game's own places: spaces, hyphens and line ends.
+
+### Decorated capitals
+
+A card text opens with a decorated capital: the game has 20×20 pictures of A–Z (ILLMCAPS.PIC). A translation's first
+letter outside A–Z takes the picture of its Latin look-alike (É: E; В: B; Α: A), else it is drawn at twice its size in a
+box of the capitals' colours. A pack may bring **its own capitals**: one PNG a letter in its `capitals` folder, named by
+the letter (`Ж.png`) or its code point (`U+0416.png`, `0416.png`), 20×20 pixels, in the colours of the game's capitals
+(transparent pixels let the card show through). A card text whose first letter has one takes it first, then the game's
+way. Without a pack, or with a pack without capitals, the game is unchanged to the pixel. A picture of another size, or
+with another colour, is not used: the game and the check say why.
+
+In the Workshop, **… › Decorated capitals…** lists the first letters your card texts start with (those with no picture
+first), each drawn as the game draws it: the game's picture, your pack's, its look-alike's, or the letter in a box.
+**Import PNG…** checks a picture (its size and colours) and puts it into the pack as `capitals/U+XXXX.png`; the preview
+shows it at once. **Save the game's A–Z as templates…** writes the game's 26 pictures as PNGs to start from (draw over
+one in a picture editor, keeping its colours). The pack check notes a card text whose first letter has no picture at
+all (a note, not an error).
 
 ## Fonts, layout and mouse areas
 

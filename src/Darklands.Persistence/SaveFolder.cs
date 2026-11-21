@@ -61,6 +61,22 @@ public sealed class SaveFolder(string path)
     }
 
     /// <summary>
+    /// When the saved game was written, by this computer's clock: its file's time (the record holds only the game's own date). Null
+    /// when the file cannot be read. For the comfort list of the load screen (the Interface switch); the game never reads it.
+    /// </summary>
+    public DateTime? SavedAt(string fileName)
+    {
+        try
+        {
+            return FindIgnoringCase(fileName) is { } path ? File.GetLastWriteTime(path) : null;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Whether the saved game belongs to a modded game: its companion file is there and is its own (<see cref="ModdedSaves.IsCompanionOf"/>).
     /// False for a plain saved game, and for a companion file left from an earlier save of that name.
     /// </summary>

@@ -1,0 +1,96 @@
+name: workshop pre-release
+
+# Publishes the Workshop (the translators' editor) as a GitHub pre-release of its own, apart from the game's releases:
+# tag workshop-v<version>, its version the build's WorkshopVersion (Directory.Build.props), its notes the short list of what
+# changed in docs/workshop-releases/<version>.md. Started by hand only (Actions, "Run workflow"), and only when the
+# maintainer types the version again: nothing is released by a push. docs/LOCALISATION.md ("The Workshop's version") says
+# how a beta is made.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The Workshop version to publish, typed again (it must be the build''s WorkshopVersion, as 1.1.0-beta.1)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: version and notes
+    runs-on: ubuntu-26.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: version
+        name: The build's WorkshopVersion, the one typed, its notes
+        shell: bash
+        run: |
+          version=$(sed -n 's:.*<WorkshopVersion>\(.*\)</WorkshopVersion>.*:\1:p' Directory.Build.props)
+          if [ "$version" != "${{ github.event.inputs.version }}" ]; then echo "typed ${{ github.event.inputs.version }}, the build says $version"; exit 1; fi
+          case "$version" in *-*) ;; *) echo "$version is not a pre-release version (no -beta.N)"; exit 1;; esac
+          if [ ! -f "docs/workshop-releases/$version.md" ]; then echo "no docs/workshop-releases/$version.md (what changed)"; exit 1; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: ${{ matrix.name }}
+    needs: check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: windows-x64
+            os: windows-latest
+            rid: win-x64
+          - name: linux-x64
+            os: ubuntu-26.04
+            rid: linux-x64
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Test the Workshop
+        run: dotnet test tests/Darklands.Workshop.Tests -c Release
+      - name: Publish the Workshop ${{ matrix.rid }}
+        run: dotnet publish src/Darklands.Workshop -p:PublishProfile=${{ matrix.rid }}
+      - name: Pack (Linux)
+        if: runner.os == 'Linux'
+        # the archive's root is the Workshop folder: unzipped into the game's folder, it lands in DarklandsRP/Workshop
+        run: tar -czf DarklandsWorkshop-${{ needs.check.outputs.version }}-${{ matrix.rid }}.tar.gz -C artifacts/workshop-${{ matrix.rid }} Workshop
+      - name: Pack (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path artifacts/workshop-${{ matrix.rid }}/Workshop -DestinationPath DarklandsWorkshop-${{ needs.check.outputs.version }}-${{ matrix.rid }}.zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: DarklandsWorkshop-${{ matrix.rid }}
+          path: |
+            DarklandsWorkshop-*.tar.gz
+            DarklandsWorkshop-*.zip
+          if-no-files-found: error
+
+  release:
+    name: pre-release
+    needs: [check, build]
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          path: downloads
+          merge-multiple: true
+      - name: The pre-release (a new tag only; never one that exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="workshop-v${{ needs.check.outputs.version }}"
+          if gh release view "$tag" > /dev/null 2>&1; then echo "$tag exists"; exit 1; fi
+          gh release create "$tag" downloads/* --prerelease --target "$GITHUB_SHA" \
+            --title "Darklands Workshop ${{ needs.check.outputs.version }} (beta)" \
+            --notes-file "docs/workshop-releases/${{ needs.check.outputs.version }}.md"

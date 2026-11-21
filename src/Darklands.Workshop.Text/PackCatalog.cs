@@ -12,33 +12,28 @@ namespace Darklands.Workshop.Text;
 public sealed record PackSummary(string Folder, string Language, string Name, string? Author, int Translated, DateTime Changed);
 
 /// <summary>
-/// The packs the Workshop's start page lists (W-0 polish): every folder holding a pack.json in the program's packs folder, the game
-/// folder's packs folder, and the packs opened lately, each once, the newest first.
+/// The packs the Workshop's start page lists (W-0 polish): every folder holding a pack.json in the game program's packs folder (its
+/// fonts, languages and audio subfolders and loose packs: Darklands.Platform.PackLayout), the game folder's packs folder, and the
+/// packs opened lately, each once, the newest first.
 /// </summary>
 // Not in the original: the 1.1 Workshop.
 public static class PackCatalog
 {
-    /// <summary>The folders searched for packs (each of their subfolders that holds a pack.json).</summary>
+    /// <summary>The packs folders searched (<paramref name="programFolder"/>: the game program's folder, where the release's packs are).</summary>
     public static IReadOnlyList<string> PackFolders(string programFolder, string? gameFolder) =>
-        [.. new[] { Path.Combine(programFolder, "packs"), gameFolder is null ? null : Path.Combine(gameFolder, "packs") }
+        [.. new[] { Path.Combine(programFolder, Darklands.Platform.PackLayout.Packs), gameFolder is null ? null : Path.Combine(gameFolder, Darklands.Platform.PackLayout.Packs) }
             .OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase)];
 
-    /// <summary>The packs in <paramref name="folders"/> (one level down) and <paramref name="recent"/>, newest first.</summary>
+    /// <summary>The packs in the packs folders <paramref name="folders"/> (their kinds' subfolders and loose packs) and <paramref name="recent"/>, newest first.</summary>
     public static IReadOnlyList<PackSummary> Find(IEnumerable<string> folders, IEnumerable<string> recent)
     {
         ArgumentNullException.ThrowIfNull(folders);
         ArgumentNullException.ThrowIfNull(recent);
         var candidates = new List<string>();
-        foreach (var folder in folders.Where(Directory.Exists))
+        foreach (var folder in folders)
         {
-            try
-            {
-                candidates.AddRange(Directory.GetDirectories(folder));
-            }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-            {
-                // a folder that cannot be listed has no pack to show
-            }
+            // a folder that cannot be listed has no pack to show
+            candidates.AddRange(Darklands.Platform.PackLayout.PacksIn(folder));
         }
         candidates.AddRange(recent);
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

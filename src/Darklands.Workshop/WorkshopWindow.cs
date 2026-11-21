@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Darklands.Platform;
 using Darklands.Presentation;
 using Darklands.Workshop.Text;
 
@@ -183,7 +184,7 @@ internal sealed class WorkshopWindow : Window
     // the start page: the banner, the packs found on this computer, the actions (StartPage)
     private Control BuildStart()
     {
-        var packs = PackCatalog.Find(PackCatalog.PackFolders(AppContext.BaseDirectory, _game), _settings.RecentPacks);
+        var packs = PackCatalog.Find(PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game), _settings.RecentPacks);
         var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault())
         {
             Open = Open,
@@ -240,6 +241,7 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Pack variables…", "braces", () => _ = Variables(), pack));
         menu.Items.Add(Item("Font pack…", "type", () => _ = BuildFontPack(ask: false), pack));
+        menu.Items.Add(Item("Decorated capitals…", "book", () => _ = Capitals(), pack));
         menu.Items.Add(Item("Notes for translators and AI…", "book", () => _ = Notes(), pack));
         menu.Items.Add(Item("Export texts…", "arrow-right", () => _ = Export(), pack, "Ctrl+E"));
         menu.Items.Add(Item("Import texts…", "folder", () => _ = Import(), pack, "Ctrl+I"));
@@ -248,7 +250,49 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(Item("Paste result", "check", () => _ = PasteResult(), pack));
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
+        menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Report a problem…", "alert", ReportProblem));
         return menu;
+    }
+
+    // a problem report (WorkshopReport): the zip beside the program, its folder and the issue form opened; nothing is sent
+    private void ReportProblem()
+    {
+        if (_editor?.Dirty == true)
+        {
+            _editor.Save();
+        }
+        var (result, url, message) = WorkshopReport.Make(_game, _project);
+        _status.Text = message;
+        if (result is not null && url is not null)
+        {
+            WorkshopReport.Present(result, url, say => _status.Text = say);
+        }
+    }
+
+    // the pack's decorated capitals (CapitalsWindow): an imported one shows at once in the preview
+    private async Task Capitals()
+    {
+        if (_editor is null)
+        {
+            return;
+        }
+        var window = new CapitalsWindow(_editor.Project);
+        window.Changed += _editor.FontsChanged;
+        await window.ShowDialog(this);
+    }
+
+    /// <summary>The capitals window, shown (tests).</summary>
+    internal CapitalsWindow? ShowCapitalsForTests()
+    {
+        if (_editor is null)
+        {
+            return null;
+        }
+        var window = new CapitalsWindow(_editor.Project);
+        window.Changed += _editor.FontsChanged;
+        window.Show(this);
+        return window;
     }
 
     // the pack's notes for translators and AI (pack.json "style")
@@ -491,7 +535,12 @@ internal sealed class WorkshopWindow : Window
         _gameButton.Content = WorkshopTheme.IconText("gamepad", _game ?? "Find the game…", 14);
         _gameButton.Foreground = WorkshopTheme.Brush(_game is null ? WorkshopTheme.Warn : WorkshopTheme.Muted);
         _crumb.Content = _project is null
-            ? new TextBlock { Text = "Darklands Workshop", FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center }
+            ? new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                Children = { new TextBlock { Text = "Darklands Workshop", FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center }, WorkshopTheme.BetaBadge() },
+            }
             : Crumb(_project);
         _keys.Children.Clear();
         if (_project is null)
@@ -521,7 +570,9 @@ internal sealed class WorkshopWindow : Window
         {
             _centre.Content = _editor.View;
         }
-        Title = "Darklands Workshop" + (_project is null ? "" : $" — {_project.Language} · {Path.GetFileName(_project.Folder)}{(_editor?.Dirty == true ? " (not saved)" : "")}");
+        // its version in the title bar, a beta said so (WorkshopVersion)
+        Title = WorkshopVersion.Label + (WorkshopVersion.IsBeta ? " (Beta)" : "")
+            + (_project is null ? "" : $" — {_project.Language} · {Path.GetFileName(_project.Folder)}{(_editor?.Dirty == true ? " (not saved)" : "")}");
     }
 
     // "Packs › Français fr": the way back to the start page and the pack's language
@@ -549,6 +600,7 @@ internal sealed class WorkshopWindow : Window
                     VerticalAlignment = VerticalAlignment.Center,
                     Child = new TextBlock { Text = project.Language, FontSize = 11.5, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), VerticalAlignment = VerticalAlignment.Center },
                 },
+                WorkshopTheme.BetaBadge(),
             },
         };
     }
@@ -586,7 +638,7 @@ internal sealed class WorkshopWindow : Window
             _status.Text = "Choose the game's folder first: the texts come from your own game files.";
             return;
         }
-        var dialog = new NewPackDialog(_game, Path.Combine(AppContext.BaseDirectory, "packs"), _settings.Author);
+        var dialog = new NewPackDialog(_game, PackLayout.KindFolder(WorkshopApp.GameProgramFolder, PackLayout.Languages), _settings.Author);
         if (!await dialog.ShowDialog<bool>(this))
         {
             return;
@@ -737,10 +789,10 @@ internal sealed class WorkshopWindow : Window
             return;
         }
         _editor.Save();
-        var program = Path.Combine(AppContext.BaseDirectory, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
+        var program = WorkshopApp.GameProgram;
         if (!File.Exists(program))
         {
-            _status.Text = $"The game's program is not beside the Workshop ({program}).";
+            _status.Text = $"The game's program is not in the folder above the Workshop's, nor beside it ({program}).";
             return;
         }
         var start = new ProcessStartInfo(program) { UseShellExecute = false };

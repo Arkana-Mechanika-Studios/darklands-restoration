@@ -272,6 +272,11 @@ after 1.0.
     and after an arrow, a click, Add, Select Image and the colour keys, nothing for a character not in the party (test
     `ScreenInputTests.TheFixedRosterPreviewShowsTheHighlightedMembersOwnFigureInOnePlace`). With it the missing picture of
     `FixRosterMissingFigure` is never asked for (the character's own figure is drawn).
+* A further evident display fix the user chose for every player game (2026-11-21, GitHub issue 4), in `DataSafe`:
+  * `FixSheetSkillValueColumn`: the character sheet's closed skill boxes (R031+0x39C6) print the third group's values (Healing to
+    Woodwise, "%02d" DS:2EED) at the box's x + 3 = 0x109, three pixels left of the other two groups (0x10C). The original's own
+    sheet frame (vis10 comm-inn, live) is byte-identical to the Faithful C#'s, so it is the original's drawing. Faithful keeps it
+    (B-c26daf, test `CharacterSheetSkillColumnTests`; the oracle and every replay play Faithful); fixed: at 0x10C, nothing else moves.
   The two exits were kept as documented differences until round restart (the roster's as an undefined-memory divergence D-8e26e9, the
   load's as a deliberate fix D-3fba1b); a reachable end of the program is now treated as the load crashes are; the map's was found in the round.
 * The switches are not exposed in the settings; the player's host sets the profile.

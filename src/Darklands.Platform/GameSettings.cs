@@ -77,6 +77,12 @@ public sealed class GameSettings
     /// <summary>↑ / ↓ and the digits work at a card menu with the pointer off its lines (an interface convenience): on unless false.</summary>
     public bool? CardMenuKeys { get; set; }
 
+    /// <summary>
+    /// The Interface switch (interface.mode): "classic", the original interface exactly, or "comfort", its comfort features (the saved
+    /// games' list, walking on with a double tap on the map); null: comfort.
+    /// </summary>
+    public string? InterfaceMode { get; set; }
+
     /// <summary>The developer console (a host feature, outside the game): on unless false.</summary>
     public bool? ConsoleEnabled { get; set; }
 

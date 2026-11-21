@@ -65,6 +65,33 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     /// <summary>The map's program globals (DarklandsGame keeps one); a fresh one for a screen made alone.</summary>
     public OverlandMemory Memory { get; init; } = new();
 
+    // ---- Walking on (the Interface switch on Comfort, GameUi.ComfortInterface). Not in the original. ----
+    // A direction key tapped twice (two make codes within KeyboardDirections.DoubleTapMilliseconds, let go in between) or pressed with
+    // Shift (the map's key cases do not tell Shift from no Shift: the BIOS gives the grey keys' same codes, the keyboard interrupt's
+    // table ignores it) walks on that way: each pass with no key waiting, no button held and no direction held, the map is given that
+    // key as a PressKey command (docs/COMMANDS.md), the key a player would press, which takes the same case of 0c44 as a typed one.
+    // It stops at any other key or a click (which is then the player's as ever), at a step that does not walk on (blocked, arrived, an
+    // encounter or a card), a map message, nightfall, and the map's edge (two steps in a row that leave the marker where it was).
+    // Replays reproduce it: it follows only from the keys, their make codes and the clock, as the game does.
+    private int? _walkKey;
+    private int _walkStill;
+
+    /// <summary>The key the party walks on with (Comfort only), null when it does not.</summary>
+    public int? WalkingOn => _walkKey;
+
+    private void StopWalking(string why)
+    {
+        if (_walkKey is not null)
+        {
+            _walkKey = null;
+            Trace?.Invoke($"walk on stops: {why}");
+        }
+    }
+
+    // the direction key of the bits of a direction (KeyboardDirections.BitsOf): 1 up, 2 down, 4 left, 8 right
+    private static int KeyOfBits(int bits) =>
+        HeldKey((bits & 4) != 0 ? -1 : (bits & 8) != 0 ? 1 : 0, (bits & 1) != 0 ? -1 : (bits & 2) != 0 ? 1 : 0, false) ?? Keys.None;
+
     private int _viewColumn;
     private int _viewTop;
     private int _viewRows;
@@ -123,15 +150,24 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var travel = new OverlandTravel(state, map, eventStarted);
         travel.HourPassed = () =>
         {
+            var daylight = state.Date.IsDaylight;
             // orig: R030+0x1300 after pass-hours(1): the clock picture onto the screen, then 2dd6 and 20d2 when the background changed
             TimePassage.Advance(state, 1);
             _page.DrawClock(Clock(state));
             var background = _background;
             ApplySeason(state);
             _mapDirty |= _background != background;
+            if (daylight && !state.Date.IsDaylight)
+            {
+                StopWalking("nightfall");
+            }
         };
         travel.PlayCue = tune => ui.PlayMusic(tune);
-        travel.MapMessage = ShowMapMessage;
+        travel.MapMessage = message =>
+        {
+            StopWalking("a map message");
+            ShowMapMessage(message);
+        };
         travel.View = () => (_viewColumn, _viewRows);
         // C: the step reads 20d2's cell buffer under the marker (R030+0x137B..0x1382), drawn for the current view before every step (Draw)
         travel.CellUnderMarker = (x, y) =>
@@ -141,9 +177,24 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         };
         travel.Begin();
         (int X, int Y)? target = null;
+        _walkKey = null;
         while (true)
         {
             Draw(state);
+            // walking on (Comfort): the walk's key as the player's command of this pass, when the player gives nothing of his own
+            var walkCommand = false;
+            if (_walkKey is { } walking)
+            {
+                if (!ui.ComfortInterface)
+                {
+                    _walkKey = null;
+                }
+                else if (ui.Commands.Count == 0 && !ui.KeyWaiting && ui.Mouse.Buttons == MouseButtons.None && ui.Directions is { X: 0, Y: 0, Enter: false })
+                {
+                    ui.Commands.Enqueue(new Commands.PressKey(walking));
+                    walkCommand = true;
+                }
+            }
             // orig: R030+0x0C44's F1..F5 / Ctrl-F1..F5 cases (HotKeys, with GameUi.SheetKeys)
             var action = ui.PollWithSheetKeys();
             var key = action?.Key ?? Keys.None;
@@ -168,6 +219,22 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 }
                 key = ui.TryReadKey(out var second) ? second : HeldKey(held.X, held.Y, held.Enter) ?? key;
                 held.ClearForTheMap();
+            }
+            if (ui.ComfortInterface)
+            {
+                // walking on: started by a double tap or Shift with a direction, stopped by any key or button of the player's
+                var tap = held.TakeDoubleTap();
+                var own = walkCommand && ui.Commands.Count == 0 && key == _walkKey;
+                if (_walkKey is { } w && !own && (keyRead && key != w || ui.Mouse.Buttons != MouseButtons.None))
+                {
+                    StopWalking("the player's key or click");
+                }
+                if (keyRead && !own && DirectionOf(key) != (0, 0) && (ui.ShiftHeld || tap != 0 && KeyOfBits(tap) == key))
+                {
+                    _walkKey = key;
+                    _walkStill = 0;
+                    Trace?.Invoke($"walk on {key:X4}");
+                }
             }
 
             // C: `if (mouse-button-state & 1)`: while the left button is HELD, a point right of x = 0x3c steers the marker, a point at or left of it clears the target and opens the sheet of the member in that row.
@@ -266,7 +333,27 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 ui.DelayClock(StepClock);
                 continue;
             }
+            var before = (_markerX, _markerY);
             var result = MoveOnce(state, travel, dx, dy);
+            if (_walkKey is not null)
+            {
+                if (result.Outcome != StepOutcome.Walked)
+                {
+                    StopWalking(result.Outcome.ToString());
+                }
+                else if ((_markerX, _markerY) == before)
+                {
+                    // C: a vertical walk takes a pixel every second pass (Memory.VerticalStep): two passes in place are the map's edge
+                    if (++_walkStill >= 2)
+                    {
+                        StopWalking("the map's edge");
+                    }
+                }
+                else
+                {
+                    _walkStill = 0;
+                }
+            }
             if (result is { Outcome: StepOutcome.Blocked })
             {
                 // C: 9999 -> `mxe = 0` in the loop (the target is dropped)

@@ -6,6 +6,8 @@
     <LangVersion>latest</LangVersion>
     <!-- the release version of every project and of the program players start (shown on the start screen) -->
     <Version>1.0.0</Version>
+    <!-- the Workshop's own version (docs/LOCALISATION.md): its one source; the Workshop shows it, packs and exports record it -->
+    <WorkshopVersion>1.1.0-beta.1</WorkshopVersion>
     <Copyright>Darklands Restoration Project contributors, GPL-3.0-or-later</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>

@@ -34,6 +34,11 @@ line). Up / Down with the pointer off the lines is `PointAt` the line they name 
 which the menu then lights from the pointer; with the pointer over a line they are the original's keys. On a host that cannot move
 the pointer those Up / Down do nothing (the digits still choose: the click is at the line).
 
+Walking on, a comfort feature of the Interface switch ([SETTINGS.md](SETTINGS.md), "The Interface switch"), is built on them too:
+after a direction tapped twice or pressed with Shift, each pass of the overland map in which the player gives nothing of his own
+(no key waiting, no button, no direction held) is given `PressKey(direction)`, which takes the same case of the map's key handler
+as a typed key. Any key or click of the player's stops it and is carried out as ever.
+
 ## Game commands (1.1)
 
 Below the player commands, the screens change the game only through the rules: `Darklands.Simulation.GameCommands` (`Lead`,

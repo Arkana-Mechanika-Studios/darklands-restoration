@@ -47,6 +47,16 @@ public sealed class LanguagePack
     /// <summary>The game version the pack translates (the manifest's "base"; the only one supported: 483.07).</summary>
     public string? Base { get; }
 
+    /// <summary>
+    /// The Workshop that last wrote the pack (the manifest's "workshop", as <c>1.1.0-beta.1</c>; null: not said). The game does nothing
+    /// with it but say it in a problem report.
+    /// </summary>
+    // Not in the original: the 1.1 Workshop's versions.
+    public string? Workshop { get; private init; }
+
+    /// <summary>The Workshop that last wrote the pack in <paramref name="folder"/> (its manifest's "workshop"), or null.</summary>
+    public static string? WorkshopOf(string folder) => ReadManifest(folder, out _)?.Workshop;
+
     /// <summary>The pack's texts over no fallback: <see cref="ILocalizer.IsTranslated"/> says which keys it has.</summary>
     public FluentLocalizer Localizer { get; }
 
@@ -154,10 +164,11 @@ public sealed class LanguagePack
             problems.Add(new LocalizationDiagnostic(SlotLayouts.FileName, 0, layoutProblem));
         }
         return new LanguagePack(folder, language, manifest.Name ?? Path.GetFileName(Path.TrimEndingDirectorySeparator(folder)), manifest.Author,
-            manifest.Base, localizer, problems, files.Count, messages) { Layouts = layouts, FontsOnly = fontsOnly };
+            manifest.Base, localizer, problems, files.Count, messages) { Layouts = layouts, FontsOnly = fontsOnly, Workshop = manifest.Workshop };
     }
 
-    private sealed record Manifest(string? Language, string? Name, string? Author, string? Base, bool Fonts = false);
+    // the manifest's fields the game reads; any other field (a Workshop's "style", a future one) is ignored
+    private sealed record Manifest(string? Language, string? Name, string? Author, string? Base, bool Fonts = false, string? Workshop = null);
 
     private static Manifest? ReadManifest(string folder, out string? why)
     {
@@ -180,7 +191,7 @@ public sealed class LanguagePack
                     : null;
             why = null;
             var fonts = json.RootElement.ValueKind == JsonValueKind.Object && json.RootElement.TryGetProperty("fonts", out var f) && f.ValueKind == JsonValueKind.True;
-            return new Manifest(Text("language"), Text("name"), Text("author"), Text("base"), fonts);
+            return new Manifest(Text("language"), Text("name"), Text("author"), Text("base"), fonts, Text("workshop"));
         }
         catch (Exception e) when (e is JsonException or IOException or UnauthorizedAccessException)
         {

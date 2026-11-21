@@ -26,15 +26,15 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 
 ## Counts (at the time of writing)
 
-60 flags, 8 settings and 1 planned fix, 69 rows:
+61 flags, 11 settings and 1 planned fix, 73 rows:
 
 | Class | Rows | Of which on in the player's game now |
 |---|---|---|
 | data-safety | 28 | 28 |
-| visual | 2 flags + 1 setting | the 2 flags (the setting `view.clean-drawing` is off by default) |
+| visual | 3 flags + 1 setting | the 3 flags (the setting `view.clean-drawing` is off by default) |
 | gameplay | 30 flags + 1 planned | 0 (the plan's Fixed rule set, release 1.1) |
-| interface-comfort | 2 | 2 |
-| presentation | 4 | choices, none changes a rule |
+| interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
+| presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
 
 ## How it is kept true

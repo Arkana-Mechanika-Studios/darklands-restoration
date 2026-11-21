@@ -170,33 +170,22 @@ internal static class LauncherHost
     /// <summary>The guide for pack makers on the web (a copy is docs/PACKS.md beside the program).</summary>
     private const string PackGuide = Darklands.Platform.ProjectLinks.PackGuide;
 
-    /// <summary>The subfolders of the packs folders: next to the program (the release's example pack is there) and next to the game.</summary>
+    /// <summary>
+    /// The packs of the packs folders (Darklands.Platform.PackLayout: their fonts, languages and audio subfolders, and loose packs):
+    /// next to the program (the release's packs are there) and next to the game.
+    /// </summary>
     internal static IReadOnlyList<string> PackFolders(string? gameFolder)
     {
-        var roots = new List<string> { Path.Combine(AppContext.BaseDirectory, "packs") };
+        var roots = new List<string> { Path.Combine(AppContext.BaseDirectory, PackLayout.Packs) };
         if (gameFolder is not null)
         {
-            roots.Add(Path.Combine(gameFolder, "packs"));
+            roots.Add(Path.Combine(gameFolder, PackLayout.Packs));
             if (Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(gameFolder)) is { } above)
             {
-                roots.Add(Path.Combine(above, "packs"));
+                roots.Add(Path.Combine(above, PackLayout.Packs));
             }
         }
-        var folders = new List<string>();
-        foreach (var root in roots.Distinct(StringComparer.OrdinalIgnoreCase))
-        {
-            try
-            {
-                if (Directory.Exists(root))
-                {
-                    folders.AddRange(Directory.EnumerateDirectories(root).Order(StringComparer.OrdinalIgnoreCase));
-                }
-            }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-            {
-            }
-        }
-        return [.. folders.Distinct(StringComparer.OrdinalIgnoreCase)];
+        return [.. roots.Distinct(StringComparer.OrdinalIgnoreCase).SelectMany(PackLayout.PacksIn).Distinct(StringComparer.OrdinalIgnoreCase)];
     }
 
     /// <summary>A folder as the game would read it: its pictures (an HD pack) and sounds (an audio pack, with audio.json's problems).</summary>

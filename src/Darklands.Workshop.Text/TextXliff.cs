@@ -24,7 +24,9 @@ public static partial class TextXliff
         ArgumentNullException.ThrowIfNull(project);
         ArgumentNullException.ThrowIfNull(items);
         var file = new XElement(Ns + "file", new XAttribute("id", "darklands"),
-            new XElement(Ns + "notes", TextExport.Instructions(project).Select(l => new XElement(Ns + "note", new XAttribute("category", "instructions"), l))));
+            new XElement(Ns + "notes",
+                new XElement(Ns + "note", new XAttribute("category", WorkshopVersion.ManifestField), WorkshopVersion.Label),
+                TextExport.Instructions(project).Select(l => new XElement(Ns + "note", new XAttribute("category", "instructions"), l))));
         foreach (var item in items)
         {
             var notes = new XElement(Ns + "notes");
