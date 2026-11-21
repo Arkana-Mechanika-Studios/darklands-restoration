@@ -386,6 +386,36 @@ public sealed class GameUi
         _laid.Count == 0 || !_laid.TryGetValue(words, out var key) ? null
         : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key);
 
+    /// <summary>
+    /// Uses the fonts of the font pack in <paramref name="folder"/> (a font-only pack, <c>{"fonts": true}</c>: high-resolution text for
+    /// English, or with a translation): its fonts take the slots the translation pack has none for. True when one is in use.
+    /// </summary>
+    // Not in the original: the 1.1 font packs.
+    public bool UseFontPack(string folder, Action<string> report)
+    {
+        ArgumentNullException.ThrowIfNull(report);
+        if (!Directory.Exists(folder))
+        {
+            report($"font pack: {folder}: no such folder; the game's fonts are used");
+            return false;
+        }
+        var fonts = FontPack.Load(folder, report);
+        if (fonts.Count == 0)
+        {
+            report($"font pack: {folder}: no fonts (fonts/slotN.json); the game's fonts are used");
+            return false;
+        }
+        var merged = new Dictionary<int, Platform.IFont>(fonts);
+        foreach (var (slot, font) in PackFonts)
+        {
+            merged[slot] = font;
+        }
+        PackFonts = merged;
+        report($"font pack: {Path.GetFileName(Path.TrimEndingDirectorySeparator(Path.GetFullPath(folder)))}, fonts for slot(s) {string.Join(", ", fonts.Keys.Order())}");
+        _text = _cardText = null;
+        return true;
+    }
+
     /// <summary>The translation pack's fonts by slot (empty: the game's fonts).</summary>
     public IReadOnlyDictionary<int, Platform.IFont> PackFonts { get; private set; } = new Dictionary<int, Platform.IFont>();
 

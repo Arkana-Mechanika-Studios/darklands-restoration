@@ -448,6 +448,14 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         var c = context();
         c.MessageFileBytes = _messages.Bytes;
         var translated = TranslatedBlock(_messages.Name, block, b.Text, out var codes);
+        // Not in the original: the 1.1 font packs. With a pack's font for the card window, a block it has no translation of is laid out
+        //   by codes in that font too (its words the original's: a font-only pack's English)
+        //   (its variables filled in on the bytes first, as a translation's bytes are)
+        int[]? laid = null;
+        if (codes is null && ui.CardText.PackFont is not null)
+        {
+            laid = Darklands.Core.TextCodes.OfBytes(TextVariables.Expand(translated ?? b.Text, c));
+        }
         var layout = new CardTextLayout(ui.CardText);
         var settings = new CardTextLayout.Settings
         {
@@ -459,9 +467,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
             DropCap = DropCap,
         };
         // a pack's text that runs past the foot of the card's window: in pages (Not in the original: the 1.1 translations)
-        if (ui.Language is not null && (codes is not null || translated is not null))
+        if ((ui.Language is not null || laid is not null) && (codes is not null || translated is not null || laid is not null))
         {
-            var expanded = codes is not null ? TextVariables.Expand(codes, c) : Darklands.Core.TextCodes.OfBytes(TextVariables.Expand(translated!, c));
+            var expanded = laid ?? (codes is not null ? TextVariables.Expand(codes, c) : Darklands.Core.TextCodes.OfBytes(TextVariables.Expand(translated!, c)));
             if (Paging(expanded, b, settings) is { } paging)
             {
                 return DrawPage(paging, b, settings, layout);
@@ -470,7 +478,8 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         _pageCount = 1;
         _lastPageOptionsOnly = false;
         // a translation with letters the game's bytes cannot hold, or in the pack's font, is laid out by codes (the same loop, L-6b)
-        var areas = codes is not null
+        var areas = laid is not null ? layout.Draw(_canvas, laid, WindowX + b.X + 5, b.Y + 5, b.Width - 10, settings)
+            : codes is not null
             ? layout.Draw(_canvas, TextVariables.Expand(codes, c), WindowX + b.X + 5, b.Y + 5, b.Width - 10, settings)
             : layout.Draw(_canvas, TextVariables.Expand(translated ?? b.Text, c), WindowX + b.X + 5, b.Y + 5, b.Width - 10, settings);
         // orig: text-paint-wrapped leaves the option lines in the hotspot list DS:E96E as soon as it has laid the text out (before press-to-continue), which is what a scripted host's option:<n> step reads

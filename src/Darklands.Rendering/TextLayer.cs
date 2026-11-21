@@ -64,9 +64,11 @@ public sealed class TextLayer
         var image = _image is { } kept && kept.Width == output.Width && kept.Height == output.Height ? kept : new RgbaImage(output.Width, output.Height);
         Array.Clear(image.Argb);
         var (sx, sy) = ((double)output.Width / Screen.Width, (double)output.Height / Screen.Height);
-        foreach (var (texel, pixels) in glyphs)
+        // in the order they were first drawn (a glyph's id is its first drawing's): an embossed heading's face, drawn after its shadow a
+        // pixel away, stays over it (the order the frame is read in would put the shadow over the face, a row lower)
+        foreach (var (texel, pixels) in glyphs.OrderByDescending(g => g.Key))
         {
-            if (TextGlyphs.Of(texel) is { } g)
+            if (TextGlyphs.Of(texel) is { } g && !Hidden(screen, pixels))
             {
                 Draw(image, screen, g, texel, pixels, sx, sy);
             }
@@ -144,6 +146,11 @@ public sealed class TextLayer
             }
         }
     }
+
+    // a glyph drawn by xor that does not show (a card's option lines before the picture fades: each pixel's colour is the one its
+    //   index without the xor bit has, so the 1x frame shows nothing there): it is not drawn again either
+    private static bool Hidden(Screen screen, List<int> pixels) =>
+        pixels.All(at => screen.Pixels[at] is var index && index >= 0x80 && screen.Palette[index] == screen.Palette[index ^ 0x80]);
 
     private static bool IsGlyph(Screen screen, int at) => screen.Texels[at] <= -2 && screen.Owners[at] == 0;
 
