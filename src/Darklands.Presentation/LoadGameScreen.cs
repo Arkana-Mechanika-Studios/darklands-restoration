@@ -91,10 +91,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                     _ => Keys.None,
                 };
             }
-            else if (action is { IsLeftClick: true } pick && ui.Laid.Map(pick.X, pick.Y) is var (px, py) && px > 0xC3 && px < 0x140 && py > 0x14 && py < 0xA5)
+            else if (action is { IsLeftClick: true } pick && ui.Laid.Map(pick.X, pick.Y) is var (px, py) && InList(px, py))
             {
                 ScreenDrawing.WaitForRelease(ui);
-                var row = (ui.LaidMouse.Y - 0x14) / 16;
+                var row = RowAt(ui.LaidMouse.Y);
                 if (_rowsShown > row)
                 {
                     Highlight(false);
@@ -122,6 +122,175 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
 
     private static bool InButtons(int x, int y) => x > 0x44 && x < 0xC6 && y > 0x2D && y < 0x5A;
 
+    // the list's place: the original's (0xc3 < x < 0x140, 0x14 < y < 0xa5, rows of 16 from y 0x14), or the comfort list's
+    private bool InList(int x, int y) => Comfort
+        ? x > WideLeft && x < WideRight && y > WideTop + 1 && y < WideBottom - 1
+        : x > 0xC3 && x < 0x140 && y > 0x14 && y < 0xA5;
+
+    private int RowAt(int y) => Comfort ? Math.Max(0, y - WideRowsTop) / WideRowHeight : (y - 0x14) / 16;
+
+    // ---- The comfort list (the Interface switch on Comfort, GameUi.ComfortInterface). Not in the original. ----
+    // The picture's list box (0xc3..0x13c x 0x11..0xb1, a black line between two grey ones) is taken away; in its place a box of
+    // details over the buttons' right (the highlighted game's comment, place and date, when it was saved, and whether it is the
+    // newest) and, below the buttons, a list the width of the screen, one line a saved game: the newest's mark, its comment, its
+    // place and date, and the real date and time it was saved. Nine rows as the original's, so its keys, its scrolling and its
+    // highlight are the original's. Classic draws the original's list.
+
+    private bool Comfort => ui.ComfortInterface;
+
+    // the wide list's frame (its black lines) and rows
+    private const int WideLeft = 0x40;
+    private const int WideRight = 0x13B;
+    private const int WideTop = 0x5E;
+    private const int WideBottom = 0xC2;
+    private const int WideRowsTop = 0x61;
+    private const int WideRowHeight = 10;
+    // the details' frame
+    private const int DetailsLeft = 0xC3;
+    private const int DetailsRight = 0x13B;
+    private const int DetailsTop = 0x11;
+    private const int DetailsBottom = 0x58;
+    private const int DetailsLine = 9;
+
+    private string? _newest;
+
+    // the picture's list box taken away (each of its lines replaced by the backdrop beside it), then the two boxes' frames drawn
+    private void ComfortBackdrop()
+    {
+        var c = ui.Canvas;
+        var black = c[0xC3, 0x64];
+        var grey = c[0xC2, 0x64];
+        for (var y = 0x0E; y <= 0xB5; y++)
+        {
+            for (var k = 0; k < 3; k++)
+            {
+                c[0xC2 + k, y] = c[0xBF + k, y];
+                c[0x13A + k, y] = c[0x137 + k, y];
+            }
+        }
+        for (var x = 0xBF; x < Canvas.Width; x++)
+        {
+            for (var k = 0; k < 3; k++)
+            {
+                c[x, 0x10 + k] = c[x, 0x13 + k];
+                c[x, 0xB0 + k] = c[x, 0xB3 + k];
+            }
+        }
+        Frame(DetailsLeft, DetailsTop, DetailsRight, DetailsBottom, black, grey);
+        Frame(WideLeft, WideTop, WideRight, WideBottom, black, grey);
+    }
+
+    // a box as the picture draws its own: a black line with a grey one on each side
+    private void Frame(int left, int top, int right, int bottom, byte black, byte grey)
+    {
+        var c = ui.Canvas;
+        c.Outline(left - 1, top - 1, right - left + 2, bottom - top + 2, grey);
+        c.Outline(left + 1, top + 1, right - left - 2, bottom - top - 2, grey);
+        c.Outline(left, top, right - left, bottom - top, black);
+    }
+
+    // a text as the original's list draws one: in colour 0x11 one pixel down and right, then in 0x10
+    private void Shadowed(int x, int y, string text, int right = int.MaxValue)
+    {
+        ui.Text.Draw(ui.Canvas, x + 1, y + 1, text, LineShadow, right == int.MaxValue ? right : right + 1);
+        ui.Text.Draw(ui.Canvas, x, y, text, LineColor, right);
+    }
+
+    private string SavedAtText(DateTime? at) => at is { } t
+        ? ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved-at",
+            ("date", t.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)),
+            ("time", t.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture))))
+        : "";
+
+    private void DrawWideList()
+    {
+        ui.Canvas.CopyFrom(_page, WideLeft + 2, WideTop + 2, WideRight - WideLeft - 3, WideBottom - WideTop - 3);
+        _rowsShown = 0;
+        var names = folder.Names();
+        _newest = folder.Newest();
+        if (names.Count == 0)
+        {
+            // as the original's: no row, no highlight; the details box empty
+            DrawDetails();
+            ui.Present();
+            return;
+        }
+        var skip = 0;
+        foreach (var name in names)
+        {
+            if (skip++ < _firstShownIndex)
+            {
+                continue;
+            }
+            if (++_rowsShown > Rows)
+            {
+                _rowsShown--;
+                break;
+            }
+            _names[_rowsShown - 1] = name;
+            var s = folder.Summary(name);
+            var y = WideRowsTop + (_rowsShown - 1) * WideRowHeight + 1;
+            // from the right: the real date and time, the place and the game's date, then the comment in what is left
+            var right = WideRight - 4;
+            var saved = SavedAtText(folder.SavedAt(name));
+            var savedX = right - ui.Text.Measure(saved);
+            Shadowed(savedX, y, saved);
+            var line = ui.Format(ScreenTexts.SavedGameLine, s.Place, s.Year, s.Month + 1, s.Day, s.Hour);
+            var lineX = Math.Max(WideLeft + 0x30, savedX - 10 - ui.Text.Measure(line));
+            Shadowed(lineX, y, line, savedX - 6);
+            var commentRight = lineX - 8;
+            if (ui.Options.CleanDrawing && folder.IsModded(name))
+            {
+                Shadowed(lineX - 7, y, ModMark);
+                commentRight -= 6;
+            }
+            Shadowed(WideLeft + 9, y, s.Comment, commentRight);
+            if (name == _newest)
+            {
+                // the newest's mark: a small diamond before its comment
+                NewestMark(WideLeft + 4, y + 2);
+            }
+        }
+        if (_saveCount <= _cursorRow)
+        {
+            _cursorRow = _rowsShown - 1;
+        }
+        Highlight(true);
+    }
+
+    private void NewestMark(int x, int y)
+    {
+        var c = ui.Canvas;
+        foreach (var (color, d) in new[] { (LineShadow, 1), (LineColor, 0) })
+        {
+            c.Fill(x + 1 + d, y + d, 1, 3, color);
+            c.Fill(x + d, y + 1 + d, 3, 1, color);
+        }
+    }
+
+    // the details of the highlighted game: its comment, place and date, when it was saved, and whether it is the newest
+    private void DrawDetails()
+    {
+        var x = DetailsLeft + 4;
+        var right = DetailsRight - 3;
+        ui.Canvas.CopyFrom(_page, DetailsLeft + 2, DetailsTop + 2, DetailsRight - DetailsLeft - 3, DetailsBottom - DetailsTop - 3);
+        if (_cursorRow < 0 || _cursorRow >= _rowsShown || _names[_cursorRow] is not { } name)
+        {
+            return;
+        }
+        var s = folder.Summary(name);
+        var y = DetailsTop + 5;
+        Shadowed(x, y, s.Comment, right);
+        Shadowed(x, y + DetailsLine, ui.Format(ScreenTexts.SavedGameLine, s.Place, s.Year, s.Month + 1, s.Day, s.Hour), right);
+        Shadowed(x, y + 3 * DetailsLine, ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved")), right);
+        Shadowed(x, y + 4 * DetailsLine, SavedAtText(folder.SavedAt(name)), right);
+        if (name == _newest)
+        {
+            NewestMark(x, y + 6 * DetailsLine + 2);
+            Shadowed(x + 6, y + 6 * DetailsLine, ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.newest")), right);
+        }
+    }
+
     // orig: R037+0x83FE: image-paint-palette(1, "pics\\loadscrn.pic"), DS:E88A = image-read("pics\\buttnCR2.pic"), backdrop-window-colour = 8,
     // fonts 1, DS:8C4C = R037+0x9C10(), DS:8C52 = 0, DS:8C50 = 0
     /// <summary>The load screen's picture, which also sets its colours (16..255): what a notice shown before any screen has been drawn is drawn over.</summary>
@@ -138,6 +307,10 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         ui.RunCycles(false);
         PaintBackdrop(ui);
         ui.PaletteSet();
+        if (Comfort)
+        {
+            ComfortBackdrop();
+        }
         _page = ui.Canvas.SaveScreen();
         ui.PicturePage = _page;
         _button = ui.Assets.PictureExists("buttncr2") ? ui.Assets.Picture("buttncr2") : null;
@@ -178,6 +351,11 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // C: the names of rows not shown this time stay in R136+0x1145E from an earlier list (a later delete of such a row reads them).
     private void DrawList()
     {
+        if (Comfort)
+        {
+            DrawWideList();
+            return;
+        }
         ui.Canvas.CopyFrom(_page, 0xC3, 0x14, 0x7D, 0x91);
         _rowsShown = 0;
         var names = folder.Names();
@@ -227,6 +405,17 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // orig: gfx-rect-recolour(screen-window, 0xc4, (DS:8C50 << 4) + 0x16, 0x7b, 0x10, 0x10, 0x12) and back (0x12 -> 0x10)
     private void Highlight(bool on)
     {
+        if (Comfort)
+        {
+            var y = WideRowsTop + _cursorRow * WideRowHeight;
+            ui.Recolor(WideLeft + 2, y, WideRight - WideLeft - 3, WideRowHeight, on ? LineColor : LineHighlight, on ? LineHighlight : LineColor);
+            if (on)
+            {
+                DrawDetails();
+            }
+            ui.Present();
+            return;
+        }
         if (on)
         {
             ui.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineColor, LineHighlight);

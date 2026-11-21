@@ -164,6 +164,7 @@ public static class SettingsFile
                     case "sdl": Section(name, value, settings, Sdl); break;
                     case "console": Section(name, value, settings, Console); break;
                     case "text": Section(name, value, settings, Text); break;
+                    case "interface": Section(name, value, settings, Interface); break;
                     default: Unknown(name); break;
                 }
             }
@@ -310,6 +311,28 @@ public static class SettingsFile
                 case "launcher": break; // retired (1.0): the launcher at every start; DarklandsRP Launcher shows it, so old files are read without a warning
                 case "commandLine": settings.CommandLine = Tokens(key, property.Value) ?? settings.CommandLine; break;
                 default: Unknown(key); break;
+            }
+        }
+
+        // the Interface switch: "mode" only for now (the settings screen of 1.2 may add a feature's own key beside it)
+        private void Interface(string section, JsonProperty property, GameSettings settings)
+        {
+            var key = $"{section}.{property.Name}";
+            if (property.Name == "mode")
+            {
+                var mode = Text(key, property.Value)?.Trim().ToLowerInvariant();
+                if (mode is "classic" or "comfort")
+                {
+                    settings.InterfaceMode = mode;
+                }
+                else if (mode is not null)
+                {
+                    problems.Add($"{key}: \"{mode}\" is not \"classic\" or \"comfort\"; ignored");
+                }
+            }
+            else
+            {
+                Unknown(key);
             }
         }
 
@@ -588,6 +611,14 @@ public static class SettingsFile
           // original: a game with a mod plays differently and its saves get a companion file (DKSAVEn.MODS.JSON); the .SAV stays
           // one the original game loads. []: none, the game's own cards. Command line: --mod <folder or name> (once per mod).
           "mods": [],
+
+          // The Interface switch: how the same orders are given and what the screens show of them. "comfort": the comfort
+          // features (the load list one line a game, the newest marked, with the real date and time it was saved; on the map, a
+          // direction key tapped twice, or pressed with Shift, walks on until something stops it); "classic": the 1992 game's
+          // interface exactly. The game plays the same either way. Command line: --interface classic|comfort.
+          "interface": {
+            "mode": "comfort"
+          },
 
           // The mouse and keyboard (SDL host). Not part of the original: the game plays the same.
           "input": {

@@ -498,7 +498,13 @@ internal sealed partial class LauncherScreen
             var introLabel = bannerEnd + v.Len(30);
             y = Select(y, "Opening", _model.Intro ? "Yes" : "No", Item.Intro,
                 at: layout with { Label = introLabel, Select = introLabel + text.Measure("Opening") + v.Len(14), SelectEnd = layout.Right });
-            y = Select(y, "Mouse wheel in menus", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel, narrow: true);
+            // the Interface switch and the mouse wheel side by side: one row (as the start-up screen and the opening)
+            var interfaceEnd = layout.Select + v.Len(92);   // Comfort or Classic
+            Select(y, "Interface", _model.ComfortInterface ? "Comfort" : "Classic", Item.Interface,
+                at: layout with { SelectEnd = interfaceEnd, Right = interfaceEnd + v.Len(8) });
+            var wheelLabel = interfaceEnd + v.Len(30);
+            y = Select(y, "Mouse wheel", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel,
+                at: layout with { Label = wheelLabel, Select = wheelLabel + text.Measure("Mouse wheel") + v.Len(14), SelectEnd = layout.Right });
             y = Select(y, "Card menu keys anywhere", _model.CardMenuKeys ? "Yes" : "No", Item.CardMenuKeys, narrow: true);
         }
 

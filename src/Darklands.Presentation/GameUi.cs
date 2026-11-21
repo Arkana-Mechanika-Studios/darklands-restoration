@@ -787,6 +787,15 @@ public sealed class GameUi
     public bool KeyboardCardMenus { get; set; }
 
     /// <summary>
+    /// The Interface switch on Comfort (off, Classic, unless a host turns it on; the oracle and the replays play Classic): the comfort
+    /// features the original does not have, which change how orders are given and what a screen shows of them, never what the game
+    /// decides. The load screen's list one line a saved game, the newest marked, with the real date and time it was saved
+    /// (LoadGameScreen); on the map, a direction tapped twice or pressed with Shift walks on (OverlandScreen.AutoWalk), made of the
+    /// original's own key commands (docs/COMMANDS.md). docs/SETTINGS.md, "The Interface switch".
+    /// </summary>
+    public bool ComfortInterface { get; set; }
+
+    /// <summary>
     /// A host's pace for the battle's edge scroll (Shift with the pointer at an edge of the view): at most one step this often, in the
     /// host clock's milliseconds. 0 (the default, the original's): a step each pass of the battle loop.
     /// </summary>

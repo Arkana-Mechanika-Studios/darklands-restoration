@@ -174,6 +174,73 @@ public sealed class LoadScreenTests
         Assert.Equal(Shown(battleCycles: false), Shown(battleCycles: true));
     }
 
+    /// <summary>
+    /// The Interface switch (GameUi.ComfortInterface): Comfort shows the list one line a saved game below the buttons, the newest
+    /// (by this computer's clock: the file's time) marked, with the real date and time beside the game's, and the highlighted game's
+    /// details above; its keys, rows and loading are the original's. Classic (the default, the oracle's) draws the original's list.
+    /// </summary>
+    [Fact]
+    public void TheComfortListShowsAGameALineWithTheNewestMarkedAndClassicIsTheOriginal()
+    {
+        if (GameFolder.Files is not { } files || Copy(files, "DKSAVE1.SAV", "DKSAVE2.SAV", "DKSAVE3.SAV") is not { } folder)
+        {
+            return;
+        }
+        File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE1.SAV"), new DateTime(2026, 11, 20, 18, 5, 0));
+        File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE2.SAV"), new DateTime(2026, 11, 21, 19, 23, 0));
+        File.SetLastWriteTime(Path.Combine(folder.Path, "DKSAVE3.SAV"), new DateTime(2026, 11, 19, 8, 0, 0));
+        Assert.Equal("DKSAVE2.SAV", folder.Newest());
+        Assert.Equal(new DateTime(2026, 11, 21, 19, 23, 0), folder.SavedAt("DKSAVE2.SAV"));
+
+        (byte[] Pixels, uint[] Palette, GameUi Ui) Shown(bool? comfort, params int[] keys)
+        {
+            var host = new KeyHost(keys);
+            var ui = new GameUi(host, new GameAssets(files));
+            if (comfort is { } on)
+            {
+                ui.ComfortInterface = on;
+            }
+            Assert.Null(new LoadGameScreen(ui, folder, ["", "", ""]).Run(fromStartScreen: false, _ => null));
+            return (host.Last!, host.LastPalette!, ui);
+        }
+        var original = Shown(null);
+        var classic = Shown(false);
+        var comfort = Shown(true);
+        Assert.False(original.Ui.ComfortInterface);
+        Assert.Equal(original.Pixels, classic.Pixels);
+        Assert.NotEqual(classic.Pixels, comfort.Pixels);
+        int At(byte[] p, int x, int y) => p[y * Screen.Width + x];
+        // the newest's mark (a small diamond at the second row's left, colour 0x10): only there, only in Comfort
+        var markY = 0x61 + 10 + 1 + 2 + 1;
+        Assert.Equal(0x10, At(comfort.Pixels, 0x45, markY));
+        Assert.NotEqual(0x10, At(comfort.Pixels, 0x45, markY - 10));
+        Assert.NotEqual(0x10, At(classic.Pixels, 0x45, markY));
+        // the rows' text in the wide list, nothing of the original's list where its rows were (below the details' box)
+        for (var row = 0; row < 3; row++)
+        {
+            var y0 = 0x61 + row * 10;
+            Assert.Contains(Enumerable.Range(y0, 10).SelectMany(y => Enumerable.Range(0x48, 0xF0).Select(x => At(comfort.Pixels, x, y))), c => c is 0x10 or 0x12);
+        }
+        Assert.DoesNotContain(Enumerable.Range(0x5E, 0x40).SelectMany(y => Enumerable.Range(0xC6, 0x70).Select(x => At(classic.Pixels, x, y))), c => c is 0x12);
+
+        // the original's keys on it: Down twice, Up once is the second row (DKSAVE2) as in Classic, and L loads that game
+        string? loaded = null;
+        var host2 = new KeyHost(Keys.Down, Keys.Down, Keys.Up, Key('l'));
+        var ui2 = new GameUi(host2, new GameAssets(files)) { ComfortInterface = true };
+        new LoadGameScreen(ui2, folder, ["", "", ""]).Run(fromStartScreen: false, name => { loaded = name; return null; });
+        Assert.Equal("DKSAVE2.SAV", loaded);
+
+        if (Environment.GetEnvironmentVariable("DARKLANDS_LOADLIST_SHOTS") is { Length: > 0 } shots)
+        {
+            Directory.CreateDirectory(shots);
+            foreach (var (name, shown) in new[] { ("load-classic", classic), ("load-comfort", comfort) })
+            {
+                File.WriteAllBytes(Path.Combine(shots, name + ".idx"), shown.Pixels);
+                File.WriteAllBytes(Path.Combine(shots, name + ".pal"), shown.Palette.SelectMany(BitConverter.GetBytes).ToArray());
+            }
+        }
+    }
+
     private static int Key(char c) => Keys.ForCharacter(c);
 
     /// <summary>A copy of some of the player's saved games in a new temporary folder.</summary>

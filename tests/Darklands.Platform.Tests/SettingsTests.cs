@@ -276,6 +276,27 @@ public class SettingsPrecedenceTests
         Assert.Equal("--no-card-menu-keys", new CommandLineOptions { NoCardMenuKeys = true }.Overrides(_ => null)["input.cardMenuKeys"]);
     }
 
+    /// <summary>interface.mode, the Interface switch: Comfort without a settings file, Classic by the file or by --interface classic.</summary>
+    [Fact]
+    public void TheInterfaceSwitchIsComfortUnlessTheFileOrTheCommandLineSaysClassic()
+    {
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).ComfortInterface);
+        var classic = SettingsFile.Parse("""{ "interface": { "mode": "Classic" } }""");
+        Assert.Empty(classic.Problems);
+        Assert.Equal("classic", classic.Settings.InterfaceMode);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, classic.Settings).ComfortInterface);
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions { InterfaceMode = "comfort" }, NoEnvironment, classic.Settings).ComfortInterface);
+        var comfort = SettingsFile.Parse("""{ "interface": { "mode": "comfort" } }""").Settings;
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { InterfaceMode = "classic" }, NoEnvironment, comfort).ComfortInterface);
+        Assert.Equal("--interface", new CommandLineOptions { InterfaceMode = "classic" }.Overrides(_ => null)["interface.mode"]);
+        // another word is reported and ignored (Comfort, the default); a future feature key beside mode is reported as unknown
+        var odd = SettingsFile.Parse("""{ "interface": { "mode": "fancy", "autoWalk": false } }""");
+        Assert.Equal(2, odd.Problems.Count);
+        Assert.Null(odd.Settings.InterfaceMode);
+        // the template has the section and reads without a problem
+        Assert.Contains("\"interface\"", SettingsFile.Template, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void DefaultsWithNothingSet()
     {

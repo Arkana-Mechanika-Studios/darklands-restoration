@@ -184,10 +184,22 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, Opening animation, start-up screen, language pack, SoundFont, ROMs, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, the Interface switch, Opening animation, start-up screen, language pack, SoundFont, ROMs, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
+    }
+
+    [Fact]
+    public void TheInterfaceSwitchIsComfortByDefaultAndWritesClassic()
+    {
+        // up from Play: Save, the card menu keys, the mouse wheel, then the Interface switch (Comfort: the file has no interface.mode)
+        var kept = Run(Context(), Up, Up, Up, Up, Right, Right);
+        Assert.False(kept.Changes.ContainsKey("interface.mode"));
+        Assert.Equal("comfort", kept.Settings.InterfaceMode);
+        var classic = Run(Context(), Up, Up, Up, Up, Enter);
+        Assert.Equal("classic", (string?)classic.Changes["interface.mode"]);
+        Assert.Equal("classic", classic.Settings.InterfaceMode);
     }
 
     [Fact]

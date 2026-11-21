@@ -35,6 +35,7 @@ using Darklands.Rendering;
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
 //   banner, intro                run the program start (the BANNER.DAT banner and its checks) and the opening
 //   datasafe                     plays with the data-safety fixes of the player's game (OriginalBehaviour.DataSafe); without it the game is Faithful, as the oracles play it
+//   interface:comfort            the Interface switch on Comfort (GameUi.ComfortInterface: the comfort features); without it Classic, as the oracles play it
 //   arg:<text>                   adds a word to the game's DOS command line (-Q, -O, -A<letter>)
 //   sound:config|adlib|sb|sbpro2|mt32|cm32l   runs the game's sound drivers in step with the script's clock (the game timer is
 //                                then the sound's, as in the SDL host); mt32roms:<folder> (default MT32_ROMS next to the program)
@@ -416,6 +417,8 @@ using var sound = soundStep is null ? null : HeadlessSound.Attach(host, OpenGame
 OverlandScreen.PassHook = host.MapPass;
 // the battle's passes: still:<n> waits for n passes at one combat clock (ScriptedHost.BattlePass)
 Darklands.Presentation.Battles.BattleScreen.PassHook = host.BattlePass;
+// the Interface switch (interface:comfort): Classic without it, as the oracles play
+var comfortInterface = steps.Remove("interface:comfort");
 var game = new DarklandsGame(host, OpenGame())
 {
     Seed = clockStep is null ? () => seed : NextSeed,
@@ -430,6 +433,7 @@ var game = new DarklandsGame(host, OpenGame())
 // a translation pack (languagepack:<folder> or the settings file's text.languagePack) changes the screens' words only; a font pack
 //   (fontpack:) their fonts
 UsePacks(game.Ui);
+game.Ui.ComfortInterface = comfortInterface;
 if (startAtStep is not null)
 {
     if (languagePackStep is null)

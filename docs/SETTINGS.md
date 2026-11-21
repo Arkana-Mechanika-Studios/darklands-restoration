@@ -62,6 +62,7 @@ not meant for players.
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
+| `interface.mode` | `"comfort"` | `--interface classic\|comfort` | the Interface switch (below): `comfort`, the comfort features; `classic`, the 1992 game's interface exactly; the game plays the same either way |
 | `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
 | `sdl.library` | the copy next to the program (`SDL3.dll` on Windows, `libSDL3.so.0` on Linux, both shipped), else the system's | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
@@ -257,6 +258,24 @@ pointer over a line the keys are the original's. Everything is made of a player'
 so the game plays the same. The launcher shows it on its Advanced tab, under Start-up: "Card menu keys anywhere";
 `--no-card-menu-keys` turns it off for one run.
 
+### The Interface switch
+
+One of the three switches of the restoration (Rules: what the game decides; Presentation: what is seen and heard; Interface: how
+the same orders are given). `interface.mode` is `"comfort"` (the default) or `"classic"`; the launcher shows it on its Advanced
+tab ("Interface: Comfort / Classic"); `--interface classic` (or `comfort`) sets it for one run. **Classic** is the original
+interface exactly, screen for screen; the replays and the comparisons with the original game play Classic. **Comfort** turns on
+the comfort features, which change how orders are given and what a screen shows of them, never what the game decides (the saved
+games are the same, and the original game loads them):
+
+* **The saved games' list** (the load screen, Alt-L): a list the width of the screen below the buttons, one line a saved game:
+  its comment, its place and the game's date and hour, and the real date and time it was saved (the file's time on this
+  computer: the saved game itself holds only the game's date). The newest is marked with a small diamond. Above it, beside the
+  buttons, the highlighted game's details (its comment in full, its place and date, when it was saved, "The newest saved game").
+  The keys, the nine rows, the scrolling, the mouse and the buttons are the original's. A translation's words are fitted: a
+  comment too long for its line is cut where the place begins (the details show it whole).
+
+`interface` is a section so that a later settings screen can give a feature its own key beside `mode`; there is none yet.
+
 ### Keys on other layouts
 
 The game takes the characters your keyboard layout prints, as DOS did with its keyboard driver: on AZERTY Shift with the `=` key is
@@ -320,5 +339,6 @@ is sent anywhere; see [REPORTING.md](REPORTING.md).
     "configDrk": { "card": "sbpro2", "port": "0x220", "irq": 7, "dma": 1 },
   },
   "startup": { "intro": false, "commandLine": ["-Q"] },
+  "interface": { "mode": "classic" },
 }
 ```

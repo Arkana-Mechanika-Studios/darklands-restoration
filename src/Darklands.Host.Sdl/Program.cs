@@ -147,6 +147,7 @@ var cli = new CommandLineOptions
     NoConsole = arguments.Remove("--no-console"),
     NoMouseWheel = arguments.Remove("--no-mouse-wheel"),
     NoCardMenuKeys = arguments.Remove("--no-card-menu-keys"),
+    InterfaceMode = Option("--interface")?.Trim().ToLowerInvariant(),
     Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -470,6 +471,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.PressedButtonMilliseconds = GameUi.PressedButtonFloor;
     // input.cardMenuKeys (docs/SETTINGS.md): up / down and the digits at a card menu wherever the pointer is, made of player commands
     game.Ui.KeyboardCardMenus = settings.CardMenuKeys;
+    // interface.mode (docs/SETTINGS.md, the Interface switch): comfort turns on the comfort features; classic is the original interface
+    game.Ui.ComfortInterface = settings.ComfortInterface;
     // the battle's edge scroll at ten steps a second at most, whatever the frame rate (the original's: a step each pass of its loop)
     game.Ui.EdgeScrollMilliseconds = 100;
     // a translation test: its saves in the pack's own scratch folder (never the player's), the game at the text or screen asked for
