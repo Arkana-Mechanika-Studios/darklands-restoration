@@ -68,6 +68,9 @@ public sealed class StartAt
         ["CharacterGeneratorScreen"] = "CharacterGeneratorScreen", ["creation"] = "CharacterGeneratorScreen",
         ["LoadGameScreen"] = "LoadGameScreen", ["load"] = "LoadGameScreen",
         ["CardScreen"] = "CardScreen",
+        // the overlays (their texts drawn over any screen): the game as the Quick Start begins it, where the menu bar, a message or the save
+        // dialog comes up as the player plays
+        ["MenuBar"] = "CardScreen", ["MessageBox"] = "CardScreen", ["SaveGameDialog"] = "CardScreen", ["TextInputBox"] = "CardScreen",
     };
 
     /// <summary>The state variants a search tries in turn: as the Quick Start leaves it, with the option flags set, with 300 florins, by night, by day, in another city.</summary>
