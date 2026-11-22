@@ -58,6 +58,7 @@ public sealed partial class CardScreen
     // DORMANT: the battle option kind (-1, marker 0x06): highlighting it calls R043+0x29CE, which does nothing (its message "Enemy stats will be displayed here" is never shown); leaving it redraws the panel, as here.
     private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Func<List<OptionArea>>? relaid = null)
     {
+        ShowPendingNotice();
         if (areas.Count == 0 && _cardName.Length > 0 && _messages?.Name != _cardName)
         {
             areas = WaitForLines(relaid ?? (() => _lastAreas));

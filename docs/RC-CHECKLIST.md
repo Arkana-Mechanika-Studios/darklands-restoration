@@ -67,6 +67,9 @@ key in the original); what is different and which side shows what. If you cannot
 
 ## A. Start and install
 
+* [ ] **A0 Version.** Before the release: `Version` in `Directory.Build.props` raised to the release's (1.1.0 for 1.1: it still says
+  1.0.0 during the 1.1 work, and the window title, the console's banner, `--version`, the logs and the problem reports all say it).
+  Compare: the window title reads "Darklands Restoration Project 1.1.0", and so does the log's first line. Proven by: UNPROVEN (by hand).
 * [ ] **A1 First run, Windows.** Do: unpack the release in an empty folder with no settings file, start `DarklandsRP`.
   Compare: the launcher comes up, finds the game (GOG, Steam or a typed folder), Play starts the game and writes
   `darklands.settings.json`. Proven by: UNPROVEN.

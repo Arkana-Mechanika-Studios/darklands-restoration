@@ -50,6 +50,28 @@ public sealed class StartAt
     /// <summary>Why the target is not shown as asked (null: it is): the game starts at the nearest point and shows this once.</summary>
     public string? Notice { get; private set; }
 
+    /// <summary>Why a card text is not reached, as a kind (the notices' words follow it).</summary>
+    public enum Miss
+    {
+        /// <summary>Reached (or a screen).</summary>
+        None,
+
+        /// <summary>No card of the game shows the file: it shipped unused.</summary>
+        UnusedFile,
+
+        /// <summary>Every way through its cards, from every start the search tries, was played to its end (no battle, no limit met): the text never came up (a story state, or unused).</summary>
+        NotSeen,
+
+        /// <summary>The search stopped before it found the text: at a battle, its depth or runs, or a card needing a story state.</summary>
+        TooFar,
+    }
+
+    /// <summary>Why the target is not shown as asked (<see cref="Miss.None"/>: it is).</summary>
+    public Miss Why { get; private set; }
+
+    /// <summary>The name of the card that shows the file (its card table name, as $Party02), for the notices.</summary>
+    public string? CardName { get; private set; }
+
     /// <summary>The screens a target may name (the screen names the texts' boxes record) and the short names the headless host takes.</summary>
     public static readonly IReadOnlyDictionary<string, string> Screens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -73,8 +95,12 @@ public sealed class StartAt
         ["MenuBar"] = "CardScreen", ["MessageBox"] = "CardScreen", ["SaveGameDialog"] = "CardScreen", ["TextInputBox"] = "CardScreen",
     };
 
-    /// <summary>The state variants a search tries in turn: as the Quick Start leaves it, with the option flags set, with 300 florins, by night, by day, in another city.</summary>
-    public static readonly IReadOnlyList<string> Variants = ["quick start", "option flags set", "a rich purse", "night", "day", "in another city"];
+    /// <summary>
+    /// The state variants a search tries in turn: as the Quick Start leaves it, with the option flags set, with 300 florins, by night, by
+    /// day, in another city, a lone adventurer, in the wilderness, and three of other luck (another seed: another party and other rolls).
+    /// </summary>
+    public static readonly IReadOnlyList<string> Variants =
+        ["quick start", "option flags set", "a rich purse", "night", "day", "in another city", "a lone adventurer", "in the wilderness", "other luck 1", "other luck 2", "other luck 3"];
 
     /// <summary>
     /// The start for <paramref name="target"/>; null with <paramref name="error"/> when the target cannot be read (not
@@ -126,14 +152,19 @@ public sealed class StartAt
         var shown = CardsShowing(cards, world, names, Lines);
         if (!shown.TryGetValue(file, out var numbers))
         {
-            error = $"no card shows the texts of {file}";
-            return null;
+            // no card of the game shows the file: the game opens as the Quick Start begins it, and says why
+            at.Why = Miss.UnusedFile;
+            at.Screen = null;
+            at.Notice = $"The game never shows this text: no card uses the file {file}, which came with the game unused. The game starts as usual. "
+                + "The Workshop's preview shows the text.";
+            return at;
         }
+        var exhausted = true;
         foreach (var number in numbers)
         {
             for (var variant = 0; variant < Variants.Count; variant++)
             {
-                if (Search(cards, number, file, block, variant, world, names, next => numbers.Contains(next), Lines) is { } steps)
+                if (Search(cards, number, file, block, variant, world, names, next => numbers.Contains(next), Lines, out var all) is { } steps)
                 {
                     at.Card = number;
                     at.Variant = variant;
@@ -141,12 +172,18 @@ public sealed class StartAt
                     at.Reached = true;
                     return at;
                 }
+                exhausted &= all;
             }
         }
         at.Card = numbers[0];
-        at.Notice = block == 0
-            ? "This card text could not be shown as the game would: the card opens from its start."
-            : "This passage needs a story state the Workshop could not set up: the card opens from its start (the Workshop's preview shows every passage).";
+        at.CardName = CardTable.Find(numbers[0])?.Name is { Length: > 0 } name ? name : file;
+        at.Why = exhausted ? Miss.NotSeen : Miss.TooFar;
+        at.Notice = exhausted
+            ? $"The Workshop played every way through this text's card ({at.CardName}) from its test starts, and the text never came up: it needs "
+                + "a story state the test party does not have, or the game does not use it (its files hold some unused texts). The card opens at its "
+                + "start; the Workshop's preview shows the text."
+            : $"This text comes later than the Workshop can play to: after a battle, further into the scene than {MaxDepth} choices, or after an event "
+                + $"of the story (a quest, an item, an earlier choice). The card ({at.CardName}) opens at its start; the Workshop's preview shows the text.";
         return at;
     }
 
@@ -215,10 +252,14 @@ public sealed class StartAt
     /// <paramref name="variant"/> (null: not within <see cref="MaxDepth"/> menus and <see cref="MaxRuns"/> runs).
     /// </summary>
     public static IReadOnlyList<int>? Search(CardRegistry cards, int card, string file, int block, int variant, WorldData world, IPersonalNames? names, Func<int, bool> follow,
-        Func<string, int, int> lines)
+        Func<string, int, int> lines) => Search(cards, card, file, block, variant, world, names, follow, lines, out _);
+
+    /// <summary>As <see cref="Search(CardRegistry, int, string, int, int, WorldData, IPersonalNames, Func{int, bool}, Func{string, int, int})"/>; <paramref name="exhausted"/>: every way was followed (no limit was met).</summary>
+    public static IReadOnlyList<int>? Search(CardRegistry cards, int card, string file, int block, int variant, WorldData world, IPersonalNames? names, Func<int, bool> follow,
+        Func<string, int, int> lines, out bool exhausted)
     {
         IReadOnlyList<int>? found = null;
-        Explore(cards, card, variant, world, names, MaxDepth, MaxRuns, probe =>
+        exhausted = Explore(cards, card, variant, world, names, MaxDepth, MaxRuns, probe =>
         {
             found = probe.Found;
             return found is not null;
@@ -227,25 +268,42 @@ public sealed class StartAt
     }
 
     // runs card <paramref name="card"/> breadth first over its menus' choices (and on into the next cards <paramref name="follow"/>
-    // takes) until <paramref name="done"/> says so or the depth or the runs run out
-    private static void Explore(CardRegistry cards, int card, int variant, WorldData world, IPersonalNames? names, int depth, int maxRuns,
+    // takes) until <paramref name="done"/> says so or the depth or the runs run out; true when every way was followed (no menu left
+    // unchosen for want of depth or runs)
+    private static bool Explore(CardRegistry cards, int card, int variant, WorldData world, IPersonalNames? names, int depth, int maxRuns,
         Func<Probe, bool> done, string file, int block, Func<int, bool> follow, Func<string, int, int> lines)
     {
         var queue = new Queue<int[]>();
         queue.Enqueue([]);
-        for (var runs = 0; queue.Count > 0 && runs < maxRuns; runs++)
+        var cut = false;
+        for (var runs = 0; queue.Count > 0; runs++)
         {
+            if (runs >= maxRuns)
+            {
+                return false;
+            }
             var choices = queue.Dequeue();
             var probe = new Probe(choices, file, block, lines);
             var state = NewState(world, variant, card);
             try
             {
                 var number = card;
-                for (var hop = 0; hop <= MaxHops && cards.Find(number) is { } script; hop++)
+                for (var hop = 0; cards.Find(number) is { } script; hop++)
                 {
                     var next = script.Run(Context(state, world, probe, names));
-                    if (CardDispatcher.IsBattle(next) || !follow(next))
+                    if (CardDispatcher.IsBattle(next))
                     {
+                        // a battle: the search does not fight it, so what the card shows after it is not tried
+                        cut = true;
+                        break;
+                    }
+                    if (!follow(next))
+                    {
+                        break;
+                    }
+                    if (hop == MaxHops)
+                    {
+                        cut = true;
                         break;
                     }
                     CardDispatcher.FinishPass(state, next);
@@ -257,20 +315,30 @@ public sealed class StartAt
             }
             catch (Exception e) when (e is InvalidOperationException or NullReferenceException or IndexOutOfRangeException or ArgumentException or KeyNotFoundException or NotSupportedException or GameOverException)
             {
-                // a card that needs what a bare start state lacks: this path ends here
+                // a card that needs what a bare start state lacks: this path ends here, untried beyond
+                cut = true;
             }
             if (done(probe))
             {
-                return;
+                return false;
             }
-            if (probe.Offered is { } offered && choices.Length < depth)
+            if (probe.Offered is { Count: > 0 } offered)
             {
-                foreach (var option in offered)
+                if (choices.Length < depth)
                 {
-                    queue.Enqueue([.. choices, option]);
+                    foreach (var option in offered)
+                    {
+                        queue.Enqueue([.. choices, option]);
+                    }
+                }
+                else
+                {
+                    cut = true;
                 }
             }
+            cut |= probe.TooLong;
         }
+        return !cut;
     }
 
     /// <summary>A card screen without a display: it gives the planned choices, records the steps, and stops at the block searched for.</summary>
@@ -290,6 +358,9 @@ public sealed class StartAt
         public IReadOnlyList<int>? Found { get; private set; }
 
         public IReadOnlyList<int>? Offered { get; private set; }
+
+        /// <summary>The run was cut for its length (200 passages), not ended by the card.</summary>
+        public bool TooLong { get; private set; }
 
         public void Show(string cardName, string picture)
         {
@@ -314,6 +385,7 @@ public sealed class StartAt
             _steps.Add(-1);
             if (_steps.Count > 200)
             {
+                TooLong = true;
                 throw new Stop();
             }
         }

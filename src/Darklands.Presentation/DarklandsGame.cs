@@ -303,9 +303,18 @@ public sealed class DarklandsGame
     private void OpenFirst(StartAt at, GameState state, CardContext context, CardScreen screen, PartyPanel panel, BattleScreens battles)
     {
         screen.Planned = new Queue<int>(at.Steps);
+        // the notice over the card, once its text is drawn and it waits for the player (CardScreen.PendingNotice); a screen opened first
+        //   shows it over that screen now
         if (at.Notice is { } notice)
         {
-            new MessageBox(_ui).Notice([notice]);
+            if (at.Screen is null)
+            {
+                screen.PendingNotice = notice;
+            }
+            else
+            {
+                new MessageBox(_ui).Notice(notice);
+            }
         }
         var screens = context.Screens;
         switch (at.Screen)
