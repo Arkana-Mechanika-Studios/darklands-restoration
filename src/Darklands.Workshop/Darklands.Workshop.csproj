@@ -59,4 +59,11 @@
     <None Include="..\..\docs\modding\*.md" Link="docs\modding\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- the makers' examples (in a release: DarklandsRP/Workshop/examples; since 1.1 no longer in the player's packs and mods folders):
+       the example sound pack of generated test tones (docs/PACKS.md) and the example mod of docs/MODS.md -->
+  <ItemGroup>
+    <None Include="..\..\docs\audio-pack-example\**\*" Link="examples\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\mods\**\*" Link="examples\mods\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

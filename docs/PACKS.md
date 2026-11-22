@@ -34,11 +34,14 @@ DarklandsRP/
   packs/
     fonts/         hd-fonts (comes with the release)
     languages/     translations (empty but for a README)
-    audio/         audio-pack-example (comes with the release)
-  mods/            wayside-shrine (comes with the release)
+    audio/         sound packs (yours)
+  mods/            mods (yours; a mod is played only when named)
   SOUNDFONT/, MT32_ROMS/
-  Workshop/        the Darklands Workshop, if you downloaded it: DarklandsWorkshop.exe, its guides in Workshop/docs
+  Workshop/        the Darklands Workshop, if you downloaded it: DarklandsWorkshop.exe, its guides in Workshop/docs,
+                   the makers' examples in Workshop/examples (audio-pack-example, mods/wayside-shrine)
 ```
+
+Since 1.1 the makers' examples (the example sound pack and the example mod) come with the Workshop, in `Workshop/examples`, no longer in the game's `packs` and `mods` folders; a 1.0 install keeps the copies it has.
 
 The Workshop (the translators' and modders' editor) is a download of its own whose archive holds the `Workshop` folder:
 unzip it into the `DarklandsRP` folder and it lands there, finding the game one folder up.
@@ -224,11 +227,12 @@ shows (the previous section); files named by `pack.json` are not reported as unk
 
 ### The example pack
 
-[`docs/audio-pack-example`](audio-pack-example) (in a release: `packs/audio/audio-pack-example` next to the program)
+[`docs/audio-pack-example`](audio-pack-example) (in a release: the Workshop's `Workshop/examples/audio-pack-example`)
 replaces the map's travel pieces (also heard while creating the party)
 with a soft generated drone and the battle's missed swing with a short generated chirp. It holds no music of the
 game: both files are test tones made with ffmpeg from a formula. Choose it in the launcher's "Audio pack" row (or
-start with `--audio-pack packs/audio/audio-pack-example`, or set `sound.audioPack`) and create a party: the creation
+start with `--audio-pack Workshop/examples/audio-pack-example`, or set `sound.audioPack`; or copy it into `packs/audio`
+first) and create a party: the creation
 screen's music is the drone; in a battle, a missed blow chirps.
 
 ## Language packs

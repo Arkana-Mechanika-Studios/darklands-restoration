@@ -7,4 +7,5 @@ Then open the launcher (DarklandsRP Launcher), its Advanced tab, the "Language p
 arrows. A translation changes the game's words only: the game plays the same. More: docs/PACKS.md, "Language packs".
 
 To make a translation: the Darklands Workshop, a download of its own, unzipped into the game's folder (it makes the
-Workshop folder beside this packs folder). It makes its new packs here.
+Workshop folder beside this packs folder). It makes its new packs here. The makers' examples (a sound pack, a mod) come
+with it too, in Workshop/examples.

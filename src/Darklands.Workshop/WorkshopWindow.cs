@@ -746,6 +746,13 @@ internal sealed class WorkshopWindow : Window
     /// <summary>Runs the check as its button does (the window's pictures in the tests).</summary>
     internal void RunCheckForTests() => RunCheck();
 
+    /// <summary>Play in game (at the text, or from the start), as its buttons do; the status line after it.</summary>
+    internal string PlayInGameForTests(bool atText)
+    {
+        RunGame(atText);
+        return _status.Text ?? "";
+    }
+
     private void RunCheck()
     {
         if (_editor is null)
@@ -796,6 +803,13 @@ internal sealed class WorkshopWindow : Window
             _status.Text = $"The game's program is not in the folder above the Workshop's, nor beside it ({program}).";
             return;
         }
+        // an older game refuses the options below and quits without a word: said here instead (WorkshopVersion.NeedsGame)
+        if (WorkshopApp.OlderGame() is { } older)
+        {
+            _status.Text = $"Play in game needs the game {WorkshopVersion.NeedsGame} or later; the one beside the Workshop is {WorkshopApp.GameProgramVersion()}.";
+            _ = SayOlderGame(older);
+            return;
+        }
         var start = new ProcessStartInfo(program) { UseShellExecute = false };
         start.ArgumentList.Add("--language-pack");
         start.ArgumentList.Add(_project.Folder);
@@ -819,6 +833,14 @@ internal sealed class WorkshopWindow : Window
         _status.Text = target is not null ? $"The game starts at {target[(target.IndexOf(':', StringComparison.Ordinal) + 1)..]} (a Quick Start party; saves go to the pack's .workshop folder)."
             : atText ? "This text is not on a card or a screen the game can open at: the game starts from the start."
             : "The game starts from the start (its saves go to the pack's .workshop folder).";
+    }
+
+    private async Task SayOlderGame(string words)
+    {
+        if (await new QuestionDialog("The game is older than the Workshop", words, "Open the releases page", "Close").ShowDialog<bool>(this))
+        {
+            _ = Launcher.LaunchUriAsync(new Uri(ProjectLinks.Releases));
+        }
     }
 
     private async Task<string?> PickFolder(string title)

@@ -87,12 +87,11 @@
   </ItemGroup>
 
   <!-- the release's packs folder (docs/PACKS.md, Darklands.Platform.PackLayout): one subfolder per kind, the launcher offers their
-       packs (and loose packs in packs itself). The pack makers' guide (docs/PACKS.md) and the example sound pack
-       (packs/audio/audio-pack-example, generated tones), beside the program in the build and in every release -->
+       packs (and loose packs in packs itself). The pack guide (docs/PACKS.md) beside the program in the build and in every release;
+       the one pack shipped is the HD fonts (since 1.1 the example sound pack and the example mod are the Workshop's: Workshop/examples,
+       Darklands.Workshop.csproj) -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\PACKS.md" Link="docs\PACKS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\audio-pack-example\**\*" Link="packs\audio\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- the "HD fonts" font pack (docs/LOCALISATION.md), packs/fonts/hd-fonts: the game's text in DejaVu Sans Mono and EB Garamond at
          the window's resolution; its pack.json and slot files from docs/hd-fonts-pack, the fonts the repository already has
          (THIRD_PARTY_NOTICES.md) -->
@@ -105,12 +104,10 @@
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\packs-languages-README.txt" Link="packs\languages\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- the mod makers' guide (docs/MODS.md) and the example mod (mods/wayside-shrine), beside the program in the build and in every
-       release; a mod is played only when named (on the command line or in the settings file) -->
+  <!-- the mods guide (docs/MODS.md), beside the program in the build and in every release; a mod is played only when named (on the
+       command line or in the settings file); the example mod is the Workshop's since 1.1 (Workshop/examples/mods/wayside-shrine) -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\MODS.md" Link="docs\MODS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\mods\**\*" Link="mods\%(RecursiveDir)%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the settings reference, beside the program in the build and in every release (the modding guides and the localisation

@@ -12,10 +12,60 @@ internal sealed class WorkshopApp : Application
     /// in a developer's build or the tests, its own when DarklandsRP is beside it (Darklands.Platform.PackLayout.GameProgramFolder).
     /// Its packs folder is where the Workshop lists and makes packs; its DarklandsRP is the program "Play in game" starts.
     /// </summary>
-    public static string GameProgramFolder { get; } = Darklands.Platform.PackLayout.GameProgramFolder(AppContext.BaseDirectory);
+    public static string GameProgramFolder { get; internal set; } = Darklands.Platform.PackLayout.GameProgramFolder(AppContext.BaseDirectory);
 
     /// <summary>The game's program (DarklandsRP.exe on Windows, DarklandsRP elsewhere) in <see cref="GameProgramFolder"/>.</summary>
     public static string GameProgram => Path.Combine(GameProgramFolder, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
+
+    private static (string Path, DateTime Written, string? Version)? _gameVersion;
+
+    /// <summary>
+    /// The version of the game's program (<see cref="GameProgram"/>), as it says it ("1.0.0"), null when it is not there or cannot
+    /// say. On Windows the program's file version; elsewhere (no such resource) what <c>DarklandsRP --version</c> prints, which every
+    /// release since 0.9 answers ("Darklands Restoration Project 1.0.0"). Read again when the program changes.
+    /// </summary>
+    public static string? GameProgramVersion()
+    {
+        var program = GameProgram;
+        if (!File.Exists(program))
+        {
+            return null;
+        }
+        var written = File.GetLastWriteTimeUtc(program);
+        if (_gameVersion is { } known && known.Path == program && known.Written == written)
+        {
+            return known.Version;
+        }
+        string? version = null;
+        try
+        {
+            version = Darklands.Workshop.Text.WorkshopVersion.Clean(System.Diagnostics.FileVersionInfo.GetVersionInfo(program).ProductVersion);
+            if (version.Length == 0)
+            {
+                var start = new System.Diagnostics.ProcessStartInfo(program, "--version") { UseShellExecute = false, RedirectStandardOutput = true, CreateNoWindow = true };
+                using var run = System.Diagnostics.Process.Start(start);
+                var said = run?.StandardOutput.ReadLineAsync();
+                version = said is not null && said.Wait(3000) && said.Result is { } line && line.LastIndexOf(' ') is var space and >= 0
+                    ? Darklands.Workshop.Text.WorkshopVersion.Clean(line[(space + 1)..])
+                    : null;
+                if (run is { HasExited: false })
+                {
+                    run.Kill();
+                }
+            }
+        }
+        catch (Exception e) when (e is IOException or InvalidOperationException or System.ComponentModel.Win32Exception or UnauthorizedAccessException)
+        {
+            // a program that cannot say its version: it is tried as it is
+        }
+        version = version is { Length: > 0 } ? version : null;
+        _gameVersion = (program, written, version);
+        return version;
+    }
+
+    /// <summary>The plain words for an older game beside the Workshop (WorkshopVersion.OlderGameWords), null when the game will do.</summary>
+    public static string? OlderGame() =>
+        GameProgramVersion() is { } game && Darklands.Workshop.Text.WorkshopVersion.IsOlderGame(game) ? Darklands.Workshop.Text.WorkshopVersion.OlderGameWords(game) : null;
 
     public override void Initialize()
     {

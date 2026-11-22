@@ -232,8 +232,17 @@ right), and starts on its pack list: every translation pack it finds in the game
 launcher lists: its `languages`, `fonts` and `audio` folders and packs put straight in it),
 in the game folder's `packs` folder and among the packs you opened, each with its language, name, author, progress and
 when it last changed, the last one you opened first (**Enter** continues with it). Under the project's banner are the
-versions ("Workshop 1.1.0-beta.1 · Restoration 1.0.0", and the game program's version when it differs) and the
+versions ("Workshop 1.1.0-beta.1 · Restoration 1.1.0", and the game program's version when it differs) and the
 project's website, GitHub and Discord. **Packs** at the top left leads back to the list from a pack.
+
+**An older game.** The Workshop plays your pack with the game beside it, which must be 1.1.0 or later (`WorkshopNeedsGame`
+in `Directory.Build.props`): language packs and starting at a text came with 1.1.0, and an older game refuses those options
+and quits. With an older one (the version its program says), the start page says so in a box over the pack list, with
+the releases page a click away, and **Play in game** says so in a dialog instead of starting it; the editor works as usual.
+
+**The examples.** The Workshop's download also holds the makers' examples, in `Workshop/examples`: a sound pack of
+generated test tones (`audio-pack-example`, [PACKS.md](PACKS.md)) and the example mod of [MODS.md](MODS.md)
+(`mods/wayside-shrine`). Since 1.1 they are no longer in the game's `packs` and `mods` folders.
 
 **The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
 now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the

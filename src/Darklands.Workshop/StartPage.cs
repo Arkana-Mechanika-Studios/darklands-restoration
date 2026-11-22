@@ -66,6 +66,11 @@ internal sealed class StartPage
             body.Children.Add(Callout("Find your game first", "The Workshop reads the texts from your own Darklands. Choose the folder that holds DARKLAND.EXE.",
                 "Choose the game folder…", ChooseGame));
         }
+        // a game older than the Workshop needs (WorkshopVersion.NeedsGame): said in words, before Play in game is tried
+        if (WorkshopApp.OlderGame() is { } older)
+        {
+            body.Children.Add(Callout("Update the game to play your pack", older, "Open the releases page", () => Link(ProjectLinks.Releases)));
+        }
         var head = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto"), Margin = new Thickness(0, 0, 0, 16) };
         head.Children.Add(new StackPanel
         {
@@ -211,15 +216,13 @@ internal sealed class StartPage
         return new Border { Child = band, BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line), BorderThickness = new Thickness(0, 0, 0, 1) };
     }
 
-    /// <summary>"Restoration 1.1.0", and "· game 1.0.0" when the game beside the Workshop is another version.</summary>
+    /// <summary>"Workshop 1.1.0-beta.1 · Restoration 1.1.0", and "· game 1.0.0" when the game beside the Workshop is another version.</summary>
     public static string Versions()
     {
-        static string Clean(string? v) => (v ?? "").Split('+')[0].Trim();
         // the Workshop's own version (WorkshopVersion), then the Restoration's this build is of (Directory.Build.props)
-        var own = Clean(typeof(StartPage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
-        var words = "Workshop " + Darklands.Workshop.Text.WorkshopVersion.Current + " · Restoration " + own;
-        var program = WorkshopApp.GameProgram;
-        if (File.Exists(program) && Clean(FileVersionInfo.GetVersionInfo(program).ProductVersion) is { Length: > 0 } game && game != own)
+        var own = WorkshopVersion.Clean(typeof(StartPage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
+        var words = "Workshop " + WorkshopVersion.Current + " · Restoration " + own;
+        if (WorkshopApp.GameProgramVersion() is { } game && game != own)
         {
             words += " · game " + game;
         }

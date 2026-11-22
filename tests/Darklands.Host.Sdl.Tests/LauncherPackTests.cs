@@ -10,12 +10,12 @@ public sealed class LauncherPackTests : IDisposable
     [Fact]
     public void TheReleasesPacksShipBesideTheProgramInTheirKindsFolders()
     {
-        var example = Path.Combine(AppContext.BaseDirectory, "packs", "audio", "audio-pack-example");
+        // the one pack shipped: the HD fonts (the example sound pack and the example mod are the Workshop's since 1.1,
+        //   Workshop/examples: GameVersionAndExamplesTests, which also checks the game's project ships neither; an older build's
+        //   copies may still lie in this output, so their absence is not asserted here)
         var hd = Path.Combine(AppContext.BaseDirectory, "packs", "fonts", "hd-fonts");
         var found = LauncherHost.PackFolders(null);
-        Assert.Contains(example, found);
         Assert.Contains(hd, found);
-        Assert.Equal(new Launcher.PackStatus(0, 3, null), LauncherHost.DescribePack(example));
         Assert.True(LauncherHost.DescribePack(hd).Fonts > 0);
         // the languages folder: empty but for its README
         Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "packs", "languages", "README.txt")));

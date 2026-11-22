@@ -99,16 +99,16 @@ AdLib, Sound Blaster, Sound Blaster Pro 2, MT-32 or CM-32L.
 
 A pack replaces pictures (PNG files) or music and battle sounds (OGG, WAV or General MIDI files) without changing how the game plays.
 Put a pack's folder in the `packs` folder next to the program and choose it in the launcher's "HD pack" or "Audio pack"
-row (or drop the folder on the launcher). A pack (or a mod) can also give music to a card of the game. MIDI music needs a General MIDI SoundFont (`.sf2`) of your own, in a `SOUNDFONT` folder next to the program or chosen in the launcher's "SoundFont" row; none is included. The release comes with a small example, `packs/audio/audio-pack-example` (generated
-test tones). How to make your own, with the names of all the game's music and sounds: [`docs/PACKS.md`](docs/PACKS.md),
+row (or drop the folder on the launcher). A pack (or a mod) can also give music to a card of the game. MIDI music needs a General MIDI SoundFont (`.sf2`) of your own, in a `SOUNDFONT` folder next to the program or chosen in the launcher's "SoundFont" row; none is included. A small example (generated test tones) comes with the Workshop, in
+`Workshop/examples/audio-pack-example`. How to make your own, with the names of all the game's music and sounds: [`docs/PACKS.md`](docs/PACKS.md),
 also beside the program and linked from the launcher ("how to make a pack").
 
 ## Mods
 
 A mod adds new cards (scenes with a text and choices) or replaces one of the game's: unlike a pack it changes the game,
 so its saved games are marked modded (a companion file beside the `.SAV`, which itself stays loadable by the original
-game). Mods are played only when named: `--mod <name>` or `"mods"` in the settings. The release comes with a small
-example, `mods/wayside-shrine`; how to write one, card by card: [`docs/MODS.md`](docs/MODS.md), also beside the program.
+game). Mods are played only when named: `--mod <name>` or `"mods"` in the settings. A small example comes with
+the Workshop, `Workshop/examples/mods/wayside-shrine`; how to write one, card by card: [`docs/MODS.md`](docs/MODS.md), also beside the program.
 
 ## Settings
 
@@ -129,7 +129,7 @@ want:
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
 `--scale 2`, `--no-intro` and so on).
 
-## Status: version 1.0.0
+## Status: version 1.1.0
 
 The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
 churches, the world map and its encounters, battles, camping, saints and alchemy, saving and loading.
