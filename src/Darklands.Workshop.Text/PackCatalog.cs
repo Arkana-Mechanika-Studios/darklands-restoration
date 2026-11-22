@@ -24,7 +24,9 @@ public static class PackCatalog
         [.. new[] { Path.Combine(programFolder, Darklands.Platform.PackLayout.Packs), gameFolder is null ? null : Path.Combine(gameFolder, Darklands.Platform.PackLayout.Packs) }
             .OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase)];
 
-    /// <summary>The packs in the packs folders <paramref name="folders"/> (their kinds' subfolders and loose packs) and <paramref name="recent"/>, newest first.</summary>
+    /// <summary>The translation packs in the packs folders <paramref name="folders"/> (their kinds' subfolders and loose packs) and
+    /// <paramref name="recent"/>, newest first: a font-only pack (the HD fonts, <see cref="LanguagePack.IsFontPack"/>) or an audio pack
+    /// is not one, wherever it sits.</summary>
     public static IReadOnlyList<PackSummary> Find(IEnumerable<string> folders, IEnumerable<string> recent)
     {
         ArgumentNullException.ThrowIfNull(folders);
@@ -41,7 +43,7 @@ public static class PackCatalog
         foreach (var candidate in candidates)
         {
             var full = Path.TrimEndingDirectorySeparator(Path.GetFullPath(candidate));
-            if (!seen.Add(full) || !File.Exists(Path.Combine(full, LanguagePack.ManifestName)) || Summary(full) is not { } summary)
+            if (!seen.Add(full) || !File.Exists(Path.Combine(full, LanguagePack.ManifestName)) || LanguagePack.IsFontPack(full) || Summary(full) is not { } summary)
             {
                 continue;
             }

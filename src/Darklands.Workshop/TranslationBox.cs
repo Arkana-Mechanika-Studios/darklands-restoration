@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using AvaloniaEdit;
 using AvaloniaEdit.Document;
@@ -39,8 +40,9 @@ internal sealed class TranslationBox : Border
         _editor.TextArea.SelectionBrush = WorkshopTheme.Brush(Color.FromArgb(0x80, WorkshopTheme.Gold.R, WorkshopTheme.Gold.G, WorkshopTheme.Gold.B));
         _editor.TextArea.Caret.CaretBrush = WorkshopTheme.Brush(WorkshopTheme.Ink);
         _editor.TextChanged += (_, _) => TextChanged?.Invoke(this, EventArgs.Empty);
-        GotFocus += (_, _) => BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Gold);
-        LostFocus += (_, _) => BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine);
+        // the editor's text area marks its focus events handled: heard here all the same
+        AddHandler(GotFocusEvent, (_, _) => BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Gold), RoutingStrategies.Bubble, handledEventsToo: true);
+        AddHandler(LostFocusEvent, (_, _) => BorderBrush = WorkshopTheme.Brush(WorkshopTheme.WoodLine), RoutingStrategies.Bubble, handledEventsToo: true);
     }
 
     /// <summary>The text as written.</summary>

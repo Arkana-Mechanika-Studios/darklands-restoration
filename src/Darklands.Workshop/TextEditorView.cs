@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Darklands.Presentation;
@@ -894,7 +895,8 @@ internal sealed class TextEditorView : IWorkshopEditor
                 box.Text = row.Field ?? CardRow.Unwrapped(row.Content);
                 _loading = false;
                 ToolTip.SetTip(box, row.Field is null ? "This row has tags the fields do not show as lines: it is written as the file holds it." : null);
-                box.GotFocus += (_, _) => _focusedRow = box;
+                // the row the translator is typing in (a chip goes there); the editor's text area marks GotFocus handled
+                box.AddHandler(InputElement.GotFocusEvent, (_, _) => _focusedRow = box, RoutingStrategies.Bubble, handledEventsToo: true);
                 box.TextChanged += (_, _) =>
                 {
                     // the box's words unchanged (it was only given the cursor): nothing is written
@@ -1043,6 +1045,8 @@ internal sealed class TextEditorView : IWorkshopEditor
             BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line2),
             Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
             Foreground = WorkshopTheme.Brush(WorkshopTheme.ChipColourOf(token) ?? WorkshopTheme.Text),
+            // a click leaves the cursor in the field it puts the chip into
+            Focusable = false,
         };
         ToolTip.SetTip(button, "Put it where the cursor is");
         button.Click += (_, _) => InsertChip(chip);

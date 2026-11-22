@@ -71,7 +71,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // table ignores it) walks on that way: each pass with no key waiting, no button held and no direction held, the map is given that
     // key as a PressKey command (docs/COMMANDS.md), the key a player would press, which takes the same case of 0c44 as a typed one.
     // It stops at any other key or a click (which is then the player's as ever), at a step that does not walk on (blocked, arrived, an
-    // encounter or a card), a map message, nightfall, and the map's edge (two steps in a row that leave the marker where it was).
+    // encounter or a card), a map message, and the map's edge (two steps in a row that leave the marker where it was). An encounter
+    // roll that draws no card is not a stop (nothing is shown), and nor is nightfall (a day passes in a few steps: the user's decision,
+    // 2026-11-22).
     // Replays reproduce it: it follows only from the keys, their make codes and the clock, as the game does.
     private int? _walkKey;
     private int _walkStill;
@@ -150,17 +152,12 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var travel = new OverlandTravel(state, map, eventStarted);
         travel.HourPassed = () =>
         {
-            var daylight = state.Date.IsDaylight;
             // orig: R030+0x1300 after pass-hours(1): the clock picture onto the screen, then 2dd6 and 20d2 when the background changed
             TimePassage.Advance(state, 1);
             _page.DrawClock(Clock(state));
             var background = _background;
             ApplySeason(state);
             _mapDirty |= _background != background;
-            if (daylight && !state.Date.IsDaylight)
-            {
-                StopWalking("nightfall");
-            }
         };
         travel.PlayCue = tune => ui.PlayMusic(tune);
         travel.MapMessage = message =>
@@ -337,7 +334,15 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             var result = MoveOnce(state, travel, dx, dy);
             if (_walkKey is not null)
             {
-                if (result.Outcome != StepOutcome.Walked)
+                if (result is { Outcome: StepOutcome.Encounter, Card: 0 })
+                {
+                    // an encounter roll that drew no card (TerrainEncounter's Winter() outside winter): nothing is shown and the map goes on
+                    //   (the loop below returns only a card), so the walk goes on too; the marker stood this pass (0c44 puts it back), which
+                    //   is not the map's edge: the count of passes in place starts again (a vertical walk stands every second pass, and two of
+                    //   those either side of this one are not two in a row)
+                    _walkStill = 0;
+                }
+                else if (result.Outcome != StepOutcome.Walked)
                 {
                     StopWalking(result.Outcome.ToString());
                 }
@@ -533,7 +538,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var result = travel.Step(x, y);
         // orig: DS:8676 = the case's direction, put back to 0 by a step that did not walk on (R030+0x10D6)
         Memory.StepDirection = result.Outcome == StepOutcome.Walked ? _markerDirection : 0;
-        Trace?.Invoke($"step d={dx},{dy} view {x - _originX},{y - _originY} col {_viewColumn} top {_viewTop} rows {_viewRows} cell {state.MapPosition.X},{state.MapPosition.Y} -> {result.Outcome}");
+        Trace?.Invoke($"step d={dx},{dy} view {x - _originX},{y - _originY} col {_viewColumn} top {_viewTop} rows {_viewRows} cell {state.MapPosition.X},{state.MapPosition.Y} -> {result.Outcome}{(result.Outcome == StepOutcome.Encounter ? " " + result.Card : "")}");
         // orig: for a result of 0 or more (blocked, arrived, an encounter) 0c44 puts the marker back and returns before the scroll block; only a
         //   plain walk (-1) keeps the new position (the cell the party stands on is OverlandTravel.Step's)
         if (result.Outcome == StepOutcome.Walked)
