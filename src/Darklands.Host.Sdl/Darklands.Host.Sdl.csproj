@@ -131,10 +131,11 @@
     <None Include="$(MSBuildThisFileDirectory)..\..\THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- a release carries an empty MT32_ROMS folder beside the program, where the player puts MT-32 / CM-32L ROM files -->
-  <Target Name="CreateMt32RomFolder" AfterTargets="Publish">
-    <MakeDir Directories="$(PublishDir)MT32_ROMS" />
-  </Target>
+  <!-- a release carries an MT32_ROMS folder beside the program, where the player puts MT-32 / CM-32L ROM files: with its README
+       (docs/mt32-roms-README.txt: which files, none included), as an empty folder does not survive the release's zip -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\mt32-roms-README.txt" Link="MT32_ROMS\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 
   <!-- and a SOUNDFONT folder, where the launcher looks for a General MIDI SoundFont (.sf2) for the packs' .mid music; none is
        included (the launcher's SoundFont row says where to get a free one) -->

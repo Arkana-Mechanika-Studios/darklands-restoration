@@ -20,7 +20,13 @@ public sealed class LauncherPackTests : IDisposable
         // the player's own folders: languages, audio and mods, empty but for their READMEs
         Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "packs", "languages", "README.txt")));
         Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "packs", "audio", "README.txt")));
-        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "mods", "README.txt")));        // the players' guides beside the program (the makers' guides are the Workshop's: Workshop/docs)
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "mods", "README.txt")));
+        // and the Roland ROMs' folder, with its README (the files that go there, none included): 1.0's zip had the folder
+        var roms = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "MT32_ROMS", "README.txt"));
+        Assert.Contains("MT-32", roms, StringComparison.Ordinal);
+        Assert.Contains("CM-32L", roms, StringComparison.Ordinal);
+        Assert.Contains("No ROM files are included", roms, StringComparison.Ordinal);
+        // the players' guides beside the program (the makers' guides are the Workshop's: Workshop/docs)
         foreach (var guide in new[] { "PACKS.md", "MODS.md", "SETTINGS.md", "REPORTING.md" })
         {
             Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", guide)), guide);
