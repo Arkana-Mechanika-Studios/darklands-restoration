@@ -3,6 +3,9 @@ using Darklands.Workshop.Text;
 namespace Darklands.Workshop.Tests;
 
 /// <summary>The start page's data: the languages of a new pack (found by any of their names or tag), the check of another tag, and the packs found on disk.</summary>
+// in the Workshop's collection: it reads WorkshopApp.GameProgramFolder, which the collection's tests set to folders of their own
+//   (and put back) one at a time; beside them, in parallel, it could read one of theirs
+[Collection(WorkshopWindowTests.Collection)]
 public sealed class StartPageDataTests
 {
     [Fact]
