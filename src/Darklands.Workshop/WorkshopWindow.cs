@@ -232,6 +232,9 @@ internal sealed class WorkshopWindow : Window
 
     private IReadOnlyList<PackSummary> _startPacks = [];
 
+    /// <summary>The packs the start page lists (the tests).</summary>
+    internal IReadOnlyList<PackSummary> StartPacksForTests => _startPacks;
+
     // how many texts a pack can translate (the template's), for the packs' progress; 0 without a game
     private int TemplateCount()
     {

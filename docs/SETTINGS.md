@@ -278,7 +278,8 @@ games are the same, and the original game loads them):
   it once with Shift, and the party walks on that way without the key held. It walks by the map's own command, the key a player
   would press, one a pass ([COMMANDS.md](COMMANDS.md)), so the rules, the time and the encounters are those of a held key. It
   stops at any other key or a click (which then does what it always does), at a step that does not walk on (blocked ground, a
-  city or place reached, an encounter, a card or event), at a message on the map, at nightfall, and at the map's edge. In the
+  city or place reached, an encounter, a card or event), at a message on the map, and at the map's edge; it goes on through
+  nightfall, and past an encounter roll that brings nothing (the map shows nothing then either). In the
   original the map's keys are only the plain direction keys (with or without Shift the BIOS gives the same codes, and its
   keyboard handler ignores Shift), so Shift with a direction did nothing of its own there. A recording of it (the keys, their
   presses and releases, the clock) plays back the same walk.

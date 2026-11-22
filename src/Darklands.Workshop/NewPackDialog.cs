@@ -34,9 +34,10 @@ internal sealed class NewPackDialog : Window
     private readonly Border _fontBox;
     private readonly Button _create = WorkshopTheme.Primary(new TextBlock { Text = "Create pack" });
     private readonly TextBlock _problem = new() { FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Bad), TextWrapping = TextWrapping.Wrap };
-    private bool _nameEdited;
-    private bool _folderEdited;
-    private bool _filling;
+    // what Chosen last wrote into the name and the folder: a box whose text differs is the player's, and keeps it (Avalonia posts
+    //   TextChanged to the dispatcher, so a flag set there comes after the dialog's own writes and cannot tell them from typing)
+    private string _nameWritten = "";
+    private string _folderWritten = "";
 
     public NewPackDialog(string game, string packsFolder, string? author)
     {
@@ -56,12 +57,7 @@ internal sealed class NewPackDialog : Window
         _list.SelectionChanged += (_, _) => Chosen();
         _tag.TextChanged += (_, _) => Chosen();
         _tagName.TextChanged += (_, _) => Chosen();
-        _name.TextChanged += (_, _) => _nameEdited |= !_filling;
-        _folder.TextChanged += (_, _) =>
-        {
-            _folderEdited |= !_filling;
-            Validate();
-        };
+        _folder.TextChanged += (_, _) => Validate();
         _fontBox = new Border
         {
             Padding = new Thickness(12),
@@ -97,7 +93,6 @@ internal sealed class NewPackDialog : Window
             if (picked.Count > 0 && picked[0].TryGetLocalPath() is { } path)
             {
                 _folder.Text = Path.Combine(path, LanguageTag.Length > 0 ? LanguageTag : "pack");
-                _folderEdited = true;
             }
         };
         _other.Children.Add(Label("Language tag"));
@@ -163,6 +158,12 @@ internal sealed class NewPackDialog : Window
     /// <summary>Whether to build the matching font with the pack.</summary>
     public bool BuildFont => _fontBox.IsVisible && _font.IsChecked == true;
 
+    /// <summary>Types <paramref name="text"/> into the language search box, as a player does (the tests).</summary>
+    internal void TypeSearchForTests(string text) => _search.Text = text;
+
+    /// <summary>Types <paramref name="text"/> as the pack's name, as a player does (the tests).</summary>
+    internal void TypeNameForTests(string text) => _name.Text = text;
+
     /// <summary>Picks a language (the tests' pictures; the list's selection).</summary>
     internal void Pick(string query, string? tag = null)
     {
@@ -215,16 +216,14 @@ internal sealed class NewPackDialog : Window
         _other.IsVisible = other;
         var tag = LanguageTag;
         var listed = Languages.Of(tag);
-        _filling = true;
-        if (!_nameEdited)
+        if ((_name.Text ?? "") == _nameWritten)
         {
-            _name.Text = listed?.Native ?? (other ? (_tagName.Text ?? "").Trim() : "");
+            _name.Text = _nameWritten = listed?.Native ?? (other ? (_tagName.Text ?? "").Trim() : "");
         }
-        if (!_folderEdited)
+        if ((_folder.Text ?? "") == _folderWritten)
         {
-            _folder.Text = tag.Length > 0 ? Path.Combine(_packs, tag) : "";
+            _folder.Text = _folderWritten = tag.Length > 0 ? Path.Combine(_packs, tag) : "";
         }
-        _filling = false;
         var lacking = Languages.IsWellFormed(tag) ? FontNeeds.LackedByTheGame(_game, tag) : "";
         _fontBox.IsVisible = lacking.Length > 0;
         _fontText.Text = $"The game's fonts have no {string.Join(" ", lacking.Take(10).Select(c => c.ToString()))}{(lacking.Length > 10 ? " …" : "")}. The Workshop draws them in the game's own pixel style, from your game's fonts.";
