@@ -72,11 +72,12 @@
   <!-- the sample translation packs (docs/language-samples: short excerpts of the opening, a deliberate exception to the project
        shipping no translation of the game's text, docs/LOCALISATION.md), in Workshop/examples/languages, listed on the start
        page. The one copy of Noto Sans CJK (SIL OFL, THIRD_PARTY_NOTICES.md) goes into each CJK sample's fonts folder, its
-       licence beside it, so each pack plays when copied alone into the game's packs/languages -->
+       licence beside it, so each pack plays when copied alone into the game's packs/languages (kept out of the single-file
+       program: a font file is otherwise bundled into it) -->
   <ItemGroup>
     <None Include="..\..\docs\language-samples\sample-*\**\*" Link="examples\languages\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="..\..\docs\language-samples\fonts\NotoSansCJK-Regular.ttc;..\..\docs\language-samples\fonts\LICENSE-OFL.txt" Link="examples\languages\sample-ja\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="..\..\docs\language-samples\fonts\NotoSansCJK-Regular.ttc;..\..\docs\language-samples\fonts\LICENSE-OFL.txt" Link="examples\languages\sample-ko\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\language-samples\fonts\NotoSansCJK-Regular.ttc;..\..\docs\language-samples\fonts\LICENSE-OFL.txt" Link="examples\languages\sample-ja\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\docs\language-samples\fonts\NotoSansCJK-Regular.ttc;..\..\docs\language-samples\fonts\LICENSE-OFL.txt" Link="examples\languages\sample-ko\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 
 </Project>

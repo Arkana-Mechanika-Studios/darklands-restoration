@@ -57,6 +57,17 @@ public sealed class SamplePacksTests
             Assert.True(File.Exists(Path.Combine(Shipped, cjk, "fonts", "LICENSE-OFL.txt")));
         }
         Assert.All(Order.Except(["sample-ja", "sample-ko"]), f => Assert.False(Directory.Exists(Path.Combine(Shipped, f, "fonts")), f));
+        // and in the published Workshop too: the single-file program would otherwise take the font into itself, leaving the packs
+        //   without it (the build's output above does not show that)
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Directory.Build.props")))
+        {
+            dir = dir.Parent;
+        }
+        var project = File.ReadAllLines(Path.Combine(dir!.FullName, "src", "Darklands.Workshop", "Darklands.Workshop.csproj"));
+        var fontLines = project.Where(l => l.Contains("NotoSansCJK-Regular.ttc", StringComparison.Ordinal) && l.Contains("<None", StringComparison.Ordinal)).ToList();
+        Assert.Equal(2, fontLines.Count);
+        Assert.All(fontLines, l => Assert.Contains("ExcludeFromSingleFile=\"true\"", l, StringComparison.Ordinal));
     }
 
     [Fact]
