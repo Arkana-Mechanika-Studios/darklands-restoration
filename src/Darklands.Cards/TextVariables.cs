@@ -166,7 +166,8 @@ public static class TextVariables
             }
             if (name == $"Money{k + 1}")
             {
-                return c.Variables.Money[k].ToString();
+                // a translation's money words when it has them (CardContext.PackMoney), else the original's
+                return c.PackMoney?.Invoke(c.Variables.Money[k]) ?? c.Variables.Money[k].ToString();
             }
         }
 

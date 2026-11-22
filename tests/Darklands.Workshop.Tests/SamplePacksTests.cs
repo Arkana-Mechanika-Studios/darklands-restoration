@@ -35,10 +35,11 @@ public sealed class SamplePacksTests
             Assert.True(pack is not null, why);
             Assert.EndsWith("(sample)", pack!.Name, StringComparison.Ordinal);
             Assert.NotEqual("de", pack.Language);
-            Assert.InRange(pack.Messages.Count, 1, 40);
+            Assert.InRange(pack.Messages.Count, 1, 60);
             foreach (var message in pack.Messages.Select(m => m.Message.Id))
             {
-                Assert.True(message.StartsWith("exe-", StringComparison.Ordinal) || Cards.Any(c => message.StartsWith("msg-" + c[1..].ToLowerInvariant() + "-", StringComparison.Ordinal)), message);
+                Assert.True(message.StartsWith("exe-", StringComparison.Ordinal) || message.StartsWith("id-rw-money-", StringComparison.Ordinal)
+                    || Cards.Any(c => message.StartsWith("msg-" + c[1..].ToLowerInvariant() + "-", StringComparison.Ordinal)), message);
             }
             // only its own words: the excerpt's files, by id (no template, no boxes, no English)
             var files = Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories).Select(f => Path.GetRelativePath(folder, f).Replace('\\', '/')).ToList();
@@ -58,7 +59,14 @@ public sealed class SamplePacksTests
             Assert.True(File.Exists(Path.Combine(Shipped, cjk, "fonts", "NotoSansCJK-Regular.ttc")));
             Assert.True(File.Exists(Path.Combine(Shipped, cjk, "fonts", "LICENSE-OFL.txt")));
         }
-        Assert.All(Order.Except(["sample-ja", "sample-ko"]), f => Assert.False(Directory.Exists(Path.Combine(Shipped, f, "fonts")), f));
+        // the others: their pixel font packs, built from the original fonts in their format (the user's decision, 2026-11-22)
+        Assert.All(Order.Except(["sample-ja", "sample-ko"]), f =>
+        {
+            Assert.True(File.Exists(Path.Combine(Shipped, f, "fonts", "slot1.json")), f);
+            Assert.True(File.Exists(Path.Combine(Shipped, f, "fonts", "slot3.png")), f);
+        });
+        // every card sample has the money words $Money fills an amount with
+        Assert.All(Order.Except(["sample-fr-layouts"]), f => Assert.True(LanguagePack.Load(Path.Combine(Shipped, f), out _)!.Localizer.IsTranslated(Darklands.Core.GameTextIds.MoneyFlorins), f));
         // and in the published Workshop too: the single-file program would otherwise take the font into itself, leaving the packs
         //   without it (the build's output above does not show that)
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
@@ -138,7 +146,8 @@ public sealed class SamplePacksTests
                 var args = played.ArgumentList.ToList();
                 Assert.Equal(Path.Combine(Shipped, "sample-ru"), args[args.IndexOf("--language-pack") + 1]);
                 Assert.Equal(Path.Combine(root, "workshop-settings", "sample-saves", "sample-ru"), args[args.IndexOf("--saves") + 1]);
-                Assert.Equal(hd, args[args.IndexOf("--font-pack") + 1]);
+                // the sample brings its pixel font: no HD fonts asked for
+                Assert.DoesNotContain("--font-pack", args);
                 Assert.Equal("card:$CITYC00#0", args[args.IndexOf("--start-at") + 1]);
                 // a CJK sample brings its own TrueType font: none given
                 started.Clear();
@@ -153,10 +162,9 @@ public sealed class SamplePacksTests
                 Assert.Equal("pl", ask.Suggested);
                 ask.Answer("polski");
                 Avalonia.Threading.Dispatcher.UIThread.RunJobs();
-                // its font offered (Polish letters the game lacks): not now
-                var offer = Assert.Single(start.OwnedWindows);
-                Assert.Equal("A font for your language", offer.Title);
-                offer.Close();
+                // its font came with it: nothing asked
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Empty(start.OwnedWindows);
                 await copying;
                 var mine = Path.Combine(languages, "polski");
                 Assert.True(File.Exists(Path.Combine(mine, "text", "pl", "msg", "$CITYC00.ftl")));
@@ -199,5 +207,63 @@ public sealed class SamplePacksTests
         }
         // the shelf: untouched
         Assert.Equal(shelf, Fingerprint());
+    }
+
+    [Fact]
+    public async Task AMoneyAmountInATextWithTheMoneyWordsNotTranslatedGetsANote()
+    {
+        if (GameFolder.Files is null || Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR") is not { } game)
+        {
+            return;
+        }
+        var root = Path.Combine(Path.GetTempPath(), "dl-moneynote-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var pack = Path.Combine(root, "fr");
+            var project = TextProject.Create(pack, "fr", "Essai", "a translator", game);
+            const string Church = "msg:$CITYC00#0";
+            var church = project.Entries.First(e => e.Key == Church);
+            Assert.Contains("$Money1", church.English, StringComparison.Ordinal);
+            project.Set(church, church.English.Replace("You come to the", "Vous arrivez à", StringComparison.Ordinal));
+            project.Save();
+            var session = WorkshopWindowTests.Session.Value;
+            await session.Dispatch(() =>
+            {
+                var window = new WorkshopWindow(new WorkshopSettings { GameFolder = game }, [pack]) { Width = 1280, Height = 800 };
+                window.Show();
+                window.Editor!.Select(Church);
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Assert.StartsWith("$Money… fills in an amount from texts you haven't translated yet: the money words", window.Editor.FillNoteForTests, StringComparison.Ordinal);
+                // a text without a filled placeholder: no note
+                window.Editor.Select("msg:$CITYC00#1");
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Null(window.Editor.FillNoteForTests);
+                window.Close();
+            }, CancellationToken.None);
+            // the money words translated: no note
+            project = TextProject.Open(pack, game);
+            foreach (var id in Darklands.Core.GameTextIds.MoneyWords)
+            {
+                var entry = project.Entries.First(e => e.Key == id);
+                project.Set(entry, entry.English);
+            }
+            project.Save();
+            await session.Dispatch(() =>
+            {
+                var window = new WorkshopWindow(new WorkshopSettings { GameFolder = game }, [pack]) { Width = 1280, Height = 800 };
+                window.Show();
+                window.Editor!.Select(Church);
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Null(window.Editor.FillNoteForTests);
+                window.Close();
+            }, CancellationToken.None);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
     }
 }

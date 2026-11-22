@@ -248,7 +248,7 @@ A language pack (a translation) changes the game's words, and only its words: th
 (`packs/languages/de/pack.json`). In the launcher's Advanced tab, the "Language pack" row then offers it with ← and →
 (Enter browses for one elsewhere); None is the original English. The choice is the settings file's `text.languagePack`
 ([SETTINGS.md](SETTINGS.md)); `--language-pack <folder>` names one for a single run. A translation into letters the
-game's fonts lack brings its own fonts.
+game's fonts lack brings its own fonts. A language pack whose letters the original fonts lack and that brings no font of its own plays with the **HD fonts**: choosing it in the launcher turns the Fonts row to HD fonts by itself, with a line saying why ("Russian needs letters the original fonts don't have: HD fonts are on"); set Fonts back to None and the line warns that those letters show as '?'. The game started with `--language-pack` alone does the same, and says so in its log.
 
 A **font pack** draws the game's text, English included, in TrueType fonts at the window's resolution: the release's
 `packs/fonts/hd-fonts` ("HD fonts") is one, chosen in the "Font pack" row (`text.fontPack`). It goes with a language

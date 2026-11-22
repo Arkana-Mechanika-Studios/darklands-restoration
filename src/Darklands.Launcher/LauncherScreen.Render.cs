@@ -739,6 +739,11 @@ internal sealed partial class LauncherScreen
         {
             yield return (_message, _messageColour);
         }
+        else if (_model.FontsNote is { } fonts)
+        {
+            // the language pack's letters and the fonts: why the HD fonts are on, or that its letters show as '?' without them
+            yield return (fonts.Text, fonts.Warning ? PaleRed : Green);
+        }
         else if (_context.Reason switch
                  {
                      LauncherReason.StartFailed => _context.Problem ?? "The game could not start.",

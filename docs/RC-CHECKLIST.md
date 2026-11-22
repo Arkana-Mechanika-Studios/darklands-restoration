@@ -71,7 +71,9 @@ key in the original); what is different and which side shows what. If you cannot
   title, the console's banner, `--version`, the logs and the problem reports all say it). Compare: the window title reads
   "Darklands Restoration Project 1.1.0", and so does the log's first line. Proven by: `GameVersionAndExamplesTests` (the build's
   version is 1.1.0), `DarklandsRP --version` on the release build (2026-11-22: "Darklands Restoration Project 1.1.0"); the
-  title on screen: UNPROVEN (by hand).
+  title on screen: UNPROVEN (by hand). The release notes: the final `releases/<version>/release-notes.md` committed in the
+  repository (the same path on every checkout and in CI); a release build (`-p:DarklandsRelease=true`, the build workflow on
+  a `v*` tag) stops with a message without it, an ordinary build goes on without. Proven by: `ReleaseNotesTests`.
 * [ ] **A1 First run, Windows.** Do: unpack the release in an empty folder with no settings file, start `DarklandsRP`.
   Compare: the launcher comes up, finds the game (GOG, Steam or a typed folder), Play starts the game and writes
   `darklands.settings.json`. Proven by: UNPROVEN.

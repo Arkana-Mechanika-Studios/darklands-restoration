@@ -56,7 +56,9 @@ original game's text, so the project does not distribute translations of it. The
 optional **translation packs**, kept outside the repository and loaded like the other packs. Where a pack is hosted is
 up to its author. The one exception is a few short **sample excerpts** of the opening in the Workshop's download (below,
 "The samples"), to show the tool: the city square and the church by day and a few screen headings, each pack holding
-only its own words, by key, never the English and nothing of the German edition.
+only its own words, by key, never the English and nothing of the German edition. The French, Spanish, Polish, Russian
+and Greek samples come with their pixel font packs, built from the original fonts in the original format (a new font in
+the game's own style); the Japanese and Korean ones with Noto Sans CJK.
 
 **What cannot be translated by text alone:**
 
@@ -258,15 +260,25 @@ in French, Spanish, Polish, Russian and Greek; the church's first text in Japane
 screen layouts (`interface/layout.json`). Each is named "… (sample)". The start page lists them under your packs, in that
 order, each with two buttons:
 * **Play**: the game, at the church (`card:$CITYC00#0`), straight from the shelf: nothing is written there, the test
-  saves go to the Workshop's own folder (`%APPDATA%\DarklandsWorkshop\sample-saves`), and the game's HD fonts are used
-  (`--font-pack`) when the game's own fonts lack the sample's letters;
+  saves go to the Workshop's own folder (`%APPDATA%\DarklandsWorkshop\sample-saves`); its own font draws its letters (a
+  pack without one would play with the game's HD fonts, `--font-pack`);
 * **Start from this sample**: asks a name, copies the sample (its font files included) into the game's
-  `packs/languages/<name>`, its name losing the "(sample)" mark, and opens the copy; its font from the player's game is
-  offered when its letters need one (as **New pack** does). A sample is never opened for editing: **Open folder…** on
-  the shelf starts from it the same way.
+  `packs/languages/<name>`, its name losing the "(sample)" mark, and opens the copy. A sample is never opened for
+  editing: **Open folder…** on the shelf starts from it the same way.
 
-They hold no font built from the game's. The Japanese and Korean samples bring Noto Sans CJK (SIL OFL,
-THIRD_PARTY_NOTICES.md), one copy in each, so a sample plays on its own. To play one from the game's launcher, copy its
+Their fonts: the French, Spanish, Polish, Russian and Greek samples ship their pixel font packs (`fonts/slot1..3`, built
+from the original fonts by the Workshop's builder, in the original format); the Japanese and Korean samples bring Noto Sans
+CJK (SIL OFL, THIRD_PARTY_NOTICES.md), one copy in each, so a sample plays on its own. Every card sample also translates the
+money words a card's `$Money` fills an amount with (`id-rw-money-florins`, `-groschen`, `-pfennigs`, with their plural
+forms by `$count`, and the joins `id-rw-money-two`, `-three`): "1 gros et 1 denier" in the French church.
+
+**Money words.** A card text's `$Money1`..`$Money5` is an amount written from five texts of the pack (`id:rw.money.*`, in
+the template's `ui.ftl`): each coin (`$count`, a number, chooses the plural; `$amount` is it written with separators) and
+the joins of two and of three parts. Until the pack translates them the game writes the amount in English. The editor
+says so beside a translated text that uses `$Money` while they are not translated yet ("fills in an amount from texts
+you haven't translated yet"), with **Show them**; a note, not an error.
+
+**Fonts and the launcher.** A language pack whose letters the original fonts lack and that brings no font of its own plays with the **HD fonts**: choosing it in the launcher turns the Fonts row to HD fonts by itself, with a line saying why ("Russian needs letters the original fonts don't have: HD fonts are on"); set Fonts back to None and the line warns that those letters show as '?'. The game started with `--language-pack` alone does the same, and says so in its log. To play one from the game's launcher, copy its
 folder into the game's `packs/languages` and choose it in the **Language pack** row.
 
 **A pack from elsewhere.** A pack opened from outside the game's packs (**Open folder…** on `D:\Packs\fr`, say) is

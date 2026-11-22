@@ -64,6 +64,14 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         ["id:rw.save.list.saved-short"] = t => $"{t.Word("day")} {t.Word("monthName")} {t.Word("time")}",
         ["id:rw.save.list.saved-at"] = t => $"{t.Word("date")} {t.Word("time")}",
         ["id:rw.save.list.saved"] = _ => "Saved on",
+        // the money words a card's $Money fills an amount with, in a translation (Darklands.Presentation.MoneyWords; the game without a
+        //   pack writes Money.ToString, these same words): a coin with its count ($count, a number for the plural; $amount, written with
+        //   separators), and the joins of two and three parts
+        [GameTextIds.MoneyFlorins] = t => t.Word("count") == "1" ? "1 florin" : $"{t.Word("amount")} florins",
+        [GameTextIds.MoneyGroschen] = t => $"{t.Word("amount")} groschen",
+        [GameTextIds.MoneyPfennigs] = t => t.Word("count") == "1" ? "1 pfennig" : $"{t.Word("amount")} pfennigs",
+        [GameTextIds.MoneyTwo] = t => $"{t.Word("a")} and {t.Word("b")}",
+        [GameTextIds.MoneyThree] = t => $"{t.Word("a")}, {t.Word("b")} and {t.Word("c")}",
     };
 
     /// <summary>The words of one of the rewrite's own notices (null for any other id): they need no EXE.</summary>

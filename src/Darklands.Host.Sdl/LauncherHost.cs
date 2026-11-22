@@ -70,7 +70,8 @@ internal static class LauncherHost
             given,
             chosen => Darklands.Audio.Packs.SoundFontLocator.Find(null, null, chosen, AppContext.BaseDirectory, _ => { }),
             () => ReportProblem(reports, settings, cli, settingsPath),
-            new FilterPreviews());
+            new FilterPreviews(),
+            Darklands.Presentation.PackLetters.NeedsFonts);
         LauncherResult result;
         using (var surface = new SdlLauncherSurface(host))
         {

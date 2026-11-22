@@ -78,12 +78,12 @@
     </ItemGroup>
   </Target>
 
-  <!-- this version's release notes (releases/<version>/release-notes.md beside the repository, when there) next to the program,
+  <!-- this version's release notes ($(ReleaseNotesFile): releases/<version>/release-notes.md in the repository, when there) next to the program,
        for the launcher's "What's new"; without them the launcher links to the release's page -->
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md" Link="RELEASE_NOTES.md"
+    <None Include="$(ReleaseNotesFile)" Link="RELEASE_NOTES.md"
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
-          Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md')" />
+          Condition="Exists('$(ReleaseNotesFile)')" />
   </ItemGroup>
 
   <!-- the release's packs folder (docs/PACKS.md, Darklands.Platform.PackLayout): one subfolder per kind, the launcher offers their
@@ -153,6 +153,11 @@
     <Exec Condition="'$(LauncherForWindows)' == 'true'" Command="dotnet build &quot;$(LauncherProject)&quot; -c Release -nologo -v q -o &quot;$(PublishDir).&quot;" />
     <Copy Condition="'$(LauncherForWindows)' != 'true'" SourceFiles="$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\DarklandsRP-Launcher;$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\install-desktop-entries" DestinationFolder="$(PublishDir)" />
     <Exec Condition="'$(LauncherForWindows)' != 'true' and !$([MSBuild]::IsOSPlatform('Windows'))" Command="chmod +x &quot;$(PublishDir)DarklandsRP-Launcher&quot; &quot;$(PublishDir)install-desktop-entries&quot;" />
+  </Target>
+
+  <!-- a release build (DarklandsRelease=true: the build workflow on a v* tag) refuses to be made without its release notes -->
+  <Target Name="RequireReleaseNotes" BeforeTargets="Build;Publish" Condition="'$(DarklandsRelease)' == 'true' And !Exists('$(ReleaseNotesFile)')">
+    <Error Text="Release $(Version) has no release notes: $(ReleaseNotesFile) is missing. Put the final notes there (releases/$(Version)/release-notes.md in the repository; docs/RC-CHECKLIST.md, A0) before a release build." />
   </Target>
 
 </Project>

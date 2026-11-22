@@ -28,12 +28,9 @@ screen headings) in French, Spanish, Polish, Russian and Greek, the church in Ja
 screen layouts. They show what a finished translation looks like. Each has two buttons:
 
 * **Play** starts the game with it, at the church. It plays straight from the Workshop's shelf of examples
-  (`Workshop\examples\sample-languages`), with the game's HD fonts when your game's own fonts lack its letters; its test
-  saves are kept apart from your games.
-* **Start from this sample** makes your own pack from it: it asks a name, copies the sample into the game's
-  `packs\languages\<name>` and opens the copy. When the language has letters the game's fonts lack (é, ł, Greek or
-  Cyrillic letters…), the Workshop offers to build a matching font from your game's own fonts: say yes, or those
-  letters show as `?`.
+  (`Workshop\examples\sample-languages`), in its own font; its test saves are kept apart from your games.
+* **Start from this sample** makes your own pack from it: it asks a name, copies the sample (its font included) into the
+  game's `packs\languages\<name>` and opens the copy.
 
 The samples themselves never change: the shelf is read-only, and everything you make lives in the game's folders.
 
@@ -90,6 +87,11 @@ The game's fonts only have the English letters.
 do; **F8** the next problem; **Ctrl+S** saves.
 
 ## Glossary and variables
+
+* **Money.** A card's `$Money1` is an amount the game writes from your pack's money words (`ui.ftl`: the florins, groschen
+  and pfennigs with their plural forms, and how two or three are joined). Until you translate them it writes the amount in
+  English; the editor says so beside a text that uses `$Money`, with **Show them**. The samples show how (the French one:
+  "1 gros et 1 denier").
 
 * **Glossary** keeps the terms you agree on (a saint's name, "Kloster", "groschen"…). When a text's English holds one,
   it is listed above your translation, marked if your words do not use it.

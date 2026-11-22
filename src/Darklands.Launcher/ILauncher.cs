@@ -52,6 +52,8 @@ public enum LauncherReason
 /// returns the message to show the player; null: the launcher offers none.</param>
 /// <param name="GivenGameFolder">The game folder the command line or the environment names (it overrides the settings file's), or
 /// null: the launcher shows it instead of the file's.</param>
+/// <param name="NeedsFonts">A language pack's folder and the game folder → the language's name ("Russian") when the pack needs
+/// letters the original fonts lack and has no font of its own (the launcher then turns the HD fonts on, saying why); null: never.</param>
 public sealed record LauncherContext(
     GameSettings Settings,
     IReadOnlyDictionary<string, string> FixedKeys,
@@ -71,7 +73,8 @@ public sealed record LauncherContext(
     string? GivenGameFolder = null,
     Func<string?, string?>? FindSoundFont = null,
     Func<string>? ReportProblem = null,
-    IFilterPreviews? Previews = null);
+    IFilterPreviews? Previews = null,
+    Func<string, string?, string?>? NeedsFonts = null);
 
 /// <summary>A picture filter's preview, ready to draw: <see cref="Width"/> x <see cref="Height"/> ARGB pixels.</summary>
 /// <param name="FromGame">Made from the player's own game files (else from a pattern drawn in code).</param>
