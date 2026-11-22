@@ -17,6 +17,16 @@ internal sealed class WorkshopApp : Application
     /// <summary>The game's program (DarklandsRP.exe on Windows, DarklandsRP elsewhere) in <see cref="GameProgramFolder"/>.</summary>
     public static string GameProgram => Path.Combine(GameProgramFolder, OperatingSystem.IsWindows() ? "DarklandsRP.exe" : "DarklandsRP");
 
+    /// <summary>
+    /// The sample translation packs that come with the Workshop (its <c>examples/languages</c> folder: short excerpts of the opening,
+    /// docs/language-samples), listed on the start page to open or play.
+    /// </summary>
+    public static string SamplesFolder { get; internal set; } = Path.Combine(AppContext.BaseDirectory, "examples", "languages");
+
+    /// <summary>Is <paramref name="folder"/> one of the samples (inside <see cref="SamplesFolder"/>)?</summary>
+    public static bool IsSample(string folder) =>
+        Path.GetFullPath(folder).StartsWith(Path.TrimEndingDirectorySeparator(Path.GetFullPath(SamplesFolder)) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+
     private static (string Path, DateTime Written, string? Version)? _gameVersion;
 
     /// <summary>

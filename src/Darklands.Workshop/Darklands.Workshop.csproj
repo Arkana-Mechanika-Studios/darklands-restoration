@@ -55,6 +55,9 @@
        they link to (copies of the game's docs folder's, so their links hold in the Workshop's own download) -->
   <ItemGroup>
     <None Include="..\..\docs\LOCALISATION.md" Link="docs\LOCALISATION.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- the translator's guide, step by step, with its pictures (the start page and the … menu link to it) -->
+    <None Include="..\..\docs\TRANSLATING.md" Link="docs\TRANSLATING.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\translating\*.png" Link="docs\translating\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\docs\PACKS.md;..\..\docs\MODS.md;..\..\docs\SETTINGS.md;..\..\docs\REPORTING.md" Link="docs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\docs\modding\*.md" Link="docs\modding\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
@@ -64,6 +67,16 @@
   <ItemGroup>
     <None Include="..\..\docs\audio-pack-example\**\*" Link="examples\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\docs\mods\**\*" Link="examples\mods\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- the sample translation packs (docs/language-samples: short excerpts of the opening, a deliberate exception to the project
+       shipping no translation of the game's text, docs/LOCALISATION.md), in Workshop/examples/languages, listed on the start
+       page. The one copy of Noto Sans CJK (SIL OFL, THIRD_PARTY_NOTICES.md) goes into each CJK sample's fonts folder, its
+       licence beside it, so each pack plays when copied alone into the game's packs/languages -->
+  <ItemGroup>
+    <None Include="..\..\docs\language-samples\sample-*\**\*" Link="examples\languages\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\language-samples\fonts\NotoSansCJK-Regular.ttc;..\..\docs\language-samples\fonts\LICENSE-OFL.txt" Link="examples\languages\sample-ja\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\language-samples\fonts\NotoSansCJK-Regular.ttc;..\..\docs\language-samples\fonts\LICENSE-OFL.txt" Link="examples\languages\sample-ko\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

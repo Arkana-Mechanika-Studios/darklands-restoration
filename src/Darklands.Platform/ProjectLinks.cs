@@ -19,6 +19,9 @@ public static class ProjectLinks
     /// <summary>The guide to making a pack of pictures, music and sounds.</summary>
     public const string PackGuide = Repository + "/blob/master/docs/PACKS.md";
 
+    /// <summary>The translator's guide (the Workshop, step by step; a copy is in the Workshop's docs folder).</summary>
+    public const string TranslatorGuide = Repository + "/blob/master/docs/TRANSLATING.md";
+
     /// <summary>The project's Discord (questions, help, ideas).</summary>
     public const string Discord = "https://discord.gg/HjzWvmHhqZ";
 }

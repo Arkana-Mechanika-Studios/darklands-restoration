@@ -52,9 +52,11 @@ them in the normal way (a pull request).
 
 **(b) The game's own text.** Card texts from the `.MSG` files, the strings inside `DARKLAND.EXE`, and the names and
 descriptions in the data tables (items, saints, places and so on). A translation of this text is a derivative of the
-original game's text, so the project cannot distribute it. These translations are separate, optional
-**translation packs**, kept outside the repository and loaded like the other packs. Where a pack is hosted is up to
-its author.
+original game's text, so the project does not distribute translations of it. These translations are separate,
+optional **translation packs**, kept outside the repository and loaded like the other packs. Where a pack is hosted is
+up to its author. The one exception is a few short **sample excerpts** of the opening in the Workshop's download (below,
+"The samples"), to show the tool: the city square and the church by day and a few screen headings, each pack holding
+only its own words, by key, never the English and nothing of the German edition.
 
 **What cannot be translated by text alone:**
 
@@ -225,6 +227,9 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 
 ## The Workshop's text editor
 
+New to it? The translator's guide, [TRANSLATING.md](TRANSLATING.md), walks through it step by step in plain words (the
+start page and the **…** menu link to it). This section is the full reference.
+
 `DarklandsWorkshop` (a download of its own beside the game's: its archive holds a `Workshop` folder; unzip it into the
 `DarklandsRP` folder, so it is `DarklandsRP/Workshop`, and it finds the game one folder up; beside `DarklandsRP` works
 too) is the translators' editor. It finds your game folder as the launcher does (or the game folder button at the top
@@ -243,6 +248,16 @@ the releases page a click away, and **Play in game** says so in a dialog instead
 **The examples.** The Workshop's download also holds the makers' examples, in `Workshop/examples`: a sound pack of
 generated test tones (`audio-pack-example`, [PACKS.md](PACKS.md)) and the example mod of [MODS.md](MODS.md)
 (`mods/wayside-shrine`). Since 1.1 they are no longer in the game's `packs` and `mods` folders.
+
+**The samples.** The Workshop's download holds sample translation packs, in `Workshop/examples/languages` (their source:
+`docs/language-samples`): the city square and the church by day, the menu bar and the party information screen's headings
+in French, Spanish, Polish, Russian and Greek; the church's first text in Japanese and Korean; and a French sample of
+screen layouts (`interface/layout.json`). Each is named "… (sample)". The start page lists them under your packs, in that
+order, each with **Open** (the editor) and **Play** (the game, at the church: `msg:$CITYC00#0`); a sample once opened is
+never listed among your packs. They hold no font built from the game's: opening or playing one whose letters the game's
+fonts lack offers to build the font (as **New pack** does), into the sample's folder. The Japanese and Korean samples bring
+Noto Sans CJK (SIL OFL, THIRD_PARTY_NOTICES.md), one copy in each, so a sample plays on its own. To play one from the
+game's launcher, copy its folder into the game's `packs/languages` and choose it in the **Language pack** row.
 
 **The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
 now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the

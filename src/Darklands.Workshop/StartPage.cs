@@ -47,6 +47,12 @@ internal sealed class StartPage
     /// <summary>Opens a web address.</summary>
     public required Action<string> Link { get; init; }
 
+    /// <summary>The sample packs that come with the Workshop (WorkshopApp.SamplesFolder), listed under the packs to open or play.</summary>
+    public IReadOnlyList<PackSummary> Samples { get; init; } = [];
+
+    /// <summary>Plays a sample (its folder): opened, then the game started with it at the church.</summary>
+    public Action<string>? PlaySample { get; init; }
+
     public StartPage(IReadOnlyList<PackSummary> packs, int total, string? game, string? last)
     {
         _packs = packs;
@@ -78,6 +84,7 @@ internal sealed class StartPage
             {
                 new TextBlock { Text = "Translation packs", FontSize = 15, FontWeight = FontWeight.SemiBold },
                 new TextBlock { Text = "Pick up where you left off, or start a new language.", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), Margin = new Thickness(0, 2, 0, 0) },
+                GuideLink(),
             },
         });
         Grid.SetColumn(_filter, 1);
@@ -105,6 +112,10 @@ internal sealed class StartPage
             Child = _rows,
         });
         FillRows();
+        if (Samples.Count > 0)
+        {
+            body.Children.Add(SamplesSection());
+        }
         var page = new DockPanel();
         var banner = Banner();
         DockPanel.SetDock(banner, Dock.Top);
@@ -391,6 +402,113 @@ internal sealed class StartPage
             }
         };
         return cell;
+    }
+
+    // "New to translating? The translator's guide" (docs/TRANSLATING.md), under the packs' heading
+    private Control GuideLink()
+    {
+        var link = new TextBlock
+        {
+            Text = "New to translating? Read the translator's guide",
+            FontSize = 12,
+            Foreground = WorkshopTheme.Brush(WorkshopTheme.Accent),
+            TextDecorations = TextDecorations.Underline,
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Margin = new Thickness(0, 4, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        ToolTip.SetTip(link, "Step by step, for translators who are not programmers (also in the Workshop's docs folder, TRANSLATING.md)");
+        link.PointerPressed += (_, e) =>
+        {
+            if (e.GetCurrentPoint(link).Properties.IsLeftButtonPressed)
+            {
+                Link(ProjectLinks.TranslatorGuide);
+            }
+        };
+        return link;
+    }
+
+    // the samples (short excerpts of the opening, in Workshop/examples/languages): each to open, or to play at the church
+    private Control SamplesSection()
+    {
+        var section = new StackPanel { Margin = new Thickness(0, 28, 0, 0) };
+        section.Children.Add(new TextBlock { Text = "Samples", FontSize = 15, FontWeight = FontWeight.SemiBold });
+        section.Children.Add(new TextBlock
+        {
+            Text = "Short excerpts of the opening (the city square and the church by day, a few screen headings), to see what a translation "
+                + "looks like. Open one in the editor, or play it in the game at the church.",
+            FontSize = 12,
+            Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 2, 0, 12),
+        });
+        var rows = new StackPanel();
+        for (var k = 0; k < Samples.Count; k++)
+        {
+            var row = SampleRow(Samples[k]);
+            rows.Children.Add(k < Samples.Count - 1 ? Lined(row) : row);
+        }
+        section.Children.Add(new Border
+        {
+            BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(10),
+            Background = WorkshopTheme.Brush(WorkshopTheme.Side),
+            ClipToBounds = true,
+            Child = rows,
+        });
+        return section;
+    }
+
+    private Control SampleRow(PackSummary sample)
+    {
+        var row = new Grid { Height = 48, ColumnDefinitions = new ColumnDefinitions("1.5*,2*,Auto,Auto"), ColumnSpacing = 12, Margin = new Thickness(16, 0) };
+        var language = Languages.Of(sample.Language);
+        row.Children.Add(new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 12,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children =
+            {
+                new Border
+                {
+                    Width = 28,
+                    Height = 28,
+                    CornerRadius = new CornerRadius(7),
+                    Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
+                    Child = new TextBlock
+                    {
+                        Text = sample.Language.Split('-')[0].ToUpperInvariant(),
+                        FontSize = 11,
+                        FontWeight = FontWeight.SemiBold,
+                        Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    },
+                },
+                new TextBlock { Text = language?.English ?? sample.Language, FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
+            },
+        });
+        var name = new TextBlock { Text = sample.Name, FontSize = 13, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+        ToolTip.SetTip(name, sample.Folder);
+        Grid.SetColumn(name, 1);
+        row.Children.Add(name);
+        var open = WorkshopTheme.Outline(new TextBlock { Text = "Open" });
+        open.IsEnabled = _game is not null;
+        open.VerticalAlignment = VerticalAlignment.Center;
+        open.Click += (_, _) => Open(sample.Folder);
+        ToolTip.SetTip(open, "Open this sample in the editor");
+        Grid.SetColumn(open, 2);
+        row.Children.Add(open);
+        var play = WorkshopTheme.Primary(WorkshopTheme.IconText("play", "Play", 13));
+        play.IsEnabled = _game is not null && PlaySample is not null;
+        play.VerticalAlignment = VerticalAlignment.Center;
+        play.Click += (_, _) => PlaySample?.Invoke(sample.Folder);
+        ToolTip.SetTip(play, "Start the game with this sample, at the church (a Quick Start party; its saves stay in the sample's folder)");
+        Grid.SetColumn(play, 3);
+        row.Children.Add(play);
+        return row;
     }
 
     private Control Callout(string title, string text, string action, Action run)

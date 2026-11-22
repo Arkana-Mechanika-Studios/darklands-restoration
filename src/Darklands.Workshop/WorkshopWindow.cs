@@ -184,9 +184,15 @@ internal sealed class WorkshopWindow : Window
     // the start page: the banner, the packs found on this computer, the actions (StartPage)
     private Control BuildStart()
     {
-        var packs = PackCatalog.Find(PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game), _settings.RecentPacks);
-        var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault())
+        // the samples apart (listed under the packs, in their own order), never among your packs even once opened
+        var packs = PackCatalog.Find(PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game), _settings.RecentPacks)
+            .Where(p => !WorkshopApp.IsSample(p.Folder)).ToList();
+        var samples = PackCatalog.Find([WorkshopApp.SamplesFolder], [])
+            .OrderBy(p => Array.IndexOf(SampleOrder, Path.GetFileName(p.Folder)) is var k and >= 0 ? k : SampleOrder.Length).ThenBy(p => p.Name, StringComparer.Ordinal).ToList();
+        var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault(p => !WorkshopApp.IsSample(p)))
         {
+            Samples = samples,
+            PlaySample = folder => _ = PlaySample(folder),
             Open = Open,
             NewPack = () => _ = NewPack(),
             OpenFolder = () => _ = OpenPack(),
@@ -251,6 +257,7 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
         menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Translator's guide", "book", () => _ = Launcher.LaunchUriAsync(new Uri(ProjectLinks.TranslatorGuide))));
         menu.Items.Add(Item("Report a problem…", "alert", ReportProblem));
         return menu;
     }
@@ -661,22 +668,58 @@ internal sealed class WorkshopWindow : Window
         }
     }
 
+    // the samples' order on the start page (WorkshopApp.SamplesFolder's folders; others after them)
+    private static readonly string[] SampleOrder = ["sample-fr", "sample-es", "sample-pl", "sample-ru", "sample-el", "sample-ja", "sample-ko", "sample-fr-layouts"];
+
     private void Open(string folder)
+    {
+        if (OpenProject(folder) && WorkshopApp.IsSample(folder))
+        {
+            _ = OfferSampleFont();
+        }
+    }
+
+    private bool OpenProject(string folder)
     {
         if (_game is null)
         {
             _status.Text = "Choose the game's folder first: the texts come from your own game files.";
-            return;
+            return false;
         }
         try
         {
             Show(TextProject.Open(folder, _game));
+            return true;
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
         {
             _status.Text = $"{folder}: {e.Message}";
+            return false;
         }
     }
+
+    // a sample opened: the font from the player's own game offered when its letters need one (the samples ship no pixel font,
+    //   which is built from the game's fonts; the CJK samples bring their TrueType font)
+    private Task OfferSampleFont() =>
+        _project is { } project && !FontNeeds.IsCjk(project.Language) ? BuildFontPack(ask: true) : Task.CompletedTask;
+
+    // a sample played from the start page: opened (its font offered first), then the game started with it at the church
+    private async Task PlaySample(string folder)
+    {
+        if (!OpenProject(folder))
+        {
+            return;
+        }
+        await OfferSampleFont();
+        if (_editor is not null && _project!.Entries.Any(e => e.Key == SampleStart))
+        {
+            _editor.Select(SampleStart);
+        }
+        RunGame(atText: true);
+    }
+
+    /// <summary>Where a sample plays from the start page: the church by day, the text every sample translates.</summary>
+    internal const string SampleStart = "msg:$CITYC00#0";
 
     private void Show(TextProject project)
     {
@@ -745,6 +788,9 @@ internal sealed class WorkshopWindow : Window
 
     /// <summary>Runs the check as its button does (the window's pictures in the tests).</summary>
     internal void RunCheckForTests() => RunCheck();
+
+    /// <summary>Opens a sample as its start page row does (its font offered when needed).</summary>
+    internal void OpenSampleForTests(string folder) => Open(folder);
 
     /// <summary>Play in game (at the text, or from the start), as its buttons do; the status line after it.</summary>
     internal string PlayInGameForTests(bool atText)
