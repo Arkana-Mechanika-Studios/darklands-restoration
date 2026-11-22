@@ -78,21 +78,20 @@
     </ItemGroup>
   </Target>
 
-  <!-- this version's release notes (releases/<version>/release-notes.md beside the repository, when there) next to the program,
+  <!-- this version's release notes ($(ReleaseNotesFile): releases/<version>/release-notes.md in the repository, when there) next to the program,
        for the launcher's "What's new"; without them the launcher links to the release's page -->
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md" Link="RELEASE_NOTES.md"
+    <None Include="$(ReleaseNotesFile)" Link="RELEASE_NOTES.md"
           CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
-          Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\releases\$(Version)\release-notes.md')" />
+          Condition="Exists('$(ReleaseNotesFile)')" />
   </ItemGroup>
 
   <!-- the release's packs folder (docs/PACKS.md, Darklands.Platform.PackLayout): one subfolder per kind, the launcher offers their
-       packs (and loose packs in packs itself). The pack makers' guide (docs/PACKS.md) and the example sound pack
-       (packs/audio/audio-pack-example, generated tones), beside the program in the build and in every release -->
+       packs (and loose packs in packs itself). The pack guide (docs/PACKS.md) beside the program in the build and in every release;
+       the one pack shipped is the HD fonts (since 1.1 the example sound pack and the example mod are the Workshop's: Workshop/examples,
+       Darklands.Workshop.csproj) -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\PACKS.md" Link="docs\PACKS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\audio-pack-example\**\*" Link="packs\audio\audio-pack-example\%(RecursiveDir)%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- the "HD fonts" font pack (docs/LOCALISATION.md), packs/fonts/hd-fonts: the game's text in DejaVu Sans Mono and EB Garamond at
          the window's resolution; its pack.json and slot files from docs/hd-fonts-pack, the fonts the repository already has
          (THIRD_PARTY_NOTICES.md) -->
@@ -103,14 +102,16 @@
     <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\OFL.txt" Link="packs\fonts\hd-fonts\fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- the language packs' folder, empty but for its README (docs/packs-languages-README.txt): where a downloaded translation goes -->
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\packs-languages-README.txt" Link="packs\languages\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- the sound packs' folder and the mods folder, empty but for their READMEs (docs/packs-audio-README.txt, docs/mods-README.txt):
+         where the player's own packs and mods go (the makers' examples are the Workshop's, Workshop/examples) -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\packs-audio-README.txt" Link="packs\audio\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\mods-README.txt" Link="mods\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- the mod makers' guide (docs/MODS.md) and the example mod (mods/wayside-shrine), beside the program in the build and in every
-       release; a mod is played only when named (on the command line or in the settings file) -->
+  <!-- the mods guide (docs/MODS.md), beside the program in the build and in every release; a mod is played only when named (on the
+       command line or in the settings file); the example mod is the Workshop's since 1.1 (Workshop/examples/mods/wayside-shrine) -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\MODS.md" Link="docs\MODS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\docs\mods\**\*" Link="mods\%(RecursiveDir)%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the settings reference, beside the program in the build and in every release (the modding guides and the localisation
@@ -152,6 +153,11 @@
     <Exec Condition="'$(LauncherForWindows)' == 'true'" Command="dotnet build &quot;$(LauncherProject)&quot; -c Release -nologo -v q -o &quot;$(PublishDir).&quot;" />
     <Copy Condition="'$(LauncherForWindows)' != 'true'" SourceFiles="$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\DarklandsRP-Launcher;$(MSBuildThisFileDirectory)..\Darklands.Host.Launcher\linux\install-desktop-entries" DestinationFolder="$(PublishDir)" />
     <Exec Condition="'$(LauncherForWindows)' != 'true' and !$([MSBuild]::IsOSPlatform('Windows'))" Command="chmod +x &quot;$(PublishDir)DarklandsRP-Launcher&quot; &quot;$(PublishDir)install-desktop-entries&quot;" />
+  </Target>
+
+  <!-- a release build (DarklandsRelease=true: the build workflow on a v* tag) refuses to be made without its release notes -->
+  <Target Name="RequireReleaseNotes" BeforeTargets="Build;Publish" Condition="'$(DarklandsRelease)' == 'true' And !Exists('$(ReleaseNotesFile)')">
+    <Error Text="Release $(Version) has no release notes: $(ReleaseNotesFile) is missing. Put the final notes there (releases/$(Version)/release-notes.md in the repository; docs/RC-CHECKLIST.md, A0) before a release build." />
   </Target>
 
 </Project>

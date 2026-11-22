@@ -1,0 +1,18 @@
+{
+  "screens": {
+    "BarterScreen": {
+      "exe:DS:2FF2": { "width": 200 }
+    },
+    "AlchemyScreen": {
+      "exe:290E:0148": { "width": 110, "lines": 2 }
+    },
+    "CharacterGeneratorScreen": {
+      "exe:DS:4515": { "width": 130, "lines": 2 },
+      "exe:DS:454D": { "width": 130, "lines": 2 }
+    },
+    "PartyInfoScreen": {
+      "exe:DS:3671": { "x": 118 },
+      "exe:DS:36C8": { "x": 117 }
+    }
+  }
+}

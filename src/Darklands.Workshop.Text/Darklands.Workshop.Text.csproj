@@ -13,9 +13,10 @@
     <EmbeddedResource Include="Resources\card-titles.json" LogicalName="Darklands.Workshop.Text.card-titles.json" />
   </ItemGroup>
 
-  <!-- the Workshop's version (Directory.Build.props), read by WorkshopVersion -->
+  <!-- the Workshop's version and the oldest game it plays with (Directory.Build.props), read by WorkshopVersion -->
   <ItemGroup>
     <AssemblyMetadata Include="WorkshopVersion" Value="$(WorkshopVersion)" />
+    <AssemblyMetadata Include="WorkshopNeedsGame" Value="$(WorkshopNeedsGame)" />
   </ItemGroup>
 
   <PropertyGroup>

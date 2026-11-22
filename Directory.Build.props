@@ -5,9 +5,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <!-- the release version of every project and of the program players start (shown on the start screen) -->
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <!-- the Workshop's own version (docs/LOCALISATION.md): its one source; the Workshop shows it, packs and exports record it -->
     <WorkshopVersion>1.1.0-beta.1</WorkshopVersion>
+    <!-- the oldest game program the Workshop plays with (its Play in game options came in 1.1.0): an older one beside it is said so in words -->
+    <WorkshopNeedsGame>1.1.0</WorkshopNeedsGame>
+    <!-- this version's release notes, at one fixed place from the repository's top (the same on the main checkout, a worktree and
+         CI): copied next to the program for the launcher's What's new. A release build (DarklandsRelease=true: CI on a v* tag)
+         fails without them; an ordinary build goes on without (docs/RC-CHECKLIST.md, A0) -->
+    <ReleaseNotesFile>$(MSBuildThisFileDirectory)releases\$(Version)\release-notes.md</ReleaseNotesFile>
     <Copyright>Darklands Restoration Project contributors, GPL-3.0-or-later</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>

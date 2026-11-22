@@ -61,6 +61,22 @@ internal sealed class TextEditorView : IWorkshopEditor
     private readonly SelectableTextBlock _english = new() { TextWrapping = TextWrapping.Wrap, FontSize = 14 };
     private readonly TranslationBox _translation = new() { MinHeight = 64, MaxHeight = 260 };
     private readonly TextBlock _chipHint = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12 };
+
+    // a placeholder the game fills from other texts of the pack ($Money: the money words) while those are not translated yet: a note
+    //   (not an error), with the way to them
+    private readonly TextBlock _fillText = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12, VerticalAlignment = VerticalAlignment.Center };
+    private readonly Button _fillGo = new() { Content = "Show them", FontSize = 12, Padding = new Thickness(8, 2) };
+    private readonly DockPanel _fillHint = new() { IsVisible = false };
+    private string? _fillFirst;
+
+    /// <summary>The placeholders the game fills from other texts: the placeholder's start, the texts' keys, what they are called.</summary>
+    internal static readonly (string Placeholder, string[] Keys, string What)[] FilledFrom =
+    [
+        ("$Money", Darklands.Core.GameTextIds.MoneyWords, "the money words (florins, groschen, pfennigs and how they are joined)"),
+    ];
+
+    /// <summary>The note beside the translation for a placeholder filled from texts not translated yet, when shown (the tests read it).</summary>
+    internal string? FillNoteForTests => _fillHint.IsVisible ? _fillText.Text : null;
     private readonly TextBlock _terms = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12 };
     private readonly StackPanel _choice = new() { Spacing = 4 };
 
@@ -89,6 +105,19 @@ internal sealed class TextEditorView : IWorkshopEditor
         _preview = new TextPreview(project);
         _glossary = Glossary.Load(project.Folder);
         _marks = ReviewMarks.Load(project.Folder);
+        _fillText.Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted);
+        _fillGo.Margin = new Thickness(8, 0, 0, 0);
+        _fillGo.Click += (_, _) =>
+        {
+            if (_fillFirst is { } first)
+            {
+                Select(first);
+            }
+        };
+        ToolTip.SetTip(_fillGo, "Go to the first of these texts not translated yet");
+        DockPanel.SetDock(_fillGo, Dock.Right);
+        _fillHint.Children.Add(_fillGo);
+        _fillHint.Children.Add(_fillText);
         RenderOptions.SetBitmapInterpolationMode(_picture, Avalonia.Media.Imaging.BitmapInterpolationMode.None);
         _bar.Child = _barFill;
         // the groups: cards by their file, screens, names by kind, the rest; in the template's order within each
@@ -897,7 +926,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             _content.Children.Add(Label(language));
             _content.Children.Add(Detach(_translation));
         }
-        _content.Children.Add(new StackPanel { Spacing = 6, Margin = new Thickness(0, 10, 0, 0), Children = { Detach(_chipHint), Detach(_terms), Detach(_choice) } });
+        _content.Children.Add(new StackPanel { Spacing = 6, Margin = new Thickness(0, 10, 0, 0), Children = { Detach(_chipHint), Detach(_fillHint), Detach(_terms), Detach(_choice) } });
         if (!card)
         {
             _content.Children.Add(new Border { Margin = new Thickness(0, 16, 0, 0), Child = Detach(_previewPanel) });
@@ -1052,11 +1081,37 @@ internal sealed class TextEditorView : IWorkshopEditor
             _chipHint.Text = "";
         }
         _chipHint.IsVisible = _chipHint.Text.Length > 0;
+        ShowFillHint();
         var terms = _glossary.In(_current.English);
         var missed = _current.Translation is null ? [] : _glossary.Missed(_current.English, _current.Translation);
         _terms.Text = terms.Count == 0 ? "" : "Glossary: " + string.Join(";  ", terms.Select(t => $"{t.Term} → {t.Translation}" + (missed.Contains(t) ? " (not used)" : "")));
         _terms.IsVisible = _terms.Text.Length > 0;
         ShowChoice();
+    }
+
+    // a translated text with a placeholder the game fills from other texts of the pack that are not translated yet ($Money: the money
+    //   words): said beside it as a note, with a button to the first of them
+    private void ShowFillHint()
+    {
+        _fillFirst = null;
+        if (_current?.Translation is { } translation)
+        {
+            foreach (var (placeholder, keys, what) in FilledFrom)
+            {
+                if (!translation.Contains(placeholder, StringComparison.Ordinal) && !_current.English.Contains(placeholder, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                var untranslated = keys.Select(k => _project.Entries.FirstOrDefault(e => e.Key == k)).Where(e => e is { Translation: null }).ToList();
+                if (untranslated.Count > 0)
+                {
+                    _fillFirst = untranslated[0]!.Key;
+                    _fillText.Text = $"{placeholder}… fills in an amount from texts you haven't translated yet: {what}. Until then the game writes it in English.";
+                    break;
+                }
+            }
+        }
+        _fillHint.IsVisible = _fillFirst is not null;
     }
 
     // a translation that is one choice (a plural, a $sex choice) as one field a variant

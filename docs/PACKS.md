@@ -33,12 +33,20 @@ DarklandsRP/
   docs/            SETTINGS, PACKS (this guide), MODS, REPORTING
   packs/
     fonts/         hd-fonts (comes with the release)
-    languages/     translations (empty but for a README)
-    audio/         audio-pack-example (comes with the release)
-  mods/            wayside-shrine (comes with the release)
+    languages/     translations (yours; empty but for a README)
+    audio/         sound packs (yours; empty but for a README)
+  mods/            mods (yours; empty but for a README; a mod is played only when named)
   SOUNDFONT/, MT32_ROMS/
-  Workshop/        the Darklands Workshop, if you downloaded it: DarklandsWorkshop.exe, its guides in Workshop/docs
+  Workshop/        the Darklands Workshop, if you downloaded it: DarklandsWorkshop.exe, its guides in Workshop/docs,
+                   and a read-only shelf of examples in Workshop/examples: example-audio-pack,
+                   example-mod-wayside-shrine, sample-languages (the translation samples)
 ```
+
+Everything you make or use lives in the game's folders (`packs\...`, `mods`); `Workshop\examples` is a shelf to copy
+from, never changed. Since 1.1 the example sound pack and the example mod come with the Workshop, no longer in the game's
+`packs` and `mods` folders; a 1.0 install keeps the copies it has.
+
+Keep a zip of every pack you make (the Workshop's **… › Export texts…**, or zip its folder): deleting the game's folder deletes the packs in it. Unpacking a new version of the game over the old one leaves `packs\languages` (and your other packs and mods) alone.
 
 The Workshop (the translators' and modders' editor) is a download of its own whose archive holds the `Workshop` folder:
 unzip it into the `DarklandsRP` folder and it lands there, finding the game one folder up.
@@ -224,11 +232,12 @@ shows (the previous section); files named by `pack.json` are not reported as unk
 
 ### The example pack
 
-[`docs/audio-pack-example`](audio-pack-example) (in a release: `packs/audio/audio-pack-example` next to the program)
+[`docs/audio-pack-example`](audio-pack-example) (in a release: the Workshop's `Workshop/examples/example-audio-pack`)
 replaces the map's travel pieces (also heard while creating the party)
 with a soft generated drone and the battle's missed swing with a short generated chirp. It holds no music of the
 game: both files are test tones made with ffmpeg from a formula. Choose it in the launcher's "Audio pack" row (or
-start with `--audio-pack packs/audio/audio-pack-example`, or set `sound.audioPack`) and create a party: the creation
+copy it into `packs/audio` first, or start with `--audio-pack Workshop/examples/example-audio-pack`, or set
+`sound.audioPack`) and create a party: the creation
 screen's music is the drone; in a battle, a missed blow chirps.
 
 ## Language packs
@@ -239,7 +248,7 @@ A language pack (a translation) changes the game's words, and only its words: th
 (`packs/languages/de/pack.json`). In the launcher's Advanced tab, the "Language pack" row then offers it with ← and →
 (Enter browses for one elsewhere); None is the original English. The choice is the settings file's `text.languagePack`
 ([SETTINGS.md](SETTINGS.md)); `--language-pack <folder>` names one for a single run. A translation into letters the
-game's fonts lack brings its own fonts.
+game's fonts lack brings its own fonts. A language pack whose letters the original fonts lack and that brings no font of its own plays with the **HD fonts**: choosing it in the launcher turns the Fonts row to HD fonts by itself, with a line saying why ("Russian needs letters the original fonts don't have: HD fonts are on"); set Fonts back to None and the line warns that those letters show as '?'. The game started with `--language-pack` alone does the same, and says so in its log.
 
 A **font pack** draws the game's text, English included, in TrueType fonts at the window's resolution: the release's
 `packs/fonts/hd-fonts` ("HD fonts") is one, chosen in the "Font pack" row (`text.fontPack`). It goes with a language

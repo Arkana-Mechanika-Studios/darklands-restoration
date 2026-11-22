@@ -275,7 +275,7 @@ public sealed class OriginalMessageTextTests
         foreach (var id in OriginalMessageText.OwnIds)
         {
             var words = text.Text(GameText.Of(id, ("name", "X"), ("number", 7), ("count", 2), ("date", "2026-11-21"), ("time", "19:23"), ("day", "21"),
-                ("month", "11"), ("monthName", "Nov")));
+                ("month", "11"), ("monthName", "Nov"), ("amount", "2"), ("a", "1 florin"), ("b", "2 groschen"), ("c", "3 pfennigs")));
             Assert.NotEqual(id, words);
             Assert.Contains(" ", words, StringComparison.Ordinal);
         }

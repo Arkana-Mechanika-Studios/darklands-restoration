@@ -73,6 +73,21 @@ public static class GameTextIds
     /// <summary>"ERROR!!!" (DS:52A9): a handler that answers −2.</summary>
     public const string HintError = "exe:DS:52A9";
 
+    /// <summary>
+    /// The money words a card's <c>$Money1</c>..<c>$Money5</c> fill an amount with in a translation (Darklands.Presentation.MoneyWords):
+    /// a coin, arguments <c>count</c> (a number, for the plural) and <c>amount</c> (it written with separators); the joins of two
+    /// parts (<c>a</c>, <c>b</c>) and of three (<c>a</c>, <c>b</c>, <c>c</c>). The game without a pack writes Money.ToString, the same
+    /// words.
+    /// </summary>
+    public const string MoneyFlorins = "id:rw.money.florins";
+    public const string MoneyGroschen = "id:rw.money.groschen";
+    public const string MoneyPfennigs = "id:rw.money.pfennigs";
+    public const string MoneyTwo = "id:rw.money.two";
+    public const string MoneyThree = "id:rw.money.three";
+
+    /// <summary>The money words, in their order (a placeholder filled from them: the Workshop's note on <c>$Money</c>).</summary>
+    public static readonly string[] MoneyWords = [MoneyFlorins, MoneyGroschen, MoneyPfennigs, MoneyTwo, MoneyThree];
+
     /// <summary>The rewrite's own notices where a screen is not there (test screens), argument <c>name</c> for trading.</summary>
     public const string TradingUnavailable = "id:rw.unavailable.trading";
     public const string CampUnavailable = "id:rw.unavailable.camp";

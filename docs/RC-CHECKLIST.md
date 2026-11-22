@@ -67,9 +67,13 @@ key in the original); what is different and which side shows what. If you cannot
 
 ## A. Start and install
 
-* [ ] **A0 Version.** Before the release: `Version` in `Directory.Build.props` raised to the release's (1.1.0 for 1.1: it still says
-  1.0.0 during the 1.1 work, and the window title, the console's banner, `--version`, the logs and the problem reports all say it).
-  Compare: the window title reads "Darklands Restoration Project 1.1.0", and so does the log's first line. Proven by: UNPROVEN (by hand).
+* [x] **A0 Version.** Before the release: `Version` in `Directory.Build.props` raised to the release's (1.1.0 for 1.1; the window
+  title, the console's banner, `--version`, the logs and the problem reports all say it). Compare: the window title reads
+  "Darklands Restoration Project 1.1.0", and so does the log's first line. Proven by: `GameVersionAndExamplesTests` (the build's
+  version is 1.1.0), `DarklandsRP --version` on the release build (2026-11-22: "Darklands Restoration Project 1.1.0"); the
+  title on screen: UNPROVEN (by hand). The release notes: the final `releases/<version>/release-notes.md` committed in the
+  repository (the same path on every checkout and in CI); a release build (`-p:DarklandsRelease=true`, the build workflow on
+  a `v*` tag) stops with a message without it, an ordinary build goes on without. Proven by: `ReleaseNotesTests`.
 * [ ] **A1 First run, Windows.** Do: unpack the release in an empty folder with no settings file, start `DarklandsRP`.
   Compare: the launcher comes up, finds the game (GOG, Steam or a typed folder), Play starts the game and writes
   `darklands.settings.json`. Proven by: UNPROVEN.
@@ -247,7 +251,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **J2 Picture pack.** Do: set a pack with a few PNGs, start. Compare: the replaced pictures show only where the
   original shows them, text and menus stay on top, fades follow the palette; the game plays the same. Proven by: `HdPackTests`, `HdRendererTests`
   (headless shots); the look: UNPROVEN.
-* [ ] **J3 Sound pack.** Do: use `packs/audio/audio-pack-example`. Compare: tones replace the pieces; Alt-P pauses them; a battle
+* [ ] **J3 Sound pack.** Do: copy the Workshop's `Workshop/examples/example-audio-pack` into `packs/audio` and use it. Compare: tones replace the pieces; Alt-P pauses them; a battle
   ends them; timing does not change. Proven by: `PackAudioTests` (the game's calls reach the drivers unchanged; pause and mute), `LauncherPackTests` (the example pack reads clean); how it sounds: UNPROVEN.
 * [ ] **J4 Broken pack.** Do: a missing folder, a bad PNG, an unknown name. Compare: a console line and the game's own
   picture or sound. Proven by: `PackAudioTests`, `HdPackTests`, `LauncherPackTests` (the problem is reported and the rest still loads).
@@ -263,7 +267,7 @@ key in the original); what is different and which side shows what. If you cannot
 ## K. Mods ([MODS.md](MODS.md))
 
 * [ ] **K1 No mod.** Do: play with no `--mod`. Compare: the 366 original cards, saves with no `.MODS.JSON`. Proven by: all sessions.
-* [ ] **K2 The example mod.** Do: `--mod wayside-shrine`, reach the added card by day in a city. Compare: text, choices,
+* [ ] **K2 The example mod.** Do: copy the Workshop's `Workshop/examples/example-mod-wayside-shrine` into `mods` as `wayside-shrine`, `--mod wayside-shrine`, reach the added card by day in a city. Compare: text, choices,
   effects; the console lists what it adds. Proven by: `ModCardTests` and `RcPlayTests` (the shrine card runs in the game loop; the console lists what the mod adds).
 * [ ] **K3 Modded save.** Do: save on the mod's card with Alt-S. Compare: `DKSAVE<n>.SAV` and `DKSAVE<n>.MODS.JSON` appear;
   the original loads the `.SAV` and goes on from the card the save names. Proven by: `ModCardTests`, `RcPlayTests` (Alt-S on the mod's card writes both files; the `.SAV` names only game cards).

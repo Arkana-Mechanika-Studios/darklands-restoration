@@ -39,8 +39,11 @@ never needs to (see "Rights" below).
 ## Where the files go
 
 The release comes with the program (`DarklandsRP.exe`), a `docs` folder (the players' guides), a `packs` folder with a
-folder per kind (the "HD fonts" font pack, an empty folder for translations, a small example sound pack) and a `mods`
-folder with a small example mod. These guides come with the Workshop, in `Workshop/docs`.
+folder per kind (the "HD fonts" font pack, and empty folders for translations and sound packs) and an empty `mods` folder.
+These guides come with the Workshop, in `Workshop/docs`, and so do the examples, on a read-only shelf in
+`Workshop/examples`: a small sound pack (`example-audio-pack`) and a small mod (`example-mod-wayside-shrine`). Copy one into
+the game's `packs/audio` or `mods` folder to try it (the mod as `mods/wayside-shrine`: its folder name is its id). Keep a
+zip of what you make: deleting the game's folder deletes it; unpacking a new version over the old one leaves it alone.
 
 ```text
 DarklandsRP.exe
@@ -48,10 +51,10 @@ darklands.settings.json      (written on the first run)
 packs/
   fonts/hd-fonts/            (comes with the release)
   languages/                 (translations)
-  audio/audio-pack-example/  (comes with the release)
+  audio/example-audio-pack/  (copied from Workshop/examples)
   my-first-pack/             (yours: a pack may also sit straight in packs)
 mods/
-  wayside-shrine/            (comes with the release)
+  wayside-shrine/            (copied from Workshop/examples/example-mod-wayside-shrine)
 SOUNDFONT/                   (optional: your own .sf2 file for MIDI music)
 ```
 

@@ -220,6 +220,16 @@ redistributed with any software, and may not be sold by themselves. The full lic
 `src/Darklands.Workshop/Assets/Fonts/Inter-OFL.txt` and is copied next to the Workshop (`Inter-OFL.txt`) in the build and
 publish output.
 
+## Noto Sans CJK (the Workshop's Japanese and Korean samples)
+
+The Workshop's Japanese and Korean sample translation packs (`Workshop/examples/sample-languages/sample-ja` and `sample-ko`) draw their
+text with Noto Sans CJK, Regular (https://github.com/notofonts/noto-cjk, `Sans/OTC/NotoSansCJK-Regular.ttc`), unmodified: one
+copy in the repository (`docs/language-samples/fonts/NotoSansCJK-Regular.ttc`), copied into each of the two packs' `fonts`
+folders in the build and publish output so each plays on its own. Copyright 2014-2021 Adobe (http://www.adobe.com/), with
+Reserved Font Name 'Source'. Licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org): it may be
+used, embedded and redistributed with any software, and may not be sold by itself. The full licence text is
+`docs/language-samples/fonts/LICENSE-OFL.txt`, copied beside the font in each pack (`fonts/LICENSE-OFL.txt`).
+
 ## Lucide (the Workshop's icons)
 
 The Workshop's line icons (`src/Darklands.Workshop/WorkshopIcons.cs`) are drawn after the Lucide icon set

@@ -803,6 +803,9 @@ public sealed class DarklandsGame
         // the cards' own words (their text variables, shop names) in the translation pack's language when it has them
         context.Translation = key => _ui.Language is { } pack && pack.Localizer.IsTranslated(key) ? pack.Localizer.Get(key) : null;
         context.PackVariable = (name, female) => _ui.Language?.Variable(name, female);
+        context.PackMoney = money => _ui.Language is { } language && language.Localizer.IsTranslated(Core.GameTextIds.MoneyFlorins)
+            ? MoneyWords.Format(money, (id, args) => language.Localizer.Get(id, args))
+            : null;
         context.TakeEngineGlobals(_lastCards);
         _lastCards = context;
         context.PersonalNames = _personalNames ??= new TablePersonalNames(Content.Formats.Characters.PersonalNamesDecoder.Decode(_ui.Assets.Files.Read("DARKLAND.EXE")));

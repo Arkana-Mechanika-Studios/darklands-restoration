@@ -52,9 +52,13 @@ them in the normal way (a pull request).
 
 **(b) The game's own text.** Card texts from the `.MSG` files, the strings inside `DARKLAND.EXE`, and the names and
 descriptions in the data tables (items, saints, places and so on). A translation of this text is a derivative of the
-original game's text, so the project cannot distribute it. These translations are separate, optional
-**translation packs**, kept outside the repository and loaded like the other packs. Where a pack is hosted is up to
-its author.
+original game's text, so the project does not distribute translations of it. These translations are separate,
+optional **translation packs**, kept outside the repository and loaded like the other packs. Where a pack is hosted is
+up to its author. The one exception is a few short **sample excerpts** of the opening in the Workshop's download (below,
+"The samples"), to show the tool: the city square and the church by day and a few screen headings, each pack holding
+only its own words, by key, never the English and nothing of the German edition. The French, Spanish, Polish, Russian
+and Greek samples come with their pixel font packs, built from the original fonts in the original format (a new font in
+the game's own style); the Japanese and Korean ones with Noto Sans CJK.
 
 **What cannot be translated by text alone:**
 
@@ -225,6 +229,9 @@ variable that uses anything but `$sex`. As Fluent requires, each variant of a ch
 
 ## The Workshop's text editor
 
+New to it? The translator's guide, [TRANSLATING.md](TRANSLATING.md), walks through it step by step in plain words (the
+start page and the **…** menu link to it). This section is the full reference.
+
 `DarklandsWorkshop` (a download of its own beside the game's: its archive holds a `Workshop` folder; unzip it into the
 `DarklandsRP` folder, so it is `DarklandsRP/Workshop`, and it finds the game one folder up; beside `DarklandsRP` works
 too) is the translators' editor. It finds your game folder as the launcher does (or the game folder button at the top
@@ -232,8 +239,56 @@ right), and starts on its pack list: every translation pack it finds in the game
 launcher lists: its `languages`, `fonts` and `audio` folders and packs put straight in it),
 in the game folder's `packs` folder and among the packs you opened, each with its language, name, author, progress and
 when it last changed, the last one you opened first (**Enter** continues with it). Under the project's banner are the
-versions ("Workshop 1.1.0-beta.1 · Restoration 1.0.0", and the game program's version when it differs) and the
+versions ("Workshop 1.1.0-beta.1 · Restoration 1.1.0", and the game program's version when it differs) and the
 project's website, GitHub and Discord. **Packs** at the top left leads back to the list from a pack.
+
+**An older game.** The Workshop plays your pack with the game beside it, which must be 1.1.0 or later (`WorkshopNeedsGame`
+in `Directory.Build.props`): language packs and starting at a text came with 1.1.0, and an older game refuses those options
+and quits. With an older one (the version its program says), the start page says so in a box over the pack list, with
+the releases page a click away, and **Play in game** says so in a dialog instead of starting it; the editor works as usual.
+
+**The examples.** The Workshop's download also holds the makers' examples, on a read-only shelf in `Workshop/examples`
+(named so that none looks like a game folder): a sound pack of generated test tones (`example-audio-pack`,
+[PACKS.md](PACKS.md)), the example mod of [MODS.md](MODS.md) (`example-mod-wayside-shrine`) and the translation samples
+(`sample-languages`). Since 1.1 they are no longer in the game's `packs` and `mods` folders, which the game's download
+ships empty but for a README each (`packs/languages`, `packs/audio`, `mods`). The rule: everything a player makes or uses
+lives in the game's folders; the shelf is copied from, never changed.
+
+**The samples.** The Workshop's download holds sample translation packs, in `Workshop/examples/sample-languages` (their source:
+`docs/language-samples`): the city square and the church by day, the menu bar and the party information screen's headings
+in French, Spanish, Polish, Russian and Greek; the church's first text in Japanese and Korean; and a French sample of
+screen layouts (`interface/layout.json`). Each is named "… (sample)". The start page lists them under your packs, in that
+order, each with two buttons:
+* **Play**: the game, at the church (`card:$CITYC00#0`), straight from the shelf: nothing is written there, the test
+  saves go to the Workshop's own folder (`%APPDATA%\DarklandsWorkshop\sample-saves`); its own font draws its letters (a
+  pack without one would play with the game's HD fonts, `--font-pack`);
+* **Start from this sample**: asks a name, copies the sample (its font files included) into the game's
+  `packs/languages/<name>`, its name losing the "(sample)" mark, and opens the copy. A sample is never opened for
+  editing: **Open folder…** on the shelf starts from it the same way.
+
+Their fonts: the French, Spanish, Polish, Russian and Greek samples ship their pixel font packs (`fonts/slot1..3`, built
+from the original fonts by the Workshop's builder, in the original format); the Japanese and Korean samples bring Noto Sans
+CJK (SIL OFL, THIRD_PARTY_NOTICES.md), one copy in each, so a sample plays on its own. Every card sample also translates the
+money words a card's `$Money` fills an amount with (`id-rw-money-florins`, `-groschen`, `-pfennigs`, with their plural
+forms by `$count`, and the joins `id-rw-money-two`, `-three`): "1 gros et 1 denier" in the French church.
+
+**Money words.** A card text's `$Money1`..`$Money5` is an amount written from five texts of the pack (`id:rw.money.*`, in
+the template's `ui.ftl`): each coin (`$count`, a number, chooses the plural; `$amount` is it written with separators) and
+the joins of two and of three parts. Until the pack translates them the game writes the amount in English. The editor
+says so beside a translated text that uses `$Money` while they are not translated yet ("fills in an amount from texts
+you haven't translated yet"), with **Show them**; a note, not an error.
+
+**Fonts and the launcher.** A language pack whose letters the original fonts lack and that brings no font of its own plays with the **HD fonts**: choosing it in the launcher turns the Fonts row to HD fonts by itself, with a line saying why ("Russian needs letters the original fonts don't have: HD fonts are on"); set Fonts back to None and the line warns that those letters show as '?'. The game started with `--language-pack` alone does the same, and says so in its log. To play one from the game's launcher, copy its
+folder into the game's `packs/languages` and choose it in the **Language pack** row.
+
+**A pack from elsewhere.** A pack opened from outside the game's packs (**Open folder…** on `D:\Packs\fr`, say) is
+edited and played as any other, under a line: "Not in the game's packs: the launcher won't list it", with **Add to the
+game**. That copies it into `packs/languages` under a name the player gives (the folder's own name suggested; when a
+pack of that name is there, nothing is overwritten and the name is asked again), leaves its test saves behind, and goes
+on with the copy; the folder opened stays as it was. **New pack** makes its packs in `packs/languages`.
+
+**Keep a copy.** Deleting the game's folder deletes the packs in it: keep a zip of each (**… › Export texts…**, or zip the
+folder). Unpacking a new version of the game over the old one leaves `packs/languages` alone.
 
 **The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
 now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the

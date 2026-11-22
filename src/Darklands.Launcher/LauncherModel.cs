@@ -129,6 +129,17 @@ internal sealed class LauncherModel
 
     public void SetPack(PackKind kind, string? folder)
     {
+        if (kind == PackKind.Fonts)
+        {
+            // the player's own choice of fonts, even None: kept (the note warns about '?' when the language needs letters)
+            _fontsAuto = false;
+        }
+        else if (kind == PackKind.Language && folder is not null && FontPack is null && NeedsFontsFor(folder) is not null && HdFonts is { } hd)
+        {
+            // a language whose letters the original fonts lack, and no font of its own: the HD fonts on, said in the note
+            FontPack = hd;
+            _fontsAuto = true;
+        }
         switch (kind)
         {
             case PackKind.Pictures:
@@ -145,6 +156,48 @@ internal sealed class LauncherModel
                 break;
         }
     }
+
+    private bool _fontsAuto;
+
+    private readonly Dictionary<(string Pack, string? Game), string?> _needsFonts = [];
+
+    /// <summary>The language's name when the pack in <paramref name="folder"/> needs letters the original fonts lack (LauncherContext.NeedsFonts).</summary>
+    public string? NeedsFontsFor(string? folder)
+    {
+        if (folder is null || _context.NeedsFonts is not { } needs)
+        {
+            return null;
+        }
+        var key = (folder, GameFolderChecked);
+        if (!_needsFonts.TryGetValue(key, out var language))
+        {
+            language = _needsFonts[key] = needs(folder, GameFolderChecked);
+        }
+        return language;
+    }
+
+    /// <summary>The HD fonts among the font packs offered (packs/fonts/hd-fonts), else the first font pack; null: none.</summary>
+    public string? HdFonts
+    {
+        get
+        {
+            var fonts = PackChoices(PackKind.Fonts).OfType<string>().ToList();
+            return fonts.FirstOrDefault(f => string.Equals(Path.GetFileName(Path.TrimEndingDirectorySeparator(f)), "hd-fonts", StringComparison.OrdinalIgnoreCase))
+                ?? fonts.FirstOrDefault();
+        }
+    }
+
+    /// <summary>
+    /// The line about the fonts for the language pack chosen: why the HD fonts were turned on, or a warning when the language needs
+    /// letters the original fonts lack and Fonts is None (they show as '?'); null when there is nothing to say.
+    /// </summary>
+    public (string Text, bool Warning)? FontsNote => NeedsFontsFor(LanguagePack) is not { } language
+        ? null
+        : FontPack is null
+        ? ($"{language} needs letters the original fonts don't have: with Fonts on None they show as '?'. Choose HD fonts.", true)
+        : _fontsAuto
+        ? ($"{language} needs letters the original fonts don't have: HD fonts are on.", false)
+        : null;
 
     /// <summary>What a folder holds as a pack (looked at once per folder: it reads the disk).</summary>
     public PackStatus Pack(string folder)

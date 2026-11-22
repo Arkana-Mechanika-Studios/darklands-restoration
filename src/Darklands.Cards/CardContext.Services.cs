@@ -48,6 +48,13 @@ public sealed partial class CardContext
     // Not in the original: the 1.1 translations (docs/LOCALISATION.md: a language's inflected pronouns).
     public Func<string, bool, string?>? PackVariable { get; set; }
 
+    /// <summary>
+    /// An amount in a translation pack's money words (<c>$Money1</c>..<c>$Money5</c>: GameTextIds.MoneyWords), or null (no pack, or
+    /// one that does not translate them: Money.ToString, the original's words).
+    /// </summary>
+    // Not in the original: the 1.1 translations.
+    public Func<Darklands.Core.Economy.Money, string?>? PackMoney { get; set; }
+
     /// <summary>The message shown when a missile weapon is needed: "You need a missile weapon" (the far string the slot 290E:1E5F points at).</summary>
     public const string NeedMissileWeapon = "exe:290E:049A";
 

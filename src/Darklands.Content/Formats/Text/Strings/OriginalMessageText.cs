@@ -64,7 +64,19 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         ["id:rw.save.list.saved-short"] = t => $"{t.Word("day")} {t.Word("monthName")} {t.Word("time")}",
         ["id:rw.save.list.saved-at"] = t => $"{t.Word("date")} {t.Word("time")}",
         ["id:rw.save.list.saved"] = _ => "Saved on",
+        // the money words a card's $Money fills an amount with, in a translation (Darklands.Presentation.MoneyWords; the game without a
+        //   pack writes Money.ToString, these same words): a coin with its count ($count, a number for the plural; $amount, written with
+        //   separators), and the joins of two and three parts
+        [GameTextIds.MoneyFlorins] = t => One(t) ? "1 florin" : $"{t.Word("amount")} florins",
+        [GameTextIds.MoneyGroschen] = t => $"{t.Word("amount")} groschen",
+        [GameTextIds.MoneyPfennigs] = t => One(t) ? "1 pfennig" : $"{t.Word("amount")} pfennigs",
+        [GameTextIds.MoneyTwo] = t => $"{t.Word("a")} and {t.Word("b")}",
+        [GameTextIds.MoneyThree] = t => $"{t.Word("a")}, {t.Word("b")} and {t.Word("c")}",
     };
+
+    // a money text's count is one (its singular); a text asked without a count (the template: its plural form) is not
+    private static bool One(GameText t) =>
+        t.Args.TryGetValue("count", out var count) && Convert.ToString(count, System.Globalization.CultureInfo.InvariantCulture) == "1";
 
     /// <summary>The words of one of the rewrite's own notices (null for any other id): they need no EXE.</summary>
     public static string? OwnWords(GameText text) => text is not null && Own.TryGetValue(text.Id, out var own) ? own(text) : null;

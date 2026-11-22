@@ -284,7 +284,7 @@ while (true)
     var start = new StartProgress();
     try
     {
-        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt);
+        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt, cli.LanguagePack is not null && cli.FontPack is null);
     }
     catch (Exception e) when (!start.Running && !noLauncher)
     {
@@ -326,7 +326,7 @@ ResolvedSettings? Resolve(GameSettings file)
 }
 
 // The game in the window, with its sound, console and saves; returns the program's exit code.
-static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt)
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt, bool languagePackAlone = false)
 {
     host.Renderer = null;
     host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
@@ -377,6 +377,17 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     // a translation pack changes the screens' words only (docs/LOCALISATION.md)
     // a font pack (text.fontPack, --font-pack): its fonts for the slots the translation pack has none for (Not in the original)
     var fontPack = settings.FontPack;
+    // a language pack given on the command line (--language-pack) with no font: when its letters are ones the original fonts lack
+    //   and it brings no font of its own, the HD fonts (packs/fonts/hd-fonts), said in the log (the launcher does the same, saying why)
+    if (fontPack is null && languagePackAlone && settings.LanguagePack is { } needing
+        && Darklands.Presentation.PackLetters.NeedsFonts(needing, folder) is { } needs
+        && Path.Combine(AppContext.BaseDirectory, Darklands.Platform.PackLayout.Packs, "fonts", "hd-fonts") is var hdFonts && Directory.Exists(hdFonts))
+    {
+        fontPack = hdFonts;
+        var why = $"Fonts: {needs} needs letters the original fonts don't have: HD fonts are on ({hdFonts}).";
+        reports.Log?.WriteLine(why);
+        Console.Error.WriteLine(why);
+    }
     if (settings.LanguagePack is { } languagePack || fontPack is not null)
     {
         if (settings.LanguagePack is { } translation)

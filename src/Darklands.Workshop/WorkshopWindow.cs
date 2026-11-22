@@ -23,6 +23,10 @@ internal sealed class WorkshopWindow : Window
     private readonly WorkshopSettings _settings;
     private readonly TextBlock _where = new() { VerticalAlignment = VerticalAlignment.Center, Foreground = WorkshopTheme.Brush(WorkshopTheme.ParchmentDim) };
     private readonly ContentControl _centre = new();
+
+    // over the editor, for a pack outside the game's packs (opened from elsewhere): the launcher will not list it; Add to the game
+    private readonly Border _outside = new() { IsVisible = false };
+    private readonly TextBlock _outsideText = new() { VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
     private readonly ListBox _findings = new() { Height = 100 };
     private readonly Expander _checkPanel = new() { IsVisible = false, HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(8, 0, 8, 4) };
     private readonly TextBlock _status = new() { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, FontSize = 12 };
@@ -170,11 +174,31 @@ internal sealed class WorkshopWindow : Window
         statusLine.Children.Add(_status);
         var bottom = new Border { Child = statusLine, Background = WorkshopTheme.Brush(WorkshopTheme.Side), BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line), BorderThickness = new Thickness(0, 1, 0, 0) };
 
+        var add = WorkshopTheme.Outline(WorkshopTheme.IconText("folder", "Add to the game", 13));
+        add.Click += (_, _) => _ = AddToTheGame();
+        ToolTip.SetTip(add, "Copies the pack into the game's packs\\languages folder (under a name you give; nothing is overwritten) and goes on with the copy");
+        var outsideRow = new DockPanel { Margin = new Thickness(12, 6) };
+        DockPanel.SetDock(add, Dock.Right);
+        outsideRow.Children.Add(add);
+        outsideRow.Children.Add(new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 8,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children = { WorkshopIcons.Make("alert", 15, WorkshopTheme.Brush(WorkshopTheme.Warn)), _outsideText },
+        });
+        _outside.Child = outsideRow;
+        _outside.Background = WorkshopTheme.Brush(Color.FromArgb(0x1A, 0xD9, 0xA0, 0x3F));
+        _outside.BorderBrush = WorkshopTheme.Brush(Color.FromArgb(0x55, 0xD9, 0xA0, 0x3F));
+        _outside.BorderThickness = new Thickness(0, 0, 0, 1);
+
         var root = new DockPanel();
         DockPanel.SetDock(top, Dock.Top);
+        DockPanel.SetDock(_outside, Dock.Top);
         DockPanel.SetDock(bottom, Dock.Bottom);
         DockPanel.SetDock(_checkPanel, Dock.Bottom);
         root.Children.Add(top);
+        root.Children.Add(_outside);
         root.Children.Add(bottom);
         root.Children.Add(_checkPanel);
         root.Children.Add(_centre);
@@ -184,9 +208,16 @@ internal sealed class WorkshopWindow : Window
     // the start page: the banner, the packs found on this computer, the actions (StartPage)
     private Control BuildStart()
     {
-        var packs = PackCatalog.Find(PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game), _settings.RecentPacks);
-        var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault())
+        // the samples apart (listed under the packs, in their own order), never among your packs even once opened
+        var packs = PackCatalog.Find(PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game), _settings.RecentPacks)
+            .Where(p => !WorkshopApp.IsSample(p.Folder)).ToList();
+        var samples = PackCatalog.Find([WorkshopApp.SamplesFolder], [])
+            .OrderBy(p => Array.IndexOf(SampleOrder, Path.GetFileName(p.Folder)) is var k and >= 0 ? k : SampleOrder.Length).ThenBy(p => p.Name, StringComparer.Ordinal).ToList();
+        var page = new StartPage(packs, TemplateCount(), _game, _settings.RecentPacks.FirstOrDefault(p => !WorkshopApp.IsSample(p)))
         {
+            Samples = samples,
+            PlaySample = PlaySample,
+            StartFromSample = folder => _ = StartFromSample(folder),
             Open = Open,
             NewPack = () => _ = NewPack(),
             OpenFolder = () => _ = OpenPack(),
@@ -251,6 +282,7 @@ internal sealed class WorkshopWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Game folder…", "gamepad", () => _ = ChooseGame()));
         menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Translator's guide", "book", () => _ = Launcher.LaunchUriAsync(new Uri(ProjectLinks.TranslatorGuide))));
         menu.Items.Add(Item("Report a problem…", "alert", ReportProblem));
         return menu;
     }
@@ -484,6 +516,7 @@ internal sealed class WorkshopWindow : Window
         _project = null;
         _editor = null;
         _checkPanel.IsVisible = false;
+        _outside.IsVisible = false;
         UpdateState();
     }
 
@@ -661,22 +694,153 @@ internal sealed class WorkshopWindow : Window
         }
     }
 
+    // the samples' order on the start page (WorkshopApp.SamplesFolder's folders; others after them)
+    private static readonly string[] SampleOrder = ["sample-fr", "sample-es", "sample-pl", "sample-ru", "sample-el", "sample-ja", "sample-ko", "sample-fr-layouts"];
+
     private void Open(string folder)
+    {
+        // the samples' shelf is read-only: a sample is never opened for editing, a pack is started from a copy of it instead
+        if (WorkshopApp.IsSample(folder))
+        {
+            _ = StartFromSample(folder);
+            return;
+        }
+        OpenProject(folder);
+    }
+
+    private bool OpenProject(string folder)
+    {
+        if (_game is null)
+        {
+            _status.Text = "Choose the game's folder first: the texts come from your own game files.";
+            return false;
+        }
+        try
+        {
+            Show(TextProject.Open(folder, _game));
+            return true;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            _status.Text = $"{folder}: {e.Message}";
+            return false;
+        }
+    }
+
+    /// <summary>The game's language packs folder (packs/languages beside the game's program): where every pack a player makes lives.</summary>
+    internal static string GameLanguages => PackLayout.KindFolder(WorkshopApp.GameProgramFolder, PackLayout.Languages);
+
+    /// <summary>Is <paramref name="folder"/> a pack the game's launcher lists (in the game program's or the game folder's packs)?</summary>
+    internal bool InTheGamesPacks(string folder)
+    {
+        var full = Path.TrimEndingDirectorySeparator(Path.GetFullPath(folder));
+        return PackCatalog.PackFolders(WorkshopApp.GameProgramFolder, _game).SelectMany(PackLayout.PacksIn)
+            .Any(p => string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(p)), full, StringComparison.OrdinalIgnoreCase));
+    }
+
+    // a sample played from the start page, straight from the shelf (never opened, nothing written there): the game at the church, its
+    //   test saves in the Workshop's own folder, with the game's HD fonts when the game's own fonts lack the sample's letters
+    private void PlaySample(string folder)
     {
         if (_game is null)
         {
             _status.Text = "Choose the game's folder first: the texts come from your own game files.";
             return;
         }
-        try
+        var language = Darklands.Localization.LanguagePack.Load(folder, out _)?.Language ?? "";
+        var hd = Path.Combine(PackLayout.KindFolder(WorkshopApp.GameProgramFolder, "fonts"), "hd-fonts");
+        var font = !FontNeeds.IsCjk(language) && !FontNeeds.HasFontPack(folder) && FontNeeds.LackedByTheGame(_game, language).Length > 0 && Directory.Exists(hd) ? hd : null;
+        var saves = Path.Combine(WorkshopSettings.Folder, "sample-saves", Path.GetFileName(Path.TrimEndingDirectorySeparator(folder)));
+        if (Launch(folder, SampleStart.Replace("msg:", "card:", StringComparison.Ordinal), saves, font))
         {
-            Show(TextProject.Open(folder, _game));
-        }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException)
-        {
-            _status.Text = $"{folder}: {e.Message}";
+            _status.Text = $"The game starts with {Path.GetFileName(folder)} at the church{(font is null ? "" : ", in the game's HD fonts")} (its test saves apart, in the Workshop's own folder).";
         }
     }
+
+    // "Start from this sample": a copy of the sample in the game's packs/languages under a name the player gives, opened; its font from
+    //   the player's game offered when its letters need one (the CJK samples bring theirs)
+    private async Task StartFromSample(string sample)
+    {
+        if (_game is null)
+        {
+            _status.Text = "Choose the game's folder first: the texts come from your own game files.";
+            return;
+        }
+        var suggested = Path.GetFileName(Path.TrimEndingDirectorySeparator(sample)).Replace("sample-", "", StringComparison.Ordinal);
+        var copy = await CopyIntoTheGame(sample, suggested, "Start from this sample",
+            "Your pack starts as a copy of this sample, in the game's packs\\languages folder, where the launcher lists it. The sample itself stays as it is. Name your pack:");
+        if (copy is null)
+        {
+            return;
+        }
+        // the copy is the player's: no longer named a sample
+        PackNaming.DropSampleMark(copy);
+        if (OpenProject(copy))
+        {
+            _status.Text = $"Your pack {Path.GetFileName(copy)} is in {GameLanguages}: a copy of the sample, yours to change.";
+            if (_project is { } project && !FontNeeds.IsCjk(project.Language))
+            {
+                await BuildFontPack(ask: true);
+            }
+        }
+    }
+
+    // a pack opened from outside the game's packs, copied in ("Add to the game"); the copy opened, the original left as it was
+    private async Task AddToTheGame()
+    {
+        if (_project is null)
+        {
+            return;
+        }
+        _editor?.Save();
+        var from = _project.Folder;
+        var copy = await CopyIntoTheGame(from, Path.GetFileName(Path.TrimEndingDirectorySeparator(from)), "Add to the game",
+            "The pack is copied into the game's packs\\languages folder, where the launcher lists it, and the Workshop goes on with the copy. "
+            + "The folder you opened stays as it was. Name the copy:");
+        if (copy is not null && OpenProject(copy))
+        {
+            _status.Text = $"Copied into the game's packs: you are now editing {copy}. {from} stays as it was.";
+        }
+    }
+
+    /// <summary>
+    /// Copies the pack in <paramref name="from"/> into the game's packs/languages under a name the player gives (asked, <paramref
+    /// name="suggested"/> first); an existing pack of that name is never overwritten: the name is asked again. Its test saves
+    /// (.workshop/saves) stay behind. The copy's folder, or null when the player cancels.
+    /// </summary>
+    private async Task<string?> CopyIntoTheGame(string from, string suggested, string title, string text)
+    {
+        var name = PackNaming.FreeName(GameLanguages, suggested);
+        var note = "";
+        while (true)
+        {
+            var asked = await new NameDialog(title, text + note, name).ShowDialog<string?>(this);
+            if (asked is null)
+            {
+                return null;
+            }
+            if (PackNaming.Problem(GameLanguages, asked) is { } problem)
+            {
+                name = PackNaming.FreeName(GameLanguages, asked.Trim());
+                note = "\n\n" + problem;
+                continue;
+            }
+            var to = Path.Combine(GameLanguages, asked.Trim());
+            try
+            {
+                PackNaming.Copy(from, to);
+                return to;
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                _status.Text = $"Could not copy into {to}: {e.Message}";
+                return null;
+            }
+        }
+    }
+
+    /// <summary>Where a sample plays from the start page: the church by day, the text every sample translates.</summary>
+    internal const string SampleStart = "msg:$CITYC00#0";
 
     private void Show(TextProject project)
     {
@@ -685,6 +849,10 @@ internal sealed class WorkshopWindow : Window
             _editor.Save();
         }
         _project = project;
+        // a pack outside the game's packs plays and edits as any other, but the launcher will not list it: said, with the way in
+        _outside.IsVisible = !InTheGamesPacks(project.Folder);
+        _outsideText.Text = "Not in the game's packs: the launcher won't list it. Add to the game copies it into packs\\languages "
+            + "(the folder you opened stays as it is).";
         _editor = new TextEditorView(project);
         _editor.Changed += UpdateState;
         _findings.ItemsSource = null;
@@ -746,6 +914,31 @@ internal sealed class WorkshopWindow : Window
     /// <summary>Runs the check as its button does (the window's pictures in the tests).</summary>
     internal void RunCheckForTests() => RunCheck();
 
+    /// <summary>Starts a pack from a sample as its start page row does (the name asked, the copy opened, its font offered).</summary>
+    internal Task StartFromSampleForTests(string folder) => StartFromSample(folder);
+
+    /// <summary>Plays a sample as its start page row does.</summary>
+    internal void PlaySampleForTests(string folder) => PlaySample(folder);
+
+    /// <summary>The open pack copied into the game's packs, as the Add to the game button does.</summary>
+    internal Task AddToTheGameForTests() => AddToTheGame();
+
+    /// <summary>Opens a pack as Open pack… does.</summary>
+    internal void OpenForTests(string folder) => Open(folder);
+
+    /// <summary>The open pack's folder.</summary>
+    internal string? PackFolderForTests => _project?.Folder;
+
+    /// <summary>The line over the editor for a pack outside the game's packs, when shown.</summary>
+    internal string? OutsideNoticeForTests => _outside.IsVisible ? _outsideText.Text : null;
+
+    /// <summary>Play in game (at the text, or from the start), as its buttons do; the status line after it.</summary>
+    internal string PlayInGameForTests(bool atText)
+    {
+        RunGame(atText);
+        return _status.Text ?? "";
+    }
+
     private void RunCheck()
     {
         if (_editor is null)
@@ -790,21 +983,49 @@ internal sealed class WorkshopWindow : Window
             return;
         }
         _editor.Save();
+        // a test game's saves go to the pack's own .workshop folder, never the player's SAVES (at a text and from the start alike)
+        var target = atText && _editor.Current is { } current ? StartTarget(current) : null;
+        if (!Launch(_project.Folder, target, Path.Combine(_project.Folder, ".workshop", "saves"), null))
+        {
+            return;
+        }
+        UpdateState();
+        _status.Text = target is not null ? $"The game starts at {target[(target.IndexOf(':', StringComparison.Ordinal) + 1)..]} (a Quick Start party; saves go to the pack's .workshop folder)."
+            : atText ? "This text is not on a card or a screen the game can open at: the game starts from the start."
+            : "The game starts from the start (its saves go to the pack's .workshop folder).";
+    }
+
+    /// <summary>The program a test game is started with (the tests put a stand-in here); null: the game's own (WorkshopApp.GameProgram).</summary>
+    internal static Func<ProcessStartInfo, bool>? StartProcessForTests { get; set; }
+
+    // the game with a pack, as a translation test: at <paramref name="target"/> (DarklandsRP --start-at) or from the start, its saves in
+    //   <paramref name="saves"/>, a font pack if given; false (said in the status line, or a dialog for an older game) when it cannot start
+    private bool Launch(string pack, string? target, string saves, string? fontPack)
+    {
         var program = WorkshopApp.GameProgram;
-        if (!File.Exists(program))
+        if (StartProcessForTests is null && !File.Exists(program))
         {
             _status.Text = $"The game's program is not in the folder above the Workshop's, nor beside it ({program}).";
-            return;
+            return false;
+        }
+        // an older game refuses the options below and quits without a word: said here instead (WorkshopVersion.NeedsGame)
+        if (WorkshopApp.OlderGame() is { } older)
+        {
+            _status.Text = $"Play in game needs the game {WorkshopVersion.NeedsGame} or later; the one beside the Workshop is {WorkshopApp.GameProgramVersion()}.";
+            _ = SayOlderGame(older);
+            return false;
         }
         var start = new ProcessStartInfo(program) { UseShellExecute = false };
         start.ArgumentList.Add("--language-pack");
-        start.ArgumentList.Add(_project.Folder);
-        // a test game's saves go to the pack's own .workshop folder, never the player's SAVES (at a text and from the start alike)
-        var saves = Path.Combine(_project.Folder, ".workshop", "saves");
+        start.ArgumentList.Add(pack);
         Directory.CreateDirectory(saves);
         start.ArgumentList.Add("--saves");
         start.ArgumentList.Add(saves);
-        var target = atText && _editor.Current is { } current ? StartTarget(current) : null;
+        if (fontPack is not null)
+        {
+            start.ArgumentList.Add("--font-pack");
+            start.ArgumentList.Add(fontPack);
+        }
         if (target is not null)
         {
             start.ArgumentList.Add("--start-at");
@@ -814,11 +1035,20 @@ internal sealed class WorkshopWindow : Window
         {
             start.ArgumentList.Add(_game);
         }
+        if (StartProcessForTests is { } stand)
+        {
+            return stand(start);
+        }
         Process.Start(start);
-        UpdateState();
-        _status.Text = target is not null ? $"The game starts at {target[(target.IndexOf(':', StringComparison.Ordinal) + 1)..]} (a Quick Start party; saves go to the pack's .workshop folder)."
-            : atText ? "This text is not on a card or a screen the game can open at: the game starts from the start."
-            : "The game starts from the start (its saves go to the pack's .workshop folder).";
+        return true;
+    }
+
+    private async Task SayOlderGame(string words)
+    {
+        if (await new QuestionDialog("The game is older than the Workshop", words, "Open the releases page", "Close").ShowDialog<bool>(this))
+        {
+            _ = Launcher.LaunchUriAsync(new Uri(ProjectLinks.Releases));
+        }
     }
 
     private async Task<string?> PickFolder(string title)

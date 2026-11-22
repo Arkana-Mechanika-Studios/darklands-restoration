@@ -47,6 +47,15 @@ internal sealed class StartPage
     /// <summary>Opens a web address.</summary>
     public required Action<string> Link { get; init; }
 
+    /// <summary>The sample packs that come with the Workshop (WorkshopApp.SamplesFolder), listed under the packs to open or play.</summary>
+    public IReadOnlyList<PackSummary> Samples { get; init; } = [];
+
+    /// <summary>Plays a sample (its folder) straight from the shelf: the game at the church, its test saves apart.</summary>
+    public Action<string>? PlaySample { get; init; }
+
+    /// <summary>Starts a pack from a sample (its folder): a copy in the game's packs/languages, under a name asked, opened.</summary>
+    public Action<string>? StartFromSample { get; init; }
+
     public StartPage(IReadOnlyList<PackSummary> packs, int total, string? game, string? last)
     {
         _packs = packs;
@@ -66,6 +75,11 @@ internal sealed class StartPage
             body.Children.Add(Callout("Find your game first", "The Workshop reads the texts from your own Darklands. Choose the folder that holds DARKLAND.EXE.",
                 "Choose the game folder…", ChooseGame));
         }
+        // a game older than the Workshop needs (WorkshopVersion.NeedsGame): said in words, before Play in game is tried
+        if (WorkshopApp.OlderGame() is { } older)
+        {
+            body.Children.Add(Callout("Update the game to play your pack", older, "Open the releases page", () => Link(ProjectLinks.Releases)));
+        }
         var head = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto"), Margin = new Thickness(0, 0, 0, 16) };
         head.Children.Add(new StackPanel
         {
@@ -73,6 +87,7 @@ internal sealed class StartPage
             {
                 new TextBlock { Text = "Translation packs", FontSize = 15, FontWeight = FontWeight.SemiBold },
                 new TextBlock { Text = "Pick up where you left off, or start a new language.", FontSize = 12, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), Margin = new Thickness(0, 2, 0, 0) },
+                GuideLink(),
             },
         });
         Grid.SetColumn(_filter, 1);
@@ -100,6 +115,10 @@ internal sealed class StartPage
             Child = _rows,
         });
         FillRows();
+        if (Samples.Count > 0)
+        {
+            body.Children.Add(SamplesSection());
+        }
         var page = new DockPanel();
         var banner = Banner();
         DockPanel.SetDock(banner, Dock.Top);
@@ -211,15 +230,13 @@ internal sealed class StartPage
         return new Border { Child = band, BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line), BorderThickness = new Thickness(0, 0, 0, 1) };
     }
 
-    /// <summary>"Restoration 1.1.0", and "· game 1.0.0" when the game beside the Workshop is another version.</summary>
+    /// <summary>"Workshop 1.1.0-beta.1 · Restoration 1.1.0", and "· game 1.0.0" when the game beside the Workshop is another version.</summary>
     public static string Versions()
     {
-        static string Clean(string? v) => (v ?? "").Split('+')[0].Trim();
         // the Workshop's own version (WorkshopVersion), then the Restoration's this build is of (Directory.Build.props)
-        var own = Clean(typeof(StartPage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
-        var words = "Workshop " + Darklands.Workshop.Text.WorkshopVersion.Current + " · Restoration " + own;
-        var program = WorkshopApp.GameProgram;
-        if (File.Exists(program) && Clean(FileVersionInfo.GetVersionInfo(program).ProductVersion) is { Length: > 0 } game && game != own)
+        var own = WorkshopVersion.Clean(typeof(StartPage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
+        var words = "Workshop " + WorkshopVersion.Current + " · Restoration " + own;
+        if (WorkshopApp.GameProgramVersion() is { } game && game != own)
         {
             words += " · game " + game;
         }
@@ -388,6 +405,115 @@ internal sealed class StartPage
             }
         };
         return cell;
+    }
+
+    // "New to translating? The translator's guide" (docs/TRANSLATING.md), under the packs' heading
+    private Control GuideLink()
+    {
+        var link = new TextBlock
+        {
+            Text = "New to translating? Read the translator's guide",
+            FontSize = 12,
+            Foreground = WorkshopTheme.Brush(WorkshopTheme.Accent),
+            TextDecorations = TextDecorations.Underline,
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Margin = new Thickness(0, 4, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        ToolTip.SetTip(link, "Step by step, for translators who are not programmers (also in the Workshop's docs folder, TRANSLATING.md)");
+        link.PointerPressed += (_, e) =>
+        {
+            if (e.GetCurrentPoint(link).Properties.IsLeftButtonPressed)
+            {
+                Link(ProjectLinks.TranslatorGuide);
+            }
+        };
+        return link;
+    }
+
+    // the samples (short excerpts of the opening, on the read-only shelf Workshop/examples/sample-languages): each to play at the
+    //   church, or to start a pack from (a copy in the game's packs/languages)
+    private Control SamplesSection()
+    {
+        var section = new StackPanel { Margin = new Thickness(0, 28, 0, 0) };
+        section.Children.Add(new TextBlock { Text = "Samples", FontSize = 15, FontWeight = FontWeight.SemiBold });
+        section.Children.Add(new TextBlock
+        {
+            Text = "Short excerpts of the opening (the city square and the church by day, a few screen headings), to see what a translation "
+                + "looks like. Play one in the game at the church, or start your own pack from it: a copy in the game's packs, yours to change "
+                + "(the samples themselves never change).",
+            FontSize = 12,
+            Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted),
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 2, 0, 12),
+        });
+        var rows = new StackPanel();
+        for (var k = 0; k < Samples.Count; k++)
+        {
+            var row = SampleRow(Samples[k]);
+            rows.Children.Add(k < Samples.Count - 1 ? Lined(row) : row);
+        }
+        section.Children.Add(new Border
+        {
+            BorderBrush = WorkshopTheme.Brush(WorkshopTheme.Line),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(10),
+            Background = WorkshopTheme.Brush(WorkshopTheme.Side),
+            ClipToBounds = true,
+            Child = rows,
+        });
+        return section;
+    }
+
+    private Control SampleRow(PackSummary sample)
+    {
+        var row = new Grid { Height = 48, ColumnDefinitions = new ColumnDefinitions("1.4*,1.7*,Auto,Auto"), ColumnSpacing = 12, Margin = new Thickness(16, 0) };
+        var language = Languages.Of(sample.Language);
+        row.Children.Add(new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 12,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children =
+            {
+                new Border
+                {
+                    Width = 28,
+                    Height = 28,
+                    CornerRadius = new CornerRadius(7),
+                    Background = WorkshopTheme.Brush(WorkshopTheme.Raised),
+                    Child = new TextBlock
+                    {
+                        Text = sample.Language.Split('-')[0].ToUpperInvariant(),
+                        FontSize = 11,
+                        FontWeight = FontWeight.SemiBold,
+                        Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    },
+                },
+                new TextBlock { Text = language?.English ?? sample.Language, FontSize = 13, VerticalAlignment = VerticalAlignment.Center },
+            },
+        });
+        var name = new TextBlock { Text = sample.Name, FontSize = 13, Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted), VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+        ToolTip.SetTip(name, sample.Folder);
+        Grid.SetColumn(name, 1);
+        row.Children.Add(name);
+        var play = WorkshopTheme.Outline(WorkshopTheme.IconText("play", "Play", 13));
+        play.IsEnabled = _game is not null && PlaySample is not null;
+        play.VerticalAlignment = VerticalAlignment.Center;
+        play.Click += (_, _) => PlaySample?.Invoke(sample.Folder);
+        ToolTip.SetTip(play, "Start the game with this sample, at the church (a Quick Start party; its test saves are kept apart from your games)");
+        Grid.SetColumn(play, 2);
+        row.Children.Add(play);
+        var start = WorkshopTheme.Primary(WorkshopTheme.IconText("plus", "Start from this sample", 13));
+        start.IsEnabled = _game is not null && StartFromSample is not null;
+        start.VerticalAlignment = VerticalAlignment.Center;
+        start.Click += (_, _) => StartFromSample?.Invoke(sample.Folder);
+        ToolTip.SetTip(start, "Your own pack, starting as a copy of this sample in the game's packs\\languages folder (you name it); the sample stays as it is");
+        Grid.SetColumn(start, 3);
+        row.Children.Add(start);
+        return row;
     }
 
     private Control Callout(string title, string text, string action, Action run)

@@ -7,4 +7,8 @@ Then open the launcher (DarklandsRP Launcher), its Advanced tab, the "Language p
 arrows. A translation changes the game's words only: the game plays the same. More: docs/PACKS.md, "Language packs".
 
 To make a translation: the Darklands Workshop, a download of its own, unzipped into the game's folder (it makes the
-Workshop folder beside this packs folder). It makes its new packs here.
+Workshop folder beside this packs folder). It makes your packs here: a new pack, or one started from one of its samples
+(Workshop/examples/sample-languages, which it never changes).
+
+Unpacking a new version of the game over this one leaves this folder alone. Deleting the game's folder deletes your packs:
+keep a zip of each pack you make (the Workshop's Export, or zip its folder).
