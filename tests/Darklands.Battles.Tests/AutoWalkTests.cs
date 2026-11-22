@@ -1,5 +1,6 @@
 using Darklands.Content;
 using Darklands.Core;
+using Darklands.Core.Events;
 using Darklands.Platform;
 using Darklands.Presentation;
 using Darklands.Simulation;
@@ -79,7 +80,9 @@ public sealed class AutoWalkTests
 
     private sealed record Walked(List<string> Trace, int X, int Y, int Hour, int Day, string Random);
 
-    private static Walked? Walk(bool comfort, int idle, params object[][] frames)
+    private static Walked? Walk(bool comfort, int idle, params object[][] frames) => Walk(1, null, comfort, idle, frames);
+
+    private static Walked? Walk(uint seed, Action<GameState>? setUp, bool comfort, int idle, params object[][] frames)
     {
         if (GameFolder.Files is not { } files)
         {
@@ -90,8 +93,9 @@ public sealed class AutoWalkTests
         {
             ComfortInterface = comfort,
         };
-        var state = NewGame.Quickstart(world, 1, () => 1);
+        var state = NewGame.Quickstart(world, seed, () => 1);
         state.Data = world;
+        setUp?.Invoke(state);
         var map = new WorldMap(Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP")), state.Locations);
         var steps = new List<string>();
         var trace = OverlandScreen.Trace;
@@ -190,5 +194,44 @@ public sealed class AutoWalkTests
         Assert.Equal(first.Trace, again.Trace);
         Assert.Equal((first.X, first.Y, first.Hour, first.Day, first.Random), (again.X, again.Y, again.Hour, again.Day, again.Random));
         Assert.Contains("walk on 4B00", first.Trace);
+    }
+
+    // a summer morning on land six columns east of the starting city, and the places around dangerous (their encounter weight raised
+    //   by the map's own weight event, kind 0x2A), noticed from further off and with no encounter card of their own: the step's roll
+    //   draws the road encounter often
+    private static void Dangerous(GameState state)
+    {
+        var here = state.Locations[state.CurrentLocation];
+        state.Date = state.Date with { Hour = 6, Month = 5 };
+        state.MapPosition = new Core.World.MapPosition(here.X + 6, here.Y);
+        foreach (var place in state.Locations.Where(p => Math.Abs(p.X - here.X) < 12 && Math.Abs(p.Y - here.Y) < 40))
+        {
+            state.Events.Create(-1, place.Index, 0, 0x2A, 0, 700, 0, EventLog.UntilEndOf1499, 0, 0);
+            place.EncounterCard = CardDispatcher.EndOfCards;
+            place.NoticeRange = 16;
+        }
+    }
+
+    [Fact]
+    public void AnEncounterThatDrawsNoCardLetsTheWalkGoOnAndARealOneStopsIt()
+    {
+        // the roll of an encounter can draw no card (TerrainEncounter's Winter() outside winter): nothing is shown and the map goes on, so
+        //   the walk goes on too; a card stops it as before. Generator 15 walking east from the dangerous ground: the walk meets a
+        //   no-card encounter, walks on, and the next step meets the road encounter 0x103.
+        if (Walk(15, Dangerous, comfort: true, idle: 200, DoubleTapRight) is not { } walked)
+        {
+            return;
+        }
+        var trace = string.Join(" | ", walked.Trace);
+        var start = walked.Trace.IndexOf("walk on 4D00");
+        Assert.True(start >= 0, trace);
+        var noCard = walked.Trace.FindIndex(start, s => s.EndsWith("-> Encounter 0", StringComparison.Ordinal));
+        var card = walked.Trace.FindIndex(start, s => s.Contains("-> Encounter ", StringComparison.Ordinal) && !s.EndsWith("-> Encounter 0", StringComparison.Ordinal));
+        Assert.True(noCard > start && card > noCard, trace);
+        // the walk took the next step east by itself (the one that met the card)
+        Assert.StartsWith("step d=1,0", walked.Trace[noCard + 1], StringComparison.Ordinal);
+        Assert.DoesNotContain(walked.Trace.Take(card), s => s.StartsWith("walk on stops", StringComparison.Ordinal));
+        Assert.EndsWith("-> Encounter 259", walked.Trace[card], StringComparison.Ordinal);
+        Assert.Equal("walk on stops: Encounter", walked.Trace[card + 1]);
     }
 }
