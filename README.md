@@ -35,10 +35,41 @@ your own copy of the game.
 **You need your own copy of Darklands** (version 483.07, for example the GOG release). Nothing from
 the game is included here: the program reads your installation.
 
+## Darklands in your language: language packs and the Darklands Workshop
+
+Since 1.1, language packs can change the words the game writes: the card texts, the screens, the names of items,
+places and saints, and the battle messages. They work in Latin, Greek and Cyrillic letters, and in Chinese, Japanese
+and Korean, with fonts in the game's own pixel style or in sharp TrueType, wider labels where a language needs room,
+and their own decorated capitals. Put a pack in `packs/languages` and choose it in the launcher (Advanced tab, the
+**Language** row). No full translation ships yet: they come from translators.
+
+<p>
+<img src="docs/screenshots/workshop-samples.jpg" width="49%" alt="The Darklands Workshop's start page, with its sample packs in seven languages" />
+<img src="docs/screenshots/game/church-korean-sample.jpg" width="49%" alt="The city church card in Korean, from a sample pack" />
+</p>
+
+**The Darklands Workshop** is the translators' editor, a separate download:
+**[Workshop 1.1.0-beta.1](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.1)**
+(Windows; Linux experimental). Unzip it into the game's folder; it makes a `Workshop` folder there. It:
+
+- shows every text of the game, grouped by screen and by card, and draws your translation as the game will, in your
+  pack's fonts, with a bar that says whether it fits its box;
+- checks the pack with the game's own check, and opens the game at the text you are translating (**Play in game**);
+- builds a pixel font for your alphabet in the game's style, from your copy of the game;
+- keeps a glossary and pack variables (pronouns), exports and imports texts (JSON, CSV, XLIFF 2.0), and works with an
+  AI translator (**Copy for AI**, **Paste result**);
+- comes with short samples of the game's opening in French, Spanish, Polish, Russian, Greek, Japanese and Korean, to
+  play or to start your own pack from, the translator's guide, and the example sound pack and mod.
+
+Watch the **[video tutorial](https://youtu.be/tPzPl-0qWg4)** (4½ minutes). The formats are in
+[`docs/LOCALISATION.md`](docs/LOCALISATION.md). If you would like to translate Darklands, say hello on the
+[Discord](https://discord.gg/HjzWvmHhqZ).
+
 ## Getting started
 
-1. Get a release (`DarklandsRP.exe` and `DarklandsRP Launcher.exe` with `SDL3.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md`
-   and empty `MT32_ROMS` and `SOUNDFONT` folders) and unpack it into a folder of its own.
+1. Get a release (`DarklandsRP.exe` and `DarklandsRP Launcher.exe` with `SDL3.dll`, `libmt32emu.dll`, `RELEASE_NOTES.md`,
+   the HD fonts in `packs/fonts`, and empty `packs/languages`, `packs/audio`, `mods`, `MT32_ROMS` and `SOUNDFONT`
+   folders) and unpack it into a folder of its own.
 2. Start **`DarklandsRP Launcher.exe`** (on Linux `DarklandsRP-Launcher`), a settings screen before the game. It
    finds your Darklands by itself (GOG, Steam, or a folder next to it); check the game folder, the window and picture
    filter, the sound card and the Roland ROM folder, try the sound, then press **Play**. The choices go into
@@ -68,6 +99,11 @@ The keys and the mouse are the original's:
 | Alt-P, Alt-O | pause; the marching order |
 | Alt-D, Alt-M, Alt-F | difficulty; music; sound effects |
 | Alt-Q | quit |
+
+With the **Comfort** interface (the default; the launcher's Interface row), tap a direction twice on the world map, or
+hold Shift with it, and the party walks on until something happens; the saved-games list shows one line a game, the
+newest first, with its date. **Classic** keeps the 1992 map and saved-games screens. Neither changes what the game
+decides.
 
 And this program's own:
 
@@ -124,6 +160,8 @@ want:
 | `display.hdPack`, `sound.audioPack`, `sound.soundFont` | a picture pack, a sound pack, the SoundFont for its `.mid` files (`docs/PACKS.md`) |
 | `display.cleanDrawing` | false: drawn as the 1992 game, oddities included; true: the cleaner drawing of 0.9.5 |
 | `mods` | mods to play with (`docs/MODS.md`); none by default |
+| `text.languagePack`, `text.fontPack` | a language pack; the fonts (`hd-fonts`: English in sharp, high-resolution fonts) |
+| `interface.mode` | `comfort` (default) or `classic` |
 | `startup.banner`, `startup.intro` | skip the banner or the opening |
 
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
@@ -131,7 +169,8 @@ Everything else is in `docs/SETTINGS.md`, which also lists the command-line form
 
 ## Status: version 1.1.0
 
-The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
+1.1 makes the game translatable (language packs, the Workshop beta), adds HD fonts for English and the Interface
+switch; the game's rules are those of 1.0. The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
 churches, the world map and its encounters, battles, camping, saints and alchemy, saving and loading.
 If anything differs from the original, please report it (above, "Reporting a problem").
 
