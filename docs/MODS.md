@@ -20,9 +20,13 @@ Name the mod when the game starts:
 * headless host (for testing): the step `mod:<folder or name>`.
 
 A name is looked up as a folder first, then as a folder of that name in a `mods` folder: next to the program, in the
-game folder, or next to the game folder. The example of this guide comes with the Workshop, in
-`Workshop/examples/mods/wayside-shrine` (since 1.1; a 1.0 install keeps its `mods/wayside-shrine`): copy that folder into
-the `mods` folder next to the program to play it by its name. It is not played unless named.
+game folder, or next to the game folder. The release's `mods` folder is empty but for a README; your mods go there. The
+example of this guide comes with the Workshop, on its read-only shelf `Workshop/examples/example-mod-wayside-shrine`
+(since 1.1; a 1.0 install keeps its `mods/wayside-shrine`): copy that folder into `mods` **as `wayside-shrine`** (a mod's
+folder name is its id: `--mod wayside-shrine`, and its saved games name it so). It is not played unless named.
+
+Keep a zip of every mod you make: deleting the game's folder deletes its `mods` folder. Unpacking a new version of the game
+over the old one leaves `mods` alone.
 
 At the start the program writes a line for every card a mod adds or replaces, and for every card it refuses, with the
 reason, to the console (the error output):
@@ -158,7 +162,7 @@ So a game with mods never reaches a card number that nothing defines.
 
 ## Example: the wayside shrine
 
-`docs/mods/wayside-shrine/mod.json` (in a release: the Workshop's `Workshop/examples/mods/wayside-shrine`) adds one small encounter, written for this
+`docs/mods/wayside-shrine/mod.json` (in a release: the Workshop's `Workshop/examples/example-mod-wayside-shrine`) adds one small encounter, written for this
 guide. Sometimes, before a city's gate by day, an old pilgrim keeps a shrine by the road.
 
 **1. A new card.** Card 366 shows the gate's picture (4), a text and three options: give a groschen (only with a
@@ -203,7 +207,7 @@ own gate card at once; otherwise, one time in four, it goes to 366 first.
 }
 ```
 
-**3. Try it.** Copy the folder into `mods` next to the program, start with `--mod wayside-shrine` and come to a city by day (a Quickstart party starting in a city
+**3. Try it.** Copy the folder into `mods` next to the program as `mods/wayside-shrine`, start with `--mod wayside-shrine` and come to a city by day (a Quickstart party starting in a city
 leaves it and comes back). To see the card at once with the headless host:
 
 ```text

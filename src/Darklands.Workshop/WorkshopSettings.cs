@@ -17,7 +17,10 @@ internal sealed class WorkshopSettings
     /// <summary>The author a new pack takes (the last one given).</summary>
     public string? Author { get; set; }
 
-    private static string Path => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DarklandsWorkshop", "settings.json");
+    /// <summary>The Workshop's own folder (its settings, and the test saves of the samples played from the start page).</summary>
+    public static string Folder { get; internal set; } = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DarklandsWorkshop");
+
+    private static string Path => System.IO.Path.Combine(Folder, "settings.json");
 
     public static WorkshopSettings Load()
     {

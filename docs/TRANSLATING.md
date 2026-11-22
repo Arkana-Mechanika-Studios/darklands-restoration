@@ -21,23 +21,34 @@ page and unzip it over the old one (your saved games and settings stay).
 
 ![The start page](translating/1-start.png)
 
-## Opening a sample
+## The samples
 
 The start page lists **Samples**: short excerpts of the opening (the city square and the church by day, and a few
 screen headings) in French, Spanish, Polish, Russian and Greek, the church in Japanese and Korean, and a French sample of
-screen layouts. They show what a finished translation looks like.
+screen layouts. They show what a finished translation looks like. Each has two buttons:
 
-* **Open** opens one in the editor.
-* **Play** starts the game with it, at the church.
+* **Play** starts the game with it, at the church. It plays straight from the Workshop's shelf of examples
+  (`Workshop\examples\sample-languages`), with the game's HD fonts when your game's own fonts lack its letters; its test
+  saves are kept apart from your games.
+* **Start from this sample** makes your own pack from it: it asks a name, copies the sample into the game's
+  `packs\languages\<name>` and opens the copy. When the language has letters the game's fonts lack (é, ł, Greek or
+  Cyrillic letters…), the Workshop offers to build a matching font from your game's own fonts: say yes, or those
+  letters show as `?`.
 
-When the sample's language has letters the game's fonts lack (é, ł, Greek or Cyrillic letters…), the Workshop offers
-to build a matching font from your game's own fonts. Say yes: without it those letters show as `?`.
+The samples themselves never change: the shelf is read-only, and everything you make lives in the game's folders.
 
 ## Making your own pack
 
 Click **New pack** (Ctrl+N). Choose your language from the list (type its name or its code), give the pack a name and
-your name. The Workshop makes the pack in the game's `packs/languages` folder, where the game's launcher finds it. Leave
+your name. The Workshop makes the pack in the game's `packs\languages` folder, where the game's launcher finds it. Leave
 **Build a matching font** ticked when it is offered.
+
+A pack you open from somewhere else (**Open folder…**, for example `D:\Packs\fr`) can be edited and played as well. A
+line over the editor says it is not in the game's packs, so the launcher won't list it; **Add to the game** copies it into
+`packs\languages` (under a name you give: if a pack of that name is already there, nothing is overwritten and you are
+asked for another) and goes on with the copy. The folder you opened stays as it was.
+
+Keep a zip of every pack you make (the Workshop's **… › Export texts…**, or zip its folder): deleting the game's folder deletes the packs in it. Unpacking a new version of the game over the old one leaves `packs\languages` (and your other packs and mods) alone.
 
 ![The New pack dialog](translating/2-new-pack.png)
 
@@ -116,13 +127,15 @@ nearest point. The preview always shows every text.
 
 ## Sharing your pack
 
-Zip the pack's folder **without** its `.workshop` folder (your test saves). Players unzip it into the game's
+Zip the pack's folder (in the game's `packs\languages`) **without** its `.workshop` folder (your test saves). Players
+unzip it into the game's
 `packs/languages` folder and choose it in the launcher's **Language pack** row (Advanced tab). A pack without a font of
 its own can be played with the game's **HD fonts** (the launcher's **Font pack** row), or its pixel font built from the
 player's own game (the Workshop's **… › Font pack…**, or `DarklandsRP --make-font-pack <pack folder>`, with
 `--scripts latin,cyrillic` or `--scripts latin,greek` for those alphabets).
 
-A sample can be played the same way: copy its folder from `Workshop/examples/languages` into `packs/languages`.
+A sample can be played from the launcher too: copy its folder from `Workshop\examples\sample-languages` into
+`packs\languages` (or use **Start from this sample**).
 
 Translations of the game's text are yours to host: the project does not distribute them (the samples are a few short
 excerpts, to show the tool). Tell others on the Discord or in a GitHub issue for your language.

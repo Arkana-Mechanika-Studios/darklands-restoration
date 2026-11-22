@@ -50,8 +50,11 @@ internal sealed class StartPage
     /// <summary>The sample packs that come with the Workshop (WorkshopApp.SamplesFolder), listed under the packs to open or play.</summary>
     public IReadOnlyList<PackSummary> Samples { get; init; } = [];
 
-    /// <summary>Plays a sample (its folder): opened, then the game started with it at the church.</summary>
+    /// <summary>Plays a sample (its folder) straight from the shelf: the game at the church, its test saves apart.</summary>
     public Action<string>? PlaySample { get; init; }
+
+    /// <summary>Starts a pack from a sample (its folder): a copy in the game's packs/languages, under a name asked, opened.</summary>
+    public Action<string>? StartFromSample { get; init; }
 
     public StartPage(IReadOnlyList<PackSummary> packs, int total, string? game, string? last)
     {
@@ -428,7 +431,8 @@ internal sealed class StartPage
         return link;
     }
 
-    // the samples (short excerpts of the opening, in Workshop/examples/languages): each to open, or to play at the church
+    // the samples (short excerpts of the opening, on the read-only shelf Workshop/examples/sample-languages): each to play at the
+    //   church, or to start a pack from (a copy in the game's packs/languages)
     private Control SamplesSection()
     {
         var section = new StackPanel { Margin = new Thickness(0, 28, 0, 0) };
@@ -436,7 +440,8 @@ internal sealed class StartPage
         section.Children.Add(new TextBlock
         {
             Text = "Short excerpts of the opening (the city square and the church by day, a few screen headings), to see what a translation "
-                + "looks like. Open one in the editor, or play it in the game at the church.",
+                + "looks like. Play one in the game at the church, or start your own pack from it: a copy in the game's packs, yours to change "
+                + "(the samples themselves never change).",
             FontSize = 12,
             Foreground = WorkshopTheme.Brush(WorkshopTheme.Muted),
             TextWrapping = TextWrapping.Wrap,
@@ -462,7 +467,7 @@ internal sealed class StartPage
 
     private Control SampleRow(PackSummary sample)
     {
-        var row = new Grid { Height = 48, ColumnDefinitions = new ColumnDefinitions("1.5*,2*,Auto,Auto"), ColumnSpacing = 12, Margin = new Thickness(16, 0) };
+        var row = new Grid { Height = 48, ColumnDefinitions = new ColumnDefinitions("1.4*,1.7*,Auto,Auto"), ColumnSpacing = 12, Margin = new Thickness(16, 0) };
         var language = Languages.Of(sample.Language);
         row.Children.Add(new StackPanel
         {
@@ -494,20 +499,20 @@ internal sealed class StartPage
         ToolTip.SetTip(name, sample.Folder);
         Grid.SetColumn(name, 1);
         row.Children.Add(name);
-        var open = WorkshopTheme.Outline(new TextBlock { Text = "Open" });
-        open.IsEnabled = _game is not null;
-        open.VerticalAlignment = VerticalAlignment.Center;
-        open.Click += (_, _) => Open(sample.Folder);
-        ToolTip.SetTip(open, "Open this sample in the editor");
-        Grid.SetColumn(open, 2);
-        row.Children.Add(open);
-        var play = WorkshopTheme.Primary(WorkshopTheme.IconText("play", "Play", 13));
+        var play = WorkshopTheme.Outline(WorkshopTheme.IconText("play", "Play", 13));
         play.IsEnabled = _game is not null && PlaySample is not null;
         play.VerticalAlignment = VerticalAlignment.Center;
         play.Click += (_, _) => PlaySample?.Invoke(sample.Folder);
-        ToolTip.SetTip(play, "Start the game with this sample, at the church (a Quick Start party; its saves stay in the sample's folder)");
-        Grid.SetColumn(play, 3);
+        ToolTip.SetTip(play, "Start the game with this sample, at the church (a Quick Start party; its test saves are kept apart from your games)");
+        Grid.SetColumn(play, 2);
         row.Children.Add(play);
+        var start = WorkshopTheme.Primary(WorkshopTheme.IconText("plus", "Start from this sample", 13));
+        start.IsEnabled = _game is not null && StartFromSample is not null;
+        start.VerticalAlignment = VerticalAlignment.Center;
+        start.Click += (_, _) => StartFromSample?.Invoke(sample.Folder);
+        ToolTip.SetTip(start, "Your own pack, starting as a copy of this sample in the game's packs\\languages folder (you name it); the sample stays as it is");
+        Grid.SetColumn(start, 3);
+        row.Children.Add(start);
         return row;
     }
 

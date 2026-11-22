@@ -245,19 +245,38 @@ in `Directory.Build.props`): language packs and starting at a text came with 1.1
 and quits. With an older one (the version its program says), the start page says so in a box over the pack list, with
 the releases page a click away, and **Play in game** says so in a dialog instead of starting it; the editor works as usual.
 
-**The examples.** The Workshop's download also holds the makers' examples, in `Workshop/examples`: a sound pack of
-generated test tones (`audio-pack-example`, [PACKS.md](PACKS.md)) and the example mod of [MODS.md](MODS.md)
-(`mods/wayside-shrine`). Since 1.1 they are no longer in the game's `packs` and `mods` folders.
+**The examples.** The Workshop's download also holds the makers' examples, on a read-only shelf in `Workshop/examples`
+(named so that none looks like a game folder): a sound pack of generated test tones (`example-audio-pack`,
+[PACKS.md](PACKS.md)), the example mod of [MODS.md](MODS.md) (`example-mod-wayside-shrine`) and the translation samples
+(`sample-languages`). Since 1.1 they are no longer in the game's `packs` and `mods` folders, which the game's download
+ships empty but for a README each (`packs/languages`, `packs/audio`, `mods`). The rule: everything a player makes or uses
+lives in the game's folders; the shelf is copied from, never changed.
 
-**The samples.** The Workshop's download holds sample translation packs, in `Workshop/examples/languages` (their source:
+**The samples.** The Workshop's download holds sample translation packs, in `Workshop/examples/sample-languages` (their source:
 `docs/language-samples`): the city square and the church by day, the menu bar and the party information screen's headings
 in French, Spanish, Polish, Russian and Greek; the church's first text in Japanese and Korean; and a French sample of
 screen layouts (`interface/layout.json`). Each is named "… (sample)". The start page lists them under your packs, in that
-order, each with **Open** (the editor) and **Play** (the game, at the church: `msg:$CITYC00#0`); a sample once opened is
-never listed among your packs. They hold no font built from the game's: opening or playing one whose letters the game's
-fonts lack offers to build the font (as **New pack** does), into the sample's folder. The Japanese and Korean samples bring
-Noto Sans CJK (SIL OFL, THIRD_PARTY_NOTICES.md), one copy in each, so a sample plays on its own. To play one from the
-game's launcher, copy its folder into the game's `packs/languages` and choose it in the **Language pack** row.
+order, each with two buttons:
+* **Play**: the game, at the church (`card:$CITYC00#0`), straight from the shelf: nothing is written there, the test
+  saves go to the Workshop's own folder (`%APPDATA%\DarklandsWorkshop\sample-saves`), and the game's HD fonts are used
+  (`--font-pack`) when the game's own fonts lack the sample's letters;
+* **Start from this sample**: asks a name, copies the sample (its font files included) into the game's
+  `packs/languages/<name>`, its name losing the "(sample)" mark, and opens the copy; its font from the player's game is
+  offered when its letters need one (as **New pack** does). A sample is never opened for editing: **Open folder…** on
+  the shelf starts from it the same way.
+
+They hold no font built from the game's. The Japanese and Korean samples bring Noto Sans CJK (SIL OFL,
+THIRD_PARTY_NOTICES.md), one copy in each, so a sample plays on its own. To play one from the game's launcher, copy its
+folder into the game's `packs/languages` and choose it in the **Language pack** row.
+
+**A pack from elsewhere.** A pack opened from outside the game's packs (**Open folder…** on `D:\Packs\fr`, say) is
+edited and played as any other, under a line: "Not in the game's packs: the launcher won't list it", with **Add to the
+game**. That copies it into `packs/languages` under a name the player gives (the folder's own name suggested; when a
+pack of that name is there, nothing is overwritten and the name is asked again), leaves its test saves behind, and goes
+on with the copy; the folder opened stays as it was. **New pack** makes its packs in `packs/languages`.
+
+**Keep a copy.** Deleting the game's folder deletes the packs in it: keep a zip of each (**… › Export texts…**, or zip the
+folder). Unpacking a new version of the game over the old one leaves `packs/languages` alone.
 
 **The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
 now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the

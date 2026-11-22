@@ -249,7 +249,7 @@ key in the original); what is different and which side shows what. If you cannot
 * [ ] **J2 Picture pack.** Do: set a pack with a few PNGs, start. Compare: the replaced pictures show only where the
   original shows them, text and menus stay on top, fades follow the palette; the game plays the same. Proven by: `HdPackTests`, `HdRendererTests`
   (headless shots); the look: UNPROVEN.
-* [ ] **J3 Sound pack.** Do: copy the Workshop's `Workshop/examples/audio-pack-example` into `packs/audio` and use it. Compare: tones replace the pieces; Alt-P pauses them; a battle
+* [ ] **J3 Sound pack.** Do: copy the Workshop's `Workshop/examples/example-audio-pack` into `packs/audio` and use it. Compare: tones replace the pieces; Alt-P pauses them; a battle
   ends them; timing does not change. Proven by: `PackAudioTests` (the game's calls reach the drivers unchanged; pause and mute), `LauncherPackTests` (the example pack reads clean); how it sounds: UNPROVEN.
 * [ ] **J4 Broken pack.** Do: a missing folder, a bad PNG, an unknown name. Compare: a console line and the game's own
   picture or sound. Proven by: `PackAudioTests`, `HdPackTests`, `LauncherPackTests` (the problem is reported and the rest still loads).
@@ -265,7 +265,7 @@ key in the original); what is different and which side shows what. If you cannot
 ## K. Mods ([MODS.md](MODS.md))
 
 * [ ] **K1 No mod.** Do: play with no `--mod`. Compare: the 366 original cards, saves with no `.MODS.JSON`. Proven by: all sessions.
-* [ ] **K2 The example mod.** Do: copy the Workshop's `Workshop/examples/mods/wayside-shrine` into `mods`, `--mod wayside-shrine`, reach the added card by day in a city. Compare: text, choices,
+* [ ] **K2 The example mod.** Do: copy the Workshop's `Workshop/examples/example-mod-wayside-shrine` into `mods` as `wayside-shrine`, `--mod wayside-shrine`, reach the added card by day in a city. Compare: text, choices,
   effects; the console lists what it adds. Proven by: `ModCardTests` and `RcPlayTests` (the shrine card runs in the game loop; the console lists what the mod adds).
 * [ ] **K3 Modded save.** Do: save on the mod's card with Alt-S. Compare: `DKSAVE<n>.SAV` and `DKSAVE<n>.MODS.JSON` appear;
   the original loads the `.SAV` and goes on from the card the save names. Proven by: `ModCardTests`, `RcPlayTests` (Alt-S on the mod's card writes both files; the `.SAV` names only game cards).

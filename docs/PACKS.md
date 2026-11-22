@@ -33,15 +33,20 @@ DarklandsRP/
   docs/            SETTINGS, PACKS (this guide), MODS, REPORTING
   packs/
     fonts/         hd-fonts (comes with the release)
-    languages/     translations (empty but for a README)
-    audio/         sound packs (yours)
-  mods/            mods (yours; a mod is played only when named)
+    languages/     translations (yours; empty but for a README)
+    audio/         sound packs (yours; empty but for a README)
+  mods/            mods (yours; empty but for a README; a mod is played only when named)
   SOUNDFONT/, MT32_ROMS/
   Workshop/        the Darklands Workshop, if you downloaded it: DarklandsWorkshop.exe, its guides in Workshop/docs,
-                   the makers' examples in Workshop/examples (audio-pack-example, mods/wayside-shrine)
+                   and a read-only shelf of examples in Workshop/examples: example-audio-pack,
+                   example-mod-wayside-shrine, sample-languages (the translation samples)
 ```
 
-Since 1.1 the makers' examples (the example sound pack and the example mod) come with the Workshop, in `Workshop/examples`, no longer in the game's `packs` and `mods` folders; a 1.0 install keeps the copies it has.
+Everything you make or use lives in the game's folders (`packs\...`, `mods`); `Workshop\examples` is a shelf to copy
+from, never changed. Since 1.1 the example sound pack and the example mod come with the Workshop, no longer in the game's
+`packs` and `mods` folders; a 1.0 install keeps the copies it has.
+
+Keep a zip of every pack you make (the Workshop's **… › Export texts…**, or zip its folder): deleting the game's folder deletes the packs in it. Unpacking a new version of the game over the old one leaves `packs\languages` (and your other packs and mods) alone.
 
 The Workshop (the translators' and modders' editor) is a download of its own whose archive holds the `Workshop` folder:
 unzip it into the `DarklandsRP` folder and it lands there, finding the game one folder up.
@@ -227,12 +232,12 @@ shows (the previous section); files named by `pack.json` are not reported as unk
 
 ### The example pack
 
-[`docs/audio-pack-example`](audio-pack-example) (in a release: the Workshop's `Workshop/examples/audio-pack-example`)
+[`docs/audio-pack-example`](audio-pack-example) (in a release: the Workshop's `Workshop/examples/example-audio-pack`)
 replaces the map's travel pieces (also heard while creating the party)
 with a soft generated drone and the battle's missed swing with a short generated chirp. It holds no music of the
 game: both files are test tones made with ffmpeg from a formula. Choose it in the launcher's "Audio pack" row (or
-start with `--audio-pack Workshop/examples/audio-pack-example`, or set `sound.audioPack`; or copy it into `packs/audio`
-first) and create a party: the creation
+copy it into `packs/audio` first, or start with `--audio-pack Workshop/examples/example-audio-pack`, or set
+`sound.audioPack`) and create a party: the creation
 screen's music is the drone; in a battle, a missed blow chirps.
 
 ## Language packs

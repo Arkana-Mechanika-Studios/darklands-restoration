@@ -145,7 +145,7 @@ and a launcher row for mods are planned after 1.0. If you build the program your
 ## Where to go next
 
 * Every key, rule and refusal: [MODS.md](../MODS.md).
-* A complete small mod with comments: [`docs/mods/wayside-shrine`](../mods/wayside-shrine/mod.json) (in a release: the Workshop's `Workshop/examples/mods/wayside-shrine`).
+* A complete small mod with comments: [`docs/mods/wayside-shrine`](../mods/wayside-shrine/mod.json) (in a release: the Workshop's `Workshop/examples/example-mod-wayside-shrine`; copy it into `mods` as `wayside-shrine`).
 * Packs for the same game, which change only how it looks and sounds: [GRAPHICS.md](GRAPHICS.md), [AUDIO.md](AUDIO.md).
 
 ## Rights

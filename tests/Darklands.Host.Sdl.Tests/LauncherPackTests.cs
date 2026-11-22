@@ -17,9 +17,10 @@ public sealed class LauncherPackTests : IDisposable
         var found = LauncherHost.PackFolders(null);
         Assert.Contains(hd, found);
         Assert.True(LauncherHost.DescribePack(hd).Fonts > 0);
-        // the languages folder: empty but for its README
+        // the player's own folders: languages, audio and mods, empty but for their READMEs
         Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "packs", "languages", "README.txt")));
-        // the players' guides beside the program (the makers' guides are the Workshop's: Workshop/docs)
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "packs", "audio", "README.txt")));
+        Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "mods", "README.txt")));        // the players' guides beside the program (the makers' guides are the Workshop's: Workshop/docs)
         foreach (var guide in new[] { "PACKS.md", "MODS.md", "SETTINGS.md", "REPORTING.md" })
         {
             Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", guide)), guide);

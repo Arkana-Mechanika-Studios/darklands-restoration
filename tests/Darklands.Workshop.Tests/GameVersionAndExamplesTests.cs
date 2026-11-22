@@ -62,15 +62,21 @@ public sealed class GameVersionAndExamplesTests
     {
         // beside the Workshop (its build, so its release: Workshop/examples)
         var examples = Path.Combine(AppContext.BaseDirectory, "examples");
-        Assert.True(File.Exists(Path.Combine(examples, "audio-pack-example", "audio.json")));
-        Assert.True(File.Exists(Path.Combine(examples, "audio-pack-example", "music", "travel-2.ogg")));
-        Assert.True(File.Exists(Path.Combine(examples, "mods", "wayside-shrine", "mod.json")));
+        // a read-only shelf, its folders named so that none looks like a game folder
+        Assert.True(File.Exists(Path.Combine(examples, "example-audio-pack", "audio.json")));
+        Assert.True(File.Exists(Path.Combine(examples, "example-audio-pack", "music", "travel-2.ogg")));
+        Assert.True(File.Exists(Path.Combine(examples, "example-mod-wayside-shrine", "mod.json")));
+        Assert.True(Directory.Exists(Path.Combine(examples, "sample-languages", "sample-fr")));
         // the game's project ships the HD fonts and the languages README in packs, and no example (a player's 1.0 copies stay: the
         //   release deletes nothing)
         var game = File.ReadAllText(Path.Combine(Root(), "src", "Darklands.Host.Sdl", "Darklands.Host.Sdl.csproj"));
         Assert.Contains(@"Link=""packs\fonts\hd-fonts\", game, StringComparison.Ordinal);
         Assert.DoesNotContain("audio-pack-example\\**", game, StringComparison.Ordinal);
         Assert.DoesNotContain(@"docs\mods\**", game, StringComparison.Ordinal);
-        Assert.DoesNotContain(@"Link=""mods\", game, StringComparison.Ordinal);
+        // the player's own folders, empty but for their READMEs: packs\audio and mods (packs\languages too)
+        Assert.Contains(@"Link=""packs\audio\README.txt""", game, StringComparison.Ordinal);
+        Assert.Contains(@"Link=""mods\README.txt""", game, StringComparison.Ordinal);
+        Assert.Contains(@"Link=""packs\languages\README.txt""", game, StringComparison.Ordinal);
+        Assert.Single(game.Split('\n'), l => l.Contains(@"Link=""mods\", StringComparison.Ordinal));
     }
 }

@@ -1,6 +1,6 @@
 # The Workshop's sample translation packs
 
-The source of the samples the Workshop's download holds in `Workshop/examples/languages` (docs/LOCALISATION.md, "The
+The source of the samples the Workshop's download holds in `Workshop/examples/sample-languages` (docs/LOCALISATION.md, "The
 samples"; the build copies them, `src/Darklands.Workshop/Darklands.Workshop.csproj`).
 
 They are a deliberate, limited exception to the project shipping no translation of the game's text, decided by the project
@@ -14,7 +14,8 @@ on 2026-11-22: short excerpts of the opening only, to show the tool.
 Rules for anything added here:
 
 * only the pack's own words, by key: never the English text, and nothing from the German edition;
-* no font built from the game's fonts (the Workshop builds it for the player when the sample is opened); only openly licensed
-  TrueType fonts, with their licence (`fonts/`: Noto Sans CJK, one copy, copied into each CJK sample by the build);
+* no font built from the game's fonts (the Workshop builds it into a pack started from the sample; Play uses the game's HD
+  fonts); only openly licensed TrueType fonts, with their licence (`fonts/`: Noto Sans CJK, one copy, copied into each CJK
+  sample by the build);
 * each pack named as a sample in its `pack.json` ("Français (sample)");
 * the game's check clean once the font is built (`SamplePacksTests` holds the rest).

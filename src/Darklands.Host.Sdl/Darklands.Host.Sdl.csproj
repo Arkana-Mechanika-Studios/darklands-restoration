@@ -102,6 +102,10 @@
     <None Include="$(MSBuildThisFileDirectory)..\Darklands.Launcher\Resources\OFL.txt" Link="packs\fonts\hd-fonts\fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- the language packs' folder, empty but for its README (docs/packs-languages-README.txt): where a downloaded translation goes -->
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\packs-languages-README.txt" Link="packs\languages\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- the sound packs' folder and the mods folder, empty but for their READMEs (docs/packs-audio-README.txt, docs/mods-README.txt):
+         where the player's own packs and mods go (the makers' examples are the Workshop's, Workshop/examples) -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\packs-audio-README.txt" Link="packs\audio\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\mods-README.txt" Link="mods\README.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the mods guide (docs/MODS.md), beside the program in the build and in every release; a mod is played only when named (on the

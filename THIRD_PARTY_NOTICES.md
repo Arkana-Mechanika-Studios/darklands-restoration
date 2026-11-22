@@ -222,7 +222,7 @@ publish output.
 
 ## Noto Sans CJK (the Workshop's Japanese and Korean samples)
 
-The Workshop's Japanese and Korean sample translation packs (`Workshop/examples/languages/sample-ja` and `sample-ko`) draw their
+The Workshop's Japanese and Korean sample translation packs (`Workshop/examples/sample-languages/sample-ja` and `sample-ko`) draw their
 text with Noto Sans CJK, Regular (https://github.com/notofonts/noto-cjk, `Sans/OTC/NotoSansCJK-Regular.ttc`), unmodified: one
 copy in the repository (`docs/language-samples/fonts/NotoSansCJK-Regular.ttc`), copied into each of the two packs' `fonts`
 folders in the build and publish output so each plays on its own. Copyright 2014-2021 Adobe (http://www.adobe.com/), with
