@@ -79,4 +79,48 @@ public sealed class LauncherFontsNoteTests : IDisposable
             Darklands.Rendering.PngCodec.Write(new Darklands.Rendering.RgbaImage(1280, 720, surface.Frames[^1]), Path.Combine(shots, "fonts-note-1280x720.png"));
         }
     }
+
+    [Fact]
+    public void ALanguagePackWithItsOwnFontsSaysSoAndFontsStaysAsChosen()
+    {
+        var (ru, fr, hd) = (Folder("packs", "languages", "ru"), Folder("packs", "languages", "fr"), Folder("packs", "fonts", "hd-fonts"));
+        // a pack bringing its own fonts (fonts/): they draw its text, so no HD fonts are turned on, and the note says why Fonts is None
+        var el = Folder("packs", "languages", "sample-el");
+        Folder("packs", "languages", "sample-el", "fonts");
+        var model = new LauncherModel(Context(ru, fr, hd) with { FindPacks = _ => [hd, fr, ru, el] }, null);
+        model.SetPack(PackKind.Language, el);
+        Assert.Null(model.FontPack);
+        Assert.Equal(("sample-el brings its own fonts; they draw its text.", false), model.FontsNote);
+        // Fonts chosen by the player: the row's value is theirs, no note
+        model.SetPack(PackKind.Fonts, hd);
+        Assert.Null(model.FontsNote);
+        // a pack without fonts of its own that the original fonts can write: no note
+        model.SetPack(PackKind.Fonts, null);
+        model.SetPack(PackKind.Language, fr);
+        Assert.Null(model.FontsNote);
+    }
+
+    [Fact]
+    public async Task ThePacksAreReadOnceAsTheLauncherOpensNotOnTheFirstClick()
+    {
+        var (ru, fr, hd) = (Folder("packs", "languages", "ru"), Folder("packs", "languages", "fr"), Folder("packs", "fonts", "hd-fonts"));
+        var described = new System.Collections.Concurrent.ConcurrentBag<string>();
+        var asked = new System.Collections.Concurrent.ConcurrentBag<string>();
+        var context = Context(ru, fr, hd);
+        var model = new LauncherModel(context with
+        {
+            DescribePack = folder => { described.Add(folder); return context.DescribePack!(folder); },
+            NeedsFonts = (folder, game) => { asked.Add(folder); return context.NeedsFonts!(folder, game); },
+        }, null);
+        await model.WarmPacks();
+        Assert.Equal(new[] { fr, hd, ru }.Order(StringComparer.Ordinal), described.Order(StringComparer.Ordinal));
+        Assert.Equal(new[] { fr, ru }.Order(StringComparer.Ordinal), asked.Order(StringComparer.Ordinal));
+        // the Language row's clicks then read nothing more, and choose as before (Russian: the HD fonts on)
+        model.CyclePack(PackKind.Language, 1);
+        model.CyclePack(PackKind.Language, 1);
+        Assert.Equal(ru, model.LanguagePack);
+        Assert.Equal(hd, model.FontPack);
+        Assert.Equal(3, described.Count);
+        Assert.Equal(2, asked.Count);
+    }
 }

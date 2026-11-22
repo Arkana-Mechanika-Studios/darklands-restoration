@@ -62,7 +62,7 @@ not meant for players.
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
-| `interface.mode` | `"comfort"` | `--interface classic\|comfort` | the Interface switch (below): `comfort`, the comfort features; `classic`, the 1992 game's interface exactly; the game plays the same either way |
+| `interface.mode` | `"comfort"` | `--interface classic\|comfort` | the Interface switch (below): `comfort`, the comfort features; `classic`, keeps the 1992 map and saved-games screens; the game plays the same either way |
 | `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
 | `sdl.library` | the copy next to the program (`SDL3.dll` on Windows, `libSDL3.so.0` on Linux, both shipped), else the system's | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
@@ -262,8 +262,9 @@ so the game plays the same. The launcher shows it on its Advanced tab, under Sta
 
 One of the three switches of the restoration (Rules: what the game decides; Presentation: what is seen and heard; Interface: how
 the same orders are given). `interface.mode` is `"comfort"` (the default) or `"classic"`; the launcher shows it on its Advanced
-tab ("Interface: Comfort / Classic"); `--interface classic` (or `comfort`) sets it for one run. **Classic** is the original
-interface exactly, screen for screen; the replays and the comparisons with the original game play Classic. **Comfort** turns on
+tab ("Interface: Comfort / Classic"); `--interface classic` (or `comfort`) sets it for one run. **Classic** keeps the 1992 map
+and saved-games screens (the mouse wheel and the card menus' keys are rows of their own); the replays and the comparisons with
+the original game play Classic. **Comfort** turns on
 the comfort features, which change how orders are given and what a screen shows of them, never what the game decides (the saved
 games are the same, and the original game loads them):
 

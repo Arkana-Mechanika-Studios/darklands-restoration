@@ -159,7 +159,7 @@ internal sealed partial class LauncherScreen
             Item.MouseWheel => "In the game's menus and lists the wheel moves the selection, as the arrow keys do; never on the map or in a battle.",
             Item.Interface => _model.ComfortInterface
                 ? "Comfort: the load list one line a game, the newest first, with its real date; on the map tap a direction twice (or Shift+direction) to walk on."
-                : "Classic: the 1992 game's interface exactly. Comfort adds a clearer load list and walking on with a double tap on the map.",
+                : "Classic: the 1992 map and saved-games screens. Comfort adds a clearer load list and walking on with a double tap on the map.",
             Item.CardMenuKeys => "At a card menu, ↑/↓ and the wheel work wherever the pointer is (the 1992 game needed it over the lines), and 1–9 choose a line.",
             Item.Save => "Writes the changes to the settings file and closes.",
             Item.Play => "Writes the changes to the settings file and starts the game.",

@@ -105,6 +105,7 @@ internal sealed partial class LauncherScreen
         {
             PackKind.Pictures => "a picture (HD) pack: PNG files named after the game's pictures",
             PackKind.Sounds => "a sound pack: OGG or WAV files named after the game's music and effects",
+            PackKind.Fonts => "a font pack: a pack.json saying \"fonts\": true, with fonts/slotN.json",
             _ => "a translation pack: a pack.json naming its language and Fluent (.ftl) files under text/<language>",
         };
         if (!cycle && _surface.PickFolder is null)
@@ -135,7 +136,7 @@ internal sealed partial class LauncherScreen
     {
         if (IsFixed(PackItem(kind), out var by))
         {
-            _message = $"The {kind switch { PackKind.Pictures => "HD", PackKind.Sounds => "audio", _ => "language" }} pack is set by {by}.";
+            _message = $"The {kind switch { PackKind.Pictures => "HD", PackKind.Sounds => "audio", PackKind.Fonts => "font", _ => "language" }} pack is set by {by}.";
             return;
         }
         _model.SetPack(kind, folder);
