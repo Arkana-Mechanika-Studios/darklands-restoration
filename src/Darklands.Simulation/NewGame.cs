@@ -86,6 +86,11 @@ public static class NewGame
     public static GameState TranslationTest(WorldData world, uint seed, int variant, int? card, Func<uint>? clockSeed = null)
     {
         ArgumentNullException.ThrowIfNull(world);
+        // the variants of other luck (8..10): another seed, so another party, city and other rolls in the card
+        if (variant >= 8)
+        {
+            seed += (uint)(variant - 7);
+        }
         var state = Quickstart(world, seed, clockSeed ?? (() => seed));
         state.Data = world;
         state.Party.Purse = Core.Economy.Money.From(12, 5, 3);
@@ -109,6 +114,19 @@ public static class NewGame
                 break;
             case 5:
                 state.CurrentLocation = 3;
+                Array.Fill(state.OptionFlags, 1);
+                break;
+            case 6:
+                // a lone adventurer: the leader only (the cards that tell a party of one apart)
+                state.Party.Slots.RemoveRange(1, state.Party.Slots.Count - 1);
+                state.Party.LeaderIndex = 0;
+                break;
+            case 7:
+                // in the wilderness (no place: the encounters' cards)
+                state.CurrentLocation = -1;
+                Array.Fill(state.OptionFlags, 1);
+                break;
+            case >= 8:
                 Array.Fill(state.OptionFlags, 1);
                 break;
         }

@@ -300,6 +300,22 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // Not in the original: the 1.1 Workshop's translation test (DarklandsRP --start-at); null in normal play.
     public Queue<int>? Planned { get; set; }
 
+    /// <summary>
+    /// A notice shown once over the card when it first waits for the player (its text drawn, before "continue" or before a menu's
+    /// choice): a translation test that could not open at its text says why over the card it opened (DarklandsGame.OpenFirst).
+    /// </summary>
+    // Not in the original: the 1.1 Workshop's translation test; null in normal play.
+    public string? PendingNotice { get; set; }
+
+    private void ShowPendingNotice()
+    {
+        if (PendingNotice is { } notice)
+        {
+            PendingNotice = null;
+            new MessageBox(ui).Notice(notice);
+        }
+    }
+
     private bool PlannedText()
     {
         if (Planned is not { Count: > 0 } plan)
@@ -732,6 +748,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // C: a press on a portrait whose slot is empty (or beyond party-headcount) is not a sheet, so it continues the card like any other press; Alt-Q answered "n" also ends the wait (see HotKeys).
     private void WaitToContinue()
     {
+        ShowPendingNotice();
         // host comfort (GameUi.SelectionList, the mouse wheel's ↑ / ↓): none: any key goes on
         using var wheel = ui.UseSelectionList(null);
         ui.Redraw = Redraw;

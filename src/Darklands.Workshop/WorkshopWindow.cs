@@ -778,7 +778,8 @@ internal sealed class WorkshopWindow : Window
     /// </summary>
     internal static string? StartTarget(TextEntry entry) =>
         entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? "card:" + entry.Key[4..]
-        : TextTitles.Section(entry) == "Screens" ? "screen:" + entry.Screens[0]
+        // a screen text: the screen its box records (StartAt.Screens), none for a text whose screen was not seen
+        : TextTitles.Section(entry) == "Screens" && entry.Screens.FirstOrDefault(StartAt.Screens.ContainsKey) is { } screen ? "screen:" + screen
         : null;
 
     // the game with the pack: at the text chosen (a translation test, --start-at), or from the start
@@ -798,6 +799,11 @@ internal sealed class WorkshopWindow : Window
         var start = new ProcessStartInfo(program) { UseShellExecute = false };
         start.ArgumentList.Add("--language-pack");
         start.ArgumentList.Add(_project.Folder);
+        // a test game's saves go to the pack's own .workshop folder, never the player's SAVES (at a text and from the start alike)
+        var saves = Path.Combine(_project.Folder, ".workshop", "saves");
+        Directory.CreateDirectory(saves);
+        start.ArgumentList.Add("--saves");
+        start.ArgumentList.Add(saves);
         var target = atText && _editor.Current is { } current ? StartTarget(current) : null;
         if (target is not null)
         {
@@ -812,7 +818,7 @@ internal sealed class WorkshopWindow : Window
         UpdateState();
         _status.Text = target is not null ? $"The game starts at {target[(target.IndexOf(':', StringComparison.Ordinal) + 1)..]} (a Quick Start party; saves go to the pack's .workshop folder)."
             : atText ? "This text is not on a card or a screen the game can open at: the game starts from the start."
-            : "The game starts from the start.";
+            : "The game starts from the start (its saves go to the pack's .workshop folder).";
     }
 
     private async Task<string?> PickFolder(string title)

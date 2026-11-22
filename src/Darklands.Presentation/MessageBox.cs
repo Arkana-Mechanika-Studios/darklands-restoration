@@ -192,6 +192,69 @@ public sealed class MessageBox(GameUi ui)
         ui.Present();
     }
 
+    /// <summary>
+    /// A text of any length in one framed box over the card window, wrapped to the window's width in the card window's font (its words
+    /// cut nowhere), from row 0x32 down, until a key or a click; then what it covered comes back.
+    /// </summary>
+    // DIVERGENCE: no original: the restoration's own notice for a longer text (a translation test that could not open at its text,
+    //   DarklandsGame.OpenFirst), drawn with the game's box (ScreenDrawing.FrameBox) and colours.
+    public void Notice(string text)
+    {
+        // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
+        using var laidOut = ui.OnScreen("MessageBox");
+        var font = ui.CardWindowText;
+        var lines = Wrap(text, WindowWidth - 24);
+        var lineHeight = font.LineHeight + 2;
+        var textWidth = lines.Max(font.Measure);
+        var height = lines.Count * lineHeight + 5;
+        var (x, top) = (WindowX + (WindowWidth - textWidth) / 2 - 5, Math.Max(4, Math.Min(0x32 - 4, Canvas.Height - 4 - height)));
+        var canvas = ui.Canvas;
+        var saved = canvas.Save(x, top, textWidth + 10, height + 2);
+        ScreenDrawing.FrameBox(canvas, ui.Assets.CommonSprites, x, top, textWidth + 10, height + 2, Background);
+        for (var i = 0; i < lines.Count; i++)
+        {
+            font.Draw(canvas, x + 5, top + 4 + i * lineHeight, lines[i], TextColor);
+        }
+        ui.Present();
+        while (true)
+        {
+            var action = ui.Poll();
+            if (action is { IsKey: true } || action is { Click: not MouseButtons.None })
+            {
+                break;
+            }
+        }
+        ui.WaitForButtonRelease();
+        canvas.Restore(saved);
+        ui.Present();
+    }
+
+    /// <summary><paramref name="text"/> in lines no wider than <paramref name="width"/> pixels in the card window's font, broken at spaces (a word wider than a line stands alone).</summary>
+    public IReadOnlyList<string> Wrap(string text, int width)
+    {
+        var font = ui.CardWindowText;
+        var lines = new List<string>();
+        var line = "";
+        foreach (var word in text.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var longer = line.Length == 0 ? word : line + " " + word;
+            if (line.Length > 0 && font.Measure(longer) > width)
+            {
+                lines.Add(line);
+                line = word;
+            }
+            else
+            {
+                line = longer;
+            }
+        }
+        if (line.Length > 0 || lines.Count == 0)
+        {
+            lines.Add(line);
+        }
+        return lines;
+    }
+
     private const int Centred = -1;
 
     /// <summary>The most boxes a notice draws (from row 0x32 down they fit above row 200).</summary>

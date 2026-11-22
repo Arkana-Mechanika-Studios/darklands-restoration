@@ -336,12 +336,20 @@ exists. To make the next beta: raise `WorkshopVersion`, write its notes file, me
   creation …). The game stays playable from there.
   * **Reaching a later passage.** The Workshop runs the card without a display beforehand, trying its menu's choices
     (up to 6 menus deep, following it into the next card when that card shows the same texts) on a few plausible states
-    (the Quick Start's, the option flags set, a rich purse, night, day, another city). It then replays the choices that
-    lead there.
-  * **A passage that needs story state.** A passage none of these reach (a quest given, being wanted in the city …) opens
-    at the card's start with a short notice; the Workshop's preview shows every passage.
+    (the Quick Start's, the option flags set, a rich purse, night, day, another city, a lone adventurer, the wilderness,
+    and three of other luck: another party and other rolls). It then replays the choices that lead there.
+  * **A text it cannot reach** opens at the nearest point, and a notice over the card (once its text is drawn; a key or a
+    click closes it) says why, in one of three ways:
+    * the game never shows it: no card uses its file (the game's files hold some unused ones); the game starts as usual;
+    * every way through its card was played from the test's starts and the text never came up: it needs a story state
+      the test party does not have, or it is unused; the card opens at its start;
+    * it comes later than the Workshop can play to: after a battle (the test does not fight for you), further than 6
+      choices, or after an event of the story (a quest given, being wanted in the city …); the card opens at its start.
+
+    The Workshop's preview shows every text. Of the 3,767 card and screen texts of the English game, 1,416 card texts
+    open at their passage and 14 screen texts at their screen (2026-11-22).
   * **Saves** go to the pack's own `.workshop\saves` folder, never your games' (zip the pack without `.workshop` to share
-    it).
+    it): at a text and **From the start** alike.
   * **The window's title** says it is a translation test.
   * The small menu beside the button has **From the start** (the title screen, as usual).
   * **On the command line** it is `DarklandsRP --language-pack <pack> --start-at card:$CITYC00#4` (or
