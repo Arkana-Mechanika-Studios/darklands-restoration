@@ -78,6 +78,22 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
     private static bool One(GameText t) =>
         t.Args.TryGetValue("count", out var count) && Convert.ToString(count, System.Globalization.CultureInfo.InvariantCulture) == "1";
 
+    // the translator's template of a coin's money text: its plural chosen by $count, so a pack's own plural forms use the variables the
+    //   template has (the check holds a translation to the template's variables); the same words as Own's
+    private static readonly Dictionary<string, string> OwnTemplates = new(StringComparer.Ordinal)
+    {
+        [GameTextIds.MoneyFlorins] = Plural("{ $amount } florin", "{ $amount } florins"),
+        [GameTextIds.MoneyGroschen] = Plural(null, "{ $amount } groschen"),
+        [GameTextIds.MoneyPfennigs] = Plural("{ $amount } pfennig", "{ $amount } pfennigs"),
+    };
+
+    private static string Plural(string? one, string other) =>
+        "\n    { $count ->\n" + (one is null ? "" : "        [one] " + one + "\n") + "       *[other] " + other + "\n    }";
+
+    /// <summary>The Fluent source the translator's template writes for one of the rewrite's own notices when its words choose a form by
+    /// a variable (the money texts' plurals by <c>$count</c>); null when the template writes <see cref="OwnWords"/> as it is.</summary>
+    public static string? OwnTemplate(string id) => OwnTemplates.GetValueOrDefault(id);
+
     /// <summary>The words of one of the rewrite's own notices (null for any other id): they need no EXE.</summary>
     public static string? OwnWords(GameText text) => text is not null && Own.TryGetValue(text.Id, out var own) ? own(text) : null;
 

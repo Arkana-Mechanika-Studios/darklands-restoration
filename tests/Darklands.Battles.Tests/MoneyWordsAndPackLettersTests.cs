@@ -112,4 +112,19 @@ public sealed class MoneyWordsAndPackLettersTests
             Directory.Delete(root, recursive: true);
         }
     }
+
+    // the translator's template of a coin's text chooses its plural by $count, so a translation's plural forms use the template's
+    //   variables (the check: a variable the template lacks is an error); the joins are as their words
+    [Fact]
+    public void TheTemplatesCoinTextsChooseTheirPluralByCount()
+    {
+        foreach (var id in new[] { GameTextIds.MoneyFlorins, GameTextIds.MoneyGroschen, GameTextIds.MoneyPfennigs })
+        {
+            var template = OriginalMessageText.OwnTemplate(id);
+            Assert.NotNull(template);
+            Assert.Equal(["amount", "count"], FtlSource.Variables(template!).Order(StringComparer.Ordinal));
+        }
+        Assert.Null(OriginalMessageText.OwnTemplate(GameTextIds.MoneyTwo));
+        Assert.Null(OriginalMessageText.OwnTemplate(GameTextIds.MoneyThree));
+    }
 }

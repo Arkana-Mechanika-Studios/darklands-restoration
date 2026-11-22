@@ -80,6 +80,27 @@ public sealed class SamplePacksTests
         Assert.All(fontLines, l => Assert.Contains("ExcludeFromSingleFile=\"true\"", l, StringComparison.Ordinal));
     }
 
+    // every shipped sample passes the game's own check (DarklandsRP --check-language-pack) with no error: the template's variables
+    //   (a coin's money text chooses its plural by $count) are the ones the samples use
+    [Fact]
+    public void EverySampleChecksWithNoError()
+    {
+        if (GameFolder.Files is null || Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR") is not { } game)
+        {
+            return;
+        }
+        // the pack's fonts read as the game reads them (its host sets these; the Workshop's App too, but this test needs no window)
+        Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+        Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
+        foreach (var folder in Order.Select(f => Path.Combine(Shipped, f)))
+        {
+            var said = new StringWriter();
+            var code = Darklands.Presentation.TranslatorCommands.CheckPack(game, folder, null, said);
+            Assert.True(code == 0, said.ToString());
+            Assert.Contains(" 0 error(s)", said.ToString(), StringComparison.Ordinal);
+        }
+    }
+
     [Fact]
     public async Task TheSamplesArePlayedFromTheShelfAndPacksStartedFromThemLiveInTheGamesPacks()
     {

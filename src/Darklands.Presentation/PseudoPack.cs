@@ -44,6 +44,8 @@ public static class PseudoPack
                 '{' => value.IndexOf('}', i),
                 '<' => value.IndexOf('>', i),
                 '$' when i + 1 < value.Length && char.IsAsciiLetter(value[i + 1]) => Name(value, i),
+                // a select's variant key ([one], *[other]: the money texts' plurals) is Fluent's syntax, not words
+                '[' => VariantKeyEnd(value, i),
                 _ => -1,
             };
             if (skip > i)
@@ -78,5 +80,25 @@ public static class PseudoPack
             i++;
         }
         return i;
+    }
+
+    // a variant key: "[name]" first on its line (after spaces and a default's '*'); -1 for any other '[' (a text's own bracket)
+    private static int VariantKeyEnd(string value, int start)
+    {
+        var before = start - 1;
+        while (before >= 0 && value[before] is ' ' or '*')
+        {
+            before--;
+        }
+        if (before >= 0 && value[before] != '\n')
+        {
+            return -1;
+        }
+        var i = start + 1;
+        while (i < value.Length && char.IsAsciiLetterOrDigit(value[i]))
+        {
+            i++;
+        }
+        return i > start + 1 && i < value.Length && value[i] == ']' ? i : -1;
     }
 }

@@ -79,7 +79,8 @@ public static class TranslatorTemplate
         {
             var english = OriginalMessageText.OwnWords(new Darklands.Core.GameText(id, new Placeholders()))!;
             var comment = id + (byKey.GetValueOrDefault(id) is { } box ? " · " + BoxWords(box) : "");
-            messages.Add(new Message("ui.ftl", KeyMangling.ToFluentId(id), id, Escape(english, placeablesAsWritten: true), [comment])
+            var value = OriginalMessageText.OwnTemplate(id) ?? Escape(english, placeablesAsWritten: true);
+            messages.Add(new Message("ui.ftl", KeyMangling.ToFluentId(id), id, value, [comment])
             {
                 Screens = byKey.GetValueOrDefault(id)?.Screens ?? [],
             });
