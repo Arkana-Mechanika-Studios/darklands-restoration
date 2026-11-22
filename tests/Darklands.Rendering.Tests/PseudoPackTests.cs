@@ -14,6 +14,12 @@ public sealed class PseudoPackTests
         Assert.Equal("<c12> M</c>öree", PseudoPack.Transform("<c12> M</c>ore"));
         Assert.Equal("Äskk $ChosenOneName<br><opt>...yess", PseudoPack.Transform("Ask $ChosenOneName<br><opt>...yes"));
         Assert.Equal("Thee", PseudoPack.Transform("The"));
+        // a select's variant keys stay (the money texts' plurals by $count); a text's own bracket is words
+        var plural = PseudoPack.Transform("\n    { $count ->\n        [one] { $amount } pfennig\n       *[other] { $amount } pfennigs\n    }");
+        Assert.Contains("\n        [one] { $amount } ", plural, StringComparison.Ordinal);
+        Assert.Contains("\n       *[other] { $amount } ", plural, StringComparison.Ordinal);
+        Assert.DoesNotContain("pfennig\n", plural, StringComparison.Ordinal);
+        Assert.DoesNotContain("[one]", PseudoPack.Transform("a [one] b"), StringComparison.Ordinal);
     }
 
     [Fact]

@@ -89,6 +89,9 @@ public sealed class SamplePacksTests
         {
             return;
         }
+        // the pack's fonts read as the game reads them (its host sets these; the Workshop's App too, but this test needs no window)
+        Darklands.Presentation.FontPack.ReadImage = Darklands.Rendering.PngCodec.ReadAlpha;
+        Darklands.Presentation.FontPack.LoadScalable = json => (Darklands.Rendering.TtfFont.Load(json, out var why), why);
         foreach (var folder in Order.Select(f => Path.Combine(Shipped, f)))
         {
             var said = new StringWriter();
