@@ -41,7 +41,9 @@ internal sealed class LauncherModel
 
     private readonly LauncherContext _context;
     private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack, string? FontPack, bool ComfortInterface) _initial;
-    private readonly Dictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
+    // what each folder holds, and the languages' fonts: read once (WarmPacks reads them all as the launcher opens, on a thread of its
+    //   own, so the first click on a pack row has nothing to read)
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
 
     /// <summary>The folder shown at the start without the player choosing it (given at the start or found), or null.</summary>
     private readonly string? _automatic;
@@ -159,7 +161,36 @@ internal sealed class LauncherModel
 
     private bool _fontsAuto;
 
-    private readonly Dictionary<(string Pack, string? Game), string?> _needsFonts = [];
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<(string Pack, string? Game), string?> _needsFonts = new();
+
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> _ownFonts = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Reads the packs offered (what each holds, and whether a language needs the HD fonts) on a thread of its own, so the pack rows'
+    /// first clicks find them read: a language pack is parsed whole, which takes a moment for a large one. The results are the same
+    /// as reading them on the first click; a row clicked meanwhile reads what it needs itself.
+    /// </summary>
+    public Task WarmPacks() => Task.Run(() =>
+    {
+        try
+        {
+            var game = GameFolderChecked;
+            foreach (var folder in _context.FindPacks?.Invoke(game) ?? [])
+            {
+                if (Holds(folder, PackKind.Language))
+                {
+                    NeedsFontsFor(folder);
+                }
+            }
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            // a folder that cannot be read: the click reads it again, and says so
+        }
+    });
+
+    /// <summary>Whether the language pack in <paramref name="folder"/> brings fonts of its own (its fonts/ folder), which draw its text.</summary>
+    public bool BringsOwnFonts(string folder) => _ownFonts.GetOrAdd(folder, f => Directory.Exists(Path.Combine(f, "fonts")));
 
     /// <summary>The language's name when the pack in <paramref name="folder"/> needs letters the original fonts lack (LauncherContext.NeedsFonts).</summary>
     public string? NeedsFontsFor(string? folder)
@@ -168,12 +199,7 @@ internal sealed class LauncherModel
         {
             return null;
         }
-        var key = (folder, GameFolderChecked);
-        if (!_needsFonts.TryGetValue(key, out var language))
-        {
-            language = _needsFonts[key] = needs(folder, GameFolderChecked);
-        }
-        return language;
+        return _needsFonts.GetOrAdd((folder, GameFolderChecked), key => needs(key.Pack, key.Game));
     }
 
     /// <summary>The HD fonts among the font packs offered (packs/fonts/hd-fonts), else the first font pack; null: none.</summary>
@@ -192,7 +218,9 @@ internal sealed class LauncherModel
     /// letters the original fonts lack and Fonts is None (they show as '?'); null when there is nothing to say.
     /// </summary>
     public (string Text, bool Warning)? FontsNote => NeedsFontsFor(LanguagePack) is not { } language
-        ? null
+        ? LanguagePack is { } own && FontPack is null && Holds(own, PackKind.Language) && BringsOwnFonts(own)
+            ? ($"{PackLabel(own)} brings its own fonts; they draw its text.", false)
+            : null
         : FontPack is null
         ? ($"{language} needs letters the original fonts don't have: with Fonts on None they show as '?'. Choose HD fonts.", true)
         : _fontsAuto
@@ -202,13 +230,9 @@ internal sealed class LauncherModel
     /// <summary>What a folder holds as a pack (looked at once per folder: it reads the disk).</summary>
     public PackStatus Pack(string folder)
     {
-        if (!_packs.TryGetValue(folder, out var status))
-        {
-            status = _packs[folder] = Directory.Exists(folder)
-                ? (_context.DescribePack ?? PackStatus.Count)(folder)
-                : new PackStatus(0, 0, "The folder does not exist.");
-        }
-        return status;
+        return _packs.GetOrAdd(folder, f => Directory.Exists(f)
+            ? (_context.DescribePack ?? PackStatus.Count)(f)
+            : new PackStatus(0, 0, "The folder does not exist."));
     }
 
     /// <summary>Whether a folder holds a pack of that kind.</summary>

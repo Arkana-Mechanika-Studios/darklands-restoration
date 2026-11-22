@@ -78,7 +78,7 @@ public sealed class GameSettings
     public bool? CardMenuKeys { get; set; }
 
     /// <summary>
-    /// The Interface switch (interface.mode): "classic", the original interface exactly, or "comfort", its comfort features (the saved
+    /// The Interface switch (interface.mode): "classic", the 1992 map and saved-games screens, or "comfort", its comfort features (the saved
     /// games' list, walking on with a double tap on the map); null: comfort.
     /// </summary>
     public string? InterfaceMode { get; set; }

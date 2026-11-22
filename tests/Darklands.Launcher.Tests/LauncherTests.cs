@@ -121,7 +121,7 @@ public sealed class LauncherTests
             Down, Enter,        // fullscreen on
             Down, Down, Down,   // past the picture filter and the HD pack
             Right, Right,       // sound: AdLib, then Sound Blaster
-            Down, Down, Down, Down, Down, Enter,  // past the audio pack, the ROMs (Advanced opens), the SoundFont and the language pack: the start-up screen off
+            Down, Down, Down, Down, Down, Down, Enter,  // past the audio pack, the ROMs (Advanced opens), the SoundFont, the language pack and the fonts: the start-up screen off
             Escape]);
         Assert.Equal(LauncherChoice.Quit, result.Choice);
         Assert.Equal("1080x600", (string)result.Changes["display.resolution"]!);
@@ -184,8 +184,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, the Interface switch, Opening animation, start-up screen, language pack, SoundFont, ROMs, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, the Interface switch, Opening animation, start-up screen, fonts, language pack, SoundFont, ROMs, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }

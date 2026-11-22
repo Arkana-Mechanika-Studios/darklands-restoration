@@ -8,6 +8,8 @@ public sealed class Launcher : ILauncher
     public LauncherResult Run(LauncherContext context, ILauncherSurface surface)
     {
         var model = new LauncherModel(context, surface.DisplaySize);
+        // the packs read while the player looks at the screen (the Language row's first click would otherwise read them all)
+        _ = model.WarmPacks();
         var screen = new LauncherScreen(model, context, surface);
         Canvas? canvas = null;
         while (true)
