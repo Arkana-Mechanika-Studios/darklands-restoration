@@ -103,6 +103,52 @@ public sealed class TextLayerTests
     }
 
     [Fact]
+    public void XorTextThatChangesNoColourStaysUnseenUntilTheFade()
+    {
+        InTemp(folder =>
+        {
+            // a card's picture before the fade: colours 0x20..0x7F repeated in 0xA0..0xFF, the picture varied (a colour a column) in the
+            //   upper half; an option line drawn by xor with 0x80 over it changes no colour the frame shows
+            var font = Load(folder, 8);
+            var screen = new Screen();
+            for (var i = 0x20; i < 0x80; i++)
+            {
+                screen.Palette[i] = screen.Palette[i + 0x80] = 0xFF000000u | (uint)(i * 0x020301);
+            }
+            var canvas = new Canvas(screen);
+            for (var x = 0; x < Screen.Width; x++)
+            {
+                canvas.Fill(x, 0, 1, Screen.Height, (byte)(0xA0 + x % 0x60));
+            }
+            var painter = new TextPainter(null!) { PackFont = font };
+            painter.DrawCodes(canvas, 20, 30, [.. "Hé, more".Select(c => (int)c)], 0x80, TextMode.Xor);
+            Assert.Contains(Enumerable.Range(0, screen.Texels.Length), i => screen.Texels[i] <= -2);
+            var renderer = new HdRenderer(HdPack.Empty);
+            var output = new DisplayRectangle(0, 0, 4 * Screen.Width, 4 * Screen.Height);
+            var picture = FrameCompositor.Compose(renderer.Render(screen, output), output.Width, output.Height);
+            // the HD picture is the frame's, pixel for pixel: no faint outline of the letters
+            for (var y = 0; y < output.Height; y++)
+            {
+                for (var x = 0; x < output.Width; x++)
+                {
+                    if (picture.Argb[y * output.Width + x] != (screen.Palette[screen.Pixels[y / 4 * Screen.Width + x / 4]] | 0xFF000000u))
+                    {
+                        Assert.Fail($"the HD picture differs from the frame at {x},{y} (1x {x / 4},{y / 4})");
+                    }
+                }
+            }
+            // the fade: the halves differ, the lines show, and the layer draws them at the output's resolution
+            for (var i = 0x20; i < 0x80; i++)
+            {
+                screen.Palette[i] = 0xFF808080u;
+            }
+            var faded = renderer.Render(screen, output);
+            Assert.Equal(2, faded.Items.Count);
+            return 0;
+        });
+    }
+
+    [Fact]
     public void AFrameWithoutScalableGlyphsComposesAsBefore()
     {
         var screen = new Screen();

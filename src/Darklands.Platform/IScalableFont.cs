@@ -23,8 +23,8 @@ public interface IScalableFont : IFont
 // Not in the original: the 1.1 font packs (L-6b set 2). It never changes a pixel of the frame.
 public static class TextGlyphs
 {
-    /// <summary>A drawing: the font, the code, the 1x glyph's top-left corner.</summary>
-    public readonly record struct Glyph(IScalableFont Font, int Code, int X, int Y);
+    /// <summary>A drawing: the font, the code, the 1x glyph's top-left corner, and the colour it was xor-ed in (0: drawn otherwise).</summary>
+    public readonly record struct Glyph(IScalableFont Font, int Code, int X, int Y, int Xor = 0);
 
     private const int Capacity = 1 << 20;
 
@@ -32,10 +32,10 @@ public static class TextGlyphs
     private static readonly Dictionary<Glyph, int> Ids = [];
     private static readonly List<Glyph> Glyphs = [];
 
-    /// <summary>The id of a drawing.</summary>
-    public static int Id(IScalableFont font, int code, int x, int y)
+    /// <summary>The id of a drawing (<paramref name="xor"/>: the colour it is xor-ed in, 0 when it is drawn otherwise).</summary>
+    public static int Id(IScalableFont font, int code, int x, int y, int xor = 0)
     {
-        var glyph = new Glyph(font, code, x, y);
+        var glyph = new Glyph(font, code, x, y, xor);
         lock (Gate)
         {
             if (Ids.TryGetValue(glyph, out var id))
