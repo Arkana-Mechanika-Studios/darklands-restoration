@@ -229,6 +229,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                     {
                         _walkKey = key;
                         _walkStill = 0;
+                         Trace?.Invoke($"walk on {key:X4}");
                     }
                     else
                     {
