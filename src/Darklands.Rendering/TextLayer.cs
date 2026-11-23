@@ -68,7 +68,7 @@ public sealed class TextLayer
         // pixel away, stays over it (the order the frame is read in would put the shadow over the face, a row lower)
         foreach (var (texel, pixels) in glyphs.OrderByDescending(g => g.Key))
         {
-            if (TextGlyphs.Of(texel) is { } g && !Hidden(screen, pixels))
+            if (TextGlyphs.Of(texel) is { } g && !pixels.All(at => Unseen(screen, g, at)))
             {
                 Draw(image, screen, g, texel, pixels, sx, sy);
             }
@@ -86,8 +86,9 @@ public sealed class TextLayer
         var (left, top, width, height, coverage) = g.Font.Raster(g.Code, sx, sy);
         var mine = new HashSet<int>(pixels);
         uint Colour(int at) => screen.Palette[screen.Pixels[at]] | 0xFF000000u;
-        // the text's colour at a 1x cell: its nearest glyph pixel's
-        uint Ink(int cx, int cy)
+        // the text's colour at a 1x cell: its nearest glyph pixel's; none when that pixel does not show (Unseen), so the layer shows the
+        //   frame there as the frame does
+        uint? Ink(int cx, int cy)
         {
             var (best, distance) = (pixels[0], int.MaxValue);
             foreach (var at in pixels)
@@ -98,11 +99,16 @@ public sealed class TextLayer
                     (best, distance) = (at, d);
                 }
             }
-            return Colour(best);
+            return Unseen(screen, g, best) ? null : Colour(best);
         }
-        // the background at a 1x cell: the cell itself when it is not the glyph's, else the nearest such pixel of its row (then above / below)
+        // the background at a 1x cell: the cell itself when it is not the glyph's (or is, but does not show), else the nearest such pixel of
+        //   its row (then above / below)
         uint Paper(int cx, int cy)
         {
+            if (mine.Contains(cy * Screen.Width + cx) && Unseen(screen, g, cy * Screen.Width + cx))
+            {
+                return Colour(cy * Screen.Width + cx);
+            }
             for (var reach = 0; reach < 16; reach++)
             {
                 foreach (var (x, y) in new[] { (cx - reach, cy), (cx + reach, cy), (cx, cy - reach), (cx, cy + reach) })
@@ -136,7 +142,7 @@ public sealed class TextLayer
                     continue;
                 }
                 var paper = Paper(cx, cy);
-                var colour = cover == 0 ? paper : Blend(Ink(cx, cy), paper, cover);
+                var colour = cover == 0 || Ink(cx, cy) is not { } ink ? paper : Blend(ink, paper, cover);
                 ref var target = ref image.Argb[py * image.Width + px];
                 // where two glyphs' boxes meet, the more inked pixel stays
                 if (target == 0 || cover > 0)
@@ -147,10 +153,13 @@ public sealed class TextLayer
         }
     }
 
-    // a glyph drawn by xor that does not show (a card's option lines before the picture fades: each pixel's colour is the one its
-    //   index without the xor bit has, so the 1x frame shows nothing there): it is not drawn again either
-    private static bool Hidden(Screen screen, List<int> pixels) =>
-        pixels.All(at => screen.Pixels[at] is var index && index >= 0x80 && screen.Palette[index] == screen.Palette[index ^ 0x80]);
+    // a pixel of a glyph drawn by xor that does not show: its colour is the one its index had before the xor (a card's option lines
+    //   before the picture fades: the picture repeats colours 0x20..0x7F in 0xA0..0xFF, so a line xor-ed by 0x80 over either half
+    //   changes no colour there; over the picture's own 0x00..0x1F it shows). A glyph none of whose pixels show is not drawn again;
+    //   one partly over such colours is drawn where it shows only (drawing all of it in the frame's colours left faint outlines of the
+    //   option lines over a varied picture before the fade)
+    private static bool Unseen(Screen screen, TextGlyphs.Glyph g, int at) =>
+        g.Xor != 0 && screen.Palette[screen.Pixels[at]] == screen.Palette[screen.Pixels[at] ^ g.Xor];
 
     private static bool IsGlyph(Screen screen, int at) => screen.Texels[at] <= -2 && screen.Owners[at] == 0;
 

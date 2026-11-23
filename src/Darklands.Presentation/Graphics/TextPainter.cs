@@ -170,7 +170,8 @@ public sealed class TextPainter(FntFont font)
             else
             {
                 // a scalable font's glyph: its 1x pixels name it, so the host draws it again at the window's resolution (L-6b set 2)
-                var texel = f is IScalableFont scalable ? TextGlyphs.TexelOf(TextGlyphs.Id(scalable, glyph, x, y)) : 0;
+                //   (an xor-ed glyph says its colour: where it changes no colour the frame shows, it is not drawn again: TextLayer)
+                var texel = f is IScalableFont scalable ? TextGlyphs.TexelOf(TextGlyphs.Id(scalable, glyph, x, y, mode == TextMode.Xor ? current : 0)) : 0;
                 DrawFontGlyph(canvas, f, x, y, glyph, current, visible, mode, texel);
             }
             x += visible;
