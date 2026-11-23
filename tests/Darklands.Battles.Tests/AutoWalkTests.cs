@@ -119,6 +119,13 @@ public sealed class AutoWalkTests
     // Right tapped twice: two presses, each with its make and break code, a frame apart
     private static readonly object[][] DoubleTapRight = [["d:4D", Keys.Right], ["u:4D"], ["d:4D", Keys.Right], ["u:4D"]];
 
+     private static readonly object[][] DoubleTapRightWaitTapLeft = [
+        ["d:4D", Keys.Right], ["u:4D"], 
+        ["d:4D", Keys.Right], ["u:4D"]
+        ,.. Enumerable.Repeat(Array.Empty<object>(), 50), 
+        ["d:4D", Keys.Left], ["u:4D"]
+        ];
+
     [Fact]
     public void ADoubleTapWalksOnInComfortAndStepsTwiceInClassic()
     {
@@ -188,6 +195,22 @@ public sealed class AutoWalkTests
         // the quickstart party sets out late in the day (night falls within thirty steps): walking on east, it is still walking when
         //   the night has come, and nightfall is no stop (a day passes in a few steps: the user's decision, 2026-11-22)
         if (Walk(comfort: true, idle: 300, DoubleTapRight) is not { } walked)
+        {
+            return;
+        }
+        Assert.DoesNotContain(walked.Trace, s => s.StartsWith("walk on stops", StringComparison.Ordinal) && s.Contains("nightfall", StringComparison.Ordinal));
+        Assert.True(Steps(walked) > 60, string.Join(" | ", walked.Trace.TakeLast(6)));
+        Assert.False(Core.Time.TimeOfDay.IsDaylight(walked.Hour) && walked.Day == 0, $"day {walked.Day} hour {walked.Hour}");
+    }
+
+    [Fact]
+    public void AWalkGoesOnWhileChangingDirectionThroughNightfall()
+    {
+        // the quickstart party sets out late in the day (night falls within thirty steps): 
+        // walking on east by double tapping right key, 
+        // then after ten frames walks west by single tapping left key
+        // it is still walking when the night has come, and nightfall is no stop (a day passes in a few steps: the user's decision, 2026-11-22)
+        if (Walk(comfort: true, idle: 300, DoubleTapRightWaitTapLeft) is not { } walked)
         {
             return;
         }
