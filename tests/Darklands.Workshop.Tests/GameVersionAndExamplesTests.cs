@@ -22,10 +22,10 @@ public sealed class GameVersionAndExamplesTests
     }
 
     [Fact]
-    public void TheReleaseIs110AndTheWorkshopNeedsThatGame()
+    public void TheReleaseIs111AndTheWorkshopNeedsThe110Game()
     {
         var props = XDocument.Load(Path.Combine(Root(), "Directory.Build.props"));
-        Assert.Equal("1.1.0", props.Descendants("Version").Single().Value);
+        Assert.Equal("1.1.1", props.Descendants("Version").Single().Value);
         Assert.Equal(props.Descendants("WorkshopNeedsGame").Single().Value, WorkshopVersion.NeedsGame);
         Assert.Equal("1.1.0", WorkshopVersion.NeedsGame);
     }
