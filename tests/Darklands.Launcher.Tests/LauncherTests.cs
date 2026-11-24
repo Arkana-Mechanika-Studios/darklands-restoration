@@ -215,15 +215,15 @@ public sealed class LauncherTests
     }
 
     [Fact]
-    public void TheRulesPresetIsOriginalByDefaultAndWritesFixed()
+    public void TheRulesPresetIsFixedByDefaultAndWritesOriginal()
     {
-        // up from Play: Save, the card menu keys, then the rules (Original: the file has no rules.preset)
+        // up from Play: Save, the card menu keys, then the rules (Fixed: the file has no rules.preset)
         var kept = Run(Context(), Up, Up, Up, Right, Right);
         Assert.False(kept.Changes.ContainsKey("rules.preset"));
-        Assert.Equal("original", kept.Settings.RulesPreset);
-        var fixedRules = Run(Context(), Up, Up, Up, Enter);
-        Assert.Equal("fixed", (string?)fixedRules.Changes["rules.preset"]);
-        Assert.Equal("fixed", fixedRules.Settings.RulesPreset);
+        Assert.Equal("fixed", kept.Settings.RulesPreset);
+        var original = Run(Context(), Up, Up, Up, Enter);
+        Assert.Equal("original", (string?)original.Changes["rules.preset"]);
+        Assert.Equal("original", original.Settings.RulesPreset);
     }
 
     [Fact]
@@ -646,6 +646,10 @@ public sealed class LauncherTests
         Shot("picture-row-1280x720", guide, 1280, 720, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
         Shot("picture-row-960x540", guide, 960, 540, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
         Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
+        // the rules row (Fixed, the default) chosen with the keyboard: its hint, at the largest and the smallest size
+        LauncherInput[] rulesRow = [new KeyPressed(LauncherKey.Tab, Control: true), .. Enumerable.Repeat<LauncherInput>(Tab, 8)];
+        Shot("advanced-rules-1280x720", guide, 1280, 720, rulesRow);
+        Shot("advanced-rules-960x540", guide, 960, 540, rulesRow);
         // the Advanced tab with the keyboard on the ROM folder and on the SoundFont: their tooltips clear of the other rows and headings
         Shot("advanced-roms-tooltip-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true));
         Shot("advanced-soundfont-tooltip-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Tab);

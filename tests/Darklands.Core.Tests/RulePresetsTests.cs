@@ -31,13 +31,17 @@ public sealed class RulePresetsTests
         Assert.True(OriginalBehaviour.Of(RulePreset.Fixed).SameFlags(OriginalBehaviour.Of(RulePreset.Restored)));
     }
 
-    /// <summary>Until the gameplay fixes are switched on for players (rules set A3), a choice of Fixed plays as Original.</summary>
+    /// <summary>Since rules set A3 Fixed plays as itself and is the preset of new games by default.</summary>
     [Fact]
-    public void FixedPlaysAsOriginalUntilItsFixesAreSwitchedOn()
+    public void FixedPlaysAsItselfAndIsTheDefault()
     {
+        Assert.True(RulePresets.FixedPlayable);
+        Assert.Equal(RulePreset.Fixed, RulePresets.Default);
+        Assert.Equal(RulePreset.Fixed, RulePresets.ForNewGames(RulePreset.Fixed));
         Assert.Equal(RulePreset.Original, RulePresets.ForNewGames(RulePreset.Original));
-        Assert.Equal(RulePresets.FixedPlayable ? RulePreset.Fixed : RulePreset.Original, RulePresets.ForNewGames(RulePreset.Fixed));
         Assert.Equal(RulePreset.Faithful, RulePresets.ForNewGames(RulePreset.Faithful));
-        Assert.False(RulePresets.FixedPlayable);
+        // every gameplay fix is on in a new game by default, none in Original
+        var newGame = OriginalBehaviour.Of(RulePresets.Default);
+        Assert.All(RuleTable.Flags.Where(r => r.Class == "gameplay"), r => Assert.True(newGame.IsOn(r.Id) && !OriginalBehaviour.Original.IsOn(r.Id), r.Id));
     }
 }

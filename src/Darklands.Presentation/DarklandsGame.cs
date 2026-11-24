@@ -579,7 +579,8 @@ public sealed class DarklandsGame
     }
 
     // Not in the original: a saved game plays with the rules it recorded (its companion file; none: Original), not with the preset
-    //   chosen now (rules.preset applies to new games only); when the two differ the player is told once, as the game loads.
+    //   chosen now (rules.preset applies to new games only); when it recorded rules that differ from those the player is told once, as
+    //   the game loads. A save without a record (the original's, 1.0's, 1.1's, an Original game's) loads as Original quietly.
     private void KeepRecordedRules(string name, LoadedGame loaded)
     {
         foreach (var problem in loaded.Mods.RulesProblems)
@@ -589,7 +590,7 @@ public sealed class DarklandsGame
         var rules = loaded.Mods.Rules ?? Core.OriginalBehaviour.Original;
         loaded.State.Behaviour = rules;
         _ownRules.AddOrUpdate(loaded.State, rules);
-        if (rules.Preset != Behaviour.Preset || !rules.SameFlags(Behaviour))
+        if (loaded.Mods.Rules is not null && (rules.Preset != Behaviour.Preset || !rules.SameFlags(Behaviour)))
         {
             var title = Core.RulePresets.Title(rules.Preset);
             Log?.Invoke($"{name} keeps the rules it was started with ({title}{(rules.Differences().Count > 0 ? ", changed" : "")}), not those chosen now ({Core.RulePresets.Title(Behaviour.Preset)})");

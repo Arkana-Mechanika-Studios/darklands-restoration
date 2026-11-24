@@ -297,17 +297,17 @@ public class SettingsPrecedenceTests
         Assert.Contains("\"interface\"", SettingsFile.Template, StringComparison.Ordinal);
     }
 
-    /// <summary>rules.preset, the rules of new games: Original without a settings file, Fixed by the file or by --rules fixed; another word is reported.</summary>
+    /// <summary>rules.preset, the rules of new games: Fixed without a settings file, Original by the file or by --rules original; another word is reported.</summary>
     [Fact]
-    public void TheRulesPresetIsOriginalUnlessTheFileOrTheCommandLineSaysFixed()
+    public void TheRulesPresetIsFixedUnlessTheFileOrTheCommandLineSaysOriginal()
     {
-        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).RulesPreset);
-        var fixedFile = SettingsFile.Parse("""{ "rules": { "preset": "Fixed" } }""");
-        Assert.Empty(fixedFile.Problems);
-        Assert.Equal("fixed", fixedFile.Settings.RulesPreset);
-        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, fixedFile.Settings).RulesPreset);
-        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "Original" }, NoEnvironment, fixedFile.Settings).RulesPreset);
-        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "fixed" }, NoEnvironment, new GameSettings()).RulesPreset);
+        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).RulesPreset);
+        var originalFile = SettingsFile.Parse("""{ "rules": { "preset": "Original" } }""");
+        Assert.Empty(originalFile.Problems);
+        Assert.Equal("original", originalFile.Settings.RulesPreset);
+        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, originalFile.Settings).RulesPreset);
+        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "Fixed" }, NoEnvironment, originalFile.Settings).RulesPreset);
+        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "original" }, NoEnvironment, new GameSettings()).RulesPreset);
         Assert.Equal("--rules", new CommandLineOptions { RulesPreset = "fixed" }.Overrides(_ => null)["rules.preset"]);
         Assert.False(new CommandLineOptions().Overrides(_ => null).ContainsKey("rules.preset"));
         // another word in the file is reported and the default kept; on the command line it is an error; an unknown key is reported
@@ -315,11 +315,11 @@ public class SettingsPrecedenceTests
         Assert.Equal(2, odd.Problems.Count);
         Assert.Contains(odd.Problems, p => p.Contains("classic", StringComparison.Ordinal));
         Assert.Null(odd.Settings.RulesPreset);
-        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, odd.Settings).RulesPreset);
+        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, odd.Settings).RulesPreset);
         Assert.Throws<ArgumentException>(() => ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "restored" }, NoEnvironment, new GameSettings()));
         // the template has the section, at its default
         Assert.Contains("\"rules\"", SettingsFile.Template, StringComparison.Ordinal);
-        Assert.Equal("original", SettingsFile.Parse(SettingsFile.Template).Settings.RulesPreset);
+        Assert.Equal("fixed", SettingsFile.Parse(SettingsFile.Template).Settings.RulesPreset);
     }
 
     [Fact]

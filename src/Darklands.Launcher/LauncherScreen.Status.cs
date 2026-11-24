@@ -161,7 +161,7 @@ internal sealed partial class LauncherScreen
                 ? "Comfort: the load list one line a game, the newest first, with its real date; on the map tap a direction twice (or Shift+direction) to walk on."
                 : "Classic: the 1992 map and saved-games screens. Comfort adds a clearer load list and walking on with a double tap on the map.",
             Item.Rules => (_model.FixedRules
-                    ? "Fixed: the original's rules with its gameplay bugs fixed (in this build Fixed still plays as Original). "
+                    ? "Fixed: the 1992 game with its gameplay bugs fixed (the list: docs/FIXED.md). "
                     : "Original: the 1992 game's rules, its bugs included (only bugs that damage saved games, and display glitches, are fixed). ")
                 + "For new games only: a saved game keeps the rules it was started with.",
             Item.CardMenuKeys => "At a card menu, ↑/↓ and the wheel work wherever the pointer is (the 1992 game needed it over the lines), and 1–9 choose a line.",

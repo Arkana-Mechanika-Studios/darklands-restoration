@@ -27,7 +27,7 @@ public sealed class LauncherPackTests : IDisposable
         Assert.Contains("CM-32L", roms, StringComparison.Ordinal);
         Assert.Contains("No ROM files are included", roms, StringComparison.Ordinal);
         // the players' guides beside the program (the makers' guides are the Workshop's: Workshop/docs)
-        foreach (var guide in new[] { "PACKS.md", "MODS.md", "SETTINGS.md", "REPORTING.md" })
+        foreach (var guide in new[] { "PACKS.md", "MODS.md", "SETTINGS.md", "FIXED.md", "REPORTING.md" })
         {
             Assert.True(File.Exists(Path.Combine(AppContext.BaseDirectory, "docs", guide)), guide);
         }

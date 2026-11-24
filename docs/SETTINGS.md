@@ -63,7 +63,7 @@ not meant for players.
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
 | `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
 | `interface.mode` | `"comfort"` | `--interface classic\|comfort` | the Interface switch (below): `comfort`, the comfort features; `classic`, keeps the 1992 map and saved-games screens; the game plays the same either way |
-| `rules.preset` | `"original"` | `--rules original\|fixed` | the rules of new games (below): `original`, the original's rules; `fixed`, Original and the original's gameplay bugs fixed (in this build Fixed plays as Original); a saved game keeps the rules it was started with |
+| `rules.preset` | `"fixed"` | `--rules fixed\|original` | the rules of new games (below): `fixed`, the original's gameplay bugs fixed ([FIXED.md](FIXED.md) lists them); `original`, the original's rules; a saved game keeps the rules it was started with |
 | `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
 | `sdl.library` | the copy next to the program (`SDL3.dll` on Windows, `libSDL3.so.0` on Linux, both shipped), else the system's | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
@@ -261,18 +261,19 @@ so the game plays the same. The launcher shows it on its Advanced tab, under Sta
 
 ### The rules preset
 
-What the game decides: `rules.preset` is `"original"` (the default) or `"fixed"`; the launcher shows it on its Advanced tab
-("Rules: Original / Fixed"); `--rules original` (or `fixed`) sets it for one run; another value in the file is reported and the
-default kept, on the command line it is an error. **Original** is the original game's rules, its bugs included: only the bugs
-that damage saved games (or end the program) and plain display glitches are fixed, as in every preset. **Fixed** is Original
-with the original's gameplay bugs fixed, each behind its own switch ([faithfulness/SWITCHES.md](faithfulness/SWITCHES.md));
-in this build its fixes are not switched on yet, and a game started with Fixed plays, and is saved, as Original.
+What the game decides: `rules.preset` is `"fixed"` (the default) or `"original"`; the launcher shows it on its Advanced tab
+("Rules: Fixed / Original"); `--rules fixed` (or `original`) sets it for one run; another value in the file is reported and the
+default kept, on the command line it is an error. **Fixed** is the original game with its gameplay bugs fixed, each behind its
+own switch ([faithfulness/SWITCHES.md](faithfulness/SWITCHES.md)); [FIXED.md](FIXED.md) says in a line each what they
+change. **Original** is the original game's rules, its bugs included. Both fix the bugs that damage saved games (or end the
+program) and plain display glitches.
 
 The preset applies to **new games only**. A saved game keeps the rules it was started with: a game whose rules are not
 Original gets a companion file beside its `.SAV` (`DKSAVEn.MODS.JSON`, the file a game with mods has, holding a `rules`
 record: the preset and any switch that differs from it); the `.SAV` itself is unchanged and the original game loads it. A
-saved game without such a record (the original's, 1.0's, 1.1's, an Original game's) loads as Original. When a loaded game's
-rules differ from the preset chosen now, a notice says so once ("This game keeps the rules it was started with"). The
+saved game without such a record (the original's, 1.0's, 1.1's, an Original game's) loads as Original, quietly, also when
+Fixed is chosen now. When a loaded game recorded rules that differ from the preset chosen now (a Fixed game loaded with
+Original chosen), a notice says so once ("This game keeps the rules it was started with: Fixed."). The
 replays, the comparisons with the original and the headless host play the faithful game, whatever this key says.
 
 ### The Interface switch
