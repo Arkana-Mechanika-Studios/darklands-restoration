@@ -6,7 +6,7 @@ generated table differ; run this after changing a flag row:
 
     tools/python/Scripts/python.exe -I -B tools/faithfulness/rule_table.py
 
-The presets column names the player's reference set `classic` (the name before 2026-11-24); it is the Original preset here.
+The presets column's words: `original` (the player's reference set: the data-safety and visual fixes), `fixed`, `restored`.
 """
 import csv
 import os
@@ -17,7 +17,7 @@ CSV = os.path.join(ROOT, "docs", "faithfulness", "switches.csv")
 OUT = os.path.join(ROOT, "src", "Darklands.Core", "RuleTable.Generated.cs")
 
 # the presets column's words and the RulePreset each stands for
-PRESETS = {"classic": "Original", "fixed": "Fixed", "restored": "Restored"}
+PRESETS = {"original": "Original", "fixed": "Fixed", "restored": "Restored"}
 
 
 def main():

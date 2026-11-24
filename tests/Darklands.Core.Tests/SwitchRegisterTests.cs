@@ -16,7 +16,7 @@ public sealed class SwitchRegisterTests
 
     private static readonly HashSet<string> Classes = ["data-safety", "visual", "gameplay", "restoration", "interface-comfort", "new-capability", "presentation", "content-mod"];
     private static readonly HashSet<string> Axes = ["Rules", "Presentation", "Interface"];
-    private static readonly HashSet<string> Presets = ["classic", "fixed", "restored", "any"];
+    private static readonly HashSet<string> Presets = ["original", "fixed", "restored", "any"];
 
     /// <summary>Keys of docs/SETTINGS.md that are not switches (paths, the window, the hardware, the start-up, the developer console): each needs a reason to stay out of the register.</summary>
     private static readonly HashSet<string> NotSwitches = new(StringComparer.Ordinal)
@@ -81,9 +81,9 @@ public sealed class SwitchRegisterTests
                 problems.Add($"{row["id"]}: default '{row["default"]}' but DataSafe has it {(on ? "on" : "off")}");
             }
             var everywhere = row["class"] is "data-safety" or "visual";
-            if (everywhere != row["presets"].Split(';').Contains("classic"))
+            if (everywhere != row["presets"].Split(';').Contains("original"))
             {
-                problems.Add($"{row["id"]}: class {row["class"]} and presets '{row["presets"]}' disagree about Classic (A4: only data-safety and visual fixes are on in Classic)");
+                problems.Add($"{row["id"]}: class {row["class"]} and presets '{row["presets"]}' disagree about Original (A4: only data-safety and visual fixes are on in Original)");
             }
             if (everywhere && !on)
             {
@@ -99,7 +99,7 @@ public sealed class SwitchRegisterTests
 
     /// <summary>
     /// The rule table (RuleTable.Generated.cs) is the CSV's flag rows, in order: id, property, class and presets (the column's
-    /// "classic" is the Original preset); each property's index constant is its place. Run tools/faithfulness/rule_table.py after
+    /// "original" is the Original preset); each property's index constant is its place. Run tools/faithfulness/rule_table.py after
     /// changing a flag row.
     /// </summary>
     [Fact]
@@ -112,7 +112,7 @@ public sealed class SwitchRegisterTests
         {
             var (row, rule) = (rows[i], RuleTable.Flags[i]);
             var presets = row["presets"].Split(';');
-            var expected = new RuleTable.Rule(row["id"], row["key"], row["class"], presets.Contains("classic"), presets.Contains("fixed"), presets.Contains("restored"));
+            var expected = new RuleTable.Rule(row["id"], row["key"], row["class"], presets.Contains("original"), presets.Contains("fixed"), presets.Contains("restored"));
             if (rule != expected)
             {
                 problems.Add($"row {i}: the table has {rule}, the CSV {expected}");
@@ -136,7 +136,7 @@ public sealed class SwitchRegisterTests
     {
         var rows = Rows().Where(r => r["kind"] == "flag").ToList();
         var problems = new List<string>();
-        foreach (var (preset, word) in new[] { (RulePreset.Faithful, "(none)"), (RulePreset.Original, "classic"), (RulePreset.Fixed, "fixed"), (RulePreset.Restored, "restored") })
+        foreach (var (preset, word) in new[] { (RulePreset.Faithful, "(none)"), (RulePreset.Original, "original"), (RulePreset.Fixed, "fixed"), (RulePreset.Restored, "restored") })
         {
             var behaviour = OriginalBehaviour.Of(preset);
             foreach (var row in rows)
@@ -284,7 +284,7 @@ public sealed class SwitchRegisterTests
                 problems.Add($"{id}: a planned switch is off ('{row["default"]}')");
             }
             var presets = row["presets"].Split(';');
-            if ((row["class"] is "data-safety" or "visual") != presets.Contains("classic") || !presets.Contains("fixed") || !presets.Contains("restored"))
+            if ((row["class"] is "data-safety" or "visual") != presets.Contains("original") || !presets.Contains("fixed") || !presets.Contains("restored"))
             {
                 problems.Add($"{id}: class {row["class"]} and presets '{row["presets"]}' disagree");
             }

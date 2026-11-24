@@ -5,19 +5,19 @@ become decisions. What is planned is in `docs/ROADMAP.md`; the practical side of
 
 ## 1. Principles
 
-1. **Classic stays the reference.** Tag v1.0 is the frozen faithful game. The Classic rule set is checked against the
-   original program in every release. No change may make Classic less faithful; a change that would is a regression,
+1. **The original stays the reference.** Tag v1.0 is the frozen faithful game. The Original rule set is checked against the
+   original program in every release. No change may make Original less faithful; a change that would is a regression,
    whatever it adds.
 2. **One codebase, switches and presets.** No long-lived forks. Every departure from the original sits behind a switch
    with an id, and the original path stays beside it. Switches act on three independent axes: **rules** (what the game
    decides), **presentation** (what the player sees and hears) and **interface** (how the player gives the same orders).
-   Presets combine them: Classic, Fixed, Restored, Custom (`docs/ROADMAP.md`). The save records the rule set it was
-   played with.
+   Presets combine them: Original, Fixed, Restored, Custom (`docs/ROADMAP.md`). The save records the rule set it was
+   played with. (The rules preset Original is not the Interface switch's Classic, which is about how orders are given.)
 3. **Every change has a class, and the class decides its evidence and its switch** (section 2).
 4. **Two kinds of fix are on in every preset:** bugs of the original that damage the player's data (lost items, broken
    saves, load crashes) and plain display glitches. Each is still reproduced exactly behind a switch, for the checks
    against the original, and documented.
-5. **Saved games stay compatible both ways** where the rule set allows: a Classic or Fixed save loads in the original
+5. **Saved games stay compatible both ways** where the rule set allows: an Original or Fixed save loads in the original
    game. New things are saved through stand-ins the original understands.
 6. **Data, not code, for mods.** Mods and packs are data only; code changes go through the repository and review.
 7. **Neutral sources and clean rights.** Committed text cites the original program by its coordinates and describes it in
@@ -29,13 +29,13 @@ become decisions. What is planned is in `docs/ROADMAP.md`; the practical side of
 
 | Class | Example | Where it lives | Evidence required |
 |---|---|---|---|
-| Faithfulness fix | the C# differs from the original program | Classic itself | the checks against the original agree afterwards |
+| Faithfulness fix | the C# differs from the original program | Original itself | the checks against the original agree afterwards |
 | Data-safety fix | a save writer that skips slots | on in every preset | exact reproduction behind its switch, and a test |
 | Display fix | stray boxes in a hint | on in every preset | the original's look documented, with a picture |
 | Gameplay bug fix | an exploit, a wrong formula | rules: Fixed | a register id, the original path kept, tests of both |
 | Restoration | unused content, the designers' intent | rules: Restored | sources at a stated level (section 3), and a test |
 | Interface comfort | key rebinding, sorting a list | interface | it breaks down into orders the original accepts |
-| New capability | a new screen that changes the game | rules: extended | a design note (section 4) and tests; never in Classic |
+| New capability | a new screen that changes the game | rules: extended | a design note (section 4) and tests; never in Original |
 | Presentation | sharper pictures, new sounds | presentation | shows nothing the original hides; clicks land where they would in the original |
 | Content mod | quests, items, art packs | the mod system | the mod checker passes |
 
