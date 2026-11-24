@@ -6,12 +6,13 @@ proposed, decided and reviewed is in `docs/GOVERNANCE.md`; how to take part is i
 
 ## The promise that does not change
 
-- **Classic stays the reference.** The game as 1.0 plays it is kept, and checked against the original program in every
-  release. Nothing below may make Classic less faithful.
+- **The original stays the reference.** The game as 1.0 plays it is kept, and checked against the original program in every
+  release. Nothing below may make it less faithful.
 - **Everything new is a switch.** Every departure from the original has an id, and the original path stays beside it.
 - **Presets** gather the switches into the games players choose between:
-  - **Classic**: the original game, its bugs included (only bugs that damage saved games, and plain display glitches, are
-    fixed in every preset). It is the reference for checking and for purists.
+  - **Original**: the original game, its bugs included (only bugs that damage saved games, and plain display glitches, are
+    fixed in every preset). It is the reference for checking and for purists. (Not the Interface switch's Classic, which is
+    about how orders are given.)
   - **Fixed**: the original content with the original game's bugs fixed. It is meant to become the default.
   - **Restored**: Fixed, plus content the original game holds but never uses and what its designers meant to do.
   - **Custom**: any choice of switches.
@@ -25,7 +26,7 @@ The work is organised in ten tracks. Each has its own goal, its own standard of 
 
 | Track | Goal |
 |---|---|
-| Faithfulness | Keep Classic exact: the checks against the original, the registers of differences, bugs and unused code. |
+| Faithfulness | Keep the original game exact: the checks against the original, the registers of differences, bugs and unused code. |
 | Engine structure | Separate the game's rules from its screens, text, data and rules settings, so the tracks below can build on it. |
 | Original bug fixing | The Fixed rule set: each bug of the original reproduced, registered with an id, then fixed behind its own switch. |
 | Restoration and research | The Restored preset: content made or meant by the designers, each item with its sources; the history of the game. |
@@ -47,7 +48,7 @@ One development line that reworks each part of the engine once. In order:
 1. Code-health work held back for 1.0 (file layout; settings read only by the hosts).
 2. Screens that only read the game and send commands, together with every text of the game given an id instead of
    English text in the code. Each step checked against the original.
-3. One table of rule switches and rule values, the Classic and Fixed presets, and the first fixed rules: as many of the
+3. One table of rule switches and rule values, the Original and Fixed presets, and the first fixed rules: as many of the
    original's gameplay bugs as can be done, each one a switch tied to its register id.
 4. An in-game settings screen (the game and its clock stand still while it is open), and input recording in problem
    reports, so a report can be replayed exactly.

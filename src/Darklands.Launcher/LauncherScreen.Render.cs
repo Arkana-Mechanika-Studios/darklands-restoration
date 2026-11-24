@@ -505,7 +505,12 @@ internal sealed partial class LauncherScreen
             var wheelLabel = interfaceEnd + v.Len(30);
             y = Select(y, "Mouse wheel", _model.MouseWheel ? "Yes" : "No", Item.MouseWheel,
                 at: layout with { Label = wheelLabel, Select = wheelLabel + text.Measure("Mouse wheel") + v.Len(14), SelectEnd = layout.Right });
-            y = Select(y, "Card menu keys anywhere", _model.CardMenuKeys ? "Yes" : "No", Item.CardMenuKeys, narrow: true);
+            // the rules preset of new games and the card menu keys side by side: one row (the tab has no height for another)
+            Select(y, "Rules", _model.FixedRules ? "Fixed" : "Original", Item.Rules,
+                at: layout with { SelectEnd = interfaceEnd, Right = interfaceEnd + v.Len(8) });
+            var keysLabel = interfaceEnd + v.Len(30);
+            y = Select(y, "Card menu keys", _model.CardMenuKeys ? "Yes" : "No", Item.CardMenuKeys,
+                at: layout with { Label = keysLabel, Select = keysLabel + text.Measure("Card menu keys") + v.Len(14), SelectEnd = layout.Right });
         }
 
         // the panel's foot: Play at the right, the larger; Save and quit at the left, apart from it

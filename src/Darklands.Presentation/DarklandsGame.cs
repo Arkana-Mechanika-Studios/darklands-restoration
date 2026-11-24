@@ -78,7 +78,20 @@ public sealed class DarklandsGame
     {
         Mods = SaveMods,
         Used = SaveUsed is { } used ? (name, loading) => used(SaveDirectory, name, loading) : null,
+        RecordRules = RecordedRules,
     };
+
+    /// <summary>
+    /// The player's game (rules.preset, docs/SETTINGS.md): a new game plays with <see cref="Behaviour"/> (the chosen preset's flags), a
+    /// saved game records its rules when they are not Original (its companion file), and a loaded game plays with the rules it
+    /// recorded (none recorded: Original), whatever <see cref="Behaviour"/> is now. Off (the testers' faithful game, the headless
+    /// host): every game plays with <see cref="Behaviour"/> and nothing is recorded, as before.
+    /// </summary>
+    // Not in the original: the rules presets.
+    public bool RecordedRules { get; set; }
+
+    // the games loaded here that play with their own recorded rules (RecordedRules): PlayEach leaves their Behaviour as it is
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<GameState, object> _ownRules = new();
 
     /// <summary>
     /// A host's notice (null: none) of the saved game being loaded (just before its file is read) or saved: the save folder, the file's
@@ -480,7 +493,11 @@ public sealed class DarklandsGame
             {
                 _session = state;
                 _played = true;
-                state.Behaviour = Behaviour;
+                // a loaded game keeps the rules it recorded (RecordedRules); every other game plays with this program's
+                if (!_ownRules.TryGetValue(state, out _))
+                {
+                    state.Behaviour = Behaviour;
+                }
                 state.Parameters = Parameters;
                 Playing = state;
                 Play(state);
@@ -536,6 +553,10 @@ public sealed class DarklandsGame
         Options.SoundEffects = loaded.SoundEffects;
         box.Close(shown);
         LoadShieldPictures(loaded);
+        if (RecordedRules)
+        {
+            KeepRecordedRules(name, loaded);
+        }
         // DIVERGENCE: no original: a game saved with mods (its companion file, ModdedSaves) that are not loaded now goes on without
         //   them, from the game's cards its .SAV names; the player is told which mods are missing.
         if (loaded.Mods.Problem is { } problem)
@@ -555,6 +576,29 @@ public sealed class DarklandsGame
             box.Notice(lines);
         }
         return loaded;
+    }
+
+    // Not in the original: a saved game plays with the rules it recorded (its companion file; none: Original), not with the preset
+    //   chosen now (rules.preset applies to new games only); when the two differ the player is told once, as the game loads.
+    private void KeepRecordedRules(string name, LoadedGame loaded)
+    {
+        foreach (var problem in loaded.Mods.RulesProblems)
+        {
+            Log?.Invoke($"{name}: {problem}");
+        }
+        var rules = loaded.Mods.Rules ?? Core.OriginalBehaviour.Original;
+        loaded.State.Behaviour = rules;
+        _ownRules.AddOrUpdate(loaded.State, rules);
+        if (rules.Preset != Behaviour.Preset || !rules.SameFlags(Behaviour))
+        {
+            var title = Core.RulePresets.Title(rules.Preset);
+            Log?.Invoke($"{name} keeps the rules it was started with ({title}{(rules.Differences().Count > 0 ? ", changed" : "")}), not those chosen now ({Core.RulePresets.Title(Behaviour.Preset)})");
+            new MessageBox(_ui).Notice([
+                _ui.Words("id:rw.save.rules-kept.1"),
+                _ui.Words(Core.GameText.Of("id:rw.save.rules-kept.2", ("rules", title))),
+                _ui.Words("id:rw.notice.press-a-key"),
+            ]);
+        }
     }
 
     /// <summary>The notice for a saved game that is cut short (the rewrite's own text: its ids, one box a line).</summary>

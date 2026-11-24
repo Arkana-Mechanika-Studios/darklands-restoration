@@ -62,6 +62,9 @@ public sealed class CommandLineOptions
     /// <summary>--interface classic|comfort: the Interface switch for this run (anything else is ignored).</summary>
     public string? InterfaceMode { get; set; }
 
+    /// <summary>--rules original|fixed: the rules preset of new games for this run.</summary>
+    public string? RulesPreset { get; set; }
+
     /// <summary>The mods of --mod (each given once per --mod); empty: the settings file's.</summary>
     public List<string> Mods { get; set; } = [];
 
@@ -107,6 +110,7 @@ public sealed class CommandLineOptions
         By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");
         By("input.cardMenuKeys", NoCardMenuKeys, "--no-card-menu-keys");
         By("interface.mode", InterfaceMode is "classic" or "comfort", "--interface");
+        By("rules.preset", Given(RulesPreset), "--rules");
         By("startup.commandLine", GameCommandLine is not null, "--");
         By("mods", Mods.Count > 0, "--mod");
         return fixedKeys;
@@ -190,6 +194,9 @@ public sealed class ResolvedSettings
     /// <summary>The Interface switch on Comfort (GameUi.ComfortInterface): the comfort features; false: Classic, the original interface.</summary>
     public bool ComfortInterface { get; private init; }
 
+    /// <summary>The rules preset of new games: "original" or "fixed" (rules.preset, --rules).</summary>
+    public string RulesPreset { get; private init; } = "original";
+
     /// <summary>The developer console is available (a host feature).</summary>
     public bool ConsoleEnabled { get; private init; }
 
@@ -241,8 +248,17 @@ public sealed class ResolvedSettings
         {
             filter = fileFilter;
         }
+        // the command line's rules preset must be a known one; the file's was checked as it was read (another value is left out there)
+        var rules = file.RulesPreset ?? "original";
+        if (Set(cli.RulesPreset) is { } cliRules)
+        {
+            rules = cliRules.Trim().ToLowerInvariant() is var given && given is "original" or "fixed"
+                ? given
+                : throw new ArgumentException($"unknown rules preset \"{cliRules}\" (original, fixed)");
+        }
         return new ResolvedSettings
         {
+            RulesPreset = rules,
             GameFolder = FirstGiven(cli.GameFolder, "DARKLANDS_DIR", file.GameFolder),
             SavesFolder = FirstGiven(cli.SavesFolder, "DARKLANDS_SAVES", file.SavesFolder),
             Window = window,

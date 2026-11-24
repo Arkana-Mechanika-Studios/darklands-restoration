@@ -44,6 +44,7 @@ internal static class CommandLineUsage
           --no-mouse-wheel           the mouse wheel does not give up / down in the menus and lists
           --no-card-menu-keys        at a card menu, up / down only with the pointer over a line (as the original)
           --interface <mode>         the Interface switch: comfort (default: the comfort features) or classic (the original's)
+          --rules <preset>           the rules of new games: original (default) or fixed
           --log-window               a window with the program's messages (Windows; they always go to the log)
           --sound-test               check the sound without the game, then stop
           --version | --help         the version | this text
