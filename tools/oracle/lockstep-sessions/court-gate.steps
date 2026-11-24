@@ -1,0 +1,23 @@
+# court-progress: the citadel's court entered from the castle gate. endgame-baphomet DKSAVE6 (483.07, "3rd done": three rooms finished,
+# DS:160C = 0x0707 in its .BSV) set at card 344 ($LastC00), saved outside the battle (local/oracle-saves/court/DKSAVE6-card344.SAV). The gate
+# reloads the finished rooms from fact 1/0x1A (DS:160C's high byte, low byte cleared) and line 0 enters the courtyard (battlefield 0x57):
+# the original marks the finished rooms' doors and fights the court's groups; the combatant records of every pass are compared.
+# No state step: the synthetic save keeps its .BSV of a game saved in the battle, whose in-battle mark the original writes back into the
+# header at load (a pair a game never writes); the battle and its combatant records are what this session checks.
+key:t
+wait:5
+key:l
+wait:300
+key:space
+wait:100
+key:space
+wait:100
+key:space
+wait:100
+option:0
+wait:5
+key:enter
+wait:300
+bwait:5
+bwait:40
+bwait:40

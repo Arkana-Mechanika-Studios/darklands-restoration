@@ -70,7 +70,8 @@ public static class CitadelBattlefield
     /// and the doors already opened are marked on the map.
     /// </summary>
     // orig: R013+0x0098 (1432:0098) draft (the draft does not match); checked against asm; tests: Oracle:special.json
-    // DORMANT: CourtProgress (DS:160C) is 0 in the shipped game, so the party start, the opened doors and the empty court never occur.
+    // C: CourtProgress (DS:160C) is non-zero after the first trial room: the party start and the empty court after a room, the opened
+    //   doors after the gate (sessions court-return, court-gate; the special corpus covers the builder for every value).
     private static void BuildCourt(GenerationState g)
     {
         int[] doorIds = [0x159, 0x15C, 0x15E, 0x15B, 0x162, 0x165, 0x166, 0];

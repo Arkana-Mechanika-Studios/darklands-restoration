@@ -1,0 +1,13 @@
+# court-progress: the citadel's court after a trial room. endgame-baphomet DKSAVE6 (483.07, "3rd done", DS:160C = 0x0707 in its .BSV) set at
+# card 365 ($LastC11, back to the courtyard, previous card 350), saved outside the battle (local/oracle-saves/court/DKSAVE6-card365.SAV).
+# The card adds the room's door bit and starts the courtyard fight (battlefield 0x57): the original builds the court from DS:160C (the
+# party at the returning door's spot, no enemies); the combatant records of every pass are compared (--battle-records).
+# No state step: the synthetic save keeps its .BSV of a game saved in the battle, whose in-battle mark the original writes back into the
+# header at load (a pair a game never writes); the battle and its combatant records are what this session checks.
+key:t
+wait:5
+key:l
+wait:300
+bwait:5
+bwait:40
+bwait:40
