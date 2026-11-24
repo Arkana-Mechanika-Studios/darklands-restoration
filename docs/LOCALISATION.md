@@ -364,7 +364,10 @@ exists. To make the next beta: raise `WorkshopVersion`, write its notes file, me
   pixels, 1 to 3 lines. It reports a layout that breaks them or runs off the screen as an error. A layout that may cover
   another text of the same screen gets a warning: that text may be on another page of the screen, or in a menu, and not drawn
   with it. Texts whose places no recorded session has (some buttons' labels) are not checked for this; look at the game. An
-  interface mod will have looser limits on the same file.
+  interface mod will have looser limits on the same file. The file also knows two other kinds of slot, for the game's new
+  screens (1.2): `"kind": "area"` (a hit rectangle: `x`, `y`, `width`, `height`) and `"kind": "list"` (`x`, `y`, `width`,
+  `rows`, `rowHeight`). They belong to interface views, not to translations: the check refuses them in a language pack, and
+  the Workshop keeps them as they are.
 
   **Embossed headings.** An embossed heading is two texts, a pixel apart: its shadow and its face (for example the party
   information screen's title). Translate both. A layout given to one is given to the other, a pixel apart.

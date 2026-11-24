@@ -62,4 +62,85 @@ public sealed class SlotLayoutsTests
         Assert.Empty(SlotLayouts.Validate(On("BarterScreen", "a", new SlotLayout(X: 20, Width: 250)), boxes, loose));
         Assert.True(new SlotLayout().IsOriginal);
     }
+
+    /// <summary>The 1.2 slot kinds: an area (a hit rectangle) and a list (rows of equal height), read and written with their fields.</summary>
+    [Fact]
+    public void AreasAndListsAreWrittenAndReadBack()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "dl-layouts-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        try
+        {
+            var area = new SlotLayout(X: 40, Y: 30, Width: 100, Kind: SlotKinds.Area, Height: 12);
+            var list = new SlotLayout(X: 40, Y: 50, Width: 200, Kind: SlotKinds.List, Rows: 8, RowHeight: 10);
+            var layouts = new Dictionary<string, Dictionary<string, SlotLayout>> { ["SettingsScreen"] = new() { ["close"] = area, ["rows"] = list } };
+            SlotLayouts.Save(folder, layouts);
+            var text = File.ReadAllText(Path.Combine(folder, "interface", "layout.json"));
+            Assert.Contains("\"kind\": \"area\"", text, StringComparison.Ordinal);
+            Assert.Contains("\"rowHeight\": 10", text, StringComparison.Ordinal);
+            var read = SlotLayouts.Load(folder, out var problem);
+            Assert.Null(problem);
+            Assert.Equal(area, read["SettingsScreen"]["close"]);
+            Assert.Equal(list, read["SettingsScreen"]["rows"]);
+            // a declaration is never the original's, so saving keeps it
+            Assert.False(area.IsOriginal);
+            Assert.False(list.IsOriginal);
+            Assert.False(area.IsText);
+            Assert.True(new SlotLayout(X: 3).IsText);
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void AnAreaAndAListAreHitWhereTheyAreDeclared()
+    {
+        var area = new SlotLayout(X: 40, Y: 30, Width: 100, Kind: SlotKinds.Area, Height: 12);
+        Assert.Equal((40, 30, 100, 12), area.Rectangle);
+        Assert.True(area.Contains(40, 30));
+        Assert.True(area.Contains(139, 41));
+        Assert.False(area.Contains(140, 41));
+        Assert.False(area.Contains(39, 30));
+        Assert.Equal(-1, area.RowAt(50, 35));
+        var list = new SlotLayout(X: 40, Y: 50, Width: 200, Kind: SlotKinds.List, Rows: 8, RowHeight: 10);
+        Assert.Equal((40, 50, 200, 80), list.Rectangle);
+        Assert.Equal(0, list.RowAt(40, 50));
+        Assert.Equal(2, list.RowAt(100, 79));
+        Assert.Equal(7, list.RowAt(239, 129));
+        Assert.Equal(-1, list.RowAt(100, 130));
+        Assert.Equal(-1, list.RowAt(240, 60));
+        // a text has no rectangle of its own here (its box is the recorded one)
+        Assert.Null(new SlotLayout(X: 1, Y: 2, Width: 3).Rectangle);
+        Assert.False(new SlotLayout(X: 1, Y: 2, Width: 3).Contains(1, 2));
+    }
+
+    [Fact]
+    public void AreasAndListsAreCheckedAndALanguagePackDeclaresNone()
+    {
+        var boxes = new Dictionary<string, TextBox>();
+        List<string> Problems(SlotLayout layout, LayoutProfile profile) =>
+            [.. SlotLayouts.Validate(On("SettingsScreen", "slot", layout), boxes, profile).Select(p => p.Problem)];
+        var mod = LayoutProfile.InterfaceMod;
+        Assert.Empty(Problems(new SlotLayout(X: 40, Y: 30, Width: 100, Kind: SlotKinds.Area, Height: 12), mod));
+        Assert.Empty(Problems(new SlotLayout(X: 40, Y: 50, Width: 200, Kind: SlotKinds.List, Rows: 8, RowHeight: 10), mod));
+        // a language pack lays out texts only
+        Assert.Contains(Problems(new SlotLayout(X: 40, Y: 30, Width: 100, Kind: SlotKinds.Area, Height: 12), LayoutProfile.LanguagePack),
+            p => p.Contains("not a language pack", StringComparison.Ordinal));
+        // the fields each kind needs, and nothing of a text's
+        Assert.Contains(Problems(new SlotLayout(X: 40, Y: 30, Kind: SlotKinds.Area, Height: 12), mod), p => p.Contains("x, y and width", StringComparison.Ordinal));
+        Assert.Contains(Problems(new SlotLayout(X: 40, Y: 30, Width: 10, Kind: SlotKinds.Area), mod), p => p.Contains("needs a height", StringComparison.Ordinal));
+        Assert.Contains(Problems(new SlotLayout(X: 40, Y: 30, Width: 10, Kind: SlotKinds.List, Rows: 3), mod), p => p.Contains("rows and a rowHeight", StringComparison.Ordinal));
+        Assert.Contains(Problems(new SlotLayout(X: 40, Y: 30, Width: 10, Lines: 2, Kind: SlotKinds.Area, Height: 5), mod), p => p.Contains("a text's", StringComparison.Ordinal));
+        Assert.Contains(Problems(new SlotLayout(X: 300, Y: 30, Width: 40, Kind: SlotKinds.Area, Height: 5), mod), p => p == "it runs off the screen");
+        Assert.Contains(Problems(new SlotLayout(X: 0, Y: 150, Width: 40, Kind: SlotKinds.List, Rows: 6, RowHeight: 10), mod), p => p == "it runs off the screen");
+        Assert.Contains(Problems(new SlotLayout(X: 0, Y: 0, Width: 4, Kind: "button", Height: 4), mod), p => p.Contains("text, area or list", StringComparison.Ordinal));
+        // an area named like a text of the screen
+        var withText = new Dictionary<string, TextBox> { ["exe:DS:1"] = new("exe:DS:1", 10, 50, false, 1, null) { Screens = ["SettingsScreen"], X = 5, Y = 5 } };
+        Assert.Contains(SlotLayouts.Validate(On("SettingsScreen", "exe:DS:1", new SlotLayout(X: 0, Y: 0, Width: 4, Kind: SlotKinds.Area, Height: 4)), withText, mod),
+            p => p.Problem.Contains("named like a text", StringComparison.Ordinal));
+        // a text with an area's fields
+        Assert.Contains(Problems(new SlotLayout(Width: 40, Height: 9), mod), p => p.Contains("a text has lines", StringComparison.Ordinal));
+    }
 }

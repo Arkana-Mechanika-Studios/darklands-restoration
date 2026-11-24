@@ -391,7 +391,7 @@ public sealed class GameUi
     // Not in the original: the 1.1 translation packs (screen layouts per language).
     public Darklands.Localization.SlotLayout? LayoutOf(string words, string screen) =>
         _laid.Count == 0 || !_laid.TryGetValue(words, out var key) ? null
-        : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key);
+        : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key) is { IsText: true } layout ? layout : null;
 
     /// <summary>
     /// Uses the fonts of the font pack in <paramref name="folder"/> (a font-only pack, <c>{"fonts": true}</c>: high-resolution text for
