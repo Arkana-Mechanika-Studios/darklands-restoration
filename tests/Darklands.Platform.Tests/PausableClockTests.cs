@@ -13,11 +13,14 @@ public sealed class PausableClockTests
         var stopped = clock.Milliseconds;
         Thread.Sleep(80);
         Assert.Equal(stopped, clock.Milliseconds);
+        var watch = System.Diagnostics.Stopwatch.StartNew();
         clock.Resume();
         Assert.False(clock.Paused);
         Thread.Sleep(30);
         var now = clock.Milliseconds;
-        Assert.True(now - stopped >= 25 && now - stopped < 80, $"{now - stopped} ms after the pause");
+        var real = watch.ElapsedMilliseconds;
+        // it goes on from where it stopped: the time since the resume, not the 80 ms it stood still (a busy machine may oversleep)
+        Assert.True(now - stopped >= 25 && now - stopped <= real + 5, $"{now - stopped} ms after the pause, {real} ms since the resume");
     }
 
     [Fact]
