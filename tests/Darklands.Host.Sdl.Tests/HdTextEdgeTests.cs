@@ -133,6 +133,7 @@ public sealed class HdTextEdgeTests
         screen.Palette[7] = 0xFFFFFFFFu;
         screen.Palette[8] = 0xFFD8B0A0u;
         screen.Palette[9] = 0xFFC09888u;
+        screen.Palette[10] = 0xFFE4E4E4u;
         var canvas = new Canvas(screen);
         for (var y = 0; y < Screen.Height; y++)
         {
@@ -142,9 +143,12 @@ public sealed class HdTextEdgeTests
             }
         }
         var painter = new TextPainter(null!) { PackFont = mono };
-        painter.DrawCodes(canvas, 9, 12, [.. "Autosave: battle".Select(c => (int)c)], 3);
-        painter.DrawCodes(canvas, 9, 28, [.. "Autosave".Select(c => (int)c)], 4);
-        painter.DrawCodes(canvas, 9, 44, [.. "Autosave: battle".Select(c => (int)c)], 4);
+        // the saved-games list's lines: a pale shadow a pixel down and right, then the line (LoadGameScreen.Shadowed)
+        foreach (var (y, text, colour) in new (int Y, string Text, byte Colour)[] { (12, "Autosave: battle", 3), (28, "Autosave", 4), (44, "Autosave: battle", 4) })
+        {
+            painter.DrawCodes(canvas, 10, y + 1, [.. text.Select(c => (int)c)], 10);
+            painter.DrawCodes(canvas, 9, y, [.. text.Select(c => (int)c)], colour);
+        }
         painter.DrawCodes(canvas, 12, 86, [.. "42  42  99".Select(c => (int)c)], 7);
         painter = new TextPainter(null!) { PackFont = serif };
         painter.DrawCodes(canvas, 9, 130, [.. "Offering some refreshment".Select(c => (int)c)], 4);
