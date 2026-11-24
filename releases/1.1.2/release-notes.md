@@ -4,10 +4,12 @@ Darklands Restoration 1.1.2 is a small fix to 1.1.
 
 - **HD fonts: no thin bits of the original letters at the edges of the HD letters.** On the saved-games list, the party
   panel, card texts and elsewhere, thin dark or light ticks of the original low-resolution letters showed beside the HD
-  letters, and white ones in the pale shadow under the saved-games list's lines (the shadow itself is the original's, and
-  is now drawn smoothly). It happened when the game's picture was not a whole multiple of its original size in the window (most full
+  letters, and white ones in the pale shadow under the saved-games list's lines. It happened when the game's picture was not a whole multiple of its original size in the window (most full
   screens, 1920x1080 for example, and most window sizes), and with every picture filter other than Sharp (Even, Soft, HQ and
   the CRT filters). That is why it came and went as the window changed size. The original fonts were not affected.
+- **HD fonts: a lighter text shadow.** With the HD fonts, the shadow under the saved-games list's lines (and the party
+  screen's) is now drawn smaller and softer, as a light emboss, instead of a blurry second copy of the text. The original
+  fonts draw it exactly as in 1992.
 
 Everything else is as in 1.1.0, with 1.1.1's fix included (no faint outlines of a card's hidden answers with the HD fonts).
 For what 1.1 brought, see
