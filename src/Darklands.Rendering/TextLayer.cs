@@ -8,12 +8,30 @@ namespace Darklands.Rendering;
 /// text's colour from the glyph's nearest 1x pixel (what the frame shows there, after the game's xor, recolours and fades) and its
 /// background from the nearest pixel of the row that is not the glyph's, blended by the glyph's coverage; so the 1x pixels are hidden
 /// under it. A frame without such glyphs gives no picture.
+/// The 1x pixels are also taken out of the frame the host scales (<see cref="Erase"/>: each gets the background the layer gives its
+/// cell), so no window pixel the layer leaves clear can show one: a graphics card stretches the frame by each window pixel's centre,
+/// the layer's cells are cut by their edges, and the picture filters spread a pixel into its neighbours; at sizes that are not whole
+/// multiples of 320x200, or with a filter, thin ticks of the 1x letters showed at the HD letters' edges.
 /// </summary>
 // Not in the original: the 1.1 font packs. It reads the frame only.
 public sealed class TextLayer
 {
     private RgbaImage? _image;
     private long _signature;
+    private readonly List<(int At, uint Colour)> _erase = [];
+
+    /// <summary>
+    /// Takes the glyphs the last <see cref="Item"/> drew out of a 320x200 picture of the frame: each 1x pixel gets the background the
+    /// layer gives its cell (glyphs that do not show, <see cref="Unseen"/>, keep theirs).
+    /// </summary>
+    public void Erase(RgbaImage frame)
+    {
+        ArgumentNullException.ThrowIfNull(frame);
+        foreach (var (at, colour) in _erase)
+        {
+            frame.Argb[at] = colour;
+        }
+    }
 
     /// <summary>The layer's draw item for <paramref name="screen"/> at <paramref name="output"/>, or null when the frame shows no such glyph.</summary>
     public DrawItem? Item(Screen screen, DisplayRectangle output)
@@ -37,6 +55,7 @@ public sealed class TextLayer
         if (glyphs.Count == 0 || output.Width <= 0 || output.Height <= 0)
         {
             _image = null;
+            _erase.Clear();
             return null;
         }
         // the backgrounds the glyphs are drawn over count too (a glyph's box takes them)
@@ -61,6 +80,7 @@ public sealed class TextLayer
             return new DrawItem(_image, output, DrawFilter.Nearest, Whole);
         }
         _signature = signature;
+        _erase.Clear();
         var image = _image is { } kept && kept.Width == output.Width && kept.Height == output.Height ? kept : new RgbaImage(output.Width, output.Height);
         Array.Clear(image.Argb);
         var (sx, sy) = ((double)output.Width / Screen.Width, (double)output.Height / Screen.Height);
@@ -70,7 +90,7 @@ public sealed class TextLayer
         {
             if (TextGlyphs.Of(texel) is { } g && !pixels.All(at => Unseen(screen, g, at)))
             {
-                Draw(image, screen, g, texel, pixels, sx, sy);
+                Draw(image, screen, g, texel, pixels, sx, sy, _erase);
             }
         }
         image.Changed();
@@ -81,7 +101,8 @@ public sealed class TextLayer
     // a placement for the whole screen: the host draws the layer as a picture (no filter), not as the game's frame
     private static readonly AssetPlacement Whole = new("text layer", 0, 0, Screen.Width, Screen.Height, false, false, []);
 
-    private static void Draw(RgbaImage image, Screen screen, TextGlyphs.Glyph g, int texel, List<int> pixels, double sx, double sy)
+    private static void Draw(RgbaImage image, Screen screen, TextGlyphs.Glyph g, int texel, List<int> pixels, double sx, double sy,
+        List<(int At, uint Colour)> erase)
     {
         var (left, top, width, height, coverage) = g.Font.Raster(g.Code, sx, sy);
         var mine = new HashSet<int>(pixels);
@@ -149,6 +170,14 @@ public sealed class TextLayer
                 {
                     target = colour;
                 }
+            }
+        }
+        // the frame under the layer without the glyph: its 1x pixels in the background the layer gives their cells
+        foreach (var at in pixels)
+        {
+            if (!Unseen(screen, g, at))
+            {
+                erase.Add((at, Paper(at % Screen.Width, at / Screen.Width)));
             }
         }
     }
