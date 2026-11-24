@@ -97,6 +97,119 @@ public sealed class SwitchRegisterTests
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
     }
 
+    /// <summary>
+    /// The rule table (RuleTable.Generated.cs) is the CSV's flag rows, in order: id, property, class and presets (the column's
+    /// "classic" is the Original preset); each property's index constant is its place. Run tools/faithfulness/rule_table.py after
+    /// changing a flag row.
+    /// </summary>
+    [Fact]
+    public void TheRuleTableIsGeneratedFromTheRegister()
+    {
+        var rows = Rows().Where(r => r["kind"] == "flag").ToList();
+        Assert.Equal(rows.Count, RuleTable.Flags.Count);
+        var problems = new List<string>();
+        for (var i = 0; i < rows.Count; i++)
+        {
+            var (row, rule) = (rows[i], RuleTable.Flags[i]);
+            var presets = row["presets"].Split(';');
+            var expected = new RuleTable.Rule(row["id"], row["key"], row["class"], presets.Contains("classic"), presets.Contains("fixed"), presets.Contains("restored"));
+            if (rule != expected)
+            {
+                problems.Add($"row {i}: the table has {rule}, the CSV {expected}");
+            }
+            var index = typeof(RuleTable).GetField(row["key"], BindingFlags.Public | BindingFlags.Static)?.GetRawConstantValue();
+            if (index is not int at || at != i)
+            {
+                problems.Add($"{row["id"]}: RuleTable.{row["key"]} is {index ?? "missing"}, not {i}");
+            }
+            if (RuleTable.IndexOf(row["id"]) != i)
+            {
+                problems.Add($"{row["id"]}: IndexOf gives {RuleTable.IndexOf(row["id"])}, not {i}");
+            }
+        }
+        Assert.True(problems.Count == 0, "RuleTable.Generated.cs differs from switches.csv (run tools/faithfulness/rule_table.py):" + Environment.NewLine + string.Join(Environment.NewLine, problems));
+    }
+
+    /// <summary>Each preset turns on exactly the flags whose presets column names it; Faithful turns none on; DataSafe is Original.</summary>
+    [Fact]
+    public void PresetsComeFromTheRegister()
+    {
+        var rows = Rows().Where(r => r["kind"] == "flag").ToList();
+        var problems = new List<string>();
+        foreach (var (preset, word) in new[] { (RulePreset.Faithful, "(none)"), (RulePreset.Original, "classic"), (RulePreset.Fixed, "fixed"), (RulePreset.Restored, "restored") })
+        {
+            var behaviour = OriginalBehaviour.Of(preset);
+            foreach (var row in rows)
+            {
+                var on = (bool)typeof(OriginalBehaviour).GetProperty(row["key"])!.GetValue(behaviour)!;
+                if (on != row["presets"].Split(';').Contains(word))
+                {
+                    problems.Add($"{preset}: {row["id"]} is {(on ? "on" : "off")}, presets '{row["presets"]}'");
+                }
+                if (on != behaviour.IsOn(row["id"]))
+                {
+                    problems.Add($"{preset}: {row["id"]}: the property and IsOn disagree");
+                }
+            }
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+        Assert.Empty(OriginalBehaviour.Faithful.On);
+        Assert.Equal(OriginalBehaviour.Original.On, OriginalBehaviour.DataSafe.On);
+        Assert.Equal(31, OriginalBehaviour.DataSafe.On.Count());
+    }
+
+    /// <summary>Every gameplay flag is on in Fixed (and Restored) and none is on in Original; the data-safety and visual flags are on in every player set.</summary>
+    [Fact]
+    public void EveryGameplayFlagIsOnInFixedAndNoneInOriginal()
+    {
+        var (original, fixedSet, restored) = (OriginalBehaviour.Of(RulePreset.Original), OriginalBehaviour.Of(RulePreset.Fixed), OriginalBehaviour.Of(RulePreset.Restored));
+        var gameplay = RuleTable.Flags.Where(r => r.Class == "gameplay").ToList();
+        Assert.Equal(30, gameplay.Count);
+        Assert.All(gameplay, r => Assert.True(fixedSet.IsOn(r.Id) && restored.IsOn(r.Id) && !original.IsOn(r.Id), r.Id));
+        Assert.All(RuleTable.Flags.Where(r => r.Class is "data-safety" or "visual"), r => Assert.True(original.IsOn(r.Id) && fixedSet.IsOn(r.Id) && restored.IsOn(r.Id), r.Id));
+        Assert.Equal(RuleTable.Flags.Count, fixedSet.On.Count());
+    }
+
+    /// <summary>Each property reads and writes its own flag of the table, by its register id.</summary>
+    [Fact]
+    public void EachPropertyIsItsKeyedFlag()
+    {
+        foreach (var rule in RuleTable.Flags)
+        {
+            var behaviour = OriginalBehaviour.Faithful;
+            behaviour.Set(rule.Id, true);
+            Assert.Equal([rule.Id], behaviour.On);
+            var property = typeof(OriginalBehaviour).GetProperty(rule.Property)!;
+            Assert.True((bool)property.GetValue(behaviour)!, rule.Id);
+            property.SetValue(behaviour, false);
+            Assert.False(behaviour.IsOn(rule.Id), rule.Id);
+        }
+    }
+
+    /// <summary>A key the table does not know (from a newer save or a typo in the settings) is reported once and ignored: it turns nothing on.</summary>
+    [Fact]
+    public void UnknownKeysAreReportedOnceAndIgnored()
+    {
+        var reports = new List<string>();
+        var before = OriginalBehaviour.ReportUnknown;
+        OriginalBehaviour.ReportUnknown = reports.Add;
+        try
+        {
+            var key = "fix.test.unknown-" + Guid.NewGuid().ToString("N");
+            var behaviour = OriginalBehaviour.Faithful;
+            Assert.False(behaviour.IsOn(key));
+            behaviour.Set(key, true);
+            Assert.False(behaviour.IsOn(key));
+            Assert.Empty(behaviour.On);
+            Assert.Single(reports, r => r.Contains(key, StringComparison.Ordinal));
+            Assert.Equal(-1, RuleTable.IndexOf(key));
+        }
+        finally
+        {
+            OriginalBehaviour.ReportUnknown = before;
+        }
+    }
+
     /// <summary>The register ids of a flag are the original-bugs entries that name it as their fix flag, no more and no fewer.</summary>
     [Fact]
     public void RegisterIdsAgreeWithTheOriginalBugsRegister()

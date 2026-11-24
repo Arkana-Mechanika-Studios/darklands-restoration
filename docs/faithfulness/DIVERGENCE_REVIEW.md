@@ -376,7 +376,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R030+0x1300` (1462:1300, draft), `R030+0x0C44` (1462:0C44, draft), `R030+0x02C0` (1462:02C0, draft)  
   divergence: the original keeps the party as three view-relative registers (DS:2866/DS:2868 the marker inside the 260x184 view, DS:286A/DS:286C/DS:286E the view's column and row offsets into the scrolling G[][] terrain buffer); this class works on absolute map pixels and cells (WorldMap.CellAt). The cell under the marker is the same one (the formulas of 1300: row = (y + 11) / 4, column from x + 16 or x + 24 by the row's parity, are those of CellAt); the terrain read through G is one cell off at the view's column 0 / row 0, as in the original (WorldMap.BufferOffset, View).  
   recommendation: **justify** - Different representation (absolute pixels and cells against view-relative registers) with the same cell under the marker, per the note, which gives the formulas. Covered by the path/travel oracle where present; verify scrolling clamps at the map edge against 1300/0C44 (OverlandScreen has the original's jumps).
-- **D-2a7fc2** `other` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:208` `OverlandTravel.ArriveAt`  
+- **D-2a7fc2** `other` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:210` `OverlandTravel.ArriveAt`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
@@ -475,7 +475,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### deliberate-fix (1)
 
-- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:431` `OriginalSaves.static`  
+- **D-1ebf76** `deliberate-fix` - `src/Darklands.Persistence/OriginalSaves.cs:432` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: with the fix (data safety, switchable; on in the player's game) the record of the status-0 slot is written like the others and the count is true.  
   recommendation: **justify** (checked against the original) - Data safety, switchable (OriginalBehaviour.FixSaveWriterSkipsEmptySlots, on in the player's game): the original writes a short file for a party slot of status 0 (the Wild Hunt) that it can crash loading; fixed, every roster record is written and the count is true. The faithful short file is reproduced (D-be90b2).
@@ -494,7 +494,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R003+0x0CE8` (0E76:0CE8, draft), `R003+0x19CA` (0E76:19CA, draft), `R003+0x19E8` (0E76:19E8, draft)  
   divergence: the original ends the program with those messages; here the read fails with them.  
   recommendation: **justify** - Host difference: the original shuts the game down and returns to DOS with the message ("EOF-" or "Corrupt file-" and the block's name); here the load fails with an exception carrying the same text and the caller reports it. Only damaged battle files reach it.
-- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:459` `OriginalSaves.static`  
+- **D-12437c** `other` - `src/Darklands.Persistence/OriginalSaves.cs:460` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the original always writes 414 records; a state with another number of places (tests) writes what it has.  
   recommendation: **justify** - Only tests use a state with another number of places; the game always has 414.
@@ -597,7 +597,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R136+0xA60B` (290E:1F7B, data), `R034+0x11DC` (1550:02FC, matched)  
   divergence: negative fame indexes before the table in the original (fame / 50 < 0); kept at rank 0 (the first title) here.  
   deterministic: **n/a** (checked against the original); action: **document** - Fame only changes via party-write(4,..): award-prize (positive) and R039+0x1E90 (ChargeFame), and 1e90 has no caller and no vector/table entry anywhere in the disassembly (dead code), so party-renown is never negative and fame/50 (idiv, clamped to 10 by the asm) is >= 0. For the record, index -k would select profession name 37-k of R136+0xA577 (-1 'Bandit', -2 'Hunter', -3 'Peasant', -4 'Thief' ...; a static table directly before the fame titles at 1F7B). (Was D-1e6f48 under PartyStanding.FameTitle, whose marker named R136+0xA773, the compass words; since L-4 the marker is on FameRank and names the fame table R136+0xA60B = 290E:1F7B.)
-- **D-e02bd8** `undefined-memory` - `src/Darklands.Core/Rules/Practice.cs:79` `Practice.ChargeFame`  
+- **D-e02bd8** `undefined-memory` - `src/Darklands.Core/Rules/Practice.cs:81` `Practice.ChargeFame`  
   original: `R039+0x1E90` (1462:1E90, matched)  
   divergence: a size above 4 multiplies an uninitialised register in the original; here 0.  
   deterministic: **n/a** (checked against the original); action: **document** - R039+0x1E90 (ChargeFame) is never called: no direct call, no vector in the root_09c0 table and no card reference in the whole listing, and CardContext.ChargeFame has no card user. For size>4 `register int v` would be SI as left by the caller. (The stored fame is cost-fame, the other bug the C# keeps behind FixFameCost.) Nothing to reproduce.
@@ -1149,11 +1149,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: depending on those bytes the original either goes on with the garbled game (DKSAVE40's re-save) or stops with run-time error R6001, "null pointer assignment", back to DOS (a re-save after losing to the Wild Hunt; card oracle, then the lockstep oracle); the rewrite loads the garbled game and goes on, never crashing.  
   deterministic: **no** (checked against the original); action: **keep** - Checked against the original: losing to the Wild Hunt (card 0x41, card oracle with the battle lost, 24 runs) makes 483.07 write a save one record short; loading that file in the lockstep oracle ends in run-time error R6001 (null pointer assignment, exit 255) inside R037+0x8ED4, while DKSAVE40's own short re-save loads garbled. Which happens depends on heap and file bytes; a crash to DOS is not reproduced on purpose (user decision 2026-10-22): the rewrite loads the garbled game. A later 'fixed' mode would stop the Wild Hunt writing such files.
-- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:234` `OriginalSaves.Read`  
+- **D-d544c3** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:235` `OriginalSaves.Read`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   divergence: more than 300 events would overrun the original's table; the rest are dropped.  
   deterministic: **n/a** (checked against the original); action: **document** - R037+0x8ED4 reads nevents from the save and does events[id]=request-work-buffer(0x30)+read for id<n with no bound; the game itself writes only non-empty slots (at most 300), so only a hand-edited or corrupt .sav can exceed 300, and then events[300..] would run on into 2E38:1FDC.. (the data before the R136+0xF92C icon table). Cannot occur with the game's own saves; keep the C# truncation.
-- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:324` `OriginalSaves.static`  
+- **D-255393** `undefined-memory` - `src/Darklands.Persistence/OriginalSaves.cs:325` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   divergence: the bytes after the place name and the comment are stack left-overs in the original; a new text is followed by zeros.  
   deterministic: **no** (checked against the original); action: **keep** - R037+0x2ACE fwrite()s the 22-byte stack array placeb (only the place name and its NUL set) for 0x15 bytes and the comment buffer for 0x4F bytes, but game-store-entry's comment is a 0x29-byte local ('Darklands' padded with zeros, then the typed text, max 0x17 chars), so the last 38 bytes are the caller's stack (saved BP, return address, menu locals). The values depend on the call chain at save time and the loader reads both fields as C strings, so they are never used; keep the zero fill.

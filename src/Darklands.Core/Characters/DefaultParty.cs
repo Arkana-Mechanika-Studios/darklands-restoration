@@ -20,7 +20,7 @@ public static class DefaultParty
     // orig: party-defaults R001+0x0000 (0E76:0000) draft
     // C: the four records are taken from the original's Quickstart party (R001 party-defaults); their names are the words the original
     //   copies from DS:0E50 .. DS:0EA2 (Content's OriginalWords.Quickstart hands them in: Core holds no words).
-    public static Party Create(int seed, IReadOnlyList<QuickstartName> names)
+    public static Party Create(int seed, IReadOnlyList<QuickstartName> names, RuleParameters? parameters = null)
     {
         ArgumentNullException.ThrowIfNull(names);
         ArgumentOutOfRangeException.ThrowIfLessThan(names.Count, 4, nameof(names));
@@ -88,6 +88,19 @@ public static class DefaultParty
         ebhard.Pack.Add(new ItemStack(51, 82, 25, 1, 0));
         ebhard.Saints.UnionWith([3, 23, 46, 50, 113]);
         party.Slots.Add(ebhard);
+        // the rules' Quickstart party (RuleParameters.QuickstartAttributes / QuickstartSkills): the original's records at their default
+        foreach (var member in party.Slots)
+        {
+            if (parameters?.QuickstartAttributes is { } attribute)
+            {
+                Array.Fill(member.AttributeMaximums, attribute);
+                Array.Fill(member.Attributes, attribute);
+            }
+            if (parameters?.QuickstartSkills is { } skillValue)
+            {
+                Array.Fill(member.Skills, skillValue);
+            }
+        }
         return party;
     }
 

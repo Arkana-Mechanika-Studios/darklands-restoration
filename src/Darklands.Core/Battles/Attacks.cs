@@ -400,6 +400,8 @@ public static class Attacks
             damage = level + roll - 10;
         }
         var target = battle[t];
+        // the rules' damage (RuleParameters.DamageToParty / DamageToEnemies): the original's at its default
+        damage = (target.IsPartyMember ? battle.Parameters.DamageToParty : battle.Parameters.DamageToEnemies).Apply(damage);
         // C: the queue is a signed byte: the addition wraps at 8 bits.
         // C: the queue is added to (18BF:093F, 18BF:0982 `add byte ptr`), never overwritten by a blow; only damage-resolve, the
         //   battle setup and the knock-back's halving write it.

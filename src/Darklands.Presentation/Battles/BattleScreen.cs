@@ -556,6 +556,7 @@ public sealed partial class BattleScreen : ITacticalView
         {
             Persistent = field.Persistent || request.Persistent, DifficultyOf = _state, LevelShown = floor,
             LeaderOf = _state.Party, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
+            Parameters = _state.Parameters,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();
@@ -631,6 +632,7 @@ public sealed partial class BattleScreen : ITacticalView
         {
             Persistent = true, DifficultyOf = _state, LevelShown = file.Variables[BattleVariables.LevelShown],
             LeaderOf = _state.Party, ActiveMember = _state.Party.LeaderIndex, Behaviour = _state.Behaviour,
+            Parameters = _state.Parameters,
         };
         _tiles = BattlefieldTiles.Load(_assets.TileSets, field.Terrain);
         var furniture = _tiles.Furniture.Select(f => f is null ? null : new FurnitureShape(f.Footprint, f.Height, f.BoxX, f.BoxY)).ToArray();

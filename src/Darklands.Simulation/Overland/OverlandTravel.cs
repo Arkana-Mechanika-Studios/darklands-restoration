@@ -143,7 +143,9 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         }
         PartyTerrain = terrain;
         // orig: DS:8672 += R030+0x2AC8(t) = Terrain.MinutesPerStep (checked: all 18 terrain cases and the default 9 of R030+0x2AC8 agree with the table)
-        PassMinutes(Terrain.MinutesPerStep(terrain));
+        // the rules' step minutes (RuleParameters.StepMinutes): the original's at its default, a scaled step at least a minute
+        var minutes = Terrain.MinutesPerStep(terrain);
+        PassMinutes(state.Parameters.StepMinutes == RuleScale.One ? minutes : Math.Max(1, state.Parameters.StepMinutes.Apply(minutes)));
 
         // C: t >= 25 && t != 27 && t != 25 (castle 28, city 29 and the other place icons); the reach is 4 around a city (29), 1 around anything else.
         // C: an arrival returns with location-now set only (1462:158E): party-map-column / party-map-row keep the cell R030+0x0C44 took at the start of the pass, the one

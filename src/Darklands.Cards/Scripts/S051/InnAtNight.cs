@@ -49,7 +49,7 @@ public sealed class InnAtNight : Card
         }
         c.StandingSeen = c.ReputationHere;
         var size = c.HereQuery(2);
-        c.Variables.Money[0] = Money.From(0, 0, c.ServicePrice(c.StandingSeen, size));
+        c.Variables.Money[0] = Money.From(0, 0, c.State.Parameters.LodgingPrice.Apply(c.ServicePrice(c.StandingSeen, size)));
         if (c.State.Party.Purse < c.Variables.Money[0])
         {
             states[1] = OptionState.Shown;
