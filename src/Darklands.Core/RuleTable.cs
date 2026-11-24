@@ -12,7 +12,7 @@ public enum RulePreset
     /// <summary>Original and every gameplay fix (not offered to players yet).</summary>
     Fixed,
 
-    /// <summary>Fixed and the restoration items (none yet; not offered to players).</summary>
+    /// <summary>Fixed and the restoration items (the switch register's class <c>restoration</c>, docs/faithfulness/RESTORATION.md; not offered to players yet).</summary>
     Restored,
 }
 

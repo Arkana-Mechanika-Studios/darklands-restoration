@@ -207,7 +207,7 @@ public sealed class JewelersGuildAtNight : Card
     }
 
     /// <summary>The lock defeats the best picker, or the clumsiest sneak gives the party away (the same tail in lines 4..6).</summary>
-    private static void FailedToGetIn(CardContext c)
+    internal static void FailedToGetIn(CardContext c)
     {
         var stealth = c.PartyAverageSkill((int)Skill.Stealth);
         if (c.PartyMaxSkill((int)Skill.Artifice) < stealth)
@@ -229,8 +229,11 @@ public sealed class JewelersGuildAtNight : Card
             // reading it, and the .SAV never changes (direct calls j_prac.py / j_call.py / j_bsv.py, local/batch/evid1o), so it is faithful
             // in both behaviours.
             var lowest = c.PartyMinSkill((int)Skill.Stealth);
-            c.Variables.Chosen[0] = lowest;
-            c.PracticeSkill(lowest, (int)Skill.Stealth, 0, 10, 0);
+            // Not in the original: the Restored rules, which make the card reachable, name the member with the lowest Stealth
+            // (OriginalBehaviour.RestoreJewellersGuild).
+            var member = c.State.Behaviour.RestoreJewellersGuild ? c.LastQueryMember : lowest;
+            c.Variables.Chosen[0] = member;
+            c.PracticeSkill(member, (int)Skill.Stealth, 0, 10, 0);
             c.Screen.Text(6, TextFrame.BlankPage);
         }
     }

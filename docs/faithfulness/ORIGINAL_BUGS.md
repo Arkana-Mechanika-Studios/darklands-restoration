@@ -376,12 +376,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-0d7783** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S048/RevolutionHouseByDay.cs:316` `RevolutionHouseByDay.UseAPotion`  
   original: `R048+0x0916` (1838:0916, matched)  
   why: the pop-up handler returns -1 as the "chance", and the draw (0..99) is never at most -1: the potion always fails, the success branch below never runs.
-- **B-169e5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:108` `FortressByDay.ReceiveACommission`  
+- **B-169e5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:109` `FortressByDay.ReceiveACommission`  
   original: `R050+0x21F8` (1A06:0518, matched), `R050+0x24E0` (1A06:0800, matched)  
   why: a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
-- **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:218` `FortressByDay.SeekService`  
+- **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:219` `FortressByDay.SeekService`  
   original: `R050+0x2298` (1A06:05B8, matched)  
-  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
+  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298). Not in the original: the Restored rules give the appointment the flag that runs its handler (OriginalBehaviour.RestoreWelcomeAppointment).
 - **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:153` `Docks.PassageHint`  
   original: `R051+0x2332` (19F2:0792, matched), `R051+0x2546` (19F2:09A6, matched), `R051+0x275A` (19F2:0BBA, matched) +2 more  
   why: the hint shows R136+0x8690+0x1E5F ("You need a missile weapon") where "Not enough money" was surely meant.
@@ -397,10 +397,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-9ddbde** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:290` `Footpads.Fight`  
   original: `R053+0x02D6` (1838:02D6, matched)  
   why: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the menu) with the gains kept, by day as by night: the fight can be repeated at will.
-- **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:383` `CouncilHall.AskForAnErrand`  
+- **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:390` `CouncilHall.AskForAnErrand`  
   original: `R054+0x22F8` (19DF:0888, matched)  
-  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
-- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:444` `CouncilHall.CallUponASaint`  
+  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8). Not in the original: the Restored rules give the appointment the flag that runs its handler (OriginalBehaviour.RestoreWelcomeAppointment).
+- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:453` `CouncilHall.CallUponASaint`  
   original: `R054+0x25C6` (19DF:0B56, matched)  
   why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (resolved-quest-at-owner(3, 0x0A, location-now)): a party that prays its way in to be paid gets a new commission instead.
 - **B-0c78c7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:77` `CityWallSallyPort.ForceChance`  

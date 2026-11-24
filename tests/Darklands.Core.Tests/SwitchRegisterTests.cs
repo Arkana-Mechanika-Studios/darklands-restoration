@@ -94,7 +94,15 @@ public sealed class SwitchRegisterTests
             {
                 problems.Add($"{row["id"]}: a {row["class"]} fix that DataSafe leaves off");
             }
-            if (!row["presets"].Split(';').Contains("fixed") || !row["presets"].Split(';').Contains("restored"))
+            if (row["class"] == "restoration")
+            {
+                // a restoration is in the Restored rule set only (restoration.csv), never in Original or Fixed
+                if (row["presets"] != "restored")
+                {
+                    problems.Add($"{row["id"]}: a restoration is on in Restored only: '{row["presets"]}'");
+                }
+            }
+            else if (!row["presets"].Split(';').Contains("fixed") || !row["presets"].Split(';').Contains("restored"))
             {
                 problems.Add($"{row["id"]}: a fix is on in Fixed and Restored too: '{row["presets"]}'");
             }
@@ -172,7 +180,47 @@ public sealed class SwitchRegisterTests
         Assert.Equal(30, gameplay.Count);
         Assert.All(gameplay, r => Assert.True(fixedSet.IsOn(r.Id) && restored.IsOn(r.Id) && !original.IsOn(r.Id), r.Id));
         Assert.All(RuleTable.Flags.Where(r => r.Class is "data-safety" or "visual"), r => Assert.True(original.IsOn(r.Id) && fixedSet.IsOn(r.Id) && restored.IsOn(r.Id), r.Id));
-        Assert.Equal(RuleTable.Flags.Count, fixedSet.On.Count());
+        Assert.Equal(RuleTable.Flags.Count(r => r.Class != "restoration"), fixedSet.On.Count());
+        Assert.Equal(RuleTable.Flags.Count, restored.On.Count());
+    }
+
+    /// <summary>
+    /// A restoration flag is on in Restored only, and its register ids are the rows of restoration.csv it restores (status <c>built</c>, the
+    /// note naming the switch); every built row has a flag. Original and Fixed turn none on.
+    /// </summary>
+    [Fact]
+    public void RestorationFlagsAreTheBuiltRowsOfTheRestorationRegister()
+    {
+        var built = ReadCsv(Path.Combine(Docs, "restoration.csv")).Where(r => r["status"] == "built").ToList();
+        var flags = Rows().Where(r => r["kind"] == "flag" && r["class"] == "restoration").ToList();
+        var problems = new List<string>();
+        foreach (var row in flags)
+        {
+            foreach (var id in row["register"].Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (built.FirstOrDefault(r => r["id"] == id) is not { } item)
+                {
+                    problems.Add($"{row["id"]}: {id} is not a built row of restoration.csv");
+                }
+                else if (!item["note"].Contains(row["id"], StringComparison.Ordinal))
+                {
+                    problems.Add($"{id}: its note does not name its switch {row["id"]}");
+                }
+            }
+            if (row["register"].Length == 0)
+            {
+                problems.Add($"{row["id"]}: a restoration names the row of restoration.csv it restores");
+            }
+            if (OriginalBehaviour.Of(RulePreset.Original).IsOn(row["id"]) || OriginalBehaviour.Of(RulePreset.Fixed).IsOn(row["id"]) || !OriginalBehaviour.Of(RulePreset.Restored).IsOn(row["id"]))
+            {
+                problems.Add($"{row["id"]}: a restoration is on in Restored and nowhere else");
+            }
+        }
+        foreach (var item in built.Where(r => !flags.Any(f => f["register"].Split(';').Contains(r["id"]))))
+        {
+            problems.Add($"{item["id"]} is built but no restoration flag names it");
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
     }
 
     /// <summary>Each property reads and writes its own flag of the table, by its register id.</summary>
@@ -237,7 +285,7 @@ public sealed class SwitchRegisterTests
             }
         }
         var problems = new List<string>();
-        foreach (var row in Rows().Where(r => r["kind"] == "flag"))
+        foreach (var row in Rows().Where(r => r["kind"] == "flag" && r["class"] != "restoration"))
         {
             var listed = row["register"].Split(';', StringSplitOptions.RemoveEmptyEntries).ToHashSet(StringComparer.Ordinal);
             var expected = bugs.GetValueOrDefault(row["key"]) ?? [];

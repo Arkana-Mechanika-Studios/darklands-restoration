@@ -13,20 +13,20 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 
 | Column | Meaning |
 |---|---|
-| `id` | The stable key, lower case, dotted: `<family>.<area>.<name>`, words joined by hyphens. Never renamed once released. Families: `fix` (a fixed original bug), `view` (what is drawn), `comfort` (how orders are given), `content` (mods and packs). |
+| `id` | The stable key, lower case, dotted: `<family>.<area>.<name>`, words joined by hyphens. Never renamed once released. Families: `fix` (a fixed original bug), `restore` (content the original holds and never offers, [RESTORATION.md](RESTORATION.md)), `view` (what is drawn), `comfort` (how orders are given), `content` (mods and packs). |
 | `kind` | `flag`: a property of `OriginalBehaviour` (`src/Darklands.Core/OriginalBehaviour.cs`), set per game. `setting`: a key of the settings file ([../SETTINGS.md](../SETTINGS.md)), set per player. `planned`: a fix decided for a later step of the plan and not in the code yet; its key is the flag it will be, and the row becomes a `flag` row when the flag is added. |
 | `key` | The name in the code: the property (`FixFameCost`) or the settings key (`input.mouseWheel`). |
-| `class` | The change class of the plan's table: `data-safety` (a bug that damages saved games or stores or ends the program: on in every player mode), `visual` (an evident drawing glitch: on in every player mode), `gameplay` (an original bug that changes what the game decides: in the Fixed rule set), `interface-comfort`, `presentation`, `content-mod`. (`restoration` and `new-capability` are allowed for later rows; none exist yet.) |
+| `class` | The change class of the plan's table: `data-safety` (a bug that damages saved games or stores or ends the program: on in every player mode), `visual` (an evident drawing glitch: on in every player mode), `gameplay` (an original bug that changes what the game decides: in the Fixed rule set), `restoration` (content the original has and never reaches, restored: in the Restored rule set only, its `register` the row of [restoration.csv](restoration.csv)), `interface-comfort`, `presentation`, `content-mod`. (`new-capability` is allowed for later rows; none exist yet.) |
 | `axis` | `Rules` (what the game decides), `Presentation` (what is seen and heard), `Interface` (how the same orders are given). |
 | `presets` | The rules presets the switch is on in: `original`, `fixed`, `restored` joined by `;`, or `any` for a choice independent of the rules preset. Restored always includes Fixed. For a flag the column is the code: `tools/faithfulness/rule_table.py` turns it into `src/Darklands.Core/RuleTable.Generated.cs`, the presets' table (`OriginalBehaviour.Of`). |
 | `default` | The state in the player's game of this release: for a flag, whether a new game at the default rules preset (Fixed, `RulePresets.Default`) has it on; for a setting, the default of the settings file. A game with the Original preset (`OriginalBehaviour.DataSafe`) has the data-safety and visual flags on; the faithful game (`OriginalBehaviour.Faithful`, which the oracles and the headless host use) has every flag off. |
-| `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). For a `planned` row the bugs it will fix (kept as the original today: no fix flag, decision `later`, the note naming the planned flag). Empty for settings. |
+| `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). For a `planned` row the bugs it will fix (kept as the original today: no fix flag, decision `later`, the note naming the planned flag). For a `restoration` flag the `R-` ids of [restoration.csv](restoration.csv) it restores (rows of status `built`). Empty for settings. |
 | `code` | The files where the code chooses between the two paths (up to three, `;` joined). A flag's name is in at least one of them. |
 | `description` | One line: the original's behaviour and what the switch does. The long account is the flag's comment in the source and the register entries. |
 
 ## Counts (at the time of writing)
 
-61 flags, 12 settings and 1 planned fix, 74 rows:
+65 flags, 12 settings and 1 planned fix, 78 rows:
 
 | Class | Rows | Of which on in the player's game now |
 |---|---|---|
@@ -36,16 +36,18 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 | interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
 | presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
+| restoration | 4 | none (the Restored rule set only, not offered to players yet) |
 
 ## How it is kept true
 
 `tests/Darklands.Core.Tests/SwitchRegisterTests.cs` fails when:
 
-- a boolean `Fix…` property of `OriginalBehaviour` has no row, or a row names a flag that no longer exists;
+- a boolean `Fix…` or `Restore…` property of `OriginalBehaviour` has no row, or a row names a flag that no longer exists;
 - a flag's `default` differs from its state in a new game at the default preset (Fixed), or its `presets` disagree with its class
-  (only `data-safety` and `visual` fixes are on in `original`; every fix is in `fixed` and `restored`);
+  (only `data-safety` and `visual` fixes are on in `original`; every fix is in `fixed` and `restored`; a `restoration` is in `restored` only);
 - the generated rule table (`RuleTable.Generated.cs`) differs from the flag rows (run `tools/faithfulness/rule_table.py`);
-- a flag's `register` ids differ from the entries of `original_bugs.csv` that name it;
+- a flag's `register` ids differ from the entries of `original_bugs.csv` that name it, or (a `restoration`) from the `built` rows of
+  `restoration.csv` whose note names it;
 - a code location does not exist, or (for a flag) none of its files mentions the flag;
 - a key of the table in `docs/SETTINGS.md` is neither a `setting` row nor on the test's short list of keys that are not
   switches (paths, window, sound hardware, start-up, developer console), so a new setting has to be decided;
@@ -71,6 +73,6 @@ Some departures from the original have no switch of their own. They are listed s
 
 The rules presets: Faithful (every flag off: the oracles and the headless host), Original (the data-safety and visual fixes:
 the player's reference, `OriginalBehaviour.DataSafe`), Fixed (Original and every gameplay fix) and Restored (Fixed and the
-restoration items, none yet). The flags are one table keyed by the `id`s above (`OriginalBehaviour.IsOn`). The player chooses
+restoration items: the `restoration` rows, not offered to players yet). The flags are one table keyed by the `id`s above (`OriginalBehaviour.IsOn`). The player chooses
 the preset with the settings key `rules.preset` ([../SETTINGS.md](../SETTINGS.md)); a saved game keeps the rules it was
 started with.

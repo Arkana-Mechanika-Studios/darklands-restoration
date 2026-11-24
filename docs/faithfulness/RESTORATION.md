@@ -55,6 +55,11 @@ own registers and the original files; level 3 to 5 rows rest on documents; no ro
   The note says exactly what.
 - `rejected`: recorded so it is not raised again, with the reason (nothing to restore, designers chose against it,
   needs art or a map that never existed, debug aid). A rejected row can be reopened with new evidence.
+- `built`: in the Restored rule set: a switch of class `restoration` in [switches.csv](switches.csv) (presets `restored`
+  only, its `register` this row's id), named in the note with the check against the original and the test.
+  `SwitchRegisterTests` keeps the two registers in step.
+- `waits`: a candidate that cannot be built yet: it needs saved state the original's `.SAV` does not hold, or new data
+  (records, pictures) that need the data seam. The note says which.
 
 ## Method
 
@@ -97,6 +102,9 @@ By evidence level (the level that makes it a candidate):
 | 6 historical research | 0 | 0 | 0 | 0 |
 
 By size guess: S 33, M 22, L 9, XL 6 (candidates: 16 S, 3 M).
+
+The counts are those of the first pass. Since then four candidates are `built` and one `waits` (restore-r1, 2026-11-24: see
+[In the Restored rule set](#in-the-restored-rule-set)), leaving 14 candidates.
 
 ### Rows skipped, by reason
 
@@ -152,7 +160,7 @@ engine seam beyond the 1.1 plan (Restored is its last step); none touches Classi
 2. **Hall of Fame** (R-8a277c, level 3+1, M). Promised in the manual, absent in every version; the start screen loads
    a fourth button and never draws it, and the inn already has a retire line. No rule changes.
 3. **Physician's house** (R-5a84a7, level 1, S). A complete service (treatment for pay, study under the physician)
-   whose only entrance is never enabled.
+   whose business-district entrance is never enabled (built later: the crafts quarter's door is open in the original).
 4. **Come-back appointment** (R-ceb4d1, level 1, S). A one-day welcome mechanism whose event never gets the flags its
    handler needs; also registered as a bug, so Fixed may take it first.
 5. **Weapons training with the guard** (R-d1c1d4, level 1, S). Chance, offers and prices are written; the council
@@ -168,6 +176,21 @@ engine seam beyond the 1.1 plan (Restored is its last step); none touches Classi
 
 Close behind: old woman's lodging (store items, add a friend), flood saints, small cave sightings, the two unused
 city-news texts, the names never drawn, a minimum price of one pfennig.
+
+## In the Restored rule set
+
+Built from the candidates, smallest and best evidenced first. Each is a switch `restore.<area>.<name>` on in Restored only;
+Original and Fixed do not change (the full replay is the gate), and the original's saved games stay readable both ways.
+Before building, each was checked against the original program: the cards the restoration opens run in the card oracle
+(the original's code on the same start state, compared with the C#), and the hidden lines it offers were forced in the
+original's own menu (`F<block>.<line>` runs) and replayed by the C#.
+
+| id | switch | what the player gets |
+|---|---|---|
+| R-5a84a7 | `restore.city.physician-street` | the business district's door to the physician's house |
+| R-726c2f | `restore.city.jewellers-guild` | the Jewelers' guild, by day and night, from the crafts quarter |
+| R-d1c1d4 | `restore.city.guard-training` | weapons training with the city guard, once a day, in the council hall |
+| R-ceb4d1 | `restore.city.welcome-appointment` | the "come back" appointment's one-day welcome at the council hall and the fortress |
 
 ## What this pass did not do
 

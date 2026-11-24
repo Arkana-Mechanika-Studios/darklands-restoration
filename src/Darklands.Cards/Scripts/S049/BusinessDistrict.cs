@@ -33,6 +33,11 @@ public sealed class BusinessDistrict : Card
         {
             states[5] = OptionState.Hidden;
         }
+        // Not in the original: the Restored rules offer the physician here (OriginalBehaviour.RestoreBusinessDistrictPhysician), under the test below.
+        if (c.State.Behaviour.RestoreBusinessDistrictPhysician)
+        {
+            states[3] = OptionState.Enabled;
+        }
         // C: this test hides the physician (option 3), which started hidden anyway: it is never offered.
         if (c.HereQuery(2) <= 3 && (c.HereQuery(0x21) + c.State.Date.Year) % 3 == 0)
         {
