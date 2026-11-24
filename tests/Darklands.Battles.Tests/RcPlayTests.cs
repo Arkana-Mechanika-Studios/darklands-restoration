@@ -53,6 +53,39 @@ public sealed class RcPlayTests
 
         public void Present(Screen screen) => Shown = ((byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone());
 
+        /// <summary>The frames the registry views of v: steps showed.</summary>
+        public int ViewsShown { get; private set; }
+
+        // a registry view's surface here: the last frame under it, no input, its frames not the game's, no time
+        private sealed class ViewSurface((byte[] Pixels, uint[] Palette)? shown) : Presentation.Views.IViewSurface
+        {
+            public Screen? Under { get; } = Frame(shown);
+
+            public bool QuitRequested => false;
+
+            public IReadOnlyList<Presentation.Views.ViewInput> Inputs() => [];
+
+            public void Show(Screen screen)
+            {
+            }
+
+            public void WaitFrame()
+            {
+            }
+
+            private static Screen? Frame((byte[] Pixels, uint[] Palette)? shown)
+            {
+                if (shown is not var (pixels, palette))
+                {
+                    return null;
+                }
+                var screen = new Screen();
+                pixels.CopyTo(screen.Pixels, 0);
+                palette.CopyTo(screen.Palette, 0);
+                return screen;
+            }
+        }
+
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
         public void MovePointer(int x, int y) => Mouse = Mouse with { X = x, Y = y };
@@ -80,6 +113,17 @@ public sealed class RcPlayTests
                     Mouse = Mouse with { Buttons = MouseButtons.None };
                 }
                 return;
+            }
+            // v:<n>: an empty registry view opened over the last frame for n frames and closed, in this pump, before the next step (the
+            //   true pause: the host's clock does not move meanwhile, its frames are not the game's, the game's code does not run)
+            while (_script.TryPeek(out var next) && next.StartsWith("v:", StringComparison.Ordinal))
+            {
+                _script.Dequeue();
+                var view = new Presentation.Views.EmptyView(int.Parse(next[2..], System.Globalization.CultureInfo.InvariantCulture));
+                var clock = _now;
+                Presentation.Views.ViewHost.Run(view, new ViewSurface(Shown));
+                ViewsShown += view.Shown;
+                Assert.Equal(clock, _now);
             }
             if (_script.TryDequeue(out var step))
             {
@@ -667,6 +711,52 @@ public sealed class RcPlayTests
         game.Run();
         Assert.Equal(RulePreset.Original, loadedWith);
         Assert.DoesNotContain(log, l => l.Contains("keeps the rules", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// The true pause (1.2, the view registry): an empty registry view opened and closed in the middle of a game, at three points of the
+    /// first cards, changes nothing: every frame the game shows and the game's state at the end are those of the same run without it.
+    /// </summary>
+    [Theory]
+    [InlineData(3)]
+    [InlineData(9)]
+    [InlineData(15)]
+    public void AViewOpenedAndClosedMidGameChangesNothing(int at)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        // Quick Start, the opening card, then the card's lines and keys (a walk through the first cards)
+        string[] script = ["k:q", "w:80", "k:space", "w:20", "k:1", "w:40", "k:space", "w:20", "k:2", "w:40", "k:space", "w:20",
+            "k:enter", "w:40", "k:esc", "w:30", "k:1", "w:40", "k:space", "w:40"];
+        (List<string> Frames, string Digest, int Views) Play(bool withView)
+        {
+            var steps = script.ToList();
+            if (withView)
+            {
+                steps.Insert(at, "v:25");
+            }
+            var host = new RcHost(steps);
+            var game = NewGame(files, host, TempFolder("pause"));
+            var frames = new List<string>();
+            host.EveryFrame = _ =>
+            {
+                if (host.Shown is var (pixels, palette))
+                {
+                    frames.Add(Convert.ToHexString(SHA256.HashData([.. pixels, .. palette.SelectMany(BitConverter.GetBytes)])));
+                }
+            };
+            game.Run();
+            return (frames, game.Playing is { } state ? Digest(state) : "", host.ViewsShown);
+        }
+        var plain = Play(false);
+        var paused = Play(true);
+        Assert.Equal(0, plain.Views);
+        Assert.Equal(25, paused.Views);
+        Assert.Equal(plain.Frames.Count, paused.Frames.Count);
+        Assert.Equal(plain.Frames, paused.Frames);
+        Assert.Equal(plain.Digest, paused.Digest);
     }
 
     /// <summary>G6: a saved game that is not there raises a file-not-found for its name (the caller's to report).</summary>

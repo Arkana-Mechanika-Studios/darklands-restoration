@@ -737,6 +737,11 @@ internal static class SdlNative
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_ResumeAudioStreamDevice(IntPtr stream);
 
+    /// <summary>Stops the device the stream is bound to (its callback is not called, nothing is played) until SDL_ResumeAudioStreamDevice.</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_PauseAudioStreamDevice(IntPtr stream);
+
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_AudioStreamDevicePaused(IntPtr stream);

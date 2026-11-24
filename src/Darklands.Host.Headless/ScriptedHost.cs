@@ -64,6 +64,57 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
 
     private int _stepsTaken;
 
+    // DARKLANDS_VIEW_AT (the true pause's proof, 1.2): before which steps an empty registry view opens and closes, inside the pump that
+    //   takes the step (so no step comes later): step numbers counted from 0, comma-separated, or "half" (the step in the middle of the
+    //   script); DARKLANDS_VIEW_FRAMES the frames it stays open (30). The game's clock and timer stand still meanwhile (the host's clock
+    //   moves only when the game sleeps or pumps), and its frames are not the game's: nothing of the session may change.
+    private readonly HashSet<int> _viewAt = ViewSteps(Environment.GetEnvironmentVariable("DARKLANDS_VIEW_AT"), steps.Count);
+    private static readonly int ViewFrames = int.TryParse(Environment.GetEnvironmentVariable("DARKLANDS_VIEW_FRAMES"), out var frames) && frames > 0 ? frames : 30;
+
+    private static HashSet<int> ViewSteps(string? setting, int count)
+    {
+        var at = new HashSet<int>();
+        foreach (var word in (setting ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (word == "half")
+            {
+                at.Add(count / 2);
+            }
+            else if (int.TryParse(word, out var n))
+            {
+                at.Add(n);
+            }
+        }
+        return at;
+    }
+
+    // an empty registry view opened over the last frame and closed after ViewFrames frames, the game's clock as it was
+    private void OpenEmptyView()
+    {
+        var before = _clockMs;
+        var view = new Darklands.Presentation.Views.EmptyView(ViewFrames);
+        Darklands.Presentation.Views.ViewHost.Run(view, new HeadlessViewSurface(_last));
+        Console.WriteLine($"view: opened before step {_stepsTaken} at {before} ms, shown {view.Shown} frames, closed at {_clockMs} ms");
+    }
+
+    // the headless host's surface for a registry view: no input, its frames not recorded, no time of the game's passing
+    private sealed class HeadlessViewSurface(Screen? under) : Darklands.Presentation.Views.IViewSurface
+    {
+        public Screen? Under => under;
+
+        public bool QuitRequested => false;
+
+        public IReadOnlyList<Darklands.Presentation.Views.ViewInput> Inputs() => [];
+
+        public void Show(Screen screen)
+        {
+        }
+
+        public void WaitFrame()
+        {
+        }
+    }
+
     /// <summary>Drops the next step (one the program itself has read).</summary>
     public void Skip() => Take();
 
@@ -354,6 +405,10 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 return;
             }
             _stillTarget = 0;
+        }
+        if (_viewAt.Remove(_stepsTaken))
+        {
+            OpenEmptyView();
         }
         if (!_steps.TryDequeue(out var step))
         {
