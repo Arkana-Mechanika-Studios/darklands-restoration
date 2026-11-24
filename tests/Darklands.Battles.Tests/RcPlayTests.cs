@@ -571,7 +571,9 @@ public sealed class RcPlayTests
     /// <summary>
     /// The rules presets through the player's game loop (DarklandsGame with RecordedRules, as the SDL host runs it): a new game takes
     /// the chosen preset; Alt-S writes the .SAV in the original's format (readable, not damaged) and, for a game that is not Original,
-    /// a companion file with its rules; loaded with the other preset chosen, the game keeps its own rules and a notice says so once.
+    /// a companion file with its rules; loaded with the other preset chosen, the game keeps its own rules, and a notice says so once
+    /// when the save recorded them (a Fixed game loaded with Original chosen); a save without a record (an Original game's, like every
+    /// save made before the presets) loads as Original quietly, Fixed chosen or not.
     /// With DARKLANDS_RULES_SHOTS set to a folder the notice is saved there as a picture.
     /// </summary>
     [Theory]
@@ -637,7 +639,34 @@ public sealed class RcPlayTests
         };
         loader.Run();
         Assert.Equal(startedWith, loadedWith ?? loader.Playing?.Behaviour.Preset);
-        Assert.Equal(startedWith != chosenNow ? 1 : 0, log.Count(l => l.Contains("keeps the rules", StringComparison.Ordinal)));
+        var recorded = startedWith != RulePreset.Original;
+        Assert.Equal(recorded && startedWith != chosenNow ? 1 : 0, log.Count(l => l.Contains("keeps the rules", StringComparison.Ordinal)));
+    }
+
+    /// <summary>A save made before the rules presets (no record: here the game folder's own) loads as Original with Fixed chosen, quietly.</summary>
+    [Fact]
+    public void AnOldSaveLoadsAsOriginalWithoutANotice()
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is not { } sav)
+        {
+            return;
+        }
+        var saves = TempFolder("old");
+        File.Copy(sav, Path.Combine(saves, "DKSAVE0.SAV"));
+        if (OwnSave(files, "DKSAVE0.BSV") is { } bsv)
+        {
+            File.Copy(bsv, Path.Combine(saves, "DKSAVE0.BSV"));
+        }
+        var log = new List<string>();
+        var host = new RcHost(["k:t", "w:40", "k:l", "w:60", "k:space", "w:40"]);
+        var game = NewGame(files, host, saves, behaviour: OriginalBehaviour.Of(RulePreset.Fixed));
+        game.RecordedRules = true;
+        game.Log = log.Add;
+        RulePreset? loadedWith = null;
+        host.EveryFrame = _ => loadedWith ??= game.Playing?.Behaviour.Preset;
+        game.Run();
+        Assert.Equal(RulePreset.Original, loadedWith);
+        Assert.DoesNotContain(log, l => l.Contains("keeps the rules", StringComparison.Ordinal));
     }
 
     /// <summary>G6: a saved game that is not there raises a file-not-found for its name (the caller's to report).</summary>

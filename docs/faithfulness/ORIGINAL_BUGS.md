@@ -880,13 +880,13 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:538` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:615` `DarklandsGame.LoadInGame`  
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:616` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:787` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:788` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:1003` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:1004` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  

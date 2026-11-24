@@ -271,9 +271,9 @@ program) and plain display glitches.
 The preset applies to **new games only**. A saved game keeps the rules it was started with: a game whose rules are not
 Original gets a companion file beside its `.SAV` (`DKSAVEn.MODS.JSON`, the file a game with mods has, holding a `rules`
 record: the preset and any switch that differs from it); the `.SAV` itself is unchanged and the original game loads it. A
-saved game without such a record (the original's, 1.0's, 1.1's, an Original game's) loads as Original, also when Fixed is
-chosen now. When a loaded game's
-rules differ from the preset chosen now, a notice says so once ("This game keeps the rules it was started with"). The
+saved game without such a record (the original's, 1.0's, 1.1's, an Original game's) loads as Original, quietly, also when
+Fixed is chosen now. When a loaded game recorded rules that differ from the preset chosen now (a Fixed game loaded with
+Original chosen), a notice says so once ("This game keeps the rules it was started with: Fixed."). The
 replays, the comparisons with the original and the headless host play the faithful game, whatever this key says.
 
 ### The Interface switch
