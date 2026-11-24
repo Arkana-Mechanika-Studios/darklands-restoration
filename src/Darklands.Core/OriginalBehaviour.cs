@@ -57,12 +57,36 @@ public sealed class OriginalBehaviour
     /// <summary>The flags a preset turns on (switches.csv's presets column, through <see cref="RuleTable"/>); Faithful turns none on.</summary>
     public static OriginalBehaviour Of(RulePreset preset)
     {
-        var behaviour = new OriginalBehaviour();
+        var behaviour = new OriginalBehaviour { Preset = preset };
         for (var i = 0; i < RuleTable.Flags.Count; i++)
         {
             behaviour._on[i] = RuleTable.Flags[i].In(preset);
         }
         return behaviour;
+    }
+
+    /// <summary>The preset this set was made from (Faithful for <c>new()</c>); flags turned on or off since are <see cref="Differences"/>.</summary>
+    public RulePreset Preset { get; private init; }
+
+    /// <summary>The flags whose state differs from <see cref="Preset"/>'s, by register id, with their state here (what a saved game records beside the preset).</summary>
+    public IReadOnlyList<(string Id, bool On)> Differences()
+    {
+        var list = new List<(string, bool)>();
+        for (var i = 0; i < RuleTable.Flags.Count; i++)
+        {
+            if (_on[i] != RuleTable.Flags[i].In(Preset))
+            {
+                list.Add((RuleTable.Flags[i].Id, _on[i]));
+            }
+        }
+        return list;
+    }
+
+    /// <summary>Whether this set turns on the same flags as <paramref name="other"/> (whatever presets they were made from).</summary>
+    public bool SameFlags(OriginalBehaviour other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+        return _on.AsSpan().SequenceEqual(other._on);
     }
 
     /// <summary>The player's reference set, <see cref="RulePreset.Original"/>: the same flags as <see cref="DataSafe"/>.</summary>

@@ -26,13 +26,13 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 
 ## Counts (at the time of writing)
 
-61 flags, 11 settings and 1 planned fix, 73 rows:
+61 flags, 12 settings and 1 planned fix, 74 rows:
 
 | Class | Rows | Of which on in the player's game now |
 |---|---|---|
 | data-safety | 28 | 28 |
 | visual | 3 flags + 1 setting | the 3 flags (the setting `view.clean-drawing` is off by default) |
-| gameplay | 30 flags + 1 planned | 0 (the plan's Fixed rule set, release 1.1) |
+| gameplay | 30 flags + 1 planned + 1 setting | 0 flags (the Fixed rule set; the setting `rules.preset` chooses Original or Fixed for new games, and Fixed plays as Original until its fixes are switched on) |
 | interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
 | presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |

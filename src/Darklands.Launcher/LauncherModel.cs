@@ -40,7 +40,7 @@ internal sealed class LauncherModel
     private static readonly double[] WindowScaleFactors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack, string? FontPack, bool ComfortInterface) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack, string? FontPack, bool ComfortInterface, bool FixedRules) _initial;
     // what each folder holds, and the languages' fonts: read once (WarmPacks reads them all as the launcher opens, on a thread of its
     //   own, so the first click on a pack row has nothing to read)
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
@@ -68,6 +68,7 @@ internal sealed class LauncherModel
         MouseWheel = s.MouseWheel ?? true;
         CardMenuKeys = s.CardMenuKeys ?? true;
         ComfortInterface = (s.InterfaceMode ?? "comfort") == "comfort";
+        FixedRules = s.RulesPreset == "fixed";
         Found = context.FoundGameFolders();
         var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
         // the folder the command line (or DARKLANDS_DIR) gives is the one the game would start with: shown first
@@ -77,7 +78,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys, LanguagePack, FontPack, ComfortInterface);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys, LanguagePack, FontPack, ComfortInterface, FixedRules);
         _automatic = GameFolder;
     }
 
@@ -296,6 +297,9 @@ internal sealed class LauncherModel
     /// <summary>The Interface switch (interface.mode): true Comfort (the comfort features), false Classic (the original interface).</summary>
     public bool ComfortInterface { get; set; }
 
+    /// <summary>The rules preset of new games (rules.preset): true Fixed, false Original.</summary>
+    public bool FixedRules { get; set; }
+
     public bool CanPlay => GameFolderChecked is not null;
 
     /// <summary>What the ROM folder holds; looked at once for each folder (it reads the disk).</summary>
@@ -415,6 +419,10 @@ internal sealed class LauncherModel
         {
             changes["interface.mode"] = ComfortInterface ? "comfort" : "classic";
         }
+        if (FixedRules != _initial.FixedRules)
+        {
+            changes["rules.preset"] = FixedRules ? "fixed" : "original";
+        }
         return changes;
     }
 
@@ -442,6 +450,7 @@ internal sealed class LauncherModel
         s.MouseWheel = MouseWheel;
         s.CardMenuKeys = CardMenuKeys;
         s.InterfaceMode = ComfortInterface ? "comfort" : "classic";
+        s.RulesPreset = FixedRules ? "fixed" : "original";
         return s;
     }
 

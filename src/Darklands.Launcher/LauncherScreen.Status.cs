@@ -160,13 +160,17 @@ internal sealed partial class LauncherScreen
             Item.Interface => _model.ComfortInterface
                 ? "Comfort: the load list one line a game, the newest first, with its real date; on the map tap a direction twice (or Shift+direction) to walk on."
                 : "Classic: the 1992 map and saved-games screens. Comfort adds a clearer load list and walking on with a double tap on the map.",
+            Item.Rules => (_model.FixedRules
+                    ? "Fixed: the original's rules with its gameplay bugs fixed (in this build Fixed still plays as Original). "
+                    : "Original: the 1992 game's rules, its bugs included (only bugs that damage saved games, and display glitches, are fixed). ")
+                + "For new games only: a saved game keeps the rules it was started with.",
             Item.CardMenuKeys => "At a card menu, ↑/↓ and the wheel work wherever the pointer is (the 1992 game needed it over the lines), and 1–9 choose a line.",
             Item.Save => "Writes the changes to the settings file and closes.",
             Item.Play => "Writes the changes to the settings file and starts the game.",
             Item.Discord => "Opens the project's Discord in your browser.",
             Item.Notes => "Opens the release notes of this version in your browser.",
             Item.TabGeneral => "The game folder, the display, the sound card and the packs. Ctrl+Tab: the other tab.",
-            Item.TabAdvanced => "The Roland ROMs, the SoundFont for the packs' MIDI music, the start-up, the mouse wheel and the card menu keys. Ctrl+Tab: the other tab.",
+            Item.TabAdvanced => "The Roland ROMs, the SoundFont for the packs' MIDI music, the start-up, the interface, the rules of new games, the mouse wheel and the card menu keys. Ctrl+Tab: the other tab.",
             Item.Minimise => "Minimises the window.",
             Item.Close => "Closes the launcher (as Esc): the changes are written to the settings file.",
             _ => "",

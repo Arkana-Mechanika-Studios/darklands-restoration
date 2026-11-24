@@ -148,6 +148,7 @@ var cli = new CommandLineOptions
     NoMouseWheel = arguments.Remove("--no-mouse-wheel"),
     NoCardMenuKeys = arguments.Remove("--no-card-menu-keys"),
     InterfaceMode = Option("--interface")?.Trim().ToLowerInvariant(),
+    RulesPreset = Option("--rules"),
     Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -366,13 +367,29 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     AudioPack? soundPack = null;
     using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.SoundFont, settings.CommandLine, audioTrace,
         settings.Mods.Count > 0, pack => soundPack = pack);
+    // rules.preset (docs/SETTINGS.md): the preset new games play with; Fixed plays as Original until its fixes are switched on
+    //   (RulePresets.FixedPlayable), said in the log. A recorded rule a saved game names that this program does not know is logged.
+    Darklands.Core.OriginalBehaviour.ReportUnknown = Console.Error.WriteLine;
+    static Darklands.Core.RulePreset NewGamesPreset(string name)
+    {
+        var chosen = Darklands.Core.RulePresets.Parse(name) ?? Darklands.Core.RulePreset.Original;
+        var playing = Darklands.Core.RulePresets.ForNewGames(chosen);
+        if (playing != chosen)
+        {
+            Console.Error.WriteLine($"rules.preset {name}: the {Darklands.Core.RulePresets.Title(chosen)} rules come in a later build; new games play {Darklands.Core.RulePresets.Title(playing)}");
+        }
+        return playing;
+    }
     var game = new DarklandsGame(host, files)
     {
         ShowStartUp = settings.ShowBanner,
         PlayOpening = settings.PlayIntro,
         CommandLine = settings.CommandLine,
-        // The player's game fixes the original's data-damaging bugs (saves and item stores); the files stay readable by the original.
-        Behaviour = Darklands.Core.OriginalBehaviour.DataSafe,
+        // The player's game: new games play with the chosen rules preset (rules.preset, --rules), which always fixes the original's
+        //   data-damaging bugs (saves and item stores; the files stay readable by the original); a saved game keeps the rules it
+        //   recorded (RecordedRules).
+        Behaviour = Darklands.Core.OriginalBehaviour.Of(NewGamesPreset(settings.RulesPreset)),
+        RecordedRules = true,
     };
     // a translation pack changes the screens' words only (docs/LOCALISATION.md)
     // a font pack (text.fontPack, --font-pack): its fonts for the slots the translation pack has none for (Not in the original)

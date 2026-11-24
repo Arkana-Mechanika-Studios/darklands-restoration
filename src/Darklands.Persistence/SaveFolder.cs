@@ -28,6 +28,12 @@ public sealed class SaveFolder(string path)
     public SaveMods? Mods { get; init; }
 
     /// <summary>
+    /// Whether a saved game records its rules: the player's game (a game not played with Original's flags gets a companion file
+    /// with a rules record, ModdedSaves). Off for the testers' faithful game, which records nothing.
+    /// </summary>
+    public bool RecordRules { get; set; }
+
+    /// <summary>
     /// A host's notice (null: none): called with the file name and true just before a saved game is read, and with the name and false
     /// after one is written. It reads and writes nothing of the game; a report helper copies the files with it (docs/REPORTING.md).
     /// </summary>
@@ -162,14 +168,16 @@ public sealed class SaveFolder(string path)
         var battle = BattleFileOf(name);
         File.WriteAllBytes(FindIgnoringCase(battle) ?? System.IO.Path.Combine(Path, battle.ToUpperInvariant()), bsv);
         OriginalSaves.Saved(state, name, sav);
-        // DIVERGENCE: no original: a game with mods (loaded now, or played with before) is marked by a companion file beside the .SAV;
-        //   a companion file left over from an earlier save of this name (deleted outside this program) is removed. Classic writes none.
+        // DIVERGENCE: no original: a game with mods (loaded now, or played with before), or one whose rules are not Original (with
+        //   RecordRules: the player's game), is marked by a companion file beside the .SAV; a companion file left over from an earlier
+        //   save of this name (deleted outside this program) is removed. An Original game without mods writes none.
         var active = Mods?.Active ?? [];
         ModdedSaves.MarkUsed(state, active);
         var companion = FindIgnoringCase(ModdedSaves.CompanionOf(name));
-        if (ModdedSaves.ModsUsed(state).Count > 0)
+        var rules = RecordRules && ModdedSaves.RecordsRules(state.Behaviour) ? state.Behaviour : null;
+        if (ModdedSaves.ModsUsed(state).Count > 0 || rules is not null)
         {
-            File.WriteAllText(companion ?? System.IO.Path.Combine(Path, ModdedSaves.CompanionOf(name)), ModdedSaves.Write(state, sav, name, cards, active));
+            File.WriteAllText(companion ?? System.IO.Path.Combine(Path, ModdedSaves.CompanionOf(name)), ModdedSaves.Write(state, sav, name, cards, active, rules));
         }
         else if (companion is not null)
         {

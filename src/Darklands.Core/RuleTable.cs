@@ -16,6 +16,40 @@ public enum RulePreset
     Restored,
 }
 
+/// <summary>The rules presets' names in the settings file, on the command line and in a saved game's record.</summary>
+// Not in the original: the rules setting (rules.preset).
+public static class RulePresets
+{
+    /// <summary>
+    /// Whether the Fixed preset plays as itself yet. False until the gameplay fixes are switched on for players (rules set A3): until
+    /// then a choice of Fixed plays, and is recorded, as Original (<see cref="ForNewGames"/>).
+    /// </summary>
+    public const bool FixedPlayable = false;
+
+    /// <summary>The presets a player chooses between, in the launcher's order.</summary>
+    public static IReadOnlyList<RulePreset> Offered { get; } = [RulePreset.Original, RulePreset.Fixed];
+
+    /// <summary>The preset of a name ("original", "fixed", "restored", "faithful"; any case), or null.</summary>
+    public static RulePreset? Parse(string? name) => name?.Trim().ToLowerInvariant() switch
+    {
+        "original" => RulePreset.Original,
+        "fixed" => RulePreset.Fixed,
+        "restored" => RulePreset.Restored,
+        "faithful" => RulePreset.Faithful,
+        _ => null,
+    };
+
+    /// <summary>A preset's name in files ("original", "fixed" ...).</summary>
+    public static string Name(RulePreset preset) => preset.ToString().ToLowerInvariant();
+
+    /// <summary>A preset's name for the player ("Original", "Fixed" ...).</summary>
+    public static string Title(RulePreset preset) => preset.ToString();
+
+    /// <summary>The preset a new game plays with when the player chose <paramref name="chosen"/>: Fixed and Restored play as Original until <see cref="FixedPlayable"/>.</summary>
+    public static RulePreset ForNewGames(RulePreset chosen) =>
+        chosen is RulePreset.Fixed or RulePreset.Restored && !FixedPlayable ? RulePreset.Original : chosen;
+}
+
 /// <summary>
 /// The fix flags of the switch register (docs/faithfulness/switches.csv): each flag's register id (<c>fix.&lt;area&gt;.&lt;name&gt;</c>),
 /// its <see cref="OriginalBehaviour"/> property, its class and the presets it is on in. The list itself is generated from the CSV
