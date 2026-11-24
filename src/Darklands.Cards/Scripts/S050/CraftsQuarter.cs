@@ -44,11 +44,6 @@ public sealed class CraftsQuarter : Card
         menu.Enable(0, 1, 3, 4, 7, 8, 9);
         menu[0] = physician;
         menu[1] = apothecary;
-        // Not in the original: the Restored rules offer the jeweller as the artificer and the clothmaker are (OriginalBehaviour.RestoreJewellersGuild).
-        if (c.State.Behaviour.RestoreJewellersGuild)
-        {
-            menu[2] = OptionState.Enabled;
-        }
         c.Next = Number;
         return menu.Run(
             // orig: R050+0x1776 (1982:02D6) + R050+0x173A (1982:029A) R050 seg 1982 matched

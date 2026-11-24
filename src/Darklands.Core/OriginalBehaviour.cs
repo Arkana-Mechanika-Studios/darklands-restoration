@@ -624,6 +624,31 @@ public sealed class OriginalBehaviour
     // orig: R057+0x0D6A reads the uninitialised [bp-2]
     public bool FixChurchAltarBoyStaleHour { get => _on[RuleTable.FixChurchAltarBoyStaleHour]; set => _on[RuleTable.FixChurchAltarBoyStaleHour] = value; }
 
+
+    /// <summary>
+    /// The "come back" appointment of the council hall's errand and the fortress's service names expiry handler 4 (a one-day welcome, event
+    /// 0x3B) but its flags are 0, so the handler never runs and the 99 chance the audience, errand and admission lines give a welcome party is
+    /// never given; fixed: the appointment is created with the flag that runs its handler.
+    /// </summary>
+    // orig: R054+0x22F8 and R050+0x2298 create the event with flags 0 (B-227a55, B-86c8e5); handler 4 is R029+0x4436
+    public bool FixWelcomeAppointment { get => _on[RuleTable.FixWelcomeAppointment]; set => _on[RuleTable.FixWelcomeAppointment] = value; }
+
+    /// <summary>
+    /// The fortress gives the City Lord's commission where the city has no town hall, but only the town hall's audience pays a finished one,
+    /// so a fortress commission is never paid; fixed: the fortress's commission line pays it first, as the town hall does (seven florins a
+    /// size of the city, then the reward card, which already has the fortress among its patrons).
+    /// </summary>
+    // orig: R050+0x21F8 / R050+0x24E0 start the quest for owner 0x0A with no resolved-commission test (B-169e5e); the payer is R054+0x1D08
+    public bool FixFortressCommissionPay { get => _on[RuleTable.FixFortressCommissionPay]; set => _on[RuleTable.FixFortressCommissionPay] = value; }
+
+    /// <summary>
+    /// The village Schulz's robber-knight task (quest 3, owner 9) is never paid: the reward card has the Schulz among its patrons and a text for
+    /// him, but the Schulz never tests for a finished task; fixed: asking him for information pays a finished task first (the five florins a
+    /// size of the village he promised), then the reward card.
+    /// </summary>
+    // orig: R077 ($Villa02) starts the quest and goes to $Raubi00 with the patron 0x86; R080 ($Raubi01) has the case 0x86; no card sends there
+    public bool FixVillageSchulzReward { get => _on[RuleTable.FixVillageSchulzReward]; set => _on[RuleTable.FixVillageSchulzReward] = value; }
+
     // ---- the Restored rule set (class restoration, presets restored only: restoration.csv) ----------------------------------------
 
     /// <summary>
@@ -635,26 +660,10 @@ public sealed class OriginalBehaviour
     public bool RestoreBusinessDistrictPhysician { get => _on[RuleTable.RestoreBusinessDistrictPhysician]; set => _on[RuleTable.RestoreBusinessDistrictPhysician] = value; }
 
     /// <summary>
-    /// The crafts quarter's line to the Jewelers' guild (cards 0x5D by day, 0x5E at night) is never enabled; restored: it is offered as the
-    /// artificer's and the clothmaker's lines are (roused at night), and the night card's failed sneak practises the member with the lowest
-    /// Stealth, not the member whose number is that skill value. Restoration R-726c2f.
-    /// </summary>
-    // orig: R050+0x1904 (1982:0464): card-option-flag-2 is 0 (Z-23871b); R067+0x1A0A passes the lowest Stealth as the member (B-751be8)
-    public bool RestoreJewellersGuild { get => _on[RuleTable.RestoreJewellersGuild]; set => _on[RuleTable.RestoreJewellersGuild] = value; }
-
-    /// <summary>
     /// The council hall's line 5, weapons training with the city guard, has flag 0 and nothing raises it; restored: it is offered while the
     /// city is not hostile and the guard was not asked since the day began (the event 0x41 its handler sets), greyed otherwise, as the
     /// audience and errand lines are. Restoration R-d1c1d4.
     /// </summary>
     // orig: R054+0x1A78: line 5 is not among the enabled lines (Z-a901ed; handler R054+0x29F8, hint R054+0x2B8C)
     public bool RestoreGuardTraining { get => _on[RuleTable.RestoreGuardTraining]; set => _on[RuleTable.RestoreGuardTraining] = value; }
-
-    /// <summary>
-    /// The "come back" appointment of the council hall's errand and the fortress's service names expiry handler 4 (a one-day welcome, event
-    /// 0x3B) but its flags are 0, so the handler never runs and the 99 chance the audience, errand and admission lines give a welcome party
-    /// is never given; restored: the appointment is created with the flag that runs its handler. Restoration R-ceb4d1.
-    /// </summary>
-    // orig: R054+0x22F8 and R050+0x2298 create the event with flags 0 (B-227a55, B-86c8e5); handler 4 is R029+0x4436
-    public bool RestoreWelcomeAppointment { get => _on[RuleTable.RestoreWelcomeAppointment]; set => _on[RuleTable.RestoreWelcomeAppointment] = value; }
 }

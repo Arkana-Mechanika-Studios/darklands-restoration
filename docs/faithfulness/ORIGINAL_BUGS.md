@@ -12,15 +12,15 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 105 | 24 | 81 |
-| cards | 77 | 3 | 74 |
+| cards | 78 | 7 | 71 |
 | events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
 | battles | 68 | 32 | 36 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 15 | 9 | 6 |
-| total | 280 | 74 | 206 |
+| total | 281 | 78 | 203 |
 
-## Core logic (265)
+## Core logic (266)
 
 ### rules (105)
 
@@ -341,7 +341,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 
-### cards (77)
+### cards (78)
 
 - **B-ad9d9e** `bug`, flag `FixGhostPartySlot` - `src/Darklands.Cards/CardContext.Party.cs:29` `CardContext.SetStatusAbleStale`  
   original: `R088+0x0440` (1859:0230, matched)  
@@ -376,12 +376,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-0d7783** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S048/RevolutionHouseByDay.cs:316` `RevolutionHouseByDay.UseAPotion`  
   original: `R048+0x0916` (1838:0916, matched)  
   why: the pop-up handler returns -1 as the "chance", and the draw (0..99) is never at most -1: the potion always fails, the success branch below never runs.
-- **B-169e5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:109` `FortressByDay.ReceiveACommission`  
+- **B-169e5e** `bug`, flag `FixFortressCommissionPay` - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:113` `FortressByDay.ReceiveACommission`  
   original: `R050+0x21F8` (1A06:0518, matched), `R050+0x24E0` (1A06:0800, matched)  
-  why: a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
-- **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:219` `FortressByDay.SeekService`  
+  why: OriginalBehaviour.FixFortressCommissionPay - a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own. Not in the original: the Fixed rules pay a finished commission here first, as the town hall's audience does (seven florins a size of the city), and go to the reward card with the fortress as its patron (its case 0x1B is written).
+- **B-86c8e5** `bug`, flag `FixWelcomeAppointment` - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:236` `FortressByDay.SeekService`  
   original: `R050+0x2298` (1A06:05B8, matched)  
-  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298). Not in the original: the Restored rules give the appointment the flag that runs its handler (OriginalBehaviour.RestoreWelcomeAppointment).
+  why: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
 - **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:153` `Docks.PassageHint`  
   original: `R051+0x2332` (19F2:0792, matched), `R051+0x2546` (19F2:09A6, matched), `R051+0x275A` (19F2:0BBA, matched) +2 more  
   why: the hint shows R136+0x8690+0x1E5F ("You need a missile weapon") where "Not enough money" was surely meant.
@@ -397,10 +397,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-9ddbde** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:290` `Footpads.Fight`  
   original: `R053+0x02D6` (1838:02D6, matched)  
   why: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the menu) with the gains kept, by day as by night: the fight can be repeated at will.
-- **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:390` `CouncilHall.AskForAnErrand`  
+- **B-227a55** `bug`, flag `FixWelcomeAppointment` - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:390` `CouncilHall.AskForAnErrand`  
   original: `R054+0x22F8` (19DF:0888, matched)  
-  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8). Not in the original: the Restored rules give the appointment the flag that runs its handler (OriginalBehaviour.RestoreWelcomeAppointment).
-- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:453` `CouncilHall.CallUponASaint`  
+  why: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
+- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:452` `CouncilHall.CallUponASaint`  
   original: `R054+0x25C6` (19DF:0B56, matched)  
   why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (resolved-quest-at-owner(3, 0x0A, location-now)): a party that prays its way in to be paid gets a new commission instead.
 - **B-0c78c7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:77` `CityWallSallyPort.ForceChance`  
@@ -477,7 +477,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-097711** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:38` `SallyPortInTheCityWall.Run`  
   original: `R073+0x2CB0` (1A7E:0850, matched)  
   why: the text's lines 1, 3 and 5 are "abandon the horses and ..." variants the script has no options for (MSGFILES): the lines are numbered in order, so from the second line on each runs another option (the second line climbs without ropes, the sewer-grate line prays, the alchemy line sneaks back), and the last three (pray, bribe, sneak back) do nothing.
-- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:115` `VillageSchulz.AskForHelp`  
+- **B-a36b44** `bug`, flag `FixVillageSchulzReward` - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:58` `VillageSchulz.AskForInformation`  
+  original: `R077+0x178E` (1996:01AE, matched), `R077+0x1920` (1996:0340, matched)  
+  why: OriginalBehaviour.FixVillageSchulzReward - the Schulz's robber-knight task (quest 3, owner 9) is never paid: the reward card ($Raubi01, R080) has this card among its patrons with its own text, but no card tests for the finished task and sends the party there (R077, $Villa02). Not in the original: the Fixed rules pay a finished task here first (the five florins a size of the village he promised).
+- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:132` `VillageSchulz.AskForHelp`  
   original: `R077+0x1958` (1996:0378, matched), `R077+0x1A64` (1996:0484, matched)  
   why: a full party gets text 6 ("Please accept this florin") but no florin; the low-standing branch adds it.
 - **B-132edf** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:50` `RobberKnightTaskRewarded.Run`  

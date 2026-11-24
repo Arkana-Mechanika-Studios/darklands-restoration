@@ -36,6 +36,7 @@ not touch it.
 | `evidence` | the evidence trail: each source, what it says, its reliability (below), `;`-separated |
 | `note` | for `candidate`: the caveat; for `needs research`: what is unknown; for `rejected`: the reason |
 | `revisit_if` | for `rejected` and `waits`: what would reopen the row (a text found, a design paper, a version difference, a part restored first) |
+| `mod_possible` | for `rejected` and `waits`: whether the item could come back as new content (a mod, our own design) and what that needs (new text, a reward or destination, new data, a new picture, the data or world seam), or why not |
 
 ### Evidence levels (design C3)
 
@@ -64,11 +65,14 @@ own registers and the original files; level 3 to 5 rows rest on documents; no ro
   The note says exactly what.
 - `rejected`: recorded so it is not raised again, with the reason (nothing to restore, designers chose against it,
   needs art or a map that never existed, debug aid). A rejected row is not forgotten: it stays in the register with what would
-  reopen it (`revisit_if`), and the rejected rows are reviewed whenever new sources arrive (an earlier release, a design paper,
-  a statement).
+  reopen it (`revisit_if`) and whether it could come back as new content (`mod_possible`): a rejected restoration may still be
+  a mod or our own design, which is new content and never part of Restored. The rejected rows are reviewed whenever new sources
+  arrive (an earlier release, a design paper, a statement).
 - `built`: in the Restored rule set: a switch of class `restoration` in [switches.csv](switches.csv) (presets `restored`
   only, its `register` this row's id), named in the note with the check against the original and the test.
   `SwitchRegisterTests` keeps the two registers in step.
+- `fixed`: not a restoration after all but an original bug whose fix is in the Fixed rule set (a gameplay switch of class
+  `gameplay`, its id named in the note); Restored inherits it.
 - `waits`: a candidate that cannot be built yet: it needs saved state the original's `.SAV` does not hold, or new data
   (records, pictures) that need the data seam. The note says which.
 
@@ -121,7 +125,9 @@ made two of them candidates (fortress-commission-pay, dragon-lair-icon) and reje
 community archive and the earlier releases (same day) gave every row its evidence trail and moved three: dragon-lair-icon to
 `rejected` (the clue book says the lairs are hidden on purpose), relic-powers back to `needs research` (unused values in the relics'
 records), and six new rows (three from the earlier releases, three from the design papers and the files): 76 rows, 15 candidates,
-4 built, 1 waits, 34 needs research, 22 rejected.
+4 built, 1 waits, 34 needs research, 22 rejected. The user's decisions of the same day (the decision sheet) and
+the code comparison of the earlier releases brought it to 82 rows: 14 candidates, 2 built, 3 fixed, 3 waits, 35 needs research,
+25 rejected.
 
 ### Rows skipped, by reason
 
@@ -205,9 +211,11 @@ original's own menu (`F<block>.<line>` runs) and replayed by the C#.
 | id | switch | what the player gets |
 |---|---|---|
 | R-5a84a7 | `restore.city.physician-street` | the business district's door to the physician's house |
-| R-726c2f | `restore.city.jewellers-guild` | the Jewelers' guild, by day and night, from the crafts quarter |
 | R-d1c1d4 | `restore.city.guard-training` | weapons training with the city guard, once a day, in the council hall |
-| R-ceb4d1 | `restore.city.welcome-appointment` | the "come back" appointment's one-day welcome at the council hall and the fortress |
+
+Decided by the user on 2026-11-24: the Jewelers' guild (R-726c2f) waits on the politics season (without it the guild is an empty
+visit); the "come back" appointment (R-ceb4d1), the fortress's commission pay (R-91ad2e) and the village Schulz's reward are
+original bugs and went to the Fixed rule set as gameplay fixes (status `fixed`).
 
 ## What this pass did not do
 

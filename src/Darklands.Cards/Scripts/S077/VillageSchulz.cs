@@ -21,6 +21,9 @@ public sealed class VillageSchulz : Card
     private const int VillageEvil = 0x3D;
     private const int AskedForHelp = 0x26;
 
+    /// <summary>The owner of the Schulz's robber-knight task (quest 3) and its reward card ($Raubi01).</summary>
+    private const int RobberKnightOwner = 9, TaskRewarded = 0x91;
+
     public override int Number => CardNumber;
 
     public override int Run(CardContext c)
@@ -52,6 +55,20 @@ public sealed class VillageSchulz : Card
     // orig: R077+0x178E (1996:01AE) matched; R077+0x1920 (1996:0340) matched; tests: CardSmokeTests
     private static void AskForInformation(CardContext c)
     {
+        // BUG: OriginalBehaviour.FixVillageSchulzReward - the Schulz's robber-knight task (quest 3, owner 9) is never paid: the reward card
+        //   ($Raubi01, R080) has this card among its patrons with its own text, but no card tests for the finished task and sends the party
+        //   there (R077, $Villa02).
+        // Not in the original: the Fixed rules pay a finished task here first (the five florins a size of the village he promised).
+        if (c.State.Behaviour.FixVillageSchulzReward && c.Events.ResolvedQuestAt(3, RobberKnightOwner, c.Here))
+        {
+            var pay = c.LocationQuery(c.Here, 2) * 5;
+            c.State.Party.Purse = c.State.Party.Purse.Add(pay, 0, 0);
+            c.Variables.Money[0] = Money.From(pay, 0, 0);
+            c.State.SavedCard = CardNumber;
+            c.State.SavedCard2 = RobberKnightOwner;
+            c.Next = TaskRewarded;
+            return;
+        }
         c.PassHours(1);
         if (c.EventAtHere(VillageEvil))
         {
@@ -89,7 +106,7 @@ public sealed class VillageSchulz : Card
         // C: closest-place-of-kind takes the village's position word pair (+4, +6) as one long.
         var village = c.State.Locations[c.Here];
         c.Variables.Location = c.NearestLocationOfType(village.X, village.Y, 2);
-        c.StartQuest3(9, c.Variables.Location, c.Here + 2000, 0x0F, 1, 0);
+        c.StartQuest3(RobberKnightOwner, c.Variables.Location, c.Here + 2000, 0x0F, 1, 0);
         c.PassHours(1);
         c.State.SavedCard = CardNumber;
         c.State.SavedCard2 = c.Variables.Location;

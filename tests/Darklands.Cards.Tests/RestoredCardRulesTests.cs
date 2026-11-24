@@ -100,57 +100,6 @@ public sealed class RestoredCardRulesTests
     }
 
     /// <summary>
-    /// RestoreJewellersGuild: the crafts quarter never offers its line 2 (the Jewelers' guild); restored, it is offered and leads to card
-    /// 0x5D by day.
-    /// </summary>
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TheCraftsQuarterOffersTheJewellersOnlyWhenRestored(bool restored)
-    {
-        if (!CardHarness.Available)
-        {
-            return;
-        }
-        var screen = new FirstMenu(2, 9);
-        var state = InCity(3, b => b.RestoreJewellersGuild = restored);
-        state.CurrentCard = CraftsQuarter.CardNumber;
-        var next = new CraftsQuarter().Run(Context(state, screen));
-        Assert.Equal(restored ? OptionState.Enabled : OptionState.Hidden, screen.Menus[0][2]);
-        Assert.Equal(restored, next == 0x5D);
-    }
-
-    /// <summary>
-    /// RestoreJewellersGuild, the night card: a failed sneak names (and practises) the member whose NUMBER is the party's lowest Stealth;
-    /// restored, the member who has it.
-    /// </summary>
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void AFailedSneakAtTheJewellersNamesTheLeastStealthyMemberWhenRestored(bool restored)
-    {
-        if (!CardHarness.Available)
-        {
-            return;
-        }
-        var state = InCity(3, b => b.RestoreJewellersGuild = restored);
-        state.Date = state.Date with { Hour = 23 };
-        var able = state.Party.Slots.Select((m, i) => (m, i)).Where(x => x.m.Status == CharacterStatus.Able).Select(x => x.i).ToList();
-        Assert.True(able.Count >= 2);
-        // every able member a good picker (Artifice 60, so the lock is not what fails) and a fair sneak; the second the clumsiest (Stealth 3)
-        foreach (var i in able)
-        {
-            state.Party.Slots[i].Skills[(int)Skill.Artifice] = 60;
-            state.Party.Slots[i].Skills[(int)Skill.Stealth] = 40;
-        }
-        var clumsy = able[1];
-        state.Party.Slots[clumsy].Skills[(int)Skill.Stealth] = 3;
-        var context = Context(state, new FirstMenu(9, 9));
-        JewelersGuildAtNight.FailedToGetIn(context);
-        Assert.Equal(restored ? clumsy : 3, context.Variables.Chosen[0]);
-    }
-
-    /// <summary>
     /// RestoreGuardTraining: the council hall never offers line 5 (weapons training with the guard); restored, it is offered in a city that
     /// is not hostile, the guard's answer follows (an hour, the training offers or a loss of standing), and the line is greyed until the next day.
     /// </summary>
@@ -187,39 +136,4 @@ public sealed class RestoredCardRulesTests
 
     private static int Teachers(GameState state) =>
         Enumerable.Range(0, EventLog.Capacity).Count(i => state.Events[i] is { Kind: EventKinds.Teacher } e && e.Location == state.CurrentLocation);
-
-    /// <summary>
-    /// RestoreWelcomeAppointment: asking the council hall for an errand can end in "come back", an event that names the one-day welcome as
-    /// its expiry handler but never runs it (flags 0); restored, it runs: when the appointment ends the party is welcome (event 0x3B) and
-    /// the audience is granted at 99 per cent.
-    /// </summary>
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TheComeBackAppointmentGivesTheWelcomeOnlyWhenRestored(bool restored)
-    {
-        if (!CardHarness.Available)
-        {
-            return;
-        }
-        for (var seed = 1u; seed < 200; seed++)
-        {
-            var state = InCity(3, b => b.RestoreWelcomeAppointment = restored, seed);
-            var screen = new FirstMenu(1, 8);
-            state.CurrentCard = CouncilHall.CardNumber;
-            var context = Context(state, screen);
-            new CouncilHall().Run(context);
-            var appointment = Enumerable.Range(0, EventLog.Capacity).Select(i => state.Events[i]).FirstOrDefault(e => e is { Kind: 0x3A, ExpiryHandler: ExpiryHandler.FollowUp });
-            if (appointment is null)
-            {
-                continue;   // no "come back" with this seed: a commission or a refusal
-            }
-            Assert.Equal(restored, appointment.Flags.HasFlag(EventFlags.CallExpiryHandler));
-            // the evening comes (the appointment ends at 18:00): welcome or not
-            context.PassHours(10);
-            Assert.Equal(restored, context.EventAtHere(EventKinds.FollowUp));
-            return;
-        }
-        Assert.Fail("no seed gave the come-back appointment");
-    }
 }

@@ -177,7 +177,7 @@ public sealed class SwitchRegisterTests
     {
         var (original, fixedSet, restored) = (OriginalBehaviour.Of(RulePreset.Original), OriginalBehaviour.Of(RulePreset.Fixed), OriginalBehaviour.Of(RulePreset.Restored));
         var gameplay = RuleTable.Flags.Where(r => r.Class == "gameplay").ToList();
-        Assert.Equal(30, gameplay.Count);
+        Assert.Equal(33, gameplay.Count);
         Assert.All(gameplay, r => Assert.True(fixedSet.IsOn(r.Id) && restored.IsOn(r.Id) && !original.IsOn(r.Id), r.Id));
         Assert.All(RuleTable.Flags.Where(r => r.Class is "data-safety" or "visual"), r => Assert.True(original.IsOn(r.Id) && fixedSet.IsOn(r.Id) && restored.IsOn(r.Id), r.Id));
         Assert.Equal(RuleTable.Flags.Count(r => r.Class != "restoration"), fixedSet.On.Count());
@@ -273,7 +273,8 @@ public sealed class SwitchRegisterTests
 
     /// <summary>
     /// The restoration register (restoration.csv) is read whole, its statuses are the allowed words, and a row set aside (rejected, or
-    /// waiting for something to exist first) says what would reopen it (<c>revisit_if</c>): rejected is not forgotten.
+    /// waiting for something to exist first) says what would reopen it (<c>revisit_if</c>) and whether it could come back as a mod
+    /// (<c>mod_possible</c>): rejected is not forgotten; a row moved to Fixed names its gameplay switch.
     /// </summary>
     [Fact]
     public void TheRestorationRegisterSaysWhatReopensEveryRowSetAside()
@@ -282,7 +283,8 @@ public sealed class SwitchRegisterTests
         var lines = File.ReadAllLines(path, Encoding.UTF8).Count(l => l.Length > 0) - 1;
         var rows = ReadCsv(path);
         Assert.Equal(lines, rows.Count);
-        var statuses = new HashSet<string>(StringComparer.Ordinal) { "candidate", "needs research", "rejected", "built", "waits" };
+        var statuses = new HashSet<string>(StringComparer.Ordinal) { "candidate", "needs research", "rejected", "built", "fixed", "waits" };
+        var gameplay = Rows().Where(r => r["kind"] == "flag" && r["class"] == "gameplay").Select(r => r["id"]).ToList();
         var problems = new List<string>();
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var row in rows)
@@ -298,6 +300,14 @@ public sealed class SwitchRegisterTests
             if (row["status"] is "rejected" or "waits" && row["revisit_if"].Length < 20)
             {
                 problems.Add($"{row["id"]}: a {row["status"]} row says what would reopen it (revisit_if)");
+            }
+            if (row["status"] is "rejected" or "waits" && row["mod_possible"].Length < 10)
+            {
+                problems.Add($"{row["id"]}: a {row["status"]} row says whether it could come back as a mod (mod_possible)");
+            }
+            if (row["status"] == "fixed" && !gameplay.Any(id => row["note"].Contains(id, StringComparison.Ordinal)))
+            {
+                problems.Add($"{row["id"]}: a fixed row names its gameplay switch in its note");
             }
         }
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));

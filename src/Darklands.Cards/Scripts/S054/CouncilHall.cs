@@ -387,11 +387,10 @@ public sealed class CouncilHall : Card
                     return;
                 }
                 c.PassHours(2);
-                // BUG: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome,
-                // event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
-                // Not in the original: the Restored rules give the appointment the flag that runs its handler (OriginalBehaviour.RestoreWelcomeAppointment).
+                // BUG: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a
+                // one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
                 c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 18),
-                    c.State.Behaviour.RestoreWelcomeAppointment ? (int)EventFlags.CallExpiryHandler : 0, 0);
+                    c.State.Behaviour.FixWelcomeAppointment ? (int)EventFlags.CallExpiryHandler : 0, 0);
                 ShowPicture(c, DeskPicture);
                 c.Screen.Text(7);
                 ShowPicture(c, Picture);

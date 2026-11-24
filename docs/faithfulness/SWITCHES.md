@@ -26,17 +26,17 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 
 ## Counts (at the time of writing)
 
-65 flags, 12 settings and 1 planned fix, 78 rows:
+66 flags, 12 settings and 1 planned fix, 79 rows:
 
 | Class | Rows | Of which on in the player's game now |
 |---|---|---|
 | data-safety | 28 | 28 |
 | visual | 3 flags + 1 setting | the 3 flags (the setting `view.clean-drawing` is off by default) |
-| gameplay | 30 flags + 1 planned + 1 setting | the 30 flags in a new game (the Fixed rule set, the default of `rules.preset`; none with Original); the player's list: [../FIXED.md](../FIXED.md) |
+| gameplay | 33 flags + 1 planned + 1 setting | the 33 flags in a new game (the Fixed rule set, the default of `rules.preset`; none with Original); the player's list: [../FIXED.md](../FIXED.md) |
 | interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
 | presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
-| restoration | 4 | none (the Restored rule set only, not offered to players yet) |
+| restoration | 2 | none (the Restored rule set only, not offered to players yet) |
 
 ## How it is kept true
 
