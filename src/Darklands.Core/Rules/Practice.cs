@@ -26,6 +26,8 @@ public static class Practice
     // C: -2 loops i < party-headcount and draws only for status-1 members (&& short-circuit); one member always draws first.
     public static void PracticeSkill(GameState s, int who, int skill, int mode, int percent, int level)
     {
+        // the rules' practice chance (RuleParameters.PracticeChance): the original's at its default
+        percent = s.Parameters.PracticeChance.Apply(percent);
         who = s.Party.Resolve(who);
         if (who == Who.Everybody)
         {

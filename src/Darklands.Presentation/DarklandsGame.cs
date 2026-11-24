@@ -64,6 +64,9 @@ public sealed class DarklandsGame
     /// <summary>The bugs the games played here have fixed: the player's host sets <see cref="OriginalBehaviour.DataSafe"/>, testers keep the faithful game.</summary>
     public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
 
+    /// <summary>The rules' numbers of the games played here (the original's; nothing changes them yet).</summary>
+    public RuleParameters Parameters { get; set; } = RuleParameters.Original;
+
     /// <summary>The game folder's SAVES folder (an existing one in any letter case, else SAVES).</summary>
     public static string DefaultSaveDirectory(string gameFolder) =>
         Directory.Exists(gameFolder)
@@ -233,7 +236,7 @@ public sealed class DarklandsGame
                     case StartChoice.Quit:
                         return;
                     case StartChoice.Quickstart:
-                        var quickstart = NewGame.Quickstart(World, Seed(), Seed, PartyTicks());
+                        var quickstart = NewGame.Quickstart(World, Seed(), Seed, PartyTicks(), Parameters);
                         quickstart.CurrentCard = QuickstartCard ?? quickstart.CurrentCard;
                         quickstart.BattleFile = ProgramBattleFile();
                         PlayFrom(quickstart);
@@ -478,6 +481,7 @@ public sealed class DarklandsGame
                 _session = state;
                 _played = true;
                 state.Behaviour = Behaviour;
+                state.Parameters = Parameters;
                 Playing = state;
                 Play(state);
                 return;

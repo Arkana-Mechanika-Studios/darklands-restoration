@@ -27,7 +27,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
-- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:163` `GameState.HanseStanding`  
+- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:166` `GameState.HanseStanding`  
   original: `R029+0x4650` (0E76:4650, draft)  
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
 - **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:147` `ItemStores.Close`  
@@ -156,7 +156,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-87887e** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:103` `PotionEffects.Drink`  
   original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
   why: Hardarmor gives 1, 2 or 3 levels of thickness (5 above quality 45) and no quality, where the manual has it better the armour's quality by 20 to 30 points and its thickness by one or two levels.
-- **B-82a169** `bug`, flag `FixFameCost` - `src/Darklands.Core/Rules/Practice.cs:78` `Practice.ChargeFame`  
+- **B-82a169** `bug`, flag `FixFameCost` - `src/Darklands.Core/Rules/Practice.cs:80` `Practice.ChargeFame`  
   original: `R039+0x1E90` (1462:1E90, matched)  
   why: v - fame is stored (FixFameCost).
 - **B-0aa03a** `bug`, no fix flag - `src/Darklands.Core/Rules/Quests.cs:360` `Quests.StartQuest3`  
@@ -619,7 +619,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:111` `CellBuffer.CampWatch`  
   original: `R030+0x25BE` (1462:25BE, draft)  
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
-- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:151` `OverlandTravel.Step`  
+- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:153` `OverlandTravel.Step`  
   original: `R030+0x2AC8` (1462:2AC8, draft)  
   why: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg, four tiles off) and 297 Putten (127 Putten, two rows off).
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
@@ -637,7 +637,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-0d81e6** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:348` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
   why: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration gives almost none ("after Great Power my bows only do 3-5 damage").
-- **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:406` `Attacks.QueueDamage`  
+- **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:408` `Attacks.QueueDamage`  
   original: `R014+0xAD5A` (18BF:08CA, draft)  
   why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage-resolve's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
 - **B-dd3d33** `bug`, flag `FixLootExitTestReadsWords` - `src/Darklands.Core/Battles/BattleEnd.cs:44` `BattleEnd.LootSkips`  
@@ -853,10 +853,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:430` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:431` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:441` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:442` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
@@ -874,19 +874,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-c26daf** `bug`, flag `FixSheetSkillValueColumn` - `src/Darklands.Presentation/CharacterSheetScreen.cs:953` `CharacterSheetScreen.DrawBoxText`  
   original: `R031+0x39C6` (1462:39C6, draft), `R031+0x39A0` (1462:39A0, draft)  
   why: OriginalBehaviour.FixSheetSkillValueColumn - the third group's values (Healing to Woodwise) are printed at the box's x + 3 (0x109), three pixels left of the two groups above (0x10C, DS:2E73 / DS:2E95's columns), so their column stands out of line. Reproduced (the original's frame of vis10 comm-inn is byte-identical to the Faithful C#'s); CharacterSheetSkillColumnTests. Fixed (an evident display fix, every player game, GitHub issue 4): at 0x10C.
-- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:505` `DarklandsGame.LoadSavedGame`  
+- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:509` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
-- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:517` `DarklandsGame.LoadSavedGame`  
+- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:521` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:567` `DarklandsGame.LoadInGame`  
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:571` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:739` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:743` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:955` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:959` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  

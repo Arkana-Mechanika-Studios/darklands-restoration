@@ -44,8 +44,69 @@ namespace Darklands.Core;
 /// </remarks>
 public sealed class OriginalBehaviour
 {
+    // the flags by index of RuleTable (the switch register's order): the properties below are reads of this table
+    private readonly bool[] _on = new bool[RuleTable.Flags.Count];
+    private static readonly HashSet<string> Reported = new(StringComparer.Ordinal);
+
+    /// <summary>Where an unknown key is reported, once a key (from a newer save or a typo in the settings): System.Diagnostics.Trace by default (a host sets its own log).</summary>
+    public static Action<string> ReportUnknown { get; set; } = message => System.Diagnostics.Trace.TraceWarning(message);
+
     /// <summary>The faithful game: every bug as in the original.</summary>
     public static OriginalBehaviour Faithful => new();
+
+    /// <summary>The flags a preset turns on (switches.csv's presets column, through <see cref="RuleTable"/>); Faithful turns none on.</summary>
+    public static OriginalBehaviour Of(RulePreset preset)
+    {
+        var behaviour = new OriginalBehaviour();
+        for (var i = 0; i < RuleTable.Flags.Count; i++)
+        {
+            behaviour._on[i] = RuleTable.Flags[i].In(preset);
+        }
+        return behaviour;
+    }
+
+    /// <summary>The player's reference set, <see cref="RulePreset.Original"/>: the same flags as <see cref="DataSafe"/>.</summary>
+    public static OriginalBehaviour Original => Of(RulePreset.Original);
+
+    /// <summary>Whether the flag with register id <paramref name="key"/> (<c>fix.&lt;area&gt;.&lt;name&gt;</c>) is on; an unknown key is reported once and is off.</summary>
+    public bool IsOn(string key)
+    {
+        var index = RuleTable.IndexOf(key);
+        if (index < 0)
+        {
+            Unknown(key);
+            return false;
+        }
+        return _on[index];
+    }
+
+    /// <summary>Turns the flag with register id <paramref name="key"/> on or off; an unknown key is reported once and changes nothing.</summary>
+    public void Set(string key, bool on)
+    {
+        var index = RuleTable.IndexOf(key);
+        if (index < 0)
+        {
+            Unknown(key);
+            return;
+        }
+        _on[index] = on;
+    }
+
+    /// <summary>The register ids of the flags that are on, in the register's order.</summary>
+    public IEnumerable<string> On => RuleTable.Flags.Where((_, i) => _on[i]).Select(rule => rule.Id);
+
+    private static void Unknown(string? key)
+    {
+        bool first;
+        lock (Reported)
+        {
+            first = Reported.Add(key ?? "");
+        }
+        if (first)
+        {
+            ReportUnknown($"rules: unknown switch '{key}' ignored");
+        }
+    }
 
     /// <summary>
     /// The faithful game with the data-safety fixes on: the original's bugs that damage the player's data (saved games, the item
@@ -53,15 +114,9 @@ public sealed class OriginalBehaviour
     /// other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here, and besides them only the evident display fixes the user chose for every player
     /// game (<see cref="FixRosterFigurePreview"/>, <see cref="FixPartyInfoBattleCycles"/>, <see cref="FixSheetSkillValueColumn"/>).
+    /// It is the <see cref="RulePreset.Original"/> preset: the flags whose presets in switches.csv include it.
     /// </summary>
-    public static OriginalBehaviour DataSafe => new()
-    {
-        FixInnCacheRewrite = true, FixCacheStoreLimit = true, FixSaveWriterSkipsEmptySlots = true, FixLeavingMemberRecordTail = true,
-        FixStaleDissolveSlot = true, FixDissolveKeyMember = true, FixStairsRecordOfShownLevel = true, FixLeaderStairsRecordOfShownLevel = true, FixExitedMemberStrandsTheRest = true, FixPlaceActionsOnOwnLevel = true, FixTriggersOfOtherLevels = true, FixPileOfOtherLevel = true, FixStaleStairsBackRecord = true, FixFollowersOnShownLevel = true, FixWokenOnOtherLevel = true, FixLeaderKeysOnOtherLevel = true, FixStairsArrivalWithoutPlace = true, FixFloorsOfResumedBattle = true, FixCombatAcrossLevels = true, FixWalkingOnOwnLevel = true,
-        FixGhostPartySlot = true, FixDamagedSavedGame = true,
-        FixRosterMissingFigure = true, FixLoadTwoSlotsOneRecord = true, FixMapQuitFreedBuffers = true, FixRosterColourRow = true,
-        FixRosterFigurePreview = true, FixRosterStaleRow = true, FixImpossibleSavedGame = true, FixPartyInfoBattleCycles = true, FixSheetSkillValueColumn = true,
-    };
+    public static OriginalBehaviour DataSafe => Of(RulePreset.Original);
 
     /// <summary>
     /// Leaving an item store that already has a stored list rewrites CACHE.TMP with a 101-byte header over the 198-byte header's
@@ -69,7 +124,7 @@ public sealed class OriginalBehaviour
     /// as a game's file is, every store kept (the compact layout of <see cref="FixCacheStoreLimit"/>).
     /// </summary>
     // orig: stash-store R035+0x1468 (1462:1468), data safety, data-damaging; the clean layout is saved-game-read R037+0x4184 (0x63, 0, 0x62 zero words) with stash-store(-1) appending after it
-    public bool FixInnCacheRewrite { get; set; }
+    public bool FixInnCacheRewrite { get => _on[RuleTable.FixInnCacheRewrite]; set => _on[RuleTable.FixInnCacheRewrite] = value; }
 
     /// <summary>
     /// The 99th item store's offset is written over the first store's count byte and first item, so the file is damaged
@@ -78,7 +133,7 @@ public sealed class OriginalBehaviour
     /// and Put at a place that would need more is refused, the item staying in the pack.
     /// </summary>
     // orig: stash-store R035+0x1468 (1462:1468), the append at R035+0x1532 and the rewrite at R035+0x15A2 (cbw R035+0x1615), data safety, data-damaging
-    public bool FixCacheStoreLimit { get; set; }
+    public bool FixCacheStoreLimit { get => _on[RuleTable.FixCacheStoreLimit]; set => _on[RuleTable.FixCacheStoreLimit] = value; }
 
     /// <summary>The item stores are laid out compactly and Put is limited (either of <see cref="FixInnCacheRewrite"/>, <see cref="FixCacheStoreLimit"/>).</summary>
     public bool CompactCache => FixInnCacheRewrite || FixCacheStoreLimit;
@@ -88,7 +143,7 @@ public sealed class OriginalBehaviour
     /// short and the original can crash loading it (the Wild Hunt's victim causes it); fixed: every roster record is written.
     /// </summary>
     // orig: save writer R037+0x2ACE (1462:2ACE), data safety, data-damaging
-    public bool FixSaveWriterSkipsEmptySlots { get; set; }
+    public bool FixSaveWriterSkipsEmptySlots { get => _on[RuleTable.FixSaveWriterSkipsEmptySlots]; set => _on[RuleTable.FixSaveWriterSkipsEmptySlots] = value; }
 
     /// <summary>
     /// A member who leaves the party through <c>party-leave</c> (gone away, sent off by a card) has only the 0x80-byte member record
@@ -98,7 +153,7 @@ public sealed class OriginalBehaviour
     /// is written.
     /// </summary>
     // orig: party-leave R037+0x3B58 (1462:3B58), data safety, data-damaging
-    public bool FixLeavingMemberRecordTail { get; set; }
+    public bool FixLeavingMemberRecordTail { get => _on[RuleTable.FixLeavingMemberRecordTail]; set => _on[RuleTable.FixLeavingMemberRecordTail] = value; }
 
     /// <summary>
     /// A saved game cut short (a file that ends inside the header and party block, a record or the location table its own counts say it
@@ -108,7 +163,7 @@ public sealed class OriginalBehaviour
     /// the start screen stays); a file that holds all its records, whatever its cache or its battle file, loads as before.
     /// </summary>
     // orig: saved-game load R037+0x8ED4 (1C7D:0D24): each _dos_read of the header, party block, records and location block ignores a short count (checked in the emulated original: header cut at 0 or 96 bytes ends in DOS, cut at 512 or 9374 plays on)
-    public bool FixDamagedSavedGame { get; set; }
+    public bool FixDamagedSavedGame { get => _on[RuleTable.FixDamagedSavedGame]; set => _on[RuleTable.FixDamagedSavedGame] = value; }
 
     /// <summary>
     /// A saved game whose header holds what no game has (edited by hand or by another tool: a month above 11, a day above 31, an hour above
@@ -119,7 +174,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: saved-game load R037+0x8ED4 (1C7D:0D24): the date, location-now and the location table are read with no check (card fuzz: a month
     //   of 12 read past the month table in the original, an IndexOutOfRange in the rewrite); data safety, a crash
-    public bool FixImpossibleSavedGame { get; set; }
+    public bool FixImpossibleSavedGame { get => _on[RuleTable.FixImpossibleSavedGame]; set => _on[RuleTable.FixImpossibleSavedGame] = value; }
 
     /// <summary>
     /// The inn's roster ("reform your party"): an arrow key onto a row past the figure list (row 4 or later with the game's four figure
@@ -128,7 +183,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R038+0x02F8 (the arrows, R038+0x045F..0x04CA): "pics\" (DS:4A3D) + the 4-byte entry DS:E7E2 + 4 x DS:E7DA + "small.pic" (DS:4A43),
     //   root 0617:045C, whose opener root 0617:000E ends the program on a missing file (root 0617:067E: mode 3, perror, exit(99)); data safety, a crash
-    public bool FixRosterMissingFigure { get; set; }
+    public bool FixRosterMissingFigure { get => _on[RuleTable.FixRosterMissingFigure]; set => _on[RuleTable.FixRosterMissingFigure] = value; }
 
     /// <summary>
     /// The inn's roster ("reform your party"): the colour keys 1, 2, 3 act on the party slot whose roster entry equals the highlighted ROW
@@ -138,7 +193,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R038+0x02F8 keys 0x231 / 0x332 / 0x433 (R038+0x127F, 0x1807, 0x1E87: the five slots' ids compared with DS:E7DA itself); the
     //   part's bytes written into the slot's colours (segment DS:7ED2 + 0x33FC + 0x18 x slot); measured: vis10 roster-colour; data safety, data-damaging
-    public bool FixRosterColourRow { get; set; }
+    public bool FixRosterColourRow { get => _on[RuleTable.FixRosterColourRow]; set => _on[RuleTable.FixRosterColourRow] = value; }
 
     /// <summary>
     /// The inn's roster ("reform your party"): the highlight goes down to as many rows as the roster has characters, listed here or not,
@@ -149,7 +204,7 @@ public sealed class OriginalBehaviour
     // orig: R038+0x02F8 keys 0x2348 (R038+0x0EB7) and 0x1F53 (R038+0x1083): the five slots' ids compared with DS:8D06[DS:E7DA]; the list
     //   R038+0x23EC writes DS:8D06 only for the rows it lists and sets DS:E7DC to the number of records (R038+0x259D); measured: vis10
     //   roster-stale; data safety, data-damaging
-    public bool FixRosterStaleRow { get; set; }
+    public bool FixRosterStaleRow { get => _on[RuleTable.FixRosterStaleRow]; set => _on[RuleTable.FixRosterStaleRow] = value; }
 
     /// <summary>
     /// The inn's roster's figure preview shows the wrong figure in the wrong place: Up, Left and Right draw it at the bottom of the
@@ -162,7 +217,7 @@ public sealed class OriginalBehaviour
     // orig: R038+0x02F8 keys 0x4800/0x4B00/0x4D00 (draw at (0x0C, 0xA4), R038+0x05AD..0x05B9) and 0x5000 (draw at (0x46, 0xA5)); only
     //   (0x46, 0xA5, 0x23 x 0x23) is copied back (R038+0x0396 / 0x061E); the name DS:E7E2 + 4 x DS:E7DA (the row); the colours of the slot
     //   whose id equals DS:E7DA; R038+0x0000's list click moves only the highlight; measured: vis10 roster-figure (11 shots at 0 px)
-    public bool FixRosterFigurePreview { get; set; }
+    public bool FixRosterFigurePreview { get => _on[RuleTable.FixRosterFigurePreview]; set => _on[RuleTable.FixRosterFigurePreview] = value; }
 
     /// <summary>
     /// The party information (F6, or the battle bar's Party Info) opened in a battle shows its picture's colours with the battle's
@@ -174,7 +229,7 @@ public sealed class OriginalBehaviour
     //   is the party information screen itself (R034+0x0EE6): its background, R034+0x11BC, loads pics\ptystats.pic with its palette
     //   (palette-load, root 0410:0364) and nothing stops the cycles (root 047C:040B) or clears DS:07D8, so the timer's frame work
     //   (root 047C:000A -> 047C:042A) writes the battle's ranges at their next steps. The load screen stops them (R037+0x8400..0x8426)
-    public bool FixPartyInfoBattleCycles { get; set; }
+    public bool FixPartyInfoBattleCycles { get => _on[RuleTable.FixPartyInfoBattleCycles]; set => _on[RuleTable.FixPartyInfoBattleCycles] = value; }
 
     /// <summary>
     /// The character sheet's closed skill boxes print the values of the third group (Healing to Woodwise) three pixels left of the
@@ -183,7 +238,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R031+0x39C6 box 7 prints "%02d" (DS:2EED) at the box's x + 3; boxes 4 and 5 at 0x10C (DS:2E73, DS:2E95); measured: the
     //   original's own sheet frame of vis10 comm-inn (live) is byte-identical to the Faithful C#'s
-    public bool FixSheetSkillValueColumn { get; set; }
+    public bool FixSheetSkillValueColumn { get => _on[RuleTable.FixSheetSkillValueColumn]; set => _on[RuleTable.FixSheetSkillValueColumn] = value; }
 
     /// <summary>
     /// A saved game whose two party slots name one character record: the load reads the record into the first slot only, the second
@@ -193,7 +248,7 @@ public sealed class OriginalBehaviour
     // orig: saved-game-read R037+0x8ED4 (R037+0x96BE..0x96D3), the load screen R037+0x84BA (R037+0x86DA..0x8754 "pics\shield<letter>.pic"
     //   for every slot whose id is not -1), measured live: lockstep session carry-dup-resave (synthetic save dup01), program exit 99 at
     //   R037+0x84BA+0x29F; data safety, a load crash
-    public bool FixLoadTwoSlotsOneRecord { get; set; }
+    public bool FixLoadTwoSlotsOneRecord { get => _on[RuleTable.FixLoadTwoSlotsOneRecord]; set => _on[RuleTable.FixLoadTwoSlotsOneRecord] = value; }
 
     /// <summary>
     /// Alt-Q read by the travel map's own key look frees the map's row and cell buffers before it asks "Quit to DOS?"; after "no" the
@@ -203,107 +258,107 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R030+0x0FD8..0x101B, then R030+0x0F06 (camp), R030+0x031F (portrait), R030+0x026C (map exit) (root 05BA:00C2 with handle 0: root 044A:0164 fails, root 0000:1354, DOS function 9, exit(0));
     //   measured: session tk-map-altq-twice (local/batch/mapquit); data safety, a crash
-    public bool FixMapQuitFreedBuffers { get; set; }
+    public bool FixMapQuitFreedBuffers { get => _on[RuleTable.FixMapQuitFreedBuffers]; set => _on[RuleTable.FixMapQuitFreedBuffers] = value; }
 
     /// <summary><c>event-advance</c> with "add" on a new event leaves 2 × value; fixed: the value.</summary>
-    public bool FixNewEventAddDoubles { get; set; }
+    public bool FixNewEventAddDoubles { get => _on[RuleTable.FixNewEventAddDoubles]; set => _on[RuleTable.FixNewEventAddDoubles] = value; }
 
     /// <summary><c>stat-cap-assign</c> ignores its 0..99 limit; fixed: the limit applies.</summary>
-    public bool FixSetAttributeMaximumLimit { get; set; }
+    public bool FixSetAttributeMaximumLimit { get => _on[RuleTable.FixSetAttributeMaximumLimit]; set => _on[RuleTable.FixSetAttributeMaximumLimit] = value; }
 
     /// <summary><c>member-top-skill</c> always reports skill 6; fixed: the best skill's number.</summary>
-    public bool FixBestWeaponSkillNumber { get; set; }
+    public bool FixBestWeaponSkillNumber { get => _on[RuleTable.FixBestWeaponSkillNumber]; set => _on[RuleTable.FixBestWeaponSkillNumber] = value; }
 
     /// <summary>The attribute-sum queries record 2 × a; fixed: a + b.</summary>
-    public bool FixAttributeSums { get; set; }
+    public bool FixAttributeSums { get => _on[RuleTable.FixAttributeSums]; set => _on[RuleTable.FixAttributeSums] = value; }
 
     /// <summary><c>place-hostile</c>'s unrest test has its arguments swapped; fixed: unrest here.</summary>
-    public bool FixHostileUnrestTest { get; set; }
+    public bool FixHostileUnrestTest { get => _on[RuleTable.FixHostileUnrestTest]; set => _on[RuleTable.FixHostileUnrestTest] = value; }
 
     /// <summary><c>place-assign</c> 6 and 11 write each other's shop; fixed: the shop <c>place-query</c> reads.</summary>
-    public bool FixShopSetSwap { get; set; }
+    public bool FixShopSetSwap { get => _on[RuleTable.FixShopSetSwap]; set => _on[RuleTable.FixShopSetSwap] = value; }
 
     /// <summary><c>place-assign</c> 37 overwrites every occupied slot; fixed: the list shifts.</summary>
-    public bool FixRecordedListShift { get; set; }
+    public bool FixRecordedListShift { get => _on[RuleTable.FixRecordedListShift]; set => _on[RuleTable.FixRecordedListShift] = value; }
 
     /// <summary><c>give-item-record-form</c>(−2) gives each member the items twice; fixed: once.</summary>
-    public bool FixPartyItemsAddedTwice { get; set; }
+    public bool FixPartyItemsAddedTwice { get => _on[RuleTable.FixPartyItemsAddedTwice]; set => _on[RuleTable.FixPartyItemsAddedTwice] = value; }
 
     /// <summary>
     /// A temporary boost owned by −2 (the whole party) is never taken back at expiry (the
     /// presence test reads the byte before the member records); fixed: taken back from everybody.
     /// </summary>
-    public bool FixEverybodyBoostsUndone { get; set; }
+    public bool FixEverybodyBoostsUndone { get => _on[RuleTable.FixEverybodyBoostsUndone]; set => _on[RuleTable.FixEverybodyBoostsUndone] = value; }
 
     /// <summary>
     /// <c>member-flag-set</c>(−1) does not resolve the leader: the saint is not learned and member
     /// 4's formula bytes get the bit; fixed: the leader learns it.
     /// </summary>
-    public bool FixSaintLearnedByLeader { get; set; }
+    public bool FixSaintLearnedByLeader { get => _on[RuleTable.FixSaintLearnedByLeader]; set => _on[RuleTable.FixSaintLearnedByLeader] = value; }
 
     /// <summary>
     /// St.Cecilia's standing goes to <c>location-now</c> even in the open country (−1: a null record,
     /// nothing changes), where the other saints take the nearest city; fixed: the nearest city.
     /// </summary>
-    public bool FixSaintStandingInOpenCountry { get; set; }
+    public bool FixSaintStandingInOpenCountry { get => _on[RuleTable.FixSaintStandingInOpenCountry]; set => _on[RuleTable.FixSaintStandingInOpenCountry] = value; }
 
     /// <summary>
     /// A saint's weapon-skill boost (<c>gear-bonus-sums</c>) for a prayer for the party (−1) looks up
     /// the equipped weapons of the record before the members' (menu-bar words), finds none and
     /// changes nothing; fixed: the leader's weapons.
     /// </summary>
-    public bool FixSaintWeaponSkillsForParty { get; set; }
+    public bool FixSaintWeaponSkillsForParty { get => _on[RuleTable.FixSaintWeaponSkillsForParty]; set => _on[RuleTable.FixSaintWeaponSkillsForParty] = value; }
 
     /// <summary><c>item-keep-percent</c> starts one past the last stack; fixed: at the last stack.</summary>
-    public bool FixKeepItemsOffByOne { get; set; }
+    public bool FixKeepItemsOffByOne { get => _on[RuleTable.FixKeepItemsOffByOne]; set => _on[RuleTable.FixKeepItemsOffByOne] = value; }
 
     /// <summary><c>item-grade-flags</c> tests item 0's flags; fixed: each stack's.</summary>
-    public bool FixItemQualityByFlags { get; set; }
+    public bool FixItemQualityByFlags { get => _on[RuleTable.FixItemQualityByFlags]; set => _on[RuleTable.FixItemQualityByFlags] = value; }
 
     /// <summary>
     /// <c>skill-temporary-drop</c>(−2) boosts everybody once per present member; and
     /// <c>stat-temporary-boost</c>(−2) stops at a member above the boost and carries the reduced
     /// boost on. Fixed: each present member gets the boost once.
     /// </summary>
-    public bool FixWholePartyBoosts { get; set; }
+    public bool FixWholePartyBoosts { get => _on[RuleTable.FixWholePartyBoosts]; set => _on[RuleTable.FixWholePartyBoosts] = value; }
 
     /// <summary><c>battle-driver</c> adds the party seed to a location seed twice; fixed: once.</summary>
-    public bool FixBattleSeed { get; set; }
+    public bool FixBattleSeed { get => _on[RuleTable.FixBattleSeed]; set => _on[RuleTable.FixBattleSeed] = value; }
 
     /// <summary>The fame cost sets fame to cost − fame; fixed: fame − cost.</summary>
-    public bool FixFameCost { get; set; }
+    public bool FixFameCost { get => _on[RuleTable.FixFameCost]; set => _on[RuleTable.FixFameCost] = value; }
 
     /// <summary>
     /// <c>groups-repair</c> drops every enemy group after the first empty one (it shifts the groups
     /// but keeps testing the stale counter); fixed: only empty groups are dropped.
     /// </summary>
-    public bool FixEnemyGroupCompaction { get; set; }
+    public bool FixEnemyGroupCompaction { get => _on[RuleTable.FixEnemyGroupCompaction]; set => _on[RuleTable.FixEnemyGroupCompaction] = value; }
 
     /// <summary>
     /// Changing a camp activity gives back an unfinished brew's ingredients from all five
     /// ingredient slots, so an empty slot adds an empty stack of item 0; fixed: only the
     /// formula's ingredients.
     /// </summary>
-    public bool FixUnbrewEmptyIngredientSlots { get; set; }
+    public bool FixUnbrewEmptyIngredientSlots { get => _on[RuleTable.FixUnbrewEmptyIngredientSlots]; set => _on[RuleTable.FixUnbrewEmptyIngredientSlots] = value; }
 
     /// <summary>
     /// Changing a camp activity looks for the member's brews from event slot (number of formulas) up, not from slot 0, so it
     /// finds none in a game with fewer events and the brew goes on; fixed: every slot is scanned.
     /// </summary>
-    public bool FixCallOffScansEveryEvent { get; set; }
+    public bool FixCallOffScansEveryEvent { get => _on[RuleTable.FixCallOffScansEveryEvent]; set => _on[RuleTable.FixCallOffScansEveryEvent] = value; }
 
     /// <summary>
     /// The shop stock test reads the city size from an uninitialised stack slot, so the first
     /// item and the item after each of the first four goods use the stock table's row 1; fixed:
     /// always the city size − 1.
     /// </summary>
-    public bool FixShopStockSize { get; set; }
+    public bool FixShopStockSize { get => _on[RuleTable.FixShopStockSize]; set => _on[RuleTable.FixShopStockSize] = value; }
 
     /// <summary>
     /// <c>cloud-on-line-test</c> loops to the cloud count inclusive, so the slot after the last
     /// effect cloud (an old cloud's copy) still blocks shots; fixed: only the clouds there are.
     /// </summary>
-    public bool FixCloudLineOneTooMany { get; set; }
+    public bool FixCloudLineOneTooMany { get => _on[RuleTable.FixCloudLineOneTooMany]; set => _on[RuleTable.FixCloudLineOneTooMany] = value; }
 
     /// <summary>
     /// With the party split over two levels and the game paused, the U key's stairs order copies entry [selected] of the member
@@ -311,7 +366,7 @@ public sealed class OriginalBehaviour
     /// DS:C8B1 into DS:C77D. Fixed: nothing is copied without a selection. (Nothing visible reads those two bytes: harmless.)
     /// </summary>
     // orig: R016+0x014E (1EF8:014E), the copy at R016+0x0165..0x0169, no test of DS:A6B2
-    public bool FixStairsKeyWithoutSelection { get; set; }
+    public bool FixStairsKeyWithoutSelection { get => _on[RuleTable.FixStairsKeyWithoutSelection]; set => _on[RuleTable.FixStairsKeyWithoutSelection] = value; }
 
     /// <summary>
     /// Esc with nobody selected (paused, outside order mode) writes the Following bit to flags[−1]'s high byte, which is the pause
@@ -319,7 +374,7 @@ public sealed class OriginalBehaviour
     /// (the battle's tests of it are mixed: Space then resumes, the AI and melee stay frozen). Fixed: no Following bit is written.
     /// </summary>
     // orig: R016+0x13D4 (1EF8:13D4), the xor at R016+0x13F9 with bx = −2
-    public bool FixEscapeWithoutSelectionPauseByte { get; set; }
+    public bool FixEscapeWithoutSelectionPauseByte { get => _on[RuleTable.FixEscapeWithoutSelectionPauseByte]; set => _on[RuleTable.FixEscapeWithoutSelectionPauseByte] = value; }
 
     /// <summary>
     /// The loot screen's D after a battle skips a party slot "gone through an exit" by reading the combat floor table (bytes, one a
@@ -328,7 +383,7 @@ public sealed class OriginalBehaviour
     /// the slot's own floor byte is tested.
     /// </summary>
     // orig: R040+0x0DB3..0x0DB7 `shl si, 1; cmp word [si - 0x594C], -0x63`
-    public bool FixLootExitTestReadsWords { get; set; }
+    public bool FixLootExitTestReadsWords { get => _on[RuleTable.FixLootExitTestReadsWords]; set => _on[RuleTable.FixLootExitTestReadsWords] = value; }
 
     /// <summary>
     /// Dissolve Lock uses up the pack entry the Eater-Water was found at (DS:C7CD, a byte) when the order was given or, for the leader,
@@ -338,7 +393,7 @@ public sealed class OriginalBehaviour
     /// used up, the weakest one the pack still holds (none: nothing).
     /// </summary>
     // orig: fighter-goto-action R014+0x2256..0x2263 (use-up-slot 18BF:0FA4 with DS:C7CD[m]), data safety, data-damaging
-    public bool FixStaleDissolveSlot { get; set; }
+    public bool FixStaleDissolveSlot { get => _on[RuleTable.FixStaleDissolveSlot]; set => _on[RuleTable.FixStaleDissolveSlot] = value; }
 
     /// <summary>
     /// The Stairs order of a member alone on another level is carried out by use-exit with his stairs-back record number (DS:C8B2,
@@ -351,7 +406,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fighter-goto-action R014+0x22B2..0x22CB (use-exit with DS:C77E[i]), use-exit R023+0x1618 (record n of the level shown,
     //   R023+0x162B..0x164A, no count test), data safety
-    public bool FixStairsRecordOfShownLevel { get; set; }
+    public bool FixStairsRecordOfShownLevel { get => _on[RuleTable.FixStairsRecordOfShownLevel]; set => _on[RuleTable.FixStairsRecordOfShownLevel] = value; }
 
     /// <summary>
     /// With the party split over two levels and the battle running (not paused), U sends the leader through his stairs-back record
@@ -362,7 +417,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: fight-keys R016+0x014E (1EF8:014E, the U case with DS:11CA != DS:C623, not paused), use-exit R023+0x1618 (record n of
     //   the level shown, R023+0x162B..0x164A, no count test), data safety
-    public bool FixLeaderStairsRecordOfShownLevel { get; set; }
+    public bool FixLeaderStairsRecordOfShownLevel { get => _on[RuleTable.FixLeaderStairsRecordOfShownLevel]; set => _on[RuleTable.FixLeaderStairsRecordOfShownLevel] = value; }
 
     /// <summary>
     /// A member who left through an exit keeps status 1 with floor -99. The end test then takes "nobody able on the enemies' floor and
@@ -374,7 +429,7 @@ public sealed class OriginalBehaviour
     /// with those still there).
     /// </summary>
     // orig: fight-finished R014+0x08FE (the fled test), use-exit R023+0x1618 (the alone loop), data safety
-    public bool FixExitedMemberStrandsTheRest { get; set; }
+    public bool FixExitedMemberStrandsTheRest { get => _on[RuleTable.FixExitedMemberStrandsTheRest]; set => _on[RuleTable.FixExitedMemberStrandsTheRest] = value; }
 
     /// <summary>
     /// The level image in memory is the one SHOWN: the place tests of each tick (which door, stairs, chest region a member stands in) and
@@ -386,7 +441,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: party-place-table R014+0xDC14, fighter-goto-action R014+0x2170 (door-flip R023+0x00B8, lock-picking R023+0x12C0, chest-opening
     //   R023+0x13D0, R023+0x153E), data safety
-    public bool FixPlaceActionsOnOwnLevel { get; set; }
+    public bool FixPlaceActionsOnOwnLevel { get => _on[RuleTable.FixPlaceActionsOnOwnLevel]; set => _on[RuleTable.FixPlaceActionsOnOwnLevel] = value; }
 
     /// <summary>
     /// The trigger test of each tick (secret doors, hidden traps, dart and spell traps, pits, wall openings, alarms) reads the triggers of
@@ -395,7 +450,7 @@ public sealed class OriginalBehaviour
     /// whoever stands there) or finds its secret doors and traps by remote. Fixed: only those on the level shown spring its triggers.
     /// </summary>
     // orig: R014+0xD6DA (no floor test), handlers R014+0xD882 / 0xD966 / 0xDA18 / 0xDACA, R023+0x0D88 / 0x0E30 / 0x0812, data safety
-    public bool FixTriggersOfOtherLevels { get; set; }
+    public bool FixTriggersOfOtherLevels { get => _on[RuleTable.FixTriggersOfOtherLevels]; set => _on[RuleTable.FixTriggersOfOtherLevels] = value; }
 
     /// <summary>
     /// The pack of a combatant who falls becomes a loot pile on the level SHOWN, merged with a pile of that level near his place and
@@ -404,7 +459,7 @@ public sealed class OriginalBehaviour
     /// battlefield. Fixed: the pile lies on his own level, merged only with a pile there.
     /// </summary>
     // orig: fighter-dying R014+0x2324 (the pile's level = DS:11CA, the merge test on DS:11CA), R014+0x2802, data safety
-    public bool FixPileOfOtherLevel { get; set; }
+    public bool FixPileOfOtherLevel { get => _on[RuleTable.FixPileOfOtherLevel]; set => _on[RuleTable.FixPileOfOtherLevel] = value; }
 
     /// <summary>
     /// use-exit writes a member's stairs-back record number (DS:C8B2) after its level switch: right when he goes alone (the old level is
@@ -414,7 +469,7 @@ public sealed class OriginalBehaviour
     /// past his own level's stairs count is not taken (the order does nothing).
     /// </summary>
     // orig: use-exit R023+0x1618 (DS:C8B2[who] = record n's +0x0D read after the level switch), fight-keys R016+0x014E, data safety
-    public bool FixStaleStairsBackRecord { get; set; }
+    public bool FixStaleStairsBackRecord { get => _on[RuleTable.FixStaleStairsBackRecord]; set => _on[RuleTable.FixStaleStairsBackRecord] = value; }
 
     /// <summary>
     /// When the party has gone down (or up) the stairs, the enemies of the kinds that follow are placed after a delay of 1 to 4 seconds
@@ -423,7 +478,7 @@ public sealed class OriginalBehaviour
     /// him Away (lost from the party) and removes the enemies. Fixed: they are placed on the party's level.
     /// </summary>
     // orig: R025+0x0CFC (placed on DS:11CA around DS:C3CD), the delay DS:C2BB from R023+0x17D2, fight-finished R014+0x08FE, data safety
-    public bool FixFollowersOnShownLevel { get; set; }
+    public bool FixFollowersOnShownLevel { get => _on[RuleTable.FixFollowersOnShownLevel]; set => _on[RuleTable.FixFollowersOnShownLevel] = value; }
 
     /// <summary>
     /// After a fight the unconscious are woken and put on a free spot near where they lay, tested against the walls and sight of the
@@ -432,7 +487,7 @@ public sealed class OriginalBehaviour
     /// level shown coming back), next to members of that level only.
     /// </summary>
     // orig: fight-recovery R014+0x0DEE (the free-spot and sight tests on DS:11CA, the anchors any able member), data safety
-    public bool FixWokenOnOtherLevel { get; set; }
+    public bool FixWokenOnOtherLevel { get => _on[RuleTable.FixWokenOnOtherLevel]; set => _on[RuleTable.FixWokenOnOtherLevel] = value; }
 
     /// <summary>
     /// The leader's keys outside order mode (U, O, P, D, the battle running) act on his stairs record, door or chest index from the place
@@ -442,7 +497,7 @@ public sealed class OriginalBehaviour
     /// the members on his level.
     /// </summary>
     // orig: fight-keys R016+0x1182 / 0x1072 / 0x10B2 / 0x0F76 with the place tests R014+0xD04E / 0xD328 / 0xD402, data safety
-    public bool FixLeaderKeysOnOtherLevel { get; set; }
+    public bool FixLeaderKeysOnOtherLevel { get => _on[RuleTable.FixLeaderKeysOnOtherLevel]; set => _on[RuleTable.FixLeaderKeysOnOtherLevel] = value; }
 
     /// <summary>
     /// use-exit places the combatant who took the stairs around the arrival spot of the record (+8..+11) on the new level; when no place
@@ -452,7 +507,7 @@ public sealed class OriginalBehaviour
     /// new level's stairs that lead back to his old level, then around a member standing on that level.
     /// </summary>
     // orig: use-exit R023+0x1618 with place-nearby R024+0x08F2 (the coordinates kept on failure), data safety
-    public bool FixStairsArrivalWithoutPlace { get; set; }
+    public bool FixStairsArrivalWithoutPlace { get => _on[RuleTable.FixStairsArrivalWithoutPlace]; set => _on[RuleTable.FixStairsArrivalWithoutPlace] = value; }
 
     /// <summary>
     /// A battle taken up again on the same battlefield in mode 1 (members standing where the last one left them: the cards of a dungeon's
@@ -462,7 +517,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R002+0x0000 (the members' floors DS:A6B4 cleared at the end), fight-main-loop R014+0x0000 (DS:A6B4 = DS:C623 = DS:11CA at the
     //   start), data safety
-    public bool FixFloorsOfResumedBattle { get; set; }
+    public bool FixFloorsOfResumedBattle { get => _on[RuleTable.FixFloorsOfResumedBattle]; set => _on[RuleTable.FixFloorsOfResumedBattle] = value; }
 
     /// <summary>
     /// The enemies' sight test sees the members on the level SHOWN, from enemies on any level, and drops the targets that are not on it;
@@ -474,7 +529,7 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: enemy-line-of-sight R018+0x04B6, the drop block R018+0x0706, R018+0x0000 (missile +0x18 = DS:11CA), R014+0xED10 (the hit test
     //   on DS:A6B4[target]), R019+0x0000 / 0x0300 (effect level = DS:11CA), data safety
-    public bool FixCombatAcrossLevels { get; set; }
+    public bool FixCombatAcrossLevels { get => _on[RuleTable.FixCombatAcrossLevels]; set => _on[RuleTable.FixCombatAcrossLevels] = value; }
 
     /// <summary>
     /// The collision test of every step, path search and re-path (fighter-collision-pass R014+0x5ECA) reads the walls and furniture of
@@ -483,7 +538,7 @@ public sealed class OriginalBehaviour
     /// and furniture.
     /// </summary>
     // orig: fighter-collision-pass R014+0x5ECA, the step R014+0x1624, path search R014+0x481A, re-path R014+0xF67A, data safety
-    public bool FixWalkingOnOwnLevel { get; set; }
+    public bool FixWalkingOnOwnLevel { get => _on[RuleTable.FixWalkingOnOwnLevel]; set => _on[RuleTable.FixWalkingOnOwnLevel] = value; }
 
     /// <summary>
     /// The Devil's Bridge Crossing (a won argument, then the battle lost or fled) sets the status of party slot DS:EE8E to able, a
@@ -492,7 +547,7 @@ public sealed class OriginalBehaviour
     /// a ghost member in a saved game. Fixed: a slot that was emptied stays empty.
     /// </summary>
     // orig: R088+0x05C6..0x05CF and R088+0x060E..0x0617 (`mov bx,[EE8E]; shl bx,7; mov byte [bx-6397h],1`), data safety, data-damaging
-    public bool FixGhostPartySlot { get; set; }
+    public bool FixGhostPartySlot { get => _on[RuleTable.FixGhostPartySlot]; set => _on[RuleTable.FixGhostPartySlot] = value; }
 
     /// <summary>
     /// The Dissolve key (D) outside order mode, where the leader dissolves the lock, uses up the pack entry at member 0's slot byte
@@ -503,7 +558,7 @@ public sealed class OriginalBehaviour
     /// Fixed: the leader's Eater-Water is used up (his slot byte, as Dissolve Lock's, with <see cref="FixStaleDissolveSlot"/>).
     /// </summary>
     // orig: R016+0x0F9A..0x0FBA (use-up-slot 18BF:0FA4 of DS:A6B2 with the byte DS:C7CD), data safety, data-damaging
-    public bool FixDissolveKeyMember { get; set; }
+    public bool FixDissolveKeyMember { get => _on[RuleTable.FixDissolveKeyMember]; set => _on[RuleTable.FixDissolveKeyMember] = value; }
 
     /// <summary>
     /// Enter travelling individually with nobody selected (after the button held over a member and let go elsewhere) leaves order
@@ -512,7 +567,7 @@ public sealed class OriginalBehaviour
     /// nothing is given (the parts on undefined memory, such as the active member DS:17B0 = 0xFF, are not reproduced either way).
     /// </summary>
     // orig: R014+0xBCA8 (19CD:0738) with DS:A6B2 = 0xFF, called by R016+0x0734
-    public bool FixLeaveOrderModeWithoutSelection { get; set; }
+    public bool FixLeaveOrderModeWithoutSelection { get => _on[RuleTable.FixLeaveOrderModeWithoutSelection]; set => _on[RuleTable.FixLeaveOrderModeWithoutSelection] = value; }
 
     /// <summary>
     /// <c>level-change</c> saves the level it leaves only when DS:D4E4 is set, and <c>use-exit</c> writes the stairs record's
@@ -521,7 +576,7 @@ public sealed class OriginalBehaviour
     /// write always persists.
     /// </summary>
     // orig: use-exit R023+0x1618 (the write at R023+0x1657, the switch at R023+0x16C7, DS:D4E4 set at R023+0x1764), level-change R024+0x05B4, battle save R003+0x0132
-    public bool FixStairsWallMarkLost { get; set; }
+    public bool FixStairsWallMarkLost { get => _on[RuleTable.FixStairsWallMarkLost]; set => _on[RuleTable.FixStairsWallMarkLost] = value; }
 
     /// <summary>
     /// Loading from inside a game (Alt-L) clears the party's slots and the events before the load
@@ -529,19 +584,19 @@ public sealed class OriginalBehaviour
     /// back to the game as it was.
     /// </summary>
     // orig: game-load-entry R037+0x8B76 (1C7D:09C6) matched: `party[i][0] = 0` and the events freed, then R037+0x81B2 and longjmp(DS:A752, -1) whatever it returned
-    public bool FixLoadScreenEscape { get; set; }
+    public bool FixLoadScreenEscape { get => _on[RuleTable.FixLoadScreenEscape]; set => _on[RuleTable.FixLoadScreenEscape] = value; }
 
     /// <summary>
     /// The university card (0x31) records a failed formulas search as a tried saints search, so
     /// the saints line is shut for the week instead; fixed: the formulas line is.
     /// </summary>
     // orig: R056+0x0D88 pushes type 0 where the other searches push their own line (R056+0x0F35 2, R056+0x1070 3, R056+0x126B 4)
-    public bool FixUniversityFormulasTried { get; set; }
+    public bool FixUniversityFormulasTried { get => _on[RuleTable.FixUniversityFormulasTried]; set => _on[RuleTable.FixUniversityFormulasTried] = value; }
 
     /// <summary>
     /// The church-at-night card (0x35) asked about Mass between 09:00 and 14:59 names a stale
     /// stack word (−1, Matins) as the hour; fixed: the hour named when no Mass is held (Prime).
     /// </summary>
     // orig: R057+0x0D6A reads the uninitialised [bp-2]
-    public bool FixChurchAltarBoyStaleHour { get; set; }
+    public bool FixChurchAltarBoyStaleHour { get => _on[RuleTable.FixChurchAltarBoyStaleHour]; set => _on[RuleTable.FixChurchAltarBoyStaleHour] = value; }
 }

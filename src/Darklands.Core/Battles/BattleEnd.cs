@@ -430,6 +430,15 @@ public static class BattleEnd
     // C: the message at the member's row is shown through changed (TacticalBattle.AfterBattle: ITacticalView.MemberMessage).
     public static void TryImprove(Battle b, int member, int skill, int mode, Action<int, int, int, int>? changed)
     {
+        // the rules' tries (RuleParameters.BattleSkillTries): one in the original
+        for (var tries = 0; tries < b.Parameters.BattleSkillTries; tries++)
+        {
+            TryImproveOnce(b, member, skill, mode, changed);
+        }
+    }
+
+    private static void TryImproveOnce(Battle b, int member, int skill, int mode, Action<int, int, int, int>? changed)
+    {
         var c = b[member];
         int v = c.Skills[skill];
         var chance = mode == 1 ? (100 - v) / 2 : (100 - v) / 4;

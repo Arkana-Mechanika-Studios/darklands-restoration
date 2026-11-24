@@ -302,8 +302,8 @@ public sealed class CampStay
     /// <summary>The lodging price of a day (before work and fees): inn by city size, other lodging as size 2, rough 1 pf, the wild free.</summary>
     public int LodgingPrice => Place switch
     {
-        CampPlace.Inn => LocationRules.ServicePrice(_s, Standing, _s.City.CitySize),
-        CampPlace.OtherLodging => LocationRules.ServicePrice(_s, Standing, 2),
+        CampPlace.Inn => _s.Parameters.LodgingPrice.Apply(LocationRules.ServicePrice(_s, Standing, _s.City.CitySize)),
+        CampPlace.OtherLodging => _s.Parameters.LodgingPrice.Apply(LocationRules.ServicePrice(_s, Standing, 2)),
         CampPlace.SleepingRough => 1,
         _ => 0,
     };
