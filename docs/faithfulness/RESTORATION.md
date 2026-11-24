@@ -104,7 +104,9 @@ By evidence level (the level that makes it a candidate):
 By size guess: S 33, M 22, L 9, XL 6 (candidates: 16 S, 3 M).
 
 The counts are those of the first pass. Since then four candidates are `built` and one `waits` (restore-r1, 2026-11-24: see
-[In the Restored rule set](#in-the-restored-rule-set)), leaving 14 candidates.
+[In the Restored rule set](#in-the-restored-rule-set)), leaving 14 candidates; the first research pass of the `needs research` rows (same day)
+made two of them candidates (fortress-commission-pay, dragon-lair-icon) and rejected nine, with the reasons in their notes:
+16 candidates, 4 built, 1 waits, 28 needs research, 21 rejected.
 
 ### Rows skipped, by reason
 
