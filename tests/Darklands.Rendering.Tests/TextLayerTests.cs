@@ -149,6 +149,50 @@ public sealed class TextLayerTests
     }
 
     [Fact]
+    public void AShadowAPixelAwayIsDrawnAsALightEmbossCloseToTheText()
+    {
+        InTemp(folder =>
+        {
+            // the saved-games list's way: the text first a pixel down and right in the shadow's colour, then in its own
+            var font = Load(folder, 8);
+            var screen = new Screen();
+            screen.Palette[5] = 0xFF203040u;
+            screen.Palette[10] = 0xFFFF0000u;
+            screen.Palette[15] = 0xFFFFFFFFu;
+            var canvas = new Canvas(screen);
+            canvas.Fill(0, 0, Screen.Width, Screen.Height, 5);
+            var painter = new TextPainter(null!) { PackFont = font };
+            painter.DrawCodes(canvas, 21, 31, [.. "Hello".Select(c => (int)c)], 10);
+            painter.DrawCodes(canvas, 20, 30, [.. "Hello".Select(c => (int)c)], 15);
+            var output = new DisplayRectangle(0, 0, 4 * Screen.Width, 4 * Screen.Height);
+            var picture = FrameCompositor.Compose(new HdRenderer(HdPack.Empty).Render(screen, output), output.Width, output.Height);
+            var (lastRed, lastWhite, strongest) = (-1, -1, 0u);
+            for (var y = 0; y < output.Height; y++)
+            {
+                for (var x = 0; x < output.Width; x++)
+                {
+                    var p = picture.Argb[y * output.Width + x];
+                    var (r, g, b) = (p >> 16 & 0xFF, p >> 8 & 0xFF, p & 0xFF);
+                    if (r > g + 40 && r > b + 40)
+                    {
+                        (lastRed, strongest) = (Math.Max(lastRed, y), Math.Max(strongest, r - Math.Max(g, b)));
+                    }
+                    if (r > 0xC0 && g > 0xC0 && b > 0xC0)
+                    {
+                        lastWhite = Math.Max(lastWhite, y);
+                    }
+                }
+            }
+            // the shadow shows, a window pixel below the text (not a game pixel, four), and half as strong as its colour (its red over the
+            //   background: at full strength 0xFF - 0x40)
+            Assert.True(lastRed >= 0 && lastWhite >= 0);
+            Assert.InRange(lastRed - lastWhite, 0, 2);
+            Assert.True(strongest < 0xA0, $"the shadow's strongest red stands {strongest:X2} above the other channels");
+            return 0;
+        });
+    }
+
+    [Fact]
     public void AFrameWithoutScalableGlyphsComposesAsBefore()
     {
         var screen = new Screen();

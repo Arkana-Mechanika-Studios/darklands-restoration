@@ -8,12 +8,33 @@ namespace Darklands.Rendering;
 /// text's colour from the glyph's nearest 1x pixel (what the frame shows there, after the game's xor, recolours and fades) and its
 /// background from the nearest pixel of the row that is not the glyph's, blended by the glyph's coverage; so the 1x pixels are hidden
 /// under it. A frame without such glyphs gives no picture.
+/// The 1x pixels are also taken out of the frame the host scales (<see cref="Erase"/>: each gets the background the layer gives its
+/// cell), so no window pixel the layer leaves clear can show one: a graphics card stretches the frame by each window pixel's centre,
+/// the layer's cells are cut by their edges, and the picture filters spread a pixel into its neighbours; at sizes that are not whole
+/// multiples of 320x200, or with a filter, thin ticks of the 1x letters showed at the HD letters' edges.
+/// A text's shadow (the same text drawn first a pixel away, as the saved-games list's and the party screen's lines: see
+/// <see cref="ShadowOf"/>) is drawn as a light emboss: a quarter of a game pixel from the text (at least one output pixel) and half
+/// as strong; the frame's own shadow, a whole game pixel away, read at the output's resolution as a second, blurred copy of the text.
 /// </summary>
 // Not in the original: the 1.1 font packs. It reads the frame only.
 public sealed class TextLayer
 {
     private RgbaImage? _image;
     private long _signature;
+    private readonly List<(int At, uint Colour)> _erase = [];
+
+    /// <summary>
+    /// Takes the glyphs the last <see cref="Item"/> drew out of a 320x200 picture of the frame: each 1x pixel gets the background the
+    /// layer gives its cell (glyphs that do not show, <see cref="Unseen"/>, keep theirs).
+    /// </summary>
+    public void Erase(RgbaImage frame)
+    {
+        ArgumentNullException.ThrowIfNull(frame);
+        foreach (var (at, colour) in _erase)
+        {
+            frame.Argb[at] = colour;
+        }
+    }
 
     /// <summary>The layer's draw item for <paramref name="screen"/> at <paramref name="output"/>, or null when the frame shows no such glyph.</summary>
     public DrawItem? Item(Screen screen, DisplayRectangle output)
@@ -37,6 +58,7 @@ public sealed class TextLayer
         if (glyphs.Count == 0 || output.Width <= 0 || output.Height <= 0)
         {
             _image = null;
+            _erase.Clear();
             return null;
         }
         // the backgrounds the glyphs are drawn over count too (a glyph's box takes them)
@@ -61,16 +83,25 @@ public sealed class TextLayer
             return new DrawItem(_image, output, DrawFilter.Nearest, Whole);
         }
         _signature = signature;
+        _erase.Clear();
         var image = _image is { } kept && kept.Width == output.Width && kept.Height == output.Height ? kept : new RgbaImage(output.Width, output.Height);
         Array.Clear(image.Argb);
         var (sx, sy) = ((double)output.Width / Screen.Width, (double)output.Height / Screen.Height);
         // in the order they were first drawn (a glyph's id is its first drawing's): an embossed heading's face, drawn after its shadow a
         // pixel away, stays over it (the order the frame is read in would put the shadow over the face, a row lower)
+        var drawn = new Dictionary<TextGlyphs.Glyph, int>();
+        foreach (var key in glyphs.Keys)
+        {
+            if (TextGlyphs.Of(key) is { } shown)
+            {
+                drawn.TryAdd(shown, key);
+            }
+        }
         foreach (var (texel, pixels) in glyphs.OrderByDescending(g => g.Key))
         {
             if (TextGlyphs.Of(texel) is { } g && !pixels.All(at => Unseen(screen, g, at)))
             {
-                Draw(image, screen, g, texel, pixels, sx, sy);
+                Draw(image, screen, g, texel, pixels, sx, sy, _erase, ShadowOf(g, texel, drawn));
             }
         }
         image.Changed();
@@ -81,7 +112,26 @@ public sealed class TextLayer
     // a placement for the whole screen: the host draws the layer as a picture (no filter), not as the game's frame
     private static readonly AssetPlacement Whole = new("text layer", 0, 0, Screen.Width, Screen.Height, false, false, []);
 
-    private static void Draw(RgbaImage image, Screen screen, TextGlyphs.Glyph g, int texel, List<int> pixels, double sx, double sy)
+    // a glyph that is a text's shadow: the same character of the same font drawn a pixel away (across, down or both) before the
+    //   text's own glyph (ids are given in the order glyphs are first drawn, so the later drawing has the lower texel); the step
+    //   from the text to the shadow, or null
+    private static (int Dx, int Dy)? ShadowOf(TextGlyphs.Glyph g, int texel, Dictionary<TextGlyphs.Glyph, int> drawn)
+    {
+        for (var dy = -1; dy <= 1; dy++)
+        {
+            for (var dx = -1; dx <= 1; dx++)
+            {
+                if ((dx, dy) != (0, 0) && drawn.TryGetValue(g with { X = g.X - dx, Y = g.Y - dy }, out var face) && face < texel)
+                {
+                    return (dx, dy);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static void Draw(RgbaImage image, Screen screen, TextGlyphs.Glyph g, int texel, List<int> pixels, double sx, double sy,
+        List<(int At, uint Colour)> erase, (int Dx, int Dy)? shadow = null)
     {
         var (left, top, width, height, coverage) = g.Font.Raster(g.Code, sx, sy);
         var mine = new HashSet<int>(pixels);
@@ -103,19 +153,27 @@ public sealed class TextLayer
         }
         // the background at a 1x cell: the cell itself when it is not the glyph's (or is, but does not show), else the nearest such pixel of
         //   its row (then above / below)
+        //   (a pixel an odd step away is of a dither's other phase: the next one along, of the cell's phase, is taken when it is of a
+        //   near colour, so a dithered background keeps its pattern instead of a flat patch of one of its two colours beside the
+        //   letters; a border or another colour there is not taken)
         uint Paper(int cx, int cy)
         {
             if (mine.Contains(cy * Screen.Width + cx) && Unseen(screen, g, cy * Screen.Width + cx))
             {
                 return Colour(cy * Screen.Width + cx);
             }
+            bool Free(int x, int y) => (uint)x < Screen.Width && (uint)y < Screen.Height && !mine.Contains(y * Screen.Width + x) && !IsGlyph(screen, y * Screen.Width + x);
             for (var reach = 0; reach < 16; reach++)
             {
-                foreach (var (x, y) in new[] { (cx - reach, cy), (cx + reach, cy), (cx, cy - reach), (cx, cy + reach) })
+                foreach (var (dx, dy) in new[] { (-1, 0), (1, 0), (0, -1), (0, 1) })
                 {
-                    if ((uint)x < Screen.Width && (uint)y < Screen.Height && !mine.Contains(y * Screen.Width + x) && !IsGlyph(screen, y * Screen.Width + x))
+                    var (x, y) = (cx + dx * reach, cy + dy * reach);
+                    if (Free(x, y))
                     {
-                        return Colour(y * Screen.Width + x);
+                        var nearest = Colour(y * Screen.Width + x);
+                        return reach % 2 == 1 && Free(x + dx, y + dy) && Colour((y + dy) * Screen.Width + x + dx) is var phase && Near(phase, nearest)
+                            ? phase
+                            : nearest;
                     }
                 }
             }
@@ -124,6 +182,14 @@ public sealed class TextLayer
         // the output pixels of the glyph's 1x cells and of its raster's box
         var ox = (int)Math.Floor(g.X * sx);
         var oy = (int)Math.Floor(g.Y * sy);
+        if (shadow is var (dx, dy))
+        {
+            // a shadow: a quarter of a game pixel from its text (at least one output pixel), not a whole one
+            ox = (int)Math.Floor((g.X - dx) * sx) + dx * Math.Max(1, (int)Math.Round(sx / 4));
+            oy = (int)Math.Floor((g.Y - dy) * sy) + dy * Math.Max(1, (int)Math.Round(sy / 4));
+        }
+        // a shadow's ink half as strong: a light emboss, not a second copy of the text
+        var strength = shadow is null ? 255 : 128;
         var cells = pixels.Select(at => (X: at % Screen.Width, Y: at / Screen.Width)).ToList();
         var x0 = Math.Min(ox + left, cells.Min(c => (int)Math.Floor(c.X * sx)));
         var y0 = Math.Min(oy + top, cells.Min(c => (int)Math.Floor(c.Y * sy)));
@@ -142,13 +208,23 @@ public sealed class TextLayer
                     continue;
                 }
                 var paper = Paper(cx, cy);
-                var colour = cover == 0 || Ink(cx, cy) is not { } ink ? paper : Blend(ink, paper, cover);
                 ref var target = ref image.Argb[py * image.Width + px];
+                // over what is drawn already (a neighbour's box, a shadow under the text) the ink is blended with that, not with the paper
+                var under = target == 0 ? paper : target;
+                var colour = cover == 0 || Ink(cx, cy) is not { } ink ? paper : Blend(ink, under, cover * strength / 255);
                 // where two glyphs' boxes meet, the more inked pixel stays
                 if (target == 0 || cover > 0)
                 {
                     target = colour;
                 }
+            }
+        }
+        // the frame under the layer without the glyph: its 1x pixels in the background the layer gives their cells
+        foreach (var at in pixels)
+        {
+            if (!Unseen(screen, g, at))
+            {
+                erase.Add((at, Paper(at % Screen.Width, at / Screen.Width)));
             }
         }
     }
@@ -160,6 +236,11 @@ public sealed class TextLayer
     //   option lines over a varied picture before the fade)
     private static bool Unseen(Screen screen, TextGlyphs.Glyph g, int at) =>
         g.Xor != 0 && screen.Palette[screen.Pixels[at]] == screen.Palette[screen.Pixels[at] ^ g.Xor];
+
+    // two colours of one dither: no channel more than 0x30 apart
+    private static bool Near(uint a, uint b) =>
+        Math.Abs((int)(a >> 16 & 0xFF) - (int)(b >> 16 & 0xFF)) <= 0x30 && Math.Abs((int)(a >> 8 & 0xFF) - (int)(b >> 8 & 0xFF)) <= 0x30
+        && Math.Abs((int)(a & 0xFF) - (int)(b & 0xFF)) <= 0x30;
 
     private static bool IsGlyph(Screen screen, int at) => screen.Texels[at] <= -2 && screen.Owners[at] == 0;
 
