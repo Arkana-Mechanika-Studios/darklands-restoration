@@ -328,7 +328,7 @@ public static class SettingsFile
                 }
                 else if (preset is not null)
                 {
-                    problems.Add($"{key}: \"{preset}\" is not \"original\" or \"fixed\"; the default (original) is used");
+                    problems.Add($"{key}: \"{preset}\" is not \"original\" or \"fixed\"; the default (fixed) is used");
                 }
             }
             else
@@ -643,12 +643,12 @@ public static class SettingsFile
             "mode": "comfort"
           },
 
-          // The rules of new games. "original": the original game's rules, its bugs included (only bugs that damage saved games,
-          // and plain display glitches, are fixed); "fixed": Original with the original's gameplay bugs fixed (in this build Fixed
-          // still plays as Original: its fixes come in a later one). A saved game keeps the rules it was started with; a game
-          // whose rules are not Original gets a companion file beside its .SAV (DKSAVEn.MODS.JSON). Command line: --rules original|fixed.
+          // The rules of new games. "fixed": the original game with its gameplay bugs fixed (docs/FIXED.md lists them);
+          // "original": the original game's rules, its bugs included (only bugs that damage saved games, and plain display
+          // glitches, are fixed). A saved game keeps the rules it was started with; a game whose rules are not Original gets a
+          // companion file beside its .SAV (DKSAVEn.MODS.JSON). Command line: --rules fixed|original.
           "rules": {
-            "preset": "original"
+            "preset": "fixed"
           },
 
           // The mouse and keyboard (SDL host). Not part of the original: the game plays the same.

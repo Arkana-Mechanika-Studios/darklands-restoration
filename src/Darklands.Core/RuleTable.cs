@@ -21,10 +21,13 @@ public enum RulePreset
 public static class RulePresets
 {
     /// <summary>
-    /// Whether the Fixed preset plays as itself yet. False until the gameplay fixes are switched on for players (rules set A3): until
-    /// then a choice of Fixed plays, and is recorded, as Original (<see cref="ForNewGames"/>).
+    /// Whether the Fixed preset plays as itself: true since its gameplay fixes are switched on for players (rules set A3; before, a
+    /// choice of Fixed played, and was recorded, as Original: <see cref="ForNewGames"/>).
     /// </summary>
-    public const bool FixedPlayable = false;
+    public const bool FixedPlayable = true;
+
+    /// <summary>The preset of new games when the player chose none (rules.preset): Fixed.</summary>
+    public const RulePreset Default = RulePreset.Fixed;
 
     /// <summary>The presets a player chooses between, in the launcher's order.</summary>
     public static IReadOnlyList<RulePreset> Offered { get; } = [RulePreset.Original, RulePreset.Fixed];

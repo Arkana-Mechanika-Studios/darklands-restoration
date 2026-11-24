@@ -367,8 +367,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     AudioPack? soundPack = null;
     using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.SoundFont, settings.CommandLine, audioTrace,
         settings.Mods.Count > 0, pack => soundPack = pack);
-    // rules.preset (docs/SETTINGS.md): the preset new games play with; Fixed plays as Original until its fixes are switched on
-    //   (RulePresets.FixedPlayable), said in the log. A recorded rule a saved game names that this program does not know is logged.
+    // rules.preset (docs/SETTINGS.md): the preset new games play with (Fixed by default). A recorded rule a saved game names that this
+    //   program does not know is logged.
     Darklands.Core.OriginalBehaviour.ReportUnknown = Console.Error.WriteLine;
     static Darklands.Core.RulePreset NewGamesPreset(string name)
     {

@@ -194,8 +194,8 @@ public sealed class ResolvedSettings
     /// <summary>The Interface switch on Comfort (GameUi.ComfortInterface): the comfort features; false: Classic, the original interface.</summary>
     public bool ComfortInterface { get; private init; }
 
-    /// <summary>The rules preset of new games: "original" or "fixed" (rules.preset, --rules).</summary>
-    public string RulesPreset { get; private init; } = "original";
+    /// <summary>The rules preset of new games: "fixed" (the default) or "original" (rules.preset, --rules).</summary>
+    public string RulesPreset { get; private init; } = "fixed";
 
     /// <summary>The developer console is available (a host feature).</summary>
     public bool ConsoleEnabled { get; private init; }
@@ -249,7 +249,7 @@ public sealed class ResolvedSettings
             filter = fileFilter;
         }
         // the command line's rules preset must be a known one; the file's was checked as it was read (another value is left out there)
-        var rules = file.RulesPreset ?? "original";
+        var rules = file.RulesPreset ?? "fixed";
         if (Set(cli.RulesPreset) is { } cliRules)
         {
             rules = cliRules.Trim().ToLowerInvariant() is var given && given is "original" or "fixed"

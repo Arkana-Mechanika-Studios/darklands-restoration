@@ -68,7 +68,7 @@ internal sealed class LauncherModel
         MouseWheel = s.MouseWheel ?? true;
         CardMenuKeys = s.CardMenuKeys ?? true;
         ComfortInterface = (s.InterfaceMode ?? "comfort") == "comfort";
-        FixedRules = s.RulesPreset == "fixed";
+        FixedRules = s.RulesPreset != "original";
         Found = context.FoundGameFolders();
         var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
         // the folder the command line (or DARKLANDS_DIR) gives is the one the game would start with: shown first
@@ -297,7 +297,7 @@ internal sealed class LauncherModel
     /// <summary>The Interface switch (interface.mode): true Comfort (the comfort features), false Classic (the original interface).</summary>
     public bool ComfortInterface { get; set; }
 
-    /// <summary>The rules preset of new games (rules.preset): true Fixed, false Original.</summary>
+    /// <summary>The rules preset of new games (rules.preset): true Fixed (the default), false Original.</summary>
     public bool FixedRules { get; set; }
 
     public bool CanPlay => GameFolderChecked is not null;

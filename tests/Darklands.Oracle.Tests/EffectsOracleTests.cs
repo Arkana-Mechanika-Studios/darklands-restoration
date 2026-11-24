@@ -125,6 +125,54 @@ public sealed class EffectsOracleTests
         Assert.True(n > 0);
     }
 
+    /// <summary>
+    /// FixCloudLineOneTooMany (a gameplay fix of the Fixed rule set): cloud-on-line-test runs one slot past the last cloud, so a cloud
+    /// left in that slot (an old cloud's copy) blocks the shot; fixed, only the clouds there are. Both paths on the corpus' scenes, a
+    /// small cloud put in the slot after the last one, on the line between shooter and target (the saved line given as that line, so
+    /// a missed cloud does not move it).
+    /// </summary>
+    [Fact]
+    public void ACloudPastTheLastBlocksTheShotOnlyInTheOriginal()
+    {
+        if (Tables.Value is null)
+        {
+            return;
+        }
+        var shown = 0;
+        foreach (var c in Data.Value.Cases("R014+0x10672"))
+        {
+            var (battle, field, _, _) = Scene(c.Inputs);
+            var a = Args(c.Inputs);
+            if (field.CloudCount is 0 or >= 8 || a[0] is < 0 or >= Combatant.Count || a[1] is < 0 or >= Combatant.Count)
+            {
+                continue;
+            }
+            var (from, to) = (battle[a[0]].Position, battle[a[1]].Position);
+            var line = (from.X, from.Y, to.X, to.Y);
+            bool Crosses(bool fixedGame)
+            {
+                battle.Behaviour = new Darklands.Core.OriginalBehaviour { FixCloudLineOneTooMany = fixedGame };
+                return field.LineCrossesCloud(a[0], a[1], line);
+            }
+            // the slot after the last emptied, far away: both paths agree
+            field.CloudSlots[field.CloudCount] = new EffectCloud { X = -20000, Y = -20000, Size = 0x10 };
+            var without = Crosses(false);
+            Assert.Equal(without, Crosses(true));
+            if (without)
+            {
+                continue;
+            }
+            // a cloud's copy in that slot, on the line: the original's shot is blocked, the fixed one is not
+            field.CloudSlots[field.CloudCount] = new EffectCloud { X = (short)((from.X + to.X) / 2), Y = (short)((from.Y + to.Y) / 2), Size = 0x10 };
+            if (Crosses(false))
+            {
+                Assert.False(Crosses(true), $"cloud-on-line-test case: the fixed test reads the slot past the last cloud");
+                shown++;
+            }
+        }
+        Assert.True(shown > 0, "no scene shows the slot past the last cloud blocking a shot");
+    }
+
     /// <summary>hit-roll's missile chance with clouds about: the cloud test starts from what its roll-one-to-n(100) left on the stack.</summary>
     [Fact]
     public void ToHitThroughCloudsIsTheOriginals()

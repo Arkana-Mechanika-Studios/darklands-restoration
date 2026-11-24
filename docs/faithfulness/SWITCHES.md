@@ -19,7 +19,7 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 | `class` | The change class of the plan's table: `data-safety` (a bug that damages saved games or stores or ends the program: on in every player mode), `visual` (an evident drawing glitch: on in every player mode), `gameplay` (an original bug that changes what the game decides: in the Fixed rule set), `interface-comfort`, `presentation`, `content-mod`. (`restoration` and `new-capability` are allowed for later rows; none exist yet.) |
 | `axis` | `Rules` (what the game decides), `Presentation` (what is seen and heard), `Interface` (how the same orders are given). |
 | `presets` | The rules presets the switch is on in: `original`, `fixed`, `restored` joined by `;`, or `any` for a choice independent of the rules preset. Restored always includes Fixed. For a flag the column is the code: `tools/faithfulness/rule_table.py` turns it into `src/Darklands.Core/RuleTable.Generated.cs`, the presets' table (`OriginalBehaviour.Of`). |
-| `default` | The state in the player's game of this release: for a flag, whether `OriginalBehaviour.DataSafe` (what the SDL host plays with) has it on; for a setting, the default of the settings file. The faithful game (`OriginalBehaviour.Faithful`, which the oracles and the headless host use) has every flag off. |
+| `default` | The state in the player's game of this release: for a flag, whether a new game at the default rules preset (Fixed, `RulePresets.Default`) has it on; for a setting, the default of the settings file. A game with the Original preset (`OriginalBehaviour.DataSafe`) has the data-safety and visual flags on; the faithful game (`OriginalBehaviour.Faithful`, which the oracles and the headless host use) has every flag off. |
 | `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). For a `planned` row the bugs it will fix (kept as the original today: no fix flag, decision `later`, the note naming the planned flag). Empty for settings. |
 | `code` | The files where the code chooses between the two paths (up to three, `;` joined). A flag's name is in at least one of them. |
 | `description` | One line: the original's behaviour and what the switch does. The long account is the flag's comment in the source and the register entries. |
@@ -32,7 +32,7 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 |---|---|---|
 | data-safety | 28 | 28 |
 | visual | 3 flags + 1 setting | the 3 flags (the setting `view.clean-drawing` is off by default) |
-| gameplay | 30 flags + 1 planned + 1 setting | 0 flags (the Fixed rule set; the setting `rules.preset` chooses Original or Fixed for new games, and Fixed plays as Original until its fixes are switched on) |
+| gameplay | 30 flags + 1 planned + 1 setting | the 30 flags in a new game (the Fixed rule set, the default of `rules.preset`; none with Original); the player's list: [../FIXED.md](../FIXED.md) |
 | interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
 | presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
@@ -42,7 +42,7 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 `tests/Darklands.Core.Tests/SwitchRegisterTests.cs` fails when:
 
 - a boolean `Fix…` property of `OriginalBehaviour` has no row, or a row names a flag that no longer exists;
-- a flag's `default` differs from its state in `OriginalBehaviour.DataSafe`, or its `presets` disagree with its class
+- a flag's `default` differs from its state in a new game at the default preset (Fixed), or its `presets` disagree with its class
   (only `data-safety` and `visual` fixes are on in `original`; every fix is in `fixed` and `restored`);
 - the generated rule table (`RuleTable.Generated.cs`) differs from the flag rows (run `tools/faithfulness/rule_table.py`);
 - a flag's `register` ids differ from the entries of `original_bugs.csv` that name it;

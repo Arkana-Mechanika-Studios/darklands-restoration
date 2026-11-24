@@ -66,20 +66,25 @@ public sealed class SwitchRegisterTests
         Assert.True(stale.Count == 0, "rows of switches.csv naming no flag of OriginalBehaviour: " + string.Join(", ", stale));
     }
 
-    /// <summary>The default column of a flag is its state in <see cref="OriginalBehaviour.DataSafe"/>, the set the player's game plays with; the presets follow its class.</summary>
+    /// <summary>
+    /// The default column of a flag is its state in a new game at the default preset (<see cref="RulePresets.Default"/>, Fixed); the
+    /// presets follow its class, and the data-safety and visual fixes are on in <see cref="OriginalBehaviour.DataSafe"/> (Original) too.
+    /// </summary>
     [Fact]
     public void FlagDefaultsAndPresetsFollowTheirClass()
     {
+        var newGame = OriginalBehaviour.Of(RulePresets.Default);
         var dataSafe = OriginalBehaviour.DataSafe;
         var problems = new List<string>();
         foreach (var row in Rows().Where(r => r["kind"] == "flag"))
         {
             var property = typeof(OriginalBehaviour).GetProperty(row["key"])!;
-            var on = (bool)property.GetValue(dataSafe)!;
-            if (row["default"] != (on ? "on" : "off"))
+            var inNewGame = (bool)property.GetValue(newGame)!;
+            if (row["default"] != (inNewGame ? "on" : "off"))
             {
-                problems.Add($"{row["id"]}: default '{row["default"]}' but DataSafe has it {(on ? "on" : "off")}");
+                problems.Add($"{row["id"]}: default '{row["default"]}' but a new game ({RulePresets.Default}) has it {(inNewGame ? "on" : "off")}");
             }
+            var on = (bool)property.GetValue(dataSafe)!;
             var everywhere = row["class"] is "data-safety" or "visual";
             if (everywhere != row["presets"].Split(';').Contains("original"))
             {
@@ -208,6 +213,14 @@ public sealed class SwitchRegisterTests
         {
             OriginalBehaviour.ReportUnknown = before;
         }
+    }
+
+    /// <summary>The players' page of the Fixed rules (docs/FIXED.md) has a line for each gameplay fix: one list item a flag.</summary>
+    [Fact]
+    public void ThePlayersPageListsEveryGameplayFix()
+    {
+        var items = File.ReadAllLines(Path.Combine(Root, "docs", "FIXED.md")).Count(l => l.StartsWith("- ", StringComparison.Ordinal));
+        Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "gameplay"), items);
     }
 
     /// <summary>The register ids of a flag are the original-bugs entries that name it as their fix flag, no more and no fewer.</summary>
