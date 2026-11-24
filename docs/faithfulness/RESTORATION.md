@@ -33,7 +33,9 @@ not touch it.
 | `restoring` | what restoring it would mean, in our words |
 | `size` | S (about 1 to 3 sessions), M (about a week), L (several weeks), XL (a phase), as in the release plan |
 | `status` | `candidate`, `needs research` or `rejected` |
+| `evidence` | the evidence trail: each source, what it says, its reliability (below), `;`-separated |
 | `note` | for `candidate`: the caveat; for `needs research`: what is unknown; for `rejected`: the reason |
+| `revisit_if` | for `rejected` and `waits`: what would reopen the row (a text found, a design paper, a version difference, a part restored first) |
 
 ### Evidence levels (design C3)
 
@@ -43,6 +45,13 @@ not touch it.
 4. stated by a designer (posts, interviews, the 1992 conference, the mailing-list archive);
 5. design documents and code held in archives (the design papers of the team);
 6. historical research, where the game aims at history.
+
+Besides the levels, the `evidence` column marks a source's kind: `code` and `data` (the original's program and files, with `oracle`
+where the original was run on it), `V` (present in an earlier release, 483.04 to 483.06, against 483.07), `M` the manual and `C` the
+clue book (level 3; the clue book says the manual was printed before the game was finished and ranks itself above it), `D` a designer's
+statement (level 4, with its year), `P` a design paper (level 5), `T` a third party's reading of the game files (reliable for what the
+files hold, speculation where it guesses intent), `G` the community archive (`O` an observation in play, `F` a file analysis, `H`
+hearsay), with the group's message numbers.
 
 A row records the level that makes it a candidate and lists the others. Level 1 and 2 rows are checkable against our
 own registers and the original files; level 3 to 5 rows rest on documents; no row rests on level 6 alone yet.
@@ -54,7 +63,9 @@ own registers and the original files; level 3 to 5 rows rest on documents; no ro
 - `needs research`: promising but something is unknown (what the text holds, the amount, the intent, who owns it).
   The note says exactly what.
 - `rejected`: recorded so it is not raised again, with the reason (nothing to restore, designers chose against it,
-  needs art or a map that never existed, debug aid). A rejected row can be reopened with new evidence.
+  needs art or a map that never existed, debug aid). A rejected row is not forgotten: it stays in the register with what would
+  reopen it (`revisit_if`), and the rejected rows are reviewed whenever new sources arrive (an earlier release, a design paper,
+  a statement).
 - `built`: in the Restored rule set: a switch of class `restoration` in [switches.csv](switches.csv) (presets `restored`
   only, its `register` this row's id), named in the note with the check against the original and the test.
   `SwitchRegisterTests` keeps the two registers in step.
@@ -106,7 +117,11 @@ By size guess: S 33, M 22, L 9, XL 6 (candidates: 16 S, 3 M).
 The counts are those of the first pass. Since then four candidates are `built` and one `waits` (restore-r1, 2026-11-24: see
 [In the Restored rule set](#in-the-restored-rule-set)), leaving 14 candidates; the first research pass of the `needs research` rows (same day)
 made two of them candidates (fortress-commission-pay, dragon-lair-icon) and rejected nine, with the reasons in their notes:
-16 candidates, 4 built, 1 waits, 28 needs research, 21 rejected.
+16 candidates, 4 built, 1 waits, 28 needs research, 21 rejected. The research in the developer sources, the manual and clue book, the
+community archive and the earlier releases (same day) gave every row its evidence trail and moved three: dragon-lair-icon to
+`rejected` (the clue book says the lairs are hidden on purpose), relic-powers back to `needs research` (unused values in the relics'
+records), and six new rows (three from the earlier releases, three from the design papers and the files): 76 rows, 15 candidates,
+4 built, 1 waits, 34 needs research, 22 rejected.
 
 ### Rows skipped, by reason
 
@@ -208,6 +223,11 @@ original's own menu (`F<block>.<line>` runs) and replayed by the C#.
 
 ## Using the register
 
+- Every decision starts with research in our own sources, recorded in the row's `evidence`: the code and data and our
+  registers; the research index of the community archive and its reports (developer intent, bug catalogue, history); the
+  developer sources (the team's design papers, the 1992 conference, the designer's later posts and interviews, readings of the
+  game files, the press, the manual and clue book text); the community archive; the earlier releases (483.04 to 483.06). When a
+  new source arrives, the `rejected` and `waits` rows are read again against their `revisit_if`.
 - Add a row when a source turns up; keep the key and id stable; never reuse an id.
 - Move a row to `candidate` only with its evidence written in `sources`; a `rejected` row keeps its reason.
 - When an item enters a rule set, add its switch id in the switch register and link the two by `id`.

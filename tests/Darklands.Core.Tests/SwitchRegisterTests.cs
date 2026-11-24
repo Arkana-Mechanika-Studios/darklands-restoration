@@ -271,6 +271,38 @@ public sealed class SwitchRegisterTests
         Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "gameplay"), items);
     }
 
+    /// <summary>
+    /// The restoration register (restoration.csv) is read whole, its statuses are the allowed words, and a row set aside (rejected, or
+    /// waiting for something to exist first) says what would reopen it (<c>revisit_if</c>): rejected is not forgotten.
+    /// </summary>
+    [Fact]
+    public void TheRestorationRegisterSaysWhatReopensEveryRowSetAside()
+    {
+        var path = Path.Combine(Docs, "restoration.csv");
+        var lines = File.ReadAllLines(path, Encoding.UTF8).Count(l => l.Length > 0) - 1;
+        var rows = ReadCsv(path);
+        Assert.Equal(lines, rows.Count);
+        var statuses = new HashSet<string>(StringComparer.Ordinal) { "candidate", "needs research", "rejected", "built", "waits" };
+        var problems = new List<string>();
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var row in rows)
+        {
+            if (!ids.Add(row["id"]) || !Regex.IsMatch(row["id"], "^R-[0-9a-f]{6}$"))
+            {
+                problems.Add($"{row["id"]}: malformed or repeated id");
+            }
+            if (!statuses.Contains(row["status"]))
+            {
+                problems.Add($"{row["id"]}: unknown status '{row["status"]}'");
+            }
+            if (row["status"] is "rejected" or "waits" && row["revisit_if"].Length < 20)
+            {
+                problems.Add($"{row["id"]}: a {row["status"]} row says what would reopen it (revisit_if)");
+            }
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
     /// <summary>The register ids of a flag are the original-bugs entries that name it as their fix flag, no more and no fewer.</summary>
     [Fact]
     public void RegisterIdsAgreeWithTheOriginalBugsRegister()
