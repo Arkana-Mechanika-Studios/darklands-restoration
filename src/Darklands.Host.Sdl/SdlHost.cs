@@ -192,6 +192,9 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// </summary>
     public void OpenView(Darklands.Presentation.Views.IRegistryView view) => _pendingView = view;
 
+    /// <summary>What Alt-T does (null: nothing, the key goes to the game as before): the host opens the settings screen (OpenView).</summary>
+    public Action? SettingsRequested { get; set; }
+
     /// <summary>The game's timer: the audio's when sound plays, else one on <see cref="Clock"/>.</summary>
     public IGameTimer Timer
     {
@@ -657,6 +660,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 }
                 continue;
             }
+            // Alt-T: the settings screen (SettingsRequested), a registry view the host runs with the game paused. A host key: the
+            //   original never reads Alt-T (its Alt keys are Q, O, P, S, D, F, L, C and M)
+            if (IsSettingsKey(e) && SettingsRequested is not null)
+            {
+                if (e.Keyboard.Repeat == 0 && !ViewOpen && !_showingText && LastFrame is not null && Console is not { Console.IsOpen: true })
+                {
+                    SettingsRequested();
+                }
+                continue;
+            }
             // F9 (developer builds): the inspector, before the console and the game
             if (Inspector is not null && IsInspectorKey(e))
             {
@@ -792,6 +805,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
             System.Console.Error.WriteLine("inspector: the clipboard could not take the lines (" + SdlNative.GetErrorText() + ")");
         }
     }
+
+    /// <summary>A press of Alt-T (either Alt key; not with Ctrl), the key that opens the settings screen.</summary>
+    internal static bool IsSettingsKey(SdlNative.SdlEvent e) =>
+        e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeT
+        && (e.Keyboard.Mod & SdlNative.KeyModAlt) != 0 && (e.Keyboard.Mod & SdlNative.KeyModCtrl) == 0;
 
     /// <summary>A press of Ctrl+F11 (either Ctrl key; not with Alt), the key that goes to the next picture filter.</summary>
     internal static bool IsNextFilterKey(SdlNative.SdlEvent e) =>

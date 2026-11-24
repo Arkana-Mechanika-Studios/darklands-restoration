@@ -15,6 +15,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     /// <summary>Runs a state:&lt;name&gt; step (the game being played written as a saved game).</summary>
     public Action<string>? State { get; set; }
 
+    /// <summary>The settings screen's view (null: the step settings does nothing): the program makes one over its game.</summary>
+    public Func<Darklands.Presentation.Views.IRegistryView>? SettingsView { get; set; }
+
     private readonly Queue<string> _steps = new(steps);
     private readonly Queue<int> _keys = new();
     private readonly Queue<(int, bool)> _transitions = new();
@@ -95,6 +98,67 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         var view = new Darklands.Presentation.Views.EmptyView(ViewFrames);
         Darklands.Presentation.Views.ViewHost.Run(view, new HeadlessViewSurface(_last));
         Console.WriteLine($"view: opened before step {_stepsTaken} at {before} ms, shown {view.Shown} frames, closed at {_clockMs} ms");
+    }
+
+    // the step settings:<name>[:<keys>] (the 1.2 settings screen, for its shots and tests): the screen opens over the frame shown, inside the
+    //   pump that takes the step; it takes the keys one a frame (up, down, left, right, enter, space, esc, f7, or a letter), then Esc; each
+    //   frame it shows is saved as <name>-NN.png. The game's clock stands still meanwhile, as for any registry view.
+    private void OpenSettings(string value)
+    {
+        if (SettingsView is not { } make)
+        {
+            Console.WriteLine("settings: no settings screen in this program");
+            return;
+        }
+        var parts = value.Split(':', 2);
+        var keys = parts.Length > 1 ? parts[1].Split(',', StringSplitOptions.RemoveEmptyEntries).Select(ViewKey).ToList() : [];
+        var before = _clockMs;
+        var surface = new ShotViewSurface(_last, keys, parts[0], output);
+        Darklands.Presentation.Views.ViewHost.Run(make(), surface);
+        Console.WriteLine($"settings: {parts[0]}: {surface.Frames} frames shown, opened at {before} ms, closed at {_clockMs} ms");
+    }
+
+    private static int ViewKey(string name) => name.Trim().ToLowerInvariant() switch
+    {
+        "up" => Keys.Up,
+        "down" => Keys.Down,
+        "left" => Keys.Left,
+        "right" => Keys.Right,
+        "enter" => Keys.Enter,
+        "space" => Keys.Space,
+        "esc" => Keys.Escape,
+        "f7" => Keys.F7,
+        var s when s.Length == 1 => Keys.ForCharacter(s[0]),
+        var s => throw new FormatException($"settings: no key '{s}'"),
+    };
+
+    // a registry view's surface for the settings step: the keys one a frame, then Esc; every frame shown saved as a picture
+    private sealed class ShotViewSurface(Screen? under, IReadOnlyList<int> keys, string name, string folder) : Darklands.Presentation.Views.IViewSurface
+    {
+        private int _input;
+
+        public Screen? Under => under;
+
+        public bool QuitRequested => _input > keys.Count + 1;
+
+        public int Frames { get; private set; }
+
+        public IReadOnlyList<Darklands.Presentation.Views.ViewInput> Inputs()
+        {
+            // the first frame as it opens, then a key a frame, then Esc
+            var n = _input++;
+            return n == 0 ? [] : n <= keys.Count ? [new(keys[n - 1], default, false)] : [new(Keys.Escape, default, false)];
+        }
+
+        public void Show(Screen screen)
+        {
+            PngWriter.Write(screen, Path.Combine(folder, string.Create(System.Globalization.CultureInfo.InvariantCulture, $"{name}-{Frames:D2}.png")));
+            Frames++;
+        }
+
+        public void WaitFrame()
+        {
+        }
     }
 
     // the headless host's surface for a registry view: no input, its frames not recorded, no time of the game's passing
@@ -502,6 +566,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
                 break;
             case "shot":
                 Shot(value);
+                break;
+            case "settings":
+                OpenSettings(value);
                 break;
             case "console":
                 ConsoleCommand?.Invoke(value);

@@ -82,7 +82,9 @@ public static class TranslatorTemplate
             var value = OriginalMessageText.OwnTemplate(id) ?? Escape(english, placeablesAsWritten: true);
             messages.Add(new Message("ui.ftl", KeyMangling.ToFluentId(id), id, value, [comment])
             {
-                Screens = byKey.GetValueOrDefault(id)?.Screens ?? [],
+                // the settings screen's texts (a registry view: no recorded session draws it) under its own screen
+                Screens = byKey.GetValueOrDefault(id)?.Screens
+                    ?? (id.StartsWith("id:rw.settings.", StringComparison.Ordinal) ? [Views.SettingsLayout.Screen] : []),
             });
         }
         return messages;

@@ -285,7 +285,8 @@ while (true)
     var start = new StartProgress();
     try
     {
-        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt, cli.LanguagePack is not null && cli.FontPack is null);
+        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt, cli.LanguagePack is not null && cli.FontPack is null,
+            fileSettings, cli.Overrides(Environment.GetEnvironmentVariable));
     }
     catch (Exception e) when (!start.Running && !noLauncher)
     {
@@ -293,6 +294,7 @@ while (true)
         Console.Error.WriteLine("Start: " + e.Message);
         reports.Screenshot = null;
         host.ReportRequested = null;
+        host.SettingsRequested = null;
         (launch, startProblem) = (LauncherReason.StartFailed, "The game could not start: " + e.Message);
         LauncherHost.Fit(host);
     }
@@ -327,7 +329,8 @@ ResolvedSettings? Resolve(GameSettings file)
 }
 
 // The game in the window, with its sound, console and saves; returns the program's exit code.
-static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt, bool languagePackAlone = false)
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt, bool languagePackAlone = false,
+    GameSettings? fileSettings = null, IReadOnlyDictionary<string, string>? fixedKeys = null)
 {
     host.Renderer = null;
     host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
@@ -501,6 +504,14 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.KeyboardCardMenus = settings.CardMenuKeys;
     // interface.mode (docs/SETTINGS.md, the Interface switch): comfort turns on the comfort features; classic is the original interface
     game.Ui.ComfortInterface = settings.ComfortInterface;
+    // the settings screen (1.2, docs/SETTINGS.md): Alt-T, and the Game menu's last line; a registry view the host
+    //   runs with the game paused (its clock, its sound), every change written to the settings file
+    var settingsModel = new Darklands.Presentation.Views.SettingsModel(new SettingsScreen(host, settingsPath, folder, Console.WriteLine), game.Ui, rules => game.Behaviour = rules, settings,
+        fileSettings ?? new GameSettings(), fixedKeys ?? new Dictionary<string, string>());
+    void OpenSettings() => host.OpenView(settingsModel.View(Keys.AltT));
+    host.SettingsRequested = OpenSettings;
+    game.Ui.OpenSettings = OpenSettings;
+    game.Ui.SettingsKeyLabel = SettingsScreen.KeyLabel;
     // the battle's edge scroll at ten steps a second at most, whatever the frame rate (the original's: a step each pass of its loop)
     game.Ui.EdgeScrollMilliseconds = 100;
     // a translation test: its saves in the pack's own scratch folder (never the player's), the game at the text or screen asked for

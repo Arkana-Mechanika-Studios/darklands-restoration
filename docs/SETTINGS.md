@@ -225,6 +225,37 @@ The launcher is its own project, `Darklands.Launcher`, which references `Darklan
 pixels; the SDL host gives it the window (`SdlLauncherSurface`) and its services (`LauncherHost`). Another launcher fits
 in by implementing `ILauncher`.
 
+## The settings screen in the game (SDL host)
+
+**Alt-T** opens the settings screen over the game, and so does the last line of the Game menu (F10, or the right button:
+"Settings"), in both interfaces. The line comes after the 1992 lines, so none of them moves: the menu is one row taller, Down
+from Quit to DOS reaches it. (The original never reads Alt-T: its Alt keys are
+Q, O, P, S, D, F, L, C and M.) The game stands still while it is open: its clock, the music and sound, the
+held keys; nothing of the game runs, and it goes on where it was when the screen closes. It is drawn in the game's own style
+(the card window's rope frame on parchment, the game's fonts) over the game darkened, so it scales and filters like the game,
+and a language pack translates its words (the Workshop lists them under the screen "Settings").
+
+| Row | Key | Takes effect |
+|---|---|---|
+| Picture | `display.filter` | at once (as Ctrl-F11) |
+| Window size | `display.scale` / `display.resolution` | at once |
+| Full screen | `display.fullscreen` | at once |
+| CRT curvature | `display.crtCurvature` | at once |
+| Interface | `interface.mode` | at once (a screen picks it up when it next opens) |
+| Rules | `rules.preset` | for the next new game: a game being played keeps its rules |
+| Language, Fonts | `text.languagePack`, `text.fontPack` | at the next start |
+| Sound card, Roland ROMs, Sound pack, SoundFont | `sound.card`, `sound.mt32Roms`, `sound.audioPack`, `sound.soundFont` | at the next start |
+| Clean drawing | `display.cleanDrawing` | at once |
+
+↑/↓ choose a row, ←/→ (Enter, Space, or a click on the row) change it; Esc, Alt-T or Close closes the screen. The note at
+the foot says when the row's change takes effect. Every change is written to the settings file at once with the launcher's
+keys, keeping its comments, so the launcher and the game always agree. The packs offered are those of the `packs` folders
+(as on the launcher); a folder elsewhere is chosen on the launcher. A row the command line or an environment variable sets is
+shown but cannot change (its note says what sets it).
+
+The screen is the first view of the view registry (the 1.2 grounds of the modular interface): its rows are a list slot and
+its Close button an area slot (`Darklands.Presentation.Views.SettingsLayout`), drawn and hit-tested from the same entries.
+
 ## Mouse (SDL host)
 
 The system's mouse pointer is hidden over the window: the game draws its own (the gauntlet, the battle's hand) at the game

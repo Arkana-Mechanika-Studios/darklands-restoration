@@ -19,6 +19,9 @@ using Darklands.Rendering;
 //   mapclick:<x>,<y>,<n>         a left click held until n passes of the map's loop have read it (tools/oracle/lockstep.py)
 //   shift:on|off, ctrl:on|off    the modifier keys; kdown:<hex> / kup:<hex> a key's make or break scan code
 //   wait:<frames>                lets frames pass; shot:<name> saves <name>.png; rec:<n> saves the next n frames
+//   settings:<name>[:<keys>]     opens the settings screen (1.2) over the frame shown, takes the keys one a frame (up,down,left,right,
+//                                enter,space,esc,f7 or a letter, comma-separated), then Esc; saves each frame as <name>-NN.png
+//   settingsline                 the Game menu ends with the settings line, as in the SDL host (DARKLANDS_SETTINGS_LINE=1: every run)
 //   seed:<n>                     the game's random seed
 //   clock:<n>,<n>,...            the clock's seeds in turn instead (srand((unsigned)time(0)) at the start and wherever the game
 //                                reseeds: tools/oracle/lockstep.py gives the original's); the last one stays
@@ -245,6 +248,7 @@ if (battleStep is not null)
     var numbers = battleStep[7..].Split(',').Select(v => int.Parse(v, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
     var files = OpenGame();
     var ui = new GameUi(host, new GameAssets(files));
+    HeadlessSettings.Offer(host, ui, null, steps.Contains("interface:comfort"), SettingsLine(steps));
     // a translation pack (the battle's words and names) and a font pack
     UsePacks(ui);
     var state = Darklands.Simulation.NewGame.Quickstart(WorldData.Load(files), seed, () => seed);
@@ -434,6 +438,8 @@ var game = new DarklandsGame(host, OpenGame())
 //   (fontpack:) their fonts
 UsePacks(game.Ui);
 game.Ui.ComfortInterface = comfortInterface;
+// the settings screen (settings: steps): its rows over this game, its changes logged (no window, no settings file written)
+HeadlessSettings.Offer(host, game.Ui, rules => game.Behaviour = rules, comfortInterface, SettingsLine(steps));
 if (startAtStep is not null)
 {
     if (languagePackStep is null)
@@ -565,9 +571,47 @@ if (game.ProgramExit is { } ended)
 Console.WriteLine($"{host.ShotsTaken} screenshot(s) in {output}");
 return 0;
 
+// the Game menu's settings line (1.2): the step settingsline, or DARKLANDS_SETTINGS_LINE=1 (a whole replay with it, tools/oracle/rerun_all.py)
+static bool SettingsLine(List<string> steps) => steps.Remove("settingsline") || Environment.GetEnvironmentVariable("DARKLANDS_SETTINGS_LINE") == "1";
+
 static List<string> TakeArguments(List<string> steps)
 {
     var words = steps.Where(s => s.StartsWith("arg:", StringComparison.Ordinal)).ToList();
     steps.RemoveAll(words.Contains);
     return [.. words.Select(w => w[4..])];
+}
+
+// the settings screen's host without a window: its changes logged, nothing written
+internal sealed class HeadlessSettings : Darklands.Presentation.Views.ISettingsHost
+{
+    /// <summary>The settings screen over <paramref name="ui"/> for the host's settings: steps (its rows as the defaults give them).</summary>
+    public static void Offer(ScriptedHost host, GameUi ui, Action<Darklands.Core.OriginalBehaviour>? newGameRules, bool comfort, bool line)
+    {
+        var model = new Darklands.Presentation.Views.SettingsModel(new HeadlessSettings(), ui, newGameRules,
+            ResolvedSettings.Resolve(new CommandLineOptions(), _ => null, new GameSettings { InterfaceMode = comfort ? "comfort" : "classic" }),
+            new GameSettings(), new Dictionary<string, string>());
+        host.SettingsView = () => model.View(Keys.AltT);
+        // the Game menu's settings line, only when asked for (the step settingsline, or DARKLANDS_SETTINGS_LINE=1 for a whole replay): the
+        //   oracle's menus are the original's
+        if (line)
+        {
+            ui.SettingsKeyLabel = "\x0fT";
+            ui.OpenSettings = () => Console.WriteLine("settings: chosen in the Game menu");
+        }
+    }
+
+    public void SetFilter(Darklands.Platform.PictureFilter filter) => Console.WriteLine("settings: picture " + Darklands.Platform.PictureFilters.Name(filter));
+
+    public void SetWindow(int width, int height, bool fullscreen) => Console.WriteLine($"settings: window {width}x{height}{(fullscreen ? " full screen" : "")}");
+
+    public void SetCurvature(bool on) => Console.WriteLine("settings: curvature " + (on ? "on" : "off"));
+
+    public (int Width, int Height)? UsableScreen => (1920, 1040);
+
+    public (IReadOnlyList<string> Packs, IReadOnlyList<string> SoundFonts) Found() => ([], []);
+
+    public Darklands.Presentation.Views.SettingsPackKind KindOf(string folder) => Darklands.Presentation.Views.SettingsPackKind.None;
+
+    public void Write(IReadOnlyDictionary<string, System.Text.Json.Nodes.JsonNode?> values) =>
+        Console.WriteLine("settings: would write " + string.Join(", ", values.Select(v => $"{v.Key} = {v.Value?.ToJsonString() ?? "null"}")));
 }

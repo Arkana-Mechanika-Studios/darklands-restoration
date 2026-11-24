@@ -115,7 +115,7 @@ public sealed partial class BattleScreen
         MenuBar? bar = null;
         bar = new MenuBar(_ui,
         [
-            new(W("exe:DS:0CA1"), true, game, BeforeItems: () => MenuBar.BeforeGameItems(_state)),
+            new(W("exe:DS:0CA1"), true, MenuBar.WithSettingsLine(_ui, game), BeforeItems: () => MenuBar.BeforeGameItems(_state)),
             new(W("exe:DS:0CA6"), true, orders, () => m.OrdersMenu),
             new(W("exe:DS:0CAD"), true, attack, () => m.AttackMenu),
             new(W("exe:DS:0CB4"), true, party, () => m.PartyMenu, () => bar!.DropdownRight),
