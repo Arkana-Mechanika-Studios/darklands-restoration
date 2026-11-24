@@ -540,6 +540,7 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     IReadOnlyList<string> commandLine, TextWriter? trace, bool modsMayHaveMusic, Action<AudioPack> onPack)
 {
     var output = SdlAudioOutput.TryOpen(out var error);
+    // a registry view's true pause stops the sound device too (SdlHost.OpenView); set below once the device is open
     if (output is null)
     {
         Console.Error.WriteLine("Sound: no audio device (" + error + "); no sound. Run with --sound-test for details.");
@@ -598,6 +599,7 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     }
     host.Audio = trace is null ? played : new TracedCalls(played, audio, trace);
     host.Timer = audio;
+    host.AudioPaused = output.SetPaused;
     // what reached the device, said a few seconds in and again later (silence that is our fault shows here: no frames pulled,
     // only zero samples, or a driver fault)
     var watch = new SoundWatch(output, audio);

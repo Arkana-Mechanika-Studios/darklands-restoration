@@ -169,6 +169,42 @@ public sealed class SilentAudio : IAudio
     public void PlaySound(int effect) { }
 }
 
+/// <summary>
+/// A clock on the system timer that a host can stop: while a registry view is open over the game (the true pause, 1.2) the game
+/// sees no time pass, and nothing it measures jumps when the view closes. The pauses nest.
+/// </summary>
+// Not in the original: the 1.2 true pause.
+public sealed class PausableClock : IClock
+{
+    private readonly System.Diagnostics.Stopwatch _watch = System.Diagnostics.Stopwatch.StartNew();
+    private int _paused;
+
+    public long Milliseconds => _watch.ElapsedMilliseconds;
+
+    /// <summary>Whether the clock stands still.</summary>
+    public bool Paused => _paused > 0;
+
+    /// <summary>Stops the clock (the time until <see cref="Resume"/> is not counted).</summary>
+    public void Pause()
+    {
+        if (_paused++ == 0)
+        {
+            _watch.Stop();
+        }
+    }
+
+    /// <summary>Starts it again where it stopped.</summary>
+    public void Resume()
+    {
+        if (_paused > 0 && --_paused == 0)
+        {
+            _watch.Start();
+        }
+    }
+
+    public void Sleep(int milliseconds) => Thread.Sleep(Math.Max(0, milliseconds));
+}
+
 /// <summary>A clock on the system timer.</summary>
 public sealed class SystemClock : IClock
 {

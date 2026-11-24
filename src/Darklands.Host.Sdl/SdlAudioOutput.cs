@@ -201,6 +201,28 @@ internal sealed class SdlAudioOutput : IPcmOutput
     /// <summary>Bytes of one sample in the format written.</summary>
     private int SampleBytes => _format is AudioS32Le or AudioF32Le ? 4 : 2;
 
+    /// <summary>
+    /// Pauses the device (true) or plays on (false): the true pause of a registry view (1.2). Paused, no frame is pulled or played, so the
+    /// frames played (<see cref="FramesPlayed"/>, the game's timer) stand still: the estimate between callbacks stops at what was pulled
+    /// before the last one.
+    /// </summary>
+    public void SetPaused(bool paused)
+    {
+        if (paused)
+        {
+            SdlNative.SDL_PauseAudioStreamDevice(_stream);
+        }
+        else
+        {
+            lock (_positionLock)
+            {
+                // the time the device stood still is not time played: the estimate starts again from now
+                _lastCallback = _clock.ElapsedTicks;
+            }
+            SdlNative.SDL_ResumeAudioStreamDevice(_stream);
+        }
+    }
+
     public void Start(IPcmSource source)
     {
         _source = source;
