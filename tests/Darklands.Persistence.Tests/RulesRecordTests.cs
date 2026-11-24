@@ -15,6 +15,18 @@ public sealed class RulesRecordTests
 
     private static string Companion(SaveFolder folder, string name) => Path.Combine(folder.Path, ModdedSaves.CompanionOf(name));
 
+    // a saved game's file as it is on disk: the game names it as the original does, in small letters ("dksave0.sav", DS:A680),
+    //   and writes it in capitals ("DKSAVE0.SAV"); on a file system where case matters (Linux) only the name on disk opens it
+    private static string OnDisk(SaveFolder folder, string name)
+    {
+        var files = Directory.GetFiles(folder.Path).Where(f => string.Equals(Path.GetFileName(f), name, StringComparison.OrdinalIgnoreCase)).ToList();
+        Assert.Single(files);
+        return files[0];
+    }
+
+    // the names on disk, compared with their case (so a name written in the wrong case fails on Windows too)
+    private static List<string> Names(SaveFolder folder) => [.. Directory.GetFiles(folder.Path).Select(f => Path.GetFileName(f)!).Order(StringComparer.Ordinal)];
+
     [Fact]
     public void AFixedGameSavedAndLoadedKeepsFixed()
     {
@@ -22,6 +34,8 @@ public sealed class RulesRecordTests
         var state = OriginalSaveTests.SampleGame();
         state.Behaviour = OriginalBehaviour.Of(RulePreset.Fixed);
         var name = folder.Save(state, "fixed", true, true);
+        // the files on disk in capitals, the companion's name made from the save's (found by the same name wherever case matters)
+        Assert.Equal(["DKSAVE0.BSV", "DKSAVE0.MODS.JSON", "DKSAVE0.SAV"], Names(folder));
         var record = JsonNode.Parse(File.ReadAllText(Companion(folder, name)))!["rules"]!;
         Assert.Equal("fixed", (string?)record["preset"]);
         Assert.Empty(record["flags"]!.AsObject());
@@ -32,7 +46,7 @@ public sealed class RulesRecordTests
         Assert.Empty(loaded.Mods.RulesProblems);
         // a companion with rules only marks no mods (the load screen's mark is for mods)
         Assert.Empty(ModdedSaves.ModsUsed(loaded.State));
-        Assert.False(ModdedSaves.IsCompanionOf(File.ReadAllText(Companion(folder, name)), File.ReadAllBytes(Path.Combine(folder.Path, name))));
+        Assert.False(ModdedSaves.IsCompanionOf(File.ReadAllText(Companion(folder, name)), File.ReadAllBytes(OnDisk(folder, name))));
     }
 
     [Fact]
@@ -64,7 +78,7 @@ public sealed class RulesRecordTests
         b.Behaviour = OriginalBehaviour.Of(RulePreset.Fixed);
         var nameA = original.Save(a, "same", true, true);
         var nameB = fixedRules.Save(b, "same", true, true);
-        Assert.Equal(File.ReadAllBytes(Path.Combine(original.Path, nameA)), File.ReadAllBytes(Path.Combine(fixedRules.Path, nameB)));
+        Assert.Equal(File.ReadAllBytes(OnDisk(original, nameA)), File.ReadAllBytes(OnDisk(fixedRules, nameB)));
         Assert.False(File.Exists(Companion(original, nameA)));
         Assert.True(File.Exists(Companion(fixedRules, nameB)));
     }
@@ -155,9 +169,10 @@ public sealed class RulesRecordTests
         var name = folder.Save(state, "fixed", true, true);
         Assert.True(File.Exists(Companion(folder, name)));
         // the original game deletes DKSAVE0.SAV and the name is saved again by an Original game: the stale companion goes
-        File.Delete(Path.Combine(folder.Path, name));
+        File.Delete(OnDisk(folder, name));
         state.Behaviour = OriginalBehaviour.Original;
         Assert.Equal(name, folder.Save(state, "original", true, true));
         Assert.False(File.Exists(Companion(folder, name)));
+        Assert.Equal(["DKSAVE0.BSV", "DKSAVE0.SAV"], Names(folder));
     }
 }
