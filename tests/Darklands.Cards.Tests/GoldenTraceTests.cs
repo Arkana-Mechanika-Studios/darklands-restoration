@@ -241,9 +241,9 @@ public sealed class GoldenTraceTests
                 var got = Safe(() => property.GetValue(value));
                 // the rules' numbers at the original's values, the flags' id list (their 61 properties are dumped) and their preset when it is
                 //   Faithful are left out: the traces were recorded before RuleParameters and the keyed flags (rules A1, A2), which change
-                //   no card
+                //   no card; the restoration flags (Restore…) while off, recorded before them (the Restored set, restore-r1)
                 if (got is RuleParameters { IsOriginal: true } || value is OriginalBehaviour && property.Name == nameof(OriginalBehaviour.On)
-                    || got is RulePreset.Faithful)
+                    || got is RulePreset.Faithful || value is OriginalBehaviour && property.Name.StartsWith("Restore", StringComparison.Ordinal) && got is false)
                 {
                     continue;
                 }
