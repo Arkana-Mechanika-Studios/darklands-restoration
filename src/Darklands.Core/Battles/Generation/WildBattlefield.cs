@@ -199,6 +199,7 @@ public static class WildBattlefield
         if (plan.Units <= 0 && g.Context.ForceMap > 0)
         {
             // DORMANT: forceMap (DS:C100) is always −1 in the shipped game.
+            //   checked 2026-11-25 (writer scan of 483.07): the only writes of DS:C100 and DS:C0FE store -1, at game start (R000+0x0390, R000+0x0393).
             // C: signed division of a positive value.
             plan.Units = g.Context.ForceMap % 10;
             if (FamilyMaps[family] < plan.Units)
@@ -695,6 +696,7 @@ public static class WildBattlefield
         if (forceMap >= 10)
         {
             // DORMANT: forceMap (DS:C100) is always −1 in the shipped game; from 10 on it switches the thinning off.
+            //   checked 2026-11-25 (writer scan of 483.07): the only writes of DS:C100 and DS:C0FE store -1, at game start (R000+0x0390, R000+0x0393).
             t = t with { Remove11 = 0, Remove12 = 0, Remove13 = 0, Remove14 = 0, Replace12 = 0, Replace13 = 0 };
         }
         return t;
@@ -1214,6 +1216,7 @@ public static class WildBattlefield
         p.Count[0, 1] = e.Count2;
         p.Count[0, 2] = e.Count3;
         // DORMANT: forceSide (DS:C0FE) is −1 in the shipped game, so every "forceSide > 0" test below is false and only the
+        //   checked 2026-11-25 (writer scan of 483.07): the only writes of DS:C100 and DS:C0FE store -1, at game start (R000+0x0390, R000+0x0393).
         // "forceSide <= 0" arms, which draw, run. The short-circuit order is kept: a roll is drawn only when the earlier terms are false.
         var fs = g.Context.ForceSide;
         bool Roll() => g.Roll(10) > 5;

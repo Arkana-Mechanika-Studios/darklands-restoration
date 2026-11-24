@@ -112,6 +112,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     // orig: DS:8672 = 0 (minutes) and DS:E488 = 0 (danger) in world-map-start R030+0x00A8 (1462:00A8) matched; DS:D843 (the terrain) is set by R030+0x16C6, which every idle pass of the loop calls through R030+0x0C44 before any step: the cell under the party at the start
     // C: DS:D843 is a global that keeps its value between visits to the map; the first pass of world-map-loop overwrites it before a step can read it.
     // DORMANT: orig: R030+0x00E6 (1462:00E6) in R030+0x00A8: DS:E3F2 = party query 5 (PartyQueries.Get: 1 when every present member is able and carries an item of flag 0x2000, a mount), computed at every map open and never read: no other instruction of the root or any overlay addresses DS:E3F1..E3F3 (capstone and IDA scans), a memory watch over map, camp, save and load sessions saw only this write, and the saved game does not hold it. The cluebook describes horses for the whole party as faster travel on the main map; a mounted, an unmounted and a one-horse-short party take the same minutes per step in the original, so the bonus was apparently planned and left unconnected. Not computed here: a known documentation discrepancy (docs/faithfulness/SUMMARY.md); an enhanced-mode rule option (rules.mounted_travel) is planned after 1.0, not implemented.
+    //   checked 2026-11-25 (writer scan of 483.07): one write of DS:E3F2 (R030+0x00E6).
     public void Begin()
     {
         _minutes = 0;

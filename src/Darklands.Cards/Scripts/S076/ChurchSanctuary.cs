@@ -106,7 +106,8 @@ public sealed class ChurchSanctuary : Card
                 // COVERAGE GAP (reachable: result 5 with a member left Away by an earlier flight; no oracle run ended so): other battle results leave the party in the sanctuary.
                 break;
         }
-        // DORMANT: the 120-hour arm: only a party at -75 or worse gets here.
+        // C: the longer stay needs a standing of -75 or worse here: reachable in play, not met in a recorded session (the lowest standing in the
+        //   community saves is -48); both arms as the original (re-tagged 2026-11-25: not dormant).
         c.EventHere(0x11, standing <= -75 ? 240 : 120);
     }
 
