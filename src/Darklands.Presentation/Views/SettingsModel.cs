@@ -16,6 +16,9 @@ public interface ISettingsHost
     /// <summary>The CRT's slight curvature on or off.</summary>
     void SetCurvature(bool on);
 
+    /// <summary>The mouse wheel gives ↑ / ↓ in the menus and lists, or nothing (part of the Comfort interface).</summary>
+    void SetMouseWheel(bool on);
+
     /// <summary>The usable part of the screen the window is on (null: unknown, every size offered).</summary>
     (int Width, int Height)? UsableScreen { get; }
 
@@ -66,6 +69,10 @@ public sealed class SettingsModel
     private readonly Action<Core.OriginalBehaviour>? _newGameRules;
     private readonly IReadOnlyDictionary<string, string> _fixed;
 
+    // the older keys input.mouseWheel / input.cardMenuKeys and their --no-* options: they can turn Comfort's wheel and card menu keys off
+    private readonly bool _wheelAllowed;
+    private readonly bool _cardKeysAllowed;
+
     // the values the rows show, by settings-file key (the window as "WxH")
     private readonly Dictionary<string, string> _values = new(StringComparer.Ordinal);
 
@@ -86,6 +93,8 @@ public sealed class SettingsModel
         _ui = ui;
         _newGameRules = newGameRules;
         _fixed = fixedKeys;
+        _wheelAllowed = running.MouseWheelAllowed;
+        _cardKeysAllowed = running.CardMenuKeysAllowed;
         var window = running.Window ?? DisplayLayout.WindowSize(null, null);
         _values["display.filter"] = PictureFilters.Name(running.Filter);
         _values["display.window"] = Size(window);
@@ -247,8 +256,11 @@ public sealed class SettingsModel
                 written[change.Key] = on;
                 break;
             case "interface.mode":
-                // the screens that read it pick it up at their next opening (the Game menu's settings line among them)
-                _ui.ComfortInterface = change.Value == "comfort";
+                // the screens that read it pick it up at their next opening; the mouse wheel and the card menu keys come and go with it
+                var comfort = change.Value == "comfort";
+                _ui.ComfortInterface = comfort;
+                _ui.KeyboardCardMenus = comfort && _cardKeysAllowed;
+                _host.SetMouseWheel(comfort && _wheelAllowed);
                 written[change.Key] = change.Value;
                 break;
             case "rules.preset":

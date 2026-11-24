@@ -606,6 +606,8 @@ internal sealed class HeadlessSettings : Darklands.Presentation.Views.ISettingsH
 
     public void SetCurvature(bool on) => Console.WriteLine("settings: curvature " + (on ? "on" : "off"));
 
+    public void SetMouseWheel(bool on) => Console.WriteLine("settings: mouse wheel " + (on ? "on" : "off"));
+
     public (int Width, int Height)? UsableScreen => (1920, 1040);
 
     public (IReadOnlyList<string> Packs, IReadOnlyList<string> SoundFonts) Found() => ([], []);
