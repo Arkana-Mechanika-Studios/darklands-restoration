@@ -4,32 +4,80 @@ using System.Text.Json.Serialization;
 namespace Darklands.Localization;
 
 /// <summary>
-/// Where and how one slot of a screen is drawn instead of the original's: at (<see cref="X"/>, <see cref="Y"/>) in game pixels (null:
-/// where the original draws it), <see cref="Width"/> pixels wide (null: the room it had), on up to <see cref="Lines"/> lines, in font
-/// slot <see cref="Font"/> (0: its own). Today a slot is a screen text (its key); the table's shape leaves room for other slots
-/// (buttons, pictures, list areas) later.
+/// One slot of a screen. Of kind <see cref="SlotKinds.Text"/> (the default, the 1.1 slots): where and how a screen text (its key) is
+/// drawn instead of the original's: at (<see cref="X"/>, <see cref="Y"/>) in game pixels (null: where the original draws it),
+/// <see cref="Width"/> pixels wide (null: the room it had), on up to <see cref="Lines"/> lines, in font slot <see cref="Font"/> (0: its
+/// own). Of kind <see cref="SlotKinds.Area"/>: a hit rectangle a view draws and tests (a row, a button), at (X, Y), Width by
+/// <see cref="Height"/>. Of kind <see cref="SlotKinds.List"/>: a list of <see cref="Rows"/> rows of <see cref="RowHeight"/> pixels,
+/// at (X, Y), Width wide, scrolled by the view. An area or a list is declared by a view (the 1.2 view registry: its drawing and its hit
+/// tests read the same entry, so moving one moves the other); the classic screens declare none.
 /// </summary>
 public sealed record SlotLayout(
     [property: JsonPropertyName("x")] int? X = null,
     [property: JsonPropertyName("y")] int? Y = null,
     [property: JsonPropertyName("width")] int? Width = null,
     [property: JsonPropertyName("lines")] int Lines = 1,
-    [property: JsonPropertyName("font")] int Font = 0)
+    [property: JsonPropertyName("font")] int Font = 0,
+    [property: JsonPropertyName("kind")] string? Kind = null,
+    [property: JsonPropertyName("height")] int? Height = null,
+    [property: JsonPropertyName("rows")] int? Rows = null,
+    [property: JsonPropertyName("rowHeight")] int? RowHeight = null)
 {
-    /// <summary>Whether the layout changes nothing (the original's).</summary>
+    /// <summary>The slot's kind: <see cref="SlotKinds.Text"/> when none is given.</summary>
     [JsonIgnore]
-    public bool IsOriginal => X is null && Y is null && Width is null && Lines <= 1 && Font == 0;
+    public string KindOrText => Kind ?? SlotKinds.Text;
+
+    /// <summary>Whether this is a screen text's layout (the 1.1 kind).</summary>
+    [JsonIgnore]
+    public bool IsText => KindOrText == SlotKinds.Text;
+
+    /// <summary>Whether the layout changes nothing (a text where the original draws it; an area or a list is a declaration, never original).</summary>
+    [JsonIgnore]
+    public bool IsOriginal => IsText && X is null && Y is null && Width is null && Lines <= 1 && Font == 0 && Height is null && Rows is null && RowHeight is null;
+
+    /// <summary>An area's or a list's rectangle in game pixels (a list: its rows' height together); null for a text or a slot missing a field.</summary>
+    [JsonIgnore]
+    public (int X, int Y, int Width, int Height)? Rectangle => KindOrText switch
+    {
+        SlotKinds.Area when X is { } x && Y is { } y && Width is { } w && Height is { } h => (x, y, w, h),
+        SlotKinds.List when X is { } x && Y is { } y && Width is { } w && Rows is { } n && RowHeight is { } r => (x, y, w, n * r),
+        _ => null,
+    };
+
+    /// <summary>The list row at game pixel (<paramref name="px"/>, <paramref name="py"/>), 0 the first (−1: off the list, or not a list).</summary>
+    public int RowAt(int px, int py) =>
+        KindOrText == SlotKinds.List && Rectangle is var (x, y, w, h) && RowHeight is > 0 and var r && px >= x && px < x + w && py >= y && py < y + h ? (py - y) / r : -1;
+
+    /// <summary>Whether game pixel (<paramref name="px"/>, <paramref name="py"/>) is inside an area's or a list's rectangle.</summary>
+    public bool Contains(int px, int py) => Rectangle is var (x, y, w, h) && px >= x && px < x + w && py >= y && py < y + h;
 }
 
-/// <summary>The limits a pack's layouts are checked against: the language packs' (strict), later a looser one for interface mods.</summary>
+/// <summary>The kinds of slot (<see cref="SlotLayout.Kind"/>).</summary>
+public static class SlotKinds
+{
+    /// <summary>A screen text, by its key (1.1).</summary>
+    public const string Text = "text";
+
+    /// <summary>A hit rectangle: a row, a button (1.2).</summary>
+    public const string Area = "area";
+
+    /// <summary>Rows of equal height, scrolled (1.2).</summary>
+    public const string List = "list";
+}
+
+/// <summary>The limits a pack's layouts are checked against: the language packs' (strict), and the interface mods' (looser).</summary>
 /// <param name="Name">How the check names it.</param>
 /// <param name="MaxMove">How far a slot may move from the original's place, in game pixels each way (null: anywhere on the screen).</param>
 /// <param name="MaxLines">The most lines a text may wrap onto.</param>
 /// <param name="WithinRoom">Whether a slot must stay within the room its text had (the free space the original leaves it).</param>
-public sealed record LayoutProfile(string Name, int? MaxMove, int MaxLines, bool WithinRoom)
+/// <param name="Areas">Whether it may declare areas and lists (<see cref="SlotKinds"/>), or only lay out texts.</param>
+public sealed record LayoutProfile(string Name, int? MaxMove, int MaxLines, bool WithinRoom, bool Areas = false)
 {
-    /// <summary>A translation pack's: at most 16 px from the original's place, 1–3 lines, within the room the text had.</summary>
+    /// <summary>A translation pack's: texts only, at most 16 px from the original's place, 1–3 lines, within the room the text had.</summary>
     public static readonly LayoutProfile LanguagePack = new("language pack", 16, 3, true);
+
+    /// <summary>An interface mod's (1.3, against the 1.2 view registry): texts anywhere on the screen, areas and lists.</summary>
+    public static readonly LayoutProfile InterfaceMod = new("interface mod", null, 3, false, Areas: true);
 }
 
 /// <summary>
@@ -129,6 +177,23 @@ public static class SlotLayouts
             foreach (var (slot, layout) in slots.OrderBy(l => l.Key, StringComparer.Ordinal))
             {
                 void Add(string what) => problems.Add((screen, slot, what));
+                if (!layout.IsText)
+                {
+                    foreach (var problem in AreaProblems(layout, profile))
+                    {
+                        Add(problem);
+                    }
+                    if (boxes.ContainsKey(slot))
+                    {
+                        // the slots of a screen share one set of names: an area under a text's key would be taken for the text's layout
+                        Add($"an {layout.KindOrText} is named like a text of the screen ({slot}): give it a name of its own");
+                    }
+                    continue;
+                }
+                if (layout.Height is not null || layout.Rows is not null || layout.RowHeight is not null)
+                {
+                    Add("height, rows and rowHeight are an area's or a list's: a text has lines");
+                }
                 if (layout.Lines < 1 || layout.Lines > profile.MaxLines)
                 {
                     Add($"{layout.Lines} lines: 1 to {profile.MaxLines} in a {profile.Name}");
@@ -182,6 +247,46 @@ public static class SlotLayouts
             }
         }
         return problems;
+    }
+
+    // an area's or a list's own checks: a kind the profile allows, its fields, on the screen
+    private static IEnumerable<string> AreaProblems(SlotLayout layout, LayoutProfile profile)
+    {
+        var kind = layout.KindOrText;
+        if (kind is not (SlotKinds.Area or SlotKinds.List))
+        {
+            yield return $"kind \"{kind}\": {SlotKinds.Text}, {SlotKinds.Area} or {SlotKinds.List}";
+            yield break;
+        }
+        if (!profile.Areas)
+        {
+            yield return $"an {kind} is for interface views, not a {profile.Name} (it lays out texts only)";
+            yield break;
+        }
+        if (layout.X is null || layout.Y is null || layout.Width is null)
+        {
+            yield return $"an {kind} needs x, y and width";
+        }
+        if (layout.Width is < 1)
+        {
+            yield return $"width {layout.Width}: at least 1 pixel";
+        }
+        if (kind == SlotKinds.Area && layout.Height is not >= 1)
+        {
+            yield return "an area needs a height of at least 1 pixel";
+        }
+        if (kind == SlotKinds.List && (layout.Rows is not >= 1 || layout.RowHeight is not >= 1))
+        {
+            yield return "a list needs rows and a rowHeight of at least 1";
+        }
+        if (layout.Lines != 1 || layout.Font != 0)
+        {
+            yield return "lines and font are a text's";
+        }
+        if (layout.Rectangle is var (x, y, w, h) && (x < 0 || y < 0 || x + w > ScreenWidth || y + h > ScreenHeight))
+        {
+            yield return "it runs off the screen";
+        }
     }
 
     /// <summary>Where a text is drawn with <paramref name="layout"/>: at its place (else its box's), as wide as given (else as the English), its lines tall.</summary>
