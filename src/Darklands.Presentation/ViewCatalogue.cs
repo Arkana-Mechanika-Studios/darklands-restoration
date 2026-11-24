@@ -8,7 +8,7 @@ public enum ViewKind
     /// <summary>A screen with its own loop (Run / Show / Pick on GameUi.Poll), as the original's screens are.</summary>
     ClassicLoop,
 
-    /// <summary>A view of the registry: a model, a layout, a drawing and the commands its input gives, run by a host (none yet).</summary>
+    /// <summary>A view of the registry: a model, a layout, a drawing and the commands its input gives, run by a host (the settings screen is the first).</summary>
     RegistryView,
 }
 
@@ -27,7 +27,7 @@ public sealed record ViewEntry(string Id, ViewKind Kind, string? Model, IReadOnl
 
 /// <summary>
 /// The view registry's catalogue (1.2, the modular UI's grounds): an entry for every screen the game can show. It is what a 1.3
-/// interface mod addresses, and what the Workshop's layout panel and the inspector list. Every screen runs its own loop today; new
+/// interface mod addresses, and what the Workshop's layout panel and the inspector list. Every screen of the original runs its own loop; new
 /// screens are written as registry views, and the classic ones move over one by one. Kept true by its test: a screen that announces
 /// a name not here, an entry no screen announces, or a recorded screen not here fails.
 /// </summary>
@@ -64,6 +64,8 @@ public static class ViewCatalogue
         new("BarterScreen", ViewKind.ClassicLoop, "BarterSession", Input),
         new("ItemStoreScreen", ViewKind.ClassicLoop, "StoreSession", Input),
         new("LootScreen", ViewKind.ClassicLoop, "LootSession", Input),
+        // the first registry view (1.2): the settings screen, its rows a list and its Close button an area (SettingsLayout)
+        new(Views.SettingsLayout.Screen, ViewKind.RegistryView, nameof(Views.SettingRow), [nameof(Views.SettingChange)]),
     ];
 
     private static readonly Dictionary<string, ViewEntry> ById = Entries.ToDictionary(e => e.Id, StringComparer.Ordinal);

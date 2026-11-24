@@ -180,12 +180,47 @@ public sealed class MenuBar
             new(() => Words("exe:DS:0DF9"), true, Words("exe:DS:0E0F"), () => keys.ChoosePartyOrder?.Invoke()),
         };
         MenuBar? bar = null;
-        bar = new MenuBar(ui, [new(Words("exe:DS:0CA1"), true, game, BeforeItems: () => BeforeGameItems(state)), new(Words("exe:DS:0CA6"), false, []),
+        bar = new MenuBar(ui, [new(Words("exe:DS:0CA1"), true, WithSettingsLine(ui, game), BeforeItems: () => BeforeGameItems(state)), new(Words("exe:DS:0CA6"), false, []),
             new(Words("exe:DS:0CAD"), false, []), new(Words("exe:DS:0CB4"), true, party, BeforeItems: () => bar!.DropdownRight)])
         {
             QuitToDos = keys.QuitToDos,
         };
         return bar;
+    }
+
+    /// <summary>
+    /// The Game menu's items, with a last line that opens the settings screen (GameUi.OpenSettings) when a host offers the screen, in
+    /// both interfaces; without one (the oracle, the replays) the items are the original's, unchanged. The line comes after the
+    /// original's, so none of them moves: the dropdown is one row (8 pixels) taller, Down from Quit to DOS reaches it, and a release
+    /// on its row chooses it.
+    /// </summary>
+    // DIVERGENCE: no original: the 1.2 settings screen's line (design 3.1; user 2026-11-24: in Classic too, at the end of the Game menu).
+    public static IReadOnlyList<Item> WithSettingsLine(GameUi ui, IReadOnlyList<Item> items)
+    {
+        ArgumentNullException.ThrowIfNull(ui);
+        // C: a Game item's text starts with its tick byte (2: none), as the original's strings do
+        var settings = new Item(() => "\x02" + ui.Words(Views.SettingsTexts.MenuLine), true, ui.SettingsKeyLabel, () => ui.OpenSettings?.Invoke());
+        return new ComfortItems(ui, items, settings);
+    }
+
+    // the items, and one more at the end while a host offers the settings screen
+    private sealed class ComfortItems(GameUi ui, IReadOnlyList<Item> items, Item extra) : IReadOnlyList<Item>
+    {
+        private bool Shown => ui.OpenSettings is not null;
+
+        public int Count => items.Count + (Shown ? 1 : 0);
+
+        public Item this[int index] => index == items.Count && Shown ? extra : items[index];
+
+        public IEnumerator<Item> GetEnumerator()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                yield return this[i];
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     /// <summary>The word DS:991C before the Game items (DS:991E): its high byte DS:991D is top-scoring-member, the low byte has no writer (0).</summary>

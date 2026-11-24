@@ -52,6 +52,9 @@ public static class Keys
     public const int AltC = 0x2E00;
     public const int AltM = 0x3200;
 
+    /// <summary>Alt-T: never read by the original (its hot keys are Alt-Q, O, P, S, D, F, L, C, M); the host's settings screen (1.2).</summary>
+    public const int AltT = 0x1400;
+
     /// <summary>Scan codes of the letter keys A..Z (PC set 1).</summary>
     private static readonly byte[] LetterScanCodes =
     [

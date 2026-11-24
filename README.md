@@ -113,6 +113,7 @@ And this program's own:
 | F11 | a developer console over the game (`help` lists its commands: time, money, attributes, saints, items...) |
 | Ctrl-F12 | make a problem report (below) |
 | Ctrl-F11 | change how the picture is drawn on a large window: sharp or even pixels, a soft VGA-monitor look, smoothed pixel art, or CRT looks (`display.filter`, [SETTINGS.md](docs/SETTINGS.md)) |
+| Alt-T | the settings screen, with the game paused: the picture, the window, the Interface switch, the rules for new games, the packs and the sound ([SETTINGS.md](docs/SETTINGS.md)); also the last line of the Game menu |
 
 ## Reporting a problem
 

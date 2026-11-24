@@ -48,6 +48,7 @@ internal static class SdlNative
     internal const int WindowCentered = 0x2FFF0000;
     internal const int KeyTab = 9;
     internal const int KeyV = 118;
+    internal const int ScancodeT = 23;
     internal const int ScancodeF9 = 66;
     internal const int ScancodeF11 = 68;
     internal const int ScancodeF12 = 69;

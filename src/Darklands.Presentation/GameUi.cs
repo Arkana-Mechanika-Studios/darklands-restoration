@@ -796,6 +796,15 @@ public sealed class GameUi
     public bool ComfortInterface { get; set; }
 
     /// <summary>
+    /// Opens the settings screen (1.2, a registry view the host runs with the game paused; null: no host offers it). The Game menu ends with a
+    /// line that calls it, in both interfaces (MenuBar.WithSettingsLine).
+    /// </summary>
+    public Action? OpenSettings { get; set; }
+
+    /// <summary>The settings screen's key as the Game menu shows it beside its line (in font 1's letters).</summary>
+    public string SettingsKeyLabel { get; set; } = "";
+
+    /// <summary>
     /// A host's pace for the battle's edge scroll (Shift with the pointer at an edge of the view): at most one step this often, in the
     /// host clock's milliseconds. 0 (the default, the original's): a step each pass of the battle loop.
     /// </summary>
