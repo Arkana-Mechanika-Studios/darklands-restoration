@@ -77,9 +77,12 @@ public sealed class HussiteBand : Card
     /// <summary>Talking the rebels round; the original only succeeds when the roll equals the chance exactly.</summary>
     // orig: R114+0x0DCC (18D3:041C) matched; tests: CardSmokeTests
     // BUG: `roll-below(100) == p` where every other card has `<=`; kept as the original has it.
-    private static void ClaimFriendship(CardContext c, int chance)
+    //   Fixed (FixHussiteFriendship): `<=`, as the card's siblings and the line's own hint (the chance shown).
+    //   Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
+    internal static void ClaimFriendship(CardContext c, int chance)
     {
-        if (c.Random(100) == chance)
+        var roll = c.Random(100);
+        if (c.State.Behaviour.FixHussiteFriendship ? roll <= chance : roll == chance)
         {
             c.Screen.Text(2);
             c.PracticeSkill(c.Leader, (int)Skill.SpeakCommon, 1, 10, 0);

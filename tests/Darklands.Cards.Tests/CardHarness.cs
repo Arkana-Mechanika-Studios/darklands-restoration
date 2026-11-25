@@ -78,6 +78,9 @@ public sealed class ScriptedScreen(int option) : ICardScreen
     /// <summary>The options offered at the last menu.</summary>
     public IReadOnlyList<OptionState> LastOptions { get; private set; } = [];
 
+    /// <summary>The options offered at the first menu (null: none yet).</summary>
+    public IReadOnlyList<OptionState>? FirstOptions { get; private set; }
+
     public void Show(string cardName, string picture) => Log.Add($"show {cardName} {picture}");
 
     public void ShowPicture(string picture) => Log.Add($"picture {picture}");
@@ -87,6 +90,7 @@ public sealed class ScriptedScreen(int option) : ICardScreen
     public int Choose(int block, IReadOnlyList<OptionState> options, Func<int, OptionHint>? hint = null)
     {
         LastOptions = options;
+        FirstOptions ??= [.. options];
         if (++_menus > 50)
         {
             throw new InvalidOperationException("The card keeps asking: it never moves on.");

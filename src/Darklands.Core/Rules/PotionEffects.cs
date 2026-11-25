@@ -71,6 +71,7 @@ public static class PotionEffects
             // BUG: the weapon potions add to the bonus byte without a limit and their bonus event (0x4A) is never undone
             // (EventExpiry.UndoBoost): they last for good and stack, and the nibbles wrap (Deadly Blade's damage nibble loses
             // its carry out of the byte, so a fourth potion can leave +1; Strongedge's carries into the damage nibble).
+            //   Decision: research, first: what wearing off should mean for the weapon potions (how long, what the texts and the manual promise) (the user's choice, 2026-11-25, F-1 set 1).
             case DeadlyBlade:
                 t = ThreeBands(3, 4, 5);
                 MemberRules.RecordPotionBonus(s, member, DeadlyBlade, t, 24);
@@ -100,6 +101,7 @@ public static class PotionEffects
                 // BUG: Hardarmor and Firewall never wear off: they raise the armour byte (+0x41) and the Firewall
                 // strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day); the
                 // armour nibble carries past 15 into the fire-charm bits, which Attacks.HitDamage also counts as armour.
+                //   Decision: research, first: what wearing off should mean for Hardarmor and Firewall (how long, what the texts and the manual promise) (the user's choice, 2026-11-25, F-1 set 1).
                 // BUG: Hardarmor gives 1, 2 or 3 levels of thickness (5 above quality 45) and no quality, where the manual has it
                 // better the armour's quality by 20 to 30 points and its thickness by one or two levels.
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));

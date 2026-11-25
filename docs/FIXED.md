@@ -37,11 +37,22 @@ Each fix is a switch of its own, with the original's behaviour kept beside it an
 - A City Lord's commission given at the fortress (in a city without a town hall) is paid when it is done, as the town hall pays its own.
 - A village Schulz's robber-knight task is paid when it is done (ask him for information).
 - Alt-L, then Esc on the load screen, goes back to the game as it was (the original went on with an empty party and no events).
+- Alchemists sell formulas from the whole range, stronger potions and higher grades included (the original's sold only the
+  first seven potions).
+- A saint's help or a price set during a battle ends when it should (the original lost it after the battle, so it lasted for good).
+- A temporary attribute boost gives back exactly what it added when it ends (the original could leave the attribute lower than
+  before when boosts overlapped or met the maximum).
+- Claiming friendship with a Hussite band succeeds at the chance shown (the original needed the roll to equal it exactly).
+- In the peat bog, a rope lets the party throw a rope (the original asked for a polearm, a bow or metal armour instead).
 
 ## Camp
 
 - Stopping a brew gives back only its ingredients, not empty stacks for unused ingredient slots.
 - Stopping a brew finds every brew of that member.
+- At an inn, the teacher list shows every teacher of the town, and each row is that teacher (the original counted the teachers of
+  other towns, leaving some out and sometimes picking another town's).
+- Leaving a stay by clicking an empty party row ends it as the other ways do: Save and Load come back, the music
+  too, and unfinished brews stop as on any way out (the original left Save and Load off until another screen).
 
 ## Battles
 

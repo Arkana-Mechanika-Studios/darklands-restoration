@@ -484,6 +484,7 @@ public static class SaintBook
         // charm nibble (SetCharm(0xA0)): no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as
         // +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage),
         // for good.
+        //   Decision: research, first: how strong the promised fire resistance should be (the user's choice, 2026-11-25, F-1 set 1).
         new("R039+0x31FA", [Standing(10, 20), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), SetCharm(0xA0)]),
         // 21 St.Christina, Astonish.
         new("R039+0x32DA", [Boost(Agility, 8, 15), Boost(Charisma, 1, 10)]),
@@ -564,6 +565,7 @@ public static class SaintBook
         // 45 St.Erasmus
         // orig: R039+0x45C8
         // BUG: resistance to fire by the text (DARKLAND.SNT), only the charm nibble in the code (see St.Charity).
+        //   Decision: research, first: how strong the promised fire resistance should be (the user's choice, 2026-11-25, F-1 set 1).
         new("R039+0x45C8", [Boost(Agility, 6, 11), Boost(Perception, 6, 11), SetCharm(0xA0)]),
         // 46 St.Eric
         new("R039+0x4676", [Boost(Strength, 8, 23), Boost(Charisma, 4, 7), WeaponSkills(15, 24), Boost(Riding, 6, 11), Boost(SpeakCommon, 6, 11)]),
@@ -759,12 +761,14 @@ public static class SaintBook
         // 103 St.Pantaleon
         // orig: R039+0x7A24
         // BUG: his text (DARKLAND.SNT) also promises resistance to fire; the code sets only the charm nibble (see St.Charity).
+        //   Decision: research, first: how strong the promised fire resistance should be (the user's choice, 2026-11-25, F-1 set 1).
         new("R039+0x7A24", [Heal(Endurance, 30), Heal(Strength, 30), Boost(Alchemy, 10, 19), Boost(Healing, 15, 29), Boost(Charisma, 6, 11),
             TravelBlessing, SetCharm(0xA0)]),
         // 104 St.Patrick
         // orig: R039+0x7B22
         // BUG: the text (DARKLAND.SNT) promises armour against missiles in combat; the code adds 2 to the one member's Hardarmor
         // nibble (AddCharm(2)), against every blow and for good (see St.Dunstan).
+        //   Decision: research, first: what wearing off should mean for St. Patrick's armour, and against what (the user's choice, 2026-11-25, F-1 set 1).
         new("R039+0x7B22", [Boost(EdgedWeapons, 15, 29), Boost(ImpactWeapons, 15, 29), Boost(Polearms, 15, 29), Boost(SpeakCommon, 15, 29),
             Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29), Boost(Charisma, 15, 24), Boost(Strength, 12, 19), AddCharm(2)]),
         // 105 St.Paul
@@ -789,6 +793,7 @@ public static class SaintBook
         // orig: R039+0x80C2
         // BUG: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte
         // (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
+        //   Decision: research, first: what wearing off should mean for St. Polycarp's charm (the user's choice, 2026-11-25, F-1 set 1).
         new("R039+0x80C2", [FirewallForAll]),
         // 111 St.Raphael
         new("R039+0x814A", [Heal(Endurance, 100), Heal(Strength, 100), Boost(Healing, 50, 139), Boost(Agility, 8, 15), Boost(Perception, 6, 11)]),

@@ -275,6 +275,7 @@ public sealed class ItemStores
     // C: i < ncache in turn at the file position reached, its offset written at (i + 1) * 2: store `handle` from the working table
     // C: (`k = *p++; p += k << 2;` skips its old bytes), the others copied from p (`k = *p; _dos_write(p, (k << 2) + 1); p += (k << 2) + 1;`).
     // BUG: the rewrite finds store 1 by the signed low byte of its offset (p = buf + (signed char)buf[2], cbw R035+0x1615 after the load at R035+0x15A2): with store 1 at 0x80 or later (a table of 128 bytes or more, the 198-byte one of a game's file too) the other stores are copied from the wrong bytes; and it reopens the file without truncating it (R035+0x15DD, mode 1), so bytes left after a shrunk store stay and a store appended after them is later copied into an earlier one. The compact layout (126-byte table, store 1 at 126) avoids the first; the second is reproduced.
+    //   Decision: covered, by the data-safety switches FixInnCacheRewrite and FixCacheStoreLimit, on in Original and Fixed (the user's choice, 2026-11-25).
     // C: The header becomes n + 2 = 101 bytes; p starts at the low byte of store 1's offset taken as a signed char, which for the 198-byte
     // C: header of a game's file (0xC6) is offset 0xFFC6 of the buffer's segment, the heap 58 bytes before it.
     // DIVERGENCE: a store copied from bytes outside the file (that read before the buffer, or past its end) copies heap memory in the original;

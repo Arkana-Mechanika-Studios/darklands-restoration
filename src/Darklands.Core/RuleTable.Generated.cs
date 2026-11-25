@@ -205,6 +205,27 @@ public static partial class RuleTable
     /// <summary>The index of <c>fix.cards.village-schulz-reward</c> (<see cref="OriginalBehaviour.FixVillageSchulzReward"/>).</summary>
     public const int FixVillageSchulzReward = 65;
 
+    /// <summary>The index of <c>fix.cards.alchemist-formula-range</c> (<see cref="OriginalBehaviour.FixAlchemistFormulaRange"/>).</summary>
+    public const int FixAlchemistFormulaRange = 66;
+
+    /// <summary>The index of <c>fix.events.battle-events-kept</c> (<see cref="OriginalBehaviour.FixBattleEventsKept"/>).</summary>
+    public const int FixBattleEventsKept = 67;
+
+    /// <summary>The index of <c>fix.camp.teacher-rows</c> (<see cref="OriginalBehaviour.FixTeacherRows"/>).</summary>
+    public const int FixTeacherRows = 68;
+
+    /// <summary>The index of <c>fix.members.boost-records-applied</c> (<see cref="OriginalBehaviour.FixBoostRecordsApplied"/>).</summary>
+    public const int FixBoostRecordsApplied = 69;
+
+    /// <summary>The index of <c>fix.cards.hussite-friendship</c> (<see cref="OriginalBehaviour.FixHussiteFriendship"/>).</summary>
+    public const int FixHussiteFriendship = 70;
+
+    /// <summary>The index of <c>fix.cards.peat-bog-rope</c> (<see cref="OriginalBehaviour.FixPeatBogRope"/>).</summary>
+    public const int FixPeatBogRope = 71;
+
+    /// <summary>The index of <c>fix.camp.empty-row-clean-up</c> (<see cref="OriginalBehaviour.FixCampEmptyRowCleanUp"/>).</summary>
+    public const int FixCampEmptyRowCleanUp = 72;
+
     /// <summary>Every fix flag of the switch register, in its order (the index of each is its place here).</summary>
     public static IReadOnlyList<Rule> Flags { get; } =
     [
@@ -274,5 +295,12 @@ public static partial class RuleTable
         new("fix.cards.welcome-appointment", nameof(OriginalBehaviour.FixWelcomeAppointment), "gameplay", false, true, true),
         new("fix.cards.fortress-commission-pay", nameof(OriginalBehaviour.FixFortressCommissionPay), "gameplay", false, true, true),
         new("fix.cards.village-schulz-reward", nameof(OriginalBehaviour.FixVillageSchulzReward), "gameplay", false, true, true),
+        new("fix.cards.alchemist-formula-range", nameof(OriginalBehaviour.FixAlchemistFormulaRange), "gameplay", false, true, true),
+        new("fix.events.battle-events-kept", nameof(OriginalBehaviour.FixBattleEventsKept), "gameplay", false, true, true),
+        new("fix.camp.teacher-rows", nameof(OriginalBehaviour.FixTeacherRows), "gameplay", false, true, true),
+        new("fix.members.boost-records-applied", nameof(OriginalBehaviour.FixBoostRecordsApplied), "gameplay", false, true, true),
+        new("fix.cards.hussite-friendship", nameof(OriginalBehaviour.FixHussiteFriendship), "gameplay", false, true, true),
+        new("fix.cards.peat-bog-rope", nameof(OriginalBehaviour.FixPeatBogRope), "gameplay", false, true, true),
+        new("fix.camp.empty-row-clean-up", nameof(OriginalBehaviour.FixCampEmptyRowCleanUp), "gameplay", false, true, true),
     ];
 }

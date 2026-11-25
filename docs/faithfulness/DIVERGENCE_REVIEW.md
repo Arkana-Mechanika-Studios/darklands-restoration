@@ -509,11 +509,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R035+0x1350` (1462:1350, matched)  
   divergence: a store read past the file's end reads the heap after its buffer in the original (handle 0's offset is bytes 0..1, a handle past the table a zero offset word or the stores' bytes); an empty store here.  
   deterministic: **no** (checked against the original); action: **keep** - stash-load (R035+0x1350) reads the store at the offset word 2h of a buffer of the file's size (request-work-buffer(ft.size)); an offset or a count that goes past the file's end reads the heap after the buffer. Handles are -1 or what stash-store assigned (1..ncache), whose offsets are inside the file, so it needs a file damaged by the 99th-store overwrite or edited by hand. Keep the empty store.
-- **D-7ca3a3** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:280` `ItemStores.Rewrite`  
+- **D-7ca3a3** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:281` `ItemStores.Rewrite`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   divergence: a store copied from bytes outside the file (that read before the buffer, or past its end) copies heap memory in the original; here such a store is written as its offset reads it. With only the store being saved (one store, the usual first revisit) nothing is copied and the file is the original's; once the header is 101 bytes p starts at store 1 and the copies read the file.  
   deterministic: **partly** (checked against the original); action: **keep** - stash-store of a known store (R035+0x1468) starts its copy at buf + (char)buf[2]: for the 198-byte header of a new or loaded game's file (0xC6) that is offset 0xFFC6 of the buffer's segment, heap memory; every store but the one saved is then copied from there (merle's inn cache bug, groups.io #3470/#3471). With one store nothing is copied and the file is the original's (lockstep cache-revisit agrees); once the header is 101 bytes the copy reads the file. With two or more stores at the first rewrite the copied bytes are heap residue: written here as each store's offset reads it.
-- **D-05b2a4** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:336` `ItemStores.Put`  
+- **D-05b2a4** `undefined-memory` - `src/Darklands.Core/Items/ItemStores.cs:337` `ItemStores.Put`  
   original: `R035+0x04BC` (1462:04BC, matched), `R035+0x1468` (1462:1468, matched)  
   divergence: a write past the file's end (an offset word of a file shorter than its offset area) leaves DOS's undefined bytes before it; zeros here.  
   deterministic: **no** (checked against the original); action: **keep** - stash-store writes offset words at (i+1)*2 / (ncache+1)*2 through fseek; a file shorter than that (only a saved game whose tail was cut or edited) is extended by DOS with whatever the clusters held. Zeros here.
@@ -525,7 +525,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R036+0x0082` (1462:0082, draft)  
   divergence: the detail words (DS:8A4E) are global in the original and keep the last stay's text; here each stay starts empty (only shown once an activity sets them).  
   deterministic: **n/a** (checked against the original); action: **document** - DS:8A4E[5][20] is only used by the camp line formatting (R036+0x1368 with DS:3AC0[act]) for activities 3 ('Make %d %s'), 4 ('Earn %d pf/day as %s') and 6 ('Train or Study (%s)'); every path that sets those activities (1e41 potion, 197e day laborer/best job, 1474 teacher) strcpy's DS:8A4E first, activities are reset to 0 at the start of 0082, and activities 1,2,5 use no string. So the previous stay's text is never displayed and the C# difference is invisible (DS:3AC0 strings checked in the EXE image).
-- **D-ab9bcb** `undefined-memory` - `src/Darklands.Core/Rules/CampStay.cs:160` `CampStay.Teacher`  
+- **D-ab9bcb** `undefined-memory` - `src/Darklands.Core/Rules/CampStay.cs:167` `CampStay.Teacher`  
   original: `R036+0x08EC` (1462:08EC, draft), `R036+0x1858` (1462:1858, draft), `R036+0x147A` (1462:147A, draft)  
   divergence: with no teacher of the skill here (the list's rows stale: TeacherList) R036+0x08EC (key T) and R036+0x1858 (the day's cost) read the fee of events[-1] unguarded (1462:0BAF, 1462:18ED: les bx, es:[bx+1B2C] with bx = -4): the far pointer at 2E38:1B28, the tail of text-slot-named[4], 0 in play, so the fee is the word at 0000:001E (the INT 7 vector's segment, F000 under DOSBox: the "-4096pfs" players see); here no fee is shown or added. The day itself (R036+0x147A) finds no teacher and the member relaxes.  
   deterministic: **no** (checked against the original); action: **keep** - event-search==-1 (stale DS:8A38 teacher skill from another town/stay; the C# keeps that stale list like the original) leads to R136+0xF458[0]->f1e, i.e. events[-1] = the far pointer at 2e38:1B28 = last 4 bytes of text-slot-named[4] (the $NamedFiveName buffer, bytes 26..29; zero unless a name >= 27 chars was copied there). With a null pointer it reads the interrupt table at 0000:001E (INT 7 vector segment word) as the fee: shown as 'Npfs' (line ~579) and added to the day's cost (1858, no guard); that depends on the DOS/BIOS environment, not on game state. Only the practice step (843) has the e!=-1 guard. Keep 'no fee'.
@@ -581,7 +581,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x06DE` (0E76:06DE, draft)  
   divergence: the original does not resolve -1 for the Agility byte (DS:9CB4[-1] reads the bytes before the records; only the band resolves it); callers pass a slot (CardContext resolves -1 first).  
   deterministic: **n/a** (checked against the original); action: **document** - member-effective-stat-two (06de) reads DS:9CB4[who] unresolved; every caller (R047 seg 1974/1a44, R058, R068, R073, R074 [EE6C], R085, R090 [EE8C], R105, R107) passes a loop member or menu-owner-member/top-scoring-member (0..4); none pushes -1. party[-1]+0x4B would be DS:9C34, unrelated UI/combat memory. Nothing to do.
-- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:347` `MemberRules.RaiseSkillTemporarily`  
+- **D-7a8af3** `undefined-memory` - `src/Darklands.Core/Rules/MemberRules.cs:354` `MemberRules.RaiseSkillTemporarily`  
   original: `R029+0x4B08` (0E76:4B08, draft)  
   divergence: member -2's skill is a byte before the records in the original (undefined); here 0.  
   deterministic: **n/a** (checked against the original); action: **document** - skill-temporary-drop (4b08) has a -2 branch (member-ability(-2,k) = DS:9BC0+k, BSS bytes before the combatant area, effectively 0), but its only callers are the saint functions in R039 seg 165C with who = DS:89EA (-1 for a normal prayer, or a chosen member 0..4, see R034); nobody passes -2 (stat-temporary-boost(-2) is used by R130, a different function). Unreachable; the C# 0 matches the BSS value anyway.
@@ -645,7 +645,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R029+0x1260` (0E76:1260, draft)  
   divergence: who >= 5 returns whatever AX holds in the original; here that slot is empty (false).  
   deterministic: **n/a** (checked against the original); action: **document** - member-flag-bit's who>=5 path jumps to the epilogue with AX still = 0x80>>(bit&7) (computed at entry), i.e. non-zero = 'true', not arbitrary; but all callers (R043 seg 150B loop members, R060/s086/s089 with -2) pass -2 or 0..4, so who>=5 does not occur. If ever wanted: return true.
-- **D-f3db18** `undefined-memory` - `src/Darklands.Core/Rules/Saints.cs:92` `Saints.ChanceLow`  
+- **D-f3db18** `undefined-memory` - `src/Darklands.Core/Rules/Saints.cs:93` `Saints.ChanceLow`  
   original: `R029+0x20C6` (0E76:20C6, draft)  
   divergence: the original indexes the records with who as given (−1 reads before the party); callers resolve it.  
   deterministic: **n/a** (checked against the original); action: **document** - saint-odds-low (20c6) is called with menu-owner-member (DS:EE6C) = (table byte)/4, i.e. 0..4, from the ~120 saint cards (R044..R135), never -1; saint-screen-entry/saint-wrap-up pass the praying member ch. party[-1] would be the unrelated DS:9BE9.. area. Keep callers resolving.
@@ -824,7 +824,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R089+0x0C08` (18CE:02A8, matched)  
   divergence: for member 0 and slot −1 the original writes the byte before the table; here nothing is written.  
   deterministic: **n/a** (checked against the original); action: **document** - The write is R136+0xE0EE[text-slot-chosen-one][card-saint-lines[menu-choice-index]] = 7 (the cited functions are only pass-hours stubs); for member 0 and slot -1 it hits 2E38:07BD, the weight byte of slot 63 of member 4's inventory (inventories end at 07BE), a slot that cannot be in use (packs hold at most 53 items), so nothing observable changes. The C# index arithmetic already reproduces the member-to-member spill (slot -1 = previous member's last group byte).
-- **D-74ee0c** `undefined-memory` - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:147` `MerchantsOfTheCity.NearestCastle`  
+- **D-74ee0c** `undefined-memory` - `src/Darklands.Cards/Scripts/S092/MerchantsOfTheCity.cs:148` `MerchantsOfTheCity.NearestCastle`  
   original: `R092+0x0792` (188F:0222, matched)  
   divergence: the original reads the location record of location-now even in the wilderness (index −1, out of the table); here the party's map position is used then.  
   deterministic: **n/a** (checked against the original); action: **document** - The merchants card belongs to a city (it uses place-query(location-now,2), city-record+0x56 and the city's money), so location-now is a city and locations[location-now] is valid; the wilderness branch is unreachable.

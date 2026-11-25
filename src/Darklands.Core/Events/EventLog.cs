@@ -97,16 +97,30 @@ public sealed class EventLog
     //   for i < count (unsigned) events[i] = a new 0x30-byte record read from the file; the record that was in the slot is not freed;
     //   tests: EventsFileOracleTests, EventLogTests
     // BUG: the table comes back compacted, and what a battle put into the slots below the count is lost: a saint's boost
-    //   (kind 0x48/0x49) or a price called in a battle is never undone, as its event, which would end it, is gone.
-    public void Reload()
+    //   (kind 0x48/0x49) or a price called in a battle is never undone, as its event, which would end it, is gone. Fixed
+    //   (FixBattleEventsKept, keepNew): the events the battle made in those slots move to free slots after the reload, so they
+    //   end as they should. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
+    public void Reload(OriginalBehaviour behaviour) => Reload(behaviour.FixBattleEventsKept);
+
+    /// <summary>The read back after a battle, the events the battle made kept (<paramref name="keepNew"/>) or lost as in the original.</summary>
+    public void Reload(bool keepNew = false)
     {
         if (_workFile is null)
         {
             return;
         }
+        var made = keepNew ? _slots.Take(_workFile.Length).Where(e => e is not null).ToList() : [];
         for (var i = 0; i < _workFile.Length; i++)
         {
             _slots[i] = Record(_workFile[i]);
+        }
+        foreach (var e in made)
+        {
+            var free = Array.IndexOf(_slots, null);
+            if (free >= 0)
+            {
+                _slots[free] = e;
+            }
         }
     }
 

@@ -68,7 +68,8 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
     // BUG: a stay left by a click on an empty party row (R036+0x059F returns at once) skips the clean-up and leaves them at 2: Save Game
     //   and Load Saved Game stay off (Alt-S / Alt-L do nothing, the menu items grey) until a screen that sets them to 1 is left (a
     //   character sheet R031+0x08F6, the inn's roster, barter); seen in the original at the inn and in a camp (vis10 comm-inn-save,
-    //   comm-camp-save); kept (not data-damaging: no save is lost or changed)
+    //   comm-camp-save); kept (not data-damaging: no save is lost or changed). Fixed (FixCampEmptyRowCleanUp): that way out ends the
+    //   stay as the others do (the clean-up runs). Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
     public void Stay(GameState state, int mode)
     {
         // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
@@ -84,7 +85,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
         };
         try
         {
-            if (Run())
+            if (Run() || state.Behaviour.FixCampEmptyRowCleanUp)
             {
                 // orig: R036+0x082C: the unfinished brews lost (event-delete(0x1D, ...)), the fonts back, music-start(DS:9C3D)
                 Brewing.AbandonAll(state);

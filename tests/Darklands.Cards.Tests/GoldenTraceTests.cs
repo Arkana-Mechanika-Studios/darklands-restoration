@@ -252,10 +252,16 @@ public sealed class GoldenTraceTests
             }
         }
 
-        /// <summary>The fix flags added after the traces were recorded (the restore-r1 decisions, 2026-11-24): left out while off, as the restoration flags are.</summary>
+        /// <summary>
+        /// The fix flags added after the traces were recorded (the restore-r1 decisions, 2026-11-24; F-1 set 1, 2026-11-25): left out while
+        /// off, as the restoration flags are.
+        /// </summary>
         private static readonly HashSet<string> FlagsAfterTheTraces = new(StringComparer.Ordinal)
         {
             nameof(OriginalBehaviour.FixWelcomeAppointment), nameof(OriginalBehaviour.FixFortressCommissionPay), nameof(OriginalBehaviour.FixVillageSchulzReward),
+            nameof(OriginalBehaviour.FixAlchemistFormulaRange), nameof(OriginalBehaviour.FixBattleEventsKept), nameof(OriginalBehaviour.FixTeacherRows),
+            nameof(OriginalBehaviour.FixBoostRecordsApplied), nameof(OriginalBehaviour.FixHussiteFriendship), nameof(OriginalBehaviour.FixPeatBogRope),
+            nameof(OriginalBehaviour.FixCampEmptyRowCleanUp),
         };
 
         private static PropertyInfo[] PropertiesOf(Type type)

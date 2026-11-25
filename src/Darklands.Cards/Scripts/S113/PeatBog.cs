@@ -14,6 +14,9 @@ public sealed class PeatBog : Card
 {
     public override int Number => 278;
 
+    // the Rope's item flag (DARKLAND.LST)
+    private const uint RopeFlag = 0x100;
+
     public override int Run(CardContext c)
     {
         Show(c, 331);
@@ -25,7 +28,8 @@ public sealed class PeatBog : Card
         // C: item-tally-by-flags(-2, 0x64, 0): the long mask 0x64 passed as two words.
         // BUG: 0x64 (100) is the Rope's item type, passed where an item-flag mask belongs: the rope line is enabled by a
         //   polearm (0x04), a bow (0x20) or metal armour (0x40), and a Rope (flag 0x100) alone leaves it shown but disabled.
-        if (c.CountItemsWithFlags(Who.Everybody, 0x64) == 0)
+        //   Fixed (FixPeatBogRope): the Rope's flag, 0x100: the line is there for a party with a rope. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
+        if (c.CountItemsWithFlags(Who.Everybody, c.State.Behaviour.FixPeatBogRope ? RopeFlag : 0x64) == 0)
         {
             menu[0] = OptionState.Shown;
         }
