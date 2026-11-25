@@ -39,6 +39,9 @@ public sealed class Battle
     /// <summary>Which original bugs are kept.</summary>
     public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
 
+    /// <summary>The rules' numbers (the original's by default).</summary>
+    public RuleParameters Parameters { get; set; } = RuleParameters.Original;
+
     /// <summary>
     /// DS:C21A: the dragon fight: 0 none, <see cref="HydraFight"/> once a file of the seven-headed dragon (picture code M73) was
     /// loaded, <see cref="CaveDragonFight"/> for the cave dragon (M90). Combatant 5 is then the dragon: it breathes every

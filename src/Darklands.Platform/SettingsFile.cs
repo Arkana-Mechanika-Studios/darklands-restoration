@@ -165,6 +165,7 @@ public static class SettingsFile
                     case "console": Section(name, value, settings, Console); break;
                     case "text": Section(name, value, settings, Text); break;
                     case "interface": Section(name, value, settings, Interface); break;
+                    case "rules": Section(name, value, settings, Rules); break;
                     default: Unknown(name); break;
                 }
             }
@@ -311,6 +312,28 @@ public static class SettingsFile
                 case "launcher": break; // retired (1.0): the launcher at every start; DarklandsRP Launcher shows it, so old files are read without a warning
                 case "commandLine": settings.CommandLine = Tokens(key, property.Value) ?? settings.CommandLine; break;
                 default: Unknown(key); break;
+            }
+        }
+
+        // the rules preset of new games: "preset" (original | fixed); another value is reported and the default kept
+        private void Rules(string section, JsonProperty property, GameSettings settings)
+        {
+            var key = $"{section}.{property.Name}";
+            if (property.Name == "preset")
+            {
+                var preset = Text(key, property.Value)?.Trim().ToLowerInvariant();
+                if (preset is "original" or "fixed")
+                {
+                    settings.RulesPreset = preset;
+                }
+                else if (preset is not null)
+                {
+                    problems.Add($"{key}: \"{preset}\" is not \"original\" or \"fixed\"; the default (fixed) is used");
+                }
+            }
+            else
+            {
+                Unknown(key);
             }
         }
 
@@ -614,23 +637,20 @@ public static class SettingsFile
 
           // The Interface switch: how the same orders are given and what the screens show of them. "comfort": the comfort
           // features (the load list one line a game, the newest first, with the real date and time it was saved; on the map, a
-          // direction key tapped twice, or pressed with Shift, walks on until something stops it); "classic": keeps the 1992
-          // map and saved-games screens. The game plays the same either way. Command line: --interface classic|comfort.
+          // direction key tapped twice, or pressed with Shift, walks on until something stops it; the mouse wheel moves the
+          // selection in the menus and lists; at a card menu the cursor keys and the wheel work wherever the pointer is and the
+          // digits 1..9 choose a line); "classic": keeps the 1992 interface. The game plays the same either way. Command line:
+          // --interface classic|comfort.
           "interface": {
             "mode": "comfort"
           },
 
-          // The mouse and keyboard (SDL host). Not part of the original: the game plays the same.
-          "input": {
-            // The mouse wheel gives the cursor keys up / down where they move a selection (the card menus, the character sheet's
-            // lists and pack, the shop, barter and load lists ...), as DOSBox-X; elsewhere (the map, a battle) it does nothing.
-            // Command line: --no-mouse-wheel.
-            "mouseWheel": true,
-
-            // At a card menu, the cursor keys up / down and the wheel work wherever the pointer is: they put the pointer on the
-            // next line (the original takes them only with the pointer over a line), and the digits 1..9 choose a line as a
-            // click does. Command line: --no-card-menu-keys.
-            "cardMenuKeys": true
+          // The rules of new games. "fixed": the original game with its gameplay bugs fixed (docs/FIXED.md lists them);
+          // "original": the original game's rules, its bugs included (only bugs that damage saved games, and plain display
+          // glitches, are fixed). A saved game keeps the rules it was started with; a game whose rules are not Original gets a
+          // companion file beside its .SAV (DKSAVEn.MODS.JSON). Command line: --rules fixed|original.
+          "rules": {
+            "preset": "fixed"
           },
 
           // Settings of the SDL host only.

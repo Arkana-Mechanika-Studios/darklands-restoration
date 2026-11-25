@@ -170,7 +170,30 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     /// <summary>The game's sound; silent unless the program attaches an audio output.</summary>
     public IAudio Audio { get; set; } = new SilentAudio();
 
-    public IClock Clock { get; } = new SystemClock();
+    public IClock Clock => _clock;
+
+    // the game's clock: it stands still while a registry view is open (OpenView: the true pause)
+    private readonly PausableClock _clock = new();
+
+    /// <summary>Pauses (true) or plays on (false) the sound device: set by the program with the audio output (a view's true pause).</summary>
+    public Action<bool>? AudioPaused { get; set; }
+
+    // the registry view to open at the next Pump (OpenView)
+    private Darklands.Presentation.Views.IRegistryView? _pendingView;
+
+    /// <summary>Whether a registry view is open (the game stands still).</summary>
+    internal bool ViewOpen { get; private set; }
+
+    /// <summary>
+    /// Opens a registry view at the next <see cref="Pump"/>, over the game's frame: the true pause (1.2, the view registry). Until it
+    /// closes the game's code does not run (the view runs inside Pump), its clock stands still (the paused time is not counted) and the
+    /// sound device is paused, so nothing the game measures jumps when it closes; none of its input reaches the game. The window's close
+    /// button closes it and quits.
+    /// </summary>
+    public void OpenView(Darklands.Presentation.Views.IRegistryView view) => _pendingView = view;
+
+    /// <summary>What Alt-T does (null: nothing, the key goes to the game as before): the host opens the settings screen (OpenView).</summary>
+    public Action? SettingsRequested { get; set; }
 
     /// <summary>The game's timer: the audio's when sound plays, else one on <see cref="Clock"/>.</summary>
     public IGameTimer Timer
@@ -386,6 +409,12 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     public void Present(Screen screen)
     {
         LastFrame = screen;
+        ShowPicture(screen);
+    }
+
+    // a 320x200 picture in the window (the game's frame, or a registry view's over it)
+    private void ShowPicture(Screen screen)
+    {
         if (Renderer is not null)
         {
             PresentHd(screen, Renderer);
@@ -631,6 +660,16 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
                 }
                 continue;
             }
+            // Alt-T: the settings screen (SettingsRequested), a registry view the host runs with the game paused. A host key: the
+            //   original never reads Alt-T (its Alt keys are Q, O, P, S, D, F, L, C and M)
+            if (IsSettingsKey(e) && SettingsRequested is not null)
+            {
+                if (e.Keyboard.Repeat == 0 && !ViewOpen && !_showingText && LastFrame is not null && Console is not { Console.IsOpen: true })
+                {
+                    SettingsRequested();
+                }
+                continue;
+            }
             // F9 (developer builds): the inspector, before the console and the game
             if (Inspector is not null && IsInspectorKey(e))
             {
@@ -708,6 +747,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
         }
         // the typematic repeats of the key held last that came due since the previous pump
         _keyboard.Tick(_keyClock.Elapsed.TotalMilliseconds);
+        if (_pendingView is { } view && !QuitRequested)
+        {
+            _pendingView = null;
+            RunView(view);
+        }
         // the game may pump without presenting while it waits: the console is drawn on (and taken away when it closes)
         if (Console is not null && (toggledThisPump || (Console.Console.IsOpen && !_framePresented)))
         {
@@ -761,6 +805,11 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
             System.Console.Error.WriteLine("inspector: the clipboard could not take the lines (" + SdlNative.GetErrorText() + ")");
         }
     }
+
+    /// <summary>A press of Alt-T (either Alt key; not with Ctrl), the key that opens the settings screen.</summary>
+    internal static bool IsSettingsKey(SdlNative.SdlEvent e) =>
+        e.Type == SdlNative.EventKeyDown && e.Keyboard.Scancode == SdlNative.ScancodeT
+        && (e.Keyboard.Mod & SdlNative.KeyModAlt) != 0 && (e.Keyboard.Mod & SdlNative.KeyModCtrl) == 0;
 
     /// <summary>A press of Ctrl+F11 (either Ctrl key; not with Alt), the key that goes to the next picture filter.</summary>
     internal static bool IsNextFilterKey(SdlNative.SdlEvent e) =>
@@ -962,4 +1011,76 @@ internal sealed class SdlHost : IHost, IVideo, IInput, IDisposable
     }
 
     private DisplayRectangle Graphics => new(_viewport.X, _viewport.Y, _viewport.Width, _viewport.Height);
+
+    // the true pause around a registry view: the game's clock, the key clock (held keys' repeats) and the sound stand still; the view's
+    //   frames are shown, the game's frame comes back when it closes
+    private void RunView(Darklands.Presentation.Views.IRegistryView view)
+    {
+        ViewOpen = true;
+        _clock.Pause();
+        _keyClock.Stop();
+        _keyboard.StopRepeating();
+        AudioPaused?.Invoke(true);
+        try
+        {
+            if (Darklands.Presentation.Views.ViewHost.Run(view, new ViewSurface(this)) == Darklands.Presentation.Views.ViewOutcome.Quit)
+            {
+                QuitRequested = true;
+            }
+        }
+        finally
+        {
+            AudioPaused?.Invoke(false);
+            _keyClock.Start();
+            _clock.Resume();
+            ViewOpen = false;
+            if (LastFrame is { } frame && !_showingText)
+            {
+                ShowPicture(frame);
+            }
+        }
+    }
+
+    // a registry view's surface on the window: its own events (none reaches the game), its frames, a frame's wait of real time
+    private sealed class ViewSurface(SdlHost host) : Darklands.Presentation.Views.IViewSurface
+    {
+        public Screen? Under => host.LastFrame;
+
+        public bool QuitRequested { get; private set; }
+
+        public IReadOnlyList<Darklands.Presentation.Views.ViewInput> Inputs()
+        {
+            var inputs = new List<Darklands.Presentation.Views.ViewInput>();
+            while (SdlNative.SDL_PollEvent(out var e))
+            {
+                switch (e.Type)
+                {
+                    case SdlNative.EventQuit:
+                        QuitRequested = true;
+                        break;
+                    case SdlNative.EventKeyDown when e.Keyboard.Repeat == 0:
+                        var key = SdlKeyMap.ToGameKey(e.Keyboard.Scancode, e.Keyboard.Key, e.Keyboard.Mod, ShiftedKey(e.Keyboard.Scancode, e.Keyboard.Mod));
+                        inputs.Add(new(key, host._mouse, false));
+                        break;
+                    case SdlNative.EventKeyUp:
+                        // a key let go while the view is open is let go for the game too (a held direction does not walk on after it)
+                        host._keyboard.KeyUp(PcScanCode(e.Keyboard.Scancode), (int)e.Keyboard.Scancode);
+                        break;
+                    case SdlNative.EventMouseMotion:
+                        host._mouse = host._mouse with { X = host.ToScreenX(Whole(e.Motion.X)), Y = host.ToScreenY(Whole(e.Motion.Y)) };
+                        inputs.Add(new(null, host._mouse, false));
+                        break;
+                    case SdlNative.EventMouseButtonDown when e.Button.Button == SdlNative.MouseButtonLeft:
+                        var at = host._mouse with { X = host.ToScreenX(Whole(e.Button.X)), Y = host.ToScreenY(Whole(e.Button.Y)) };
+                        inputs.Add(new(null, at, true));
+                        break;
+                }
+            }
+            return inputs;
+        }
+
+        public void Show(Screen screen) => host.ShowPicture(screen);
+
+        public void WaitFrame() => Thread.Sleep(15);
+    }
 }

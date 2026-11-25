@@ -29,12 +29,20 @@ public sealed class SaveMods
 public sealed record ModdedLoad(IReadOnlyList<ModMark> MissingMods, string? Problem)
 {
     public static readonly ModdedLoad None = new([], null);
+
+    /// <summary>The rules the game was saved with (its companion file's <c>rules</c>), null when the file records none: the game is Original.</summary>
+    public OriginalBehaviour? Rules { get; init; }
+
+    /// <summary>What in the recorded rules could not be used (an unknown preset or flag: reported, left out), else empty.</summary>
+    public IReadOnlyList<string> RulesProblems { get; init; } = [];
 }
 
 /// <summary>
-/// The companion file of a modded saved game (SAVES\DKSAVEn.MODS.JSON beside DKSAVEn.SAV): which mods the game was saved
-/// with and played with, and the card numbers above 365 the .SAV could not hold. The .SAV itself stays in the original
-/// format and names only the game's cards, so the original game (and the restoration without the mod) loads it.
+/// The companion file of a saved game (SAVES\DKSAVEn.MODS.JSON beside DKSAVEn.SAV): which mods the game was saved
+/// with and played with, the card numbers above 365 the .SAV could not hold, and the rules it plays with when they are not
+/// Original (a preset and the flags that differ from it). The .SAV itself stays in the original format and names only the
+/// game's cards, so the original game (and the restoration without the mod) loads it. The name stays MODS.JSON for every
+/// companion, so the files of 1.0 and 1.1 keep working; readers ignore what they do not know.
 /// </summary>
 /// <remarks>
 /// New code (no original). The file carries the SHA-256 of its .SAV: when the .SAV was replaced since (the original game
@@ -86,7 +94,8 @@ public static class ModdedSaves
     /// <summary>The companion file's text for a game just saved as <paramref name="sav"/> under <paramref name="savName"/>.</summary>
     /// <param name="cards">The game's real card numbers (<see cref="CardsOf"/>), those above 365 included.</param>
     /// <param name="active">The mods loaded now.</param>
-    public static string Write(GameState state, byte[] sav, string savName, int[] cards, IReadOnlyList<ModMark> active)
+    /// <param name="rules">The rules to record (null: none; the game is Original).</param>
+    public static string Write(GameState state, byte[] sav, string savName, int[] cards, IReadOnlyList<ModMark> active, OriginalBehaviour? rules = null)
     {
         var header = SaveFile.Parse(sav).Header;
         var saved = new JsonObject();
@@ -98,11 +107,14 @@ public static class ModdedSaves
         }
         static JsonArray MarksToJson(IEnumerable<ModMark> marks) =>
             new(marks.Select(m => (JsonNode)new JsonObject { ["id"] = m.Id, ["name"] = m.Name, ["version"] = m.Version }).ToArray());
+        var modded = active.Count > 0 || ModsUsed(state).Count > 0;
         var file = new JsonObject
         {
             ["format"] = Format,
-            ["modded"] = true,
-            ["note"] = "Written by the Darklands Restoration beside a game saved with mods. The .SAV is in the original format and names only the game's own cards (savedAs); this file keeps the mods' card numbers (cards).",
+            ["modded"] = modded,
+            ["note"] = modded
+                ? "Written by the Darklands Restoration beside a game saved with mods. The .SAV is in the original format and names only the game's own cards (savedAs); this file keeps the mods' card numbers (cards)."
+                : "Written by the Darklands Restoration beside a game that plays with rules other than Original (rules). The .SAV is in the original format.",
             ["save"] = savName.ToUpperInvariant(),
             ["sha256"] = Convert.ToHexString(SHA256.HashData(sav)),
             ["mods"] = MarksToJson(active),
@@ -110,7 +122,55 @@ public static class ModdedSaves
             ["cards"] = real,
             ["savedAs"] = saved,
         };
+        if (rules is not null)
+        {
+            var differ = new JsonObject();
+            foreach (var (id, on) in rules.Differences())
+            {
+                differ[id] = on;
+            }
+            file["rules"] = new JsonObject { ["preset"] = RulePresets.Name(rules.Preset), ["flags"] = differ };
+        }
         return file.ToJsonString(IndentedJson);
+    }
+
+    /// <summary>Whether a game with these rules needs them recorded: any set but Original's flags.</summary>
+    public static bool RecordsRules(OriginalBehaviour rules)
+    {
+        ArgumentNullException.ThrowIfNull(rules);
+        return rules.Preset != RulePreset.Original || rules.Differences().Count > 0;
+    }
+
+    // the companion's rules object: the preset (Original when unknown, reported) and its differing flags (unknown ids reported, left out)
+    private static (OriginalBehaviour? Rules, List<string> Problems) RulesFromJson(JsonNode? node)
+    {
+        var problems = new List<string>();
+        if (node is not JsonObject rules)
+        {
+            return (null, problems);
+        }
+        var name = rules["preset"]?.GetValueKind() == JsonValueKind.String ? (string?)rules["preset"] : null;
+        var preset = RulePresets.Parse(name);
+        if (preset is null)
+        {
+            problems.Add($"the recorded rules preset \"{name}\" is not known; the game plays Original");
+        }
+        var behaviour = OriginalBehaviour.Of(preset ?? RulePreset.Original);
+        if (rules["flags"] is JsonObject flags)
+        {
+            foreach (var (id, value) in flags)
+            {
+                if (RuleTable.IndexOf(id) < 0)
+                {
+                    problems.Add($"the recorded rule \"{id}\" is not known; it is left out");
+                }
+                if (value?.GetValueKind() is JsonValueKind.True or JsonValueKind.False)
+                {
+                    behaviour.Set(id, (bool)value!);
+                }
+            }
+        }
+        return (behaviour, problems);
     }
 
     /// <summary>
@@ -142,6 +202,7 @@ public static class ModdedSaves
             {
                 return new ModdedLoad([], "the companion file belongs to an earlier game saved under this name; it is ignored");
             }
+            var (rules, rulesProblems) = RulesFromJson(file["rules"]);
             var savedWith = MarksFromJson(file["mods"]);
             MarkUsed(state, MarksFromJson(file["playedWith"]).Concat(savedWith));
             var active = mods?.Active ?? [];
@@ -168,7 +229,7 @@ public static class ModdedSaves
                     state.PreviousCard = previous;
                 }
             }
-            return new ModdedLoad(missing, null);
+            return new ModdedLoad(missing, null) { Rules = rules, RulesProblems = rulesProblems };
         }
         catch (Exception e) when (e is InvalidOperationException or FormatException or JsonException or OverflowException)
         {

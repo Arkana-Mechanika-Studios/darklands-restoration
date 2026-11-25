@@ -62,6 +62,9 @@ public sealed class CommandLineOptions
     /// <summary>--interface classic|comfort: the Interface switch for this run (anything else is ignored).</summary>
     public string? InterfaceMode { get; set; }
 
+    /// <summary>--rules original|fixed: the rules preset of new games for this run.</summary>
+    public string? RulesPreset { get; set; }
+
     /// <summary>The mods of --mod (each given once per --mod); empty: the settings file's.</summary>
     public List<string> Mods { get; set; } = [];
 
@@ -107,6 +110,7 @@ public sealed class CommandLineOptions
         By("input.mouseWheel", NoMouseWheel, "--no-mouse-wheel");
         By("input.cardMenuKeys", NoCardMenuKeys, "--no-card-menu-keys");
         By("interface.mode", InterfaceMode is "classic" or "comfort", "--interface");
+        By("rules.preset", Given(RulesPreset), "--rules");
         By("startup.commandLine", GameCommandLine is not null, "--");
         By("mods", Mods.Count > 0, "--mod");
         return fixedKeys;
@@ -181,14 +185,29 @@ public sealed class ResolvedSettings
 
     public string? SdlLibrary { get; private init; }
 
-    /// <summary>The mouse wheel gives ↑ / ↓ where they move a selection (a host comfort).</summary>
-    public bool MouseWheel { get; private init; }
+    /// <summary>
+    /// The mouse wheel gives ↑ / ↓ where they move a selection (a host comfort): part of the Comfort interface (1.2), so on with Comfort
+    /// unless the older key input.mouseWheel (false) or --no-mouse-wheel turns it off; off with Classic.
+    /// </summary>
+    public bool MouseWheel => ComfortInterface && MouseWheelAllowed;
 
-    /// <summary>↑ / ↓ and the digits at a card menu with the pointer off its lines (an interface convenience, GameUi.KeyboardCardMenus).</summary>
-    public bool CardMenuKeys { get; private init; }
+    /// <summary>
+    /// ↑ / ↓ and the digits at a card menu with the pointer off its lines (GameUi.KeyboardCardMenus): part of the Comfort interface (1.2),
+    /// so on with Comfort unless the older key input.cardMenuKeys (false) or --no-card-menu-keys turns them off; off with Classic.
+    /// </summary>
+    public bool CardMenuKeys => ComfortInterface && CardMenuKeysAllowed;
+
+    /// <summary>Whether the older key input.mouseWheel and --no-mouse-wheel leave the wheel to the Comfort interface (true unless either turns it off).</summary>
+    public bool MouseWheelAllowed { get; private init; }
+
+    /// <summary>Whether the older key input.cardMenuKeys and --no-card-menu-keys leave the card menu keys to the Comfort interface.</summary>
+    public bool CardMenuKeysAllowed { get; private init; }
 
     /// <summary>The Interface switch on Comfort (GameUi.ComfortInterface): the comfort features; false: Classic, the original interface.</summary>
     public bool ComfortInterface { get; private init; }
+
+    /// <summary>The rules preset of new games: "fixed" (the default) or "original" (rules.preset, --rules).</summary>
+    public string RulesPreset { get; private init; } = "fixed";
 
     /// <summary>The developer console is available (a host feature).</summary>
     public bool ConsoleEnabled { get; private init; }
@@ -241,8 +260,17 @@ public sealed class ResolvedSettings
         {
             filter = fileFilter;
         }
+        // the command line's rules preset must be a known one; the file's was checked as it was read (another value is left out there)
+        var rules = file.RulesPreset ?? "fixed";
+        if (Set(cli.RulesPreset) is { } cliRules)
+        {
+            rules = cliRules.Trim().ToLowerInvariant() is var given && given is "original" or "fixed"
+                ? given
+                : throw new ArgumentException($"unknown rules preset \"{cliRules}\" (original, fixed)");
+        }
         return new ResolvedSettings
         {
+            RulesPreset = rules,
             GameFolder = FirstGiven(cli.GameFolder, "DARKLANDS_DIR", file.GameFolder),
             SavesFolder = FirstGiven(cli.SavesFolder, "DARKLANDS_SAVES", file.SavesFolder),
             Window = window,
@@ -268,8 +296,9 @@ public sealed class ResolvedSettings
             TextFont = FirstGiven(cli.TextFont, "DARKLANDS_TEXT_FONT", file.TextFont),
             ScreenshotsFolder = FirstGiven(cli.ScreenshotsFolder, null, file.ScreenshotsFolder),
             SdlLibrary = FirstGiven(cli.SdlLibrary, null, file.SdlLibrary),
-            MouseWheel = !cli.NoMouseWheel && (file.MouseWheel ?? true),
-            CardMenuKeys = !cli.NoCardMenuKeys && (file.CardMenuKeys ?? true),
+            // the older keys and options, read still: they can only turn the Comfort interface's wheel and card menu keys off
+            MouseWheelAllowed = !cli.NoMouseWheel && (file.MouseWheel ?? true),
+            CardMenuKeysAllowed = !cli.NoCardMenuKeys && (file.CardMenuKeys ?? true),
             ComfortInterface = (cli.InterfaceMode is "classic" or "comfort" ? cli.InterfaceMode : file.InterfaceMode ?? "comfort") == "comfort",
             ConsoleEnabled = !cli.NoConsole && (file.ConsoleEnabled ?? true),
             ConsoleFont = file.ConsoleFont,

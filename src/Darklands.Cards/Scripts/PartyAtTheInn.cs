@@ -108,6 +108,11 @@ public sealed class PartyAtTheInn : Card
         var pfennigs = c.Random(3) + 10;
         var groschen = c.Random(3) + 8;
         state.Party.Purse = Money.From(0, groschen, pfennigs);
+        // the rules' starting money (RuleParameters.StartingMoney), after the draws: the original's purse at its default
+        if (state.Parameters.StartingMoney is { } purse)
+        {
+            state.Party.Purse = purse;
+        }
         // C: hour 9; day = roll-below(6) + 0x18 (24..29) is drawn before month = roll-below(4) + 4 (May..August): two statements, so top to bottom.
         var day = c.Random(6) + 24;
         var month = c.Random(4) + 4;

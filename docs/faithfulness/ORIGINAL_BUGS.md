@@ -12,22 +12,22 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 | area | bugs | with a fix flag | without |
 |---|---|---|---|
 | rules | 105 | 24 | 81 |
-| cards | 77 | 3 | 74 |
+| cards | 78 | 7 | 71 |
 | events | 9 | 4 | 5 |
 | travel | 4 | 0 | 4 |
 | battles | 68 | 32 | 36 |
 | persistence | 2 | 2 | 0 |
 | screens/presentation | 15 | 9 | 6 |
-| total | 280 | 74 | 206 |
+| total | 281 | 78 | 203 |
 
-## Core logic (265)
+## Core logic (266)
 
 ### rules (105)
 
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
-- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:163` `GameState.HanseStanding`  
+- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:166` `GameState.HanseStanding`  
   original: `R029+0x4650` (0E76:4650, draft)  
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
 - **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:147` `ItemStores.Close`  
@@ -156,7 +156,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-87887e** `bug`, no fix flag - `src/Darklands.Core/Rules/PotionEffects.cs:103` `PotionEffects.Drink`  
   original: `R031+0x10AE` (1462:10AE, draft), `R031+0x43B2` (1462:43B2, draft), `R031+0x4CC4` (18E7:0474, draft)  
   why: Hardarmor gives 1, 2 or 3 levels of thickness (5 above quality 45) and no quality, where the manual has it better the armour's quality by 20 to 30 points and its thickness by one or two levels.
-- **B-82a169** `bug`, flag `FixFameCost` - `src/Darklands.Core/Rules/Practice.cs:78` `Practice.ChargeFame`  
+- **B-82a169** `bug`, flag `FixFameCost` - `src/Darklands.Core/Rules/Practice.cs:80` `Practice.ChargeFame`  
   original: `R039+0x1E90` (1462:1E90, matched)  
   why: v - fame is stored (FixFameCost).
 - **B-0aa03a** `bug`, no fix flag - `src/Darklands.Core/Rules/Quests.cs:360` `Quests.StartQuest3`  
@@ -341,7 +341,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
   original: `R032+0x0F60` (1462:0F60, draft)  
   why: a click lights any of the four shop rows (R032+0x0000: DS:8832 = (y - 0x55) >> 3), also one past a shorter list's end; P then buys DS:86A2[row], the code an earlier, longer listing of this run of the game left there (item 0 before any), at this shop's price and quality (local/batch/c2stale/barter_probe.py: with 1 item listed and row 3, R032+0x0F60 prices, rates and adds DS:86A2[3]).
 
-### cards (77)
+### cards (78)
 
 - **B-ad9d9e** `bug`, flag `FixGhostPartySlot` - `src/Darklands.Cards/CardContext.Party.cs:29` `CardContext.SetStatusAbleStale`  
   original: `R088+0x0440` (1859:0230, matched)  
@@ -376,12 +376,12 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-0d7783** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S048/RevolutionHouseByDay.cs:316` `RevolutionHouseByDay.UseAPotion`  
   original: `R048+0x0916` (1838:0916, matched)  
   why: the pop-up handler returns -1 as the "chance", and the draw (0..99) is never at most -1: the potion always fails, the success branch below never runs.
-- **B-169e5e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:108` `FortressByDay.ReceiveACommission`  
+- **B-169e5e** `bug`, flag `FixFortressCommissionPay` - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:114` `FortressByDay.ReceiveACommission`  
   original: `R050+0x21F8` (1A06:0518, matched), `R050+0x24E0` (1A06:0800, matched)  
-  why: a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
-- **B-86c8e5** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:218` `FortressByDay.SeekService`  
+  why: OriginalBehaviour.FixFortressCommissionPay - a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own. Not in the original: the Fixed rules pay a finished commission here first, as the town hall's audience does (seven florins a size of the city), and go to the reward card with the fortress as its patron (its case 0x1B is written).
+- **B-86c8e5** `bug`, flag `FixWelcomeAppointment` - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:237` `FortressByDay.SeekService`  
   original: `R050+0x2298` (1A06:05B8, matched)  
-  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
+  why: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
 - **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:153` `Docks.PassageHint`  
   original: `R051+0x2332` (19F2:0792, matched), `R051+0x2546` (19F2:09A6, matched), `R051+0x275A` (19F2:0BBA, matched) +2 more  
   why: the hint shows R136+0x8690+0x1E5F ("You need a missile weapon") where "Not enough money" was surely meant.
@@ -397,10 +397,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-9ddbde** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:290` `Footpads.Fight`  
   original: `R053+0x02D6` (1838:02D6, matched)  
   why: the standing (and the battle's skill practice) is given before the thanks; a game saved at that text holds only this card (DS:A772 = 0x24), so loading it starts the card again (an hour, the ambush or the menu) with the gains kept, by day as by night: the fight can be repeated at will.
-- **B-227a55** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:383` `CouncilHall.AskForAnErrand`  
+- **B-227a55** `bug`, flag `FixWelcomeAppointment` - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:392` `CouncilHall.AskForAnErrand`  
   original: `R054+0x22F8` (19DF:0888, matched)  
-  why: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
-- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:444` `CouncilHall.CallUponASaint`  
+  why: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
+- **B-8af2a7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S054/CouncilHall.cs:454` `CouncilHall.CallUponASaint`  
   original: `R054+0x25C6` (19DF:0B56, matched)  
   why: unlike the audience (ReceiveACommission), the saint's way in never asks for a finished commission (resolved-quest-at-owner(3, 0x0A, location-now)): a party that prays its way in to be paid gets a new commission instead.
 - **B-0c78c7** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S055/CityWallSallyPort.cs:77` `CityWallSallyPort.ForceChance`  
@@ -477,7 +477,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-097711** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S073/SallyPortInTheCityWall.cs:38` `SallyPortInTheCityWall.Run`  
   original: `R073+0x2CB0` (1A7E:0850, matched)  
   why: the text's lines 1, 3 and 5 are "abandon the horses and ..." variants the script has no options for (MSGFILES): the lines are numbered in order, so from the second line on each runs another option (the second line climbs without ropes, the sewer-grate line prays, the alchemy line sneaks back), and the last three (pray, bribe, sneak back) do nothing.
-- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:115` `VillageSchulz.AskForHelp`  
+- **B-a36b44** `bug`, flag `FixVillageSchulzReward` - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:58` `VillageSchulz.AskForInformation`  
+  original: `R077+0x178E` (1996:01AE, matched), `R077+0x1920` (1996:0340, matched)  
+  why: OriginalBehaviour.FixVillageSchulzReward - the Schulz's robber-knight task (quest 3, owner 9) is never paid: the reward card ($Raubi01, R080) has this card among its patrons with its own text, but no card tests for the finished task and sends the party there (R077, $Villa02). Not in the original: the Fixed rules pay a finished task here first (the five florins a size of the village he promised).
+- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:132` `VillageSchulz.AskForHelp`  
   original: `R077+0x1958` (1996:0378, matched), `R077+0x1A64` (1996:0484, matched)  
   why: a full party gets text 6 ("Please accept this florin") but no florin; the low-standing branch adds it.
 - **B-132edf** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:50` `RobberKnightTaskRewarded.Run`  
@@ -619,7 +622,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:111` `CellBuffer.CampWatch`  
   original: `R030+0x25BE` (1462:25BE, draft)  
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
-- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:151` `OverlandTravel.Step`  
+- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:154` `OverlandTravel.Step`  
   original: `R030+0x2AC8` (1462:2AC8, draft)  
   why: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg, four tiles off) and 297 Putten (127 Putten, two rows off).
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
@@ -637,7 +640,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-0d81e6** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:348` `Attacks.HitDamage`  
   original: `R014+0xAC08` (18BF:0778, draft)  
   why: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration gives almost none ("after Great Power my bows only do 3-5 damage").
-- **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:406` `Attacks.QueueDamage`  
+- **B-08f8dd** `bug`, no fix flag - `src/Darklands.Core/Battles/Attacks.cs:408` `Attacks.QueueDamage`  
   original: `R014+0xAD5A` (18BF:08CA, draft)  
   why: damage queued faster than it is applied (blows resolved at engagement time, applied at the end of each attacker's animation; traps) wraps past 127 to a negative queue, which damage-resolve's signed test (jle 42) lets through: the target gains Endurance (and Strength, for the second byte) instead of losing it.
 - **B-dd3d33** `bug`, flag `FixLootExitTestReadsWords` - `src/Darklands.Core/Battles/BattleEnd.cs:44` `BattleEnd.LootSkips`  
@@ -661,7 +664,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-c90740** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/CastleGenerator.Walls.cs:155` `CastleGenerator.OpenExitsAndDecorateWalls`  
   original: `R007+0x0698` (15AF:0698, draft)  
   why: a corridor's decoration spot can fall past its end: it is counted from the far end (o1, and o3 below) rather than from o0 (o2), so only a roll of 1 falls on the corridor; larger rolls test, and may mark, the cells past its end.
-- **B-ab0e37** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:764` `FortressBattlefield.Fortress.SetUpRoom14`  
+- **B-ab0e37** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:765` `FortressBattlefield.Fortress.SetUpRoom14`  
   original: `R011+0x096A` (1432:096A, draft)  
   why: the fortress relics are forced to quality 35: the three relics get quality 0x23 and type 0x9F whatever DARKLAND.LST gives them (the relic weapons have qualities 50..85 and weapon types).
 - **B-219beb** `bug`, no fix flag - `src/Darklands.Core/Battles/Generation/MineBuilder.Connections.cs:260` `MineBuilder.CarveGap`  
@@ -853,10 +856,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 
 ### persistence (2)
 
-- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:430` `OriginalSaves.static`  
+- **B-1cec30** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:431` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - R037+0x2ACE leaves the record out and writes the full count, so the file is short and the original's loader reads out of step.
-- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:441` `OriginalSaves.static`  
+- **B-0c7843** `bug`, flag `FixSaveWriterSkipsEmptySlots` - `src/Darklands.Persistence/OriginalSaves.cs:442` `OriginalSaves.static`  
   original: `R037+0x2ACE` (1462:2ACE, draft)  
   why: OriginalBehaviour.FixSaveWriterSkipsEmptySlots - the same for a slot past party-headcount: the writer tests all five ids, and a slot past party-headcount has status 0 (party-headcount is one past the last slot of status != 0), so its record is left out as well.
 
@@ -874,19 +877,19 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-c26daf** `bug`, flag `FixSheetSkillValueColumn` - `src/Darklands.Presentation/CharacterSheetScreen.cs:953` `CharacterSheetScreen.DrawBoxText`  
   original: `R031+0x39C6` (1462:39C6, draft), `R031+0x39A0` (1462:39A0, draft)  
   why: OriginalBehaviour.FixSheetSkillValueColumn - the third group's values (Healing to Woodwise) are printed at the box's x + 3 (0x109), three pixels left of the two groups above (0x10C, DS:2E73 / DS:2E95's columns), so their column stands out of line. Reproduced (the original's frame of vis10 comm-inn is byte-identical to the Faithful C#'s); CharacterSheetSkillColumnTests. Fixed (an evident display fix, every player game, GitHub issue 4): at 0x10C.
-- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:505` `DarklandsGame.LoadSavedGame`  
+- **B-e60d2a** `bug`, flag `FixDamagedSavedGame`, `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:526` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixDamagedSavedGame - R037+0x8ED4 reads a file cut short as far as it goes and plays on from what is left in its buffers (or ends in DOS); the battle file's restore (R003+0x0CE8) ends in DOS on an empty, short or corrupt .BSV.
-- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:517` `DarklandsGame.LoadSavedGame`  
+- **B-f523d4** `bug`, flag `FixImpossibleSavedGame` - `src/Darklands.Presentation/DarklandsGame.cs:538` `DarklandsGame.LoadSavedGame`  
   original: `R037+0x8ED4` (1C7D:0D24, matched)  
   why: OriginalBehaviour.FixImpossibleSavedGame - R037+0x8ED4 reads the date, location-now and the location table with no check: a hand-edited month above 11 or location-now past the places reads past the original's tables, and the rewrite then throws where it indexes them.
-- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:567` `DarklandsGame.LoadInGame`  
+- **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:616` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:739` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:788` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:955` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:1004` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  
@@ -895,14 +898,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:156` `CardTextLayout.Lay`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
-- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:403` `OverlandScreen.FreeBuffer`  
+- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:404` `OverlandScreen.FreeBuffer`  
   original: `root 05BA:00C2` (05BA:00C2, matched), `root 0000:13A0` (0000:13A0, draft), `root 0000:0CAA` (0000:0CAA, draft) +2 more  
   why: OriginalBehaviour.FixMapQuitFreedBuffers - after the map's Alt-Q answered "no" the handles are 0, and the next free of one (a second Alt-Q "M", a portrait click or the camp "S", leaving the map "Map") fails root 05BA:00C2's check (root 044A:0164): root 0000:1354 (the drivers stopped, text mode), "<name> - Buffer dealloc error" by DOS function 9, exit(0) (session tk-map-altq-twice, local/batch/mapquit: the second Alt-Q). Fixed (DataSafe): the buffers are the map's as before.
-- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:564` `OverlandScreen.PlaceParty`  
+- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:565` `OverlandScreen.PlaceParty`  
   original: `R030+0x00A8` (1462:00A8, draft)  
   why: R030+0x01EB..0x0220: with x - 8 < 0 the marker x is 0x82 - (x - 8), one pixel per missing tile instead of 16, and the view column is 0; the party that leaves a place whose column is below 8 stands 2 to 5 tiles east of it (a column of 3 gives 8, a column of 6 gives 8 as well: 0x82 + 5 and 0x82 + 2 pixels read as tile 8) once the map runs (each pass of R030+0x0C44 takes the party's cell from the marker). In the shipped data the places are Nancy and Elberg (their exit points, DARKLAND.CTY, columns 6 and 6) and Valkenberg, Tongeren, Gemert, Helmond, Limberg, Spa and Briey (DARKLAND.LOC columns 5, 5, 5, 3, 6, 3, 3); a column of exactly 8 (Moresnet) is exact. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:629` `OverlandScreen.Scroll`  
+- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:630` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 - **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:236` `PartyRosterScreen.Arrow`  

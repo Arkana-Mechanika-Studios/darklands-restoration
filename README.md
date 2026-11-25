@@ -49,7 +49,7 @@ and their own decorated capitals. Put a pack in `packs/languages` and choose it 
 </p>
 
 **The Darklands Workshop** is the translators' editor, a separate download:
-**[Workshop 1.1.0-beta.1](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.1)**
+**[Workshop 1.1.0-beta.2](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.2)**
 (Windows; Linux experimental). Unzip it into the game's folder; it makes a `Workshop` folder there. It:
 
 - shows every text of the game, grouped by screen and by card, and draws your translation as the game will, in your
@@ -113,6 +113,7 @@ And this program's own:
 | F11 | a developer console over the game (`help` lists its commands: time, money, attributes, saints, items...) |
 | Ctrl-F12 | make a problem report (below) |
 | Ctrl-F11 | change how the picture is drawn on a large window: sharp or even pixels, a soft VGA-monitor look, smoothed pixel art, or CRT looks (`display.filter`, [SETTINGS.md](docs/SETTINGS.md)) |
+| Alt-T | the settings screen, with the game paused: the picture, the window, the Interface switch, the rules for new games, the packs and the sound ([SETTINGS.md](docs/SETTINGS.md)); also the last line of the Game menu |
 
 ## Reporting a problem
 
@@ -167,7 +168,7 @@ want:
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
 `--scale 2`, `--no-intro` and so on).
 
-## Status: version 1.1.1
+## Status: version 1.1.3
 
 1.1 makes the game translatable (language packs, the Workshop beta), adds HD fonts for English and the Interface
 switch; the game's rules are those of 1.0. The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and

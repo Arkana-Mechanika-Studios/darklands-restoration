@@ -238,9 +238,25 @@ public sealed class GoldenTraceTests
             }
             foreach (var property in PropertiesOf(type))
             {
-                Dump(property.Name, Safe(() => property.GetValue(value)), depth + 1);
+                var got = Safe(() => property.GetValue(value));
+                // the rules' numbers at the original's values, the flags' id list (their 61 properties are dumped) and their preset when it is
+                //   Faithful are left out: the traces were recorded before RuleParameters and the keyed flags (rules A1, A2), which change
+                //   no card; the restoration flags (Restore…) while off, recorded before them (the Restored set, restore-r1)
+                if (got is RuleParameters { IsOriginal: true } || value is OriginalBehaviour && property.Name == nameof(OriginalBehaviour.On)
+                    || got is RulePreset.Faithful || value is OriginalBehaviour && got is false
+                        && (property.Name.StartsWith("Restore", StringComparison.Ordinal) || FlagsAfterTheTraces.Contains(property.Name)))
+                {
+                    continue;
+                }
+                Dump(property.Name, got, depth + 1);
             }
         }
+
+        /// <summary>The fix flags added after the traces were recorded (the restore-r1 decisions, 2026-11-24): left out while off, as the restoration flags are.</summary>
+        private static readonly HashSet<string> FlagsAfterTheTraces = new(StringComparer.Ordinal)
+        {
+            nameof(OriginalBehaviour.FixWelcomeAppointment), nameof(OriginalBehaviour.FixFortressCommissionPay), nameof(OriginalBehaviour.FixVillageSchulzReward),
+        };
 
         private static PropertyInfo[] PropertiesOf(Type type)
         {

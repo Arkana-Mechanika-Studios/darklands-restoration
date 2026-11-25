@@ -148,6 +148,7 @@ var cli = new CommandLineOptions
     NoMouseWheel = arguments.Remove("--no-mouse-wheel"),
     NoCardMenuKeys = arguments.Remove("--no-card-menu-keys"),
     InterfaceMode = Option("--interface")?.Trim().ToLowerInvariant(),
+    RulesPreset = Option("--rules"),
     Mods = mods,
     GameCommandLine = commandLine,
     GameFolder = arguments.FirstOrDefault(),
@@ -284,7 +285,8 @@ while (true)
     var start = new StartProgress();
     try
     {
-        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt, cli.LanguagePack is not null && cli.FontPack is null);
+        return Play(host, settings, folder!, version, start, settingsPath, reports, startAt, cli.LanguagePack is not null && cli.FontPack is null,
+            fileSettings, cli.Overrides(Environment.GetEnvironmentVariable));
     }
     catch (Exception e) when (!start.Running && !noLauncher)
     {
@@ -292,6 +294,7 @@ while (true)
         Console.Error.WriteLine("Start: " + e.Message);
         reports.Screenshot = null;
         host.ReportRequested = null;
+        host.SettingsRequested = null;
         (launch, startProblem) = (LauncherReason.StartFailed, "The game could not start: " + e.Message);
         LauncherHost.Fit(host);
     }
@@ -326,7 +329,8 @@ ResolvedSettings? Resolve(GameSettings file)
 }
 
 // The game in the window, with its sound, console and saves; returns the program's exit code.
-static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt, bool languagePackAlone = false)
+static int Play(SdlHost host, ResolvedSettings settings, string folder, string version, StartProgress start, string? settingsPath, ReportService reports, string? startAt, bool languagePackAlone = false,
+    GameSettings? fileSettings = null, IReadOnlyDictionary<string, string>? fixedKeys = null)
 {
     host.Renderer = null;
     host.Filter = settings.Filter;   // the picture filter (docs/SETTINGS.md, display.filter): only how the window shows the frame
@@ -366,13 +370,29 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     AudioPack? soundPack = null;
     using var audioOutput = settings.NoAudio ? null : StartAudio(host, files, settings.SoundChoice, settings.Mt32Roms, settings.AudioPack, settings.SoundFont, settings.CommandLine, audioTrace,
         settings.Mods.Count > 0, pack => soundPack = pack);
+    // rules.preset (docs/SETTINGS.md): the preset new games play with (Fixed by default). A recorded rule a saved game names that this
+    //   program does not know is logged.
+    Darklands.Core.OriginalBehaviour.ReportUnknown = Console.Error.WriteLine;
+    static Darklands.Core.RulePreset NewGamesPreset(string name)
+    {
+        var chosen = Darklands.Core.RulePresets.Parse(name) ?? Darklands.Core.RulePreset.Original;
+        var playing = Darklands.Core.RulePresets.ForNewGames(chosen);
+        if (playing != chosen)
+        {
+            Console.Error.WriteLine($"rules.preset {name}: the {Darklands.Core.RulePresets.Title(chosen)} rules come in a later build; new games play {Darklands.Core.RulePresets.Title(playing)}");
+        }
+        return playing;
+    }
     var game = new DarklandsGame(host, files)
     {
         ShowStartUp = settings.ShowBanner,
         PlayOpening = settings.PlayIntro,
         CommandLine = settings.CommandLine,
-        // The player's game fixes the original's data-damaging bugs (saves and item stores); the files stay readable by the original.
-        Behaviour = Darklands.Core.OriginalBehaviour.DataSafe,
+        // The player's game: new games play with the chosen rules preset (rules.preset, --rules), which always fixes the original's
+        //   data-damaging bugs (saves and item stores; the files stay readable by the original); a saved game keeps the rules it
+        //   recorded (RecordedRules).
+        Behaviour = Darklands.Core.OriginalBehaviour.Of(NewGamesPreset(settings.RulesPreset)),
+        RecordedRules = true,
     };
     // a translation pack changes the screens' words only (docs/LOCALISATION.md)
     // a font pack (text.fontPack, --font-pack): its fonts for the slots the translation pack has none for (Not in the original)
@@ -484,6 +504,14 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.KeyboardCardMenus = settings.CardMenuKeys;
     // interface.mode (docs/SETTINGS.md, the Interface switch): comfort turns on the comfort features; classic is the original interface
     game.Ui.ComfortInterface = settings.ComfortInterface;
+    // the settings screen (1.2, docs/SETTINGS.md): Alt-T, and the Game menu's last line; a registry view the host
+    //   runs with the game paused (its clock, its sound), every change written to the settings file
+    var settingsModel = new Darklands.Presentation.Views.SettingsModel(new SettingsScreen(host, settingsPath, folder, Console.WriteLine), game.Ui, rules => game.Behaviour = rules, settings,
+        fileSettings ?? new GameSettings(), fixedKeys ?? new Dictionary<string, string>());
+    void OpenSettings() => host.OpenView(settingsModel.View(Keys.AltT));
+    host.SettingsRequested = OpenSettings;
+    game.Ui.OpenSettings = OpenSettings;
+    game.Ui.SettingsKeyLabel = SettingsScreen.KeyLabel;
     // the battle's edge scroll at ten steps a second at most, whatever the frame rate (the original's: a step each pass of its loop)
     game.Ui.EdgeScrollMilliseconds = 100;
     // a translation test: its saves in the pack's own scratch folder (never the player's), the game at the text or screen asked for
@@ -523,6 +551,7 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     IReadOnlyList<string> commandLine, TextWriter? trace, bool modsMayHaveMusic, Action<AudioPack> onPack)
 {
     var output = SdlAudioOutput.TryOpen(out var error);
+    // a registry view's true pause stops the sound device too (SdlHost.OpenView); set below once the device is open
     if (output is null)
     {
         Console.Error.WriteLine("Sound: no audio device (" + error + "); no sound. Run with --sound-test for details.");
@@ -581,6 +610,7 @@ static IDisposable? StartAudio(SdlHost host, GameFiles files, string? choice, st
     }
     host.Audio = trace is null ? played : new TracedCalls(played, audio, trace);
     host.Timer = audio;
+    host.AudioPaused = output.SetPaused;
     // what reached the device, said a few seconds in and again later (silence that is our fault shows here: no frames pulled,
     // only zero samples, or a driver fault)
     var watch = new SoundWatch(output, audio);

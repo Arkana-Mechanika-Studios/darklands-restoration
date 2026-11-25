@@ -83,7 +83,8 @@ public sealed class TextProject
     public SlotLayout? LayoutOf(TextEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
-        return entry.Screens.Select(s => Layouts.GetValueOrDefault(s)?.GetValueOrDefault(entry.Key)).FirstOrDefault(l => l is not null);
+        // a text's layout only: an area or a list (a view's, SlotKinds) of the same name is not the text's, and is kept as it is
+        return entry.Screens.Select(s => Layouts.GetValueOrDefault(s)?.GetValueOrDefault(entry.Key)).FirstOrDefault(l => l is { IsText: true });
     }
 
     /// <summary>Sets (or with null or the original's, takes off) the layout of the screen text <paramref name="entry"/> on each of its screens.</summary>

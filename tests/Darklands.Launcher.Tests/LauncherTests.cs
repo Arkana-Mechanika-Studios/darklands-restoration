@@ -184,8 +184,8 @@ public sealed class LauncherTests
     {
         var links = new List<string>();
         var tests = new List<string?>();
-        // Play, Discord (open it), then back up past Play, Save, the mouse wheel, the Interface switch, Opening animation, start-up screen, fonts, language pack, SoundFont, ROMs, audio pack to the sound test
-        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
+        // Play, Discord (open it), then back up past Play, Save, the rules, the Interface switch, Opening animation, start-up screen, fonts, language pack, SoundFont, ROMs, audio pack to the sound test
+        Run(Context(links: links, tests: tests), Tab, Enter, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Up, Enter, Enter, Enter);
         Assert.Equal([LauncherScreen.DiscordLink], links);
         Assert.Equal(["config", "stop", "config"], tests);
     }
@@ -193,47 +193,41 @@ public sealed class LauncherTests
     [Fact]
     public void TheInterfaceSwitchIsComfortByDefaultAndWritesClassic()
     {
-        // up from Play: Save, the card menu keys, the mouse wheel, then the Interface switch (Comfort: the file has no interface.mode)
-        var kept = Run(Context(), Up, Up, Up, Up, Right, Right);
+        // up from Play: Save, the rules, then the Interface switch (Comfort: the file has no interface.mode)
+        var kept = Run(Context(), Up, Up, Up, Right, Right);
         Assert.False(kept.Changes.ContainsKey("interface.mode"));
         Assert.Equal("comfort", kept.Settings.InterfaceMode);
-        var classic = Run(Context(), Up, Up, Up, Up, Enter);
+        var classic = Run(Context(), Up, Up, Up, Enter);
         Assert.Equal("classic", (string?)classic.Changes["interface.mode"]);
         Assert.Equal("classic", classic.Settings.InterfaceMode);
     }
 
     [Fact]
-    public void TheMouseWheelInMenusIsASettingOnByDefault()
+    public void TheRulesPresetIsFixedByDefaultAndWritesOriginal()
     {
-        // up from Play: Save, the card menu keys, then the mouse wheel (on: the file has no input.mouseWheel)
-        var kept = Run(Context(), Up, Up, Up, Right, Right);
-        Assert.False(kept.Changes.ContainsKey("input.mouseWheel"));
-        Assert.True(kept.Settings.MouseWheel);
-        var off = Run(Context(), Up, Up, Up, Enter);
-        Assert.False((bool)off.Changes["input.mouseWheel"]!);
-        Assert.False(off.Settings.MouseWheel);
-    }
-
-    [Fact]
-    public void TheMouseWheelFixedByTheCommandLineIsShownButNotChanged()
-    {
-        var fixedKeys = new Dictionary<string, string> { ["input.mouseWheel"] = "--no-mouse-wheel" };
-        var result = Run(Context(fixedKeys: fixedKeys), Up, Up, Up, Enter);
-        Assert.False(result.Changes.ContainsKey("input.mouseWheel"));
-    }
-
-    [Fact]
-    public void TheCardMenuKeysAreASettingOnByDefault()
-    {
-        // up from Play: Save, then the card menu keys (on: the file has no input.cardMenuKeys)
+        // up from Play: Save, then the rules (Fixed: the file has no rules.preset)
         var kept = Run(Context(), Up, Up, Right, Right);
-        Assert.False(kept.Changes.ContainsKey("input.cardMenuKeys"));
-        Assert.True(kept.Settings.CardMenuKeys);
-        var off = Run(Context(), Up, Up, Enter);
-        Assert.False((bool)off.Changes["input.cardMenuKeys"]!);
-        Assert.False(off.Settings.CardMenuKeys);
-        var fixedKeys = new Dictionary<string, string> { ["input.cardMenuKeys"] = "--no-card-menu-keys" };
-        Assert.False(Run(Context(fixedKeys: fixedKeys), Up, Up, Enter).Changes.ContainsKey("input.cardMenuKeys"));
+        Assert.False(kept.Changes.ContainsKey("rules.preset"));
+        Assert.Equal("fixed", kept.Settings.RulesPreset);
+        var original = Run(Context(), Up, Up, Enter);
+        Assert.Equal("original", (string?)original.Changes["rules.preset"]);
+        Assert.Equal("original", original.Settings.RulesPreset);
+    }
+
+    /// <summary>
+    /// The mouse wheel and the card menu keys are part of the Comfort interface (1.2): the launcher has no rows of theirs and never
+    /// writes their older keys; a file that has them keeps them as they are (they can still turn Comfort's off).
+    /// </summary>
+    [Fact]
+    public void TheMouseWheelAndTheCardMenuKeysHaveNoRowsAndTheirOlderKeysAreKept()
+    {
+        Assert.DoesNotContain(Enum.GetNames<LauncherScreen.Item>(), n => n is "MouseWheel" or "CardMenuKeys");
+        var file = new GameSettings { GameFolder = Game, MouseWheel = false, CardMenuKeys = false };
+        var classic = Run(Context(settings: file), Up, Up, Up, Enter);
+        Assert.Equal("classic", (string?)classic.Changes["interface.mode"]);
+        Assert.DoesNotContain(classic.Changes.Keys, k => k.StartsWith("input.", StringComparison.Ordinal));
+        Assert.Equal(false, classic.Settings.MouseWheel);
+        Assert.Equal(false, classic.Settings.CardMenuKeys);
     }
 
     [Fact]
@@ -634,6 +628,14 @@ public sealed class LauncherTests
         Shot("picture-row-1280x720", guide, 1280, 720, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
         Shot("picture-row-960x540", guide, 960, 540, [.. Enumerable.Repeat<LauncherInput>(Tab, 9), Right, Right, Right, Escape]);
         Shot("advanced-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Escape);
+        // the rules row (Fixed, the default) chosen with the keyboard: its hint, at the largest and the smallest size
+        LauncherInput[] rulesRow = [new KeyPressed(LauncherKey.Tab, Control: true), .. Enumerable.Repeat<LauncherInput>(Tab, 7)];
+        Shot("advanced-rules-1280x720", guide, 1280, 720, rulesRow);
+        Shot("advanced-rules-960x540", guide, 960, 540, rulesRow);
+        // the Interface row (Comfort: the mouse wheel and the card menu keys are part of it, 1.2) beside the rules, its hint
+        LauncherInput[] interfaceRow = [new KeyPressed(LauncherKey.Tab, Control: true), .. Enumerable.Repeat<LauncherInput>(Tab, 6)];
+        Shot("advanced-interface-1280x720", guide, 1280, 720, interfaceRow);
+        Shot("advanced-interface-960x540", guide, 960, 540, interfaceRow);
         // the Advanced tab with the keyboard on the ROM folder and on the SoundFont: their tooltips clear of the other rows and headings
         Shot("advanced-roms-tooltip-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true));
         Shot("advanced-soundfont-tooltip-1280x720", guide, 1280, 720, new KeyPressed(LauncherKey.Tab, Control: true), Tab);

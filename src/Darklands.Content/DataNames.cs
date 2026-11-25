@@ -6,9 +6,10 @@ namespace Darklands.Content;
 /// <summary>
 /// The names of the data files as a translation pack gives them (docs/LOCALISATION.md, tables.ftl): items, saints, formulae, cities
 /// and their buildings and people, places and enemies, keyed by record and index as the original-English table keys them
-/// (<see cref="OriginalTextExtractor"/>). A name is translated where it is shown; the rules and the saves keep the original's.
+/// (<see cref="OriginalTextExtractor"/>); and since 1.1.3 the descriptions of the saints, the formulae and the cities. A name or
+/// description is translated where it is shown; the rules and the saves keep the original's.
 /// </summary>
-// Not in the original: the 1.1 translations (names of the data files).
+// Not in the original: the 1.1 translations (names and descriptions of the data files).
 public static class DataNames
 {
     private static string N(int n) => n.ToString(CultureInfo.InvariantCulture);
@@ -60,7 +61,16 @@ public static class DataNames
     /// <inheritdoc cref="EnemyTemplate"/>
     public static string EnemyType(int index) => $"enm:type/{N(index)}.name";
 
-    /// <summary>What a key of the names names (the template's comment), or null for a key that is not a translatable name.</summary>
+    /// <summary>A saint's description (DARKLAND.SNT, 360 bytes), on the prayer screen.</summary>
+    public static string SaintDescription(int index) => $"snt:saint/{N(index)}.desc";
+
+    /// <summary>A formula's description (DARKLAND.ALC), on the alchemy screens.</summary>
+    public static string FormulaDescription(int index) => $"alc:{N(index)}.desc";
+
+    /// <summary>A city's description (DARKLAND.DSC, 80 bytes), in card texts ($PlaceDesc).</summary>
+    public static string CityDescription(int index) => $"dsc:{N(index)}.desc";
+
+    /// <summary>What a key of the names or descriptions names (the template's comment), or null for a key that is not a translatable one.</summary>
     public static string? What(string key)
     {
         ArgumentNullException.ThrowIfNull(key);
@@ -98,6 +108,18 @@ public static class DataNames
         if (key.StartsWith("enm:type/", StringComparison.Ordinal))
         {
             return "an enemy kind's name (20 bytes in DARKLAND.ENM)";
+        }
+        if (key.StartsWith("snt:saint/", StringComparison.Ordinal) && key.EndsWith(".desc", StringComparison.Ordinal))
+        {
+            return "a saint's description (DARKLAND.SNT)";
+        }
+        if (key.StartsWith("alc:", StringComparison.Ordinal) && key.EndsWith(".desc", StringComparison.Ordinal))
+        {
+            return "a formula's description (DARKLAND.ALC)";
+        }
+        if (key.StartsWith("dsc:", StringComparison.Ordinal) && key.EndsWith(".desc", StringComparison.Ordinal))
+        {
+            return "a city's description, in the card texts that show $PlaceDesc (80 bytes in DARKLAND.DSC)";
         }
         return null;
     }

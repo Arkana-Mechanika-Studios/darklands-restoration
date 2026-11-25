@@ -282,6 +282,7 @@ public sealed class SabbatWitchFeast : Card
                 break;
             default:
                 // DORMANT: a slot outside 0..3 (only a stale menu-choice-index) answers the prayer with nothing at all.
+                //   checked 2026-11-25 (writer scan of 483.07): DS:EE6A is written only by the menu (R043+0x1CAE, R043+0x26B9, R043+0x27C1) and with 2 (R055+0x116B, R073+0x2A1E).
                 return;
         }
         c.AddSkill(Who.Everybody, (int)Skill.Virtue, 1);

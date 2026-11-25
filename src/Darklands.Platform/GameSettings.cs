@@ -83,6 +83,12 @@ public sealed class GameSettings
     /// </summary>
     public string? InterfaceMode { get; set; }
 
+    /// <summary>
+    /// The rules preset of new games (rules.preset): "fixed", Original and the gameplay fixes, or "original", the original's rules
+    /// with the data-safety and display fixes; null: fixed. A saved game keeps the rules it was started with.
+    /// </summary>
+    public string? RulesPreset { get; set; }
+
     /// <summary>The developer console (a host feature, outside the game): on unless false.</summary>
     public bool? ConsoleEnabled { get; set; }
 

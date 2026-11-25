@@ -31,9 +31,20 @@ internal static class ScreenDrawing
     /// Word-wrapped text as the game's <c>text-paint-wrapped</c>: a column of
     /// <paramref name="width"/> pixels, lines <paramref name="spacing"/> + <paramref name="leading"/> apart.
     /// </summary>
-    public static void Wrapped(GameUi ui, string text, int width, int x, int y, byte color, int spacing = 8, int leading = 1) =>
-        new CardTextLayout(ui.Text).Draw(ui.Canvas, TextPainter.Encode(text), x, y, width,
-            new CardTextLayout.Settings { Color = color, Spacing = spacing, Leading = leading });
+    // Not in the original: the 1.1.3 translations. With a translation pack the text is laid out by codes (its letters beyond the game's
+    //   bytes, a font pack's included, as the saint screen's name); no pack: the bytes, as before.
+    public static void Wrapped(GameUi ui, string text, int width, int x, int y, byte color, int spacing = 8, int leading = 1)
+    {
+        var settings = new CardTextLayout.Settings { Color = color, Spacing = spacing, Leading = leading };
+        if (ui.Language is not null)
+        {
+            new CardTextLayout(ui.Text).Draw(ui.Canvas, Darklands.Core.TextCodes.OfText(text), x, y, width, settings);
+        }
+        else
+        {
+            new CardTextLayout(ui.Text).Draw(ui.Canvas, TextPainter.Encode(text), x, y, width, settings);
+        }
+    }
 
     /// <summary>Text centred on <paramref name="centerX"/> (left edge at centre − width / 2).</summary>
     public static void Centered(GameUi ui, int centerX, int y, string text, byte color) =>

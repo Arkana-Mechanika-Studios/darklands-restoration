@@ -67,6 +67,9 @@ public sealed class GameState
     /// <summary>Which of the original's bugs are fixed (none by default).</summary>
     public OriginalBehaviour Behaviour { get; set; } = OriginalBehaviour.Faithful;
 
+    /// <summary>The rules' numbers (the original's by default).</summary>
+    public RuleParameters Parameters { get; set; } = RuleParameters.Original;
+
     /// <summary>The battle words cards hand to the main loop (DS:A766..A770, 9080, A893).</summary>
     public Battles.BattleOrders BattleOrders { get; } = new();
 

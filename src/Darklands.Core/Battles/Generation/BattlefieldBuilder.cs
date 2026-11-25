@@ -144,21 +144,25 @@ public sealed class BattlefieldContext
     /// (iminegen.nnn, counted from 1; 0 = the special map 0) a fixed-layout mine loads; −1 in the shipped game.
     /// </summary>
     // DORMANT: the original sets it to −1 at start-up and never writes it again.
+    //   checked 2026-11-25 (writer scan of 483.07): the only writes of DS:C100 and DS:C0FE store -1, at game start (R000+0x0390, R000+0x0393).
     public int ForceMap { get; init; } = -1;
 
     /// <summary>DS:C0FE: a debugging override of the side a wilderness battle is laid out on and of which of its exits a fixed-layout mine uses; −1 in the shipped game.</summary>
     // DORMANT: the original sets it to −1 at start-up and never writes it again.
+    //   checked 2026-11-25 (writer scan of 483.07): the only writes of DS:C100 and DS:C0FE store -1, at game start (R000+0x0390, R000+0x0393).
     public int ForceSide { get; init; } = -1;
 
     /// <summary>
     /// DS:160C (R013's own data): how far the party has come through the citadel's court; the low byte has the bit of the
     /// court spot the party starts on (it then meets no one), the high byte the bits of the doors already opened.
     /// </summary>
-    // DORMANT: nothing writes it; it is 0 in the shipped game (the court is always fresh).
+    // C: the castle cards write it (the gate reloads the finished rooms from fact 1/0x1A, the return from a room ORs its door's bit:
+    //   GameState.LastCastleFlags); a player's 483.07 saves between the trials hold 0x0101 .. 0x3F3F; the battle start passes it.
     public int CourtProgress { get; init; }
 
     /// <summary>DS:11DD: a debugging switch of the mine generator (plain wall gaps, no door objects for the special exits); off in the shipped game.</summary>
-    // DORMANT: the original's data segment holds 0 and nothing writes it.
+    // DORMANT: the original's data segment holds 0; the game-start function R000+0x052A writes it (R000+0x0792: 1 when DS:907A, the in-battle mark, is 1;
+    //   R000+0x080F: 0 otherwise), and its only caller (R000+0x008C) runs after the entry set DS:907A to 0 (R000+0x003E): 0 in play (checked 2026-11-25).
     public bool MineDebugSwitch { get; init; }
 
     public BattlefieldMemory Memory { get; init; } = new();

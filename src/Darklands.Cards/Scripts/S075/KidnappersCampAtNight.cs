@@ -38,6 +38,7 @@ public sealed class KidnappersCampAtNight : Card
         //   0x7E, the original's word is 0xA714 (vis10 run of uncert-kidnap, hooked at R075+0x111A): the text fetch R043+0x118E then copies from
         //   DS:[DS:36CF] + 0xA895 into its 900-byte stack buffer (TextVariables.Expand), and the emulated original stopped soon after at a fetch from unmapped
         //   memory (not traced further). Block 0 is kept here.
+        //   checked 2026-11-25 (writer scan of 483.07): 0x7E is written to DS:E48A at R075+0x0DD9 (line 4 of $McGuf10) and twice inside this card, nowhere else.
         return menu.Run(
             // orig: R075+0x12E2 (193D:0292) matched; R075+0x12E4 (193D:0294) matched; tests: CardSmokeTests
             // DORMANT: sneaking up does nothing (the menu returns).

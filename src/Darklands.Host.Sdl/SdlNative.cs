@@ -48,6 +48,7 @@ internal static class SdlNative
     internal const int WindowCentered = 0x2FFF0000;
     internal const int KeyTab = 9;
     internal const int KeyV = 118;
+    internal const int ScancodeT = 23;
     internal const int ScancodeF9 = 66;
     internal const int ScancodeF11 = 68;
     internal const int ScancodeF12 = 69;
@@ -736,6 +737,11 @@ internal static class SdlNative
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]
     internal static extern bool SDL_ResumeAudioStreamDevice(IntPtr stream);
+
+    /// <summary>Stops the device the stream is bound to (its callback is not called, nothing is played) until SDL_ResumeAudioStreamDevice.</summary>
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool SDL_PauseAudioStreamDevice(IntPtr stream);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.U1)]

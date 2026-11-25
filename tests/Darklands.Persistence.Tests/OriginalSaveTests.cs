@@ -633,7 +633,7 @@ public sealed class OriginalSaveTests
         Assert.Same(running.Random, village.Random);
     }
 
-    private sealed class FakeCities : IGameData
+    internal sealed class FakeCities : IGameData
     {
         public const int Count = 92;
 

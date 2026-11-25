@@ -22,13 +22,14 @@ developers ([the plan in steps](#the-plan-for-developers)).
   sheet's labels), the program's own notices (a damaged saved game, missing mods ...), the **card texts** (the `.MSG`
   blocks, [written as below](#card-texts)) and the words the cards put into them (months, hours, lord titles, patron and
   shop names, the cards' own words such as a physician's verdict), and the **names of the data files**
-  ([below](#names-of-the-data-files)): items, saints, formulae, places, cities and their buildings and people, enemies.
+  ([below](#names-of-the-data-files)): items, saints, formulae, places, cities and their buildings and people, enemies;
+  and since 1.1.3 their **descriptions**: a saint's on the prayer screen, a formula's on the alchemy screens, a city's in
+  the card texts that show `$PlaceDesc`.
 * **The battle's words:** its messages (a split party, travelling as a group, a lock or trap's outcome, the surrender
   question ...), its menus and the enemy panel's weapon, armour and shield types and quality words, under their `exe:`
   keys; the battle's far texts (the type names, the ordinals of "Select …", the "cannot view" notice) as `exe:286B:XXXX`.
   Without a pack the battle is the original's to the byte: the replays prove it.
-* **Not yet:** the descriptions in the data files (saints, formulae, places) and the program start's messages. These
-  keep the original English for now.
+* **Not yet:** the program start's messages. These keep the original English for now.
 * **Fonts.** Without a font pack the game draws a translation with the original fonts, which have no letters beyond the
   original's set (the German edition's umlauts and ß are among them); a letter they lack is drawn as `?`. A pack can bring
   fonts of its own with any letters ([font packs](#font-packs)).
@@ -111,6 +112,14 @@ original's names: a saved game written with a pack is the same as one written wi
 place's, a battle's enemies) are translated while they are still the data file's; the party's names, which the player
 typed, are never translated.
 
+**Descriptions** (since 1.1.3) are in `tables.ftl` too: a saint's (`snt:saint/<n>.desc`, DARKLAND.SNT) on the prayer
+screen, a formula's (`alc:<n>.desc`, DARKLAND.ALC) in the alchemy screen's book and on the formula page, and a city's
+(`dsc:<n>.desc`, DARKLAND.DSC) in the card texts that show `$PlaceDesc` (arriving at a city, for example). The screens
+wrap a description in a column, so its box is a number of lines of a width, taken from the screen's own layout, and the
+comment gives it: `box: 12 lines of 156 px (font 2) on the prayer screen`. The check reports a description that runs
+past the foot of its box (into the lines below it, or off its page). A city's description has no box of its own: it is
+part of the card text, whose box applies. Without a pack the screens draw the original's bytes, as before.
+
 **A name's other forms.** A language that declines its nouns or makes words agree with them gives a name its forms as
 Fluent attributes: `nom`, `gen`, `dat`, `acc`, `ins`, `loc`, `voc`, `abl` (the cases a language needs) and `gender`:
 
@@ -138,7 +147,7 @@ my-translation-pack/
     de/
       exe.ftl          the EXE's strings and the word tables
       ui.ftl           the restoration's own notices
-      tables.ftl       the names of the data files (items, saints, places ...)
+      tables.ftl       the names and descriptions of the data files (items, saints, places ...)
       msg/
         $CITYG04.ftl   card texts, one file per .MSG file (the file names are free; this one is the convention)
 ```
@@ -290,9 +299,9 @@ on with the copy; the folder opened stays as it was. **New pack** makes its pack
 **Keep a copy.** Deleting the game's folder deletes the packs in it: keep a zip of each (**… › Export texts…**, or zip the
 folder). Unpacking a new version of the game over the old one leaves `packs/languages` alone.
 
-**The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
+**The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.2`
 now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the
-start page and beside the pack's name, and says so in the title bar ("Darklands Workshop 1.1.0-beta.1 (Beta)"). The
+start page and beside the pack's name, and says so in the title bar ("Darklands Workshop 1.1.0-beta.2 (Beta)"). The
 version is recorded:
 * in every pack the Workshop saves: `pack.json`'s `"workshop"` (an older Workshop's pack is stamped when saved again);
 * in every export: the JSON's `"workshop"` field, the CSV's first comment line (`# written by Darklands Workshop …`), the
@@ -364,7 +373,10 @@ exists. To make the next beta: raise `WorkshopVersion`, write its notes file, me
   pixels, 1 to 3 lines. It reports a layout that breaks them or runs off the screen as an error. A layout that may cover
   another text of the same screen gets a warning: that text may be on another page of the screen, or in a menu, and not drawn
   with it. Texts whose places no recorded session has (some buttons' labels) are not checked for this; look at the game. An
-  interface mod will have looser limits on the same file.
+  interface mod will have looser limits on the same file. The file also knows two other kinds of slot, for the game's new
+  screens (1.2): `"kind": "area"` (a hit rectangle: `x`, `y`, `width`, `height`) and `"kind": "list"` (`x`, `y`, `width`,
+  `rows`, `rowHeight`). They belong to interface views, not to translations: the check refuses them in a language pack, and
+  the Workshop keeps them as they are.
 
   **Embossed headings.** An embossed heading is two texts, a pixel apart: its shadow and its face (for example the party
   information screen's title). Translate both. A layout given to one is given to the other, a pixel apart.

@@ -6,45 +6,48 @@ today, and the few fixes already decided for a later step (`planned` rows). (Pla
 row's `id` is the key it will keep.)
 
 The rules it serves: every departure from the original sits behind a switch with an id, and the original path stays beside it;
-the faithful game ("Classic") stays the reference the oracles check; two kinds of fix are on in every player mode, each kept
+the faithful game stays the reference the oracles check; two kinds of fix are on in every player mode, each kept
 exact behind its switch for the oracle (data-damaging bugs and plain visual glitches).
 
 ## Columns
 
 | Column | Meaning |
 |---|---|
-| `id` | The stable key, lower case, dotted: `<family>.<area>.<name>`, words joined by hyphens. Never renamed once released. Families: `fix` (a fixed original bug), `view` (what is drawn), `comfort` (how orders are given), `content` (mods and packs). |
+| `id` | The stable key, lower case, dotted: `<family>.<area>.<name>`, words joined by hyphens. Never renamed once released. Families: `fix` (a fixed original bug), `restore` (content the original holds and never offers, [RESTORATION.md](RESTORATION.md)), `view` (what is drawn), `comfort` (how orders are given), `content` (mods and packs). |
 | `kind` | `flag`: a property of `OriginalBehaviour` (`src/Darklands.Core/OriginalBehaviour.cs`), set per game. `setting`: a key of the settings file ([../SETTINGS.md](../SETTINGS.md)), set per player. `planned`: a fix decided for a later step of the plan and not in the code yet; its key is the flag it will be, and the row becomes a `flag` row when the flag is added. |
 | `key` | The name in the code: the property (`FixFameCost`) or the settings key (`input.mouseWheel`). |
-| `class` | The change class of the plan's table: `data-safety` (a bug that damages saved games or stores or ends the program: on in every player mode), `visual` (an evident drawing glitch: on in every player mode), `gameplay` (an original bug that changes what the game decides: in the Fixed rule set), `interface-comfort`, `presentation`, `content-mod`. (`restoration` and `new-capability` are allowed for later rows; none exist yet.) |
+| `class` | The change class of the plan's table: `data-safety` (a bug that damages saved games or stores or ends the program: on in every player mode), `visual` (an evident drawing glitch: on in every player mode), `gameplay` (an original bug that changes what the game decides: in the Fixed rule set), `restoration` (content the original has and never reaches, restored: in the Restored rule set only, its `register` the row of [restoration.csv](restoration.csv)), `interface-comfort`, `presentation`, `content-mod`. (`new-capability` is allowed for later rows; none exist yet.) |
 | `axis` | `Rules` (what the game decides), `Presentation` (what is seen and heard), `Interface` (how the same orders are given). |
-| `presets` | Where the switch is on, as the plan sets the presets out: `classic`, `fixed`, `restored` joined by `;`, or `any` for a choice independent of the rules preset. Restored always includes Fixed. **This is the plan, not the code**: today nothing but `OriginalBehaviour.DataSafe` and the settings file select anything. |
-| `default` | The state in the player's game of this release: for a flag, whether `OriginalBehaviour.DataSafe` (what the SDL host plays with) has it on; for a setting, the default of the settings file. The faithful game (`OriginalBehaviour.Faithful`, which the oracles and the headless host use) has every flag off. |
-| `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). For a `planned` row the bugs it will fix (kept as the original today: no fix flag, decision `later`, the note naming the planned flag). Empty for settings. |
+| `presets` | The rules presets the switch is on in: `original`, `fixed`, `restored` joined by `;`, or `any` for a choice independent of the rules preset. Restored always includes Fixed. For a flag the column is the code: `tools/faithfulness/rule_table.py` turns it into `src/Darklands.Core/RuleTable.Generated.cs`, the presets' table (`OriginalBehaviour.Of`). |
+| `default` | The state in the player's game of this release: for a flag, whether a new game at the default rules preset (Fixed, `RulePresets.Default`) has it on; for a setting, the default of the settings file. A game with the Original preset (`OriginalBehaviour.DataSafe`) has the data-safety and visual flags on; the faithful game (`OriginalBehaviour.Faithful`, which the oracles and the headless host use) has every flag off. |
+| `register` | The ids of the entries of [original_bugs.csv](original_bugs.csv) the flag fixes (`;` joined; their `fix_flag` column names the flag). For a `planned` row the bugs it will fix (kept as the original today: no fix flag, decision `later`, the note naming the planned flag). For a `restoration` flag the `R-` ids of [restoration.csv](restoration.csv) it restores (rows of status `built`). Empty for settings. |
 | `code` | The files where the code chooses between the two paths (up to three, `;` joined). A flag's name is in at least one of them. |
 | `description` | One line: the original's behaviour and what the switch does. The long account is the flag's comment in the source and the register entries. |
 
 ## Counts (at the time of writing)
 
-61 flags, 11 settings and 1 planned fix, 73 rows:
+66 flags, 12 settings and 1 planned fix, 79 rows:
 
 | Class | Rows | Of which on in the player's game now |
 |---|---|---|
 | data-safety | 28 | 28 |
 | visual | 3 flags + 1 setting | the 3 flags (the setting `view.clean-drawing` is off by default) |
-| gameplay | 30 flags + 1 planned | 0 (the plan's Fixed rule set, release 1.1) |
+| gameplay | 33 flags + 1 planned + 1 setting | the 33 flags in a new game (the Fixed rule set, the default of `rules.preset`; none with Original); the player's list: [../FIXED.md](../FIXED.md) |
 | interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
 | presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
+| restoration | 2 | none (the Restored rule set only, not offered to players yet) |
 
 ## How it is kept true
 
 `tests/Darklands.Core.Tests/SwitchRegisterTests.cs` fails when:
 
-- a boolean `Fix…` property of `OriginalBehaviour` has no row, or a row names a flag that no longer exists;
-- a flag's `default` differs from its state in `OriginalBehaviour.DataSafe`, or its `presets` disagree with its class
-  (only `data-safety` and `visual` fixes are on in `classic`; every fix is in `fixed` and `restored`);
-- a flag's `register` ids differ from the entries of `original_bugs.csv` that name it;
+- a boolean `Fix…` or `Restore…` property of `OriginalBehaviour` has no row, or a row names a flag that no longer exists;
+- a flag's `default` differs from its state in a new game at the default preset (Fixed), or its `presets` disagree with its class
+  (only `data-safety` and `visual` fixes are on in `original`; every fix is in `fixed` and `restored`; a `restoration` is in `restored` only);
+- the generated rule table (`RuleTable.Generated.cs`) differs from the flag rows (run `tools/faithfulness/rule_table.py`);
+- a flag's `register` ids differ from the entries of `original_bugs.csv` that name it, or (a `restoration`) from the `built` rows of
+  `restoration.csv` whose note names it;
 - a code location does not exist, or (for a flag) none of its files mentions the flag;
 - a key of the table in `docs/SETTINGS.md` is neither a `setting` row nor on the test's short list of keys that are not
   switches (paths, window, sound hardware, start-up, developer console), so a new setting has to be decided;
@@ -68,5 +71,8 @@ Some departures from the original have no switch of their own. They are listed s
 | `CardScreen.Menu.cs` | On a host that cannot move the pointer, the menu acts as if the pointer were on the chosen line | host only |
 | `OriginalSaves.cs`, `SaveFolder.cs`, `DarklandsGame.cs` (mods) | Companion files for modded saves; card numbers above the original's are never written | part of `content.mods` |
 
-`DataSafe` and `Faithful` themselves are the two whole-set selectors of today; the plan's presets (Classic, Fixed, Restored,
-Custom) will replace them with one table keyed by the `id`s above.
+The rules presets: Faithful (every flag off: the oracles and the headless host), Original (the data-safety and visual fixes:
+the player's reference, `OriginalBehaviour.DataSafe`), Fixed (Original and every gameplay fix) and Restored (Fixed and the
+restoration items: the `restoration` rows, not offered to players yet). The flags are one table keyed by the `id`s above (`OriginalBehaviour.IsOn`). The player chooses
+the preset with the settings key `rules.preset` ([../SETTINGS.md](../SETTINGS.md)); a saved game keeps the rules it was
+started with.

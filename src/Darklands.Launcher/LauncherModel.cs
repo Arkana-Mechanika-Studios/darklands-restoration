@@ -40,7 +40,7 @@ internal sealed class LauncherModel
     private static readonly double[] WindowScaleFactors = [1, 1.5, 2, 2.5, 3, 4];
 
     private readonly LauncherContext _context;
-    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, bool MouseWheel, bool CardMenuKeys, string? LanguagePack, string? FontPack, bool ComfortInterface) _initial;
+    private readonly (string? GameFolder, (int W, int H) Window, bool Fullscreen, string Filter, string? HdPack, string SoundCard, string? Roms, string? AudioPack, string? SoundFont, bool Banner, bool Intro, string? LanguagePack, string? FontPack, bool ComfortInterface, bool FixedRules) _initial;
     // what each folder holds, and the languages' fonts: read once (WarmPacks reads them all as the launcher opens, on a thread of its
     //   own, so the first click on a pack row has nothing to read)
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, PackStatus> _packs = new(StringComparer.Ordinal);
@@ -65,9 +65,8 @@ internal sealed class LauncherModel
         FontPack = string.IsNullOrWhiteSpace(s.FontPack) ? null : s.FontPack;
         Banner = s.Banner ?? true;
         Intro = s.Intro ?? true;
-        MouseWheel = s.MouseWheel ?? true;
-        CardMenuKeys = s.CardMenuKeys ?? true;
         ComfortInterface = (s.InterfaceMode ?? "comfort") == "comfort";
+        FixedRules = s.RulesPreset != "original";
         Found = context.FoundGameFolders();
         var fileFolder = string.IsNullOrWhiteSpace(s.GameFolder) ? null : s.GameFolder;
         // the folder the command line (or DARKLANDS_DIR) gives is the one the game would start with: shown first
@@ -77,7 +76,7 @@ internal sealed class LauncherModel
         {
             SetGameFolder(Found[0].Folder, Found[0].Source);
         }
-        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, MouseWheel, CardMenuKeys, LanguagePack, FontPack, ComfortInterface);
+        _initial = (fileFolder, Windows[WindowIndex], Fullscreen, Filter, HdPack, SoundCard, Mt32Roms, AudioPack, SoundFont, Banner, Intro, LanguagePack, FontPack, ComfortInterface, FixedRules);
         _automatic = GameFolder;
     }
 
@@ -286,15 +285,14 @@ internal sealed class LauncherModel
 
     public bool Intro { get; set; }
 
-
-    /// <summary>The mouse wheel moves the selection of the game's menus and lists (input.mouseWheel).</summary>
-    public bool MouseWheel { get; set; }
-
-    /// <summary>Up / down and the digits at a card menu wherever the pointer is (input.cardMenuKeys).</summary>
-    public bool CardMenuKeys { get; set; }
-
-    /// <summary>The Interface switch (interface.mode): true Comfort (the comfort features), false Classic (the original interface).</summary>
+    /// <summary>
+    /// The Interface switch (interface.mode): true Comfort (the comfort features, the mouse wheel and the card menu keys among them),
+    /// false Classic (the original interface).
+    /// </summary>
     public bool ComfortInterface { get; set; }
+
+    /// <summary>The rules preset of new games (rules.preset): true Fixed (the default), false Original.</summary>
+    public bool FixedRules { get; set; }
 
     public bool CanPlay => GameFolderChecked is not null;
 
@@ -403,17 +401,13 @@ internal sealed class LauncherModel
         {
             changes["startup.intro"] = Intro;
         }
-        if (MouseWheel != _initial.MouseWheel)
-        {
-            changes["input.mouseWheel"] = MouseWheel;
-        }
-        if (CardMenuKeys != _initial.CardMenuKeys)
-        {
-            changes["input.cardMenuKeys"] = CardMenuKeys;
-        }
         if (ComfortInterface != _initial.ComfortInterface)
         {
             changes["interface.mode"] = ComfortInterface ? "comfort" : "classic";
+        }
+        if (FixedRules != _initial.FixedRules)
+        {
+            changes["rules.preset"] = FixedRules ? "fixed" : "original";
         }
         return changes;
     }
@@ -439,9 +433,8 @@ internal sealed class LauncherModel
         s.FontPack = FontPack;
         s.Banner = Banner;
         s.Intro = Intro;
-        s.MouseWheel = MouseWheel;
-        s.CardMenuKeys = CardMenuKeys;
         s.InterfaceMode = ComfortInterface ? "comfort" : "classic";
+        s.RulesPreset = FixedRules ? "fixed" : "original";
         return s;
     }
 

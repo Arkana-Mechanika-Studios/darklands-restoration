@@ -205,6 +205,13 @@ public sealed class GameUi
     /// <summary>A formula's name as the screens show it.</summary>
     public string FormulaName(int index, string original) => Name(DataNames.Formula(index), original);
 
+    /// <summary>A saint's description (DARKLAND.SNT) as the prayer screen shows it (no pack: the original's).</summary>
+    // Not in the original: the 1.1.3 translations of the data files' descriptions.
+    public string SaintDescription(int index, string original) => Name(DataNames.SaintDescription(index), original);
+
+    /// <summary>A formula's description (DARKLAND.ALC) as the alchemy screens show it (no pack: the original's).</summary>
+    public string FormulaDescription(int index, string original) => Name(DataNames.FormulaDescription(index), original);
+
     /// <summary>A place's name as the screens show it: translated while the saved name is still DARKLAND.LOC's (a save keeps the original's).</summary>
     public string PlaceName(Darklands.Core.World.Location place)
     {
@@ -391,7 +398,7 @@ public sealed class GameUi
     // Not in the original: the 1.1 translation packs (screen layouts per language).
     public Darklands.Localization.SlotLayout? LayoutOf(string words, string screen) =>
         _laid.Count == 0 || !_laid.TryGetValue(words, out var key) ? null
-        : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key);
+        : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key) is { IsText: true } layout ? layout : null;
 
     /// <summary>
     /// Uses the fonts of the font pack in <paramref name="folder"/> (a font-only pack, <c>{"fonts": true}</c>: high-resolution text for
@@ -794,6 +801,15 @@ public sealed class GameUi
     /// original's own key commands (docs/COMMANDS.md). docs/SETTINGS.md, "The Interface switch".
     /// </summary>
     public bool ComfortInterface { get; set; }
+
+    /// <summary>
+    /// Opens the settings screen (1.2, a registry view the host runs with the game paused; null: no host offers it). The Game menu ends with a
+    /// line that calls it, in both interfaces (MenuBar.WithSettingsLine).
+    /// </summary>
+    public Action? OpenSettings { get; set; }
+
+    /// <summary>The settings screen's key as the Game menu shows it beside its line (in font 1's letters).</summary>
+    public string SettingsKeyLabel { get; set; } = "";
 
     /// <summary>
     /// A host's pace for the battle's edge scroll (Shift with the pointer at an edge of the view): at most one step this often, in the

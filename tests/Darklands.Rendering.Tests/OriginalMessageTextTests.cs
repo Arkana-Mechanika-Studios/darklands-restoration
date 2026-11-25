@@ -275,9 +275,14 @@ public sealed class OriginalMessageTextTests
         foreach (var id in OriginalMessageText.OwnIds)
         {
             var words = text.Text(GameText.Of(id, ("name", "X"), ("number", 7), ("count", 2), ("date", "2026-11-21"), ("time", "19:23"), ("day", "21"),
-                ("month", "11"), ("monthName", "Nov"), ("amount", "2"), ("a", "1 florin"), ("b", "2 groschen"), ("c", "3 pfennigs")));
+                ("month", "11"), ("monthName", "Nov"), ("amount", "2"), ("a", "1 florin"), ("b", "2 groschen"), ("c", "3 pfennigs"), ("rules", "Fixed"), ("by", "--rules")));
             Assert.NotEqual(id, words);
-            Assert.Contains(" ", words, StringComparison.Ordinal);
+            Assert.False(string.IsNullOrWhiteSpace(words), id);
+            // a notice is a sentence; the settings screen's labels and values may be one word ("Close", "On")
+            if (!id.StartsWith("id:rw.settings.", StringComparison.Ordinal))
+            {
+                Assert.Contains(" ", words, StringComparison.Ordinal);
+            }
         }
         Assert.Equal("", text.Text(GameText.None));
     }

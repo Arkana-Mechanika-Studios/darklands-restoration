@@ -317,6 +317,7 @@ internal sealed partial class MineBuilder
 
     /// <summary>What the carved gap becomes: 1 an exit gap, 2 and 3 exit gaps with other walls (mine 0x0d), 0 a plain opening (debugging switch).</summary>
     // DORMANT: mode 0 needs DS:11DD (the debugging switch, 0 in the shipped game); no mode above 3 exists.
+    //   checked 2026-11-25 (writer scan of 483.07): DS:11DD is 0 in play (its two writes are at game start, see BattlefieldContext.MineDebugSwitch).
     private int GapMode(int t, int section)
     {
         var mode = 1;

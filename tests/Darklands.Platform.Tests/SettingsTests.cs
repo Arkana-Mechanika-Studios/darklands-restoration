@@ -248,10 +248,16 @@ public class SettingsPrecedenceTests
 {
     private static string? NoEnvironment(string name) => null;
 
-    /// <summary>input.mouseWheel: on without a settings file, off by the file's false or by --no-mouse-wheel.</summary>
+    /// <summary>
+    /// The mouse wheel is part of the Comfort interface (1.2): on with Comfort (the default) and off with Classic; the older key
+    /// input.mouseWheel (false) and --no-mouse-wheel are still read and turn it off.
+    /// </summary>
     [Fact]
-    public void TheMouseWheelIsOnUnlessTheFileOrTheCommandLineTurnsItOff()
+    public void TheMouseWheelComesWithComfortUnlessTheFileOrTheCommandLineTurnsItOff()
     {
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { InterfaceMode = "classic" }, NoEnvironment, new GameSettings()).MouseWheel);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings { InterfaceMode = "classic" }).MouseWheel);
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings { InterfaceMode = "classic" }).MouseWheelAllowed);
         Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).MouseWheel);
         var off = SettingsFile.Parse("""{ "input": { "mouseWheel": false } }""");
         Assert.Empty(off.Problems);
@@ -262,10 +268,15 @@ public class SettingsPrecedenceTests
         Assert.Contains("input.wheel", string.Join(' ', SettingsFile.Parse("""{ "input": { "wheel": 1 } }""").Problems));
     }
 
-    /// <summary>input.cardMenuKeys: on without a settings file, off by the file's false or by --no-card-menu-keys.</summary>
+    /// <summary>
+    /// The card menu keys are part of the Comfort interface (1.2): on with Comfort (the default) and off with Classic; the older key
+    /// input.cardMenuKeys (false) and --no-card-menu-keys are still read and turn them off.
+    /// </summary>
     [Fact]
-    public void TheCardMenuKeysAreOnUnlessTheFileOrTheCommandLineTurnsThemOff()
+    public void TheCardMenuKeysComeWithComfortUnlessTheFileOrTheCommandLineTurnsThemOff()
     {
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { InterfaceMode = "classic" }, NoEnvironment, new GameSettings()).CardMenuKeys);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings { InterfaceMode = "classic", CardMenuKeys = true }).CardMenuKeys);
         Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).CardMenuKeys);
         var off = SettingsFile.Parse("""{ "input": { "cardMenuKeys": false } }""");
         Assert.Empty(off.Problems);
@@ -295,6 +306,31 @@ public class SettingsPrecedenceTests
         Assert.Null(odd.Settings.InterfaceMode);
         // the template has the section and reads without a problem
         Assert.Contains("\"interface\"", SettingsFile.Template, StringComparison.Ordinal);
+    }
+
+    /// <summary>rules.preset, the rules of new games: Fixed without a settings file, Original by the file or by --rules original; another word is reported.</summary>
+    [Fact]
+    public void TheRulesPresetIsFixedUnlessTheFileOrTheCommandLineSaysOriginal()
+    {
+        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).RulesPreset);
+        var originalFile = SettingsFile.Parse("""{ "rules": { "preset": "Original" } }""");
+        Assert.Empty(originalFile.Problems);
+        Assert.Equal("original", originalFile.Settings.RulesPreset);
+        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, originalFile.Settings).RulesPreset);
+        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "Fixed" }, NoEnvironment, originalFile.Settings).RulesPreset);
+        Assert.Equal("original", ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "original" }, NoEnvironment, new GameSettings()).RulesPreset);
+        Assert.Equal("--rules", new CommandLineOptions { RulesPreset = "fixed" }.Overrides(_ => null)["rules.preset"]);
+        Assert.False(new CommandLineOptions().Overrides(_ => null).ContainsKey("rules.preset"));
+        // another word in the file is reported and the default kept; on the command line it is an error; an unknown key is reported
+        var odd = SettingsFile.Parse("""{ "rules": { "preset": "classic", "difficulty": 3 } }""");
+        Assert.Equal(2, odd.Problems.Count);
+        Assert.Contains(odd.Problems, p => p.Contains("classic", StringComparison.Ordinal));
+        Assert.Null(odd.Settings.RulesPreset);
+        Assert.Equal("fixed", ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, odd.Settings).RulesPreset);
+        Assert.Throws<ArgumentException>(() => ResolvedSettings.Resolve(new CommandLineOptions { RulesPreset = "restored" }, NoEnvironment, new GameSettings()));
+        // the template has the section, at its default
+        Assert.Contains("\"rules\"", SettingsFile.Template, StringComparison.Ordinal);
+        Assert.Equal("fixed", SettingsFile.Parse(SettingsFile.Template).Settings.RulesPreset);
     }
 
     [Fact]

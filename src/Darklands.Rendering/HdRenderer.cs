@@ -37,16 +37,22 @@ public sealed class HdRenderer(HdPack pack)
     /// <summary>The draw items of the screen for an output rectangle (the host's window area for the 320×200 picture).</summary>
     public HdFrame Render(Screen screen, DisplayRectangle output)
     {
-        var frame = RenderPictures(screen, output);
-        // a font pack's scalable glyphs over everything, at the output's resolution (TextLayer, L-6b set 2)
-        return _text.Item(screen, output) is { } text ? frame with { Items = [.. frame.Items, text] } : frame;
+        // a font pack's scalable glyphs over everything, at the output's resolution (TextLayer, L-6b set 2); their 1x pixels are
+        //   taken out of the frame under them (the base and the overlay), so neither the host's scaling nor a filter shows them
+        var text = _text.Item(screen, output);
+        var frame = RenderPictures(screen, output, text is not null);
+        return text is not null ? frame with { Items = [.. frame.Items, text] } : frame;
     }
 
-    private HdFrame RenderPictures(Screen screen, DisplayRectangle output)
+    private HdFrame RenderPictures(Screen screen, DisplayRectangle output, bool withoutGlyphs)
     {
         for (var i = 0; i < _base.Argb.Length; i++)
         {
             _base.Argb[i] = screen.Palette[screen.Pixels[i]] | 0xFF000000u;
+        }
+        if (withoutGlyphs)
+        {
+            _text.Erase(_base);
         }
         _base.Changed();
         var items = new List<DrawItem> { new(_base, output, DrawFilter.Nearest, null) };

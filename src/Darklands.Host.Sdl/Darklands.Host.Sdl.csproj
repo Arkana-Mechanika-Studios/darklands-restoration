@@ -118,6 +118,8 @@
        guide are the Workshop's: Workshop/docs, Darklands.Workshop.csproj) -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\docs\SETTINGS.md" Link="docs\SETTINGS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- what the Fixed rules change (rules.preset), one line a fix -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\docs\FIXED.md" Link="docs\FIXED.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- the guide to reporting a problem (docs/REPORTING.md), beside the program in the build and in every release -->

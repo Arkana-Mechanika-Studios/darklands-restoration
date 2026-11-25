@@ -16,7 +16,7 @@ public sealed class SwitchRegisterTests
 
     private static readonly HashSet<string> Classes = ["data-safety", "visual", "gameplay", "restoration", "interface-comfort", "new-capability", "presentation", "content-mod"];
     private static readonly HashSet<string> Axes = ["Rules", "Presentation", "Interface"];
-    private static readonly HashSet<string> Presets = ["classic", "fixed", "restored", "any"];
+    private static readonly HashSet<string> Presets = ["original", "fixed", "restored", "any"];
 
     /// <summary>Keys of docs/SETTINGS.md that are not switches (paths, the window, the hardware, the start-up, the developer console): each needs a reason to stay out of the register.</summary>
     private static readonly HashSet<string> NotSwitches = new(StringComparer.Ordinal)
@@ -66,32 +66,248 @@ public sealed class SwitchRegisterTests
         Assert.True(stale.Count == 0, "rows of switches.csv naming no flag of OriginalBehaviour: " + string.Join(", ", stale));
     }
 
-    /// <summary>The default column of a flag is its state in <see cref="OriginalBehaviour.DataSafe"/>, the set the player's game plays with; the presets follow its class.</summary>
+    /// <summary>
+    /// The default column of a flag is its state in a new game at the default preset (<see cref="RulePresets.Default"/>, Fixed); the
+    /// presets follow its class, and the data-safety and visual fixes are on in <see cref="OriginalBehaviour.DataSafe"/> (Original) too.
+    /// </summary>
     [Fact]
     public void FlagDefaultsAndPresetsFollowTheirClass()
     {
+        var newGame = OriginalBehaviour.Of(RulePresets.Default);
         var dataSafe = OriginalBehaviour.DataSafe;
         var problems = new List<string>();
         foreach (var row in Rows().Where(r => r["kind"] == "flag"))
         {
             var property = typeof(OriginalBehaviour).GetProperty(row["key"])!;
-            var on = (bool)property.GetValue(dataSafe)!;
-            if (row["default"] != (on ? "on" : "off"))
+            var inNewGame = (bool)property.GetValue(newGame)!;
+            if (row["default"] != (inNewGame ? "on" : "off"))
             {
-                problems.Add($"{row["id"]}: default '{row["default"]}' but DataSafe has it {(on ? "on" : "off")}");
+                problems.Add($"{row["id"]}: default '{row["default"]}' but a new game ({RulePresets.Default}) has it {(inNewGame ? "on" : "off")}");
             }
+            var on = (bool)property.GetValue(dataSafe)!;
             var everywhere = row["class"] is "data-safety" or "visual";
-            if (everywhere != row["presets"].Split(';').Contains("classic"))
+            if (everywhere != row["presets"].Split(';').Contains("original"))
             {
-                problems.Add($"{row["id"]}: class {row["class"]} and presets '{row["presets"]}' disagree about Classic (A4: only data-safety and visual fixes are on in Classic)");
+                problems.Add($"{row["id"]}: class {row["class"]} and presets '{row["presets"]}' disagree about Original (A4: only data-safety and visual fixes are on in Original)");
             }
             if (everywhere && !on)
             {
                 problems.Add($"{row["id"]}: a {row["class"]} fix that DataSafe leaves off");
             }
-            if (!row["presets"].Split(';').Contains("fixed") || !row["presets"].Split(';').Contains("restored"))
+            if (row["class"] == "restoration")
+            {
+                // a restoration is in the Restored rule set only (restoration.csv), never in Original or Fixed
+                if (row["presets"] != "restored")
+                {
+                    problems.Add($"{row["id"]}: a restoration is on in Restored only: '{row["presets"]}'");
+                }
+            }
+            else if (!row["presets"].Split(';').Contains("fixed") || !row["presets"].Split(';').Contains("restored"))
             {
                 problems.Add($"{row["id"]}: a fix is on in Fixed and Restored too: '{row["presets"]}'");
+            }
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
+    /// <summary>
+    /// The rule table (RuleTable.Generated.cs) is the CSV's flag rows, in order: id, property, class and presets (the column's
+    /// "original" is the Original preset); each property's index constant is its place. Run tools/faithfulness/rule_table.py after
+    /// changing a flag row.
+    /// </summary>
+    [Fact]
+    public void TheRuleTableIsGeneratedFromTheRegister()
+    {
+        var rows = Rows().Where(r => r["kind"] == "flag").ToList();
+        Assert.Equal(rows.Count, RuleTable.Flags.Count);
+        var problems = new List<string>();
+        for (var i = 0; i < rows.Count; i++)
+        {
+            var (row, rule) = (rows[i], RuleTable.Flags[i]);
+            var presets = row["presets"].Split(';');
+            var expected = new RuleTable.Rule(row["id"], row["key"], row["class"], presets.Contains("original"), presets.Contains("fixed"), presets.Contains("restored"));
+            if (rule != expected)
+            {
+                problems.Add($"row {i}: the table has {rule}, the CSV {expected}");
+            }
+            var index = typeof(RuleTable).GetField(row["key"], BindingFlags.Public | BindingFlags.Static)?.GetRawConstantValue();
+            if (index is not int at || at != i)
+            {
+                problems.Add($"{row["id"]}: RuleTable.{row["key"]} is {index ?? "missing"}, not {i}");
+            }
+            if (RuleTable.IndexOf(row["id"]) != i)
+            {
+                problems.Add($"{row["id"]}: IndexOf gives {RuleTable.IndexOf(row["id"])}, not {i}");
+            }
+        }
+        Assert.True(problems.Count == 0, "RuleTable.Generated.cs differs from switches.csv (run tools/faithfulness/rule_table.py):" + Environment.NewLine + string.Join(Environment.NewLine, problems));
+    }
+
+    /// <summary>Each preset turns on exactly the flags whose presets column names it; Faithful turns none on; DataSafe is Original.</summary>
+    [Fact]
+    public void PresetsComeFromTheRegister()
+    {
+        var rows = Rows().Where(r => r["kind"] == "flag").ToList();
+        var problems = new List<string>();
+        foreach (var (preset, word) in new[] { (RulePreset.Faithful, "(none)"), (RulePreset.Original, "original"), (RulePreset.Fixed, "fixed"), (RulePreset.Restored, "restored") })
+        {
+            var behaviour = OriginalBehaviour.Of(preset);
+            foreach (var row in rows)
+            {
+                var on = (bool)typeof(OriginalBehaviour).GetProperty(row["key"])!.GetValue(behaviour)!;
+                if (on != row["presets"].Split(';').Contains(word))
+                {
+                    problems.Add($"{preset}: {row["id"]} is {(on ? "on" : "off")}, presets '{row["presets"]}'");
+                }
+                if (on != behaviour.IsOn(row["id"]))
+                {
+                    problems.Add($"{preset}: {row["id"]}: the property and IsOn disagree");
+                }
+            }
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+        Assert.Empty(OriginalBehaviour.Faithful.On);
+        Assert.Equal(OriginalBehaviour.Original.On, OriginalBehaviour.DataSafe.On);
+        Assert.Equal(31, OriginalBehaviour.DataSafe.On.Count());
+    }
+
+    /// <summary>Every gameplay flag is on in Fixed (and Restored) and none is on in Original; the data-safety and visual flags are on in every player set.</summary>
+    [Fact]
+    public void EveryGameplayFlagIsOnInFixedAndNoneInOriginal()
+    {
+        var (original, fixedSet, restored) = (OriginalBehaviour.Of(RulePreset.Original), OriginalBehaviour.Of(RulePreset.Fixed), OriginalBehaviour.Of(RulePreset.Restored));
+        var gameplay = RuleTable.Flags.Where(r => r.Class == "gameplay").ToList();
+        Assert.Equal(33, gameplay.Count);
+        Assert.All(gameplay, r => Assert.True(fixedSet.IsOn(r.Id) && restored.IsOn(r.Id) && !original.IsOn(r.Id), r.Id));
+        Assert.All(RuleTable.Flags.Where(r => r.Class is "data-safety" or "visual"), r => Assert.True(original.IsOn(r.Id) && fixedSet.IsOn(r.Id) && restored.IsOn(r.Id), r.Id));
+        Assert.Equal(RuleTable.Flags.Count(r => r.Class != "restoration"), fixedSet.On.Count());
+        Assert.Equal(RuleTable.Flags.Count, restored.On.Count());
+    }
+
+    /// <summary>
+    /// A restoration flag is on in Restored only, and its register ids are the rows of restoration.csv it restores (status <c>built</c>, the
+    /// note naming the switch); every built row has a flag. Original and Fixed turn none on.
+    /// </summary>
+    [Fact]
+    public void RestorationFlagsAreTheBuiltRowsOfTheRestorationRegister()
+    {
+        var built = ReadCsv(Path.Combine(Docs, "restoration.csv")).Where(r => r["status"] == "built").ToList();
+        var flags = Rows().Where(r => r["kind"] == "flag" && r["class"] == "restoration").ToList();
+        var problems = new List<string>();
+        foreach (var row in flags)
+        {
+            foreach (var id in row["register"].Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (built.FirstOrDefault(r => r["id"] == id) is not { } item)
+                {
+                    problems.Add($"{row["id"]}: {id} is not a built row of restoration.csv");
+                }
+                else if (!item["note"].Contains(row["id"], StringComparison.Ordinal))
+                {
+                    problems.Add($"{id}: its note does not name its switch {row["id"]}");
+                }
+            }
+            if (row["register"].Length == 0)
+            {
+                problems.Add($"{row["id"]}: a restoration names the row of restoration.csv it restores");
+            }
+            if (OriginalBehaviour.Of(RulePreset.Original).IsOn(row["id"]) || OriginalBehaviour.Of(RulePreset.Fixed).IsOn(row["id"]) || !OriginalBehaviour.Of(RulePreset.Restored).IsOn(row["id"]))
+            {
+                problems.Add($"{row["id"]}: a restoration is on in Restored and nowhere else");
+            }
+        }
+        foreach (var item in built.Where(r => !flags.Any(f => f["register"].Split(';').Contains(r["id"]))))
+        {
+            problems.Add($"{item["id"]} is built but no restoration flag names it");
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
+    /// <summary>Each property reads and writes its own flag of the table, by its register id.</summary>
+    [Fact]
+    public void EachPropertyIsItsKeyedFlag()
+    {
+        foreach (var rule in RuleTable.Flags)
+        {
+            var behaviour = OriginalBehaviour.Faithful;
+            behaviour.Set(rule.Id, true);
+            Assert.Equal([rule.Id], behaviour.On);
+            var property = typeof(OriginalBehaviour).GetProperty(rule.Property)!;
+            Assert.True((bool)property.GetValue(behaviour)!, rule.Id);
+            property.SetValue(behaviour, false);
+            Assert.False(behaviour.IsOn(rule.Id), rule.Id);
+        }
+    }
+
+    /// <summary>A key the table does not know (from a newer save or a typo in the settings) is reported once and ignored: it turns nothing on.</summary>
+    [Fact]
+    public void UnknownKeysAreReportedOnceAndIgnored()
+    {
+        var reports = new List<string>();
+        var before = OriginalBehaviour.ReportUnknown;
+        OriginalBehaviour.ReportUnknown = reports.Add;
+        try
+        {
+            var key = "fix.test.unknown-" + Guid.NewGuid().ToString("N");
+            var behaviour = OriginalBehaviour.Faithful;
+            Assert.False(behaviour.IsOn(key));
+            behaviour.Set(key, true);
+            Assert.False(behaviour.IsOn(key));
+            Assert.Empty(behaviour.On);
+            Assert.Single(reports, r => r.Contains(key, StringComparison.Ordinal));
+            Assert.Equal(-1, RuleTable.IndexOf(key));
+        }
+        finally
+        {
+            OriginalBehaviour.ReportUnknown = before;
+        }
+    }
+
+    /// <summary>The players' page of the Fixed rules (docs/FIXED.md) has a line for each gameplay fix: one list item a flag.</summary>
+    [Fact]
+    public void ThePlayersPageListsEveryGameplayFix()
+    {
+        var items = File.ReadAllLines(Path.Combine(Root, "docs", "FIXED.md")).Count(l => l.StartsWith("- ", StringComparison.Ordinal));
+        Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "gameplay"), items);
+    }
+
+    /// <summary>
+    /// The restoration register (restoration.csv) is read whole, its statuses are the allowed words, and a row set aside (rejected, or
+    /// waiting for something to exist first) says what would reopen it (<c>revisit_if</c>) and whether it could come back as a mod
+    /// (<c>mod_possible</c>): rejected is not forgotten; a row moved to Fixed names its gameplay switch.
+    /// </summary>
+    [Fact]
+    public void TheRestorationRegisterSaysWhatReopensEveryRowSetAside()
+    {
+        var path = Path.Combine(Docs, "restoration.csv");
+        var lines = File.ReadAllLines(path, Encoding.UTF8).Count(l => l.Length > 0) - 1;
+        var rows = ReadCsv(path);
+        Assert.Equal(lines, rows.Count);
+        var statuses = new HashSet<string>(StringComparer.Ordinal) { "candidate", "needs research", "rejected", "built", "fixed", "waits" };
+        var gameplay = Rows().Where(r => r["kind"] == "flag" && r["class"] == "gameplay").Select(r => r["id"]).ToList();
+        var problems = new List<string>();
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var row in rows)
+        {
+            if (!ids.Add(row["id"]) || !Regex.IsMatch(row["id"], "^R-[0-9a-f]{6}$"))
+            {
+                problems.Add($"{row["id"]}: malformed or repeated id");
+            }
+            if (!statuses.Contains(row["status"]))
+            {
+                problems.Add($"{row["id"]}: unknown status '{row["status"]}'");
+            }
+            if (row["status"] is "rejected" or "waits" && row["revisit_if"].Length < 20)
+            {
+                problems.Add($"{row["id"]}: a {row["status"]} row says what would reopen it (revisit_if)");
+            }
+            if (row["status"] is "rejected" or "waits" && row["mod_possible"].Length < 10)
+            {
+                problems.Add($"{row["id"]}: a {row["status"]} row says whether it could come back as a mod (mod_possible)");
+            }
+            if (row["status"] == "fixed" && !gameplay.Any(id => row["note"].Contains(id, StringComparison.Ordinal)))
+            {
+                problems.Add($"{row["id"]}: a fixed row names its gameplay switch in its note");
             }
         }
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
@@ -111,7 +327,7 @@ public sealed class SwitchRegisterTests
             }
         }
         var problems = new List<string>();
-        foreach (var row in Rows().Where(r => r["kind"] == "flag"))
+        foreach (var row in Rows().Where(r => r["kind"] == "flag" && r["class"] != "restoration"))
         {
             var listed = row["register"].Split(';', StringSplitOptions.RemoveEmptyEntries).ToHashSet(StringComparer.Ordinal);
             var expected = bugs.GetValueOrDefault(row["key"]) ?? [];
@@ -171,7 +387,7 @@ public sealed class SwitchRegisterTests
                 problems.Add($"{id}: a planned switch is off ('{row["default"]}')");
             }
             var presets = row["presets"].Split(';');
-            if ((row["class"] is "data-safety" or "visual") != presets.Contains("classic") || !presets.Contains("fixed") || !presets.Contains("restored"))
+            if ((row["class"] is "data-safety" or "visual") != presets.Contains("original") || !presets.Contains("fixed") || !presets.Contains("restored"))
             {
                 problems.Add($"{id}: class {row["class"]} and presets '{row["presets"]}' disagree");
             }

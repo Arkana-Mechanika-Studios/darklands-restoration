@@ -1187,14 +1187,18 @@ internal sealed class TextEditorView : IWorkshopEditor
             _barFill.Width = 0;
             // the English of a text not translated yet, in the pack's fonts: not the pack's fault, and not what will be measured
             var english = result.Untranslated;
+            // a description's column (1.1.3) or the card's window
+            var where = result.Column ?? "the card's window";
             state = result.Overflows && !english ? WorkshopTheme.Bad : result.Overflows || result.Pages > 1 ? WorkshopTheme.Warn : WorkshopTheme.Ok;
             _bar.Background = WorkshopTheme.Brush(state);
             _measure.Text = result.Overflows && english
-                ? $"Not translated yet: the English, drawn in this pack's font, runs {result.Foot - result.FootLimit + 1} px past the foot of the card's window. Your translation is what is measured."
+                ? $"Not translated yet: the English, drawn in this pack's font, runs {result.Foot - result.FootLimit + 1} px past the foot of {where}. Your translation is what is measured."
                 : result.Overflows
-                ? $"Runs past the foot of the card's window by {result.Foot - result.FootLimit + 1} px (every passage shown)."
+                ? $"Runs past the foot of {where} by {result.Foot - result.FootLimit + 1} px" + (result.Column is null ? " (every passage shown)." : ".")
                 : result.Pages > 1
                     ? $"Too long for one window: the game shows it in {result.Pages} pages (every passage shown)."
+                    : result.Column is { } column
+                    ? $"Fits {column} · {spare} px to spare."
                     : $"Fits · {spare} px to spare (every passage shown).";
         }
         else if (result.Room > 0)
@@ -1210,7 +1214,9 @@ internal sealed class TextEditorView : IWorkshopEditor
         {
             _barFill.Width = 0;
             _bar.Background = WorkshopTheme.Brush(WorkshopTheme.Line);
-            _measure.Text = $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
+            _measure.Text = result.Column is { } where
+                ? $"{result.Measured} px wide; drawn in {where}: its room is theirs (their own preview)."
+                : $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
         }
         ShowLayout(result);
         if (result.Problem is { } problem)
@@ -1240,6 +1246,22 @@ internal sealed class TextEditorView : IWorkshopEditor
         },
     };
 
+    /// <summary>
+    /// The preview's size in layout units per game pixel (<paramref name="room"/> and the result in layout units): every pixel of its
+    /// picture is drawn as the same whole number of the screen's pixels across and down (nearest neighbour), at any display scaling
+    /// (<paramref name="renderScaling"/>: 1.25 at 125 %). The largest that fits the room, at most <paramref name="most"/> layout units
+    /// a game pixel; at least one screen pixel a picture pixel. A TrueType font's picture (<see cref="PreviewResult.Scale"/> pixels a
+    /// game pixel) is shown at whole multiples of its own pixels, never shrunk.
+    /// </summary>
+    // Not in the original: the 1.1 Workshop (1.1.3: before, the size was whole in layout units only, and a TrueType picture was shrunk).
+    internal static double Scale(PreviewResult shown, double room, int most, double renderScaling)
+    {
+        var k = Math.Max(1, shown.Scale);
+        var fits = (int)Math.Floor(Math.Min(room / shown.Width, most) * renderScaling / k);
+        var times = Math.Max(1, fits);
+        return (double)times * k / renderScaling;
+    }
+
     // the preview's size: whole multiples of the game's pixels, as large as its place allows (the pane beside a card text, the
     // text's width under a screen text)
     private void Place()
@@ -1251,7 +1273,8 @@ internal sealed class TextEditorView : IWorkshopEditor
         var room = shown.CardText
             ? (_root.ColumnDefinitions[2].Width.Value > 0 ? _root.ColumnDefinitions[2].Width.Value : 552) - 32
             : Math.Max(300, _root.Bounds.Width - _root.ColumnDefinitions[0].Width.Value - 48);
-        var scale = (int)Math.Clamp(room / shown.Width, 1, 4);
+        // a description's column (1.1.3) is tall: at most twice its size, so its foot and the bar stay in view
+        var scale = Scale(shown, room, shown.Column is not null && shown.CardText ? 2 : 4, TopLevel.GetTopLevel(_root)?.RenderScaling ?? 1);
         _picture.Width = shown.Width * scale;
         _picture.Height = shown.Height * scale;
         _bar.Width = shown.CardText ? _picture.Width : Math.Min(room, shown.Width * scale);

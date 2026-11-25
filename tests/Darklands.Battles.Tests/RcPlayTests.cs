@@ -53,6 +53,39 @@ public sealed class RcPlayTests
 
         public void Present(Screen screen) => Shown = ((byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone());
 
+        /// <summary>The frames the registry views of v: steps showed.</summary>
+        public int ViewsShown { get; private set; }
+
+        // a registry view's surface here: the last frame under it, no input, its frames not the game's, no time
+        private sealed class ViewSurface((byte[] Pixels, uint[] Palette)? shown) : Presentation.Views.IViewSurface
+        {
+            public Screen? Under { get; } = Frame(shown);
+
+            public bool QuitRequested => false;
+
+            public IReadOnlyList<Presentation.Views.ViewInput> Inputs() => [];
+
+            public void Show(Screen screen)
+            {
+            }
+
+            public void WaitFrame()
+            {
+            }
+
+            private static Screen? Frame((byte[] Pixels, uint[] Palette)? shown)
+            {
+                if (shown is not var (pixels, palette))
+                {
+                    return null;
+                }
+                var screen = new Screen();
+                pixels.CopyTo(screen.Pixels, 0);
+                palette.CopyTo(screen.Palette, 0);
+                return screen;
+            }
+        }
+
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
         public void MovePointer(int x, int y) => Mouse = Mouse with { X = x, Y = y };
@@ -80,6 +113,17 @@ public sealed class RcPlayTests
                     Mouse = Mouse with { Buttons = MouseButtons.None };
                 }
                 return;
+            }
+            // v:<n>: an empty registry view opened over the last frame for n frames and closed, in this pump, before the next step (the
+            //   true pause: the host's clock does not move meanwhile, its frames are not the game's, the game's code does not run)
+            while (_script.TryPeek(out var next) && next.StartsWith("v:", StringComparison.Ordinal))
+            {
+                _script.Dequeue();
+                var view = new Presentation.Views.EmptyView(int.Parse(next[2..], System.Globalization.CultureInfo.InvariantCulture));
+                var clock = _now;
+                Presentation.Views.ViewHost.Run(view, new ViewSurface(Shown));
+                ViewsShown += view.Shown;
+                Assert.Equal(clock, _now);
             }
             if (_script.TryDequeue(out var step))
             {
@@ -532,6 +576,187 @@ public sealed class RcPlayTests
         game.Run();
         Assert.True(screens.Count >= 2, "the load should play the loaded game with new battle screens");
         Assert.Single(memories);
+    }
+
+    /// <summary>
+    /// FixLoadScreenEscape (a gameplay fix of the Fixed rule set): Alt-L empties the party's slots and the events before the load
+    /// screen opens, and Esc there goes on with that emptied game; fixed, Esc goes back to the game as it was.
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void EscOnTheLoadScreenGoesOnWithTheEmptiedOrTheWholeGame(bool fixedGame)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        // Quick Start, the opening card, Alt-L, Y to the question, Esc on the load screen
+        var host = new RcHost(["k:q", "w:80", "c:2600", "w:30", "k:y", "w:30", "k:esc", "w:40"]);
+        var game = NewGame(files, host, TempFolder("esc"), behaviour: new OriginalBehaviour { FixLoadScreenEscape = fixedGame });
+        int? membersBefore = null;
+        var membersAfter = -1;
+        host.EveryFrame = frame =>
+        {
+            if (game.Playing is not { } state)
+            {
+                return;
+            }
+            var members = state.Party.Slots.Count(m => m.Status != Core.Characters.CharacterStatus.Empty);
+            membersBefore ??= members;
+            membersAfter = members;
+        };
+        game.Run();
+        // (the events are cleared too; the card the emptied game goes on with makes new ones, so the party is what shows it)
+        Assert.Equal(4, membersBefore);
+        Assert.Equal(fixedGame ? 4 : 0, membersAfter);
+    }
+
+    /// <summary>
+    /// The rules presets through the player's game loop (DarklandsGame with RecordedRules, as the SDL host runs it): a new game takes
+    /// the chosen preset; Alt-S writes the .SAV in the original's format (readable, not damaged) and, for a game that is not Original,
+    /// a companion file with its rules; loaded with the other preset chosen, the game keeps its own rules, and a notice says so once
+    /// when the save recorded them (a Fixed game loaded with Original chosen); a save without a record (an Original game's, like every
+    /// save made before the presets) loads as Original quietly, Fixed chosen or not.
+    /// With DARKLANDS_RULES_SHOTS set to a folder the notice is saved there as a picture.
+    /// </summary>
+    [Theory]
+    [InlineData(RulePreset.Fixed, RulePreset.Original)]
+    [InlineData(RulePreset.Original, RulePreset.Fixed)]
+    [InlineData(RulePreset.Fixed, RulePreset.Fixed)]
+    public void ASavedGameKeepsTheRulesItWasStartedWith(RulePreset startedWith, RulePreset chosenNow)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var saves = TempFolder("rules");
+        // Quick Start with the preset, the opening card, Alt-S (Enter for the comment), Esc
+        var host = new RcHost(["k:q", "w:80", "c:1F00", "w:30", "k:enter", "w:60", "k:esc", "w:40"]);
+        var game = NewGame(files, host, saves, behaviour: OriginalBehaviour.Of(startedWith));
+        game.RecordedRules = true;
+        RulePreset? played = null;
+        host.EveryFrame = _ => played ??= game.Playing?.Behaviour.Preset;
+        game.Run();
+        Assert.Equal(startedWith, played);
+        var sav = File.ReadAllBytes(Path.Combine(saves, "DKSAVE0.SAV"));
+        Assert.False(SaveFile.RunsPastTheEnd(sav), "the .SAV is one the original reads to its end");
+        var companion = Path.Combine(saves, "DKSAVE0.MODS.JSON");
+        Assert.Equal(startedWith != RulePreset.Original, File.Exists(companion));
+        if (startedWith != RulePreset.Original)
+        {
+            Assert.Contains($"\"preset\": \"{RulePresets.Name(startedWith)}\"", File.ReadAllText(companion), StringComparison.Ordinal);
+        }
+
+        // loaded from the start screen (T, then L: Load on the list's first line) with the other preset chosen: the game's own rules, and
+        //   the notice over the load screen (a key closes it)
+        var log = new List<string>();
+        var loadHost = new RcHost(["k:t", "w:40", "k:l", "w:60", "k:space", "w:40"]);
+        var loader = NewGame(files, loadHost, saves, behaviour: OriginalBehaviour.Of(chosenNow));
+        loader.RecordedRules = true;
+        loader.Log = log.Add;
+        RulePreset? loadedWith = null;
+        var sinceNotice = -1;
+        var shots = Environment.GetEnvironmentVariable("DARKLANDS_RULES_SHOTS");
+        loadHost.EveryFrame = _ =>
+        {
+            loadedWith ??= loader.Playing?.Behaviour.Preset;
+            if (sinceNotice < 0 && log.Any(l => l.Contains("keeps the rules", StringComparison.Ordinal)))
+            {
+                sinceNotice = 0;
+            }
+            if (sinceNotice >= 0 && ++sinceNotice == 20 && !string.IsNullOrEmpty(shots) && loadHost.Shown is var (pixels, palette))
+            {
+                Directory.CreateDirectory(shots);
+                // three times the game's size, each pixel a 3x3 block
+                var argb = new uint[9 * pixels.Length];
+                for (var y = 0; y < 3 * Screen.Height; y++)
+                {
+                    for (var x = 0; x < 3 * Screen.Width; x++)
+                    {
+                        argb[y * 3 * Screen.Width + x] = palette[pixels[y / 3 * Screen.Width + x / 3]] | 0xFF000000u;
+                    }
+                }
+                Presentation.Graphics.PngWriter.Write(argb, 3 * Screen.Width, 3 * Screen.Height,
+                    Path.Combine(shots, $"notice-{RulePresets.Name(startedWith)}-save-with-{RulePresets.Name(chosenNow)}-chosen.png"));
+            }
+        };
+        loader.Run();
+        Assert.Equal(startedWith, loadedWith ?? loader.Playing?.Behaviour.Preset);
+        var recorded = startedWith != RulePreset.Original;
+        Assert.Equal(recorded && startedWith != chosenNow ? 1 : 0, log.Count(l => l.Contains("keeps the rules", StringComparison.Ordinal)));
+    }
+
+    /// <summary>A save made before the rules presets (no record: here the game folder's own) loads as Original with Fixed chosen, quietly.</summary>
+    [Fact]
+    public void AnOldSaveLoadsAsOriginalWithoutANotice()
+    {
+        if (GameFolder.Files is not { } files || OwnSave(files, "DKSAVE0.SAV") is not { } sav)
+        {
+            return;
+        }
+        var saves = TempFolder("old");
+        File.Copy(sav, Path.Combine(saves, "DKSAVE0.SAV"));
+        if (OwnSave(files, "DKSAVE0.BSV") is { } bsv)
+        {
+            File.Copy(bsv, Path.Combine(saves, "DKSAVE0.BSV"));
+        }
+        var log = new List<string>();
+        var host = new RcHost(["k:t", "w:40", "k:l", "w:60", "k:space", "w:40"]);
+        var game = NewGame(files, host, saves, behaviour: OriginalBehaviour.Of(RulePreset.Fixed));
+        game.RecordedRules = true;
+        game.Log = log.Add;
+        RulePreset? loadedWith = null;
+        host.EveryFrame = _ => loadedWith ??= game.Playing?.Behaviour.Preset;
+        game.Run();
+        Assert.Equal(RulePreset.Original, loadedWith);
+        Assert.DoesNotContain(log, l => l.Contains("keeps the rules", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// The true pause (1.2, the view registry): an empty registry view opened and closed in the middle of a game, at three points of the
+    /// first cards, changes nothing: every frame the game shows and the game's state at the end are those of the same run without it.
+    /// </summary>
+    [Theory]
+    [InlineData(3)]
+    [InlineData(9)]
+    [InlineData(15)]
+    public void AViewOpenedAndClosedMidGameChangesNothing(int at)
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        // Quick Start, the opening card, then the card's lines and keys (a walk through the first cards)
+        string[] script = ["k:q", "w:80", "k:space", "w:20", "k:1", "w:40", "k:space", "w:20", "k:2", "w:40", "k:space", "w:20",
+            "k:enter", "w:40", "k:esc", "w:30", "k:1", "w:40", "k:space", "w:40"];
+        (List<string> Frames, string Digest, int Views) Play(bool withView)
+        {
+            var steps = script.ToList();
+            if (withView)
+            {
+                steps.Insert(at, "v:25");
+            }
+            var host = new RcHost(steps);
+            var game = NewGame(files, host, TempFolder("pause"));
+            var frames = new List<string>();
+            host.EveryFrame = _ =>
+            {
+                if (host.Shown is var (pixels, palette))
+                {
+                    frames.Add(Convert.ToHexString(SHA256.HashData([.. pixels, .. palette.SelectMany(BitConverter.GetBytes)])));
+                }
+            };
+            game.Run();
+            return (frames, game.Playing is { } state ? Digest(state) : "", host.ViewsShown);
+        }
+        var plain = Play(false);
+        var paused = Play(true);
+        Assert.Equal(0, plain.Views);
+        Assert.Equal(25, paused.Views);
+        Assert.Equal(plain.Frames.Count, paused.Frames.Count);
+        Assert.Equal(plain.Frames, paused.Frames);
+        Assert.Equal(plain.Digest, paused.Digest);
     }
 
     /// <summary>G6: a saved game that is not there raises a file-not-found for its name (the caller's to report).</summary>

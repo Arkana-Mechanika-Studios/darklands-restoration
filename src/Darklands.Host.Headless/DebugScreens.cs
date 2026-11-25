@@ -6,7 +6,7 @@ using Darklands.Presentation;
 using Darklands.Presentation.Graphics;
 using Darklands.Rendering;
 
-/// <summary>Opens the sheet, party information, camp or alchemy screen directly (a debugging aid).</summary>
+/// <summary>Opens the sheet, party information, camp, alchemy, prayer or formula screen directly (a debugging aid).</summary>
 internal static class DebugScreens
 {
     public static void Run(IHost host, GameFiles files, string which, uint seed, Action<GameUi>? packs = null)
@@ -26,6 +26,15 @@ internal static class DebugScreens
                 case "sheet": screens.CharacterSheet(0); break;
                 case "party": screens.PartyInfo(); break;
                 case ['a', 'l', ..]: screens.Alchemy(which.Length > 7 ? which[7] - '0' : 0, 0); break;
+                // the prayer screen of saint n (the first member praying) and the formula page of formula n (screen:saint<n>, screen:formula<n>)
+                case ['s', 'a', 'i', 'n', 't', ..]:
+                    new SaintPrayerScreen(ui, panel).Pray(state, 0, int.Parse(which[5..], System.Globalization.CultureInfo.InvariantCulture),
+                        Darklands.Core.Rules.PrayerMode.ForMember, Darklands.Core.Rules.SaintEffects.Instance);
+                    break;
+                case ['f', 'o', 'r', 'm', 'u', 'l', 'a', ..]:
+                    new AlchemyScreen(ui, panel, FormulaBook.Load(files, world)).ShowFormula(state, 0,
+                        int.Parse(which[7..], System.Globalization.CultureInfo.InvariantCulture));
+                    break;
                 default: screens.Camp(which.Length > 4 ? which[4] - '0' : 0); break;
             }
         }

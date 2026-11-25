@@ -51,7 +51,7 @@ public sealed class InnByDay : Card
             picture = BackRoomPicture;
             ShowPicture(c, picture);
         }
-        c.Variables.Money[0] = Money.FromPfennigs(c.ServicePrice(c.StandingSeen, size));
+        c.Variables.Money[0] = Money.FromPfennigs(c.State.Parameters.LodgingPrice.Apply(c.ServicePrice(c.StandingSeen, size)));
         if (c.State.Party.Purse < c.Variables.Money[0])
         {
             states[1] = OptionState.Shown;

@@ -396,6 +396,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     // C: lockstep session tk-map-altq (Right and Alt-Q pressed together, "no", then a walk: every state agrees)
     // DORMANT: the icon pictures' free (R030+0x0FFB..0x100B: when DS:E416 is not 0): DS:E416 is 0 in the data image and every direct write
     //   stores 0 (R030+0x02B7, 0x101B, R037+0x8E83), so the test always jumps (unreachable.csv)
+    //   checked 2026-11-25 (writer scan of 483.07): the three writes of DS:E416 all store 0 (R030+0x02B7, R030+0x101B, R037+0x8E83).
     // DIVERGENCE: which of the two looks a single press meets first is host timing: the C# gives it to hotkey-table's (the same question,
     //   without the buffers freed).
     // C: the frees after "no" end the program (FreeBuffer, OriginalBehaviour.FixMapQuitFreedBuffers)

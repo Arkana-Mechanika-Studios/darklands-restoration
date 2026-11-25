@@ -124,6 +124,7 @@ public static class OriginalSaves
         if (running is not null)
         {
             state.Behaviour = running.Behaviour;
+            state.Parameters = running.Parameters;
             // C: the item store screen's working table (2E38:37F4) is not in the save: a load keeps what the run left in it.
             state.StoreTable = running.StoreTable;
             state.OptionFlags = running.OptionFlags;

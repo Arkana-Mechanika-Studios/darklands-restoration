@@ -41,9 +41,10 @@ internal static class CommandLineUsage
           --text-font <file>         the text screen's 8x16 font
           --sdl <file>               the SDL3 library to use
           --no-console               no developer console (F11)
-          --no-mouse-wheel           the mouse wheel does not give up / down in the menus and lists
-          --no-card-menu-keys        at a card menu, up / down only with the pointer over a line (as the original)
+          --no-mouse-wheel           with the Comfort interface, the mouse wheel does not give up / down in the menus and lists
+          --no-card-menu-keys        with the Comfort interface, card menus take up / down only over a line (as the original)
           --interface <mode>         the Interface switch: comfort (default: the comfort features) or classic (the original's)
+          --rules <preset>           the rules of new games: fixed (default: the gameplay bugs fixed) or original
           --log-window               a window with the program's messages (Windows; they always go to the log)
           --sound-test               check the sound without the game, then stop
           --version | --help         the version | this text
