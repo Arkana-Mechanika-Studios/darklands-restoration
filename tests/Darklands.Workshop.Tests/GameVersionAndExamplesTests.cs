@@ -30,6 +30,16 @@ public sealed class GameVersionAndExamplesTests
         Assert.Equal("1.1.0", WorkshopVersion.NeedsGame);
     }
 
+    /// <summary>The README's status line says the build's version (a hotfix 1.1.4 left it at 1.1.3: docs/RC-CHECKLIST.md, A0).</summary>
+    [Fact]
+    public void TheReadmesStatusIsTheBuildsVersion()
+    {
+        var props = XDocument.Load(Path.Combine(Root(), "Directory.Build.props"));
+        var version = props.Descendants("Version").Single().Value;
+        var status = File.ReadLines(Path.Combine(Root(), "README.md")).Single(l => l.StartsWith("## Status: version ", StringComparison.Ordinal));
+        Assert.Equal("## Status: version " + version, status);
+    }
+
     [Theory]
     [InlineData("1.0.0", true)]
     [InlineData("1.0.0-rc6", true)]
