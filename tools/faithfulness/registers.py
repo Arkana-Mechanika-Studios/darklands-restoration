@@ -252,7 +252,17 @@ def build(root: Path = ROOT):
             e.flags = [] if decision(e) and not decision(e).startswith(('fix', 'covered')) else found
         entries.append(e)
     # BUG: the flag nearest after the marker wins when several flags sit in the window
+    # a raw control character in a marker (an escape such as \b turned into its byte by a tool) would go into the registers unseen:
+    #   refused, with the place to fix (tests/Darklands.Architecture.Tests/ControlCharacterTests.cs guards the sources too)
+    refuse_control_characters(entries)
     return index, flags, entries
+
+
+def refuse_control_characters(entries) -> None:
+    """Stops when a marker's note holds a raw control character (tab and line ends aside), naming its file and line."""
+    bad = [e for e in entries if any(ord(ch) < 32 and ch not in (chr(9), chr(10), chr(13)) for ch in e.note)]
+    if bad:
+        raise SystemExit("control character in the marker of " + ", ".join(f"{e.file}:{e.line}" for e in bad) + ": write it as text")
 
 
 # --------------------------------------------------------------------------- output helpers

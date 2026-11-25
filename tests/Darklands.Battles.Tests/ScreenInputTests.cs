@@ -777,7 +777,7 @@ public sealed class ScreenInputTests
         }
         var chosen = false;
         var hotKeys = 0;
-        ui.MenuBar = new MenuBar(ui, [new MenuBar.Menu("Game", true, [new MenuBar.Item(() => "Save Game", true, "", () => chosen = true)])]);
+        ui.MenuBar = new MenuBar(ui, [new MenuBar.Menu("Game", true, [new MenuBar.Item(() => "\u0002Save Game", true, "", () => chosen = true)])]);
         ui.GameKey = _ => { hotKeys++; return true; };
         var data = Darklands.Content.Formats.Characters.CreationDataDecoder.Decode(ui.Assets.Files.Read("DARKLAND.EXE"));
         var creation = new Darklands.Core.Characters.Creation.CharacterCreation(data.Tables, world.ItemDefinitions,

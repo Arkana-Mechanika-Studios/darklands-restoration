@@ -72,27 +72,27 @@ public sealed partial class BattleScreen
         // C: every Orders text starts with its tick byte (font 1: 1 a tick, 2 none, both 6 pixels wide): 2, but Travel As Group's (DS:07AA) and
         // C: Travel Single File's (DS:07BC), which R016+0x0BD6 / R016+0x0CDC set to 1 for the mode turned on and every other writer (R002+0x0000,
         // C: R014+0x0000 at real combat, R037+0x8B76) to 2 with travel-mode 0: the tick is travel-mode's
-        static string Tick(bool on) => on ? "" : "";
+        static string Tick(bool on) => on ? "\u0001" : "\u0002";
         var orders = new List<MenuBar.Item>
         {
             O(OrdersItem.Resume, () => W("exe:DS:0D49"), W("exe:DS:0D51"), Resume),
-            O(OrdersItem.Finished, () => "" + m.Giver + S(BattleScreens.FinishedText), W("exe:DS:0D56"), () => tb.LeaveOrderMode()),
+            O(OrdersItem.Finished, () => "\u0002" + m.Giver + S(BattleScreens.FinishedText), W("exe:DS:0D56"), () => tb.LeaveOrderMode()),
             O(OrdersItem.EnemyInfo, () => W("exe:DS:0D58"), W("exe:DS:0D64"), EnemyInfo),
             O(OrdersItem.Walk, () => S(0x67C).TrimEnd(), W("exe:DS:0D67"), () => tb.ChooseOrder(1)),
             O(OrdersItem.Flee, () => S(0x690).TrimEnd(), W("exe:DS:0D6A"), () => tb.ChooseOrder(1, flee: true)),
             O(OrdersItem.Halt, () => W("exe:DS:06A4"), W("exe:DS:0D6D"), () => tb.Halt(tb.Battle.Leader)),
             O(OrdersItem.Group, () => Ticked(tb.MoveMode == 1, "exe:DS:07AA"), W("exe:DS:0D70"), tb.ToggleGroup),
             O(OrdersItem.SingleFile, () => Ticked(tb.MoveMode == 2, "exe:DS:07BC"), W("exe:DS:0D73"), tb.ToggleSingleFile),
-            O(OrdersItem.UseDoor, () => "" + With(0x6AA, 8, m.DoorSuffix), W("exe:DS:0D76"), () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.UseStairs, () => "" + With(0x6BA, 10, m.StairsSuffix), W("exe:DS:0D79"), () => tb.UseKey(tb.Selected)),
-            O(OrdersItem.OpenChest, () => "" + With(0x6CC, 10, m.ChestSuffix), W("exe:DS:0D7C"), () => tb.OpenKey(tb.Selected)),
-            O(OrdersItem.PickLock, () => "" + With(0x6DE, 9, m.PickSuffix), W("exe:DS:0D7F"), () => tb.PickKey(tb.Selected)),
-            O(OrdersItem.DissolveLock, () => "" + With(0x6F0, 13, m.DissolveSuffix), W("exe:DS:0D82"), () => tb.DissolveKey(tb.Selected)),
+            O(OrdersItem.UseDoor, () => "\u0002" + With(0x6AA, 8, m.DoorSuffix), W("exe:DS:0D76"), () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.UseStairs, () => "\u0002" + With(0x6BA, 10, m.StairsSuffix), W("exe:DS:0D79"), () => tb.UseKey(tb.Selected)),
+            O(OrdersItem.OpenChest, () => "\u0002" + With(0x6CC, 10, m.ChestSuffix), W("exe:DS:0D7C"), () => tb.OpenKey(tb.Selected)),
+            O(OrdersItem.PickLock, () => "\u0002" + With(0x6DE, 9, m.PickSuffix), W("exe:DS:0D7F"), () => tb.PickKey(tb.Selected)),
+            O(OrdersItem.DissolveLock, () => "\u0002" + With(0x6F0, 13, m.DissolveSuffix), W("exe:DS:0D82"), () => tb.DissolveKey(tb.Selected)),
             O(OrdersItem.DisarmTrap, () => S(m.DisarmText), W("exe:DS:0D85"), () => tb.DissolveKey(tb.Selected)),
             O(OrdersItem.Surrender, () => W("exe:DS:0706"), W("exe:DS:0D88"), Surrender),
             // orig: R016+0x13CA (1EF8:13CA) matched (R016+0x13CA): R016+0x1590 with 9
             O(OrdersItem.LootBodies, () => W("exe:DS:0718"), W("exe:DS:0D8B"), () => tb.ChoosePlace(PlaceAction.TakeLoot)),
-            O(OrdersItem.Exit, () => "" + With(0x726, 16, m.ExitSuffix), W("exe:DS:0D8E"), tb.ExitKey),
+            O(OrdersItem.Exit, () => "\u0002" + With(0x726, 16, m.ExitSuffix), W("exe:DS:0D8E"), tb.ExitKey),
             O(OrdersItem.Cancel, () => W("exe:DS:0D91"), W("exe:DS:0DA6"), tb.CancelOrder),
         };
         // orig: the Attack items' functions DS:97DB (R000+0x083E), each R016+0x156E(action), matched: R016+0x130A (0x12), R016+0x1314 (0x0A)

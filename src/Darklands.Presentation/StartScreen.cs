@@ -17,7 +17,7 @@ public enum StartChoice
 /// "Create characters" and "Load a saved game" — and Alt-Q to quit.
 /// </summary>
 // orig: R037+0x9C48 (1E26:0008) = thunk 09C0:18DD, run once by the main function before the card loop; its helpers 00dc (draw the picture, load button1..4), 014a (copy to the screen), 00a6 (free the button pictures) and the key handler 0172; matched; tests: none (needs a host)
-// DORMANT: picsutton4.pic is loaded (DS:8D04) but nothing in this file ever draws it: the header says "4 buttons: quit / default party / load / create" but only buttons 1..3 are drawn (as the pressed states).
+// DORMANT: pics\button4.pic is loaded (DS:8D04) but nothing in this file ever draws it: the header says "4 buttons: quit / default party / load / create" but only buttons 1..3 are drawn (as the pressed states).
 // DIVERGENCE: the original runs the start screen once and ends the program when the game ends (the main loop returns, release-work-buffer, exit); DarklandsGame.Run comes back to this screen after a game instead.
 // DIVERGENCE: the original starts the chosen action as the pressed button is drawn, with no pause (loading takes the time); the 150 ms here only lets the press be seen.
 public sealed class StartScreen(GameUi ui)
