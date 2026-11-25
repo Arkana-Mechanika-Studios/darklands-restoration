@@ -128,7 +128,7 @@ public static class OriginalTextExtractor
     [
         // the alchemy menu's four lines (R033+0x094A)
         (0x1DC3, 4),
-        (0x1DD3, 3), (0x1DDF, 0x41), (0x20AB, 6), (0x1EE7, 34),
+        (0x1DD3, 3), (0x1DDF, 0x41), (0x20AB, 6), (0x1EE7, 37),
         (0x235F, 0x6E), (0x2517, 0x5A), (0x267F, 0x93), (0x28CB, 0x11),
         (0x1FA7, 16), (0x1FE7, 38), (0x2107, 31),
         // the far tables of OriginalWords: fame titles, the shop names (from entry -3), directions, standing words, job names

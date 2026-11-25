@@ -72,10 +72,16 @@ public sealed class PackRoutesTests : IDisposable
         }
         var ui = new GameUi(new BattleScreenTests.SilentHost(), new GameAssets(files));
         var backgrounds = Enumerable.Range(0, 6).Select(i => ui.Word(OriginalWords.BackgroundNames, i)).ToList();
-        var occupations = Enumerable.Range(0, 34).Select(i => ui.Word(OriginalWords.OccupationNames, i)).ToList();
-        Assert.All(backgrounds, b => Assert.False(string.IsNullOrEmpty(b)));
-        Assert.All(occupations, o => Assert.False(string.IsNullOrEmpty(o)));
-        Assert.Equal(occupations.Count, occupations.Distinct().Count());
+        var creation = Darklands.Content.Formats.Characters.CreationDataDecoder.Decode(files.Read("DARKLAND.EXE")).Tables;
+        var occupations = Enumerable.Range(0, Darklands.Core.Characters.Creation.CharacterCreation.OccupationCount)
+            .Select(i => ui.Word(OriginalWords.OccupationNames, i)).ToList();
+        // the word tables are the creation data's names, every entry (the generator's lists draw them by index)
+        Assert.Equal(creation.Backgrounds.Select(b => b.Name), backgrounds);
+        Assert.Equal(creation.Occupations.Select(o => o.Name), occupations);
+        // each entry has a key of the template
+        var table = OriginalTextExtractor.Extract(files);
+        Assert.All(Enumerable.Range(0, occupations.Count), i => Assert.True(table.Contains(ui.Assets.Words.Key(OriginalWords.OccupationNames, i)), i.ToString()));
+        Assert.All(Enumerable.Range(0, 6), i => Assert.True(table.Contains(ui.Assets.Words.Key(OriginalWords.BackgroundNames, i)), i.ToString()));
 
         Pack(ui, (ui.Assets.Words.Key(OriginalWords.OccupationNames, 0), "Beruf"));
         Assert.Equal("Beruf", ui.Word(OriginalWords.OccupationNames, 0));

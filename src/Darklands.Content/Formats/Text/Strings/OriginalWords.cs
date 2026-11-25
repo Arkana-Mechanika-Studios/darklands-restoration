@@ -71,7 +71,7 @@ public sealed class OriginalWords(DarklandsExecutable exe)
     public static readonly WordTable BackgroundNames = WordTable.Far("background-names", 0x20AB, 6);
 
     /// <summary>The character creation's 34 occupations (290E:1EE7), as its list shows them.</summary>
-    public static readonly WordTable OccupationNames = WordTable.Far("occupation-names", 0x1EE7, 34);
+    public static readonly WordTable OccupationNames = WordTable.Far("occupation-names", 0x1EE7, Darklands.Core.Characters.Creation.CharacterCreation.OccupationCount);
 
     // orig: R136+0xA813 = 290E:2183, 6 far strings, read by R034+0x0EE6, R034+0x144C, R034+0x166E and the card texts' case 16 (R043+0x1316)
     //   (PartyStanding.StandingBand)
