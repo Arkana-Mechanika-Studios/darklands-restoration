@@ -810,7 +810,7 @@ public sealed class DarklandsGame
         // C: cards-setup (thunk of R043+0x078E): the clock reseed, then world-read's city record and events (CardContext.RunBattle has the details).
         Core.Rules.TimePassage.Reseed(state);
         Core.World.CityFile.ReloadAfterBattle(state);
-        state.Events.Reload();
+        state.Events.Reload(state.Behaviour);
         // orig: root 03A1:0438..0441: after cards-setup (thunk 09C0:1919(0), 03A1:0430) thunk 09C0:190F(0) = pass-hours(0), before the
         // pass's own end calls it again (03A1:0463, CardDispatcher.FinishPass): two more clock reseeds (lockstep session dungeon-mine-doormsg:
         // the second second of the original's reload took the next clock seed)

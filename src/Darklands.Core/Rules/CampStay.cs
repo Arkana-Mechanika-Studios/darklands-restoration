@@ -132,22 +132,29 @@ public sealed class CampStay
 
     // orig: R036+0x1D24 (1462:1D24) draft (bytes match); the same scan repeated inline in R036+0x0082 and R036+0x147A
     // BUG: j counts every teacher event met, so rows are numbered by log position and the scan stops after "count here" events of any town.
+    //   Fixed (FixTeacherRows): j counts the teachers here only, so every one of them is listed and each row is its own. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
     /// <summary>The skills taught here (skill numbers), in list order (the teacher box); it also fills the row table the way the original does.</summary>
     public List<int> TeacherList()
     {
         var skills = new List<int>();
         var count = _s.Events.CountAt(EventKinds.Teacher, _s.CurrentLocation);
-        for (int k = 0, j = 0; j < count; k++, j++)
+        var hereOnly = _s.Behaviour.FixTeacherRows;
+        for (int k = 0, j = 0; j < count; k++)
         {
             k = _s.Events.Next(EventKinds.Teacher, k);
             if (k == -1)
             {
                 break;
             }
-            if (_s.Events.HasStarted(k) && _s.Events[k]!.Location == _s.CurrentLocation)
+            var here = _s.Events.HasStarted(k) && _s.Events[k]!.Location == _s.CurrentLocation;
+            if (here)
             {
                 _teacherSkills[j] = _s.Events[k]!.Type;
                 skills.Add(_s.Events[k]!.Type);
+            }
+            if (here || !hereOnly)
+            {
+                j++;
             }
         }
         return skills;

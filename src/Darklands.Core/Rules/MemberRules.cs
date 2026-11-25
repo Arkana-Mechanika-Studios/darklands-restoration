@@ -319,7 +319,9 @@ public static class MemberRules
         // only by the excess over the maximum and then recorded in full, but AddAttribute keeps the attribute within
         // 1..99 and under the maximum plus the largest single boost (R029+0x4E0C); the expiry takes back the recorded
         // amount, so a boost cut short (an attribute near 99, or a second boost overlapping a larger one, in either
-        // order) leaves the attribute lower than before. The whole-party path above does the same.
+        // order) leaves the attribute lower than before. The whole-party path above does the same. Fixed (FixBoostRecordsApplied):
+        // the event keeps what was really added (set after the raise, which counts the event in its cap), so its end takes back
+        // exactly that. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
         var gap = Attribute(s, who, attribute) - AttributeMaximum(s, who, attribute);
         if (gap > 0 && points < gap)
         {
@@ -329,8 +331,13 @@ public static class MemberRules
         {
             points -= gap;
         }
-        RecordBoost(s, who, EventKinds.AttributeBoost, attribute, points, hours);
+        var before = Attribute(s, who, attribute);
+        var slot = RecordBoost(s, who, EventKinds.AttributeBoost, attribute, points, hours);
         AddAttribute(s, who, attribute, points);
+        if (s.Behaviour.FixBoostRecordsApplied && slot >= 0 && s.Events[slot] is { } boost)
+        {
+            boost.Value = Attribute(s, who, attribute) - before;
+        }
     }
 
     /// <summary>
@@ -402,7 +409,7 @@ public static class MemberRules
 
     // orig: event-create R029+0x2C4E (0E76:2C4E) draft
     // C: event-create(who, location-now, 0x63, kind, k, d, 6, roll-below(3) + h - 5, 1, 0).
-    private static void RecordBoost(GameState s, int owner, int kind, int type, int points, int hours) =>
+    private static int RecordBoost(GameState s, int owner, int kind, int type, int points, int hours) =>
         s.Events.Create(owner, s.CurrentLocation, 0x63, kind, type, points, (int)ExpiryHandler.UndoTemporaryBoost,
             s.Random.Below(3) + hours - 5, (int)EventFlags.CallExpiryHandler, 0);
 

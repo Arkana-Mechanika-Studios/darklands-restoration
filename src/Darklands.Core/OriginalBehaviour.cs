@@ -649,6 +649,34 @@ public sealed class OriginalBehaviour
     // orig: R077 ($Villa02) starts the quest and goes to $Raubi00 with the patron 0x86; R080 ($Raubi01) has the case 0x86; no card sends there
     public bool FixVillageSchulzReward { get => _on[RuleTable.FixVillageSchulzReward]; set => _on[RuleTable.FixVillageSchulzReward] = value; }
 
+    /// <summary>An alchemist offers formulas 0..21 only (modulo 22, the potions' count, used as a formula number); fixed: modulo 66, every formula.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-10641a
+    public bool FixAlchemistFormulaRange { get => _on[RuleTable.FixAlchemistFormulaRange]; set => _on[RuleTable.FixAlchemistFormulaRange] = value; }
+
+    /// <summary>The events made in a battle are lost when the event table is read back after it; fixed: they are kept, so they end.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-e1b48f
+    public bool FixBattleEventsKept { get => _on[RuleTable.FixBattleEventsKept]; set => _on[RuleTable.FixBattleEventsKept] = value; }
+
+    /// <summary>The teacher list counts the teachers of every town; fixed: this town's only.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-459e15
+    public bool FixTeacherRows { get => _on[RuleTable.FixTeacherRows]; set => _on[RuleTable.FixTeacherRows] = value; }
+
+    /// <summary>A temporary attribute boost records the asked amount, not the amount added; fixed: the added amount, taken back exactly.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-6eb045
+    public bool FixBoostRecordsApplied { get => _on[RuleTable.FixBoostRecordsApplied]; set => _on[RuleTable.FixBoostRecordsApplied] = value; }
+
+    /// <summary>A Hussite band's friendship succeeds only on a roll equal to the chance; fixed: at or below it.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-7bfead
+    public bool FixHussiteFriendship { get => _on[RuleTable.FixHussiteFriendship]; set => _on[RuleTable.FixHussiteFriendship] = value; }
+
+    /// <summary>The peat bog's rope line tests the Rope's item type as a flag mask; fixed: the Rope's flag.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-03246c
+    public bool FixPeatBogRope { get => _on[RuleTable.FixPeatBogRope]; set => _on[RuleTable.FixPeatBogRope] = value; }
+
+    /// <summary>A stay left by a click on an empty party row skips its clean-up; fixed: it runs.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-2a4a58
+    public bool FixCampEmptyRowCleanUp { get => _on[RuleTable.FixCampEmptyRowCleanUp]; set => _on[RuleTable.FixCampEmptyRowCleanUp] = value; }
+
     // ---- the Restored rule set (class restoration, presets restored only: restoration.csv) ----------------------------------------
 
     /// <summary>

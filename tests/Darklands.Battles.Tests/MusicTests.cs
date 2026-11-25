@@ -123,6 +123,13 @@ public sealed class MusicTests
                     var xy = value.Split(',');
                     Mouse = Mouse with { X = int.Parse(xy[0], System.Globalization.CultureInfo.InvariantCulture), Y = int.Parse(xy[1], System.Globalization.CultureInfo.InvariantCulture) };
                     break;
+                case "down":
+                    // the left button pressed (the value is not read) and held until up
+                    Mouse = Mouse with { Buttons = MouseButtons.Left };
+                    break;
+                case "up":
+                    Mouse = Mouse with { Buttons = MouseButtons.None };
+                    break;
             }
         }
     }

@@ -440,7 +440,7 @@ public sealed partial class CardContext
         }
         TimePassage.Reseed(State);
         Core.World.CityFile.ReloadAfterBattle(State);
-        Events.Reload();
+        Events.Reload(State.Behaviour);
         TimePassage.Advance(State, 0);
         // orig: card-run(card-title, image-buffer) at the end: the named card's texts (a card that only named itself, NameTheCard, has its own from here)
         Screen.ReloadAfterBattle();

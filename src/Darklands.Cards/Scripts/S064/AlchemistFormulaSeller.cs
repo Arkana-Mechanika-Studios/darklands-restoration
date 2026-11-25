@@ -16,6 +16,9 @@ public sealed class AlchemistFormulaSeller : Card
     private const int ListedFormulas = 4;
     private const int FormulaGroups = 22;
 
+    // the formulas of DARKLAND.ALC: 22 potions in three grades
+    private const int Formulas = 66;
+
     public override int Number => 0x53;
 
     public override int Run(CardContext c)
@@ -72,8 +75,10 @@ public sealed class AlchemistFormulaSeller : Card
     // orig: R064+0x2D38
     // BUG: only formulas 0..21 are ever for sale: the offer is taken modulo 22 (the number of potions) but used as a
     // formula number (potion = n / 3, grade = n % 3), so only the first seven potions and the first grade of the eighth are
-    // offered (unsigned div by 0x16, 1B0B:008E and the three after it).
-    private static int FormulaOnOffer(CardContext c, int slot) => (ushort)((ushort)c.HereQuery(0x21) + slot * 3 + 100) % FormulaGroups;
+    // offered (unsigned div by 0x16, 1B0B:008E and the three after it). Fixed (FixAlchemistFormulaRange): modulo 66, the
+    // formulas' count, so the four slots are four potions of one grade from the whole range. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1).
+    internal static int FormulaOnOffer(CardContext c, int slot) =>
+        (ushort)((ushort)c.HereQuery(0x21) + slot * 3 + 100) % (c.State.Behaviour.FixAlchemistFormulaRange ? Formulas : FormulaGroups);
 
     // C: R136+0xF066 (virtue-label-table) is filled with the full formula names of DARKLAND.LST by world-read (see CardContext.NameToSlot), so the LST names are the table.
     private static string FormulaName(CardContext c, int formula) =>

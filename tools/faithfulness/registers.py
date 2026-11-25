@@ -248,7 +248,8 @@ def build(root: Path = ROOT):
             found = sorted(set(re.findall(r"\b(Fix[A-Z]\w+)\b", window)) & flags)
             # a bug kept as the original (its note closes with a decision) has no fix flag, even when a flag of a neighbouring bug is
             # in the window (the planned fix is a `planned` row of switches.csv)
-            e.flags = [] if decision(e) else found
+            # (a decision to fix, or a row covered by another's flag, keeps the flags its note names)
+            e.flags = [] if decision(e) and not decision(e).startswith(('fix', 'covered')) else found
         entries.append(e)
     # BUG: the flag nearest after the marker wins when several flags sit in the window
     return index, flags, entries
@@ -294,8 +295,9 @@ def orig_md(e: Entry, index: Index) -> str:
 
 def decision(e: Entry) -> str:
     """The decision about a bug kept as the original, from the closing sentence of its note: "Decision: later, <rule>." or
-    "Decision: never, <reason>." (later: an optional fixed rule after 1.0; never: no change). Empty when the note has none."""
-    m = re.search(r"Decision: (later|never), (.+?)\.?\s*$", e.note) if e.kind == "BUG" else None
+    "Decision: never, <reason>." (later: an optional fixed rule after 1.0; never: no change), and since F-1 (2026-11-25) the user's row
+    decisions: "fix, ..." (fixed behind its flag), "research, ...", "covered, ..." (by another row's flag), "keep, ...". Empty when none."""
+    m = re.search(r"Decision: (later|never|fix|research|covered|keep), (.+?)\.?\s*$", e.note) if e.kind == "BUG" else None
     return f"{m.group(1)}: {m.group(2)}" if m else ""
 
 
