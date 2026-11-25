@@ -33,6 +33,9 @@ Each fix is a switch of its own, with the original's behaviour kept beside it an
 - Whether a shop has an item depends on the city's size, not on a leftover value.
 - At the university, a failed search for formulas shuts the formulas line for the week, not the saints line.
 - At a church at night, the altar boy asked about Mass between 9:00 and 14:59 gives the right answer, not a stray hour.
+- A clerk's "come back later" at the town hall or the fortress keeps its promise: the party is welcome there the next day.
+- A City Lord's commission given at the fortress (in a city without a town hall) is paid when it is done, as the town hall pays its own.
+- A village Schulz's robber-knight task is paid when it is done (ask him for information).
 - Alt-L, then Esc on the load screen, goes back to the game as it was (the original went on with an empty party and no events).
 
 ## Camp

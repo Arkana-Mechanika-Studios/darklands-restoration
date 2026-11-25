@@ -28,7 +28,11 @@ public sealed class RulePresetsTests
         fixedSet.Set(gameplay, false);
         Assert.Equal([(gameplay, false)], fixedSet.Differences());
         Assert.False(fixedSet.SameFlags(OriginalBehaviour.Of(RulePreset.Fixed)));
-        Assert.True(OriginalBehaviour.Of(RulePreset.Fixed).SameFlags(OriginalBehaviour.Of(RulePreset.Restored)));
+        // Restored is Fixed and the restoration flags (class restoration), no more
+        var restored = OriginalBehaviour.Of(RulePreset.Restored);
+        Assert.False(OriginalBehaviour.Of(RulePreset.Fixed).SameFlags(restored));
+        Assert.Equal(RuleTable.Flags.Where(r => r.Class == "restoration").Select(r => r.Id), restored.On.Except(OriginalBehaviour.Of(RulePreset.Fixed).On));
+        Assert.Empty(OriginalBehaviour.Of(RulePreset.Fixed).On.Except(restored.On));
     }
 
     /// <summary>Since rules set A3 Fixed plays as itself and is the preset of new games by default.</summary>

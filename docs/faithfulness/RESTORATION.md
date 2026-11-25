@@ -33,7 +33,10 @@ not touch it.
 | `restoring` | what restoring it would mean, in our words |
 | `size` | S (about 1 to 3 sessions), M (about a week), L (several weeks), XL (a phase), as in the release plan |
 | `status` | `candidate`, `needs research` or `rejected` |
+| `evidence` | the evidence trail: each source, what it says, its reliability (below), `;`-separated |
 | `note` | for `candidate`: the caveat; for `needs research`: what is unknown; for `rejected`: the reason |
+| `revisit_if` | for `rejected` and `waits`: what would reopen the row (a text found, a design paper, a version difference, a part restored first) |
+| `mod_possible` | for `rejected` and `waits`: whether the item could come back as new content (a mod, our own design) and what that needs (new text, a reward or destination, new data, a new picture, the data or world seam), or why not |
 
 ### Evidence levels (design C3)
 
@@ -43,6 +46,13 @@ not touch it.
 4. stated by a designer (posts, interviews, the 1992 conference, the mailing-list archive);
 5. design documents and code held in archives (the design papers of the team);
 6. historical research, where the game aims at history.
+
+Besides the levels, the `evidence` column marks a source's kind: `code` and `data` (the original's program and files, with `oracle`
+where the original was run on it), `V` (present in an earlier release, 483.04 to 483.06, against 483.07), `M` the manual and `C` the
+clue book (level 3; the clue book says the manual was printed before the game was finished and ranks itself above it), `D` a designer's
+statement (level 4, with its year), `P` a design paper (level 5), `T` a third party's reading of the game files (reliable for what the
+files hold, speculation where it guesses intent), `G` the community archive (`O` an observation in play, `F` a file analysis, `H`
+hearsay), with the group's message numbers.
 
 A row records the level that makes it a candidate and lists the others. Level 1 and 2 rows are checkable against our
 own registers and the original files; level 3 to 5 rows rest on documents; no row rests on level 6 alone yet.
@@ -54,7 +64,17 @@ own registers and the original files; level 3 to 5 rows rest on documents; no ro
 - `needs research`: promising but something is unknown (what the text holds, the amount, the intent, who owns it).
   The note says exactly what.
 - `rejected`: recorded so it is not raised again, with the reason (nothing to restore, designers chose against it,
-  needs art or a map that never existed, debug aid). A rejected row can be reopened with new evidence.
+  needs art or a map that never existed, debug aid). A rejected row is not forgotten: it stays in the register with what would
+  reopen it (`revisit_if`) and whether it could come back as new content (`mod_possible`): a rejected restoration may still be
+  a mod or our own design, which is new content and never part of Restored. The rejected rows are reviewed whenever new sources
+  arrive (an earlier release, a design paper, a statement).
+- `built`: in the Restored rule set: a switch of class `restoration` in [switches.csv](switches.csv) (presets `restored`
+  only, its `register` this row's id), named in the note with the check against the original and the test.
+  `SwitchRegisterTests` keeps the two registers in step.
+- `fixed`: not a restoration after all but an original bug whose fix is in the Fixed rule set (a gameplay switch of class
+  `gameplay`, its id named in the note); Restored inherits it.
+- `waits`: a candidate that cannot be built yet: it needs saved state the original's `.SAV` does not hold, or new data
+  (records, pictures) that need the data seam. The note says which.
 
 ## Method
 
@@ -97,6 +117,17 @@ By evidence level (the level that makes it a candidate):
 | 6 historical research | 0 | 0 | 0 | 0 |
 
 By size guess: S 33, M 22, L 9, XL 6 (candidates: 16 S, 3 M).
+
+The counts are those of the first pass. Since then four candidates are `built` and one `waits` (restore-r1, 2026-11-24: see
+[In the Restored rule set](#in-the-restored-rule-set)), leaving 14 candidates; the first research pass of the `needs research` rows (same day)
+made two of them candidates (fortress-commission-pay, dragon-lair-icon) and rejected nine, with the reasons in their notes:
+16 candidates, 4 built, 1 waits, 28 needs research, 21 rejected. The research in the developer sources, the manual and clue book, the
+community archive and the earlier releases (same day) gave every row its evidence trail and moved three: dragon-lair-icon to
+`rejected` (the clue book says the lairs are hidden on purpose), relic-powers back to `needs research` (unused values in the relics'
+records), and six new rows (three from the earlier releases, three from the design papers and the files): 76 rows, 15 candidates,
+4 built, 1 waits, 34 needs research, 22 rejected. The user's decisions of the same day (the decision sheet) and
+the code comparison of the earlier releases brought it to 82 rows: 14 candidates, 2 built, 3 fixed, 3 waits, 35 needs research,
+25 rejected.
 
 ### Rows skipped, by reason
 
@@ -152,7 +183,7 @@ engine seam beyond the 1.1 plan (Restored is its last step); none touches Classi
 2. **Hall of Fame** (R-8a277c, level 3+1, M). Promised in the manual, absent in every version; the start screen loads
    a fourth button and never draws it, and the inn already has a retire line. No rule changes.
 3. **Physician's house** (R-5a84a7, level 1, S). A complete service (treatment for pay, study under the physician)
-   whose only entrance is never enabled.
+   whose business-district entrance is never enabled (built later: the crafts quarter's door is open in the original).
 4. **Come-back appointment** (R-ceb4d1, level 1, S). A one-day welcome mechanism whose event never gets the flags its
    handler needs; also registered as a bug, so Fixed may take it first.
 5. **Weapons training with the guard** (R-d1c1d4, level 1, S). Chance, offers and prices are written; the council
@@ -169,6 +200,23 @@ engine seam beyond the 1.1 plan (Restored is its last step); none touches Classi
 Close behind: old woman's lodging (store items, add a friend), flood saints, small cave sightings, the two unused
 city-news texts, the names never drawn, a minimum price of one pfennig.
 
+## In the Restored rule set
+
+Built from the candidates, smallest and best evidenced first. Each is a switch `restore.<area>.<name>` on in Restored only;
+Original and Fixed do not change (the full replay is the gate), and the original's saved games stay readable both ways.
+Before building, each was checked against the original program: the cards the restoration opens run in the card oracle
+(the original's code on the same start state, compared with the C#), and the hidden lines it offers were forced in the
+original's own menu (`F<block>.<line>` runs) and replayed by the C#.
+
+| id | switch | what the player gets |
+|---|---|---|
+| R-5a84a7 | `restore.city.physician-street` | the business district's door to the physician's house |
+| R-d1c1d4 | `restore.city.guard-training` | weapons training with the city guard, once a day, in the council hall |
+
+Decided by the user on 2026-11-24: the Jewelers' guild (R-726c2f) waits on the politics season (without it the guild is an empty
+visit); the "come back" appointment (R-ceb4d1), the fortress's commission pay (R-91ad2e) and the village Schulz's reward are
+original bugs and went to the Fixed rule set as gameplay fixes (status `fixed`).
+
 ## What this pass did not do
 
 - No level 6 item yet: nothing in the sources read points at a historical correction as the designers' aim. The
@@ -183,6 +231,11 @@ city-news texts, the names never drawn, a minimum price of one pfennig.
 
 ## Using the register
 
+- Every decision starts with research in our own sources, recorded in the row's `evidence`: the code and data and our
+  registers; the research index of the community archive and its reports (developer intent, bug catalogue, history); the
+  developer sources (the team's design papers, the 1992 conference, the designer's later posts and interviews, readings of the
+  game files, the press, the manual and clue book text); the community archive; the earlier releases (483.04 to 483.06). When a
+  new source arrives, the `rejected` and `waits` rows are read again against their `revisit_if`.
 - Add a row when a source turns up; keep the key and id stable; never reuse an id.
 - Move a row to `candidate` only with its evidence written in `sources`; a `rejected` row keeps its reason.
 - When an item enters a rule set, add its switch id in the switch register and link the two by `id`.

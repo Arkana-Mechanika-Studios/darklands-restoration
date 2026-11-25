@@ -190,6 +190,21 @@ public static partial class RuleTable
     /// <summary>The index of <c>fix.cards.church-altar-boy-hour</c> (<see cref="OriginalBehaviour.FixChurchAltarBoyStaleHour"/>).</summary>
     public const int FixChurchAltarBoyStaleHour = 60;
 
+    /// <summary>The index of <c>restore.city.physician-street</c> (<see cref="OriginalBehaviour.RestoreBusinessDistrictPhysician"/>).</summary>
+    public const int RestoreBusinessDistrictPhysician = 61;
+
+    /// <summary>The index of <c>restore.city.guard-training</c> (<see cref="OriginalBehaviour.RestoreGuardTraining"/>).</summary>
+    public const int RestoreGuardTraining = 62;
+
+    /// <summary>The index of <c>fix.cards.welcome-appointment</c> (<see cref="OriginalBehaviour.FixWelcomeAppointment"/>).</summary>
+    public const int FixWelcomeAppointment = 63;
+
+    /// <summary>The index of <c>fix.cards.fortress-commission-pay</c> (<see cref="OriginalBehaviour.FixFortressCommissionPay"/>).</summary>
+    public const int FixFortressCommissionPay = 64;
+
+    /// <summary>The index of <c>fix.cards.village-schulz-reward</c> (<see cref="OriginalBehaviour.FixVillageSchulzReward"/>).</summary>
+    public const int FixVillageSchulzReward = 65;
+
     /// <summary>Every fix flag of the switch register, in its order (the index of each is its place here).</summary>
     public static IReadOnlyList<Rule> Flags { get; } =
     [
@@ -254,5 +269,10 @@ public static partial class RuleTable
         new("fix.save.load-screen-escape", nameof(OriginalBehaviour.FixLoadScreenEscape), "gameplay", false, true, true),
         new("fix.cards.university-formulas-tried", nameof(OriginalBehaviour.FixUniversityFormulasTried), "gameplay", false, true, true),
         new("fix.cards.church-altar-boy-hour", nameof(OriginalBehaviour.FixChurchAltarBoyStaleHour), "gameplay", false, true, true),
+        new("restore.city.physician-street", nameof(OriginalBehaviour.RestoreBusinessDistrictPhysician), "restoration", false, false, true),
+        new("restore.city.guard-training", nameof(OriginalBehaviour.RestoreGuardTraining), "restoration", false, false, true),
+        new("fix.cards.welcome-appointment", nameof(OriginalBehaviour.FixWelcomeAppointment), "gameplay", false, true, true),
+        new("fix.cards.fortress-commission-pay", nameof(OriginalBehaviour.FixFortressCommissionPay), "gameplay", false, true, true),
+        new("fix.cards.village-schulz-reward", nameof(OriginalBehaviour.FixVillageSchulzReward), "gameplay", false, true, true),
     ];
 }
