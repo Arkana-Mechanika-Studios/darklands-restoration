@@ -380,7 +380,7 @@ public sealed class CharacterGeneratorScreen
                 Help(t[CreationData.SelectFamilyBackground]);
                 for (var i = 0; i < 6; i++)
                 {
-                    Button(ListTop + i * RowHeight, _creation.Tables.Backgrounds[i].Name);
+                    Button(ListTop + i * RowHeight, _ui.Word(Darklands.Content.Formats.Text.Strings.OriginalWords.BackgroundNames, i));
                 }
                 _ui.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
                 break;
@@ -395,7 +395,7 @@ public sealed class CharacterGeneratorScreen
                 // C: at most 14 rows are drawn, though the list may hold 15 (the 15th can still be clicked).
                 for (var i = 0; i < _creation.Choices.Count && i < 14; i++)
                 {
-                    Button(ListTop + i * RowHeight, _creation.Tables.Occupations[_creation.Choices[i]].Name);
+                    Button(ListTop + i * RowHeight, _ui.Word(Darklands.Content.Formats.Text.Strings.OriginalWords.OccupationNames, _creation.Choices[i]));
                 }
                 _ui.Recolor(0x44, _creation.Cursor * RowHeight + 0x2F, 0x6C, RowHeight, Ink, Highlight);
                 break;
@@ -554,9 +554,10 @@ public sealed class CharacterGeneratorScreen
         WaitThenRedraw();
     }
 
-    private string FormulaName(int f) => f < _world.Items.Formulae.Count ? _world.Items.Formulae[f].FullName : "";
+    // the names in the pack's words where it has them (the 1.2 translations; no pack: the list's)
+    private string FormulaName(int f) => f < _world.Items.Formulae.Count ? _ui.FormulaName(f, _world.Items.Formulae[f].FullName) : "";
 
-    private string SaintName(int s) => s < _world.Items.Saints.Count ? _world.Items.Saints[s].FullName : "";
+    private string SaintName(int s) => s < _world.Items.Saints.Count ? _ui.SaintName(s, _world.Items.Saints[s].FullName) : "";
 
     // orig: R037+0x7F06 / R037+0x802A: `while (!key-waiting-test() && !(mouse-button-state & 1));` (no root 0000:0000: no menu bar, no hot keys) then a key is taken (read-key), a press is not:
     // orig: after R037+0x4B9E the loop of R037+0x4664 finds the button still down and takes the press as a click where the pointer is

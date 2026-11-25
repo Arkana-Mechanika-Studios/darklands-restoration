@@ -90,7 +90,7 @@ public static class TextVariables
         var result = new List<int>(text.Length + 64);
         var name = new System.Text.StringBuilder();
         var inName = false;
-        int[] Value() => TextCodes.OfText(TextVariables.Value(name.ToString(), c) ?? PackValue(name.ToString(), c) ?? "$" + name);
+        int[] Value() => TextCodes.OfText(PronounOfPack(name.ToString(), c) ?? TextVariables.Value(name.ToString(), c) ?? PackValue(name.ToString(), c) ?? "$" + name);
         foreach (var b in text)
         {
             if (b == 0)
@@ -126,12 +126,18 @@ public static class TextVariables
     private static byte[] Evaluate(List<byte> name, CardContext c)
     {
         var text = GameTextCodec.Decode([.. name]);
-        return GameTextCodec.Encode(Value(text, c) ?? PackValue(text, c) ?? "$" + text);
+        return GameTextCodec.Encode(PronounOfPack(text, c) ?? Value(text, c) ?? PackValue(text, c) ?? "$" + text);
     }
 
     // a translation pack's own variable, for a name the game does not know (null: none, or no pack, as the original: "$name" stays)
     private static string? PackValue(string name, CardContext c) =>
         c.PackVariable is { } pack ? pack(name, ChosenIsFemale(c)) : null;
+
+    // Not in the original: the 1.2 translations (the untranslated-text audit). A pack's own variable of a pronoun's name (var-he, var-his ...)
+    //   answers the game's pronoun, so a language can say it in its own words and forms; without one the game's English (no pack: as ever)
+    private static readonly HashSet<string> Pronouns = new(StringComparer.Ordinal) { "He", "he", "his", "His", "him", "himself" };
+
+    private static string? PronounOfPack(string name, CardContext c) => Pronouns.Contains(name) ? PackValue(name, c) : null;
 
     /// <summary>Whether the chosen one (text-slot-chosen-one) is female, as the pronouns read it (Value).</summary>
     public static bool ChosenIsFemale(CardContext c) =>

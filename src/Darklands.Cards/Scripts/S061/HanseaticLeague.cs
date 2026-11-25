@@ -164,7 +164,7 @@ public sealed class HanseaticLeague : Card
                 BankingHouses.BusyForThreeDays(c, House);
                 return;
             }
-            c.Variables.Named[1] = c.World.ItemName(reward);
+            c.Variables.Named[1] = c.ItemNameShown(reward);
             ShowPicture(c, PursePicture);
             c.Screen.Text(8);
             return;

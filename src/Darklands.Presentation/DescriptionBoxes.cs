@@ -17,14 +17,18 @@ public static class DescriptionBoxes
     /// One place a description is drawn: the screen, the column's left edge, first row and width, the first row below the room
     /// (<paramref name="Foot"/>: what the screen draws there or the end of its page), the font slot and the line step.
     /// </summary>
-    public sealed record Box(string Screen, string Where, int X, int Y, int Width, int Foot, int Font, int Spacing = 8, int Leading = 1)
+    // Spacing null: the font's own line height (the layout's default, as the map's message box lays its text out)
+    public sealed record Box(string Screen, string Where, int X, int Y, int Width, int Foot, int Font, int? Spacing = 8, int Leading = 1)
     {
-        /// <summary>The lines that fit between the first row and the foot in a font <paramref name="height"/> pixels high.</summary>
-        public int Lines(int height) => (Foot - Y - height) / (Spacing + Leading) + 1;
+        /// <summary>The rows from one line to the next in <paramref name="painter"/> (the box's font).</summary>
+        public int Step(TextPainter painter) => (Spacing ?? painter.LineHeight) + Leading;
+
+        /// <summary>The lines that fit between the first row and the foot in <paramref name="painter"/> (the box's font).</summary>
+        public int Lines(TextPainter painter) => (Foot - Y - painter.Font.CharacterHeight) / Step(painter) + 1;
 
         /// <summary>The box in the template's words: "12 lines of 156 px (font 2) on the prayer screen".</summary>
-        public string Words(int height) =>
-            string.Create(CultureInfo.InvariantCulture, $"{Lines(height)} lines of {Width} px (font {Font}) {Where}");
+        public string Words(TextPainter painter) =>
+            string.Create(CultureInfo.InvariantCulture, $"{Lines(painter)} lines of {Width} px (font {Font}) {Where}");
     }
 
     // orig: saint-info-paint R034+0x0BC4: the description by text-paint-wrapped in 0x9C from (0x94, 0x25), spacing 8, leading 1, font slot 2
@@ -42,10 +46,20 @@ public static class DescriptionBoxes
     /// <summary>A formula's description in the alchemy screen's book.</summary>
     public static readonly Box FormulaBook = new("AlchemyScreen", "in the alchemy screen's book", 0x58, 0x6B, 0x69, 0xA4, 1);
 
+    // orig: R030+0x2BB0: the message's record drawn in colour 0 at (105, 55) in a column 170 wide (the layout's own line height, leading 0)
+    //   inside the box (100, 50, 180 x 115) whose dark frame's last row is 164
+    /// <summary>A map message (DARKLAND.MSG) in the map's message box.</summary>
+    // Not in the original: the 1.2 translations (the untranslated-text audit).
+    public static readonly Box MapMessage = new("OverlandScreen", "in the map's message box", 105, 55, 170, 164, 1, Spacing: null, Leading: 0);
+
     /// <summary>The boxes of a description's key (none for a city's description or another key).</summary>
     public static IReadOnlyList<Box> Of(string key)
     {
         ArgumentNullException.ThrowIfNull(key);
+        if (key.StartsWith("map:", StringComparison.Ordinal) && key.EndsWith(".text", StringComparison.Ordinal))
+        {
+            return [MapMessage];
+        }
         if (!key.EndsWith(".desc", StringComparison.Ordinal))
         {
             return [];
@@ -95,6 +109,6 @@ public static class DescriptionBoxes
         ArgumentNullException.ThrowIfNull(painter);
         var boxes = Of(key);
         return boxes.Count == 0 ? null
-            : "box: " + string.Join(", ", boxes.Select(b => b.Words(painter(b.Font).Font.CharacterHeight)));
+            : "box: " + string.Join(", ", boxes.Select(b => b.Words(painter(b.Font))));
     }
 }

@@ -119,8 +119,8 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         ui.Canvas.CopyFrom(_back, TownBoxX, TownBoxY, clearWidth, clearHeight);
         var place = state.Locations[town];
         ScreenDrawing.Centered(ui, TownCenterX, 0x22, ui.PlaceName(place), TextColor);
-        ScreenDrawing.Centered(ui, TownCenterX, 0x2C, words.Text(sizeWords, PartyStanding.SizeClass(place.Size)), TextColor);
-        ScreenDrawing.Centered(ui, TownCenterX, 0x36, ui.Words(rep) + words.Text(OriginalWords.StandingWords, PartyStanding.StandingBand(state, town)), TextColor);
+        ScreenDrawing.Centered(ui, TownCenterX, 0x2C, ui.Word(sizeWords, PartyStanding.SizeClass(place.Size)), TextColor);
+        ScreenDrawing.Centered(ui, TownCenterX, 0x36, ui.Words(rep) + ui.Word(OriginalWords.StandingWords, PartyStanding.StandingBand(state, town)), TextColor);
         ScreenDrawing.Centered(ui, TownCenterX, 0x40, ui.Format(reputation, place.Reputation), TextColor);
     }
 

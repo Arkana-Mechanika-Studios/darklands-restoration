@@ -76,8 +76,7 @@ public sealed class AlchemistFormulaSeller : Card
     private static int FormulaOnOffer(CardContext c, int slot) => (ushort)((ushort)c.HereQuery(0x21) + slot * 3 + 100) % FormulaGroups;
 
     // C: R136+0xF066 (virtue-label-table) is filled with the full formula names of DARKLAND.LST by world-read (see CardContext.NameToSlot), so the LST names are the table.
-    private static string FormulaName(CardContext c, int formula) =>
-        formula < c.World.Items.Formulae.Count ? c.World.Items.Formulae[formula].FullName : "";
+    private static string FormulaName(CardContext c, int formula) => formula < c.World.Items.Formulae.Count ? c.FormulaNameShown(formula) : "";
 
     /// <summary>10 florins for the first grade of a potion, 20 and 30 for the others, divided by the city's size.</summary>
     // C: unsigned 16-bit division, as location-now-query returns unsigned (a size of 0 would trap in the original).

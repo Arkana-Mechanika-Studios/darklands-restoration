@@ -108,9 +108,9 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
             LaidOut(x, y, text, color, layout);
             return;
         }
-        if (ui.Text.PackFont is not null || text.Any(ch => ch > 0xFF && ch is < '' or > ''))
+        if (ui.Text.PackFont is not null || ui.Language is not null || text.Any(ch => ch > 0xFF && ch is < '' or > ''))
         {
-            // Not in the original: the 1.1 translations. Letters the game's bytes cannot hold, or the pack's font, by codes (the same
+            // Not in the original: the 1.1 translations (1.2: any pack's text, whose Latin-1 letters the byte path would take for colours). Letters the game's bytes cannot hold, or the pack's font, by codes (the same
             //   colour rule, TextPainter.DrawCodes)
             ui.Text.DrawCodes(ui.Canvas, x, y, Darklands.Core.TextCodes.OfText(text), color);
             return;

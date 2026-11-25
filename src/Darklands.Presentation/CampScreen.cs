@@ -464,7 +464,7 @@ public sealed class CampScreen(GameUi ui, PartyPanel panel, IReadOnlyList<Formul
             var y = i * 0x12 + 0x30;
             ui.Text.Draw(ui.Canvas, 0x49, y, ui.Format("exe:DS:3FE7", m.ShortName), color);  // "%s..."
             var activity = (int)_stay.Activity[i];
-            var detail = ui.Assets.Words.Detail(_stay.Detail[i]);
+            var detail = ui.CampDetail(_stay.Detail[i]);
             var text = activity == 6 ? ui.Format(ActivityTexts[activity], detail) : ui.Format(ActivityTexts[activity], _stay.Gain[i], detail);
             ScreenDrawing.Wrapped(ui, text, 0x50, 0x78, y, color, leading: 0);
         }

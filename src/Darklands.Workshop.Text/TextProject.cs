@@ -229,7 +229,7 @@ public sealed class TextProject
         var game = new GameFiles(gameFolder);
         var boxesFile = Path.Combine(folder, TranslatorCommands.BoxesFile);
         // the pack's own boxes, else the ones the Workshop ships
-        var boxes = File.Exists(boxesFile) ? TextBoxes.Read(boxesFile) : WorkshopBoxes.Default;
+        var boxes = ColumnBoxes.With(File.Exists(boxesFile) ? TextBoxes.Read(boxesFile) : WorkshopBoxes.Default, new GameAssets(game));
         var entries = TranslatorTemplate.Build(game, boxes).Select(m => new TextEntry(m)).ToList();
         var byId = entries.ToDictionary(e => e.Id, StringComparer.Ordinal);
         var others = new List<(string, FtlSource.Message)>();

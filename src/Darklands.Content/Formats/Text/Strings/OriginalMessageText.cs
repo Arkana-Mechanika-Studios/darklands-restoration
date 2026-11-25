@@ -48,6 +48,8 @@ public sealed class OriginalMessageText(DarklandsExecutable exe)
         ["id:rw.notice.and-more"] = t => $"... and {t.Word("count")} more",
         // the load's refusals and the missing mods' notice (DarklandsGame), one box a line
         ["id:rw.save.damaged.1"] = _ => "This saved game is damaged and cannot be loaded.",
+        // the item store's refused Put (Storing.NoRoomMessage, the data-safety fix FixCacheStoreLimit): own text
+        ["id:rw.store.no-room"] = _ => Darklands.Core.Rules.Storing.NoRoomMessage,
         ["id:rw.save.impossible.1"] = _ => "This saved game holds values no game can have",
         ["id:rw.save.impossible.2"] = _ => "and cannot be loaded.",
         ["id:rw.notice.press-a-key"] = _ => "Press a key.",

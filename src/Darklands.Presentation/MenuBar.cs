@@ -149,11 +149,14 @@ public sealed class MenuBar
     // orig: R000+0x083E: DS:9419 = Game (x6 1), Orders (2), Attack (2), Party (1); Game items DS:991E "\x02Save Game" "\x0fS" game-store-overlay-entry, "\x02Load Saved Game" "\x0fL" game-load-overlay-entry, "\x02Difficulty" "\x0fD" thunk 09C0:17E3 (root 0000:25F0, empty) with the sub-menu DS:99EC "\x02Basic" / "\x02Standard" / "\x02Expert" (difficulty-set-*), "\x01Show Changes" "\x0fC" saint-notices-switch, "\x01Music" "\x0fM" music-switch, "\x01Sound FX" "\x0fF" sound-switch, "\x02Pause" "\x0fP" root 0000:1080, "\x02Quit to DOS" "\x0fQ" exit-to-system, all enabled; Party items DS:987D "Party Info" key "\x0a" party-info-overlay-entry, "Change Marching Order" "\x0fO" party-order-chooser-overlay-entry
     // C: the first character of an item's text is its tick: 1 (a tick in font 1) or 2 (none); saint-notices-switch, music-switch, sound-switch and difficulty-display write it (*DS:995A, *DS:996E, *DS:9982, *DS:99EC / *DS:9A02 / *DS:9A18), so here it is read from the options when drawn.
     // C: key characters 0x0F and 0x0A are glyphs of font 1 (the "Alt" and "F6" signs).
+    /// <summary>A menu item's words without the tick byte they start with (a pack's words without one: whole; the 1.2 translations).</summary>
+    public static string Untick(string words) => words.Length > 0 && words[0] is '\u0001' or '\u0002' ? words[1..] : words;
+
     public static MenuBar ForGame(GameUi ui, GameState state, GameOptions options, HotKeys keys)
     {
         static string Tick(bool on) => on ? "\x01" : "\x02";
         // an item's string with the tick the program writes into its first byte; a key label ("\x0fS") or a title as it is
-        string Ticked(bool on, string id) => Tick(on) + ui.Words(id)[1..];
+        string Ticked(bool on, string id) => Tick(on) + Untick(ui.Words(id));
         string Words(string id) => ui.Words(id);
         var difficulty = new List<SubItem>
         {

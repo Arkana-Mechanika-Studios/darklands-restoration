@@ -193,7 +193,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         switch (_s.Put(state.Here!))
         {
             case StorePut.NoRoom:
-                page.ShowMessage(Storing.NoRoomMessage);
+                page.ShowMessage(page.Ui.Words(Darklands.Core.GameText.Of("id:rw.store.no-room")));
                 return;
             case StorePut.Nothing:
                 return;

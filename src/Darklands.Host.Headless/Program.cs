@@ -520,6 +520,14 @@ host.State = name =>
         Console.WriteLine($"state {name}: no game");
     }
 };
+// DARKLANDS_TEXT_ALL=<folder> (the untranslated-text audit): every text drawn, with the key it came from (none: a literal, a data file's
+//   text or a card's) and its screens, written to <folder>/texts-<process>.jsonl when the run ends
+var allTextsFolder = Environment.GetEnvironmentVariable("DARKLANDS_TEXT_ALL");
+if (!string.IsNullOrEmpty(allTextsFolder))
+{
+    Darklands.Platform.ScreenTextPlane.Recording = true;
+    Darklands.Platform.ScreenTextPlane.ScreenOf = Darklands.Presentation.ScreenNames.Current;
+}
 #if DEV_TOOLS
 // the developer's inspector (inspect:x,y steps): only in builds with the property DevTools (not in release builds); its text plane
 //   (ScreenTextPlane) is kept from the start
@@ -557,6 +565,12 @@ if (!string.IsNullOrEmpty(textBoxesFolder))
             e.Values?.ToDictionary(v => v.Key, v => v.Value, StringComparer.Ordinal)) { Screens = [.. e.Screens], X = e.At?.X, Y = e.At?.Y }));
 }
 #endif
+if (!string.IsNullOrEmpty(allTextsFolder))
+{
+    Directory.CreateDirectory(allTextsFolder);
+    File.WriteAllLines(Path.Combine(allTextsFolder, $"texts-{Environment.ProcessId}.jsonl"),
+        Darklands.Platform.ScreenTextPlane.AllTexts().Select(e => System.Text.Json.JsonSerializer.Serialize(new { text = e.Text, key = e.Key, screens = e.Screens, font = e.Font })));
+}
 if (game.ProgramExit is { } ended)
 {
     // the program's own end (the original's exit: lockstep.py's original side logs "program exit <code>")

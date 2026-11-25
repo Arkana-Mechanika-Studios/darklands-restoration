@@ -113,6 +113,11 @@ public static class OriginalTextExtractor
         0x0D49,
         // the battle results (R002), the ordinal's Select (R022), the enemy box's labels, the load texts (R037)
         0x10CB, 0x10DC, 0x10E4, 0x10EC, 0x10F3, 0x10FD, 0x1106, 0x23DC, 0x2334, 0x2345, 0x479E, 0x4825,
+        // the battle menu's "(Ldr)" and "(All)" (R000+0x083E's suffixes), and the shop names cards open barter with (R049, R051, R056)
+        //   (the 1.2 translations: the untranslated-text audit)
+        0x073E, 0x0744, 0x587D, 0x5887, 0x5915, 0x5A8D,
+        // the guild masters' "rebel" and "conservative" (R0xx GuildMastersAudience)
+        0x5E47, 0x5E4D,
         // the camp (R036)
         0x3A2C, 0x3A34, 0x3A4F, 0x3A70, 0x3A7B, 0x3A90, 0x3AA4, 0x3D69, 0x3D77, 0x3D8A, 0x3DA3, 0x3DB3, 0x3DCA, 0x3DDC, 0x3DEE, 0x3E5A,
         0x3ECE, 0x3F4C, 0x3FAD, 0x3FBE, 0x3FDE, 0x3FE7,
@@ -123,7 +128,7 @@ public static class OriginalTextExtractor
     [
         // the alchemy menu's four lines (R033+0x094A)
         (0x1DC3, 4),
-        (0x1DD3, 3), (0x1DDF, 0x41), (0x20AB, 6), (0x1EE7, 34),
+        (0x1DD3, 3), (0x1DDF, 0x41), (0x20AB, 6), (0x1EE7, 37),
         (0x235F, 0x6E), (0x2517, 0x5A), (0x267F, 0x93), (0x28CB, 0x11),
         (0x1FA7, 16), (0x1FE7, 38), (0x2107, 31),
         // the far tables of OriginalWords: fame titles, the shop names (from entry -3), directions, standing words, job names
@@ -214,6 +219,18 @@ public static class OriginalTextExtractor
             foreach (var d in new DarklandDescriptionsDecoder().Decode(files.Read("DARKLAND.DSC"), "DARKLAND.DSC").Records)
             {
                 AddIfText(table, $"dsc:{N(d.Index)}.desc", d.Text);
+            }
+        }
+        // the map's messages (DARKLAND.MSG: a count byte, then records of 400 bytes, each to its first zero), as the map reads them
+        //   (R030+0x2BB0, OverlandScreen.ShowMapMessage); Not in the original: the 1.2 translations
+        if (files.Exists("DARKLAND.MSG"))
+        {
+            var bytes = files.Read("DARKLAND.MSG");
+            for (var n = 0; 1 + n * 400 < bytes.Length; n++)
+            {
+                var record = bytes.AsSpan(1 + n * 400, Math.Min(400, bytes.Length - 1 - n * 400));
+                var end = record.IndexOf((byte)0);
+                AddIfText(table, $"map:{N(n)}.text", Darklands.Core.GameTextCodec.Decode(end < 0 ? record : record[..end]));
             }
         }
         if (files.Exists("DARKLAND.CTY"))

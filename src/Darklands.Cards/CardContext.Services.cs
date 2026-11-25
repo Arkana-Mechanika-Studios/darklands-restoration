@@ -29,6 +29,17 @@ public sealed partial class CardContext
     /// <summary>The words of an EXE key (<c>exe:DS:XXXX</c>): a card's own copy of a word it puts into a text variable or names a shop by.</summary>
     public string ExeText(string key) => Translation?.Invoke(key) ?? World.Words.Exe(key);
 
+    /// <summary>A name of the data files (<see cref="Darklands.Content.DataNames"/>) in the pack's words when it has them, else <paramref name="original"/>.</summary>
+    // Not in the original: the 1.2 translations (the untranslated-text audit): the names cards put into their texts.
+    public string ShownName(string key, string original) => Translation?.Invoke(key) ?? original;
+
+    /// <summary>An item's name as the cards put it into their texts (the pack's words when it has them).</summary>
+    public string ItemNameShown(int code) => ShownName(Darklands.Content.DataNames.Item(code), World.ItemName(code));
+
+    /// <summary>A formula's full name as the cards put it into their texts, "" for none.</summary>
+    public string FormulaNameShown(int formula) =>
+        formula >= 0 && formula < World.Items.Formulae.Count ? ShownName(Darklands.Content.DataNames.Formula(formula), World.Items.Formulae[formula].FullName) : "";
+
     /// <summary>Entry <paramref name="k"/> of one of the original's word tables, as the card texts put it in (a translation's words when there is one).</summary>
     public string Word(Darklands.Content.Formats.Text.Strings.WordTable table, int k) =>
         Translation is { } translation && translation(World.Words.Key(table, k)) is { } words ? words : World.Words.Text(table, k);

@@ -157,7 +157,7 @@ public sealed class MediciBank : Card
             }
             else
             {
-                c.Variables.Named[1] = c.World.ItemName(reward);
+                c.Variables.Named[1] = c.ItemNameShown(reward);
                 ShowPicture(c, OfficePicture);
                 c.Screen.Text(8);
             }

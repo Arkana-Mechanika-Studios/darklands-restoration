@@ -205,6 +205,45 @@ public sealed class GameUi
     /// <summary>A formula's name as the screens show it.</summary>
     public string FormulaName(int index, string original) => Name(DataNames.Formula(index), original);
 
+    /// <summary>A formula's short name (DARKLAND.LST, the alchemy screen's batch list) as the screens show it.</summary>
+    // Not in the original: the 1.2 translations (the untranslated-text audit, issue 5).
+    public string FormulaShortName(int index, string original) => Name(DataNames.FormulaShort(index), original);
+
+    /// <summary>
+    /// A place name a saved game holds (the load screen's lines): translated when it is the name of a place of DARKLAND.LOC, else as
+    /// saved (a name the party gave, another game's).
+    /// </summary>
+    // Not in the original: the 1.2 translations (the untranslated-text audit, issue 5).
+    public string SavedPlaceName(string saved)
+    {
+        ArgumentNullException.ThrowIfNull(saved);
+        if (Language is null && !ScreenTextPlane.Recording)
+        {
+            return saved;
+        }
+        _world ??= WorldData.Load(Assets.Files);
+        for (var i = 0; i < _world.LocationRecords.Locations.Count; i++)
+        {
+            if (_world.FileLocationName(i) == saved)
+            {
+                return Name(DataNames.Location(i), saved);
+            }
+        }
+        return saved;
+    }
+
+    /// <summary>The camp's detail of a member's activity (the potions, a job's name, a fee) in the pack's words where it has them.</summary>
+    // Not in the original: the 1.2 translations (the untranslated-text audit, issue 5).
+    public string CampDetail(Darklands.Core.Rules.CampDetail detail) => detail.Kind switch
+    {
+        Darklands.Core.Rules.CampDetailKind.Potions =>
+            Word(Darklands.Content.Formats.Text.Strings.OriginalWords.CampWords, 0) + (detail.Number != 1 ? Word(Darklands.Content.Formats.Text.Strings.OriginalWords.CampWords, 1) : ""),
+        Darklands.Core.Rules.CampDetailKind.Job => Word(Darklands.Content.Formats.Text.Strings.OriginalWords.JobNames, detail.Number),
+        Darklands.Core.Rules.CampDetailKind.Fee =>
+            detail.Number.ToString(System.Globalization.CultureInfo.InvariantCulture) + Word(Darklands.Content.Formats.Text.Strings.OriginalWords.CampWords, 2),
+        _ => "",
+    };
+
     /// <summary>A saint's description (DARKLAND.SNT) as the prayer screen shows it (no pack: the original's).</summary>
     // Not in the original: the 1.1.3 translations of the data files' descriptions.
     public string SaintDescription(int index, string original) => Name(DataNames.SaintDescription(index), original);

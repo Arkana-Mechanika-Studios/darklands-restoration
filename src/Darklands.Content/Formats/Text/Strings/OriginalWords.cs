@@ -66,6 +66,13 @@ public sealed class OriginalWords(DarklandsExecutable exe)
     // orig: R136+0xA60B = 290E:1F7B, 11 far strings, read by R034+0x11DC (PartyStanding.FameRank)
     public static readonly WordTable FameTitles = WordTable.Far("fame-titles", 0x1F7B, 11);
 
+    /// <summary>The character creation's six family backgrounds (290E:20AB), as its list shows them.</summary>
+    // Not in the original as a table of this program: the 1.2 translations (the creation screen asks for its words by key).
+    public static readonly WordTable BackgroundNames = WordTable.Far("background-names", 0x20AB, 6);
+
+    /// <summary>The character creation's 34 occupations (290E:1EE7), as its list shows them.</summary>
+    public static readonly WordTable OccupationNames = WordTable.Far("occupation-names", 0x1EE7, Darklands.Core.Characters.Creation.CharacterCreation.OccupationCount);
+
     // orig: R136+0xA813 = 290E:2183, 6 far strings, read by R034+0x0EE6, R034+0x144C, R034+0x166E and the card texts' case 16 (R043+0x1316)
     //   (PartyStanding.StandingBand)
     public static readonly WordTable StandingWords = WordTable.Far("standing-words", 0x2183, 6);
@@ -127,6 +134,14 @@ public sealed class OriginalWords(DarklandsExecutable exe)
 
     // orig: 290E:2107 entries 0..11 (goods merchant .. castle), the patrons of the market (R049) and the council hall (R054)
     public static readonly WordTable PatronNames = WordTable.Far("patron-names", 0x2107, 12);
+
+    // orig: 290E:1FA7 (16), 290E:1FE7 (38) and 290E:2107 (31): the dragons', dwarfs' and titles' names label-to-slot kinds 6..8 copy
+    //   (R029+0x1FB8, PersonalNamesDecoder); Not in the original: their keys for the 1.2 translations (the untranslated-text audit)
+    public static readonly WordTable DragonNames = WordTable.Far("dragon-names", 0x1FA7, 16);
+
+    public static readonly WordTable DwarfNames = WordTable.Far("dwarf-names", 0x1FE7, 38);
+
+    public static readonly WordTable TitleNames = WordTable.Far("title-names", 0x2107, 31);
 
     // orig: party-defaults R001+0x0000 copies each Quickstart member's full and short name from DS:0E50 / 0E61, 0E68 / 0E77, 0E7F / 0E8B,
     //   0E90 / 0EA2 (DefaultParty)

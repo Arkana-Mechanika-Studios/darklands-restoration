@@ -233,7 +233,7 @@ public sealed class University_Unive00 : Card
             c.Screen.Text(8);
             ShowPicture(c, Picture);
             // The university's own shop, in alchemical materials (category mask 0x400).
-            c.Barter(-1, 0x400, "University");
+            c.Barter(-1, 0x400, c.ExeText("exe:DS:5A8D"));  // "University"
         }
         else
         {

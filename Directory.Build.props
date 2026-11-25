@@ -5,9 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <!-- the release version of every project and of the program players start (shown on the start screen) -->
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <!-- the Workshop's own version (docs/LOCALISATION.md): its one source; the Workshop shows it, packs and exports record it -->
-    <WorkshopVersion>1.1.0-beta.2</WorkshopVersion>
+    <WorkshopVersion>1.1.0-beta.3</WorkshopVersion>
     <!-- the oldest game program the Workshop plays with (its Play in game options came in 1.1.0): an older one beside it is said so in words -->
     <WorkshopNeedsGame>1.1.0</WorkshopNeedsGame>
     <!-- this version's release notes, at one fixed place from the repository's top (the same on the main checkout, a worktree and

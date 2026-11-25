@@ -28,7 +28,7 @@ public sealed partial class BattleScreen
         // the program's string at DS offset at, in the pack's words when it has them (no pack: the original's)
         string S(int at) => _ui.Name("exe:DS:" + at.ToString("X4", System.Globalization.CultureInfo.InvariantCulture), exe.String(at));
         // a menu string with its tick byte as the program writes it; a key label or title as it is
-        string Ticked(bool on, string id) => Tick(on) + _ui.Words(id)[1..];
+        string Ticked(bool on, string id) => Tick(on) + MenuBar.Untick(_ui.Words(id));
         string W(string id) => _ui.Words(id);
         static void Nothing()
         {
@@ -37,6 +37,10 @@ public sealed partial class BattleScreen
         MenuBar.Item A(AttackItem item, Func<string> text, string key, Action run) => new(text, true, key, run, State: () => m.Attack[(int)item]);
         string With(int at, int pos, string suffix)
         {
+            // the "(Ldr)" and "(All)" suffixes (DS:073E, DS:0744) in the pack's words too (the 1.2 translations); the battle keeps the original's
+            suffix = suffix == Darklands.Core.Battles.Tactics.BattleMenus.Leader ? S(0x073E)
+                : suffix == Darklands.Core.Battles.Tactics.BattleMenus.All ? S(0x0744)
+                : suffix;
             if (S(at) is var shown && shown != exe.String(at))
             {
                 // a translation: its words whole (the original's are cut at the place of the suffix)
@@ -144,7 +148,9 @@ public sealed partial class BattleScreen
             return "";
         }
         var name = _assets.Items[potion + 0x5F].ShortName;
-        return name.Length > 9 ? name[..9] : name;
+        name = name.Length > 9 ? name[..9] : name;
+        // the pack's short name where it has one (the 1.2 translations), not cut (the cut is the original's buffer of 9 bytes)
+        return _ui.Language is null ? name : _ui.ItemShortName(potion + 0x5F, name);
     }
 
     /// <summary>Save Game (Alt-S): while DS:9920 offers it, the game's save in its battle form.</summary>

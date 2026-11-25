@@ -221,7 +221,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             {
                 ui.Text.Draw(canvas, 0xCF, row * RowHeight + ListTop, ui.Format(countFormat, b.Count), ListColor);
             }
-            ui.Text.Draw(canvas, 0xDE, row * RowHeight + ListTop, b.Formula.ShortName, ListColor);
+            ui.Text.Draw(canvas, 0xDE, row * RowHeight + ListTop, ui.FormulaShortName(b.Formula.Index, b.Formula.ShortName), ListColor);
         }
         HighlightRow(true);
     }

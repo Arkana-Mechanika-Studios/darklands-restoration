@@ -70,6 +70,10 @@ public static class DataNames
     /// <summary>A city's description (DARKLAND.DSC, 80 bytes), in card texts ($PlaceDesc).</summary>
     public static string CityDescription(int index) => $"dsc:{N(index)}.desc";
 
+    /// <summary>A message of the map's message box (DARKLAND.MSG, 400 bytes a record).</summary>
+    // Not in the original: the 1.2 translations (the untranslated-text audit).
+    public static string MapMessage(int index) => $"map:{N(index)}.text";
+
     /// <summary>What a key of the names or descriptions names (the template's comment), or null for a key that is not a translatable one.</summary>
     public static string? What(string key)
     {
@@ -116,6 +120,10 @@ public static class DataNames
         if (key.StartsWith("alc:", StringComparison.Ordinal) && key.EndsWith(".desc", StringComparison.Ordinal))
         {
             return "a formula's description (DARKLAND.ALC)";
+        }
+        if (key.StartsWith("map:", StringComparison.Ordinal) && key.EndsWith(".text", StringComparison.Ordinal))
+        {
+            return "a message on the map, in its message box (400 bytes in DARKLAND.MSG)";
         }
         if (key.StartsWith("dsc:", StringComparison.Ordinal) && key.EndsWith(".desc", StringComparison.Ordinal))
         {

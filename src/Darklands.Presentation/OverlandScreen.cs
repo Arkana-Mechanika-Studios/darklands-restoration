@@ -778,8 +778,17 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var text = MapMessageText(message);
         if (text.Length > 0)
         {
-            new CardTextLayout(ui.Text).Draw(canvas, text, 105, 55, 170,
-                new CardTextLayout.Settings { Color = 0, Leading = 0 });
+            var settings = new CardTextLayout.Settings { Color = 0, Leading = 0 };
+            // with a translation pack its words for the message, by codes (the 1.2 translations); no pack: the file's bytes, as the original
+            if (ui.Language is not null)
+            {
+                new CardTextLayout(ui.Text).Draw(canvas, Darklands.Core.TextCodes.OfText(ui.Name(Darklands.Content.DataNames.MapMessage(message),
+                    Darklands.Core.GameTextCodec.Decode(text))), 105, 55, 170, settings);
+            }
+            else
+            {
+                new CardTextLayout(ui.Text).Draw(canvas, text, 105, 55, 170, settings);
+            }
         }
         while (true)
         {

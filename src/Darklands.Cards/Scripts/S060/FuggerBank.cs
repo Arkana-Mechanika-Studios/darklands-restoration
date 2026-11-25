@@ -173,7 +173,7 @@ public sealed class FuggerBank : Card
             }
             else
             {
-                c.Variables.Named[1] = c.World.ItemName(reward);
+                c.Variables.Named[1] = c.ItemNameShown(reward);
                 ShowPicture(c, ChestPicture);
                 c.Screen.Text(8);
                 ShowPicture(c, picture);

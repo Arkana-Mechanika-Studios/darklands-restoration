@@ -140,12 +140,15 @@ public static class ScreenTextPlane
     }
 
     /// <summary>Every keyed text kept so far, with the widest it was drawn (the boxes of decision 12).</summary>
-    public static IReadOnlyList<Entry> KeyedTexts()
+    public static IReadOnlyList<Entry> KeyedTexts() => [.. AllTexts().Where(e => e.Key is not null)];
+
+    /// <summary>Every text kept so far, keyed or not (with its screens): the untranslated-text audit looks at those with no key.</summary>
+    public static IReadOnlyList<Entry> AllTexts()
     {
         lock (Gate)
         {
-            return Entries.Select((e, id) => ScreensOf.TryGetValue(id, out var s) ? e with { Screens = [.. s.Screens.Order(StringComparer.Ordinal)] } : e)
-                .Where(e => e.Key is not null).ToList();
+            return Entries.Skip(1).Select((e, i) => ScreensOf.TryGetValue(i + 1, out var s) ? e with { Screens = [.. s.Screens.Order(StringComparer.Ordinal)] } : e)
+                .ToList();
         }
     }
 }
