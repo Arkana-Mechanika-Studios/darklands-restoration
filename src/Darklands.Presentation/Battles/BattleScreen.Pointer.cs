@@ -72,7 +72,8 @@ public sealed partial class BattleScreen
         int x = _ui.Mouse.X - shape.HotX, y = _ui.Mouse.Y - shape.HotY;
         var sprite = _assets.Images[shape.Image];
         _underPointer = sprite is null ? null : canvas.Save(x, y, sprite.Width, sprite.Height);
-        SpriteDrawing.Draw(canvas, sprite, x, y, new Clip(0, 0, Canvas.Width, Canvas.Height));
+        // on top: a font pack's letters under it stay whole and under it (1.1.4); the restore takes it off again
+        SpriteDrawing.DrawPointer(canvas, sprite, x, y);
     }
 
     /// <summary>The hot spots of the scroll arrows (pointer-shape-set's first two arguments in R014+0x33A2), by <see cref="EdgeArrow"/>.</summary>

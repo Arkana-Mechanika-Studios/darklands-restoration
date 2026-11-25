@@ -31,11 +31,24 @@ public sealed class Screen
     // drawn several times, clipped, mirrored or partly covered, so its rectangle cannot be told from the owners alone).
     public int[] Texels { get; } = new int[Width * Height];
 
-    /// <summary>Copies <see cref="Owners"/> and <see cref="Texels"/> to another screen.</summary>
+    /// <summary>
+    /// The pixels drawn over everything else (the pointer), each with the <see cref="Texels"/> entry of the letter it covers (an
+    /// unowned pixel's before the pointer was drawn; 0: none). A host's text layer keeps a letter the pointer covers whole and leaves
+    /// these pixels to the frame, so the pointer stays over a font pack's text. Any later drawing on a pixel takes it out.
+    /// </summary>
+    // Not in the original, like Owners (the 1.1.4 fix of the pointer under a font pack's text: a Discord report). It never changes Pixels.
+    public Dictionary<int, int> OnTop { get; } = [];
+
+    /// <summary>Copies <see cref="Owners"/>, <see cref="Texels"/> and <see cref="OnTop"/> to another screen.</summary>
     public void CopyOwnershipTo(Screen other)
     {
         Owners.CopyTo(other.Owners, 0);
         Texels.CopyTo(other.Texels, 0);
+        other.OnTop.Clear();
+        foreach (var (at, texel) in OnTop)
+        {
+            other.OnTop[at] = texel;
+        }
     }
 }
 

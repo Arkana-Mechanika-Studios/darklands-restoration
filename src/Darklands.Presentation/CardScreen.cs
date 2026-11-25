@@ -422,10 +422,9 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     // DIVERGENCE: the whole window right of the panel is restored from the picture (the original restores only the text area and redraws the frame, which covers the rest identically)
     private void RestoreWindowFrom(SavedScreen picture)
     {
-        for (var y = 0; y < Canvas.Height; y++)
-        {
-            Array.Copy(picture.Pixels, y * Canvas.Width + WindowX, _canvas.Screen.Pixels, y * Canvas.Width + WindowX, Canvas.Width - WindowX);
-        }
+        // the picture's pixels with their owners and text plane: a copy of the pixels alone left the last screen's letters in the text plane
+        //   (a font pack drew them again over the card's picture: the 1.1.4 fix of a Discord report); the pixels are the same
+        _canvas.CopyFrom(picture, WindowX, 0, Canvas.Width - WindowX, Canvas.Height);
         picture.Palette.CopyTo(_canvas.Screen.Palette, 0);
     }
 

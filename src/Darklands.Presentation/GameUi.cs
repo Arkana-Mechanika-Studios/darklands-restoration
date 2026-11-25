@@ -1081,7 +1081,8 @@ public sealed class GameUi
         {
             // orig: pointer-shape-set(0, 0, mouse-cursor-default) at start-up (R000+0x052A): the gauntlet of COMMONSP.IMG, hot spot at its top-left
             //   corner; the driver draws the shape at the mouse less the hot spot (PointerHotSpot)
-            SpriteDrawing.Draw(new Canvas(_shown), PointerShape ?? Assets.CommonSprites.Pointer, Mouse.X - PointerHotSpot.X, Mouse.Y - PointerHotSpot.Y);
+            //   (on top: a font pack's letters under it stay whole and under it, 1.1.4)
+            SpriteDrawing.DrawPointer(new Canvas(_shown), PointerShape ?? Assets.CommonSprites.Pointer, Mouse.X - PointerHotSpot.X, Mouse.Y - PointerHotSpot.Y);
         }
         _host.Video.Present(_shown);
     }
