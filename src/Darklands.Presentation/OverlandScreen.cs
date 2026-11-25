@@ -224,16 +224,17 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 var own = walkCommand && ui.Commands.Count == 0 && key == _walkKey;
                 if (_walkKey is { } w && !own && (keyRead && key != w || ui.Mouse.Buttons != MouseButtons.None))
                 {
-                    // if direction key continue walking in that direction
-                    if (DirectionOf(key) != (0, 0))
+                    // another direction key turns the walk that way (the opposite one turns it around, a diagonal steers: issue 4);
+                    //   a click, or any other key, stops it, whatever key is held with the click
+                    if (keyRead && DirectionOf(key) != (0, 0) && ui.Mouse.Buttons == MouseButtons.None)
                     {
                         _walkKey = key;
                         _walkStill = 0;
-                         Trace?.Invoke($"walk on {key:X4}");
+                        Trace?.Invoke($"walk on turns {key:X4}");
                     }
                     else
                     {
-                      StopWalking("the player's key or click");
+                        StopWalking("the player's key or click");
                     }
                 }
                 if (keyRead && !own && DirectionOf(key) != (0, 0) && (ui.ShiftHeld || tap != 0 && KeyOfBits(tap) == key))

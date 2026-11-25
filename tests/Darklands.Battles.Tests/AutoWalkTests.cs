@@ -17,7 +17,10 @@ namespace Darklands.Battles.Tests;
 [Collection("OverlandTrace")]
 public sealed class AutoWalkTests
 {
-    /// <summary>A host whose frames give keys (a number), make / break codes ("d:4D" / "u:4D") and Shift ("shift" / "noshift").</summary>
+    /// <summary>
+    /// A host whose frames give keys (a number), make / break codes ("d:4D" / "u:4D"), Shift ("shift" / "noshift") and a left click on the
+    /// map ("click": the button down for that frame at (200, 100), right of the party's panel).
+    /// </summary>
     private sealed class TapHost(params object[][] frames) : IHost, IVideo, IInput, IClock
     {
         private readonly Queue<object[]> _frames = new(frames);
@@ -30,7 +33,7 @@ public sealed class AutoWalkTests
         public IAudio Audio { get; } = new SilentAudio();
         public IClock Clock => this;
         public bool QuitRequested { get; private set; }
-        public MouseState Mouse => new(5, 5, MouseButtons.None);
+        public MouseState Mouse { get; private set; } = new(5, 5, MouseButtons.None);
         public bool ShiftHeld { get; private set; }
         public long Milliseconds => _now;
 
@@ -54,10 +57,14 @@ public sealed class AutoWalkTests
                 QuitRequested = true;
                 return;
             }
+            Mouse = new(5, 5, MouseButtons.None);
             foreach (var e in frame)
             {
                 switch (e)
                 {
+                    case "click":
+                        Mouse = new(200, 100, MouseButtons.Left);
+                        break;
                     case "shift":
                         ShiftHeld = true;
                         break;
@@ -119,12 +126,13 @@ public sealed class AutoWalkTests
     // Right tapped twice: two presses, each with its make and break code, a frame apart
     private static readonly object[][] DoubleTapRight = [["d:4D", Keys.Right], ["u:4D"], ["d:4D", Keys.Right], ["u:4D"]];
 
-     private static readonly object[][] DoubleTapRightWait50FramesTapLeft = [
-        ["d:4D", Keys.Right], ["u:4D"], 
-        ["d:4D", Keys.Right], ["u:4D"]
-        ,.. Enumerable.Repeat(Array.Empty<object>(), 50), 
-        ["d:4D", Keys.Left], ["u:4D"]
-        ];
+    private static readonly object[][] DoubleTapRightWait50FramesTapLeft =
+    [
+        ["d:4D", Keys.Right], ["u:4D"],
+        ["d:4D", Keys.Right], ["u:4D"],
+        .. Enumerable.Repeat(Array.Empty<object>(), 50),
+        ["d:4D", Keys.Left], ["u:4D"],
+    ];
 
     [Fact]
     public void ADoubleTapWalksOnInComfortAndStepsTwiceInClassic()
@@ -206,8 +214,8 @@ public sealed class AutoWalkTests
     [Fact]
     public void AWalkGoesOnWhileChangingDirectionThroughNightfall()
     {
-        // the quickstart party sets out late in the day (night falls within thirty steps): 
-        // walking on east by double tapping right key, 
+        // the quickstart party sets out late in the day (night falls within thirty steps):
+        // walking on east by double tapping right key,
         // then after waiting walks west by single tapping left key
         // it is still walking when the night has come, and nightfall is no stop (a day passes in a few steps: the user's decision, 2026-11-22)
         if (Walk(comfort: true, idle: 300, DoubleTapRightWait50FramesTapLeft) is not { } walked)
@@ -217,6 +225,54 @@ public sealed class AutoWalkTests
         Assert.DoesNotContain(walked.Trace, s => s.StartsWith("walk on stops", StringComparison.Ordinal) && s.Contains("nightfall", StringComparison.Ordinal));
         Assert.True(Steps(walked) > 60, string.Join(" | ", walked.Trace.TakeLast(6)));
         Assert.False(Core.Time.TimeOfDay.IsDaylight(walked.Hour) && walked.Day == 0, $"day {walked.Day} hour {walked.Hour}");
+    }
+
+    // walking on east (Right tapped twice), then after twenty frames one more frame (the PR 6 fix-up's cases); a click there is
+    //   held three more frames, as a player's press lasts
+    private static object[][] WalkingOnThen(params object[] frame) =>
+        [.. DoubleTapRight, .. Enumerable.Repeat(Array.Empty<object>(), 20), frame,
+            .. Enumerable.Repeat<object[]>(frame.Contains("click") ? ["click"] : [], 3), ["u:4B"]];
+
+    [Fact]
+    public void TheOppositeKeyTurnsTheWalkAroundAndADiagonalSteersIt()
+    {
+        if (Walk(comfort: true, idle: 60, DoubleTapRightWait50FramesTapLeft) is not { } back
+            || Walk(comfort: true, idle: 60, WalkingOnThen("d:47", Keys.Home)) is not { } diagonal)
+        {
+            return;
+        }
+        Assert.Contains("walk on 4D00", back.Trace);
+        Assert.Contains("walk on turns 4B00", back.Trace);
+        Assert.DoesNotContain(back.Trace, s => s.StartsWith("walk on stops: the player's", StringComparison.Ordinal));
+        Assert.Contains("walk on turns 4700", diagonal.Trace);
+        Assert.DoesNotContain(diagonal.Trace, s => s.StartsWith("walk on stops: the player's", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void AClickStopsTheWalkEvenWithADirectionKeyHeld()
+    {
+        // the left button down on the map while Left is pressed: the click stops the walk, the key does not turn it
+        if (Walk(comfort: true, idle: 60, WalkingOnThen("d:4B", Keys.Left, "click")) is not { } walked
+            || Walk(comfort: true, idle: 60, WalkingOnThen("click")) is not { } clicked)
+        {
+            return;
+        }
+        Assert.Contains("walk on 4D00", walked.Trace);
+        Assert.Contains("walk on stops: the player's key or click", walked.Trace);
+        Assert.DoesNotContain(walked.Trace, s => s.StartsWith("walk on turns", StringComparison.Ordinal));
+        Assert.Contains("walk on stops: the player's key or click", clicked.Trace);
+    }
+
+    [Fact]
+    public void AKeyThatIsNoDirectionStopsTheWalk()
+    {
+        if (Walk(comfort: true, idle: 60, WalkingOnThen(Keys.ForCharacter('5'))) is not { } walked)
+        {
+            return;
+        }
+        Assert.Contains("walk on 4D00", walked.Trace);
+        Assert.Contains("walk on stops: the player's key or click", walked.Trace);
+        Assert.DoesNotContain(walked.Trace, s => s.StartsWith("walk on turns", StringComparison.Ordinal));
     }
 
     [Fact]
