@@ -25,6 +25,11 @@ Without a language pack the game is exactly as before: these screens draw the or
   check calls a description an unknown id). Descriptions written by hand into `tables.ftl` are kept when the Workshop saves
   the pack, and the game shows them.
 
+## Language packs
+
+A Chinese (Simplified) pack is out: https://github.com/ycsqwan/darklands-restoration-zh-pack. It is a community pack,
+made by its author, not by this project. To install it, copy its `darklands-zh` folder into the game's `packs/languages/`.
+
 Everything else is as in 1.1.2. For what 1.1 brought, see
 https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/v1.1.0
 
