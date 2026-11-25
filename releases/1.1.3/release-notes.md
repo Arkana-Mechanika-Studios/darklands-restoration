@@ -45,7 +45,7 @@ https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/w
 
 ## Faithfulness
 
-The testers' exact mode still plays exactly as the original. All 1,042 recorded battles and whole-game sessions were
+The testers' exact mode still plays exactly as the original. All 1,040 recorded battles and whole-game sessions were
 replayed against this build and agree with the original.
 
 ## Reporting a problem
