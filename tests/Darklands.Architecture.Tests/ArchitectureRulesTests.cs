@@ -210,10 +210,11 @@ public sealed class ArchitectureRulesTests
         Check(breaks, SaveAndLoadPlaces, "views that use Darklands.Persistence", KnownPersistenceUsers);
     }
 
-    /// <summary>The places that save and load by design.</summary>
+    /// <summary>The places that save and load by design (and the input recording's replay, which writes the game at its end as a .SAV to compare, R-1).</summary>
     private static readonly HashSet<string> SaveAndLoadPlaces =
     [
         "Darklands.Presentation.DarklandsGame", "Darklands.Presentation.LoadGameScreen", "Darklands.Presentation.SaveGameDialog",
+        "Darklands.Presentation.Recording.GameReplay",
     ];
 
     private static readonly Dictionary<string, string> KnownPersistenceUsers = new()
@@ -227,7 +228,9 @@ public sealed class ArchitectureRulesTests
     public void ViewsAskThroughGameUi()
     {
         var breaks = Owners([Presentation], use => use.Target.FullName is "Darklands.Platform.IInput" or "Darklands.Platform.IHost");
-        Check(breaks, ["Darklands.Presentation.GameUi", "Darklands.Presentation.DarklandsGame"], "views that read the host's input", []);
+        // the input recording (R-1) is no view: it wraps the host the game is given, and its replay is the host
+        Check(breaks, ["Darklands.Presentation.GameUi", "Darklands.Presentation.DarklandsGame", "Darklands.Presentation.Recording.GameRecording",
+            "Darklands.Presentation.Recording.GameReplay"], "views that read the host's input", []);
     }
 
     private static IEnumerable<string> References(string name) =>

@@ -15,6 +15,7 @@ namespace Darklands.Platform.Reporting;
 /// <param name="SavesFolders">Folders searched for saved games (the settings' and the game's, the user's fallback).</param>
 /// <param name="ScreenshotFile">A PNG of the last frame, or null.</param>
 /// <param name="LogCount">How many of the newest logs go in (the current and the previous run).</param>
+/// <param name="RecordingFile">The session's input recording (R-1, <c>recording.dlrec</c>), or null.</param>
 public sealed record ReportInput(
     string ReportsFolder,
     string LogsFolder,
@@ -32,7 +33,8 @@ public sealed record ReportInput(
     string? ScreenshotFile,
     Scrubber Scrubber,
     int LogCount = 2,
-    DateTime? Now = null);
+    DateTime? Now = null,
+    string? RecordingFile = null);
 
 /// <summary>The finished report: the zip, what is in it, what was left out, and the text of report.txt (scrubbed).</summary>
 public sealed record ReportResult(string Zip, IReadOnlyList<string> Entries, IReadOnlyList<string> Notes, string ReportText);
@@ -98,6 +100,9 @@ public static class ReportBuilder
             }
         }
 
+        // the input recording (R-1) of this run first: within the package's limit it goes before the logs (an older run's log is the
+        //   one left out)
+        Add("recording/" + Path.GetFileName(input.RecordingFile ?? ""), input.RecordingFile is { } recording && File.Exists(recording) ? recording : null, text: false);
         // the logs: the newest ones (this run, the one before)
         foreach (var log in SessionLog.Logs(input.LogsFolder).Take(input.LogCount))
         {

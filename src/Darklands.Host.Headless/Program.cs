@@ -124,6 +124,77 @@ GameFiles OpenGame()
 }
 var output = Directory.CreateDirectory(argList[1]).FullName;
 var steps = argList.Skip(2).ToList();
+// replay:<recording> (R-1): plays an input recording again (a problem report's recording.dlrec) on this game, its saves in
+//   <output>/saves; says whether the tape played to its end and each game it saved came out with the same bytes. packs:<folder>
+//   is where its packs are looked for by name (<folder>/languages/<name>, <folder>/fonts/<name>; also the program's packs folder).
+// tapedump:<recording>:<from>:<count> (R-1, a developer's aid): the tape's entries from <from>, one a line
+if (steps.FirstOrDefault(s => s.StartsWith("tapedump:", StringComparison.Ordinal)) is { } dumpStep)
+{
+    var parts = dumpStep[9..].Split(':');
+    var (file, from, count) = (string.Join(":", parts[..^2]), long.Parse(parts[^2], System.Globalization.CultureInfo.InvariantCulture), long.Parse(parts[^1], System.Globalization.CultureInfo.InvariantCulture));
+    var reader = new Darklands.Platform.Recording.TapeReader(Darklands.Platform.Recording.InputRecording.Read(file).Tape);
+    for (long n = 0; n < from + count && reader.Next() is { } entry; n++)
+    {
+        if (n >= from)
+        {
+            Console.WriteLine($"{n} {entry.Kind} {entry.Value}{(entry.Note is null ? "" : " " + entry.Note)}");
+        }
+    }
+    return 0;
+}
+if (steps.FirstOrDefault(s => s.StartsWith("replay:", StringComparison.Ordinal)) is { } replayStep)
+{
+    var packsRoot = steps.FirstOrDefault(s => s.StartsWith("packs:", StringComparison.Ordinal))?[6..];
+    Darklands.Platform.Recording.InputRecording recorded;
+    try
+    {
+        recorded = Darklands.Platform.Recording.InputRecording.Read(replayStep[7..]);
+    }
+    catch (Exception e) when (e is InvalidDataException or System.Text.Json.JsonException or IOException)
+    {
+        Console.WriteLine("replay refused: " + e.Message);
+        return 3;
+    }
+    string? FindPack(string kindAndName)
+    {
+        var (kind, name) = (kindAndName[..kindAndName.IndexOf(':')], kindAndName[(kindAndName.IndexOf(':') + 1)..]);
+        var sub = kind == "language" ? "languages" : "fonts";
+        return new[] { packsRoot, Path.Combine(AppContext.BaseDirectory, Darklands.Platform.PackLayout.Packs) }
+            .Where(r => r is not null).Select(r => Path.Combine(r!, sub, name)).FirstOrDefault(Directory.Exists);
+    }
+    Darklands.Simulation.Mods.ModSet? FindMods(IReadOnlyList<string> names)
+    {
+        var folders = names.Select(n => Darklands.Content.ModFolders.Find(n, resolved.GameFolder!, Environment.CurrentDirectory)).ToList();
+        return folders.Any(f => f is null) ? null
+            : Darklands.Simulation.Mods.ModSet.Load(folders.Select(f => Darklands.Content.ModFolders.Read(f!)), Console.Error.WriteLine, n => true);
+    }
+    // the developer console's commands in the recording run on the game commands (the SDL host's own ones are its options: noted apart)
+    Action<string> ReplayConsole(DarklandsGame replayed)
+    {
+        var replayConsole = new Darklands.DevConsole.GameConsole();
+        Darklands.DevConsole.GameCommands.Register(replayConsole, () => replayed.Playing);
+        return line => replayConsole.Execute(line);
+    }
+    // anybuild: play a recording another build made (a developer's try: it may part)
+    var result = Darklands.Presentation.Recording.GameReplay.Run(recorded, OpenGame(), output, FindPack, FindMods, console: ReplayConsole,
+        anyBuild: steps.Contains("anybuild"));
+    if (result.Refused is { } refused)
+    {
+        Console.WriteLine("replay refused: " + refused);
+        return 3;
+    }
+    foreach (var note in result.Notes)
+    {
+        Console.WriteLine("replay note: " + note);
+    }
+    Console.WriteLine(result.Parted is { } parted ? "replay parted: " + parted : $"replay played {result.Entries} of {result.TapeEntries} entries");
+    foreach (var (name, same) in result.Saves)
+    {
+        Console.WriteLine($"replay save {name}: {(same ? "same bytes" : "DIFFERS")}");
+    }
+    Console.WriteLine(result.Same ? "replay: same" : "replay: differs");
+    return result.Same ? 0 : 3;
+}
 uint seed = 1;
 var seedStep = steps.FirstOrDefault(s => s.StartsWith("seed:", StringComparison.Ordinal));
 if (seedStep is not null)
@@ -423,7 +494,20 @@ OverlandScreen.PassHook = host.MapPass;
 Darklands.Presentation.Battles.BattleScreen.PassHook = host.BattlePass;
 // the Interface switch (interface:comfort): Classic without it, as the oracles play
 var comfortInterface = steps.Remove("interface:comfort");
-var game = new DarklandsGame(host, OpenGame())
+// record:<file> (R-1): the session's input recording, written to <file> when the run ends (replay: plays it again)
+//   (or the environment variable DARKLANDS_RECORD=<file>: a whole lockstep run recorded as it plays, tools/oracle)
+var recordStep = steps.FirstOrDefault(s => s.StartsWith("record:", StringComparison.Ordinal));
+if (recordStep is not null)
+{
+    steps.Remove(recordStep);
+}
+else if (Environment.GetEnvironmentVariable("DARKLANDS_RECORD") is { Length: > 0 } recordTo)
+{
+    recordStep = "record:" + (recordTo == "1" ? Path.Combine(output, Darklands.Platform.Recording.InputRecording.FileName) : recordTo);
+}
+using var recording = recordStep is null ? null
+    : new Darklands.Presentation.Recording.GameRecording(host, savesStep?[6..] ?? resolved.SavesFolder ?? Path.Combine(AppContext.BaseDirectory, "SAVES"));
+var game = new DarklandsGame(recording?.Host ?? (Darklands.Platform.IHost)host, OpenGame())
 {
     Seed = clockStep is null ? () => seed : NextSeed,
     PartyTicks = () => partyTicks.Count > 1 ? partyTicks.Dequeue() : partyTicks.Count == 1 ? partyTicks.Peek() : (ushort)seed,
@@ -544,6 +628,43 @@ host.Inspect = (frame, x, y, step) =>
     }
 };
 #endif
+var recordingWritten = false;
+void WriteRecording()
+{
+    if (recording is null || recordingWritten)
+    {
+        return;
+    }
+    recordingWritten = true;
+    var made = recording.Snapshot(Darklands.Platform.Recording.InputRecording.Checksum(game.Ui.Assets.Files.Read("DARKLAND.EXE")));
+    made.Write(recordStep![7..]);
+    Console.WriteLine($"recording: {made.Header.Entries} entries, tape {made.Tape.Length} bytes, {made.Header.Written.Count} file(s) saved{(made.Header.FinalState.Length > 0 ? ", a game in play" : "")}, written to {recordStep[7..]}");
+}
+if (recording is not null)
+{
+    recording.Attach(game);
+    host.StepsEnded = WriteRecording;
+    if (game.QuickstartCard is { } quickCard)
+    {
+        recording.StartSettings["quickstartCard"] = quickCard.ToString("X", System.Globalization.CultureInfo.InvariantCulture);
+    }
+    if (game.StartWithSave is { } firstSave)
+    {
+        recording.StartSettings["startWithSave"] = firstSave;
+    }
+    if (languagePackStep is not null)
+    {
+        recording.StartSettings["pack.language"] = Path.GetFileName(Path.TrimEndingDirectorySeparator(languagePackStep));
+    }
+    if (fontPackStep is not null)
+    {
+        recording.StartSettings["pack.font"] = Path.GetFileName(Path.TrimEndingDirectorySeparator(fontPackStep));
+    }
+    if (modSteps.Count > 0)
+    {
+        recording.StartSettings["mods"] = string.Join("\u001f", modSteps.Select(s => s[4..]));
+    }
+}
 host.ConsoleCommand = line =>
 {
     foreach (var text in developerConsole.Execute(line).Lines)
@@ -551,7 +672,15 @@ host.ConsoleCommand = line =>
         Console.WriteLine("console: " + text);
     }
 };
-game.Run();
+try
+{
+    game.Run();
+}
+finally
+{
+    // a run that ended before its steps did (the game quit): the recording up to there
+    WriteRecording();
+}
 #if DEV_TOOLS
 if (!string.IsNullOrEmpty(textBoxesFolder))
 {

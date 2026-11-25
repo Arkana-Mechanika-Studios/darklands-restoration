@@ -38,6 +38,9 @@ public sealed class ReportService(ReportLocations locations, string version, str
     /// <summary>The version with its commit, as the issue form wants it.</summary>
     public string VersionText => version + " (commit " + commit + ")";
 
+    /// <summary>Writes the session's input recording (R-1) and gives its file, or null: none (the host's).</summary>
+    public Func<string?>? Recording { get; set; }
+
     public static string SystemText => RuntimeInformation.OSDescription + ", " + RuntimeInformation.FrameworkDescription + ", " + RuntimeInformation.ProcessArchitecture;
 
     public ReportResult Build(bool crash, string? source, string? playerText, Exception? exception, int logCount = 2)
@@ -51,6 +54,15 @@ public sealed class ReportService(ReportLocations locations, string version, str
         {
             log?.WriteLine("Report: no screenshot (" + e.GetType().Name + ": " + e.Message + ")", error: true);
         }
+        string? recording = null;
+        try
+        {
+            recording = Recording?.Invoke();
+        }
+        catch (Exception e) when (e is not OutOfMemoryException)
+        {
+            log?.WriteLine("Report: no input recording (" + e.GetType().Name + ": " + e.Message + ")", error: true);
+        }
         IReadOnlyList<(string, string)> facts;
         try
         {
@@ -61,7 +73,7 @@ public sealed class ReportService(ReportLocations locations, string version, str
             facts = [("Settings", "unavailable: " + e.Message)];
         }
         var result = ReportBuilder.Build(new ReportInput(locations.Reports, locations.Logs, version, commit, crash, source, playerText, exception, facts,
-            SettingsFile, GameFolder, SavesFolders, saves, picture, _scrubber, logCount));
+            SettingsFile, GameFolder, SavesFolders, saves, picture, _scrubber, logCount, RecordingFile: recording));
         log?.WriteLine("Report: made " + result.Zip + " (" + result.Entries.Count + " files" + (result.Notes.Count > 0 ? ", " + result.Notes.Count + " left out" : "") + ")");
         return result;
     }

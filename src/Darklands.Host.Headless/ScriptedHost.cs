@@ -201,6 +201,9 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
     /// <summary>Called when the clock moves on (the sound renders up to the new time).</summary>
     public Action<long>? Advanced { get; set; }
     public bool QuitRequested { get; private set; }
+
+    /// <summary>Called once when the steps run out, inside the pump that finds none left (the input recording is taken there, R-1).</summary>
+    public Action? StepsEnded { get; set; }
     public MouseState Mouse { get; private set; } = new(160, 100, MouseButtons.None);
     public bool ShiftHeld { get; private set; }
 
@@ -476,6 +479,11 @@ internal sealed class ScriptedHost(List<string> steps, string output) : IHost, I
         }
         if (!_steps.TryDequeue(out var step))
         {
+            // the steps' end, inside the pump (where a player's problem report is made): an input recording is taken here (R-1)
+            if (!QuitRequested)
+            {
+                StepsEnded?.Invoke();
+            }
             QuitRequested = true;
             return;
         }
