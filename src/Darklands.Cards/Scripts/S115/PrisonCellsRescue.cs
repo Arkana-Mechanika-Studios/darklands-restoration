@@ -65,6 +65,7 @@ public sealed class PrisonCellsRescue : Card
     // DIVERGENCE: without such an event the original reads events[-1]; here nobody joins (-1).
     // DORMANT: when nobody can join (-1: the 0x4D event is gone), the original copies the name at party[-1] + 0x11; the leader's name is used. Both ways to this
     //   card (CitySquareAtNight, CouncilHall) offer it only while the event exists.
+    //   checked 2026-11-25: no community save holds an event 0x4D.
     private static void FreeTheFriend(CardContext c)
     {
         var note = c.Events.Find(0x4D, -1, c.Here, -1, -1, -1);

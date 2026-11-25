@@ -449,6 +449,7 @@ public sealed partial class CardScreen
     // orig: R043+0x3292(1): DS:EE13 = DS:E970; DS:E970 = DS:EE0D - DS:E972 (the main lines end where the box begins); 2802(2) puts the width back
     // C: the recolouring around the save turns colour-5 pixels under the box into the text colour when the box goes; the saved rectangle is a driver picture and goes back with colour 0 transparent (Canvas.RestoreTransparent), which is why the text colour is recoloured to 5 before the save.
     // DORMANT: DS:EE72 < 0 (no fill and outline): every card sets DS:EE72 = 7.
+    //   checked 2026-11-25 (writer scan of 483.07): all 365 writes of DS:EE72 store 7.
     private PopupBox OpenBox(OptionLayout main, OptionArea line)
     {
         var c = context();

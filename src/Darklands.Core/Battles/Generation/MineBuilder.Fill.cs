@@ -621,6 +621,7 @@ internal sealed partial class MineBuilder
     // orig: R009+0x26CC (1432:26CC) draft (unmatched draft, far off per the draft notes); tests:
     // Oracle:mine.json
     // DORMANT: DS:11DD (the debugging switch) is 0 in the shipped game, so the early return never happens.
+    //   checked 2026-11-25 (writer scan of 483.07): DS:11DD is 0 in play (its two writes are at game start, see BattlefieldContext.MineDebugSwitch).
     // DORMANT: the arm for 0x84..0x86 never runs (LoadSection hands over the remapped type 0x0e..0x10).
     private void ConvertExitMarkers(int t, int section)
     {

@@ -134,6 +134,7 @@ public sealed class SabbatField : Card
             // C: the drunk talker (picture 158, text 2) is a switch on menu-choice-index with cases 0..3 only (two identical
             //   case groups); a slot outside 0..3 skips him and goes straight to the news.
             // DORMANT: menu-choice-index is outside 0..3 only if a stale global holds such a value; card-saint-lines has 4 slots.
+            //   checked 2026-11-25 (writer scan of 483.07): DS:EE6A is written only by the menu (R043+0x1CAE, R043+0x26B9, R043+0x27C1) and with 2 (R055+0x116B, R073+0x2A1E).
             if (c.MenuSlot is >= 0 and <= 3)
             {
                 ShowPicture(c, PrayerAnsweredPicture);

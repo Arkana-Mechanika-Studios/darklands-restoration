@@ -135,6 +135,7 @@ public sealed class CouncilHall : Card
                 value = 1;
             }
             // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
+            //   checked 2026-11-25 (writer scan of 483.07): event 0x3B is created only by expiry handler 4 (R029+0x4436), whose appointment has flags 0; no community save holds a 0x3A or 0x3B event.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;
@@ -165,6 +166,7 @@ public sealed class CouncilHall : Card
                 value = 1;
             }
             // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
+            //   checked 2026-11-25 (writer scan of 483.07): event 0x3B is created only by expiry handler 4 (R029+0x4436), whose appointment has flags 0; no community save holds a 0x3A or 0x3B event.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;

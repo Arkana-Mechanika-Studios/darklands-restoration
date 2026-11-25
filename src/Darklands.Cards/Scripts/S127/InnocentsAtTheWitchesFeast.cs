@@ -186,6 +186,7 @@ public sealed class InnocentsAtTheWitchesFeast : Card
                 SetTheScene(c, AdoptionPicture);
                 break;
             // DORMANT: slot 3 (card-saint-lines[3] is −1) or a stale menu-choice-index outside 0..2: an answered prayer does nothing.
+            //   checked 2026-11-25 (writer scan of 483.07): DS:EE6A is written only by the menu (R043+0x1CAE, R043+0x26B9, R043+0x27C1) and with 2 (R055+0x116B, R073+0x2A1E).
         }
     }
 
