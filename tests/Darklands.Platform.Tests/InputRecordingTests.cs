@@ -158,6 +158,40 @@ public sealed class InputRecordingTests : IDisposable
     }
 
     [Fact]
+    public void ARecordingOfAnotherBuildIsRefused()
+    {
+        // the same version and commit (or a commit not known on either side): played
+        Assert.Null(RecordingBuild.Refusal("1.2.0", "abc1234", "1.2.0", "abc1234"));
+        Assert.Null(RecordingBuild.Refusal("1.2.0", "unknown", "1.2.0", "abc1234"));
+        // an older build's: refused, with the build to use
+        var older = RecordingBuild.Refusal("1.1.3", "6da0fec", "1.2.0", "abc1234");
+        Assert.NotNull(older);
+        Assert.Contains("made by Darklands Restoration 1.1.3 (commit 6da0fec)", older, StringComparison.Ordinal);
+        Assert.Contains("play it with the build that made it", older, StringComparison.Ordinal);
+        Assert.NotNull(RecordingBuild.Refusal("1.2.0", "0000000", "1.2.0", "abc1234"));
+    }
+
+    [Fact]
+    public void ARecordingOfAnotherFormatIsRefusedWhenRead()
+    {
+        Directory.CreateDirectory(_folder);
+        var path = Path.Combine(_folder, InputRecording.FileName);
+        using (var zip = ZipFile.Open(path, ZipArchiveMode.Create))
+        {
+            using (var stream = new StreamWriter(zip.CreateEntry("recording.json").Open()))
+            {
+                stream.Write("{ \"format\": 0, \"program\": \"1.0.0\" }");
+            }
+            zip.CreateEntry("tape.bin");
+        }
+        var refused = Assert.Throws<InvalidDataException>(() => InputRecording.Read(path));
+        Assert.Contains("recording format 0", refused.Message, StringComparison.Ordinal);
+        // and a file that is no recording at all
+        File.WriteAllText(path, "not a zip");
+        Assert.Throws<InvalidDataException>(() => InputRecording.Read(path));
+    }
+
+    [Fact]
     public void AProblemReportPacksTheRecording()
     {
         var logs = Path.Combine(_folder, "logs");

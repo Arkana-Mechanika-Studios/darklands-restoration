@@ -100,6 +100,9 @@ public static class ReportBuilder
             }
         }
 
+        // the input recording (R-1) of this run first: within the package's limit it goes before the logs (an older run's log is the
+        //   one left out)
+        Add("recording/" + Path.GetFileName(input.RecordingFile ?? ""), input.RecordingFile is { } recording && File.Exists(recording) ? recording : null, text: false);
         // the logs: the newest ones (this run, the one before)
         foreach (var log in SessionLog.Logs(input.LogsFolder).Take(input.LogCount))
         {
@@ -110,8 +113,6 @@ public static class ReportBuilder
             Add("settings/" + Path.GetFileName(settings), settings, text: true);
         }
         Add("screenshot.png", input.ScreenshotFile is { } shot && File.Exists(shot) ? shot : null, text: false);
-        // the input recording (R-1): what the player did since the program started, to play it again (inputs only)
-        Add("recording/" + Path.GetFileName(input.RecordingFile ?? ""), input.RecordingFile is { } recording && File.Exists(recording) ? recording : null, text: false);
 
         // the saved game last used (as it is now), its copy from the time it was loaded, the newest save
         var lastUse = input.Saves?.Last;

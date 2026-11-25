@@ -555,11 +555,14 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     }
     recording.TakeSaves(game.SaveDirectory);
     recording.Attach(game);
+    // report.txt says how long the recording is and whether it was cut
+    var runFacts = reports.Facts;
+    reports.Facts = () => [.. runFacts(), ("Input recording", recording.Describe())];
     reports.Recording = () =>
     {
         Directory.CreateDirectory(reports.Locations.Session);
         var file = Path.Combine(reports.Locations.Session, Darklands.Platform.Recording.InputRecording.FileName);
-        var made = recording.Snapshot(version, ReportHost.Commit(), Darklands.Platform.Recording.InputRecording.Checksum(files.Read("DARKLAND.EXE")));
+        var made = recording.Snapshot(Darklands.Platform.Recording.InputRecording.Checksum(files.Read("DARKLAND.EXE")));
         made.Write(file);
         reports.Log?.WriteLine($"Input recording: {made.Header.Entries} entries, {made.Tape.Length / 1024} KB of tape{(made.Header.Cut ? ", cut at its limit" : "")}");
         return file;
@@ -567,6 +570,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     start.Running = true;
     game.Run();
     reports.Recording = null;
+    reports.Facts = runFacts;
     reports.Screenshot = null;
     host.ReportRequested = null;
     audioTrace?.Dispose();

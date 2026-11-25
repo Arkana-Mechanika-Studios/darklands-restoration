@@ -9,7 +9,8 @@ namespace Darklands.Host.Sdl.Tests;
 /// <summary>
 /// The input recording in the real SDL window (R-1): a game played by SDL events pushed as a player's (a Quickstart party, the
 /// mouse moved, the game's own pause, the settings screen with the picture filter, the window's size, the interface, the rules and
-/// clean drawing changed while the game is paused, a card option taken, a save), the recording taken by Ctrl-F12 as a report
+/// clean drawing changed while the game is paused, a card option taken, a save, that game loaded again in the middle of the session
+/// and saved once more), the recording taken by Ctrl-F12 as a report
 /// takes it, then played again with no window: the same saved game and the same game at the end. Needs the SDL3 library the host
 /// ships and the game files (DARKLANDS_DIR); skipped without them.
 /// </summary>
@@ -17,7 +18,7 @@ namespace Darklands.Host.Sdl.Tests;
 public sealed class InputRecordingSdlTests
 {
     // SDL3's keys: scancodes (USB usage) and keycodes
-    private const int ScanQ = 20, ScanP = 19, ScanS = 22, ScanT = 23, Scan1 = 30, ScanReturn = 40, ScanEscape = 41, ScanSpace = 44;
+    private const int ScanQ = 20, ScanP = 19, ScanS = 22, ScanT = 23, ScanL = 15, ScanY = 28, Scan1 = 30, ScanReturn = 40, ScanEscape = 41, ScanSpace = 44;
     private const int ScanRight = 79, ScanDown = 81;
     private const int KeyRight = 0x4000004F, KeyDown = 0x40000051, Key1 = '1';
     private const ushort ModAlt = 0x0100, ModCtrl = 0x0040;
@@ -38,6 +39,7 @@ public sealed class InputRecordingSdlTests
         {
             InputRecording? taken = null;
             var settingsLog = new List<string>();
+            var loads = 0;
             var files = new GameFiles(gameFolder);
             using (var host = new SdlHost("recording test"))
             {
@@ -61,9 +63,10 @@ public sealed class InputRecordingSdlTests
                 game.Ui.OpenSettings = OpenSettings;
                 game.Ui.PressedButtonMilliseconds = GameUi.PressedButtonFloor;
                 game.Ui.EdgeScrollMilliseconds = 100;
+                game.SaveUsed = (_, _, loading) => loads += loading ? 1 : 0;
                 recording.TakeSaves(saves);
                 recording.Attach(game);
-                host.ReportRequested = () => taken = recording.Snapshot("test", "", InputRecording.Checksum(files.Read("DARKLAND.EXE")));
+                host.ReportRequested = () => taken = recording.Snapshot(InputRecording.Checksum(files.Read("DARKLAND.EXE")));
                 var player = new Thread(() => Play()) { IsBackground = true };
                 player.Start();
                 game.Run();
@@ -74,7 +77,9 @@ public sealed class InputRecordingSdlTests
             {
                 File.WriteAllText(measured, $"entries {taken!.Header.Entries} tape {taken.Tape.Length} bytes" + Environment.NewLine);
             }
-            Assert.True(taken!.Header.Written.Count >= 2, $"{taken.Header.Written.Count} file(s) saved");
+            Assert.Equal(1, loads);
+            // two saves (each a .SAV and a .BSV), the second after the load
+            Assert.True(taken!.Header.Written.Count >= 4, $"{taken.Header.Written.Count} file(s) saved");
             Assert.NotEqual("", taken.Header.FinalState);
             // the settings changed while paused are on the tape
             var reader = new TapeReader(taken.Tape);
@@ -142,13 +147,39 @@ public sealed class InputRecordingSdlTests
         Thread.Sleep(800);
         Key(ScanReturn, 13);
         Thread.Sleep(2000);
+        Key(ScanL, 'l', ModAlt);                          // a load in the middle of the session: "Proceed?" yes, the newest game
+        Thread.Sleep(800);
+        Key(ScanY, 'y');
+        Thread.Sleep(1500);
+        Key(ScanL, 'l');
+        Thread.Sleep(3000);
+        Mouse(350, 260);
+        Key(ScanReturn, 13);
+        Thread.Sleep(1500);
+        Key(ScanS, 's', ModAlt);                          // and a save after it
+        Thread.Sleep(800);
+        Key(ScanReturn, 13);
+        Thread.Sleep(2000);
         // DARKLANDS_RECORDING_MEASURE=<seconds> (a developer's measure of the tape's size): that long more of a moving mouse and a key
         //   every few seconds, as a player's hand, before the recording is taken
         if (int.TryParse(Environment.GetEnvironmentVariable("DARKLANDS_RECORDING_MEASURE"), out var seconds))
         {
+            // DARKLANDS_RECORDING_MEASURE_MODE=worst: the mouse at a random place every 10 ms (every read of it a new value)
+            var worst = Environment.GetEnvironmentVariable("DARKLANDS_RECORDING_MEASURE_MODE") == "worst";
+            var random = new Random(1);
             var end = DateTime.UtcNow.AddSeconds(seconds);
             for (var n = 0; DateTime.UtcNow < end; n++)
             {
+                if (worst)
+                {
+                    var e = new SdlNative.SdlEvent();
+                    e.Motion.Type = SdlNative.EventMouseMotion;
+                    e.Motion.X = random.Next(0, 960);
+                    e.Motion.Y = random.Next(0, 600);
+                    SdlNative.SDL_PushEvent(ref e);
+                    Thread.Sleep(10);
+                    continue;
+                }
                 Mouse(200 + 150 * MathF.Sin(n / 20f), 200 + 100 * MathF.Cos(n / 31f));
                 if (n % 60 == 59)
                 {

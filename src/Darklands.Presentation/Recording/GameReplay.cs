@@ -9,11 +9,14 @@ namespace Darklands.Presentation.Recording;
 public sealed record ReplayResult(bool ReachedEnd, string? Parted, long Entries, long TapeEntries,
     IReadOnlyList<(string Name, bool Same)> Saves, IReadOnlyList<string> Notes, bool? FinalStateSame = null)
 {
+    /// <summary>Why the recording was not played at all (another build made it), or null.</summary>
+    public string? Refused { get; init; }
+
     /// <summary>
     /// True when the whole tape played, every save the recording made came out with the same bytes, and the game in play at the end
     /// is the same (when the recording says what it was).
     /// </summary>
-    public bool Same => ReachedEnd && Parted is null && Saves.All(s => s.Same) && FinalStateSame != false;
+    public bool Same => Refused is null && ReachedEnd && Parted is null && Saves.All(s => s.Same) && FinalStateSame != false;
 }
 
 /// <summary>
@@ -31,12 +34,21 @@ public static class GameReplay
     /// </summary>
     public static ReplayResult Run(InputRecording recording, GameFiles files, string workFolder, Func<string, string?>? findPack = null,
         Func<IReadOnlyList<string>, Simulation.Mods.ModSet?>? mods = null, Action<DarklandsGame>? setUp = null,
-        Func<DarklandsGame, Action<string>>? console = null)
+        Func<DarklandsGame, Action<string>>? console = null, bool anyBuild = false)
     {
         ArgumentNullException.ThrowIfNull(recording);
         ArgumentNullException.ThrowIfNull(files);
         var notes = new List<string>();
         var header = recording.Header;
+        // another build's recording is not played (anyBuild: a developer's try, said in the notes)
+        if (RecordingBuild.Refusal(header.Program, header.Commit, RecordingBuild.Version, RecordingBuild.Commit) is { } refusal)
+        {
+            if (!anyBuild)
+            {
+                return new ReplayResult(false, null, 0, header.Entries, [], notes) { Refused = refusal };
+            }
+            notes.Add(refusal + " (played anyway)");
+        }
         if (header.Cut)
         {
             notes.Add("the recording was cut at its limit: the replay stops where it ends");

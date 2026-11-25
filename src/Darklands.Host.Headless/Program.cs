@@ -145,7 +145,16 @@ if (steps.FirstOrDefault(s => s.StartsWith("tapedump:", StringComparison.Ordinal
 if (steps.FirstOrDefault(s => s.StartsWith("replay:", StringComparison.Ordinal)) is { } replayStep)
 {
     var packsRoot = steps.FirstOrDefault(s => s.StartsWith("packs:", StringComparison.Ordinal))?[6..];
-    var recorded = Darklands.Platform.Recording.InputRecording.Read(replayStep[7..]);
+    Darklands.Platform.Recording.InputRecording recorded;
+    try
+    {
+        recorded = Darklands.Platform.Recording.InputRecording.Read(replayStep[7..]);
+    }
+    catch (Exception e) when (e is InvalidDataException or System.Text.Json.JsonException or IOException)
+    {
+        Console.WriteLine("replay refused: " + e.Message);
+        return 3;
+    }
     string? FindPack(string kindAndName)
     {
         var (kind, name) = (kindAndName[..kindAndName.IndexOf(':')], kindAndName[(kindAndName.IndexOf(':') + 1)..]);
@@ -166,7 +175,14 @@ if (steps.FirstOrDefault(s => s.StartsWith("replay:", StringComparison.Ordinal))
         Darklands.DevConsole.GameCommands.Register(replayConsole, () => replayed.Playing);
         return line => replayConsole.Execute(line);
     }
-    var result = Darklands.Presentation.Recording.GameReplay.Run(recorded, OpenGame(), output, FindPack, FindMods, console: ReplayConsole);
+    // anybuild: play a recording another build made (a developer's try: it may part)
+    var result = Darklands.Presentation.Recording.GameReplay.Run(recorded, OpenGame(), output, FindPack, FindMods, console: ReplayConsole,
+        anyBuild: steps.Contains("anybuild"));
+    if (result.Refused is { } refused)
+    {
+        Console.WriteLine("replay refused: " + refused);
+        return 3;
+    }
     foreach (var note in result.Notes)
     {
         Console.WriteLine("replay note: " + note);
@@ -620,7 +636,7 @@ void WriteRecording()
         return;
     }
     recordingWritten = true;
-    var made = recording.Snapshot(typeof(Program).Assembly.GetName().Version?.ToString() ?? "", "", Darklands.Platform.Recording.InputRecording.Checksum(game.Ui.Assets.Files.Read("DARKLAND.EXE")));
+    var made = recording.Snapshot(Darklands.Platform.Recording.InputRecording.Checksum(game.Ui.Assets.Files.Read("DARKLAND.EXE")));
     made.Write(recordStep![7..]);
     Console.WriteLine($"recording: {made.Header.Entries} entries, tape {made.Tape.Length} bytes, {made.Header.Written.Count} file(s) saved{(made.Header.FinalState.Length > 0 ? ", a game in play" : "")}, written to {recordStep[7..]}");
 }

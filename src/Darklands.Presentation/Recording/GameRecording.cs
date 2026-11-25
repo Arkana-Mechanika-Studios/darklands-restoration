@@ -52,6 +52,12 @@ public sealed class GameRecording : IDisposable
     /// <summary>The tape's entries so far.</summary>
     public long Entries => _tape.Entries;
 
+    /// <summary>The recording in a report's words: its size, and whether it was cut (the tape at its limit, saves left out).</summary>
+    public string Describe() =>
+        string.Create(CultureInfo.InvariantCulture, $"since the program started: {_tape.Entries} entries, {Math.Max(1, _tape.CompressedBytes / 1024)} KB")
+        + (_tape.Full ? "; cut at its limit (the end of the session is not in it)" : "")
+        + (_savesCut ? "; the oldest saved games left out (the saves folder is over the limit)" : "");
+
     /// <summary>
     /// Follows <paramref name="game"/> (built over <see cref="Host"/>): its seeds and its tick words of the day go on the tape, its
     /// saves are noted by checksum, and its settings (those that change what it does) are taken now and after every pump.
@@ -98,9 +104,10 @@ public sealed class GameRecording : IDisposable
     /// <summary>The settings that change what the game does at the start (by name; packs and mods by their folders' names).</summary>
     public Dictionary<string, string> StartSettings { get; } = new(StringComparer.Ordinal);
 
-    /// <summary>The recording as it is now (the session goes on).</summary>
-    public InputRecording Snapshot(string program, string commit, string gameExeChecksum)
+    /// <summary>The recording as it is now (the session goes on); this build's version and commit (<see cref="RecordingBuild"/>).</summary>
+    public InputRecording Snapshot(string gameExeChecksum)
     {
+        var (program, commit) = (RecordingBuild.Version, RecordingBuild.Commit);
         lock (_gate)
         {
             var tape = _tape.Snapshot();
