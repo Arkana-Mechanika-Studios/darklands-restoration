@@ -118,7 +118,8 @@ And this program's own:
 ## Reporting a problem
 
 Something crashed, or differs from the original? The program writes a log of every run, and can pack it with your settings,
-the saved game and a screenshot into a zip you attach to a GitHub issue: type `report` in the console (F11), press Ctrl-F12,
+the saved game, a screenshot and a recording of your inputs since the program started (so the run can be played again; inputs
+only) into a zip you attach to a GitHub issue: type `report` in the console (F11), press Ctrl-F12,
 or use "make a problem report" on the launcher; after a crash the program offers it. Nothing is sent anywhere by the program.
 How, and what the zip holds: [docs/REPORTING.md](docs/REPORTING.md). To watch the program's messages as it runs, start it
 from a terminal, or with `--log-window` for a window of their own (Windows; no such window opens otherwise).

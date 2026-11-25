@@ -293,6 +293,7 @@ while (true)
         // the game could not start (a damaged HD pack, a missing file ...): back to the launcher, which says why
         Console.Error.WriteLine("Start: " + e.Message);
         reports.Screenshot = null;
+        reports.Recording = null;
         host.ReportRequested = null;
         host.SettingsRequested = null;
         (launch, startProblem) = (LauncherReason.StartFailed, "The game could not start: " + e.Message);
@@ -383,7 +384,10 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
         }
         return playing;
     }
-    var game = new DarklandsGame(host, files)
+    // the input recording (R-1, docs/REPORTING.md): every value the window gives the game from now on, for a problem report to
+    //   play again; inputs only, kept in memory (compressed) until a report is made
+    using var recording = new Darklands.Presentation.Recording.GameRecording(host);
+    var game = new DarklandsGame(recording.Host, files)
     {
         ShowStartUp = settings.ShowBanner,
         PlayOpening = settings.PlayIntro,
@@ -462,6 +466,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
             if (ModFolders.Find(mod, files.Root, modBase) is { } modFolder)
             {
                 modFolders.Add(modFolder);
+                recording.StartSettings["mods"] = (recording.StartSettings.GetValueOrDefault("mods") is { Length: > 0 } named ? named + "\u001f" : "")
+                    + Path.GetFileName(Path.TrimEndingDirectorySeparator(modFolder));
             }
             else
             {
@@ -475,7 +481,7 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
             soundPack.AddModMusic(game.Mods.Music).ToList().ForEach(Console.Error.WriteLine);
         }
     }
-    using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version, reports) : null;
+    using var console = settings.ConsoleEnabled ? CreateConsole(game, settings, version, reports, recording.ConsoleCommand) : null;
     host.Console = console;
     // what the sound pack could not use at the start (no SoundFont for its .mid music, a mod's missing music ...) is told in the console too
     if (console is not null && soundPack is not null)
@@ -538,8 +544,29 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
             + " (set savesFolder in the settings file, DARKLANDS_SAVES or --saves to choose another folder).");
     }
     game.SaveDirectory = saves.Folder;
+    // the recording's start: the packs by their folders' names (no path of the player's), the saves folder as it is now, the game's setup
+    if (settings.LanguagePack is { } recordedLanguage)
+    {
+        recording.StartSettings["pack.language"] = Path.GetFileName(Path.TrimEndingDirectorySeparator(recordedLanguage));
+    }
+    if (fontPack is not null)
+    {
+        recording.StartSettings["pack.font"] = Path.GetFileName(Path.TrimEndingDirectorySeparator(fontPack));
+    }
+    recording.TakeSaves(game.SaveDirectory);
+    recording.Attach(game);
+    reports.Recording = () =>
+    {
+        Directory.CreateDirectory(reports.Locations.Session);
+        var file = Path.Combine(reports.Locations.Session, Darklands.Platform.Recording.InputRecording.FileName);
+        var made = recording.Snapshot(version, ReportHost.Commit(), Darklands.Platform.Recording.InputRecording.Checksum(files.Read("DARKLAND.EXE")));
+        made.Write(file);
+        reports.Log?.WriteLine($"Input recording: {made.Header.Entries} entries, {made.Tape.Length / 1024} KB of tape{(made.Header.Cut ? ", cut at its limit" : "")}");
+        return file;
+    };
     start.Running = true;
     game.Run();
+    reports.Recording = null;
     reports.Screenshot = null;
     host.ReportRequested = null;
     audioTrace?.Dispose();
@@ -681,14 +708,26 @@ static string? FindGameFolder(string? named, string? settingsPath)
 }
 
 /// <summary>The developer console: the game commands on the game being played, and the host's own.</summary>
-static ConsoleOverlay CreateConsole(DarklandsGame game, ResolvedSettings settings, string version, ReportService reports)
+static ConsoleOverlay CreateConsole(DarklandsGame game, ResolvedSettings settings, string version, ReportService reports, Action<string>? recordCommand = null)
 {
     var console = new Darklands.DevConsole.GameConsole();
-    // the console's lines go to the session log too
-    console.Echo = (line, kind) => reports.Log?.WriteLine("console: " + line, kind == Darklands.DevConsole.ConsoleLineKind.Error);
+    // the console's lines go to the session log too; a command line goes into the input recording (R-1: a replay runs it there)
+    console.Echo = (line, kind) =>
+    {
+        reports.Log?.WriteLine("console: " + line, kind == Darklands.DevConsole.ConsoleLineKind.Error);
+        if (kind == Darklands.DevConsole.ConsoleLineKind.Command)
+        {
+            recordCommand?.Invoke(line.StartsWith("> ", StringComparison.Ordinal) ? line[2..] : line);
+        }
+    };
     console.Add(new Darklands.DevConsole.ConsoleCommand("report", "report [text]  (make a problem report: a zip with the logs, settings, saves and last frame; opens its folder and the issue form; nothing is sent)",
         words => Darklands.DevConsole.ConsoleResult.Ok([.. ReportHost.Manual(reports, "console", words.Length == 0 ? null : string.Join(' ', words))])));
     Darklands.DevConsole.GameCommands.Register(console, () => game.Playing);
+    // R-1: the input recording alone, without a report (a tester's or developer's aid; the report packs the same file)
+    console.Add(new Darklands.DevConsole.ConsoleCommand("recording", "recording  (write the input recording of this session now: recording.dlrec in the session's folder; nothing is sent)",
+        _ => reports.Recording?.Invoke() is { } written
+            ? Darklands.DevConsole.ConsoleResult.Ok("input recording written: " + written)
+            : throw new InvalidOperationException("no input recording in this session")));
     console.Add(new Darklands.DevConsole.ConsoleCommand("music", "music on|off  (the game's music option, as Alt-M sets it)", words =>
     {
         var on = words.Length == 1 && words[0].Equals("on", StringComparison.OrdinalIgnoreCase);

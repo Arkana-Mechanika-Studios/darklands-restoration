@@ -27,10 +27,28 @@ https://github.com/Arkana-Mechanika-Studios/darklands-restoration/issues/new/cho
 | `logs\` | the log of this run and of the one before (everything the program printed, and the console's lines) |
 | `settings\darklands.settings.json` | your settings file |
 | `screenshot.png` | the last frame, when there is one |
+| `recording
+ecording.dlrec` | the input recording of this run (below): what you did since the program started, so that it can be played again |
 | `saves\last-used\` | the saved game you last loaded or saved (`DKSAVEn.SAV`, `.BSV`, `.MODS.JSON`), as it is now |
 | `saves\at-load\` | a copy of that saved game as it was when you loaded it: the state before the problem |
 | `saves\newest\` | the newest saved game, if it is another |
 | `game\` | `CACHE.TMP` and `CHARACTR.TMP`, if present |
+
+### The input recording
+
+From the moment the program starts, it notes what the game is given: each key you press, where the mouse is and its buttons, the
+game's clock and timer, the sound driver's answers, the random seeds the game takes from the clock, and a setting you change on
+the settings screen (Alt-T) while you play. It also keeps the saved games of your saves folder as they were at the start, and the
+checksums of the games you save. Nothing else: no file of yours, no folder name (packs and mods are named by their own folders'
+names), and nothing is sent. It stays in memory, packed small (about 0.1 MB for an hour of play; it stops growing at 12 MB), until you
+make a report, which puts it in the zip as `recording
+ecording.dlrec`.
+
+With it, a developer plays your run again on their own copy of the game, step by step, to the same saved game: the problem shows up
+as it did for you. If the run differs (another version of the game files, a pack they do not have), the replay says where.
+
+The developer console's commands (F11) are recorded too, and the replay runs the game's own ones. Pausing, the settings screen,
+moving or resizing the window and the picture filters do not change the replay.
 
 Your user name and your user-profile folder are replaced by `<user>` in every text file. Saved games and the picture are copied as they
 are; a saved game holds your characters' names. A file over 20 MB is left out (and the report says so).
@@ -46,6 +64,16 @@ Beside the settings file (`darklands.settings.json`; when that folder cannot be 
 You can read any of them, and delete them whenever you like.
 
 ## For developers
+
+**Playing a recording again.** The headless host replays one:
+`Darklands.Host.Headless <game folder> <output folder> replay:<recording.dlrec> [packs:<folder>]`. It restores the recording's saves
+into `<output folder>\saves`, sets the game up as the recording says (rules, interface, packs and mods by name, found in
+`<folder>\languages`, `<folder>\fonts` and the program's `packs`), hands the game the recorded values in order, and prints whether the
+tape played to its end, each game saved during the recording came out with the same bytes, and the game at the end is the same
+(`replay: same`; exit code 3 when not). Where the game asks for something else than the tape holds, it stops and names the entry
+(`DARKLANDS_TAPE_STACK=1` adds where the game asked from; `tapedump:<file>:<from>:<count>` lists the tape). `record:<file>` (or
+`DARKLANDS_RECORD=<file>`, `1` for `recording.dlrec` in the output folder) records a scripted run the same way. The console's
+`recording` writes the recording without a report.
 
 The build stamps the commit it was made from (`AssemblyMetadata("Commit")`: `GITHUB_SHA` in CI, else the short commit from git,
 else `unknown`). The issue form is `.github/ISSUE_TEMPLATE/bug_report.yml`; the address the program opens fills its fields `kind`,
