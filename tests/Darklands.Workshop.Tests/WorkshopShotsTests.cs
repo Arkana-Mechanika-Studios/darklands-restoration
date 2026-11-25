@@ -49,6 +49,8 @@ public sealed class WorkshopShotsTests
             fr.Set(saint, "Une sainte patronne des cloches et des infirmières, éprouvée par bien des tourments. Elle augmente un peu le Charisme et l'Endurance.");
             var formula = fr.Entries.First(e => e.Key == Darklands.Content.DataNames.FormulaDescription(1));
             fr.Set(formula, string.Concat(Enumerable.Repeat("Un grand nuage dont l'odeur rend malade ; ", 4)));
+            var city = fr.Entries.First(e => e.Key == Darklands.Content.DataNames.CityDescription(3));
+            fr.Set(city, "un petit port danois de commerce et de pêche");
             fr.Save();
             foreach (var (language, words) in new[]
             {
@@ -122,6 +124,8 @@ public sealed class WorkshopShotsTests
                 Shot(window, "3a-saint-description");
                 Choose(window, formula.Key);
                 Shot(window, "3b-formula-description");
+                Choose(window, city.Key);
+                Shot(window, "3c-city-description");
                 window.RunCheckForTests();
                 Choose(window, menu.Key);
                 Shot(window, "4-check");
