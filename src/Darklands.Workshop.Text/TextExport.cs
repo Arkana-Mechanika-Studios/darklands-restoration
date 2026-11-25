@@ -104,6 +104,8 @@ public static class TextExport
     {
         var n when n.StartsWith("room ", StringComparison.Ordinal) => n.Split(';')[0],
         var n when n.StartsWith("a card text: box: ", StringComparison.Ordinal) => n["a card text: box: ".Length..],
+        // a description of the data files (1.1.3): its column's lines on each screen
+        var n when n.Contains(" · box: ", StringComparison.Ordinal) => n[(n.IndexOf(" · box: ", StringComparison.Ordinal) + " · box: ".Length)..],
         _ => "",
     };
 

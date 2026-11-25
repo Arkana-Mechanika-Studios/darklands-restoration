@@ -110,8 +110,15 @@ public static class LanguagePackCheck
             var arguments = box.GetValueOrDefault(english.Key)?.Arguments?.ToDictionary(a => a.Key, a => (object?)a.Value, StringComparer.Ordinal)
                 ?? english.Variables.ToDictionary(v => v, v => (object?)"0", StringComparer.Ordinal);
             var words = Darklands.Core.TextCodes.FromTags(pack.Localizer.Get(english.Key, arguments));
+            if (DescriptionBoxes.Of(english.Key) is { Count: > 0 } described)
+            {
+                // a description of the data files (1.1.3): a word-wrapped column, measured as the screen lays it out, to its foot
+                CheckDescription(words, described, Painter, Add);
+                continue;
+            }
             var b = box.GetValueOrDefault(english.Key);
-            var painter = Painter(b is { Font: > 0 } ? b.Font : 1);
+            // a city's description is drawn in the card texts that show $PlaceDesc (the card window's font)
+            var painter = Painter(DescriptionBoxes.IsCityDescription(english.Key) ? 3 : b is { Font: > 0 } ? b.Font : 1);
             if (Unshowable(Darklands.Core.TextCodes.OfText(words), painter) is { Length: > 0 } lacking)
             {
                 Add(Severity.Error, $"the font has no {lacking}: drawn as '?' (a font pack can add letters)");
@@ -229,6 +236,32 @@ public static class LanguagePackCheck
             {
                 add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
                     $"runs past the foot of the card's window (every passage shown, the $Names as written; the English ends at row {english})"));
+            }
+        }
+    }
+
+    // a description's boxes (DescriptionBoxes): the letters its font lacks, and the text laid out in each box: past the foot (where
+    //   the screen draws something else or its page ends) and lower than the English is an overflow
+    private static void CheckDescription(string words, IReadOnlyList<DescriptionBoxes.Box> boxes, Func<int, TextPainter> painter,
+        Action<Severity, string> add)
+    {
+        var codes = Darklands.Core.TextCodes.OfText(words);
+        foreach (var slot in boxes.Select(b => b.Font).Distinct())
+        {
+            if (Unshowable(codes, painter(slot)) is { Length: > 0 } lacking)
+            {
+                add(Severity.Error, $"the font has no {lacking}: drawn as '?' (a font pack can add letters)");
+            }
+        }
+        foreach (var b in boxes)
+        {
+            var p = painter(b.Font);
+            var bottom = DescriptionBoxes.Bottom(b, p, codes);
+            if (bottom >= b.Foot)
+            {
+                var lines = (bottom - b.Y) / (b.Spacing + b.Leading) + 1;
+                add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
+                    $"runs past the foot of its box {b.Where} ({lines} lines of {b.Width} px; the box holds {b.Lines(p.Font.CharacterHeight)})"));
             }
         }
     }

@@ -377,8 +377,17 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
         var measured = _text.Measure(date);
         var width = measured < 0x31 ? measured : 0x32;
         _text.Draw(_canvas, (0x32 - width) / 2 + 0x4B, 0xBD, date, TextColor);
-        layout.Draw(_canvas, TextPainter.Encode(ui.Assets.SaintDescription(saint)), 0x94, 0x25, 0x9C,
-            new CardTextLayout.Settings { Color = TextColor, Spacing = 8 });
+        var description = ui.Assets.SaintDescription(saint);
+        var descriptionSettings = new CardTextLayout.Settings { Color = TextColor, Spacing = 8 };
+        if (ui.Language is not null)
+        {
+            // Not in the original: the 1.1.3 translations. The description in the pack's words, by codes (the same layout); no pack: the bytes
+            layout.Draw(_canvas, Darklands.Core.TextCodes.OfText(ui.SaintDescription(saint, description)), 0x94, 0x25, 0x9C, descriptionSettings);
+        }
+        else
+        {
+            layout.Draw(_canvas, TextPainter.Encode(description), 0x94, 0x25, 0x9C, descriptionSettings);
+        }
     }
 
     /// <summary>The saint's full name (saint-label-table R136+0xF16E, from DARKLAND.LST).</summary>

@@ -63,6 +63,19 @@ The game's fonts only have the English letters.
   high-resolution display. The Japanese and Korean samples show how: the font sits in the pack's `fonts` folder and
   `fonts/slot1.json` to `slot3.json` name it.
 
+### Chinese, Japanese and Korean: today's limits
+
+The screens' boxes and columns are still where the original put them for its 7, 8 and 9 pixel fonts: a pack's font
+does not move them. Until it can:
+
+* **Slot 1 at 7 px.** Slot 1 draws the side window, the screen pages and the menus. Set it to `"size": 7` in
+  `fonts/slot1.json`. A taller font meets rows and columns made for 7 pixels: labels wrap or run into their neighbours,
+  most of all in the character sheet's narrow columns.
+* **`lines: 2` where a text needs it.** A text that does not fit can get a second line, or more width, in the pack's
+  `interface/layout.json` ([LOCALISATION.md](LOCALISATION.md)). The check says when a widened text may cover another
+  one. Where several texts share a narrow panel (the barter screen's purse lines, for example) this does not help yet.
+* A line height per slot that the screens' layout follows is planned for 1.2.
+
 ## The editor
 
 ![A card text in the editor](translating/3-card-text.png)

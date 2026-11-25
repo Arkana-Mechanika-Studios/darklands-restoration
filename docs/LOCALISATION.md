@@ -22,13 +22,14 @@ developers ([the plan in steps](#the-plan-for-developers)).
   sheet's labels), the program's own notices (a damaged saved game, missing mods ...), the **card texts** (the `.MSG`
   blocks, [written as below](#card-texts)) and the words the cards put into them (months, hours, lord titles, patron and
   shop names, the cards' own words such as a physician's verdict), and the **names of the data files**
-  ([below](#names-of-the-data-files)): items, saints, formulae, places, cities and their buildings and people, enemies.
+  ([below](#names-of-the-data-files)): items, saints, formulae, places, cities and their buildings and people, enemies;
+  and since 1.1.3 their **descriptions**: a saint's on the prayer screen, a formula's on the alchemy screens, a city's in
+  the card texts that show `$PlaceDesc`.
 * **The battle's words:** its messages (a split party, travelling as a group, a lock or trap's outcome, the surrender
   question ...), its menus and the enemy panel's weapon, armour and shield types and quality words, under their `exe:`
   keys; the battle's far texts (the type names, the ordinals of "Select …", the "cannot view" notice) as `exe:286B:XXXX`.
   Without a pack the battle is the original's to the byte: the replays prove it.
-* **Not yet:** the descriptions in the data files (saints, formulae, places) and the program start's messages. These
-  keep the original English for now.
+* **Not yet:** the program start's messages. These keep the original English for now.
 * **Fonts.** Without a font pack the game draws a translation with the original fonts, which have no letters beyond the
   original's set (the German edition's umlauts and ß are among them); a letter they lack is drawn as `?`. A pack can bring
   fonts of its own with any letters ([font packs](#font-packs)).
@@ -111,6 +112,14 @@ original's names: a saved game written with a pack is the same as one written wi
 place's, a battle's enemies) are translated while they are still the data file's; the party's names, which the player
 typed, are never translated.
 
+**Descriptions** (since 1.1.3) are in `tables.ftl` too: a saint's (`snt:saint/<n>.desc`, DARKLAND.SNT) on the prayer
+screen, a formula's (`alc:<n>.desc`, DARKLAND.ALC) in the alchemy screen's book and on the formula page, and a city's
+(`dsc:<n>.desc`, DARKLAND.DSC) in the card texts that show `$PlaceDesc` (arriving at a city, for example). The screens
+wrap a description in a column, so its box is a number of lines of a width, taken from the screen's own layout, and the
+comment gives it: `box: 12 lines of 156 px (font 2) on the prayer screen`. The check reports a description that runs
+past the foot of its box (into the lines below it, or off its page). A city's description has no box of its own: it is
+part of the card text, whose box applies. Without a pack the screens draw the original's bytes, as before.
+
 **A name's other forms.** A language that declines its nouns or makes words agree with them gives a name its forms as
 Fluent attributes: `nom`, `gen`, `dat`, `acc`, `ins`, `loc`, `voc`, `abl` (the cases a language needs) and `gender`:
 
@@ -138,7 +147,7 @@ my-translation-pack/
     de/
       exe.ftl          the EXE's strings and the word tables
       ui.ftl           the restoration's own notices
-      tables.ftl       the names of the data files (items, saints, places ...)
+      tables.ftl       the names and descriptions of the data files (items, saints, places ...)
       msg/
         $CITYG04.ftl   card texts, one file per .MSG file (the file names are free; this one is the convention)
 ```

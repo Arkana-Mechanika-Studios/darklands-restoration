@@ -141,7 +141,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
             ui.Text.Draw(ui.Canvas, 100, 9, ui.FormulaName(f.Index, f.Name), HeadingColor);
             ui.Text.Draw(ui.Canvas, 100, 0x12, ui.Format("exe:DS:33B8", f.MysticNumber), HeadingColor);  // "Mystical Number - %d"
             ScreenDrawing.Wrapped(ui, ui.FormulaName(f.Index, f.Name), 0x5F, 0x49, 0x3A, MenuColor);
-            ScreenDrawing.Wrapped(ui, f.Description, 0x5F, 0x49, 0x52, MenuColor);
+            ScreenDrawing.Wrapped(ui, ui.FormulaDescription(f.Index, f.Description), 0x5F, 0x49, 0x52, MenuColor);
             ui.Text.Draw(ui.Canvas, 0xCB, 0x39, ui.Words("exe:DS:33D5"), MenuColor);  // "Ingredients:" (the body R033+0x16FA's copy)
             var y = 0x41;
             foreach (var ing in f.Slots)
@@ -239,7 +239,7 @@ public sealed class AlchemyScreen(GameUi ui, PartyPanel panel, IReadOnlyList<For
         }
         ui.Canvas.CopyFrom(_back, 0x55, 0x50, 0x6E, 0x54);
         ScreenDrawing.Wrapped(ui, ui.FormulaName(Selected.Formula.Index, Selected.Formula.Name), 0x69, 0x58, 0x53, MenuColor);
-        ScreenDrawing.Wrapped(ui, Selected.Formula.Description, 0x69, 0x58, 0x6B, MenuColor);
+        ScreenDrawing.Wrapped(ui, ui.FormulaDescription(Selected.Formula.Index, Selected.Formula.Description), 0x69, 0x58, 0x6B, MenuColor);
     }
 
     // orig: R033+0x0D54 (1462:0D54) draft (bytes match)

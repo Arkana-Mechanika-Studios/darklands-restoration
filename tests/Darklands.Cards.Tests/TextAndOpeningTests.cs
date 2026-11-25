@@ -117,6 +117,20 @@ public sealed class TextAndOpeningTests
         Assert.Equal(CardHarness.World!.CityDescription(3), Expand(c, "$PlaceDesc"));
     }
 
+    [Fact]
+    public void APacksCityDescriptionIsWhatPlaceDescShows()
+    {
+        if (Context(location: 3) is not { } c)
+        {
+            return;
+        }
+        // Not in the original: the 1.1.3 translations. The pack's words for the city's description (DARKLAND.DSC), the original's without
+        c.Translation = key => key == Darklands.Content.DataNames.CityDescription(3) ? "Translated words of the city" : null;
+        Assert.Equal("Translated words of the city", Expand(c, "$PlaceDesc"));
+        c.Translation = _ => null;
+        Assert.Equal(CardHarness.World!.CityDescription(3), Expand(c, "$PlaceDesc"));
+    }
+
     [Theory]
     [InlineData(0, 0, 0, -30, 0)]     // north
     [InlineData(0, 0, 30, -60, 1)]    // north-east
