@@ -131,6 +131,8 @@ public sealed class SettingsScreenTests
 
         public void SetCurvature(bool on) => Done.Add("curvature " + on);
 
+        public void SetMouseWheel(bool on) => Done.Add("wheel " + on);
+
         public (int Width, int Height)? UsableScreen => (1600, 900);
 
         public (IReadOnlyList<string> Packs, IReadOnlyList<string> SoundFonts) Found() => (["packs/languages/de", "packs/fonts/hd-fonts", "packs/audio/remix"], ["SOUNDFONT/a.sf2"]);
@@ -194,8 +196,10 @@ public sealed class SettingsScreenTests
         model.Carry(new("display.cleanDrawing", "on"));
         model.Carry(new("rules.preset", "original"));
         model.Carry(new("text.languagePack", "packs/languages/de"));
-        Assert.Equal(["filter crt", "window 1440x800 False", "window 1080x600 False", "window 1080x600 True"], host.Done);
+        Assert.Equal(["filter crt", "window 1440x800 False", "window 1080x600 False", "window 1080x600 True", "wheel True"], host.Done);
         Assert.True(ui.ComfortInterface);
+        // the mouse wheel and the card menu keys are part of Comfort (1.2): they come with it
+        Assert.True(ui.KeyboardCardMenus);
         Assert.True(ui.Options.CleanDrawing);
         Assert.Equal(Darklands.Core.RulePreset.Original, Assert.Single(rules).Preset);
         string Of(int i) => string.Join(", ", host.Written[i].Select(v => $"{v.Key}={v.Value?.ToJsonString()}"));
@@ -211,6 +215,31 @@ public sealed class SettingsScreenTests
         // the rows show the values now
         Assert.Equal("de", model.Rows().Single(r => r.Key == "text.languagePack").ValueLabel);
         Assert.Equal("Original", model.Rows().Single(r => r.Key == "rules.preset").ValueLabel);
+    }
+
+    /// <summary>The mouse wheel and the card menu keys come and go with the Interface switch; the older keys can still keep them off.</summary>
+    [Fact]
+    public void TheWheelAndTheCardMenuKeysFollowTheInterfaceUnlessTheOlderKeysTurnedThemOff()
+    {
+        if (Model() is not var (model, host, ui, _))
+        {
+            return;
+        }
+        model.Carry(new("interface.mode", "classic"));
+        Assert.False(ui.KeyboardCardMenus);
+        model.Carry(new("interface.mode", "comfort"));
+        Assert.True(ui.KeyboardCardMenus);
+        Assert.Equal(["wheel False", "wheel True"], host.Done);
+        if (Model(file: new GameSettings { MouseWheel = false, CardMenuKeys = false, InterfaceMode = "classic" }) is not var (off, offHost, offUi, _))
+        {
+            return;
+        }
+        off.Carry(new("interface.mode", "comfort"));
+        Assert.True(offUi.ComfortInterface);
+        Assert.False(offUi.KeyboardCardMenus);
+        Assert.Equal(["wheel False"], offHost.Done);
+        // nothing of theirs is written: only the Interface switch
+        Assert.Equal(["interface.mode"], offHost.Written.SelectMany(w => w.Keys));
     }
 
     [Fact]

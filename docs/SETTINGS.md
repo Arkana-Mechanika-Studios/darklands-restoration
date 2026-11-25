@@ -61,10 +61,10 @@ not meant for players.
 | `text.fontPack` | none | `--font-pack <folder>`; `DARKLANDS_FONT_PACK` | a font pack: a folder with a `pack.json` saying `"fonts": true` and its fonts in `fonts/` ([PACKS.md](PACKS.md#language-packs)): the game's text, English included, drawn in them at the window's resolution; it combines with a translation pack (whose own fonts win for their slots); the program ships one, "HD fonts" in `packs/fonts/hd-fonts` (DejaVu Sans Mono and EB Garamond); not part of the original; the launcher's Advanced tab has its row |
 | `screenshotsFolder` | current folder | `--screenshots` | |
 | `mods` | `[]` | `--mod <folder or name>` (once per mod; replaces the file's list) | mods to play with, in load order: a mod's folder, or the name of a folder in a `mods` folder next to the program, in the game folder or next to it ([MODS.md](MODS.md)); not part of the original: a game with a mod plays differently and its saves get a companion file |
-| `input.mouseWheel` | true | `--no-mouse-wheel` | the mouse wheel gives the cursor keys ↑ / ↓ where they move a selection (below); not part of the original, the game plays the same (SDL host) |
+| `input.mouseWheel` | true | `--no-mouse-wheel` | older key, still read: the mouse wheel is part of the Comfort interface (below); `false` keeps it off there too. New settings files no longer have it (SDL host) |
 | `interface.mode` | `"comfort"` | `--interface classic\|comfort` | the Interface switch (below): `comfort`, the comfort features; `classic`, keeps the 1992 map and saved-games screens; the game plays the same either way |
 | `rules.preset` | `"fixed"` | `--rules fixed\|original` | the rules of new games (below): `fixed`, the original's gameplay bugs fixed ([FIXED.md](FIXED.md) lists them); `original`, the original's rules; a saved game keeps the rules it was started with |
-| `input.cardMenuKeys` | true | `--no-card-menu-keys` | at a card menu, ↑ / ↓ (and so the wheel) work wherever the pointer is and 1..9 choose a line (below); the original takes ↑ / ↓ only with the pointer over a line; made of player commands, the game plays the same |
+| `input.cardMenuKeys` | true | `--no-card-menu-keys` | older key, still read: the card menu keys are part of the Comfort interface (below); `false` keeps them off there too. New settings files no longer have it |
 | `sdl.library` | the copy next to the program (`SDL3.dll` on Windows, `libSDL3.so.0` on Linux, both shipped), else the system's | `--sdl` | the SDL3 library to load (SDL host only) |
 | `console.enabled` | true | `--no-console` | the developer console (SDL host; below) |
 | `console.font` | the bundled DejaVu Sans Mono | | a TrueType (.ttf) file for the console, e.g. `"C:/Windows/Fonts/consola.ttf"` |
@@ -271,24 +271,26 @@ headless host and the oracle tools always draw the pointer.
 
 ### The mouse wheel
 
-With `input.mouseWheel` on (the default) the wheel moves the selection as ↑ / ↓ do, as DOSBox-X maps it: a notch away from you is
+Part of the Comfort interface (since 1.2; Classic leaves the wheel as the original, which has none): the wheel moves the selection as ↑ / ↓ do, as DOSBox-X maps it: a notch away from you is
 one press of ↑, towards you one of ↓. It does so only where these keys move a selection: the card menus and their item and saint
 boxes, the character sheet's open lists and pack, the shop, barter and loot lists, the load list, the camp, the inn's roster, the
 alchemy list, the character creation menus and the menu bar's pull-downs in its keyboard mode. Everywhere else (the map, a battle, a
 card's text, a message box, the character sheet with no list open, where ↑ / ↓ move the frame between the boxes) the wheel does
 nothing. The game reads each notch as the key itself, a press and release a player could have made; nothing else changes. The
 screens say whether a selection is up (`GameUi.SelectionList`), the window turns the wheel into the keys (`IInput.SelectionListActive`).
-The launcher shows it on its Advanced tab, under Start-up: "Mouse wheel in menus"; `--no-mouse-wheel` turns it off for one run.
+It has no row of its own on the launcher or the settings screen: the Interface row turns it on and off. The older key
+`input.mouseWheel` (`false`) and `--no-mouse-wheel` (for one run) are still read and keep it off with Comfort too.
 
 ### Card menu keys
 
 The original's card menus take ↑ / ↓ only while the pointer is over one of the menu's lines; elsewhere it drops them, and so
-drops the wheel's notches too. With `input.cardMenuKeys` on (the default), ↑ / ↓ with the pointer off the lines put the pointer
+drops the wheel's notches too. With the Comfort interface (since 1.2), ↑ / ↓ with the pointer off the lines put the pointer
 on the line they name (from no highlight ↓ the first line, ↑ the last), which the menu then lights as it does for the mouse; and
 the digits 1..9 choose the line of that number as a click on it does (in an item or saint box, the box's lines). With the
 pointer over a line the keys are the original's. Everything is made of a player's own moves and clicks ([COMMANDS.md](COMMANDS.md)),
-so the game plays the same. The launcher shows it on its Advanced tab, under Start-up: "Card menu keys" (beside "Rules");
-`--no-card-menu-keys` turns it off for one run.
+so the game plays the same. It has no row of its own on the launcher or the settings screen: the Interface row turns it on and
+off. The older key `input.cardMenuKeys` (`false`) and `--no-card-menu-keys` (for one run) are still read and keep it off with
+Comfort too.
 
 ### The rules preset
 
@@ -311,9 +313,9 @@ replays, the comparisons with the original and the headless host play the faithf
 
 One of the three switches of the restoration (Rules: what the game decides; Presentation: what is seen and heard; Interface: how
 the same orders are given). `interface.mode` is `"comfort"` (the default) or `"classic"`; the launcher shows it on its Advanced
-tab ("Interface: Comfort / Classic"); `--interface classic` (or `comfort`) sets it for one run. **Classic** keeps the 1992 map
-and saved-games screens (the mouse wheel and the card menus' keys are rows of their own); the replays and the comparisons with
-the original game play Classic. **Comfort** turns on
+tab ("Interface: Comfort / Classic", beside "Rules") and the settings screen (Alt-T); `--interface classic` (or `comfort`) sets it
+for one run. **Classic** keeps the 1992 interface; the replays and the comparisons with the original game play Classic.
+**Comfort** turns on
 the comfort features, which change how orders are given and what a screen shows of them, never what the game decides (the saved
 games are the same, and the original game loads them):
 
@@ -324,6 +326,8 @@ games are the same, and the original game loads them):
   computer; the saved game itself holds only the game's date). Under the buttons, the highlighted game's place, the game's date
   and hour, and the whole real date ("Saved on 2026-11-21 19:23"). The keys, the scrolling, the highlight, the mouse and loading
   are the original's. A comment too long for its line is cut before the date column.
+* **The mouse wheel** in the menus and lists, and **the card menu keys** (↑ / ↓ wherever the pointer is, 1..9 choose a line):
+  above. Until 1.2 they were settings of their own.
 * **Walking on** (the overland map): tap a direction key twice (two presses within 0.35 s, the key let go in between), or press
   it once with Shift, and the party walks on that way without the key held. It walks by the map's own command, the key a player
   would press, one a pass ([COMMANDS.md](COMMANDS.md)), so the rules, the time and the encounters are those of a held key. It
@@ -334,7 +338,7 @@ games are the same, and the original game loads them):
   keyboard handler ignores Shift), so Shift with a direction did nothing of its own there. A recording of it (the keys, their
   presses and releases, the clock) plays back the same walk.
 
-`interface` is a section so that a later settings screen can give a feature its own key beside `mode`; there is none yet.
+`interface` is a section so that a feature could have its own key beside `mode`; there is none.
 
 ### Keys on other layouts
 
