@@ -623,4 +623,47 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R057+0x0D6A reads the uninitialised [bp-2]
     public bool FixChurchAltarBoyStaleHour { get => _on[RuleTable.FixChurchAltarBoyStaleHour]; set => _on[RuleTable.FixChurchAltarBoyStaleHour] = value; }
+
+
+    /// <summary>
+    /// The "come back" appointment of the council hall's errand and the fortress's service names expiry handler 4 (a one-day welcome, event
+    /// 0x3B) but its flags are 0, so the handler never runs and the 99 chance the audience, errand and admission lines give a welcome party is
+    /// never given; fixed: the appointment is created with the flag that runs its handler.
+    /// </summary>
+    // orig: R054+0x22F8 and R050+0x2298 create the event with flags 0 (B-227a55, B-86c8e5); handler 4 is R029+0x4436
+    public bool FixWelcomeAppointment { get => _on[RuleTable.FixWelcomeAppointment]; set => _on[RuleTable.FixWelcomeAppointment] = value; }
+
+    /// <summary>
+    /// The fortress gives the City Lord's commission where the city has no town hall, but only the town hall's audience pays a finished one,
+    /// so a fortress commission is never paid; fixed: the fortress's commission line pays it first, as the town hall does (seven florins a
+    /// size of the city, then the reward card, which already has the fortress among its patrons).
+    /// </summary>
+    // orig: R050+0x21F8 / R050+0x24E0 start the quest for owner 0x0A with no resolved-commission test (B-169e5e); the payer is R054+0x1D08
+    public bool FixFortressCommissionPay { get => _on[RuleTable.FixFortressCommissionPay]; set => _on[RuleTable.FixFortressCommissionPay] = value; }
+
+    /// <summary>
+    /// The village Schulz's robber-knight task (quest 3, owner 9) is never paid: the reward card has the Schulz among its patrons and a text for
+    /// him, but the Schulz never tests for a finished task; fixed: asking him for information pays a finished task first (the five florins a
+    /// size of the village he promised), then the reward card.
+    /// </summary>
+    // orig: R077 ($Villa02) starts the quest and goes to $Raubi00 with the patron 0x86; R080 ($Raubi01) has the case 0x86; no card sends there
+    public bool FixVillageSchulzReward { get => _on[RuleTable.FixVillageSchulzReward]; set => _on[RuleTable.FixVillageSchulzReward] = value; }
+
+    // ---- the Restored rule set (class restoration, presets restored only: restoration.csv) ----------------------------------------
+
+    /// <summary>
+    /// The business district's line to the physician (card 0x18) starts hidden and nothing raises it, so the house is reached only through
+    /// the crafts quarter; restored: the line is offered, and hidden in the small towns and years the crafts quarter hides its physician in
+    /// (the card's own test, which the original already makes). Restoration R-5a84a7.
+    /// </summary>
+    // orig: R049+0x034A (1838:034A): option 3's state is never set before the hide test (Z-4e29af)
+    public bool RestoreBusinessDistrictPhysician { get => _on[RuleTable.RestoreBusinessDistrictPhysician]; set => _on[RuleTable.RestoreBusinessDistrictPhysician] = value; }
+
+    /// <summary>
+    /// The council hall's line 5, weapons training with the city guard, has flag 0 and nothing raises it; restored: it is offered while the
+    /// city is not hostile and the guard was not asked since the day began (the event 0x41 its handler sets), greyed otherwise, as the
+    /// audience and errand lines are. Restoration R-d1c1d4.
+    /// </summary>
+    // orig: R054+0x1A78: line 5 is not among the enabled lines (Z-a901ed; handler R054+0x29F8, hint R054+0x2B8C)
+    public bool RestoreGuardTraining { get => _on[RuleTable.RestoreGuardTraining]; set => _on[RuleTable.RestoreGuardTraining] = value; }
 }

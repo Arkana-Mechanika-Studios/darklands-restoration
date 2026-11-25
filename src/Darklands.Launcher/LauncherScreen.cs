@@ -106,8 +106,6 @@ internal sealed partial class LauncherScreen
         Test,
         Banner,
         Intro,
-        MouseWheel,
-        CardMenuKeys,
         Interface,
         Rules,
         Save,
@@ -186,7 +184,7 @@ internal sealed partial class LauncherScreen
     public bool AdvancedShown => _advanced;
 
     /// <summary>The rows of the Advanced tab; the other settings rows are on General.</summary>
-    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.LanguagePack or Item.FontPack or Item.Banner or Item.Intro or Item.Interface or Item.MouseWheel or Item.Rules or Item.CardMenuKeys;
+    private static bool OnAdvanced(Item item) => item is Item.Roms or Item.SoundFont or Item.LanguagePack or Item.FontPack or Item.Banner or Item.Intro or Item.Interface or Item.Rules;
 
     private static bool OnGeneral(Item item) => item is Item.GameFolder or Item.Change or Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.Sound or Item.Test or Item.AudioPack;
 
@@ -203,7 +201,7 @@ internal sealed partial class LauncherScreen
 
     // Tab and the arrows go through General's rows, then Advanced's (its tab opens), then the buttons and the links
     private IEnumerable<Item> Order =>
-        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.LanguagePack, Item.FontPack, Item.Banner, Item.Intro, Item.Interface, Item.MouseWheel, Item.Rules, Item.CardMenuKeys, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
+        new[] { Item.GameFolder, Item.Change, Item.Window, Item.Fullscreen, Item.Picture, Item.HdPack, Item.Sound, Item.Test, Item.AudioPack, Item.Roms, Item.SoundFont, Item.LanguagePack, Item.FontPack, Item.Banner, Item.Intro, Item.Interface, Item.Rules, Item.Save, Item.Play, Item.Discord, Item.PackGuide, Item.Report, Item.Notes }
             .Where(i => (i != Item.Test || _context.SoundTest is not null) && (i != Item.Notes || _context.ReleaseNotesLink is not null)
                 && (i != Item.PackGuide || _context.PackGuide is not null) && (i != Item.Report || _context.ReportProblem is not null));
 
@@ -339,7 +337,7 @@ internal sealed partial class LauncherScreen
             case LauncherKey.Left:
             case LauncherKey.Right:
                 var step = key.Key == LauncherKey.Left ? -1 : 1;
-                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.LanguagePack or Item.FontPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Interface or Item.MouseWheel or Item.Rules or Item.CardMenuKeys or Item.GameFolder)
+                if (_focus is Item.Window or Item.Fullscreen or Item.Picture or Item.HdPack or Item.AudioPack or Item.LanguagePack or Item.FontPack or Item.SoundFont or Item.Sound or Item.Banner or Item.Intro or Item.Interface or Item.Rules or Item.GameFolder)
                 {
                     return Activate(_focus, step, cycle: true);
                 }
@@ -480,12 +478,6 @@ internal sealed partial class LauncherScreen
             case Item.Intro:
                 _model.Intro = !_model.Intro;
                 break;
-            case Item.MouseWheel:
-                _model.MouseWheel = !_model.MouseWheel;
-                break;
-            case Item.CardMenuKeys:
-                _model.CardMenuKeys = !_model.CardMenuKeys;
-                break;
             case Item.Interface:
                 _model.ComfortInterface = !_model.ComfortInterface;
                 break;
@@ -584,8 +576,6 @@ internal sealed partial class LauncherScreen
             Item.Roms => "sound.mt32Roms",
             Item.Banner => "startup.banner",
             Item.Intro => "startup.intro",
-            Item.MouseWheel => "input.mouseWheel",
-            Item.CardMenuKeys => "input.cardMenuKeys",
             Item.Interface => "interface.mode",
             Item.Rules => "rules.preset",
             _ => null,

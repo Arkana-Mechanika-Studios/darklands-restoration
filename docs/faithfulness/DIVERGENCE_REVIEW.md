@@ -376,7 +376,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R030+0x1300` (1462:1300, draft), `R030+0x0C44` (1462:0C44, draft), `R030+0x02C0` (1462:02C0, draft)  
   divergence: the original keeps the party as three view-relative registers (DS:2866/DS:2868 the marker inside the 260x184 view, DS:286A/DS:286C/DS:286E the view's column and row offsets into the scrolling G[][] terrain buffer); this class works on absolute map pixels and cells (WorldMap.CellAt). The cell under the marker is the same one (the formulas of 1300: row = (y + 11) / 4, column from x + 16 or x + 24 by the row's parity, are those of CellAt); the terrain read through G is one cell off at the view's column 0 / row 0, as in the original (WorldMap.BufferOffset, View).  
   recommendation: **justify** - Different representation (absolute pixels and cells against view-relative registers) with the same cell under the marker, per the note, which gives the formulas. Covered by the path/travel oracle where present; verify scrolling clamps at the map edge against 1300/0C44 (OverlandScreen has the original's jumps).
-- **D-2a7fc2** `other` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:210` `OverlandTravel.ArriveAt`  
+- **D-2a7fc2** `other` - `src/Darklands.Simulation/Overland/OverlandTravel.cs:211` `OverlandTravel.ArriveAt`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   divergence: the city record and description are not read here: GameState.City loads the working copy for the current location on first use, and TextVariables takes the description from WorldData.  
   recommendation: **justify** - The city record and description are loaded lazily when first used instead of at arrival; the only observable difference is the stale record between arrival and first use, which GameState.City models by loading for the current location.
@@ -385,7 +385,7 @@ Each is a core-logic divergence where the C# does something the original does no
 
 #### not-modelled (7)
 
-- **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:57` `FortressBattlefield.BuildFortress`  
+- **D-ca7108** `not-modelled` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:58` `FortressBattlefield.BuildFortress`  
   original: `R011+0x0000` (1432:0000, draft)  
   divergence: the four level buffers (request-work-buffer 0xCFF0) are arrays; DS:E049 (the room each buffer holds) is written and never read, so it is not kept. Its only store is R011+0x04ED; no instruction of the root or the 136 overlays reads it.  
   recommendation: **justify** (checked against the original) - R011+0x0000 stores DS:E049[k] = n once (R011+0x04ED, mov [bx - 0x1FB7], cx); scanning the root and all 136 overlays for DS:E049..E04F finds no other reference, so the array is write-only.
@@ -439,7 +439,7 @@ Each is a core-logic divergence where the C# does something the original does no
   original: `R014+0xAA22` (18BF:0592, draft)  
   divergence: against a berserk target the asm keeps the attacker's −skill/4 only when it is −10 or lower and otherwise uses −10 (the draft writes the opposite clamp).  
   recommendation: **justify** - Not a deviation from the original: the draft C writes the opposite clamp and the C# follows the asm. Keep; covered by the tactics oracle.
-- **D-eef8f4** `other` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:123` `FortressBattlefield.BuildTombs`  
+- **D-eef8f4** `other` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:124` `FortressBattlefield.BuildTombs`  
   original: `R011+0x1FB2` (1432:1FB2, draft)  
   divergence: the original works in the battle's static floor image; the map fills it completely, so nothing of an earlier battle remains.  
   recommendation: **justify** - The map fills the whole floor image, so no earlier battle's bytes remain; no divergence in effect. Keep the note as the argument.
@@ -1006,11 +1006,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R006+0x1D48` (16E1:0A28, draft)  
   divergence: the search reads them up to two cells outside [0, 40), which the original reads from the neighbouring locals (stack memory); those read as 0 here. It matters only if a room or strip bound lies within two cells of the map's edge (writes at -1 or 40 would stop the rewrite with an index error). Not seen: the castle corpus's 100 scenarios with 3,000 seeds each (300,000 builds, 395,486 calls) read no cell outside [0, 40) and throw nothing; not proven by a bound.  
   deterministic: **no**; action: **keep** - audit19: the out-of-range reads are only the final +-2 search (k = i-2..i+2 around a cell with bit 4) and the i+step test, which reads only cells the loops before wrote (an out-of-range one would have thrown); bit 4 at 0, 1, 38 or 39 needs a room or strip bound there. Measured on an instrumented copy: the castle corpus's 100 scenarios with 3,000 seeds each (300,000 builds, 395,486 calls) read no cell outside [0, 40) and throw nothing. Not proven by a bound on room and strip positions; keep.
-- **D-d75fc3** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CitadelBattlefield.cs:107` `CitadelBattlefield.BuildCourt`  
+- **D-d75fc3** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CitadelBattlefield.cs:108` `CitadelBattlefield.BuildCourt`  
   original: `R013+0x0098` (1432:0098, draft)  
   divergence: the loop of the original runs over 9 bits; bits 7 and 8 take the door ids 0x159 and 0x15E as rows and write far outside the level (into unrelated memory), which is not reproduced.  
   deterministic: **n/a** (checked against the original); action: **document** - 0098 loops bit=1..0x100 over m2 = DS:160C>>8, but m2 is a byte so bit 0x100 never matches, and bit 0x80 (pos[7] = door id 0x159 as a row, a write at cell[0x159][3] far outside the 0x33FC image) needs a high byte >= 0x80; DS:160C is only changed by the citadel door cards (R130 1838 ORs low-byte bits 1,2,4,8,0x10,0x20,0x40; R130 199F/s131/s132/s133 OR word masks 0x0202,0x0404,0x0808,0x0101,0x1010; R130 18AC sets it from fact (1,0x1A) with the low byte cleared), so the high byte only gets bits 0..4 and the 9-bit overrun is unreachable. NOTE (outside this entry): DS:160C is live game state (saved/restored by R003), so BattlefieldContext.CourtProgress is NOT dormant/always 0 as documented; the court's party-start and opened-door branches do occur after the player has passed court doors.
-- **D-893983** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CitadelBattlefield.cs:211` `CitadelBattlefield.MapGroups`  
+- **D-893983** `undefined-memory` - `src/Darklands.Core/Battles/Generation/CitadelBattlefield.cs:212` `CitadelBattlefield.MapGroups`  
   original: `R013+0x098A` (1432:098A, draft)  
   divergence: an unknown type (−1) would flag the bytes before the first kind record, which nothing reads.  
   deterministic: **n/a** (checked against the original); action: **document** - The only caller that flags the kind (0C1E, lc_g7b, type 0x6E) does battlefield-monster-table[group.type[0]].x0c = 1 with type[0] returned by monster-type-lookup, which is -1 only for a type outside 0..0x51 (the write would then hit monster-prototype byte 0xB6, level 7 kind 7). I decoded every group file the dispatcher loads from LCASTLE (lc_court, lc_g1, g2, g3, g4s, g4ns, g5, g7a, g7b): all group types are 0x18..0x44, so -1 never occurs. (lc_g4ns holds 12 groups on one level, which equals a flat battlefield-group-table array and needs no special handling.)
@@ -1018,11 +1018,11 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R010+0x2B42` (1432:2B42, draft)  
   divergence: the original writes into the next group slot even past 10 (into the next level's groups); the C# list grows.  
   deterministic: **n/a** (checked against the original); action: **document** - Every call site of 2B42 is inside one switch case of 08AA/1516/1B22, i.e. at most 3-4 calls per level buffer (d = lvl-lb), so group-total never exceeds 4; the C# generator run over all city battlefield types with random specs gave at most 3 groups on a level. The write past slot 10 cannot happen with this code.
-- **D-d332b8** `undefined-memory` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:322` `FortressBattlefield.PlaceGroup`  
+- **D-d332b8** `undefined-memory` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:323` `FortressBattlefield.PlaceGroup`  
   original: `R011+0x1A2A` (1432:1A2A, draft)  
   divergence: the original writes the group into slot (level × 10 + count) even past the tenth group of a level (into the next level's slots); the list here grows.  
   deterministic: **n/a** (checked against the original); action: **document** - 1A2A is called with fixed group ids 0..6 per room (at most 6 calls per level number in 096A) and by 1FB2 for ids 1..count, but the imisctom.001/.002 maps only contain group markers 12..18 (ids 1..7); the C# fortress/tomb runs gave at most 6 and 7 groups, so slot level*10+count never passes 9.
-- **D-d4b83c** `undefined-memory` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:385` `FortressBattlefield.FlagKind`  
+- **D-d4b83c** `undefined-memory` - `src/Darklands.Core/Battles/Generation/FortressBattlefield.cs:386` `FortressBattlefield.FlagKind`  
   original: `R011+0x1A2A` (1432:1A2A, draft)  
   divergence: a kind of −1 addresses the last kind of the level before (or, for level 0, the enemy buffer's header, which nothing reads); only the former is kept.  
   deterministic: **n/a** (checked against the original); action: **document** - battlefield-monster-table[lvl*12+t1].x0c = x is executed with t1=-1 only if monster-type-lookup rejects the type (type <0 or >=0x52). All first-type arguments at the 1A2A call sites (including the tomb's 0x2D) are constants between 0x00 and 0x51, so the -1 write (level L-1 kind 11, or for level 0 the low byte of monster-prototype[7*12+7]) never occurs.
@@ -1042,7 +1042,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R009+0x0D90` (1432:0D90, draft)  
   divergence: a debugging override beyond the 21 general maps would write past DS:E00D into the next table; ignored here.  
   deterministic: **n/a** (checked against the original); action: **document** - DS:E00D[kn-1]=1 with kn=-numl takes the debug-override path only when exf && DS:C100>=0 (or case 0x0A); DS:C100 is set to -1 at start-up (R000 0EAF0) and the only other references are the 2-byte block copies at R049/s092 that (de)serialise it, never a value >=0, so the override beyond the 21 general maps cannot occur in play.
-- **D-fde067** `undefined-memory` - `src/Darklands.Core/Battles/Generation/WildBattlefield.cs:1538` `WildBattlefield.AddGroup`  
+- **D-fde067** `undefined-memory` - `src/Darklands.Core/Battles/Generation/WildBattlefield.cs:1541` `WildBattlefield.AddGroup`  
   original: `R008+0x2ADC` (1432:2ADC, draft)  
   divergence: the original writes into the next group slot even when it is the last (into the next level's groups); the C# list grows.  
   deterministic: **n/a** (checked against the original); action: **document** - Wilderness 2ADC has a single call site (the loop i<5 over DS:DF8F[], so at most 5 groups) writing battlefield-group-table[group-total++] of level 0 (a scalar group-total), so the 11th slot is never reached; the C# wilderness run gave at most 4 groups.

@@ -1,5 +1,6 @@
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
+using Darklands.Core.Events;
 using Darklands.Core.Time;
 
 namespace Darklands.Cards.Scripts;
@@ -32,8 +33,8 @@ public sealed class CouncilHall : Card
     private const int Challenged = 0x01, SideStreet = 0x09, SideStreetAtNight = 0x0A, CitySquare = 0x12, CitySquareAtNight = 0x19,
         Commission = 0x90, CommissionPaid = 0x91, Errand10Offered = 0x151, Errand10Paid = 0x152, PrisonWindow = 0x11E;
 
-    /// <summary>Events at the city: the hall shut to the party (0x3A), recently refused (0x3C), welcome (0x3B), a prisoner sought (0x4D).</summary>
-    private const int Shut = 0x3A, Refused = 0x3C, Welcome = 0x3B, SoughtPrisoner = 0x4D;
+    /// <summary>Events at the city: the hall shut to the party (0x3A), recently refused (0x3C), welcome (0x3B), a prisoner sought (0x4D), the guard asked for training today (0x41).</summary>
+    private const int Shut = 0x3A, Refused = 0x3C, Welcome = 0x3B, SoughtPrisoner = 0x4D, TrainingAsked = 0x41;
 
     /// <summary>The owner and tag of the City Lord's errands (quest owner 0x0A).</summary>
     private const int Lord = 0x0A;
@@ -73,6 +74,12 @@ public sealed class CouncilHall : Card
         menu[2] = saint;
         menu[3] = prisoners;
         menu[4] = prisoners;
+        // Not in the original: the Restored rules offer the guard's training (OriginalBehaviour.RestoreGuardTraining), greyed in a hostile
+        // city (as the audience and the errand are) and once the guard was asked today (the event 0x41 TrainWithTheGuard sets).
+        if (c.State.Behaviour.RestoreGuardTraining)
+        {
+            menu[5] = c.Hostile() || c.EventAtHere(TrainingAsked) ? OptionState.Shown : OptionState.Enabled;
+        }
         // C: after each choice the loop sets $ChosenOneName to the leader, then calls the handler (the saint box's, R054+0x2F5C..,
         // C: for a choice in the box: by a click, or by Enter as card-option-handler[2]), then the action.
         menu.OnChoice = () => c.Variables.Chosen[0] = c.Leader;
@@ -135,6 +142,7 @@ public sealed class CouncilHall : Card
                 value = 1;
             }
             // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
+            //   checked 2026-11-25 (writer scan of 483.07): event 0x3B is created only by expiry handler 4 (R029+0x4436), whose appointment has flags 0; no community save holds a 0x3A or 0x3B event.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;
@@ -165,6 +173,7 @@ public sealed class CouncilHall : Card
                 value = 1;
             }
             // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
+            //   checked 2026-11-25 (writer scan of 483.07): event 0x3B is created only by expiry handler 4 (R029+0x4436), whose appointment has flags 0; no community save holds a 0x3A or 0x3B event.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;
@@ -380,9 +389,10 @@ public sealed class CouncilHall : Card
                     return;
                 }
                 c.PassHours(2);
-                // BUG: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome,
-                // event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
-                c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 18), 0, 0);
+                // BUG: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a
+                // one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R054+0x22F8).
+                c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 18),
+                    c.State.Behaviour.FixWelcomeAppointment ? (int)EventFlags.CallExpiryHandler : 0, 0);
                 ShowPicture(c, DeskPicture);
                 c.Screen.Text(7);
                 ShowPicture(c, Picture);
@@ -529,7 +539,7 @@ public sealed class CouncilHall : Card
             ShowPicture(c, GuardPicture);
             c.Screen.Text(0x0D);
         }
-        c.EventHere(0x41, TimeOfDay.HoursUntil(c.State.Date.Hour, 5) + 0x18);
+        c.EventHere(TrainingAsked, TimeOfDay.HoursUntil(c.State.Date.Hour, 5) + 0x18);
         c.Next = c.IsDaylight ? CitySquare : CitySquareAtNight;
     }
 

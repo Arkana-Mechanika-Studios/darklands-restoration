@@ -578,6 +578,7 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
     //   invisible until the fade separates the two halves: the xor-ed pixels of a picture in 0xA0..0xFF fall in 0x20..0x7F and turn grey,
     //   the remap makes them colour 7 and the recolour makes the choosable lines the text colour; lines shown but not choosable stay grey.
     // DORMANT: DS:9069 != 0 (a no-fade setting) skips the fade and the grey remap, and the recolour loop then reads an uninitialised local in R043+0x1E82; nothing sets DS:9069 here.
+    //   checked 2026-11-25 (writer scan of 483.07): the only write of DS:9069 stores 0 (R000+0x0547).
     private void GreyThePicture(List<OptionArea> areas, bool animate = false)
     {
         FadePalette(animate);

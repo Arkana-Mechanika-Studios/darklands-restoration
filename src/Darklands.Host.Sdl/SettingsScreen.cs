@@ -20,6 +20,8 @@ internal sealed class SettingsScreen(SdlHost host, string? settingsPath, string 
 
     public void SetCurvature(bool on) => host.Curvature = on;
 
+    public void SetMouseWheel(bool on) => host.MouseWheelArrows = on;
+
     public (int Width, int Height)? UsableScreen => host.UsableScreen();
 
     public (IReadOnlyList<string> Packs, IReadOnlyList<string> SoundFonts) Found()

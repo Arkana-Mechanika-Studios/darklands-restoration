@@ -180,6 +180,7 @@ public sealed class LakeOfFire : Card
                     ShowTheSteamingHall(c);
                     break;
                 // DORMANT: a stale menu-choice-index outside 0..3 skips the texts and goes straight to the fight.
+                //   checked 2026-11-25 (writer scan of 483.07): DS:EE6A is written only by the menu (R043+0x1CAE, R043+0x26B9, R043+0x27C1) and with 2 (R055+0x116B, R073+0x2A1E).
             }
             LastCastle.Fight(c, LakeEnemy);
             return;

@@ -248,10 +248,16 @@ public class SettingsPrecedenceTests
 {
     private static string? NoEnvironment(string name) => null;
 
-    /// <summary>input.mouseWheel: on without a settings file, off by the file's false or by --no-mouse-wheel.</summary>
+    /// <summary>
+    /// The mouse wheel is part of the Comfort interface (1.2): on with Comfort (the default) and off with Classic; the older key
+    /// input.mouseWheel (false) and --no-mouse-wheel are still read and turn it off.
+    /// </summary>
     [Fact]
-    public void TheMouseWheelIsOnUnlessTheFileOrTheCommandLineTurnsItOff()
+    public void TheMouseWheelComesWithComfortUnlessTheFileOrTheCommandLineTurnsItOff()
     {
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { InterfaceMode = "classic" }, NoEnvironment, new GameSettings()).MouseWheel);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings { InterfaceMode = "classic" }).MouseWheel);
+        Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings { InterfaceMode = "classic" }).MouseWheelAllowed);
         Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).MouseWheel);
         var off = SettingsFile.Parse("""{ "input": { "mouseWheel": false } }""");
         Assert.Empty(off.Problems);
@@ -262,10 +268,15 @@ public class SettingsPrecedenceTests
         Assert.Contains("input.wheel", string.Join(' ', SettingsFile.Parse("""{ "input": { "wheel": 1 } }""").Problems));
     }
 
-    /// <summary>input.cardMenuKeys: on without a settings file, off by the file's false or by --no-card-menu-keys.</summary>
+    /// <summary>
+    /// The card menu keys are part of the Comfort interface (1.2): on with Comfort (the default) and off with Classic; the older key
+    /// input.cardMenuKeys (false) and --no-card-menu-keys are still read and turn them off.
+    /// </summary>
     [Fact]
-    public void TheCardMenuKeysAreOnUnlessTheFileOrTheCommandLineTurnsThemOff()
+    public void TheCardMenuKeysComeWithComfortUnlessTheFileOrTheCommandLineTurnsThemOff()
     {
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions { InterfaceMode = "classic" }, NoEnvironment, new GameSettings()).CardMenuKeys);
+        Assert.False(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings { InterfaceMode = "classic", CardMenuKeys = true }).CardMenuKeys);
         Assert.True(ResolvedSettings.Resolve(new CommandLineOptions(), NoEnvironment, new GameSettings()).CardMenuKeys);
         var off = SettingsFile.Parse("""{ "input": { "cardMenuKeys": false } }""");
         Assert.Empty(off.Problems);

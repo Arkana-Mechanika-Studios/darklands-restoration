@@ -1,3 +1,5 @@
+using Darklands.Core.Economy;
+using Darklands.Core.Events;
 using Darklands.Core.Time;
 
 namespace Darklands.Cards.Scripts;
@@ -15,6 +17,9 @@ namespace Darklands.Cards.Scripts;
 public sealed class FortressByDay : Card
 {
     public const int CardNumber = 0x1B;
+
+    /// <summary>The robber knight task's reward card ($Raubi01), whose patrons include this card.</summary>
+    private const int CommissionPaid = 0x91;
 
     private const int Picture = 236, GuardPicture = 10, AudiencePicture = 293, WaitPicture = 40, TurnedAwayPicture = 277,
         BlessingPicture = 240, RefusedPicture = 263;
@@ -90,6 +95,7 @@ public sealed class FortressByDay : Card
                 value = 1;
             }
             // DORMANT: nothing creates the welcome event (0x3B): the "come back" event that would start it never runs its handler, so the 99 chance is never given.
+            //   checked 2026-11-25 (writer scan of 483.07): event 0x3B is created only by expiry handler 4 (R029+0x4436), whose appointment has flags 0; no community save holds a 0x3A or 0x3B event.
             if (c.EventAtHere(Welcome))
             {
                 value = 99;
@@ -100,14 +106,27 @@ public sealed class FortressByDay : Card
     }
 
     /// <summary>The lord's commission: quest 3 of tag 10 to a nearby site; the party then leaves to <paramref name="returnTo"/>.</summary>
-    private static void ReceiveACommission(CardContext c, Func<int> returnTo)
+    internal static void ReceiveACommission(CardContext c, Func<int> returnTo)
     {
         var here = c.State.Locations[c.Here];
         c.Variables.Location = c.NearestLocationOfType(here.X, here.Y, 2);
         // orig: R050+0x21F8; R050+0x24E0
-        // BUG: a fortress commission is never paid in money: it is recorded for owner 0x0A, which only the town hall
-        // pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall
+        // BUG: OriginalBehaviour.FixFortressCommissionPay - a fortress commission is never paid in money: it is recorded for owner 0x0A,
+        // which only the town hall pays (CouncilHall, R054+0x1D08), and the fortress gives commissions only where the city has no town hall
         // (location query 0x18 = 0) (R050+0x21F8, R050+0x24E0); this card has no resolved-commission test of its own.
+        // Not in the original: the Fixed rules pay a finished commission here first, as the town hall's audience does (seven florins a size
+        // of the city), and go to the reward card with the fortress as its patron (its case 0x1B is written).
+        if (c.State.Behaviour.FixFortressCommissionPay && c.Events.ResolvedQuestAt(3, 0x0A, c.Here))
+        {
+            var pay = c.HereQuery(2) * 7;
+            c.State.Party.Purse = c.State.Party.Purse.Add(pay, 0, 0);
+            c.Variables.Money[0] = Money.From(pay, 0, 0);
+            c.RandomName(c.City.Ordinal + 0x0C, 0, 0);
+            c.State.SavedCard = CardNumber;
+            c.State.SavedCard2 = 0x0A;
+            c.Next = CommissionPaid;
+            return;
+        }
         c.StartQuest3(0x0A, c.Variables.Location, c.City.Ordinal + 0x62, 0x0F, 2, 0);
         c.PassHours(1);
         // C: the street is chosen after the hour has passed.
@@ -215,9 +234,10 @@ public sealed class FortressByDay : Card
                 }
                 c.PassHours(2);
                 // orig: R050+0x2298
-                // BUG: the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome,
-                // event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
-                c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 5), 0, 0);
+                // BUG: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a
+                // one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
+                c.Events.Create(-2, c.Here, 0x5A, Shut, 0, 0x63, 4, TimeOfDay.HoursUntil(c.State.Date.Hour, 5),
+                    c.State.Behaviour.FixWelcomeAppointment ? (int)EventFlags.CallExpiryHandler : 0, 0);
                 c.Screen.Text(7);
                 // The party stays at the fortress gate.
                 return;
