@@ -13,6 +13,31 @@ public static class SpriteDrawing
 
     public static void Draw(Canvas canvas, RowRunSprite? sprite, int x, int y, Clip clip) => Draw(canvas, sprite, x, y, clip, null);
 
+    /// <summary>
+    /// Draws the pointer: the pixels as <see cref="Draw(Canvas, RowRunSprite?, int, int)"/> draws them, each on top
+    /// (<see cref="Canvas.PlotOnTop"/>), so a font pack's text under it stays whole and under it.
+    /// </summary>
+    // Not in the original: the 1.1.4 fix of the pointer under a font pack's text (the pixels are Draw's).
+    public static void DrawPointer(Canvas canvas, RowRunSprite? sprite, int x, int y)
+    {
+        if (sprite is null)
+        {
+            return;
+        }
+        var owner = ScreenOwners.IdOf(sprite.AssetName, sprite.Width, sprite.Height);
+        for (var row = 0; row < sprite.RowCount; row++)
+        {
+            var (start, pixels) = sprite.Row(row);
+            for (var i = 0; i < pixels.Length; i++)
+            {
+                if (pixels[i] != 0)
+                {
+                    canvas.PlotOnTop(x + start + i, y + row, pixels[i], owner, ScreenTexel.Pack(start + i, row));
+                }
+            }
+        }
+    }
+
     /// <summary>Draws a sprite through a colour table (the team-colour remaps of the effect sprites). The pixels drawn belong to the sprite's asset, remapped or not.</summary>
     public static void Draw(Canvas canvas, RowRunSprite? sprite, int x, int y, Clip clip, byte[]? remap)
     {

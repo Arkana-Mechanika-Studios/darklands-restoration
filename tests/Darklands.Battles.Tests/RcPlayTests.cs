@@ -51,7 +51,14 @@ public sealed class RcPlayTests
         /// <summary>The last frame handed to the display: its pixels and palette (copies).</summary>
         public (byte[] Pixels, uint[] Palette)? Shown { get; private set; }
 
-        public void Present(Screen screen) => Shown = ((byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone());
+        /// <summary>Called with each frame handed to the display (the screen itself, owners and text plane included).</summary>
+        public Action<Screen>? OnPresent { get; set; }
+
+        public void Present(Screen screen)
+        {
+            Shown = ((byte[])screen.Pixels.Clone(), (uint[])screen.Palette.Clone());
+            OnPresent?.Invoke(screen);
+        }
 
         /// <summary>The frames the registry views of v: steps showed.</summary>
         public int ViewsShown { get; private set; }

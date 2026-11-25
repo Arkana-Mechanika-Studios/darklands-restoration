@@ -14,14 +14,6 @@ Original rules are the faithful game, checked against the original in every rele
 
 ## Translations
 
-- **Texts a translation pack never reached.** An audit of every text the game draws found screens that showed the
-  English with a pack loaded: the formulae's short names in the alchemy screen's batch list, the character generator's
-  families, occupations, formulae and saints, the town size and standing on the party information screen, the camp's
-  details, the saved games' places and months on the load screen, the battle's potions, its "(Ldr)" and "(All)" and its
-  members' messages, the store's message when it is full, the shop names and guild words the cards put in, the dragons',
-  dwarfs' and titles' names, and the map's messages. They are now the pack's words (new keys `map:<n>.text`,
-  `id:rw.store.no-room`, and the EXE's word tables). A pack's own `var-he`, `var-his` … now answer the game's pronouns.
-- **Letters lost in some texts.** A pack's text in a card's hint and tell line, the battle's place notes and member
-  messages, and the store's pages went through the game's 8-bit text, so a Chinese or Cyrillic letter was drawn as `?`.
-  They now draw the pack's letters.
+- The untranslated-text audit came out in 1.1.4 (texts a pack never reached, letters lost in some texts, the pronouns):
+  see its notes. In 1.2 a pack also names the rules in the notice a saved game with other rules gives.
 - Without a pack every screen is the original's, as before.

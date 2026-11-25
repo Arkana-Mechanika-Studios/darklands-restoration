@@ -45,14 +45,25 @@ public sealed class TextLayer
         for (var i = 0; i < screen.Texels.Length; i++)
         {
             var texel = screen.Texels[i];
-            if (texel <= -2 && screen.Owners[i] == 0)
+            // a pixel the pointer is drawn over keeps the letter it covers (1.1.4: the letter stays whole, under the pointer)
+            var under = 0;
+            var onTop = screen.OnTop.Count > 0 && screen.OnTop.TryGetValue(i, out under);
+            if (onTop)
+            {
+                texel = under;
+            }
+            if (texel <= -2 && (onTop || screen.Owners[i] == 0))
             {
                 if (!glyphs.TryGetValue(texel, out var pixels))
                 {
                     glyphs[texel] = pixels = [];
                 }
                 pixels.Add(i);
-                signature = signature * 31 + texel * 131 + screen.Palette[screen.Pixels[i]];
+                signature = signature * 31 + texel * 131 + (onTop ? 7 : screen.Palette[screen.Pixels[i]]);
+            }
+            else if (onTop)
+            {
+                signature = signature * 31 + i;
             }
         }
         if (glyphs.Count == 0 || output.Width <= 0 || output.Height <= 0)
@@ -99,7 +110,7 @@ public sealed class TextLayer
         }
         foreach (var (texel, pixels) in glyphs.OrderByDescending(g => g.Key))
         {
-            if (TextGlyphs.Of(texel) is { } g && !pixels.All(at => Unseen(screen, g, at)))
+            if (TextGlyphs.Of(texel) is { } g && !pixels.All(at => Covered(screen, at) || Unseen(screen, g, at)))
             {
                 Draw(image, screen, g, texel, pixels, sx, sy, _erase, ShadowOf(g, texel, drawn));
             }
@@ -140,16 +151,20 @@ public sealed class TextLayer
         //   frame there as the frame does
         uint? Ink(int cx, int cy)
         {
-            var (best, distance) = (pixels[0], int.MaxValue);
+            var (best, distance) = (-1, int.MaxValue);
             foreach (var at in pixels)
             {
+                if (Covered(screen, at))
+                {
+                    continue;
+                }
                 var d = Math.Abs(at % Screen.Width - cx) + Math.Abs(at / Screen.Width - cy);
                 if (d < distance)
                 {
                     (best, distance) = (at, d);
                 }
             }
-            return Unseen(screen, g, best) ? null : Colour(best);
+            return best < 0 || Unseen(screen, g, best) ? null : Colour(best);
         }
         // the background at a 1x cell: the cell itself when it is not the glyph's (or is, but does not show), else the nearest such pixel of
         //   its row (then above / below)
@@ -158,11 +173,12 @@ public sealed class TextLayer
         //   letters; a border or another colour there is not taken)
         uint Paper(int cx, int cy)
         {
-            if (mine.Contains(cy * Screen.Width + cx) && Unseen(screen, g, cy * Screen.Width + cx))
+            if (mine.Contains(cy * Screen.Width + cx) && !Covered(screen, cy * Screen.Width + cx) && Unseen(screen, g, cy * Screen.Width + cx))
             {
                 return Colour(cy * Screen.Width + cx);
             }
-            bool Free(int x, int y) => (uint)x < Screen.Width && (uint)y < Screen.Height && !mine.Contains(y * Screen.Width + x) && !IsGlyph(screen, y * Screen.Width + x);
+            bool Free(int x, int y) => (uint)x < Screen.Width && (uint)y < Screen.Height && !mine.Contains(y * Screen.Width + x) && !IsGlyph(screen, y * Screen.Width + x)
+                && !Covered(screen, y * Screen.Width + x);
             for (var reach = 0; reach < 16; reach++)
             {
                 foreach (var (dx, dy) in new[] { (-1, 0), (1, 0), (0, -1), (0, 1) })
@@ -200,6 +216,11 @@ public sealed class TextLayer
             for (var px = Math.Max(0, x0); px < Math.Min(image.Width, x1); px++)
             {
                 var (cx, cy) = ((int)(px / sx), (int)(py / sy));
+                if ((uint)cx < Screen.Width && (uint)cy < Screen.Height && Covered(screen, cy * Screen.Width + cx))
+                {
+                    // the pointer is over the letter there: the frame shows it (1.1.4)
+                    continue;
+                }
                 var (rx, ry) = (px - ox - left, py - oy - top);
                 var cover = rx >= 0 && rx < width && ry >= 0 && ry < height ? coverage[ry * width + rx] : 0;
                 var onGlyphCell = mine.Contains(cy * Screen.Width + cx);
@@ -222,7 +243,7 @@ public sealed class TextLayer
         // the frame under the layer without the glyph: its 1x pixels in the background the layer gives their cells
         foreach (var at in pixels)
         {
-            if (!Unseen(screen, g, at))
+            if (!Covered(screen, at) && !Unseen(screen, g, at))
             {
                 erase.Add((at, Paper(at % Screen.Width, at / Screen.Width)));
             }
@@ -243,6 +264,9 @@ public sealed class TextLayer
         && Math.Abs((int)(a & 0xFF) - (int)(b & 0xFF)) <= 0x30;
 
     private static bool IsGlyph(Screen screen, int at) => screen.Texels[at] <= -2 && screen.Owners[at] == 0;
+
+    // a pixel the pointer is drawn over (Screen.OnTop): the layer leaves it to the frame (1.1.4)
+    private static bool Covered(Screen screen, int at) => screen.OnTop.Count > 0 && screen.OnTop.ContainsKey(at);
 
     private static uint Blend(uint ink, uint paper, int cover)
     {

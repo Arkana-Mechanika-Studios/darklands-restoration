@@ -41,6 +41,45 @@ public sealed class Canvas(Screen screen)
             _pixels[y * Width + x] = color;
             _owners[y * Width + x] = owner;
             _texels[y * Width + x] = owner == 0 ? 0 : texel;
+            Uncover(y * Width + x);
+        }
+    }
+
+    // a pixel drawn on is no longer the pointer's (Screen.OnTop); nothing to do while nothing is on top
+    private void Uncover(int at)
+    {
+        if (_onTop.Count > 0)
+        {
+            _onTop.Remove(at);
+        }
+    }
+
+    private void Uncover(int start, int length)
+    {
+        if (_onTop.Count > 0)
+        {
+            for (var i = start; i < start + length; i++)
+            {
+                _onTop.Remove(i);
+            }
+        }
+    }
+
+    private readonly Dictionary<int, int> _onTop = screen.OnTop;
+
+    /// <summary>
+    /// Sets one pixel drawn over everything (the pointer): as <see cref="Plot"/>, and the pixel is on top (<see cref="Screen.OnTop"/>),
+    /// with the letter it covers, so a font pack's text drawn again at the window's resolution keeps that letter and leaves the pixel.
+    /// </summary>
+    // Not in the original: the 1.1.4 fix of the pointer under a font pack's text. The pixel's colour is Plot's.
+    public void PlotOnTop(int x, int y, byte color, int owner, int texel)
+    {
+        if ((uint)x < Width && (uint)y < Height)
+        {
+            var at = y * Width + x;
+            var covered = _onTop.TryGetValue(at, out var under) ? under : _owners[at] == 0 ? _texels[at] : 0;
+            Plot(x, y, color, owner, texel);
+            _onTop[at] = covered;
         }
     }
 
@@ -52,6 +91,7 @@ public sealed class Canvas(Screen screen)
             _pixels[y * Width + x] = color;
             _owners[y * Width + x] = 0;
             _texels[y * Width + x] = text;
+            Uncover(y * Width + x);
         }
     }
 
@@ -69,6 +109,7 @@ public sealed class Canvas(Screen screen)
         Array.Fill(_pixels, color);
         Array.Clear(_owners);
         Array.Clear(_texels);
+        _onTop.Clear();
     }
 
     public void Fill(int x, int y, int width, int height, byte color)
@@ -82,6 +123,7 @@ public sealed class Canvas(Screen screen)
                 _pixels.AsSpan(row * Width + from, to - from).Fill(color);
                 _owners.AsSpan(row * Width + from, to - from).Clear();
                 _texels.AsSpan(row * Width + from, to - from).Clear();
+                Uncover(row * Width + from, to - from);
             }
         }
     }
@@ -105,6 +147,7 @@ public sealed class Canvas(Screen screen)
             if (to > from)
             {
                 Array.Copy(page.Pixels, row * Width + from, _pixels, row * Width + from, to - from);
+                Uncover(row * Width + from, to - from);
                 if (page.Owners is { } owners)
                 {
                     Array.Copy(owners, row * Width + from, _owners, row * Width + from, to - from);
@@ -153,6 +196,7 @@ public sealed class Canvas(Screen screen)
                     _texels[sy * Width + sx] = pixelOwner == 0 ? (owners.IsEmpty || texels.IsEmpty ? 0 : texels[row * width + column])
                         : owners.IsEmpty ? ScreenTexel.Pack(column, row)
                         : texels.IsEmpty ? ScreenTexel.Unknown : texels[row * width + column];
+                    Uncover(sy * Width + sx);
                 }
             }
         }
@@ -262,6 +306,7 @@ public sealed class Canvas(Screen screen)
     {
         saved.Pixels.CopyTo(_pixels, 0);
         saved.Palette.CopyTo(screen.Palette, 0);
+        _onTop.Clear();
         if (saved.Owners is { } owners)
         {
             owners.CopyTo(_owners, 0);
