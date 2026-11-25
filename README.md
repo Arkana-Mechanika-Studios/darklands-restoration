@@ -167,7 +167,7 @@ want:
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
 `--scale 2`, `--no-intro` and so on).
 
-## Status: version 1.1.2
+## Status: version 1.1.3
 
 1.1 makes the game translatable (language packs, the Workshop beta), adds HD fonts for English and the Interface
 switch; the game's rules are those of 1.0. The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and

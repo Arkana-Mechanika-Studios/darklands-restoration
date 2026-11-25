@@ -309,7 +309,9 @@ public static class TextVariables
     //   (the opens of darkland.dsc at R029+0x4ED4, R030+0x06F2, R037+0x9A0D, R043+0x0447, R051+0x2296/0x24AA/0x26BE/0x28D4/0x2AE8,
     //   R066+0x291E/0x2A2E/0x2B3E/0x2C4E, R082+0x15C4, R133+0x1B48: no other code names the file), so the two never part for a city; for
     //   the other indexes see CityFile.Read.
-    private static string PlaceDescription(CardContext c) => c.World.CityDescription(c.State.City.City);
+    // Not in the original: the 1.1.3 translations. The description in the pack's words where it has them (no pack: the original's).
+    private static string PlaceDescription(CardContext c) =>
+        Shown(c, DataNames.CityDescription(c.State.City.City), c.World.CityDescription(c.State.City.City));
 
     // orig: case 16: R136+0xA813[place-query(location-now, 1)]
     // DIVERGENCE: in the wilderness (no location) the original indexes locations[-1]; here the standing band of an unknown place, 2, is used ("unknown").

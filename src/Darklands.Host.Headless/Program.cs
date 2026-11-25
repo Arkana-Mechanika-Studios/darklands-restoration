@@ -345,7 +345,7 @@ var screenStep = steps.FirstOrDefault(s => s.StartsWith("screen:", StringCompari
 if (screenStep is not null)
 {
     // Debug entry: opens one full screen on the Quickstart party
-    // (screen:sheet|party|camp<mode>|alchemy<member>|barter|store|loot).
+    // (screen:sheet|party|camp<mode>|alchemy<member>|saint<n>|formula<n>|barter|store|loot).
     steps.Remove(screenStep);
     host = new ScriptedHost(steps, output);
     var which = screenStep[7..];

@@ -9,7 +9,7 @@ namespace Darklands.Presentation;
 
 /// <summary>
 /// The translator's template (docs/LOCALISATION.md, L-7w): every text a translation pack can translate today, in the pack's layout
-/// (<c>text/en/exe.ftl</c>, <c>text/en/ui.ftl</c>, <c>text/en/tables.ftl</c> the data files' names, <c>text/en/msg/&lt;FILE&gt;.ftl</c>), the English as each message's value and a
+/// (<c>text/en/exe.ftl</c>, <c>text/en/ui.ftl</c>, <c>text/en/tables.ftl</c> the data files' names and descriptions, <c>text/en/msg/&lt;FILE&gt;.ftl</c>), the English as each message's value and a
 /// comment above it: the key, the text's box (the room the screens give it, from a boxes file) and what each argument is. Built
 /// from the player's own game files; the program holds none of the game's words.
 /// </summary>
@@ -45,7 +45,13 @@ public static class TranslatorTemplate
         // a card text's line: the card window's font and the layout's one pixel of leading (CardScreen)
         var lineHeight = new Graphics.TextPainter(assets.Font(3)).LineHeight + 1;
         var messages = new List<Message>();
-        foreach (var e in OriginalTextExtractor.Extract(files).Entries)
+        var entries = OriginalTextExtractor.Extract(files).Entries;
+        // the cards whose texts show a city's description ($PlaceDesc): where the descriptions of DARKLAND.DSC are seen
+        var placeDescCards = entries
+            .Where(e => e.Key.StartsWith("msg:", StringComparison.Ordinal) && e.Text.Contains(DescriptionBoxes.CityVariable, StringComparison.Ordinal))
+            .Select(e => "card " + e.Key[4..e.Key.IndexOf('#', StringComparison.Ordinal)])
+            .Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
+        foreach (var e in entries)
         {
             if (e.Key.StartsWith("exe:", StringComparison.Ordinal) && e.Origin == StringOrigin.Known)
             {
@@ -66,12 +72,18 @@ public static class TranslatorTemplate
             }
             else if (DataNames.What(e.Key) is { } what)
             {
-                // a name from the data files (tables.ftl): shown translated, saved as the original's
+                // a name or a description from the data files (tables.ftl): shown translated, saved as the original's; a description's box
+                //   is the screens' column (DescriptionBoxes), a city's is the card text's that shows it
                 var box = byKey.GetValueOrDefault(e.Key);
+                var descriptionBoxes = DescriptionBoxes.Of(e.Key);
+                var boxWords = DescriptionBoxes.BoxWords(e.Key, slot => new Graphics.TextPainter(assets.Font(slot)))
+                    ?? (DescriptionBoxes.IsCityDescription(e.Key) ? "box: the card text's that shows it" : box is null ? null : BoxWords(box));
                 messages.Add(new Message("tables.ftl", KeyMangling.ToFluentId(e.Key), e.Key, Escape(e.Text, placeablesAsWritten: false),
-                    [e.Key + " · " + what + (box is null ? "" : " · " + BoxWords(box))])
+                    [e.Key + " · " + what + (boxWords is null ? "" : " · " + boxWords)])
                 {
-                    Screens = box?.Screens ?? [],
+                    Screens = descriptionBoxes.Count > 0 ? [.. descriptionBoxes.Select(b => b.Screen).Distinct(StringComparer.Ordinal)]
+                        : DescriptionBoxes.IsCityDescription(e.Key) ? placeDescCards
+                        : box?.Screens ?? [],
                 });
             }
         }

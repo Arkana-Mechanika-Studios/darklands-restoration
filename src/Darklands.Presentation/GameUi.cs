@@ -205,6 +205,13 @@ public sealed class GameUi
     /// <summary>A formula's name as the screens show it.</summary>
     public string FormulaName(int index, string original) => Name(DataNames.Formula(index), original);
 
+    /// <summary>A saint's description (DARKLAND.SNT) as the prayer screen shows it (no pack: the original's).</summary>
+    // Not in the original: the 1.1.3 translations of the data files' descriptions.
+    public string SaintDescription(int index, string original) => Name(DataNames.SaintDescription(index), original);
+
+    /// <summary>A formula's description (DARKLAND.ALC) as the alchemy screens show it (no pack: the original's).</summary>
+    public string FormulaDescription(int index, string original) => Name(DataNames.FormulaDescription(index), original);
+
     /// <summary>A place's name as the screens show it: translated while the saved name is still DARKLAND.LOC's (a save keeps the original's).</summary>
     public string PlaceName(Darklands.Core.World.Location place)
     {
