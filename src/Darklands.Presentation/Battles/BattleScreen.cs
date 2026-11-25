@@ -499,6 +499,9 @@ public sealed partial class BattleScreen : ITacticalView
             Location = _state.CurrentLocation, WorldTerrain = _owner.WorldTerrain?.Invoke() ?? _state.PartyTerrain, Month = _state.Date.Month,
             AbleMembers = _state.Party.Able.Count(), Memory = _owner.Memory, Process = _owner.GenerationMemory, Behaviour = _state.Behaviour,
             LoreLevel = () => Darklands.Core.Rules.PartyQueries.LoreLevel(_state),
+            // C: the court builder (R013+0x0098) reads DS:160C, the last castle's progress the castle cards write (GameState.LastCastleFlags);
+            //   until 2026-11 the rewrite never passed it, so its court was always built fresh (sessions court-return, court-gate)
+            CourtProgress = _state.LastCastleFlags,
         };
         // battle-entry's modes: 0 builds a new battlefield (fight-flags 0x10); 1..3 go back onto the last one (kept with its
         // levels and the encounters not met yet, as the original keeps the level files): 1 and 2 show the level shown when the last

@@ -754,6 +754,12 @@ BATTLE_RECORDS |= {"gen-bdead-02", "gen-bgater-01", "gen-bgater-04", "gen-bheld-
 # bug report, kept under local/oracle-saves/dlp-issue2 and not in the repository (no licence to redistribute it)
 SESSIONS["dungeon-mine-doormsg"] = "local/oracle-saves/dlp-issue2/DKSAVE16.SAV"
 BATTLE_RECORDS |= {"dungeon-mine-doormsg"}
+# court-progress: the citadel's court built from DS:160C (the last castle's progress) after a trial room and from the gate, from a player's
+# 483.07 game between trials (endgame-baphomet DKSAVE6, DS:160C 0x0707 in its .BSV) set at card 365 / 344 outside the battle; kept under
+# local/oracle-saves/court and not in the repository (a player's saved game)
+SESSIONS["court-return"] = "local/oracle-saves/court/DKSAVE6-card365.SAV"
+SESSIONS["court-gate"] = "local/oracle-saves/court/DKSAVE6-card344.SAV"
+BATTLE_RECORDS |= {"court-return", "court-gate"}
 # b35: the riddle door's battle of the same save started, entered through the door and back, and started again after an Alt-L outside the
 # battle, each with an in-battle Alt-S (the party's sizes and place tables, the level files, the chest offsets; local/batch/b35)
 for _name in ("b35-door-start", "b35-door-back", "b35-door-reload"):
