@@ -5,9 +5,12 @@ become decisions. What is planned is in `docs/ROADMAP.md`; the practical side of
 
 ## 1. Principles
 
-1. **The original stays the reference.** Tag v1.0 is the frozen faithful game. The Original rule set is checked against the
-   original program in every release. No change may make Original less faithful; a change that would is a regression,
-   whatever it adds.
+1. **The original stays the reference.** The original program is the reference. The Original rule set is the faithful
+   game, checked against the original in every release. Tag v1.0 records the first release of it. Where our game is found
+   to differ from the original (our mistake, not the original's), the fix goes into Original, and so into every rule set,
+   and each release's notes list it under "Faithfulness fixes". The original's own bugs are another matter: they stay in
+   Original and are fixed in Fixed (with the few exceptions of principle 4). No change may make Original less faithful; a
+   change that would is a regression, whatever it adds.
 2. **One codebase, switches and presets.** No long-lived forks. Every departure from the original sits behind a switch
    with an id, and the original path stays beside it. Switches act on three independent axes: **rules** (what the game
    decides), **presentation** (what the player sees and hears) and **interface** (how the player gives the same orders).

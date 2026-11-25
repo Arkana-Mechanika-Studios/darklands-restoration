@@ -1,13 +1,15 @@
 # Roadmap after 1.0
 
-Version 1.0 is the faithful game: Darklands 483.07 rebuilt in C#, every rule checked against the original program. This
-page says what comes after it and in what order. It gives no dates: releases ship when they are ready. How work is
+Version 1.0 was the first release of the faithful game: Darklands 483.07 rebuilt in C#, every rule checked against the
+original program. This page says what comes after it and in what order. It gives no dates: releases ship when they are ready. How work is
 proposed, decided and reviewed is in `docs/GOVERNANCE.md`; how to take part is in `CONTRIBUTING.md`.
 
 ## The promise that does not change
 
-- **The original stays the reference.** The game as 1.0 plays it is kept, and checked against the original program in every
-  release. Nothing below may make it less faithful.
+- **The original stays the reference.** The original program is the reference. The Original rule set is the faithful game,
+  checked against the original in every release; tag v1.0 records its first release. Where our game is found to differ
+  from the original (our mistake), the fix goes into Original, and so into every rule set, and the release's notes list it.
+  The original's own bugs stay in Original and are fixed in Fixed. Nothing below may make Original less faithful.
 - **Everything new is a switch.** Every departure from the original has an id, and the original path stays beside it.
 - **Presets** gather the switches into the games players choose between:
   - **Original**: the original game, its bugs included (only bugs that damage saved games, and plain display glitches, are
