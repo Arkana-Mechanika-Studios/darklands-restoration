@@ -299,9 +299,9 @@ on with the copy; the folder opened stays as it was. **New pack** makes its pack
 **Keep a copy.** Deleting the game's folder deletes the packs in it: keep a zip of each (**… › Export texts…**, or zip the
 folder). Unpacking a new version of the game over the old one leaves `packs/languages` alone.
 
-**The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.1`
+**The Workshop's version.** The Workshop has a version of its own, apart from the game's "Restoration x": `1.1.0-beta.2`
 now. Its one source is the build (`WorkshopVersion` in `Directory.Build.props`). A beta shows a **Beta** badge on the
-start page and beside the pack's name, and says so in the title bar ("Darklands Workshop 1.1.0-beta.1 (Beta)"). The
+start page and beside the pack's name, and says so in the title bar ("Darklands Workshop 1.1.0-beta.2 (Beta)"). The
 version is recorded:
 * in every pack the Workshop saves: `pack.json`'s `"workshop"` (an older Workshop's pack is stamped when saved again);
 * in every export: the JSON's `"workshop"` field, the CSV's first comment line (`# written by Darklands Workshop …`), the

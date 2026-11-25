@@ -17,13 +17,11 @@ Without a language pack the game is exactly as before: these screens draw the or
 
 ## For translators
 
-- Make a new template (`DarklandsRP <game folder> --translator-template <folder>`) to get the descriptions, about 300 more
-  texts, and copy them into your pack's `tables.ftl`.
+- The Workshop 1.1.0-beta.2 (below) lists the descriptions, about 300 more texts, with their room, and its check knows
+  them. Without the Workshop, make a new template (`DarklandsRP <game folder> --translator-template <folder>`) and copy
+  them into your pack's `tables.ftl`.
 - The translator's guide (`docs/TRANSLATING.md`) has a short section on Chinese, Japanese and Korean today: slot 1 at 7 px,
   `lines: 2` where a text needs it, and what is planned.
-- The Workshop 1.1.0-beta.1 does not list the descriptions yet: its editor and its check know the texts of 1.1.2 (its
-  check calls a description an unknown id). Descriptions written by hand into `tables.ftl` are kept when the Workshop saves
-  the pack, and the game shows them.
 
 ## Language packs
 
@@ -40,8 +38,9 @@ the game is included.
 
 ## The Darklands Workshop (beta)
 
-The translators' editor is unchanged: version 1.1.0-beta.1, a separate download that works with this release:
-https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.1
+A new beta of the translators' editor comes with this release: version 1.1.0-beta.2, a separate download. It has the
+descriptions, each drawn in its screen's column with the room it has:
+https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.2
 
 ## Faithfulness
 
@@ -74,5 +73,5 @@ To translate: download the Workshop (link above) and unzip it into the same fold
 | `DarklandsRP-1.1.3-linux-x64.tar.gz` | Linux x64 (experimental): the same |
 | `*.sha256` | the SHA-256 checksum of each package |
 
-The Workshop's own files (`DarklandsWorkshop-1.1.0-beta.1-win-x64.zip` and `-linux-x64.tar.gz`) are on its pre-release
+The Workshop's own files (`DarklandsWorkshop-1.1.0-beta.2-win-x64.zip` and `-linux-x64.tar.gz`) are on its pre-release
 page.

@@ -8,7 +8,7 @@ namespace Darklands.Workshop.Tests;
 /// <summary>
 /// The Workshop's window in its states, drawn without a screen at 1280x800 (or DARKLANDS_WORKSHOP_SHOTS_SIZE): the start with no pack, a card text whose letters the game's
 /// fonts lack (the hint to build the font pack), the same with the font pack built, a screen text with its preview and width bar, a
-/// check's results, and a Greek and a Russian card text (the font pack's other alphabets; Φ has no decorated capital, В takes B's).
+/// check's results, a saint's and a formula's description in their screens' columns (the second too long), and a Greek and a Russian card text (the font pack's other alphabets; Φ has no decorated capital, В takes B's).
 /// With DARKLANDS_WORKSHOP_SHOTS set, each is saved there as a picture (the before / after pictures of a change to the window);
 /// without it, the states are only opened.
 /// </summary>
@@ -44,6 +44,11 @@ public sealed class WorkshopShotsTests
             fr.SetLayout(leave, new Darklands.Localization.SlotLayout(Width: 130, Lines: 2));
             var menu = fr.Entries.First(e => e.Key == "exe:290E:0112");
             fr.Set(menu, "<c12> W</c>eitere Chargen");
+            // a saint's and a formula's description (1.1.3): listed under their screens, drawn in the screen's column against its foot
+            var saint = fr.Entries.First(e => e.Key == Darklands.Content.DataNames.SaintDescription(1));
+            fr.Set(saint, "Une sainte patronne des cloches et des infirmières, éprouvée par bien des tourments. Elle augmente un peu le Charisme et l'Endurance.");
+            var formula = fr.Entries.First(e => e.Key == Darklands.Content.DataNames.FormulaDescription(1));
+            fr.Set(formula, string.Concat(Enumerable.Repeat("Un grand nuage dont l'odeur rend malade ; ", 4)));
             fr.Save();
             foreach (var (language, words) in new[]
             {
@@ -113,6 +118,10 @@ public sealed class WorkshopShotsTests
                 Assert.Contains("<opt>...<indent>assister à la messe.<br><p><opt>", chosen.Translation, StringComparison.Ordinal);
                 Choose(window, leave.Key);
                 Shot(window, "3-screen-text");
+                Choose(window, saint.Key);
+                Shot(window, "3a-saint-description");
+                Choose(window, formula.Key);
+                Shot(window, "3b-formula-description");
                 window.RunCheckForTests();
                 Choose(window, menu.Key);
                 Shot(window, "4-check");

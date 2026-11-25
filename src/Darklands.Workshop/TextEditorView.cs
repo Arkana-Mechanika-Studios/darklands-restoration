@@ -1187,14 +1187,18 @@ internal sealed class TextEditorView : IWorkshopEditor
             _barFill.Width = 0;
             // the English of a text not translated yet, in the pack's fonts: not the pack's fault, and not what will be measured
             var english = result.Untranslated;
+            // a description's column (1.1.3) or the card's window
+            var where = result.Column ?? "the card's window";
             state = result.Overflows && !english ? WorkshopTheme.Bad : result.Overflows || result.Pages > 1 ? WorkshopTheme.Warn : WorkshopTheme.Ok;
             _bar.Background = WorkshopTheme.Brush(state);
             _measure.Text = result.Overflows && english
-                ? $"Not translated yet: the English, drawn in this pack's font, runs {result.Foot - result.FootLimit + 1} px past the foot of the card's window. Your translation is what is measured."
+                ? $"Not translated yet: the English, drawn in this pack's font, runs {result.Foot - result.FootLimit + 1} px past the foot of {where}. Your translation is what is measured."
                 : result.Overflows
-                ? $"Runs past the foot of the card's window by {result.Foot - result.FootLimit + 1} px (every passage shown)."
+                ? $"Runs past the foot of {where} by {result.Foot - result.FootLimit + 1} px" + (result.Column is null ? " (every passage shown)." : ".")
                 : result.Pages > 1
                     ? $"Too long for one window: the game shows it in {result.Pages} pages (every passage shown)."
+                    : result.Column is { } column
+                    ? $"Fits {column} · {spare} px to spare."
                     : $"Fits · {spare} px to spare (every passage shown).";
         }
         else if (result.Room > 0)
@@ -1251,7 +1255,8 @@ internal sealed class TextEditorView : IWorkshopEditor
         var room = shown.CardText
             ? (_root.ColumnDefinitions[2].Width.Value > 0 ? _root.ColumnDefinitions[2].Width.Value : 552) - 32
             : Math.Max(300, _root.Bounds.Width - _root.ColumnDefinitions[0].Width.Value - 48);
-        var scale = (int)Math.Clamp(room / shown.Width, 1, 4);
+        // a description's column (1.1.3) is tall: at most twice its size, so its foot and the bar stay in view
+        var scale = (int)Math.Clamp(room / shown.Width, 1, shown.Column is null ? 4 : 2);
         _picture.Width = shown.Width * scale;
         _picture.Height = shown.Height * scale;
         _bar.Width = shown.CardText ? _picture.Width : Math.Min(room, shown.Width * scale);
