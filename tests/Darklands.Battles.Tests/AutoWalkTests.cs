@@ -119,7 +119,7 @@ public sealed class AutoWalkTests
     // Right tapped twice: two presses, each with its make and break code, a frame apart
     private static readonly object[][] DoubleTapRight = [["d:4D", Keys.Right], ["u:4D"], ["d:4D", Keys.Right], ["u:4D"]];
 
-     private static readonly object[][] DoubleTapRightWaitTapLeft = [
+     private static readonly object[][] DoubleTapRightWait50FramesTapLeft = [
         ["d:4D", Keys.Right], ["u:4D"], 
         ["d:4D", Keys.Right], ["u:4D"]
         ,.. Enumerable.Repeat(Array.Empty<object>(), 50), 
@@ -208,9 +208,9 @@ public sealed class AutoWalkTests
     {
         // the quickstart party sets out late in the day (night falls within thirty steps): 
         // walking on east by double tapping right key, 
-        // then after ten frames walks west by single tapping left key
+        // then after waiting walks west by single tapping left key
         // it is still walking when the night has come, and nightfall is no stop (a day passes in a few steps: the user's decision, 2026-11-22)
-        if (Walk(comfort: true, idle: 300, DoubleTapRightWaitTapLeft) is not { } walked)
+        if (Walk(comfort: true, idle: 300, DoubleTapRightWait50FramesTapLeft) is not { } walked)
         {
             return;
         }
