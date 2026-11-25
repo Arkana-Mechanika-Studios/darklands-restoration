@@ -49,7 +49,7 @@ and their own decorated capitals. Put a pack in `packs/languages` and choose it 
 </p>
 
 **The Darklands Workshop** is the translators' editor, a separate download:
-**[Workshop 1.1.0-beta.1](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.1)**
+**[Workshop 1.1.0-beta.2](https://github.com/Arkana-Mechanika-Studios/darklands-restoration/releases/tag/workshop-v1.1.0-beta.2)**
 (Windows; Linux experimental). Unzip it into the game's folder; it makes a `Workshop` folder there. It:
 
 - shows every text of the game, grouped by screen and by card, and draws your translation as the game will, in your

@@ -29,6 +29,12 @@ public sealed record PreviewResult(int Width, int Height, uint[] Argb, int Measu
 
     /// <summary>The words do not fit: wider than the box, or past the card window's foot.</summary>
     public bool Overflows => CardText ? Foot >= FootLimit : Room > 0 && Measured > Room;
+
+    /// <summary>
+    /// A description of the data files (1.1.3): laid out in its screen's column (<see cref="CardText"/> is set: measured against a
+    /// foot), and where that column is, as "its box on the prayer screen"; null for a card text.
+    /// </summary>
+    public string? Column { get; init; }
 }
 
 /// <summary>The editor's live preview of a project's texts (W-0 + E-text): the same painter and layout the game uses.</summary>
@@ -97,7 +103,9 @@ public sealed class TextPreview(TextProject project)
         {
             return Empty(problems[0].Message, entry.Key.StartsWith("msg:", StringComparison.Ordinal));
         }
-        var result = entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? Card(entry, localizer.Get(entry.Key)) : Line(entry, localizer);
+        var result = entry.Key.StartsWith("msg:", StringComparison.Ordinal) ? Card(entry, localizer.Get(entry.Key))
+            : DescriptionBoxes.Of(entry.Key) is { Count: > 0 } boxes ? Description(boxes, TextCodes.FromTags(localizer.Get(entry.Key)))
+            : Line(entry, localizer);
         return untranslated ? result with { Untranslated = true } : result;
     }
 
@@ -146,6 +154,36 @@ public sealed class TextPreview(TextProject project)
         }
         var lacking = Lacking(LanguagePackCheck.Unshowable(TextCodes.OfText(words), painter));
         return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false) { Scale = k };
+    }
+
+    // a description (1.1.3): laid out in each of its screens' columns as the screen does, against the column's foot; the box it fills
+    //   most is shown (a formula's: the formula page's or the book's)
+    private PreviewResult Description(IReadOnlyList<DescriptionBoxes.Box> boxes, string words)
+    {
+        var codes = TextCodes.OfText(words);
+        PreviewResult? worst = null;
+        foreach (var box in boxes)
+        {
+            var painter = Painter(box.Font);
+            var canvas = new Canvas(new Screen());
+            new CardTextLayout(painter).Draw(canvas, codes, box.X, box.Y, box.Width,
+                new CardTextLayout.Settings { Color = Ink, Spacing = box.Spacing, Leading = box.Leading });
+            var bottom = DescriptionBoxes.Bottom(box, painter, codes);
+            // the column from 3 px left of it to 3 px right, from its first row to past the foot or the text's end
+            var (left, top) = (box.X - 3, box.Y - 3);
+            var width = box.Width + 6;
+            var height = Math.Min(Screen.Height, Math.Max(box.Foot, bottom + 1) + 4) - top;
+            var k = ScaleOf(painter);
+            var argb = Crop(Picture(canvas, Palette256.DefaultVga.Entries.ToArray(), k), k, left, top, width, height);
+            HorizontalDots(argb, width * k, (box.Foot - top) * k, k);
+            var result = new PreviewResult(width, height, argb, 0, box.Width, 0, Lacking(LanguagePackCheck.Unshowable(codes, painter)), true,
+                bottom, box.Foot) { Scale = k, Column = "its box " + box.Where };
+            if (worst is null || result.Foot - result.FootLimit > worst.Foot - worst.FootLimit)
+            {
+                worst = result;
+            }
+        }
+        return worst!;
     }
 
     // a card text: laid out in its block as the card screen does (every passage shown), against the foot of the card's window

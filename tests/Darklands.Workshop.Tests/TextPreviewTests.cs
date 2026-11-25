@@ -9,6 +9,43 @@ namespace Darklands.Workshop.Tests;
 public sealed class TextPreviewTests
 {
     [Fact]
+    public void ADescriptionIsDrawnInItsScreensColumnAndMeasuredAgainstItsFoot()
+    {
+        if (GameFolder.Files is null || LocalPaths.Get("game", "DARKLANDS_DIR") is not { } game)
+        {
+            return;
+        }
+        var folder = Path.Combine(Path.GetTempPath(), "dl-preview-desc-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            TextProject.Create(folder, "de", "Test", null, game);
+            var project = TextProject.Open(folder, game);
+            var preview = new TextPreview(project);
+            // a saint's description (1.1.3): listed under the prayer screen, its room the column's lines
+            var saint = project.Find(Darklands.Localization.KeyMangling.ToFluentId(Darklands.Content.DataNames.SaintDescription(1)))!;
+            Assert.Equal(["SaintPrayerScreen"], saint.Screens);
+            var english = preview.Render(saint, null);
+            Assert.True(english.CardText);
+            Assert.Equal("its box on the prayer screen", english.Column);
+            Assert.Equal(Darklands.Presentation.DescriptionBoxes.Saint.Foot, english.FootLimit);
+            Assert.Equal(0x9C, english.Room);
+            Assert.False(english.Overflows);
+            var longer = preview.Render(saint, string.Concat(Enumerable.Repeat("Ein langer Satz, der immer weiter geht. ", 20)));
+            Assert.True(longer.Overflows);
+            // a formula's: the box it fills most, the formula page's narrower column
+            var formula = project.Find(Darklands.Localization.KeyMangling.ToFluentId(Darklands.Content.DataNames.FormulaDescription(1)))!;
+            Assert.Equal(["AlchemyScreen"], formula.Screens);
+            var page = preview.Render(formula, string.Concat(Enumerable.Repeat("Ein langer Satz. ", 12)));
+            Assert.True(page.Overflows);
+            Assert.Equal("its box on the formula page", page.Column);
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void AScreenTextIsDrawnAsTheGameDrawsItAndMeasuredAgainstItsBox()
     {
         if (GameFolder.Files is not { } files || LocalPaths.Get("game", "DARKLANDS_DIR") is not { } game)

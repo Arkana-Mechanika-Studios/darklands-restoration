@@ -30,7 +30,7 @@ public sealed class BetaAndCapitalsTests
         var props = XDocument.Load(Path.Combine(Root(), "Directory.Build.props"));
         var version = props.Descendants("WorkshopVersion").Single().Value;
         Assert.Equal(version, WorkshopVersion.Current);
-        Assert.Equal("1.1.0-beta.1", WorkshopVersion.Current);
+        Assert.Equal("1.1.0-beta.2", WorkshopVersion.Current);
         Assert.True(WorkshopVersion.IsBeta);
         Assert.Equal("Darklands Workshop " + version, WorkshopVersion.Label);
         // a pre-release's notes are there (the pre-release workflow refuses one without)
