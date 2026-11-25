@@ -1,8 +1,8 @@
 # Roadmap after 1.0
 
 Version 1.0 was the first release of the faithful game: Darklands 483.07 rebuilt in C#, every rule checked against the
-original program. This page says what comes after it and in what order. It gives no dates: releases ship when they are ready. How work is
-proposed, decided and reviewed is in `docs/GOVERNANCE.md`; how to take part is in `CONTRIBUTING.md`.
+original program. This page says what comes after it and in what order. It gives no dates: releases ship when they are
+ready. How work is proposed, decided and reviewed is in `docs/GOVERNANCE.md`; how to take part is in `CONTRIBUTING.md`.
 
 ## The promise that does not change
 
