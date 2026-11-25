@@ -1214,7 +1214,9 @@ internal sealed class TextEditorView : IWorkshopEditor
         {
             _barFill.Width = 0;
             _bar.Background = WorkshopTheme.Brush(WorkshopTheme.Line);
-            _measure.Text = $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
+            _measure.Text = result.Column is { } where
+                ? $"{result.Measured} px wide; drawn in {where}: its room is theirs (their own preview)."
+                : $"{result.Measured} px wide; its box is not known (no recorded session showed it).";
         }
         ShowLayout(result);
         if (result.Problem is { } problem)
@@ -1244,6 +1246,22 @@ internal sealed class TextEditorView : IWorkshopEditor
         },
     };
 
+    /// <summary>
+    /// The preview's size in layout units per game pixel (<paramref name="room"/> and the result in layout units): every pixel of its
+    /// picture is drawn as the same whole number of the screen's pixels across and down (nearest neighbour), at any display scaling
+    /// (<paramref name="renderScaling"/>: 1.25 at 125 %). The largest that fits the room, at most <paramref name="most"/> layout units
+    /// a game pixel; at least one screen pixel a picture pixel. A TrueType font's picture (<see cref="PreviewResult.Scale"/> pixels a
+    /// game pixel) is shown at whole multiples of its own pixels, never shrunk.
+    /// </summary>
+    // Not in the original: the 1.1 Workshop (1.1.3: before, the size was whole in layout units only, and a TrueType picture was shrunk).
+    internal static double Scale(PreviewResult shown, double room, int most, double renderScaling)
+    {
+        var k = Math.Max(1, shown.Scale);
+        var fits = (int)Math.Floor(Math.Min(room / shown.Width, most) * renderScaling / k);
+        var times = Math.Max(1, fits);
+        return (double)times * k / renderScaling;
+    }
+
     // the preview's size: whole multiples of the game's pixels, as large as its place allows (the pane beside a card text, the
     // text's width under a screen text)
     private void Place()
@@ -1256,7 +1274,7 @@ internal sealed class TextEditorView : IWorkshopEditor
             ? (_root.ColumnDefinitions[2].Width.Value > 0 ? _root.ColumnDefinitions[2].Width.Value : 552) - 32
             : Math.Max(300, _root.Bounds.Width - _root.ColumnDefinitions[0].Width.Value - 48);
         // a description's column (1.1.3) is tall: at most twice its size, so its foot and the bar stay in view
-        var scale = (int)Math.Clamp(room / shown.Width, 1, shown.Column is null ? 4 : 2);
+        var scale = Scale(shown, room, shown.Column is not null && shown.CardText ? 2 : 4, TopLevel.GetTopLevel(_root)?.RenderScaling ?? 1);
         _picture.Width = shown.Width * scale;
         _picture.Height = shown.Height * scale;
         _bar.Width = shown.CardText ? _picture.Width : Math.Min(room, shown.Width * scale);

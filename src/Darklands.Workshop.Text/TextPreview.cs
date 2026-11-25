@@ -32,7 +32,8 @@ public sealed record PreviewResult(int Width, int Height, uint[] Argb, int Measu
 
     /// <summary>
     /// A description of the data files (1.1.3): laid out in its screen's column (<see cref="CardText"/> is set: measured against a
-    /// foot), and where that column is, as "its box on the prayer screen"; null for a card text.
+    /// foot), and where that column is, as "its box on the prayer screen"; a city's description, drawn on one line, where it is
+    /// drawn ("the card texts that show $PlaceDesc"); null for other texts.
     /// </summary>
     public string? Column { get; init; }
 }
@@ -133,7 +134,9 @@ public sealed class TextPreview(TextProject project)
         var words = TextCodes.FromTags(localizer.Get(entry.Key, arguments));
         // the pack's layout of the text (interface/layout.json): its font, its width (else the room left after its move), its lines
         var layout = project.LayoutOf(entry);
-        var painter = Painter(layout is { Font: >= 1 and <= 3 } ? layout.Font : box is { Font: > 0 } ? box.Font : 1);
+        // a city's description (1.1.3) is drawn inside card texts ($PlaceDesc): the card window's font
+        var city = DescriptionBoxes.IsCityDescription(entry.Key);
+        var painter = Painter(layout is { Font: >= 1 and <= 3 } ? layout.Font : box is { Font: > 0 } ? box.Font : city ? 3 : 1);
         var moved = (layout?.X ?? box?.X ?? 0) - (box?.X ?? 0);
         var room = box is { Room: > 0 } ? layout?.Width ?? box.Room - moved : layout?.Width ?? 0;
         var lines = layout is null ? [words] : painter.Wrap(words, room > 0 ? room : Screen.Width, Math.Max(1, layout.Lines));
@@ -153,7 +156,11 @@ public sealed class TextPreview(TextProject project)
             VerticalDots(argb, width * k, height * k, (room + 3) * k, k);
         }
         var lacking = Lacking(LanguagePackCheck.Unshowable(TextCodes.OfText(words), painter));
-        return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false) { Scale = k };
+        return new PreviewResult(width, height, argb, measured, room, box?.English ?? 0, lacking, false)
+        {
+            Scale = k,
+            Column = city ? "the card texts that show " + DescriptionBoxes.CityVariable : null,
+        };
     }
 
     // a description (1.1.3): laid out in each of its screens' columns as the screen does, against the column's foot; the box it fills

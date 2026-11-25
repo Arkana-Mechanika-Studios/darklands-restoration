@@ -38,6 +38,14 @@ public sealed class TextPreviewTests
             var page = preview.Render(formula, string.Concat(Enumerable.Repeat("Ein langer Satz. ", 12)));
             Assert.True(page.Overflows);
             Assert.Equal("its box on the formula page", page.Column);
+            // a city's description: one line in the card window's font, drawn in the cards that show $PlaceDesc
+            var city = project.Find(Darklands.Localization.KeyMangling.ToFluentId(Darklands.Content.DataNames.CityDescription(3)))!;
+            Assert.All(city.Screens, s => Assert.StartsWith("card ", s, StringComparison.Ordinal));
+            var line = preview.Render(city, null);
+            Assert.False(line.CardText);
+            Assert.Equal("the card texts that show $PlaceDesc", line.Column);
+            var cardFont = new TextPainter(new GameAssets(GameFolder.Files!).Font(3));
+            Assert.Equal(cardFont.Measure(city.English), line.Measured);
         }
         finally
         {
