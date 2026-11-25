@@ -54,11 +54,11 @@ public sealed class GuildMastersAudience : Card
         }
         else if (side == -1)
         {
-            c.Variables.Named[0] = "rebel";
+            c.Variables.Named[0] = c.ExeText("exe:DS:5E47");  // "rebel"
         }
         else if (side == 1)
         {
-            c.Variables.Named[0] = "conservative";
+            c.Variables.Named[0] = c.ExeText("exe:DS:5E4D");  // "conservative"
         }
         c.Variables.Money[0] = Money.From(0, 0, Contribution(c));
         if (c.State.Party.Purse < c.Variables.Money[0])

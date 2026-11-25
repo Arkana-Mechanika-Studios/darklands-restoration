@@ -48,7 +48,7 @@ public sealed class WildHunt : Card
         var saint = quest?.Data1 ?? 0;
         var item = quest?.Data2 ?? 0;
         c.Variables.Texts[0] = c.SaintName(saint);
-        c.Variables.Texts[1] = c.World.ItemName(item);
+        c.Variables.Texts[1] = c.ItemNameShown(item);
         if (!c.KnowsSaint(Who.Everybody, saint))
         {
             // C: member-flag-bit(-2, saint) false: card-option-flag-4 = 0.

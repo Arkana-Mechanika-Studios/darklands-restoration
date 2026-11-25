@@ -305,7 +305,7 @@ public sealed class TextPreview(TextProject project)
             }
             else
             {
-                var more = OriginalMessageText.OwnWords(GameText.Of(CardScreen.MorePrompt)) ?? "";
+                var more = MoreWords();
                 painter.Draw(canvas, left + block.X + block.Width - 5 - painter.Measure(more), CardPaging.WindowFoot - painter.LineHeight - 1, more, Ink);
             }
             label.Draw(canvas, left + 2, 1, $"page {p + 1}/{n}", 14);
@@ -318,6 +318,20 @@ public sealed class TextPreview(TextProject project)
             }
         }
         return new PreviewResult(pictureWidth, height, argb, 0, width, 0, problem, true, foot, limit, n) { Scale = k };
+    }
+
+    // the "more" prompt in the pack's words when it translates it (the 1.2 translations: the untranslated-text audit), else the English
+    private string MoreWords()
+    {
+        if (project.Entries.FirstOrDefault(e => e.Key == CardScreen.MorePrompt) is { Translation: { } words } entry)
+        {
+            var localizer = new FluentLocalizer(project.Language, OriginalTable.Empty, null, pseudoTransform: false);
+            if (localizer.AddOverlay("more", FtlSource.Write(entry.Id, words) + "\n").Count == 0)
+            {
+                return localizer.Get(entry.Key);
+            }
+        }
+        return OriginalMessageText.OwnWords(GameText.Of(CardScreen.MorePrompt)) ?? "";
     }
 
     // a painter's resolution: a TrueType font's text at the high scale (when the Workshop can draw it so), else the game's pixels

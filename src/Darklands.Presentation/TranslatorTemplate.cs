@@ -40,8 +40,9 @@ public static class TranslatorTemplate
     {
         ArgumentNullException.ThrowIfNull(files);
         ArgumentNullException.ThrowIfNull(boxes);
-        var byKey = boxes.ToDictionary(b => b.Key, StringComparer.Ordinal);
         var assets = new GameAssets(files);
+        // the fixed columns' boxes for the keys the given boxes lack (ColumnBoxes: the formulae's short names)
+        var byKey = ColumnBoxes.With(boxes, assets).ToDictionary(b => b.Key, StringComparer.Ordinal);
         // a card text's line: the card window's font and the layout's one pixel of leading (CardScreen)
         var lineHeight = new Graphics.TextPainter(assets.Font(3)).LineHeight + 1;
         var messages = new List<Message>();

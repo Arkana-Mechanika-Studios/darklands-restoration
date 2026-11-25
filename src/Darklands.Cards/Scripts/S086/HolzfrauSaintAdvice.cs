@@ -30,8 +30,8 @@ public sealed class HolzfrauSaintAdvice : Card
         var item = c.Events[quest]?.Data2 ?? 0;
         // C: the text is saint-names[saint] (2E38:183E, R086+0x0CC8), the table world-read R043+0x0100 (matched) fills with DARKLAND.LST's
         //   first name list after the item records: the full names (DarklandListDecoder) (b32).
-        c.Variables.Texts[0] = saint >= 0 && saint < c.World.Items.Saints.Count ? c.World.Items.Saints[saint].FullName : "";
-        c.Variables.Texts[1] = c.World.ItemName(item);
+        c.Variables.Texts[0] = c.SaintName(saint);
+        c.Variables.Texts[1] = c.ItemNameShown(item);
         if (c.KnowsSaint(Who.Everybody, saint))
         {
             c.Screen.Text(3);

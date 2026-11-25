@@ -170,6 +170,14 @@ public sealed partial class BattleScreen
     private void DrawPlaceNote(Canvas canvas, int row, string note, byte color)
     {
         var layout = new CardTextLayout(_panel);
+        // with a translation pack by codes (its letters beyond the game's bytes; the 1.2 translations), else the bytes as the original
+        if (_ui.Language is not null)
+        {
+            var codes = Darklands.Core.TextCodes.OfText(note);
+            var codesHeight = layout.MeasureHeight(codes, 0x24, 0);
+            layout.Draw(canvas, codes, 0x13, row * PartyPanel.RowHeight + Math.Max(-1, (0x1F - 9 - codesHeight + 1) / 2) + 9, 0x24, new CardTextLayout.Settings { Color = color, Leading = 0, Alignment = TextAlignment.Center });
+            return;
+        }
         var text = TextPainter.Encode(note);
         var height = layout.MeasureHeight(text, 0x24, 0);
         var dy = Math.Max(-1, (0x1F - 9 - height + 1) / 2);

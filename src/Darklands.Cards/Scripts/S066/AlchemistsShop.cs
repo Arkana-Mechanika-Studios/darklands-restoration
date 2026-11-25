@@ -122,8 +122,7 @@ public sealed class AlchemistsShop : Card
         c.Next = Streets;
     }
 
-    private static string FormulaName(CardContext c, int formula) =>
-        formula >= 0 && formula < c.World.Items.Formulae.Count ? c.World.Items.Formulae[formula].FullName : "";
+    private static string FormulaName(CardContext c, int formula) => c.FormulaNameShown(formula);
 
     /// <summary>
     /// The shop's quality: three times the city size plus a city number remainder, and in

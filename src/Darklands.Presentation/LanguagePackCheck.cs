@@ -65,7 +65,8 @@ public static class LanguagePackCheck
             findings.Add(new Finding(Severity.Error, problem.Line > 0 ? $"{problem.Source}:{problem.Line}" : problem.Source, "", problem.Message));
         }
         var byId = template.ToDictionary(m => m.Id, StringComparer.Ordinal);
-        var box = boxes.ToDictionary(b => b.Key, StringComparer.Ordinal);
+        // the fixed columns' boxes for the keys the given boxes lack (ColumnBoxes: the formulae's short names)
+        var box = ColumnBoxes.With(boxes, assets).ToDictionary(b => b.Key, StringComparer.Ordinal);
         var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var (file, message) in pack.Messages)
         {
@@ -259,9 +260,9 @@ public static class LanguagePackCheck
             var bottom = DescriptionBoxes.Bottom(b, p, codes);
             if (bottom >= b.Foot)
             {
-                var lines = (bottom - b.Y) / (b.Spacing + b.Leading) + 1;
+                var lines = (bottom - b.Y) / b.Step(p) + 1;
                 add(Severity.Overflow, string.Create(CultureInfo.InvariantCulture,
-                    $"runs past the foot of its box {b.Where} ({lines} lines of {b.Width} px; the box holds {b.Lines(p.Font.CharacterHeight)})"));
+                    $"runs past the foot of its box {b.Where} ({lines} lines of {b.Width} px; the box holds {b.Lines(p)})"));
             }
         }
     }

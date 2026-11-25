@@ -66,7 +66,7 @@ public sealed class Marketplace : Card
             // C: (-0x7bc1, 0x3f) is the long mask 0x003F843F.
             Shop: () => c.Barter(-1, 0x003F843F, c.ExeText("exe:DS:586E")));  // "Foreign Trader"
         var herbalist = new Merchant(Owner: 5, Patron: 5, OfferBelow: 2, NameSeedPaid: 0, NameSeedErrand: 5, QuestType: 0x62,
-            FairWage: false, PaidSiteIcon: 2, Shop: () => c.Barter(-1, 0x400, "herbalist"));
+            FairWage: false, PaidSiteIcon: 2, Shop: () => c.Barter(-1, 0x400, c.ExeText("exe:DS:587D")));  // "herbalist"
 
         var menu = Menu(c, c.Hostile() ? 1 : 0);
         menu.Enable(0, 1, 2, 3, 4, 5, 6, 8, 9);
@@ -97,7 +97,7 @@ public sealed class Marketplace : Card
                         return;
                     }
                     // C: (-0x3c01, 0x2c3e) is the long mask 0x2C3EC3FF.
-                    c.Barter(-2, 0x2C3EC3FF, "Pawnshop");
+                    c.Barter(-2, 0x2C3EC3FF, c.ExeText("exe:DS:5887"));  // "Pawnshop"
                 },
                 Safety),
             // orig: R049+0x1A44 (1893:1494) + R049+0x19FC (1893:144C) R049 seg 1893 matched

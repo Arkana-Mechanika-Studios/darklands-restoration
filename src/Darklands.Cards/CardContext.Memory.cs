@@ -304,11 +304,23 @@ public sealed partial class CardContext
         return best;
     }
 
-    /// <summary>The name of a location (its record's name), "" for none.</summary>
-    public string LocationName(int loc) => loc >= 0 && loc < State.Locations.Count ? State.Locations[loc].Name : "";
+    /// <summary>
+    /// The name of a location (its record's name), "" for none; in the pack's words while it is still DARKLAND.LOC's (a save keeps the
+    /// original's: a name changed in play stays as it is).
+    /// </summary>
+    public string LocationName(int loc)
+    {
+        if (loc < 0 || loc >= State.Locations.Count)
+        {
+            return "";
+        }
+        var stored = State.Locations[loc].Name;
+        return Translation is not null && stored == World.FileLocationName(loc) ? ShownName(Darklands.Content.DataNames.Location(loc), stored) : stored;
+    }
 
-    /// <summary>The full name of a saint (DARKLAND.LST), "" for none.</summary>
-    public string SaintName(int saint) => saint >= 0 && saint < World.Items.Saints.Count ? World.Items.Saints[saint].FullName : "";
+    /// <summary>The full name of a saint (DARKLAND.LST) as the cards put it into their texts (the pack's words when it has them), "" for none.</summary>
+    public string SaintName(int saint) =>
+        saint >= 0 && saint < World.Items.Saints.Count ? ShownName(Darklands.Content.DataNames.Saint(saint), World.Items.Saints[saint].FullName) : "";
 
     /// <summary>
     /// The guild a guild card hands over to the next card ($Guild00, $Snuck00 ...): the original

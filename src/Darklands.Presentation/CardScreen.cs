@@ -377,8 +377,16 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         var saved = canvas.Save(0, 0, WindowX, Canvas.Height);
         var y = member == OptionHint.WholeParty ? 0x51 : member * 40 + 1;
         SideWindowBackground(ui, member);
-        new CardTextLayout(ui.Text).Draw(canvas, TextPainter.Encode(message), 3, y + 4, 0x37,
-            new CardTextLayout.Settings { Color = Palette.White, Leading = 0, Alignment = TextAlignment.Center });
+        var settings = new CardTextLayout.Settings { Color = Palette.White, Leading = 0, Alignment = TextAlignment.Center };
+        // with a translation pack by codes (its letters beyond the game's bytes; the 1.2 translations), else the bytes as the original
+        if (ui.Language is not null)
+        {
+            new CardTextLayout(ui.Text).Draw(canvas, Darklands.Core.TextCodes.OfText(message), 3, y + 4, 0x37, settings);
+        }
+        else
+        {
+            new CardTextLayout(ui.Text).Draw(canvas, TextPainter.Encode(message), 3, y + 4, 0x37, settings);
+        }
         // C: the wait is `while (!key-waiting-test() && !(mouse-button-state & 1)) menu-bar-loop(...)`, then the button is waited out and the key eaten: any key, or the left button anywhere.
         while (true)
         {
@@ -470,7 +478,16 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         int[]? laid = null;
         if (codes is null && ui.CardText.PackFont is not null)
         {
-            laid = Darklands.Core.TextCodes.OfBytes(TextVariables.Expand(translated ?? b.Text, c));
+            // with a translation pack its $variables by codes (a translated name keeps its letters; the 1.2 translations), else on the bytes
+            laid = ui.Language is not null
+                ? TextVariables.Expand(Darklands.Core.TextCodes.OfBytes(translated ?? b.Text), c)
+                : Darklands.Core.TextCodes.OfBytes(TextVariables.Expand(translated ?? b.Text, c));
+        }
+        // Not in the original: the 1.2 translations. With a pack, a block laid out from its bytes takes its $variables by codes too, so a
+        //   name the pack translated (a city's, a saint's) keeps its letters beyond the game's bytes
+        if (codes is null && laid is null && ui.Language is not null)
+        {
+            codes = Darklands.Core.TextCodes.OfBytes(translated ?? b.Text);
         }
         var layout = new CardTextLayout(ui.CardText);
         var settings = new CardTextLayout.Settings
@@ -709,11 +726,19 @@ public sealed partial class CardScreen(GameUi ui, Func<CardContext> context, Par
         var (top, height) = hint.Member == OptionHint.WholeParty ? (1, 0xC6) : (hint.Member * 40 + 1, 0x26);
         SideWindowBackground(ui, hint.Member);
         var layout = new CardTextLayout(ui.Text);
+        var hintSettings = new CardTextLayout.Settings { Color = Palette.White, Leading = 0, Alignment = TextAlignment.Center };
+        // with a translation pack by codes (the 1.2 translations), else the bytes as the original
+        if (ui.Language is not null)
+        {
+            var codes = Darklands.Core.TextCodes.OfText(text);
+            var codesHeight = layout.MeasureHeight(codes, 0x32, 0);
+            layout.Draw(_canvas, codes, 5, top + Math.Max(0, (height - (codesHeight - 1)) / 2), 0x32, hintSettings);
+            return;
+        }
         var bytes = TextPainter.Encode(text);
         var textHeight = layout.MeasureHeight(bytes, 0x32, 0);
         var offset = Math.Max(0, (height - (textHeight - 1)) / 2);
-        layout.Draw(_canvas, bytes, 5, top + offset, 0x32,
-            new CardTextLayout.Settings { Color = Palette.White, Leading = 0, Alignment = TextAlignment.Center });
+        layout.Draw(_canvas, bytes, 5, top + offset, 0x32, hintSettings);
     }
 
     /// <summary>The background of the side window behind a message: one member's row, or the whole column.</summary>

@@ -246,7 +246,8 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     // the real date and time a game was saved, short (the list: "21 Nov 19:23") or whole (the details: "2026-11-21 19:23")
     private string ShortSavedAt(DateTime? at) => at is { } t
         ? ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved-short", ("day", t.Day.ToString(Invariant)), ("month", t.Month.ToString(Invariant)),
-            ("monthName", t.ToString("MMM", Invariant)), ("time", t.ToString("HH:mm", Invariant))))
+            ("monthName", ui.Language is null ? t.ToString("MMM", Invariant) : ui.Word(Darklands.Content.Formats.Text.Strings.OriginalWords.MonthNames, t.Month - 1)),
+            ("time", t.ToString("HH:mm", Invariant))))
         : "";
 
     private string SavedAtText(DateTime? at) => at is { } t
@@ -305,7 +306,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         var s = folder.Summary(name);
         // the place, then the game's date and hour (the original's line without its place)
-        Shadowed(x, DetailsTop, s.Place, right);
+        Shadowed(x, DetailsTop, ui.SavedPlaceName(s.Place), right);
         Shadowed(x, DetailsTop + DetailsLine, ui.Format(ScreenTexts.SavedGameLine, "", s.Year, s.Month + 1, s.Day, s.Hour).Trim(), right);
         Shadowed(x, DetailsTop + 2 * DetailsLine + 4, ui.Words(Darklands.Core.GameText.Of("id:rw.save.list.saved")), right);
         Shadowed(x, DetailsTop + 3 * DetailsLine + 4, SavedAtText(folder.SavedAt(name)), right);
@@ -423,7 +424,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             }
             _names[_rowsShown - 1] = name;
             var s = folder.Summary(name);
-            var line = ui.Format(ScreenTexts.SavedGameLine, s.Place, s.Year, s.Month + 1, s.Day, s.Hour);
+            var line = ui.Format(ScreenTexts.SavedGameLine, ui.SavedPlaceName(s.Place), s.Year, s.Month + 1, s.Day, s.Hour);
             var y = _rowsShown << 4;
             // DIVERGENCE: no original: with GameOptions.CleanDrawing (the Fixed and Classic + comfort presets) a saved game of a modded game
             //   (its own companion file, SaveFolder.IsModded) carries the mod mark at the right end of its first line, which stops short of it.

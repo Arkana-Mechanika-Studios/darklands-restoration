@@ -299,18 +299,23 @@ public sealed partial class CardContext
     {
         string Bell(int band) => Word(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, band);
         // C: the tables are read unchecked (IPersonalNames.Name reads the neighbouring pointers); without the EXE's tables the slot keeps its text
-        string Table(NameTable table) => PersonalNames.Count(table) > 0 ? PersonalNames.Name(table, index) : Variables.Named[slot];
+        // with a translation pack an entry of the table in its words (the 1.2 translations); no pack, or an index outside: as the original
+        string Table(NameTable table, Darklands.Content.Formats.Text.Strings.WordTable words) =>
+            PersonalNames.Count(table) is var count && count == 0 ? Variables.Named[slot]
+            : Translation is not null && index >= 0 && index < count ? Word(words, index)
+            : PersonalNames.Name(table, index);
         Variables.Named[slot] = kind switch
         {
-            0 => World.ItemName(index),
-            1 => index >= 0 && index < World.Items.Saints.Count ? World.Items.Saints[index].FullName : "",
+            // the names in the pack's words when it has them (the 1.2 translations; no pack: the list's, as the original)
+            0 => ItemNameShown(index),
+            1 => SaintName(index),
             2 => FormulaOrSaintName(index - FormulaTableBase) ?? Variables.Named[slot],
             // C: bell-time-label(time-of-day-band(index), slot) (R029+0x5756 matched: _fstrcpy(dst, bell-time-labels[i])).
             3 or 4 => Bell(TimeOfDay.Band(index)),
             5 => Bell(TimeOfDay.Band(index) + 1 > 7 ? 0 : TimeOfDay.Band(index) + 1),
-            6 => Table(NameTable.Dragons),
-            7 => Table(NameTable.Dwarfs),
-            8 => Table(NameTable.Titles),
+            6 => Table(NameTable.Dragons, Darklands.Content.Formats.Text.Strings.OriginalWords.DragonNames),
+            7 => Table(NameTable.Dwarfs, Darklands.Content.Formats.Text.Strings.OriginalWords.DwarfNames),
+            8 => Table(NameTable.Titles, Darklands.Content.Formats.Text.Strings.OriginalWords.TitleNames),
             _ => Variables.Named[slot],
         };
     }
@@ -324,10 +329,10 @@ public sealed partial class CardContext
         var saints = World.Items.Saints;
         if (n >= 0 && n < formulae.Count)
         {
-            return formulae[n].FullName;
+            return FormulaNameShown(n);
         }
         n -= formulae.Count;
-        return n >= 0 && n < saints.Count ? saints[n].FullName : null;
+        return n >= 0 && n < saints.Count ? SaintName(n) : null;
     }
 
     // ---- time -----------------------------------------------------------------------

@@ -91,6 +91,7 @@ into words: from the pack when it has the id, else from the player's own files. 
 | `cty:n.field` | a city's names in `DARKLAND.CTY`: `short`, `full`, `leader`, `ruler`, and its buildings (`church`, `market` … the names cards put in) |
 | `loc:n.name` | a place's name, by its index in `DARKLAND.LOC` |
 | `enm:type/n.name` | an enemy kind's name in `DARKLAND.ENM` (the battle's enemy panel) |
+| `map:n.text` | a message of the map's message box, by its record in `DARKLAND.MSG` (since 1.2) |
 
 In a `.ftl` file a key is written as a Fluent identifier: lower case, `:` `.` `/` `#` `+` turned into `-`, `$` dropped.
 So `exe:DS:2FF2` is `exe-ds-2ff2` and `id:rw.save.damaged.1` is `id-rw-save-damaged-1`. Two keys never meet in one
@@ -119,6 +120,20 @@ wrap a description in a column, so its box is a number of lines of a width, take
 comment gives it: `box: 12 lines of 156 px (font 2) on the prayer screen`. The check reports a description that runs
 past the foot of its box (into the lines below it, or off its page). A city's description has no box of its own: it is
 part of the card text, whose box applies. Without a pack the screens draw the original's bytes, as before.
+
+**The map's messages** (since 1.2) are in `tables.ftl` as `map:<n>.text` (DARKLAND.MSG), with the box of the map's
+message box: `box: … lines of 170 px (font 1) in the map's message box`. A formula's short name (`lst:formula/<n>.short`)
+has the box of the alchemy screen's batch list, 61 px, though no recorded session drew it.
+
+**Where 1.2 reaches further.** The untranslated-text audit of 1.2 routed through the pack the texts that were drawn
+without it: the formulae's short names in the batch list, the character generator's family and occupation names (the
+EXE's word tables) and its formula and saint names, the party information's town size and standing words, the camp's
+details, the saved games' place names and month names on the load screen, the battle's potion names, its "(Ldr)" and
+"(All)" and its members' messages, the store's "no room" message (`id:rw.store.no-room`), the shop names cards open barter
+with, the guild master's "rebel" and "conservative", the names cards copy (items, saints, formulae, and the dragons',
+dwarfs' and titles' names of the EXE), and the rules-kept notice's preset name. A pack's text in a card's hint, its tell
+line, the battle's place notes and member messages is drawn by its letters, so a letter outside the game's 8-bit set
+(a Chinese character, a Cyrillic letter) is no longer lost there.
 
 **A name's other forms.** A language that declines its nouns or makes words agree with them gives a name its forms as
 Fluent attributes: `nom`, `gen`, `dat`, `acc`, `ins`, `loc`, `voc`, `abl` (the cases a language needs) and `gender`:
@@ -231,6 +246,10 @@ var-him1 =
 # text/de/msg/$ARMOR00.ftl
 msg-armor00-12 = ... Ihr gebt $ChosenOneName $him1 ...
 ```
+
+**The game's pronouns** (since 1.2): a pack's variable named as one of the English pronouns (`var-He`, `var-he`,
+`var-his`, `var-His`, `var-him`, `var-himself`) answers that pronoun in every card text, so a language can say it in its
+own words; a pronoun the pack does not define stays the game's English.
 
 A name is letters and digits, and its case counts (`var-Him1` beside `var-him1`). The check allows in a card text exactly
 the English block's `$Names` and the pack's own (a translation need not use them all); any other is an error, and so is a

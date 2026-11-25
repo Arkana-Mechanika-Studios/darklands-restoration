@@ -525,7 +525,7 @@ public sealed partial class BattleScreen
 
     /// <summary>A report in its member's panel row (or the whole column for −2) in the original's words: good news in colour 15, bad news in 12.</summary>
     public void MemberMessage(GameMessage message) =>
-        MemberMessage(message.Member, new OriginalMessageText(_assets.Executable).Text(message), message.Good ? 15 : 12);
+        MemberMessage(message.Member, _ui.Words(new Darklands.Core.GameText(message.Id, message.Args)), message.Good ? 15 : 12);
 
     /// <summary>A text in a member's panel row (or the whole column for −2) in colour <paramref name="color"/>, waiting for a key or a left click.</summary>
     // orig: R021+0x01E2 (1EF8:01E2) matched: the row background DS:A626 at (3, row × 40 + 1)
@@ -555,8 +555,16 @@ public sealed partial class BattleScreen
             SpriteDrawing.Draw(canvas, sprites.RowBackground, 3, y);
         }
         var layout = new CardTextLayout(_ui.Text);
-        layout.Draw(canvas, TextPainter.Encode(text), 3, y + 4, 0x37,
-            new CardTextLayout.Settings { Color = (byte)color, Leading = 0, Alignment = TextAlignment.Center });
+        var settings = new CardTextLayout.Settings { Color = (byte)color, Leading = 0, Alignment = TextAlignment.Center };
+        // with a translation pack by codes (its letters beyond the game's bytes; the 1.2 translations), else the bytes as the original
+        if (_ui.Language is not null)
+        {
+            layout.Draw(canvas, Darklands.Core.TextCodes.OfText(text), 3, y + 4, 0x37, settings);
+        }
+        else
+        {
+            layout.Draw(canvas, TextPainter.Encode(text), 3, y + 4, 0x37, settings);
+        }
         var restore = ShowDriverPointer();
         // orig: R021+0x02A6 matched C: `while (!root 047C:073D() && !(mouse-button-state & 1)) root 0000:0000(&DS:9419, 0);` (the key stays
         // waiting for the battle's keys), then R021+0x02C3 `while (mouse-button-state & 1);` (the release is counted: the next pass of the

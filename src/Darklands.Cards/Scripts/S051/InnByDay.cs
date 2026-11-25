@@ -181,7 +181,7 @@ public sealed class InnByDay : Card
         c.Screen.Text(c.PartyGet(5) != 0 ? 1 : 7);
         Show(c, picture);
         c.PassHours(1);
-        c.Barter(-1, 0x2000, "Stablemaster");
+        c.Barter(-1, 0x2000, c.ExeText("exe:DS:5915"));  // "Stablemaster"
         c.Next = c.IsDaylight ? CardNumber : InnAtNight;
     }
 

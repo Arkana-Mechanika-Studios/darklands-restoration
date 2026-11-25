@@ -593,10 +593,17 @@ public sealed class DarklandsGame
         if (loaded.Mods.Rules is not null && (rules.Preset != Behaviour.Preset || !rules.SameFlags(Behaviour)))
         {
             var title = Core.RulePresets.Title(rules.Preset);
+            // the preset's name in the pack's words (the settings screen's ids; the 1.2 translations), the log's in English
+            var shownTitle = rules.Preset switch
+            {
+                Core.RulePreset.Original => _ui.Words(Views.SettingsTexts.Original),
+                Core.RulePreset.Fixed => _ui.Words(Views.SettingsTexts.Fixed),
+                _ => title,
+            };
             Log?.Invoke($"{name} keeps the rules it was started with ({title}{(rules.Differences().Count > 0 ? ", changed" : "")}), not those chosen now ({Core.RulePresets.Title(Behaviour.Preset)})");
             new MessageBox(_ui).Notice([
                 _ui.Words("id:rw.save.rules-kept.1"),
-                _ui.Words(Core.GameText.Of("id:rw.save.rules-kept.2", ("rules", title))),
+                _ui.Words(Core.GameText.Of("id:rw.save.rules-kept.2", ("rules", shownTitle))),
                 _ui.Words("id:rw.notice.press-a-key"),
             ]);
         }
