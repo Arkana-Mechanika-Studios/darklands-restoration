@@ -350,4 +350,52 @@ public sealed class SettingsScreenTests
         ui.OpenSettings = null;
         Assert.Equal(2, game.Count);
     }
+
+    /// <summary>
+    /// The chosen row is marked as the game's menus mark their chosen line: its words in the highlight colour, no pointer in the margin
+    /// (the user's choice of 2026-11-25); a fixed row chosen keeps its grey value; a row whose value can change shows it in the colour too.
+    /// </summary>
+    [Fact]
+    public void TheChosenRowIsInTheMenusHighlightColourWithNoPointer()
+    {
+        if (Model(new Dictionary<string, string> { ["rules.preset"] = "--rules" }) is not var (model, _, _, _))
+        {
+            return;
+        }
+        var rows = model.Rows().ToList();
+        var list = SettingsLayout.Rows(rows.Count);
+        var (lx, ly, lw, _) = list.Rectangle!.Value;
+        var step = list.RowHeight!.Value;
+        int[] Colours(Screen s, int x0, int y0, int w, int h) =>
+            [.. Enumerable.Range(y0, h).SelectMany(y => Enumerable.Range(x0, w).Select(x => (int)s.Pixels[(y * Screen.Width) + x])).Distinct()];
+        foreach (var chosen in new[] { rows.FindIndex(r => r.CanChange), rows.FindIndex(r => r.FixedBy is not null) })
+        {
+            Assert.True(chosen >= 0);
+            var view = model.View();
+            for (var k = 0; k < chosen; k++)
+            {
+                view.Handle(new ViewInput(Keys.Down, default, false));
+            }
+            var frame = new Screen();
+            view.Draw(frame);
+            var y = ly + (chosen * step);
+            var label = Colours(frame, lx, y, SettingsLayout.ValueColumn - 4, step);
+            var value = Colours(frame, lx + SettingsLayout.ValueColumn, y, lw - SettingsLayout.ValueColumn, step);
+            Assert.Contains((int)Darklands.Presentation.Graphics.Palette.Highlight, label);
+            Assert.DoesNotContain(1, label);
+            if (rows[chosen].FixedBy is null)
+            {
+                Assert.Contains((int)Darklands.Presentation.Graphics.Palette.Highlight, value);
+            }
+            else
+            {
+                Assert.Contains(7, value);
+                Assert.DoesNotContain((int)Darklands.Presentation.Graphics.Palette.Highlight, value);
+            }
+            // nothing in the margin where the pointer was (inside the rope): the parchment
+            Assert.Equal([0xFF], Colours(frame, lx - 5, y, 5, step));
+            // the other rows: none in the highlight colour
+            Assert.DoesNotContain((int)Darklands.Presentation.Graphics.Palette.Highlight, Colours(frame, lx, ly + ((chosen == 0 ? 1 : 0) * step), lw, step));
+        }
+    }
 }

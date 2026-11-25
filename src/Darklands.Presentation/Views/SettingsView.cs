@@ -166,7 +166,8 @@ public sealed class SettingsView(SettingsLook look, Func<IReadOnlyList<SettingRo
     // the colours of the startup palette (0..15, the same on every screen) the page's text uses
     private const byte Ink = 0;
     private const byte ValueInk = 6;
-    private const byte ChosenInk = 1;
+    // the chosen row: the menus' highlight colour, as the game's menus mark their chosen line (no pointer: the user's choice, 2026-11-25)
+    private const byte ChosenInk = Palette.Highlight;
     private const byte FixedInk = 7;
     private const byte TitleInk = 4;
     private const byte NoteInk = 8;
@@ -293,13 +294,9 @@ public sealed class SettingsView(SettingsLook look, Func<IReadOnlyList<SettingRo
                 var row = all[i];
                 var y = ly + i * rowHeight;
                 var chosen = i == _chosen;
-                var ink = row.FixedBy is not null ? FixedInk : chosen ? ChosenInk : Ink;
+                // the chosen row's label is always in the highlight colour (a fixed row too: its value stays grey, its note says why)
+                var ink = chosen ? ChosenInk : row.FixedBy is not null ? FixedInk : Ink;
                 var valueInk = row.FixedBy is not null ? FixedInk : chosen ? ChosenInk : ValueInk;
-                if (chosen)
-                {
-                    // the row chosen: a pointer in the margin, as a card menu marks its line
-                    look.Text.Draw(canvas, lx - 7, y + 1, "»", ChosenInk);
-                }
                 look.Text.Draw(canvas, lx, y + 1, row.Label, ink, lx + SettingsLayout.ValueColumn - 4);
                 var value = row.ValueLabel;
                 if (chosen && row.CanChange)
