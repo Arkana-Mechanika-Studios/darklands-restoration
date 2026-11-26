@@ -128,6 +128,11 @@ public sealed class GameState
     /// The working copy of the city record (<c>city-record</c>): the current city's, or the last
     /// city's while the party is elsewhere. Loaded on first use.
     /// </summary>
+    // orig: world-map-loop R030+0x02C0 (the city record read on arrival)
+    // DORMANT: the original reads the record again on every arrival (world-map-loop R030+0x02C0); here it is read again only when the working
+    //   copy is another city's (or no city's: a load in the wilderness, CityFile.Read, GitHub issue 7). The two differ only if the working copy
+    //   was written and the party left the city and came back without a battle or a load in between: place-assign's codes 2..8 and 11
+    //   (LocationRules.Set) are the only writers, and nothing calls them (the cards use codes 0 and 32, the camp code 0; checked 2026-11-25).
     public CityRecord City
     {
         get

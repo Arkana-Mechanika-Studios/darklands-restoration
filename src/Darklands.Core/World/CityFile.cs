@@ -31,13 +31,18 @@ public static class CityFile
         bytes.CopyTo(record, 0);
         // C: a record kept from before (a read past the file's end) keeps its city: the darkland.dsc read beside it also returns nothing and
         //   leaves city-description (DS:978B) as it was.
-        // DIVERGENCE: the record read at the file's start (a negative index: the wilderness, -1) is taken as city 0's, so its description is
-        //   city 0's. The original's city-description is then DARKLAND.DSC bytes 0x200..0x24F: the darkland.dsc stream's fgetc (root 06A1:12DC)
+        // DIVERGENCE: the record read at the file's start (a negative index: the wilderness, -1) belongs to no city (-1), so its description is
+        //   none (city 0's before 1.1.5, see below). The original's city-description is then DARKLAND.DSC bytes 0x200..0x24F: the darkland.dsc stream's fgetc (root 06A1:12DC)
         //   filled its 0x200-byte buffer (the buffer set-up at root 06A1:0AE4 asks for 0x200 bytes), fseek to the negative offset is refused by lseek
         //   (root 06A1:131A tests the sign before any DOS call) after the buffer was dropped, and fread goes on from the handle's place 0x200.
         //   Not shown in play: $PlaceDesc is only in the city-arrival texts ($CityE00/01/03, $Enter00, $Outsi00), shown after the overland
         //   read of that city.
-        return new CityRecord(offset < 0 ? 0 : before?.City ?? 0, record);
+        // C: the original reads the city's record on every arrival (the end of world-map-loop R030+0x02C0); the rewrite reads it when the
+        //   working copy is not that city's (GameState.City). Taken as city 0's, the record read at the file's start (a game loaded in the
+        //   wilderness) was never read again on arriving in city 0, Groningen: its fields one byte off (no Stadtplatz, no market, a stray
+        //   byte before the name, the inn's name garbled; GitHub issue 7). It belongs to no city, so the arrival reads Groningen's own, as the
+        //   original does. Our mistake since 0.9.0, fixed in every rule set (1.1.5).
+        return new CityRecord(offset < 0 ? -1 : before?.City ?? 0, record);
     }
 
     /// <summary>

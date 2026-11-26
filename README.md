@@ -169,11 +169,11 @@ want:
 Everything else is in `docs/SETTINGS.md`, which also lists the command-line forms (`--fullscreen`,
 `--scale 2`, `--no-intro` and so on).
 
-## Status: version 1.1.4
+## Status: version 1.1.5
 
 1.1 makes the game translatable (language packs, the Workshop beta), adds HD fonts for English and the Interface
 switch; the game's rules are those of 1.0. 1.1.4 keeps the pointer over the HD fonts' text and lets language packs reach
-the texts the game still drew in English. The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
+the texts the game still drew in English; 1.1.5 mends the cities after a game loaded in the wilderness. The whole game plays: character creation, cities and their streets, inns and shops, guilds, banks and
 churches, the world map and its encounters, battles, camping, saints and alchemy, saving and loading.
 If anything differs from the original, please report it (above, "Reporting a problem").
 
