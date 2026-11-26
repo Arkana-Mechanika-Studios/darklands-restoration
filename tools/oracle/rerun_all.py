@@ -1182,6 +1182,9 @@ TRAVEL_LONG = {
     "b34-m6-pb-145",
 }
 SESSIONS.update(TRAVEL)
+# 1.1.5 (GitHub issue 7): a game loaded on the world map, then Groningen (city 0) first: the arrival's texts, the dawn, the gate's toll and
+# the main street (DKSAVE17 moved next to Groningen; differs on 1.1.4, agrees on 1.1.5)
+SESSIONS["wild-load-groningen"] = "synth/DKSAVE17-pos32x222.sav"
 
 
 def check_headless(given: Path | None, stale_ok: bool) -> None:

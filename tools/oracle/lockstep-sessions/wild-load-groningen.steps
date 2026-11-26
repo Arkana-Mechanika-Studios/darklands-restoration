@@ -1,0 +1,35 @@
+# Lockstep session (GitHub issue 7): a game saved on the world map next to Groningen (DKSAVE17 moved to map cell 32,222: synth pos32x222) is
+# loaded from the start screen, the party walks onto Groningen (city 0, the first city after the load), waits for dawn, pays the gate's toll
+# and takes the main street's first line. Before 1.1.5 the load's city record (the file's start) was kept as city 0's: the arrival's texts,
+# the toll and the main street's lines were one byte off.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+click:190,64
+wait:600
+state:arrived
+key:enter
+wait:100
+option:0
+wait:20
+key:enter
+wait:200
+state:dawn
+key:enter
+wait:100
+state:gate
+click:150,75
+wait:200
+state:paid
+key:enter
+wait:200
+key:enter
+wait:200
+state:street
+option:0
+wait:20
+key:enter
+wait:200
+state:chosen
