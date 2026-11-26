@@ -367,6 +367,7 @@ Commands (`help` lists them, `help <command>` shows one):
 | `money add\|set <florins> [groschen] [pfennigs]` | changes the purse |
 | `reputation set <value>` | the party's reputation in the current place |
 | `character <slot\|all> <attribute\|skill> <value>` | sets an attribute (raising its maximum if needed) or a skill |
+| `prisoner <slot>` | the member is held in the current city's prison, as when the party leaves a city fight without them |
 | `heal [slot\|all]` | endurance and strength back to their maximums |
 | `saint grant\|remove <slot\|all> <number>` | a saint known or forgotten |
 | `item find <text>` / `item grant <slot\|all> <code> [quality] [count]` | finds item codes; puts items in packs |

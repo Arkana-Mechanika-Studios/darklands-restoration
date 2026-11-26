@@ -38,6 +38,7 @@ using Darklands.Rendering;
 //   saves:<folder>               the saved games' folder (default: SAVES beside the program, never the game folder)
 //   banner, intro                run the program start (the BANNER.DAT banner and its checks) and the opening
 //   datasafe                     plays with the data-safety fixes of the player's game (OriginalBehaviour.DataSafe); without it the game is Faithful, as the oracles play it
+//   rules:original|fixed|restored   plays a new or loaded game with that rules preset (the players' documents' shots: docs/restored/)
 //   interface:comfort            the Interface switch on Comfort (GameUi.ComfortInterface: the comfort features); without it Classic, as the oracles play it
 //   arg:<text>                   adds a word to the game's DOS command line (-Q, -O, -A<letter>)
 //   sound:config|adlib|sb|sbpro2|mt32|cm32l   runs the game's sound drivers in step with the script's clock (the game timer is
@@ -248,6 +249,7 @@ string? TakeStep(string prefix)
 }
 var soundStep = TakeStep("sound:") ?? (fileSettings.SoundCard is { } card and not "none" ? card : null);
 var wavStep = TakeStep("wav:");
+var rulesStep = TakeStep("rules:");
 var traceStep = TakeStep("trace:");
 var romsStep = TakeStep("mt32roms:") ?? resolved.Mt32Roms;
 var hdPackStep = TakeStep("hdpack:") ?? fileSettings.HdPack;
@@ -514,7 +516,8 @@ var game = new DarklandsGame(recording?.Host ?? (Darklands.Platform.IHost)host, 
     PlayOpening = steps.Remove("intro") || fileSettings.Intro == true,
     ShowStartUp = steps.Remove("banner") || fileSettings.Banner == true,
     CommandLine = commandLine,
-    Behaviour = steps.Remove("datasafe") ? Darklands.Core.OriginalBehaviour.DataSafe : Darklands.Core.OriginalBehaviour.Faithful,
+    Behaviour = rulesStep is not null ? Darklands.Core.OriginalBehaviour.Of(Enum.Parse<Darklands.Core.RulePreset>(rulesStep, ignoreCase: true))
+        : steps.Remove("datasafe") ? Darklands.Core.OriginalBehaviour.DataSafe : Darklands.Core.OriginalBehaviour.Faithful,
     QuickstartCard = cardStep is null ? null : Convert.ToInt32(cardStep[5..], 16),
     StartWithSave = loadStep?[5..],
 };

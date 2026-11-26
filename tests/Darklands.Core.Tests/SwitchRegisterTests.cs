@@ -271,12 +271,52 @@ public sealed class SwitchRegisterTests
         Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "gameplay"), items);
     }
 
-    /// <summary>The players' page of the Restored rules (docs/RESTORED.md) has a line for each restoration: one list item a flag.</summary>
+    /// <summary>
+    /// The players' page of the Restored rules (docs/RESTORED.md) has a line for each restoration: one list item a flag, each linking
+    /// its own page (docs/restored/&lt;name&gt;.md). Every page names its register row, shows at least one screenshot of
+    /// docs/screenshots/restored/ that exists, and says since when; the pages' rows are the restoration flags' rows.
+    /// </summary>
     [Fact]
     public void ThePlayersPageListsEveryRestoration()
     {
-        var items = File.ReadAllLines(Path.Combine(Root, "docs", "RESTORED.md")).Count(l => l.StartsWith("- ", StringComparison.Ordinal));
-        Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "restoration"), items);
+        var restorations = Rows().Where(r => r["kind"] == "flag" && r["class"] == "restoration").ToList();
+        var items = File.ReadAllLines(Path.Combine(Root, "docs", "RESTORED.md")).Where(l => l.StartsWith("- ", StringComparison.Ordinal)).ToList();
+        Assert.Equal(restorations.Count, items.Count);
+        var problems = new List<string>();
+        var named = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var item in items)
+        {
+            var link = Regex.Match(item, @"\]\((restored/[a-z0-9-]+\.md)\)");
+            if (!link.Success)
+            {
+                problems.Add("no page linked: " + item);
+                continue;
+            }
+            var page = Path.Combine(Root, "docs", link.Groups[1].Value);
+            if (!File.Exists(page))
+            {
+                problems.Add("missing page " + link.Groups[1].Value);
+                continue;
+            }
+            var text = File.ReadAllText(page, Encoding.UTF8);
+            foreach (Match id in Regex.Matches(text, @"\bR-[0-9a-f]{6}\b"))
+            {
+                named.Add(id.Value);
+            }
+            var shots = Regex.Matches(text, @"\]\((\.\./screenshots/restored/[^)]+\.png)\)").Select(m => m.Groups[1].Value).ToList();
+            if (shots.Count == 0)
+            {
+                problems.Add(link.Groups[1].Value + ": no screenshot");
+            }
+            problems.AddRange(shots.Where(s => !File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(page)!, s))))
+                .Select(s => link.Groups[1].Value + ": missing " + s));
+            if (!text.Contains("## Since", StringComparison.Ordinal))
+            {
+                problems.Add(link.Groups[1].Value + ": no Since");
+            }
+        }
+        problems.AddRange(restorations.Select(r => r["register"]).Where(id => !named.Contains(id)).Select(id => "no page names " + id));
+        Assert.Empty(problems);
     }
 
     /// <summary>

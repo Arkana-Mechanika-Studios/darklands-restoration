@@ -151,6 +151,21 @@ public sealed class GameConsoleTests
         Assert.True(console.Execute("reputation set 1").IsError);
     }
 
+    /// <summary>The prisoner: the member leaves the party and the city holds a prisoner note (event 0x4D), as after a fight the rest left.</summary>
+    [Fact]
+    public void APrisonerIsLeftInTheCitysPrison()
+    {
+        var (console, state) = Playing();
+        var before = state.Party.Occupied.Count();
+        var name = state.Party.Slots[1].Name;
+        Assert.False(console.Execute("prisoner 2").IsError);
+        Assert.Equal(before - 1, state.Party.Occupied.Count());
+        Assert.DoesNotContain(state.Party.Occupied, m => m.Name == name);
+        Assert.True(state.Events.At(EventKinds.MemberAway, 0));
+        state.CurrentLocation = GameState.Wilderness;
+        Assert.True(console.Execute("prisoner 1").IsError);
+    }
+
     [Fact]
     public void CharacterSetsAttributesRaisingTheMaximumAndSkills()
     {

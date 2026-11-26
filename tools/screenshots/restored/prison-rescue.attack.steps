@@ -1,0 +1,45 @@
+# The prison rescue, the attack: the guards-of-every-floor text, then the fight
+# Start: copy the community save fixtures/saves/bug-duplicate-quest-items/Dksave21.sav (and .bsv) as DKSAVE21.SAV / .BSV into
+#   the saves folder (saves:<folder>). THE CONSOLE then holds Ebhard in Lubeck's prison (as after a city fight the party left);
+#   the rest is played.
+load:DKSAVE21.SAV
+rules:restored
+wait:300
+console:prisoner 4
+wait:300
+key:space
+wait:300
+option:6
+wait:5
+key:enter
+wait:300
+key:space
+wait:300
+option:0
+wait:5
+key:enter
+wait:300
+key:space
+wait:300
+option:1
+wait:5
+key:enter
+wait:300
+key:space
+wait:300
+move:120,122
+wait:30
+click:120,122
+wait:300
+key:space
+wait:300
+key:space
+wait:300
+move:120,91
+wait:20
+click:120,91
+wait:300
+shot:6-attack
+key:space
+wait:400
+shot:7-fight

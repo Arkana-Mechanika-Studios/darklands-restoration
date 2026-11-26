@@ -35,6 +35,9 @@ public static class GameCommands
             "character <slot 1..5|all> <attribute|skill> <value>  (attributes: end str agl per int chr df; skills: edge impact "
             + "flail polearm thrown bow missile alchemy religion virtue speakcommon latin readwrite healing artifice stealth "
             + "streetwise riding woodwise)", On(CharacterCommand)));
+        console.Add(new ConsoleCommand("prisoner",
+            "prisoner <slot 1..5>  (the member is left behind in the current city's prison, as after a battle the rest of the party left)",
+            On(Prisoner)));
         console.Add(new ConsoleCommand("heal", "heal [slot 1..5|all]  (endurance and strength back to their maximums)", On(Heal)));
         console.Add(new ConsoleCommand("saint", "saint grant|remove <slot 1..5|all> <saint number>", On(Saint)));
         console.Add(new ConsoleCommand("item", "item grant <slot 1..5|all> <code> [quality] [count] | item find <text>", On(Item)));
@@ -235,6 +238,24 @@ public static class GameCommands
             lines.Add($"{m.Name}: end {m[CharacterAttribute.Endurance]}, str {m[CharacterAttribute.Strength]}");
         }
         return new ConsoleResult(lines);
+    }
+
+    // the game's own way: a member left Away when the party leaves a battle is reported absent (PartyRules.ReportAway), which leaves a
+    //   prisoner note (event 0x4D) at the place for a year and takes the member out of the party; the prison cards then find the note
+    private static ConsoleResult Prisoner(GameState s, string[] w)
+    {
+        if (s.Here is not { } here || !here.IsCity)
+        {
+            return ConsoleResult.Error("the party is not in a city: no prison to be held in");
+        }
+        var member = Members(s, Word(w, 0)).Single();
+        if (s.Party.Occupied.Count() < 2)
+        {
+            return ConsoleResult.Error("the party's last member cannot be left behind");
+        }
+        member.Status = CharacterStatus.Away;
+        PartyRules.ReportAway(s);
+        return ConsoleResult.Ok($"{member.Name} is held in the prison of {PlaceText(s)}");
     }
 
     private static ConsoleResult Saint(GameState s, string[] w)
