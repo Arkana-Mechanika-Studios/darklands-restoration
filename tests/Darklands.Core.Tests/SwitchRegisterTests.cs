@@ -263,12 +263,66 @@ public sealed class SwitchRegisterTests
         }
     }
 
-    /// <summary>The players' page of the Fixed rules (docs/FIXED.md) has a line for each gameplay fix: one list item a flag.</summary>
+    /// <summary>
+    /// Nothing on in Fixed or Restored ships undocumented (the documentation standard, the user's rule of 2026-11-26): every flag of
+    /// a gameplay, data-safety or visual fix on in Fixed or Restored has an entry in the players' page of the fixes (docs/FIXED.md)
+    /// that names each of its register rows and says how a player notices it and since when (the entry, or its section's opening
+    /// lines for a section that says it once for all); every such setting is in docs/SETTINGS.md. The restorations' pages:
+    /// <see cref="ThePlayersPageListsEveryRestoration"/>.
+    /// </summary>
     [Fact]
-    public void ThePlayersPageListsEveryGameplayFix()
+    public void ThePlayersPageDocumentsEverySwitchOnInFixedOrRestored()
     {
-        var items = File.ReadAllLines(Path.Combine(Root, "docs", "FIXED.md")).Count(l => l.StartsWith("- ", StringComparison.Ordinal));
-        Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "gameplay"), items);
+        var page = File.ReadAllText(Path.Combine(Root, "docs", "FIXED.md"), Encoding.UTF8).Replace("\r\n", "\n", StringComparison.Ordinal);
+        var settings = File.ReadAllText(Path.Combine(Root, "docs", "SETTINGS.md"), Encoding.UTF8);
+        // the page's entries: a list item with its indented lines, or a ### block; each with its ## section's opening lines
+        var entries = new List<(string Text, string Section)>();
+        foreach (var section in Regex.Split(page, @"(?m)^(?=## )"))
+        {
+            var opening = Regex.Split(section, @"(?m)^(?=- |### )")[0];
+            foreach (var item in Regex.Split(section, @"(?m)^(?=- |### )").Skip(1))
+            {
+                entries.Add((item, opening));
+            }
+        }
+        var problems = new List<string>();
+        foreach (var row in Rows().Where(r => r["presets"].Contains("fixed", StringComparison.Ordinal) || r["presets"].Contains("restored", StringComparison.Ordinal)))
+        {
+            if (row["kind"] == "setting")
+            {
+                if (!settings.Contains(row["key"], StringComparison.Ordinal))
+                {
+                    problems.Add($"{row["key"]}: not in docs/SETTINGS.md");
+                }
+                continue;
+            }
+            if (row["kind"] != "flag" || row["class"] is not ("gameplay" or "data-safety" or "visual"))
+            {
+                continue;
+            }
+            foreach (var id in row["register"].Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var found = entries.Where(e => Regex.IsMatch(e.Text, $@"\b{Regex.Escape(id)}\b")).ToList();
+                if (found.Count == 0)
+                {
+                    problems.Add($"{row["key"]}: no entry of docs/FIXED.md names {id}");
+                    continue;
+                }
+                // the words as read: a line break is a space
+                static string Words(string text) => Regex.Replace(text, @"\s+", " ");
+                bool Says(string what) => found.Any(e => Words(e.Text).Contains(what, StringComparison.OrdinalIgnoreCase)
+                    || Words(e.Section).Contains(what, StringComparison.OrdinalIgnoreCase));
+                if (!Says("how you notice"))
+                {
+                    problems.Add($"{row["key"]} ({id}): its entry does not say how a player notices it");
+                }
+                if (!Says("since"))
+                {
+                    problems.Add($"{row["key"]} ({id}): its entry does not say since when");
+                }
+            }
+        }
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
     }
 
     /// <summary>
