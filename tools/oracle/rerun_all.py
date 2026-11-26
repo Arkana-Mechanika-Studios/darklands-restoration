@@ -1191,6 +1191,19 @@ SESSIONS.update(TRAVEL)
 # 1.1.5 (GitHub issue 7): a game loaded on the world map, then Groningen (city 0) first: the arrival's texts, the dawn, the gate's toll and
 # the main street (DKSAVE17 moved next to Groningen; differs on 1.1.4, agrees on 1.1.5)
 SESSIONS["wild-load-groningen"] = "synth/DKSAVE17-pos32x222.sav"
+# load then act (set 1, after GitHub issue 7): a game saved on the map one row north of a place of each kind is loaded and the place
+#   entered, saved there (Alt-S), a choice made, loaded again there (Alt-L) and another choice made (lockstep-sessions/lta-*.steps)
+SESSIONS.update({"lta-castle-kulmbach": "synth/DKSAVE17-pos160x622.sav", "lta-robber-meissen": "synth/DKSAVE17-pos200x499.sav",
+                 "lta-monastery-hundeluft": "synth/DKSAVE17-pos175x386.sav", "lta-cave-30x535": "synth/DKSAVE17-pos30x535.sav",
+                 "lta-mine-schneeberg": "synth/DKSAVE17-pos191x519.sav", "lta-village-southnurn": "synth/DKSAVE17-pos138x719.sav",
+                 "lta-tomb-114x322": "synth/DKSAVE17-pos114x322.sav", "lta-robber-cairn": "synth/DKSAVE17-pos199x503.sav"})
+# the same places loaded from the start screen: games the original saved there (local/oracle-saves/loadact, the Alt-S files above)
+SESSIONS.update({"lta-castle-kulmbach-fresh": "local/oracle-saves/loadact/castle-kulmbach.SAV",
+                 "lta-robber-meissen-fresh": "local/oracle-saves/loadact/robber-meissen.SAV",
+                 "lta-monastery-hundeluft-fresh": "local/oracle-saves/loadact/monastery-hundeluft.SAV",
+                 "lta-cave-30x535-fresh": "local/oracle-saves/loadact/cave-30x535.SAV",
+                 "lta-mine-schneeberg-fresh": "local/oracle-saves/loadact/mine-schneeberg.SAV",
+                 "lta-village-southnurn-fresh": "local/oracle-saves/loadact/village-southnurn.SAV"})
 
 
 def check_headless(given: Path | None, stale_ok: bool) -> None:

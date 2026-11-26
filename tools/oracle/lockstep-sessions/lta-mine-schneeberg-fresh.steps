@@ -1,0 +1,20 @@
+# Lockstep session (load then act, set 1): a game the original saved at the place (local/oracle-saves/loadact/mine-schneeberg.SAV, the Alt-S
+# file of lta-mine-schneeberg) loaded from the start screen: the miners' shacks of Schneeberg: 'travel elsewhere', the map, a walk west.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:100
+state:options
+option:0
+wait:10
+key:enter
+wait:200
+state:left
+key:left
+wait:60
+key:left
+wait:60
+state:walked

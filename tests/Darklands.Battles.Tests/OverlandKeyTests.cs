@@ -30,7 +30,9 @@ public sealed class OverlandKeyTests
         public bool ShiftHeld => false;
         public long Milliseconds => _now;
 
-        public void Present(Screen screen) { }
+        public Action? Presented { get; set; }
+
+        public void Present(Screen screen) => Presented?.Invoke();
 
         public void Sleep(int milliseconds) => _now += Math.Max(1, milliseconds);
 
@@ -456,5 +458,44 @@ public sealed class OverlandKeyTests
         var seconds = (walking[^1].Ms - walking[0].Ms) / 1000.0;
         Assert.InRange(steps / seconds, 10.0, 11.5);
         Assert.InRange(walking.Count - steps, (int)(6 * seconds), (int)(8.5 * seconds));
+    }
+
+    /// <summary>
+    /// The map message (R030+0x2BB0: the notice of a place, here the robber knight's territory of Meissen) hides the pointer before it saves
+    /// and draws its box (R030+0x2C3D, root 047C:12C3) and shows it after the box is put back (R030+0x2D33, root 047C:1293): no frame shown
+    /// while the message waits has the pointer (the load-then-act session lta-robber-cairn: the original's screen has none).
+    /// </summary>
+    [Fact]
+    public void TheMapMessageShowsNoPointerWhileItWaits()
+    {
+        if (GameFolder.Files is not { } files)
+        {
+            return;
+        }
+        var world = WorldData.Load(files);
+        // a step up into the place's notice range, the message waits through idle passes, Enter closes it, idle passes
+        int[][] frames = [[], [Keys.Up], .. Enumerable.Repeat(Array.Empty<int>(), 20), [Keys.Enter], .. Enumerable.Repeat(Array.Empty<int>(), 20)];
+        var host = new KeyHost(frames);
+        var ui = new GameUi(host, new GameAssets(files));
+        var state = NewGame.Quickstart(world, 1, () => 1);
+        state.Data = world;
+        state.CurrentLocation = Core.GameState.Wilderness;
+        state.MapPosition = new Core.World.MapPosition(199, 503);
+        // Meissen (place 102, a robber knight's castle) with its notice message, as the saved game DKSAVE17 holds it
+        state.Events.Create(Core.Characters.Who.Everybody, 102, 0, 0x2B, 0, 5, 0, Core.Events.EventLog.UntilEndOf1499, 0, 0);
+        var map = new WorldMap(Content.Formats.Maps.WorldMapData.Decode(files.Read("DARKLAND.MAP")), state.Locations);
+        var shown = new List<bool>();
+        host.Presented = () => shown.Add(ui.PointerVisible);
+        try
+        {
+            new OverlandScreen(ui, new PartyPanel(ui.Assets), map).Travel(state);
+        }
+        catch (QuitGameException)
+        {
+        }
+        Assert.Equal(0, state.Events.ValueAt(0x2B, 102));                                          // the message was shown (its event consumed)
+        Assert.Contains(false, shown);                                                           // the frames of its wait
+        Assert.True(shown[^1]);                                                                  // the box put back, then the pointer
+        Assert.Equal(shown.Count(v => !v), shown.SkipWhile(v => v).TakeWhile(v => !v).Count()); // one stretch without it
     }
 }

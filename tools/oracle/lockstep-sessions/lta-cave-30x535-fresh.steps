@@ -1,0 +1,20 @@
+# Lockstep session (load then act, set 1): a game the original saved at the place (local/oracle-saves/loadact/cave-30x535.SAV, the Alt-S
+# file of lta-cave-30x535) loaded from the start screen: the cave (place 180): 'hide outside the cave and observe it for a few hours', then on.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:100
+state:options
+option:1
+wait:10
+key:enter
+wait:200
+state:hidden
+key:enter
+wait:150
+key:enter
+wait:150
+state:after

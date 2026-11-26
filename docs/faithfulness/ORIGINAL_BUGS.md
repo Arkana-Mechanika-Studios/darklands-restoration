@@ -27,8 +27,8 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-126118** `bug`, no fix flag - `src/Darklands.Core/Characters/Creation/CharacterCreation.cs:295` `CharacterCreation.Back`  
   original: `R037+0x4664` (18C8:0004, draft)  
   why: Esc from the childhood attributes goes back to the background list at age 15; a background row then serves the adult occupation of that number (Recruit..Knight), as in the original.
-- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:171` `GameState.HanseStanding`  
-  original: `R030+0x02C0` (1462:02C0, draft)  
+- **B-047d71** `bug`, no fix flag - `src/Darklands.Core/GameState.cs:173` `GameState.HanseStanding`  
+  original: `R037+0x2ACE` (1462:2ACE, draft), `R037+0x8ED4` (1C7D:0D24, matched), `R039+0x715A` (165C:51BA, matched)  
   why: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0). Decision: research, first: where the standings could be stored safely (the user's choice, 2026-11-25, F-1 set 1).
   decision: research: first: where the standings could be stored safely (the user's choice, 2026-11-25, F-1 set 1)
 - **B-85e0e4** `bug`, flag `FixCacheStoreLimit`, `FixInnCacheRewrite` - `src/Darklands.Core/Items/ItemStores.cs:147` `ItemStores.Close`  

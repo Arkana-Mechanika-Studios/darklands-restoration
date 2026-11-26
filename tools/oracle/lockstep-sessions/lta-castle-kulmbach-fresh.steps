@@ -1,0 +1,20 @@
+# Lockstep session (load then act, set 1): a game the original saved at the place (local/oracle-saves/loadact/castle-kulmbach.SAV, the Alt-S
+# file of lta-castle-kulmbach) loaded from the start screen: the count's castle of Kulmbach: 'pause and talk to the peasant farmers', then on.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:100
+state:options
+option:1
+wait:10
+key:enter
+wait:200
+state:farmers
+key:enter
+wait:150
+key:enter
+wait:150
+state:after

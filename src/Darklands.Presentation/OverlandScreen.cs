@@ -782,9 +782,15 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     }
 
     // orig: R030+0x2BB0 (1462:2BB0) draft (bytes match): waits for the left button to be released, reads record `message` (400 bytes) of darkland.msg, saves the area (100, 50, 180x115), fills it with colour 7 under a dark frame (colour 8), draws the text in colour 0 at (105, 55) in a column 170 wide, and waits for a key or either mouse button
+    // C: R030+0x2C3D pointer-hide (root 047C:12C3) before the area is saved, R030+0x2D33 pointer-show (root 047C:1293) after it is put back:
+    //   no pointer while the message waits (the load-then-act session lta-robber-meissen's grim cairn, vis10: the C# showed it, 2,775 px)
     private void ShowMapMessage(int message)
     {
         var canvas = ui.Canvas;
+        // C: `while (mouse-button-state & 1);` first (before the first call, R030+0x2BB6), then the file is read
+        ui.WaitForButtonRelease();
+        var pointer = ui.PointerVisible;
+        ui.PointerVisible = false;
         var saved = canvas.Save(100, 50, 180, 115);
         canvas.Fill(100, 50, 180, 115, 7);
         canvas.Fill(100, 50, 180, 1, 8);
@@ -794,7 +800,10 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
         var text = MapMessageText(message);
         if (text.Length > 0)
         {
-            var settings = new CardTextLayout.Settings { Color = 0, Leading = 0 };
+            // C: text-paint-wrapped(screen, buf, 170, 105, 55, font-line-height, 0, 0, 0, 1, 0, 0) (R030+0x2BB0's call of root 0265:0134): no hot
+            //   spots, no init, no stop, leading 1 (a line is the font's height and one pixel), no drop cap: the lines 8 pixels apart in the
+            //   game's font (vis10 of the load-then-act walk lta-robber-cairn: 7 before, 2,608 px)
+            var settings = new CardTextLayout.Settings { Color = 0, Leading = 1 };
             // with a translation pack its words for the message, by codes (the 1.2 translations); no pack: the file's bytes, as the original
             if (ui.Language is not null)
             {
@@ -806,15 +815,16 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
                 new CardTextLayout(ui.Text).Draw(canvas, text, 105, 55, 170, settings);
             }
         }
-        while (true)
+        // C: the wait loop (its key test the call of root 047C:073D at R030+0x2D0C):
+        //   `while (!root 047C:073D() && !(mouse-button-state & 1) && !(mouse-button-state & 2));`: the key is only looked at, not taken: the map's next pass reads it, and a key read there ends a walk to the clicked point (the load-then-act walk
+        //   lta-robber-cairn: Enter on the message, the party stands; the C# took the key and walked on, its random state apart)
+        while (!ui.KeyWaiting && !ui.Mouse.Left && !ui.Mouse.Right)
         {
-            var action = ui.WaitForAction();
-            if (action.IsKey || action.Click != MouseButtons.None)
-            {
-                break;
-            }
+            ui.Present();
+            ui.Idle();
         }
         canvas.Restore(saved);
+        ui.PointerVisible = pointer;
     }
 
     // orig: fseek(f, msg * 400 + 1), fread(buf, 400, 1, f) on darkland.msg (the first byte is skipped by fgetc)

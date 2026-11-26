@@ -1,0 +1,14 @@
+# Lockstep session (load then act, set 1): DKSAVE17 moved onto the map three rows south and one column west of the robber knight's tower
+# of Meissen (place 102; synth pos199x503), loaded from the start screen, a click on the tower: on the way the place's notice (the map
+# message R030+0x2BB0, "a grim cairn ... the territory of a robber knight", event 0x2B consumed), Enter, the walk goes on
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+click:190,64
+wait:600
+state:cairn
+key:enter
+wait:600
+state:after

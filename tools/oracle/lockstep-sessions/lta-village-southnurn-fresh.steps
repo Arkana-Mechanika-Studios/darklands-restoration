@@ -1,0 +1,19 @@
+# Lockstep session (load then act, set 1): a game the original saved at the place (local/oracle-saves/loadact/village-southnurn.SAV, the Alt-S
+# file of lta-village-southnurn) loaded from the start screen: the village of South Nuernberg (the Devil's Bridge): its texts read to the end.
+key:t
+wait:5
+key:l
+wait:300
+state:loaded
+key:enter
+wait:100
+state:options
+key:enter
+wait:150
+key:enter
+wait:150
+key:enter
+wait:150
+key:enter
+wait:150
+state:after

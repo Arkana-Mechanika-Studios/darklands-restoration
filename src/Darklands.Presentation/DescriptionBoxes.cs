@@ -50,7 +50,8 @@ public static class DescriptionBoxes
     //   inside the box (100, 50, 180 x 115) whose dark frame's last row is 164
     /// <summary>A map message (DARKLAND.MSG) in the map's message box.</summary>
     // Not in the original: the 1.2 translations (the untranslated-text audit).
-    public static readonly Box MapMessage = new("OverlandScreen", "in the map's message box", 105, 55, 170, 164, 1, Spacing: null, Leading: 0);
+    // C: leading 1, as the box draws its text (R030+0x2BB0's text-paint-wrapped: the font's height and one pixel a line)
+    public static readonly Box MapMessage = new("OverlandScreen", "in the map's message box", 105, 55, 170, 164, 1, Spacing: null, Leading: 1);
 
     /// <summary>The boxes of a description's key (none for a city's description or another key).</summary>
     public static IReadOnlyList<Box> Of(string key)

@@ -167,6 +167,8 @@ public sealed class GameState
     public int MediciStanding { get; set; }
 
     /// <summary>The party's standing with the Hanseatic League (DS:4BBA, read by the $Hansa00 card; 0 at the start).</summary>
+    // orig: R037+0x2ACE (the save) and R037+0x8ED4 (the load) name none of DS:4BB6 / 4BB8 / 4BBA (read and written by the bank cards of R060 /
+    //   R061 and by R039+0x715A); the bug's own address, so the register does not take the City note's above
     // C: the saved game does not hold DS:4BB6/4BB8/4BBA: they keep their values across a load (OriginalSaves.Read carries them over from the running game).
     // BUG: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
     //   Decision: research, first: where the standings could be stored safely (the user's choice, 2026-11-25, F-1 set 1).

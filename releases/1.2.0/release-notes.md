@@ -16,6 +16,15 @@ Original rules are the faithful game, checked against the original in every rele
   main street, the inn's name missing, a city lord's title left as `CityLordTitle`, and the city's own numbers (the toll
   at the gate, for one) read from the wrong place. The game now reads Groningen's own record on arrival, as the original
   does. Wrong since 0.9.0 (GitHub issue 7). Proven against the original by a recorded session (`wild-load-groningen`).
+- **The message box on the world map** (a place noticed on the way, such as a robber knight's territory). Its lines are
+  now one pixel further apart, as in the original; the pointer is hidden while it waits; and the key that closes it stops
+  a walk to a clicked point, as in the original, where our game walked on. Wrong since 0.9.0. Found by the new sessions
+  below (`lta-robber-cairn`). Before and after pictures: `docs/FIXED.md`, "The message box on the world map".
+
+New recorded sessions, after GitHub issue 7: a game saved in the wilderness next to a count's castle, a robber knight's
+tower, a monastery, a village, a cave, a mine and a ruin is loaded and the place entered, saved there and loaded again,
+and then the place's choices taken; and games the original itself saved at those places are loaded from the start
+screen. All 14 agree with the original and are now part of every release's check.
 
 ## Translations
 

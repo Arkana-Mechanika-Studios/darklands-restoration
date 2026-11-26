@@ -63,3 +63,28 @@ Each fix is a switch of its own, with the original's behaviour kept beside it an
 - Enter (travel individually) with nobody selected gives no order and changes nothing else.
 - U with nobody selected and the party split changes nothing.
 - The mark the stairs leave on a wall group is kept when the level is left, so that wall is not opened again.
+
+## In every rule set: where our game differed from the original
+
+These are not changes to the 1992 game but places where our game did not do what the original program does. They are
+fixed in every rule set, Original included, and checked against the original program itself (the register:
+[faithfulness/SUMMARY.md](faithfulness/SUMMARY.md), the round named in each entry).
+
+### The message box on the world map
+
+**What was wrong:** when the party noticed a place on its way (a robber knight's territory, for one), the box with
+the message drew its lines one pixel too close together, showed the pointer over the text, and the key that closed it was
+used up: a party walking to a clicked point walked on after the box closed. **Now** the box looks as in the original (the
+lines one pixel further apart, no pointer while it waits), and the key that closes it stops the walk, as in the original.
+
+**How you notice it:** walk across the map (with the mouse) into the area of a place with a notice, for example the robber
+knight's tower of Meissen, near Dresden. Before, the pointer covered a word of the message and, after Enter, the party
+went on to the clicked point; now the box is as in the original and the party stops where it is.
+
+| Before (1.1.5 and earlier) | Now (the same as the original, pixel for pixel) |
+|---|---|
+| ![The message with the pointer over its text, the lines close together](screenshots/fixed/map-message-box/before.png) | ![The message without the pointer, the lines one pixel further apart](screenshots/fixed/map-message-box/after.png) |
+| ![After Enter: the party walked on to the clicked point](screenshots/fixed/map-message-box/before-after-enter.png) | ![After Enter: the party stands where the message stopped it](screenshots/fixed/map-message-box/after-after-enter.png) |
+
+In every rule set (Original, Fixed, Restored). Since 1.2.0; wrong since 0.9.0. Register: faithfulness round loadact1
+(the recorded session `lta-robber-cairn` checks it against the original).

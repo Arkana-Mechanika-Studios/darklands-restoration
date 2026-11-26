@@ -103,8 +103,9 @@ public sealed class PackRoutesTests : IDisposable
         var box = Assert.Single(DescriptionBoxes.Of(DataNames.MapMessage(0)));
         Assert.Same(DescriptionBoxes.MapMessage, box);
         var painter = new TextPainter(new GameAssets(files).Font(box.Font));
-        // the font's own line height, leading 0: the lines of the box (100, 50, 180 x 115) from row 55 to its frame
-        Assert.Equal(painter.LineHeight, box.Step(painter));
+        // the font's own line height and leading 1, as R030+0x2BB0's text-paint-wrapped (8 pixels a line in the game's font, checked against
+        //   the original's screen: vis10 of lta-robber-cairn): the lines of the box (100, 50, 180 x 115) from row 55 to its frame
+        Assert.Equal(painter.LineHeight + 1, box.Step(painter));
         Assert.True(box.Lines(painter) >= 8);
         // every message fits its box in the English
         var layout = new CardTextLayout(painter);
