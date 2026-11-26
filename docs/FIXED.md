@@ -44,6 +44,47 @@ Each fix is a switch of its own, with the original's behaviour kept beside it an
   before when boosts overlapped or met the maximum).
 - Claiming friendship with a Hussite band succeeds at the chance shown (the original needed the roll to equal it exactly).
 - In the peat bog, a rope lets the party throw a rope (the original asked for a polearm, a bow or metal armour instead).
+- **The bankers' and the Hanse's standing survives a saved game.** The party's standing with the Fugger, the Medici and
+  the Hanse (St. Matthew raises the bankers') was lost when a game was loaded: the original keeps it nowhere in
+  the saved game, so a load brought back the standing of the game played before (or none). Now it is kept in spare bytes of
+  the save's header. *How you notice it:* at a Fugger or Medici bank, or at the Hanse's hall, after loading a game: they
+  treat the party as before the save. The 1992 game loads such a save, but clears the standings if it saves it again.
+  *Rules:* Fixed, Restored. *Since:* 1.2.0. *Register:* [B-047d71](faithfulness/ORIGINAL_BUGS.md).
+
+  For example, in Lübeck's Marktplatz, at the Fugger banking offices: Ebhard prays to St. Matthew and the chance of a
+  letter of credit rises from 79% to 99% (Basic difficulty, Shift held over the line). The game is saved there, the game
+  quit and started again, and the save loaded:
+
+  | After the prayer | Loaded, before (Original) | Loaded, now (Fixed) |
+  |---|---|---|
+  | ![The chance shows 99% after the prayer](screenshots/fixed/bank-standings/1-after-the-prayer.png) | ![After the load the chance is 79% again: the standing was lost](screenshots/fixed/bank-standings/2-before-loaded.png) | ![After the load the chance is still 99%](screenshots/fixed/bank-standings/3-now-loaded.png) |
+
+
+## Potions and saints
+
+What the potions and the saints give now lasts about a day, as the game's own texts say (the manual, the saints'
+descriptions, the clue book), instead of for good; a new dose or prayer of the same kind replaces the one running. A potion or
+charm already in a saved game from before stays as it was. None of this shows on a screen: you notice it in fights, by
+the harm done and taken, and after about a day, when the effect is gone. *Rules:* Fixed, Restored. *Since:* 1.2.0.
+
+- **Deadly Blade, Strongedge and Great Power** lasted for good and added up with every dose. Now each lasts about a day, a
+  new dose replaces the old one, and each works with the weapons the manual names: Deadly Blade with every weapon but
+  impact weapons and flails, Strongedge with edged weapons and polearms, Great Power with impact weapons, flails and
+  handguns; with another weapon it does nothing. *Register:* [B-11a75a](faithfulness/ORIGINAL_BUGS.md).
+- **Hardarmor and Firewall** lasted for good, and Firewall added armour against every blow. Now each lasts about a day, and
+  Firewall guards against flame only (Arabian Fire, a dragon's breath), as the clue book says. *Register:* [B-d0b264](faithfulness/ORIGINAL_BUGS.md).
+- **St. Polycarp** gave a lasting charm (armour against every blow) instead of his protection from fire. Now: fire
+  protection 90 for the whole party, about a day. *Register:* [B-44772a](faithfulness/ORIGINAL_BUGS.md).
+- **St. Charity** gave a lasting charm instead of resistance to fire. Now: fire protection 90 for the one prayed for and 50
+  for the others, about a day. *Register:* [B-315695](faithfulness/ORIGINAL_BUGS.md).
+- **St. Erasmus** gave a lasting charm instead of resistance to fire. Now: fire protection 50 for the party, about a day.
+  *Register:* [B-f32e0e](faithfulness/ORIGINAL_BUGS.md).
+- **St. Pantaleon** gave a lasting charm instead of what his text says. Now: fire protection 30 for the party and less
+  harm from wolves, boars, bears and spiders (+1 armour against them), about a day. *Register:* [B-ce6144](faithfulness/ORIGINAL_BUGS.md).
+- **St. Patrick** added armour against every blow, for good. Now: +2 armour against missiles for the one prayed for, about a
+  day. *Register:* [B-a19878](faithfulness/ORIGINAL_BUGS.md).
+- **St. Dunstan** added armour against every blow, for good. Now, as his text says, the party's metal armour (scale,
+  chainmail, brigandine, plate) is 20 points better for about a day; enemies are not affected. *Register:* [B-243faa](faithfulness/ORIGINAL_BUGS.md).
 
 ## Camp
 

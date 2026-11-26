@@ -71,15 +71,26 @@ public static class PotionEffects
             // BUG: the weapon potions add to the bonus byte without a limit and their bonus event (0x4A) is never undone
             // (EventExpiry.UndoBoost): they last for good and stack, and the nibbles wrap (Deadly Blade's damage nibble loses
             // its carry out of the byte, so a fourth potion can leave +1; Strongedge's carries into the damage nibble).
-            //   Decision: research, first: what wearing off should mean for the weapon potions (how long, what the texts and the manual promise) (the user's choice, 2026-11-25, F-1 set 1).
+            //   Fixed (FixWeaponPotionsWearOff): about a day (their own event, taken back), a new dose replaces the old one, and each counts
+            //   only with the weapons the manual names (DayProtections). Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
             case DeadlyBlade:
                 t = ThreeBands(3, 4, 5);
+                if (s.Behaviour.FixWeaponPotionsWearOff)
+                {
+                    DayProtections.Start(s, member, DayProtections.DeadlyBlade, t);
+                    break;
+                }
                 MemberRules.RecordPotionBonus(s, member, DeadlyBlade, t, 24);
                 m.WeaponPotions = (byte)(((t + hi) << 4) + lo);
                 break;
             // BUG: Strongedge and Great Power record the pack index as the bonus event's type (Deadly Blade records the potion code).
             case Strongedge:
                 t = ThreeBands(3, 4, 5);
+                if (s.Behaviour.FixWeaponPotionsWearOff)
+                {
+                    DayProtections.Start(s, member, DayProtections.Strongedge, t);
+                    break;
+                }
                 MemberRules.RecordPotionBonus(s, member, index, t, 24);
                 m.WeaponPotions = (byte)((hi << 4) + t + lo);
                 break;
@@ -87,6 +98,11 @@ public static class PotionEffects
             // +14, with the carries), where the manual has it raise the weapon's quality by that much, up to 99.
             case GreatPower:
                 t = ThreeBands(14, 22, 30);
+                if (s.Behaviour.FixWeaponPotionsWearOff)
+                {
+                    DayProtections.Start(s, member, DayProtections.GreatPower, t);
+                    break;
+                }
                 MemberRules.RecordPotionBonus(s, member, index, t, 24);
                 m.WeaponPotions = (byte)(m.WeaponPotions + t);
                 break;
@@ -101,9 +117,15 @@ public static class PotionEffects
                 // BUG: Hardarmor and Firewall never wear off: they raise the armour byte (+0x41) and the Firewall
                 // strength (+0x10, below) with no event, and nothing lowers them again (the manual gives them a day); the
                 // armour nibble carries past 15 into the fire-charm bits, which Attacks.HitDamage also counts as armour.
-                //   Decision: research, first: what wearing off should mean for Hardarmor and Firewall (how long, what the texts and the manual promise) (the user's choice, 2026-11-25, F-1 set 1).
+                //   Fixed (FixArmourPotionsWearOff): about a day (their own event, taken back), a new dose replaces the old one; Firewall gives
+                //   its strength alone, against flame weapons (Arabian Fire, the dragon's breath), no charm. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
                 // BUG: Hardarmor gives 1, 2 or 3 levels of thickness (5 above quality 45) and no quality, where the manual has it
                 // better the armour's quality by 20 to 30 points and its thickness by one or two levels.
+                if (s.Behaviour.FixArmourPotionsWearOff)
+                {
+                    DayProtections.Start(s, member, DayProtections.Hardarmor, t);
+                    break;
+                }
                 m.ArmourPotions = (byte)((m.ArmourPotions >> 4 << 4) + t + (m.ArmourPotions & 0xF));
                 break;
             // C: party-purse++ increments the florin word alone (16-bit, no normalisation).
@@ -130,6 +152,11 @@ public static class PotionEffects
                 break;
             case Firewall:
                 t = ThreeBands(50, 70, 90);
+                if (s.Behaviour.FixArmourPotionsWearOff)
+                {
+                    DayProtections.Start(s, member, DayProtections.Firewall, t);
+                    break;
+                }
                 m.ArmourPotions = (byte)((((m.ArmourPotions >> 4) + 1) << 4) + (m.ArmourPotions & 0xF));
                 m.FirewallStrength = t;
                 break;

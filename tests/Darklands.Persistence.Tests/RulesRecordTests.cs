@@ -69,7 +69,9 @@ public sealed class RulesRecordTests
     [Fact]
     public void TheSavedGameIsTheSameWhateverItsRulesRecord()
     {
-        // the record lives only in the companion: Original and Fixed games write the same .SAV (no gameplay fix acted here)
+        // the record lives only in the companion: Original and Fixed games write the same .SAV (no gameplay fix acted here), but for
+        //   the bank standings Fixed keeps in the header's spare words +0xA7..+0xAE (F-1 set 1b, B-047d71: the marker "BK", then the
+        //   Fugger's, the Medici's and the Hanse's standing), where Original writes zeros as the original does
         var original = Folder();
         var fixedRules = Folder();
         var a = OriginalSaveTests.SampleGame();
@@ -78,7 +80,12 @@ public sealed class RulesRecordTests
         b.Behaviour = OriginalBehaviour.Of(RulePreset.Fixed);
         var nameA = original.Save(a, "same", true, true);
         var nameB = fixedRules.Save(b, "same", true, true);
-        Assert.Equal(File.ReadAllBytes(OnDisk(original, nameA)), File.ReadAllBytes(OnDisk(fixedRules, nameB)));
+        var bytesA = File.ReadAllBytes(OnDisk(original, nameA));
+        var bytesB = File.ReadAllBytes(OnDisk(fixedRules, nameB));
+        Assert.Equal(new byte[8], bytesA[0xA7..0xAF]);
+        Assert.Equal("BK"u8.ToArray(), bytesB[0xA7..0xA9]);
+        bytesB.AsSpan(0xA7, 8).Clear();
+        Assert.Equal(bytesA, bytesB);
         Assert.False(File.Exists(Companion(original, nameA)));
         Assert.True(File.Exists(Companion(fixedRules, nameB)));
     }

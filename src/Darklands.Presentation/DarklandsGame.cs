@@ -557,6 +557,13 @@ public sealed class DarklandsGame
         {
             KeepRecordedRules(name, loaded);
         }
+        // Not in the original: a Fixed game's bank standings come back from its file (F-1 set 1b, B-047d71), with the rules the loaded game
+        //   plays (its recorded ones, or with RecordedRules off this program's: the headless host's rules: step); other rules keep the
+        //   original's carry-over (the running game's)
+        if ((RecordedRules ? loaded.State.Behaviour : Behaviour).FixBankStandingsSaved && loaded.State.SavedStandings is var (fugger, medici, hanse))
+        {
+            (loaded.State.FuggerStanding, loaded.State.MediciStanding, loaded.State.HanseStanding) = (fugger, medici, hanse);
+        }
         // DIVERGENCE: no original: a game saved with mods (its companion file, ModdedSaves) that are not loaded now goes on without
         //   them, from the game's cards its .SAV names; the player is told which mods are missing.
         if (loaded.Mods.Problem is { } problem)

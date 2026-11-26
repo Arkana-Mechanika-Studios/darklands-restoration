@@ -244,7 +244,9 @@ public sealed class GoldenTraceTests
                 //   no card; the restoration flags (Restore…) while off, recorded before them (the Restored set, restore-r1)
                 if (got is RuleParameters { IsOriginal: true } || value is OriginalBehaviour && property.Name == nameof(OriginalBehaviour.On)
                     || got is RulePreset.Faithful || value is OriginalBehaviour && got is false
-                        && (property.Name.StartsWith("Restore", StringComparison.Ordinal) || FlagsAfterTheTraces.Contains(property.Name)))
+                        && (property.Name.StartsWith("Restore", StringComparison.Ordinal) || FlagsAfterTheTraces.Contains(property.Name))
+                    // the bank standings a Fixed save carried (F-1 set 1b), added after the traces: left out while there are none
+                    || value is GameState && property.Name == nameof(GameState.SavedStandings) && got is null)
                 {
                     continue;
                 }
@@ -262,6 +264,10 @@ public sealed class GoldenTraceTests
             nameof(OriginalBehaviour.FixAlchemistFormulaRange), nameof(OriginalBehaviour.FixBattleEventsKept), nameof(OriginalBehaviour.FixTeacherRows),
             nameof(OriginalBehaviour.FixBoostRecordsApplied), nameof(OriginalBehaviour.FixHussiteFriendship), nameof(OriginalBehaviour.FixPeatBogRope),
             nameof(OriginalBehaviour.FixCampEmptyRowCleanUp),
+            // F-1 set 1b (2026-11-25)
+            nameof(OriginalBehaviour.FixWeaponPotionsWearOff), nameof(OriginalBehaviour.FixArmourPotionsWearOff), nameof(OriginalBehaviour.FixPolycarpFireForADay),
+            nameof(OriginalBehaviour.FixPatrickMissileArmour), nameof(OriginalBehaviour.FixCharityFire), nameof(OriginalBehaviour.FixErasmusFire),
+            nameof(OriginalBehaviour.FixPantaleonFireAndAnimals), nameof(OriginalBehaviour.FixDunstanMetalArmour), nameof(OriginalBehaviour.FixBankStandingsSaved),
         };
 
         private static PropertyInfo[] PropertiesOf(Type type)

@@ -235,6 +235,33 @@ public static partial class RuleTable
     /// <summary>The index of <c>restore.city.cloth-guild-shop</c> (<see cref="OriginalBehaviour.RestoreClothGuildShop"/>).</summary>
     public const int RestoreClothGuildShop = 75;
 
+    /// <summary>The index of <c>fix.potions.weapon-potions-wear-off</c> (<see cref="OriginalBehaviour.FixWeaponPotionsWearOff"/>).</summary>
+    public const int FixWeaponPotionsWearOff = 76;
+
+    /// <summary>The index of <c>fix.potions.armour-potions-wear-off</c> (<see cref="OriginalBehaviour.FixArmourPotionsWearOff"/>).</summary>
+    public const int FixArmourPotionsWearOff = 77;
+
+    /// <summary>The index of <c>fix.saints.polycarp-fire-a-day</c> (<see cref="OriginalBehaviour.FixPolycarpFireForADay"/>).</summary>
+    public const int FixPolycarpFireForADay = 78;
+
+    /// <summary>The index of <c>fix.saints.patrick-missile-armour</c> (<see cref="OriginalBehaviour.FixPatrickMissileArmour"/>).</summary>
+    public const int FixPatrickMissileArmour = 79;
+
+    /// <summary>The index of <c>fix.saints.charity-fire</c> (<see cref="OriginalBehaviour.FixCharityFire"/>).</summary>
+    public const int FixCharityFire = 80;
+
+    /// <summary>The index of <c>fix.saints.erasmus-fire</c> (<see cref="OriginalBehaviour.FixErasmusFire"/>).</summary>
+    public const int FixErasmusFire = 81;
+
+    /// <summary>The index of <c>fix.saints.pantaleon-fire-and-animals</c> (<see cref="OriginalBehaviour.FixPantaleonFireAndAnimals"/>).</summary>
+    public const int FixPantaleonFireAndAnimals = 82;
+
+    /// <summary>The index of <c>fix.saints.dunstan-metal-armour</c> (<see cref="OriginalBehaviour.FixDunstanMetalArmour"/>).</summary>
+    public const int FixDunstanMetalArmour = 83;
+
+    /// <summary>The index of <c>fix.saves.bank-standings</c> (<see cref="OriginalBehaviour.FixBankStandingsSaved"/>).</summary>
+    public const int FixBankStandingsSaved = 84;
+
     /// <summary>Every fix flag of the switch register, in its order (the index of each is its place here).</summary>
     public static IReadOnlyList<Rule> Flags { get; } =
     [
@@ -314,5 +341,14 @@ public static partial class RuleTable
         new("restore.travel.hussite-road-encounter", nameof(OriginalBehaviour.RestoreHussiteRoadEncounter), "restoration", false, false, true),
         new("restore.city.prison-rescue", nameof(OriginalBehaviour.RestorePrisonRescue), "restoration", false, false, true),
         new("restore.city.cloth-guild-shop", nameof(OriginalBehaviour.RestoreClothGuildShop), "restoration", false, false, true),
+        new("fix.potions.weapon-potions-wear-off", nameof(OriginalBehaviour.FixWeaponPotionsWearOff), "gameplay", false, true, true),
+        new("fix.potions.armour-potions-wear-off", nameof(OriginalBehaviour.FixArmourPotionsWearOff), "gameplay", false, true, true),
+        new("fix.saints.polycarp-fire-a-day", nameof(OriginalBehaviour.FixPolycarpFireForADay), "gameplay", false, true, true),
+        new("fix.saints.patrick-missile-armour", nameof(OriginalBehaviour.FixPatrickMissileArmour), "gameplay", false, true, true),
+        new("fix.saints.charity-fire", nameof(OriginalBehaviour.FixCharityFire), "gameplay", false, true, true),
+        new("fix.saints.erasmus-fire", nameof(OriginalBehaviour.FixErasmusFire), "gameplay", false, true, true),
+        new("fix.saints.pantaleon-fire-and-animals", nameof(OriginalBehaviour.FixPantaleonFireAndAnimals), "gameplay", false, true, true),
+        new("fix.saints.dunstan-metal-armour", nameof(OriginalBehaviour.FixDunstanMetalArmour), "gameplay", false, true, true),
+        new("fix.saves.bank-standings", nameof(OriginalBehaviour.FixBankStandingsSaved), "gameplay", false, true, true),
     ];
 }

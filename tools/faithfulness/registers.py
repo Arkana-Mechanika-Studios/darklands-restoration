@@ -249,11 +249,29 @@ def build(root: Path = ROOT):
             # a bug kept as the original (its note closes with a decision) has no fix flag, even when a flag of a neighbouring bug is
             # in the window (the planned fix is a `planned` row of switches.csv)
             # (a decision to fix, or a row covered by another's flag, keeps the flags its note names)
-            e.flags = [] if decision(e) and not decision(e).startswith(('fix', 'covered')) else found
+            #   (when its note names flags, only those: a neighbouring row's flag in the same window is not its)
+            named = [f for f in found if re.search(r"\b" + f + r"\b", e.note)]
+            e.flags = [] if decision(e) and not decision(e).startswith(('fix', 'covered')) else named if decision(e) and named else found
         entries.append(e)
     # BUG: the flag nearest after the marker wins when several flags sit in the window
     # a raw control character in a marker (an escape such as \b turned into its byte by a tool) would go into the registers unseen:
     #   refused, with the place to fix (tests/Darklands.Architecture.Tests/ControlCharacterTests.cs guards the sources too)
+    # a flag a decided row's note names is that row's: another row whose window only holds it (a neighbour in the same table,
+    #   the decided row's own comment) does not get it
+    claimed = {}
+    for e in entries:
+        if e.kind == "BUG" and decision(e) and decision(e).startswith(('fix', 'covered')):
+            for f in e.flags:
+                if re.search(r"\b" + f + r"\b", e.note):
+                    claimed.setdefault(f, set()).add(id(e))
+    # (a row switches.csv lists for the flag keeps it)
+    listed = {}
+    with open(HERE.parent.parent / "docs" / "faithfulness" / "switches.csv", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            listed[row["key"]] = set((row.get("register") or "").split(";"))
+    for e in entries:
+        if e.kind == "BUG":
+            e.flags = [f for f in e.flags if f not in claimed or id(e) in claimed[f] or e.id in listed.get(f, set())]
     refuse_control_characters(entries)
     return index, flags, entries
 

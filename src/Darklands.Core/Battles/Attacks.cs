@@ -339,15 +339,42 @@ public static class Attacks
         // (+1 each), St.Polycarp, St.Charity and the other SetCharm saints set, so they give +16 to +112 armour that never
         // wears off (the "invulnerable after Polycarp and Firewall" bug); only the low nibble is the potions' and saints' armour.
         var armour = ct.ArmourValue[location] + (ct.Protection & 0x7F);
+        // Not in the original: the Fixed rules' day-long protections (F-1 set 1b, DayProtections): the weapon potions count with the
+        //   weapons the manual names; the target's St. Patrick armour against missiles, St. Pantaleon armour against the four animals and
+        //   St. Dunstan quality on metal armour (read from the running events; no member record changes)
+        var weaponBonus = ca.WeaponBonus;
+        var metalQuality = 0;
+        if (battle.DifficultyOf is { } game)
+        {
+            if (battle.Behaviour.FixWeaponPotionsWearOff && MemberSlot(game, ca) is var shooter and >= 0)
+            {
+                weaponBonus = Darklands.Core.Rules.DayProtections.WeaponBonusFor(game, shooter, weaponBonus, ca.Action.Has(CombatAction.Missile) ? ca.MissileWeapon : ca.DefaultWeapon);
+            }
+            if (MemberSlot(game, ct) is var member and >= 0)
+            {
+                if (battle.Behaviour.FixPatrickMissileArmour && ca.Action.Has(CombatAction.Missile))
+                {
+                    armour += Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.MissileArmour);
+                }
+                if (battle.Behaviour.FixPantaleonFireAndAnimals && ca.Member is null && Darklands.Core.Rules.DayProtections.AnimalWeapons.Contains(ca.DefaultWeapon))
+                {
+                    armour += Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.AnimalArmour);
+                }
+                if (battle.Behaviour.FixDunstanMetalArmour && Darklands.Core.Rules.DayProtections.IsMetalArmour(ct.ArmourType[location]))
+                {
+                    metalQuality = Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.MetalQuality);
+                }
+            }
+        }
         // BUG: the weapon potions' bonus byte counts with any weapon the member strikes with (bows and fists too), where the
         // manual and the potions' own descriptions limit Deadly Blade, Strongedge and Great Power to some kinds of weapon.
-        var bonus = (ca.WeaponBonus >> 4) + ca.WeaponDamage;
+        var bonus = (weaponBonus >> 4) + ca.WeaponDamage;
         var fullStrength = ca.FullStrength & 0x7F;
         int minimumStrength = ca.MinimumStrength;
         // C: the bonus byte is added whole (not just its low nibble) before masking.
         // BUG: the penetration wraps: (bonus + weapon) & 15, so Strongedge or Great Power on a weapon of high penetration
         // gives almost none ("after Great Power my bows only do 3-5 damage").
-        var penetration = (ca.WeaponBonus + ca.WeaponClass) & 0xF;
+        var penetration = (weaponBonus + ca.WeaponClass) & 0xF;
         if (ca.Action.Has(CombatAction.VulnerableAttack))
         {
             penetration += battle.RollOneTo(4);
@@ -372,13 +399,16 @@ public static class Attacks
         }
         // C: the target's +0x24 / 2 is an 8-bit signed division.
         var armourQuality = (ca.Protection & 0x80) != 0 ? (sbyte)(ct.PiercingResistance / 2) : 0;
-        armourQuality += ct.ArmourQuality[location];
+        armourQuality += ct.ArmourQuality[location] + metalQuality;
         if (armourQuality > 99)
         {
             armourQuality = 99;
         }
         return QueueDamage(battle, (ca.StrikeQuality - armourQuality) / 10 + bonus, t, penetration, armour);
     }
+
+    // the party slot of a combatant's member (−1: an enemy, or none)
+    private static int MemberSlot(GameState s, Combatant c) => c.Member is { } m ? s.Party.Slots.ToList().IndexOf(m) : -1;
 
     /// <summary>Rolls damage of level <paramref name="level"/> (0..40) and queues it on <paramref name="t"/>; returns the endurance damage.</summary>
     // orig: damage-pending-list R014+0xAD5A (18BF:08CA) draft, checked against draft; tests: Oracle:battle.json

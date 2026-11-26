@@ -177,7 +177,7 @@ public sealed class SwitchRegisterTests
     {
         var (original, fixedSet, restored) = (OriginalBehaviour.Of(RulePreset.Original), OriginalBehaviour.Of(RulePreset.Fixed), OriginalBehaviour.Of(RulePreset.Restored));
         var gameplay = RuleTable.Flags.Where(r => r.Class == "gameplay").ToList();
-        Assert.Equal(40, gameplay.Count);
+        Assert.Equal(49, gameplay.Count);
         Assert.All(gameplay, r => Assert.True(fixedSet.IsOn(r.Id) && restored.IsOn(r.Id) && !original.IsOn(r.Id), r.Id));
         Assert.All(RuleTable.Flags.Where(r => r.Class is "data-safety" or "visual"), r => Assert.True(original.IsOn(r.Id) && fixedSet.IsOn(r.Id) && restored.IsOn(r.Id), r.Id));
         Assert.Equal(RuleTable.Flags.Count(r => r.Class != "restoration"), fixedSet.On.Count());

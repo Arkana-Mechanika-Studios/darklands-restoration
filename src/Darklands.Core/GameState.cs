@@ -171,8 +171,16 @@ public sealed class GameState
     //   R061 and by R039+0x715A); the bug's own address, so the register does not take the City note's above
     // C: the saved game does not hold DS:4BB6/4BB8/4BBA: they keep their values across a load (OriginalSaves.Read carries them over from the running game).
     // BUG: so the party's standing with the Fugger, the Medici and the Hanse is lost by saving: a load keeps the last game's (or the start's 0).
-    //   Decision: research, first: where the standings could be stored safely (the user's choice, 2026-11-25, F-1 set 1).
+    //   Fixed (FixBankStandingsSaved): the three are kept in the save's spare header words behind a marker (+0xA7..+0xAE; DKED keeps
+    //   them, the original's own save clears them). Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
     public int HanseStanding { get; set; }
+
+    /// <summary>
+    /// The bank standings a saved game held (Fugger, Medici, Hanse: the Fixed rules keep them in the header's spare words), until the
+    /// loaded game's rules are known (null: none in the file).
+    /// </summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (B-047d71).
+    public (int Fugger, int Medici, int Hanse)? SavedStandings { get; set; }
 
     /// <summary>
     /// How the party last left the world map (DS:A891, saved with the game): 1 while it waited,

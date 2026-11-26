@@ -26,6 +26,23 @@ tower, a monastery, a village, a cave, a mine and a ruin is loaded and the place
 and then the place's choices taken; and games the original itself saved at those places are loaded from the start
 screen. All 14 agree with the original and are now part of every release's check.
 
+## Fixed rules: potions, saints and the banks
+
+In the Fixed rules (the default for new games; Restored too), what the potions and the saints give now lasts about a day,
+as the game's own texts say, and does what they describe (in Original nothing changes). Each with its own entry in
+`docs/FIXED.md` ("Potions and saints"):
+
+- Deadly Blade, Strongedge and Great Power last about a day, replace each other's dose, and work with the weapons the
+  manual names.
+- Hardarmor and Firewall last about a day; Firewall guards against flame (Arabian Fire, a dragon's breath) only.
+- St. Polycarp, St. Charity and St. Erasmus give fire protection for about a day instead of a lasting charm.
+- St. Pantaleon: fire protection 30 and +1 armour against wolves, boars, bears and spiders, about a day.
+- St. Patrick: +2 armour against missiles for about a day; St. Dunstan: the party's metal armour 20 points better for
+  about a day.
+- The party's standing with the Fugger, the Medici and the Hanse survives saving and loading.
+
+Potions and charms already in a saved game stay as they were.
+
 ## Translations
 
 - The untranslated-text audit came out in 1.1.4 (texts a pack never reached, letters lost in some texts, the pronouns):

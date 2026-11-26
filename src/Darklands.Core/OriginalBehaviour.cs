@@ -665,6 +665,42 @@ public sealed class OriginalBehaviour
     // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-6eb045
     public bool FixBoostRecordsApplied { get => _on[RuleTable.FixBoostRecordsApplied]; set => _on[RuleTable.FixBoostRecordsApplied] = value; }
 
+    /// <summary>Deadly Blade, Strongedge and Great Power never wear off and add up; fixed: about a day, a new dose replaces the old one, each with the weapons the manual names.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-11a75a
+    public bool FixWeaponPotionsWearOff { get => _on[RuleTable.FixWeaponPotionsWearOff]; set => _on[RuleTable.FixWeaponPotionsWearOff] = value; }
+
+    /// <summary>Hardarmor and Firewall never wear off; fixed: about a day, a new dose replaces the old one, Firewall against flame weapons only.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-d0b264
+    public bool FixArmourPotionsWearOff { get => _on[RuleTable.FixArmourPotionsWearOff]; set => _on[RuleTable.FixArmourPotionsWearOff] = value; }
+
+    /// <summary>St. Polycarp's charm never wears off; fixed: fire protection 90 for the party for about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-44772a
+    public bool FixPolycarpFireForADay { get => _on[RuleTable.FixPolycarpFireForADay]; set => _on[RuleTable.FixPolycarpFireForADay] = value; }
+
+    /// <summary>St. Patrick adds armour against every blow for good; fixed: +2 against missiles for about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-a19878
+    public bool FixPatrickMissileArmour { get => _on[RuleTable.FixPatrickMissileArmour]; set => _on[RuleTable.FixPatrickMissileArmour] = value; }
+
+    /// <summary>St. Charity gives no fire resistance but a lasting charm; fixed: fire 90 for the one prayed for, 50 for the others, about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-315695
+    public bool FixCharityFire { get => _on[RuleTable.FixCharityFire]; set => _on[RuleTable.FixCharityFire] = value; }
+
+    /// <summary>St. Erasmus gives no fire resistance but a lasting charm; fixed: fire 50 for the party for about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-f32e0e
+    public bool FixErasmusFire { get => _on[RuleTable.FixErasmusFire]; set => _on[RuleTable.FixErasmusFire] = value; }
+
+    /// <summary>St. Pantaleon gives a lasting charm instead of what his text says; fixed: fire 30 and +1 armour against wolves, boars, bears and spiders, about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-ce6144
+    public bool FixPantaleonFireAndAnimals { get => _on[RuleTable.FixPantaleonFireAndAnimals]; set => _on[RuleTable.FixPantaleonFireAndAnimals] = value; }
+
+    /// <summary>St. Dunstan adds armour against every blow for good; fixed: +20 quality to the party's metal armour for about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-243faa
+    public bool FixDunstanMetalArmour { get => _on[RuleTable.FixDunstanMetalArmour]; set => _on[RuleTable.FixDunstanMetalArmour] = value; }
+
+    /// <summary>The bank standings are not saved; fixed: kept in the save's spare header words (the 1992 game clears them when it saves).</summary>
+    // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-047d71
+    public bool FixBankStandingsSaved { get => _on[RuleTable.FixBankStandingsSaved]; set => _on[RuleTable.FixBankStandingsSaved] = value; }
+
     /// <summary>A Hussite band's friendship succeeds only on a roll equal to the chance; fixed: at or below it.</summary>
     // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-7bfead
     public bool FixHussiteFriendship { get => _on[RuleTable.FixHussiteFriendship]; set => _on[RuleTable.FixHussiteFriendship] = value; }

@@ -299,6 +299,50 @@ public static class SaintBook
         m.BattleCharms = (byte)(m.BattleCharms + points);
     };
 
+    // ---- The Fixed rules' day-long protections (F-1 set 1b: DayProtections). Not in the original. ----
+
+    /// <summary>The original's help, or the Fixed rules' when <paramref name="on"/> says so for the game's rules.</summary>
+    private static Boon Either(Func<OriginalBehaviour, bool> on, Boon original, Boon fixedHelp) =>
+        (s, who, given) => (on(s.Behaviour) ? fixedHelp : original)(s, who, given);
+
+    // the one prayed for: the member the prayer names (the leader when it names none)
+    private static int PrayedFor(GameState s, int who, int given) => s.Party.Resolve(given == Who.Leader ? who : given);
+
+    /// <summary>Fire protection for every present member for about a day: <paramref name="prayedFor"/> for the one prayed for, <paramref name="others"/> for the rest.</summary>
+    private static Boon FireForTheParty(int saint, int prayedFor, int others) => (s, who, given) =>
+    {
+        var one = PrayedFor(s, who, given);
+        for (var i = 0; i < s.Party.Slots.Count; i++)
+        {
+            if (s.Party.OccupiedSlot(i) is not null)
+            {
+                DayProtections.Start(s, i, DayProtections.SaintFire + saint, i == one ? prayedFor : others);
+            }
+        }
+    };
+
+    /// <summary>A day's protection of <paramref name="type"/> for every present member.</summary>
+    private static Boon ForTheParty(int type, int value) => (s, _, _) =>
+    {
+        for (var i = 0; i < s.Party.Slots.Count; i++)
+        {
+            if (s.Party.OccupiedSlot(i) is not null)
+            {
+                DayProtections.Start(s, i, type, value);
+            }
+        }
+    };
+
+    /// <summary>A day's protection of <paramref name="type"/> for the one prayed for.</summary>
+    private static Boon ForTheOnePrayedFor(int type, int value) => (s, who, given) => DayProtections.Start(s, PrayedFor(s, who, given), type, value);
+
+    /// <summary>St. Pantaleon in the Fixed rules: fire 30 and +1 armour against the four animals, for the party, about a day.</summary>
+    private static readonly Boon PantaleonsHelp = (s, who, given) =>
+    {
+        FireForTheParty(103, 30, 30)(s, who, given);
+        ForTheParty(DayProtections.AnimalArmour, 1)(s, who, given);
+    };
+
     /// <summary>St.Polycarp: every present member gets the charm 0xB (high nibble) at a strength of 90.</summary>
     // orig: for (i = 0; i < 5; i++) if (party[i].status) { f41 = (f41 & 0xf) - 0x50; f10 = 0x5a; }
     private static readonly Boon FirewallForAll = (s, _, _) =>
@@ -484,8 +528,9 @@ public static class SaintBook
         // charm nibble (SetCharm(0xA0)): no fire protection (+0x10, which St.Polycarp also sets) is given; bits 4-6 (0x20) count as
         // +32 armour in every hit and bit 7 makes the member's own blows test the target's fire protection (Attacks.HitDamage),
         // for good.
-        //   Decision: research, first: how strong the promised fire resistance should be (the user's choice, 2026-11-25, F-1 set 1).
-        new("R039+0x31FA", [Standing(10, 20), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11), SetCharm(0xA0)]),
+        //   Fixed (FixCharityFire): fire 90 for the one prayed for, 50 for the others, about a day, no charm. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
+        new("R039+0x31FA", [Standing(10, 20), Boost(FlailWeapons, 15, 29), Boost(Charisma, 6, 11),
+            Either(b => b.FixCharityFire, SetCharm(0xA0), FireForTheParty(20, prayedFor: 90, others: 50))]),
         // 21 St.Christina, Astonish.
         new("R039+0x32DA", [Boost(Agility, 8, 15), Boost(Charisma, 1, 10)]),
         // 22 St.Christopher
@@ -544,8 +589,10 @@ public static class SaintBook
         // BUG: the text (DARKLAND.SNT) promises a better quality of the party's metal armour; the code adds 1 to the one member's
         // Hardarmor nibble (AddCharm(1)): armour against every blow, with no event, so it never wears off and piles up with each
         // prayer (past 15 into the fire-charm bits).
+        //   Fixed (FixDunstanMetalArmour): as his text says, +20 quality to the party's worn metal armour (scale, chainmail,
+        //   brigandine, plate), capped at 99, about a day; the items themselves never change. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
         new("R039+0x3FF2", [WeaponSkills(6, 11), Boost(Perception, 6, 11), Boost(Artifice, 25, 74), Boost(Streetwise, 6, 11), Boost(Alchemy, 5, 14),
-            AddCharm(1)]),
+            Either(b => b.FixDunstanMetalArmour, AddCharm(1), ForTheParty(DayProtections.MetalQuality, 20))]),
         // 40 St.Dymphna
         new("R039+0x40E2", [Heal(Endurance, 30), Boost(Agility, 4, 7), Boost(Stealth, 15, 29), Boost(Healing, 10, 19)]),
         // 41 St.Edward, Confessor
@@ -565,8 +612,9 @@ public static class SaintBook
         // 45 St.Erasmus
         // orig: R039+0x45C8
         // BUG: resistance to fire by the text (DARKLAND.SNT), only the charm nibble in the code (see St.Charity).
-        //   Decision: research, first: how strong the promised fire resistance should be (the user's choice, 2026-11-25, F-1 set 1).
-        new("R039+0x45C8", [Boost(Agility, 6, 11), Boost(Perception, 6, 11), SetCharm(0xA0)]),
+        //   Fixed (FixErasmusFire): fire 50 for the party, about a day, no charm. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
+        new("R039+0x45C8", [Boost(Agility, 6, 11), Boost(Perception, 6, 11),
+            Either(b => b.FixErasmusFire, SetCharm(0xA0), FireForTheParty(45, prayedFor: 50, others: 50))]),
         // 46 St.Eric
         new("R039+0x4676", [Boost(Strength, 8, 23), Boost(Charisma, 4, 7), WeaponSkills(15, 24), Boost(Riding, 6, 11), Boost(SpeakCommon, 6, 11)]),
         // 47 St.Eustace
@@ -761,16 +809,19 @@ public static class SaintBook
         // 103 St.Pantaleon
         // orig: R039+0x7A24
         // BUG: his text (DARKLAND.SNT) also promises resistance to fire; the code sets only the charm nibble (see St.Charity).
-        //   Decision: research, first: how strong the promised fire resistance should be (the user's choice, 2026-11-25, F-1 set 1).
+        //   Fixed (FixPantaleonFireAndAnimals): as his text says, fire 30 for the party and +1 armour against wolves, boars, bears and
+        //   spiders (the user's list), about a day, no charm. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
         new("R039+0x7A24", [Heal(Endurance, 30), Heal(Strength, 30), Boost(Alchemy, 10, 19), Boost(Healing, 15, 29), Boost(Charisma, 6, 11),
-            TravelBlessing, SetCharm(0xA0)]),
+            TravelBlessing, Either(b => b.FixPantaleonFireAndAnimals, SetCharm(0xA0), PantaleonsHelp)]),
         // 104 St.Patrick
         // orig: R039+0x7B22
         // BUG: the text (DARKLAND.SNT) promises armour against missiles in combat; the code adds 2 to the one member's Hardarmor
         // nibble (AddCharm(2)), against every blow and for good (see St.Dunstan).
-        //   Decision: research, first: what wearing off should mean for St. Patrick's armour, and against what (the user's choice, 2026-11-25, F-1 set 1).
+        //   Fixed (FixPatrickMissileArmour): +2 armour against missiles for the one prayed for, about a day, as the SNT and the manual
+        //   say. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
         new("R039+0x7B22", [Boost(EdgedWeapons, 15, 29), Boost(ImpactWeapons, 15, 29), Boost(Polearms, 15, 29), Boost(SpeakCommon, 15, 29),
-            Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29), Boost(Charisma, 15, 24), Boost(Strength, 12, 19), AddCharm(2)]),
+            Boost(SpeakLatin, 15, 29), Boost(ReadWrite, 15, 29), Boost(Charisma, 15, 24), Boost(Strength, 12, 19),
+            Either(b => b.FixPatrickMissileArmour, AddCharm(2), ForTheOnePrayedFor(DayProtections.MissileArmour, 2))]),
         // 105 St.Paul
         // orig: R039+0x7C6A; R039+0x7D0C
         // BUG: the helps of the two Pauls are mixed up: St.Paul gets R039+0x7C6A, whose feast day (66) and help are
@@ -793,8 +844,8 @@ public static class SaintBook
         // orig: R039+0x80C2
         // BUG: the saints' charms never wear off: FirewallForAll, like SetCharm and AddCharm, sets the charm byte
         // (+0x41) and its strength (+0x10) with no event, and nothing takes them back.
-        //   Decision: research, first: what wearing off should mean for St. Polycarp's charm (the user's choice, 2026-11-25, F-1 set 1).
-        new("R039+0x80C2", [FirewallForAll]),
+        //   Fixed (FixPolycarpFireForADay): fire 90 for the party, about a day, no charm. Decision: fix, in Fixed (the user's choice, 2026-11-25, F-1 set 1b).
+        new("R039+0x80C2", [Either(b => b.FixPolycarpFireForADay, FirewallForAll, FireForTheParty(110, prayedFor: 90, others: 90))]),
         // 111 St.Raphael
         new("R039+0x814A", [Heal(Endurance, 100), Heal(Strength, 100), Boost(Healing, 50, 139), Boost(Agility, 8, 15), Boost(Perception, 6, 11)]),
         // 112 St.Raymond Penafort

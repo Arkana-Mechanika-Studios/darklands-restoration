@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
@@ -76,6 +77,10 @@ public static class OriginalSaves
     private const int SoundAt = 0xA3;
     private const int MapLeaveModeAt = 0xA4;
     private const int ZerosAt = 0xA6;
+
+    // Not in the original: where the Fixed rules keep the bank standings (F-1 set 1b), and their marker ("BK")
+    private const int StandingsAt = 0xA7;
+    private const ushort StandingsMark = 0x4B42;
 
     /// <summary>The word the original writes at +0x66 (v7o = 7); the loader skips it.</summary>
     private const int Version = 7;
@@ -156,6 +161,12 @@ public static class OriginalSaves
         state.SavedCard2 = Word(h, SavedCard2At);
         state.PreviousCard = Word(h, PreviousCardAt);
         state.Difficulty = (Difficulty)(h[DifficultyAt] & ~InBattleBit);
+        // Not in the original: the bank standings a Fixed game kept in the spare words (F-1 set 1b): set aside until the loaded game's
+        //   rules are known (DarklandsGame applies them when those are Fixed)
+        state.SavedStandings = BinaryPrimitives.ReadUInt16LittleEndian(h.AsSpan(StandingsAt)) == StandingsMark
+            ? (BinaryPrimitives.ReadInt16LittleEndian(h.AsSpan(StandingsAt + 2)), BinaryPrimitives.ReadInt16LittleEndian(h.AsSpan(StandingsAt + 4)),
+                BinaryPrimitives.ReadInt16LittleEndian(h.AsSpan(StandingsAt + 6)))
+            : null;
         state.Battlefield.LastLocation = Word(h, BattleLocationAt);
         state.Battlefield.ClearedLevels = Word(h, ClearedLevelsAt);
         state.MapLeaveMode = Word(h, MapLeaveModeAt);
@@ -400,6 +411,15 @@ public static class OriginalSaves
         PutOption(h, SoundAt, soundEffects);
         PutWord(h, MapLeaveModeAt, state.MapLeaveMode);
         h.AsSpan(ZerosAt).Clear();
+        // Not in the original: the Fixed rules keep the bank standings in the spare words (F-1 set 1b, B-047d71): a marker, then the
+        //   Fugger's, the Medici's and the Hanse's (DKED leaves these bytes alone; the original's own save writes zeros there)
+        if (state.Behaviour.FixBankStandingsSaved)
+        {
+            BinaryPrimitives.WriteUInt16LittleEndian(h.AsSpan(StandingsAt), StandingsMark);
+            BinaryPrimitives.WriteInt16LittleEndian(h.AsSpan(StandingsAt + 2), (short)state.FuggerStanding);
+            BinaryPrimitives.WriteInt16LittleEndian(h.AsSpan(StandingsAt + 4), (short)state.MediciStanding);
+            BinaryPrimitives.WriteInt16LittleEndian(h.AsSpan(StandingsAt + 6), (short)state.HanseStanding);
+        }
 
         state.Roster.Reconcile(state.Party);
         state.Roster.PartySlots.CopyTo(file.PartyIds, 0);

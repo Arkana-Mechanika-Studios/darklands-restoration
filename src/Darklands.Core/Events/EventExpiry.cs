@@ -161,6 +161,11 @@ public static class EventExpiry
             case EventKinds.SkillBoost:
                 MemberRules.AddSkill(s, e.Owner, e.Type, -e.Value);
                 break;
+            // Not in the original: the Fixed rules' day-long potions and saints' protections (F-1 set 1b): their events (marked)
+            //   take back what they gave; the original's own potion bonus events stay as they are (the BUG above)
+            case EventKinds.PotionBonus when DayProtections.Handles(e):
+                DayProtections.TakeBack(s, e);
+                break;
         }
         s.ReportSkillChanges = true;
     }
