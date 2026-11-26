@@ -271,6 +271,14 @@ public sealed class SwitchRegisterTests
         Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "gameplay"), items);
     }
 
+    /// <summary>The players' page of the Restored rules (docs/RESTORED.md) has a line for each restoration: one list item a flag.</summary>
+    [Fact]
+    public void ThePlayersPageListsEveryRestoration()
+    {
+        var items = File.ReadAllLines(Path.Combine(Root, "docs", "RESTORED.md")).Count(l => l.StartsWith("- ", StringComparison.Ordinal));
+        Assert.Equal(Rows().Count(r => r["kind"] == "flag" && r["class"] == "restoration"), items);
+    }
+
     /// <summary>
     /// The restoration register (restoration.csv) is read whole, its statuses are the allowed words, and a row set aside (rejected, or
     /// waiting for something to exist first) says what would reopen it (<c>revisit_if</c>) and whether it could come back as a mod

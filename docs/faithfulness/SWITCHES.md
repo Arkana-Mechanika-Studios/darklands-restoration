@@ -36,7 +36,7 @@ exact behind its switch for the oracle (data-damaging bugs and plain visual glit
 | interface-comfort | 3 | 3 (the Interface switch is Comfort by default) |
 | presentation | 6 | choices, none changes a rule |
 | content-mod | 1 | no mods by default |
-| restoration | 2 | none (the Restored rule set only, not offered to players yet) |
+| restoration | 5 | none (the Restored rule set only, not offered to players yet: [RESTORED.md](../RESTORED.md)) |
 
 ## How it is kept true
 

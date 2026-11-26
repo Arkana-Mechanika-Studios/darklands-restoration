@@ -472,4 +472,54 @@ public sealed class OverlandTests
         SeasonPalette.Apply(palette, 10, 4);
         Assert.Equal(0x38, palette[0x13B]);
     }
+
+    // ---- the Restored rules ----------------------------------------------------------------
+
+    /// <summary>
+    /// RestoreHussiteRoadEncounter (restoration R-13ad91): the road rolls 19 to 22 meet card 0x104; restored, near one of the five Bohemian
+    /// cities (0x44 to 0x47, 0x4A) the Hussite band (0x119) instead, as in 483.04-.06, and the nearest city goes to the place's text slot.
+    /// Every other roll, and every roll near another city, is the same either way.
+    /// </summary>
+    [Theory]
+    [InlineData(0x46, true)]    // Prag
+    [InlineData(0x44, true)]    // St. Joachimsthal
+    [InlineData(0x4A, true)]    // Bruenn
+    [InlineData(0x48, false)]   // next to them in the table, not Bohemian
+    [InlineData(0x05, false)]
+    public void TheRestoredRoadMeetsTheHussitesOnlyNearTheFiveBohemianCities(int city, bool bohemian)
+    {
+        var met = 0;
+        for (uint seed = 1; seed <= 200; seed++)
+        {
+            int Encounter(bool restored, List<int> named)
+            {
+                var state = State(seed);
+                state.Locations[city] = Place(city, 12, 10);
+                state.MapPosition = new MapPosition(10, 10);
+                state.PartyTerrain = Terrain.Road;
+                var behaviour = OriginalBehaviour.Faithful;
+                behaviour.RestoreHussiteRoadEncounter = restored;
+                state.Behaviour = behaviour;
+                var travel = new OverlandTravel(state, MapOf(40, 40, (_, _) => Terrain.Road), kind => false) { PlaceNamed = named.Add };
+                return travel.RoadEncounter();
+            }
+            var offNamed = new List<int>();
+            var onNamed = new List<int>();
+            var off = Encounter(false, offNamed);
+            var on = Encounter(true, onNamed);
+            Assert.Empty(offNamed);
+            if (off == 0x104)
+            {
+                Assert.Equal(bohemian ? 0x119 : 0x104, on);
+                Assert.Equal([city], onNamed);
+                met++;
+            }
+            else
+            {
+                Assert.Equal(off, on);
+                Assert.Empty(onNamed);
+            }
+        }
+        Assert.True(met > 0, "no seed drew a road roll of 19 to 22");
+    }
 }

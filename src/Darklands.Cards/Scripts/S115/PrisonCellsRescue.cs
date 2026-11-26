@@ -36,7 +36,9 @@ public sealed class PrisonCellsRescue : Card
             new MenuLine(_ => BribeTheGuards(c)),
             // orig: R115+0x1090 (1901:0400) matched; hint R115+0x109A
             // C: the friend is freed first, then the fight is fought: the original calls the rescue, then the battle.
-            new MenuLine(_ => { FreeTheFriend(c); FightTheGuards(c); }),
+            // Not in the original: the Restored rules (OriginalBehaviour.RestorePrisonRescue) show text 7 (the guards of every floor must
+            // fall first; written for 483.07, shown by no code) and fight; only a won fight frees the friend (card 288, as 483.04-.06).
+            new MenuLine(_ => Attack(c)),
             // orig: R115+0x10D2 (line 2); hint R115+0x1196 (1901:0506) matched
             new MenuLine(_ => ThrowAPotion(c), () => OptionHint.Say("exe:DS:4F0C")),  // "Select a person and a potion."
             // orig: R115+0x11CE (line 3); hint R115+0x12A8 (1901:0618) matched
@@ -55,6 +57,25 @@ public sealed class PrisonCellsRescue : Card
             // orig: R115+0x1444 (line 9)
             new MenuLine(_ => c.PassHours(0)));
     }
+
+    /// <summary>The attack line: the rescue, then the fight; restored, text 7 and the fight (a won fight leads to card 288).</summary>
+    private static void Attack(CardContext c)
+    {
+        if (c.State.Behaviour.RestorePrisonRescue)
+        {
+            c.Screen.Text(7);
+            FightTheGuards(c);
+            return;
+        }
+        FreeTheFriend(c);
+        FightTheGuards(c);
+    }
+
+    /// <summary>The freed companion's card (<c>$Dunge04</c>): the friend joins there. Reached only under the Restored rules.</summary>
+    private const int CompanionReleased = 288;
+
+    /// <summary>The side street the earlier releases saved (DS:E2A1) before sending to card 288: 9 by day, 10 at night.</summary>
+    private static int SideStreet(CardContext c) => c.IsDaylight ? 9 : 10;
 
     /// <summary>
     /// The imprisoned friend (the character in the kind 0x4D event here) rejoins the party as
@@ -92,6 +113,13 @@ public sealed class PrisonCellsRescue : Card
         }
         c.State.Party.Purse = c.State.Party.Purse.Subtract(bribe);
         c.Screen.Text(1);
+        if (c.State.Behaviour.RestorePrisonRescue)
+        {
+            // Not in the original: as 483.04-.06 (R114+0x104A..0x107E), the side street is saved and card 288 frees the friend.
+            c.State.SavedCard = SideStreet(c);
+            c.Next = CompanionReleased;
+            return;
+        }
         FreeTheFriend(c);
     }
 
@@ -158,7 +186,8 @@ public sealed class PrisonCellsRescue : Card
     private static void FightTheGuards(CardContext c)
     {
         var guards = c.Random(5) + 3;
-        switch (c.RunBattle(8, c.Here + 0x6F, 3, 1, guards, 0, 2, 1, -1, 0, 0))
+        var result = c.RunBattle(8, c.Here + 0x6F, 3, 1, guards, 0, 2, 1, -1, 0, 0);
+        switch (result)
         {
             case 0:
             case 1:
@@ -166,6 +195,17 @@ public sealed class PrisonCellsRescue : Card
                 c.ReportAway();
                 c.ExtendEventHere(0x12, 30);
                 c.Next = c.IsDaylight ? 0x12 : 0x19;
+                // Not in the original: under the Restored rules a won fight leads to card 288, which frees the friend, as in 483.04-.06
+                // (R114+0x0F2E: result 0; R114+0x0F42: result 1, which also saves the side street); a flight (2) stays as 483.07 has it
+                // (483.06 sent it to the watch's challenge, card 1, R114+0x0F68).
+                if (c.State.Behaviour.RestorePrisonRescue && result != 2)
+                {
+                    if (result == 1)
+                    {
+                        c.State.SavedCard = SideStreet(c);
+                    }
+                    c.Next = CompanionReleased;
+                }
                 break;
             case 3:
             case 4:

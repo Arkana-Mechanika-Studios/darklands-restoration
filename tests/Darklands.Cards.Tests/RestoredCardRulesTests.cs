@@ -134,6 +134,107 @@ public sealed class RestoredCardRulesTests
         Assert.Equal(OptionState.Shown, again.Menus[0][5]);
     }
 
+    /// <summary>
+    /// RestoreClothGuildShop (R-e0e0ff): the clothmakers' street by day never offers its shop line 0; restored, it is offered and opens
+    /// the guild's shop (shop 8), an hour passes and the party is back on the street.
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheClothmakersShopIsOfferedByDayOnlyWhenRestored(bool restored)
+    {
+        if (!CardHarness.Available)
+        {
+            return;
+        }
+        var state = InCity(3, b => b.RestoreClothGuildShop = restored);
+        var screen = new FirstMenu(0, 6);
+        state.CurrentCard = ClothmakersStreet_Cloth00.CardNumber;
+        var hour = state.Date.Hour;
+        var next = new ClothmakersStreet_Cloth00().Run(Context(state, screen));
+        Assert.Equal(restored ? OptionState.Enabled : OptionState.Hidden, screen.Menus[0][0]);
+        // without a barter screen the shop says so (a Tell); an hour later the street's menu again (two menus), then leave (line 6)
+        Assert.Equal(restored, screen.Log.Contains("tell"));
+        Assert.Equal(restored ? 2 : 1, screen.Menus.Count);
+        Assert.Equal(0x1A, next);
+        Assert.Equal(restored ? hour + 1 : hour, state.Date.Hour);
+    }
+
+    /// <summary>The prison of city 3 with an imprisoned companion (event 0x4D here, its type the stored character 0) and 10 florins.</summary>
+    private static GameState InPrison(bool restored)
+    {
+        var state = InCity(3, b => b.RestorePrisonRescue = restored);
+        state.Events.Create(-2, 3, 0, 0x4D, 0, 0, 0, 9999, 0, 0);
+        state.Party.Purse = Core.Economy.Money.From(10, 0, 0);
+        state.CurrentCard = 286;
+        return state;
+    }
+
+    private static bool Imprisoned(GameState state) => state.Events.Find(0x4D, -1, 3, -1, -1, -1) != -1;
+
+    /// <summary>
+    /// RestorePrisonRescue (R-b3f475): a bribe that works frees the companion on the spot; restored, it leads to card 288 (as 483.04-.06),
+    /// which frees him there.
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheRestoredBribeLeadsToTheFreedCompanionsCard(bool restored)
+    {
+        if (!CardHarness.Available)
+        {
+            return;
+        }
+        var state = InPrison(restored);
+        var screen = new FirstMenu(0, 4);
+        var next = new PrisonCellsRescue().Run(Context(state, screen));
+        Assert.Contains("text 1", screen.Log);
+        Assert.Equal(Core.Economy.Money.From(5, 0, 0), state.Party.Purse);
+        if (!restored)
+        {
+            Assert.False(Imprisoned(state));
+            Assert.Equal(0x12, next);
+            return;
+        }
+        Assert.True(Imprisoned(state));
+        Assert.Equal(288, next);
+        Assert.Equal(9, state.SavedCard);
+        state.CurrentCard = 288;
+        Assert.Equal(0x12, new CompanionReleased().Run(Context(state, new FirstMenu(0, 0))));
+        Assert.False(Imprisoned(state));
+    }
+
+    /// <summary>
+    /// RestorePrisonRescue (R-b3f475): the attack frees the companion before its fight, so even a lost fight frees him; restored, text 7
+    /// (the guards of every floor) is shown, then the fight, and only a won fight (results 0, 1) leads to card 288; a flight (2) or a defeat
+    /// (3, 4) frees nobody and goes where 483.07 goes.
+    /// </summary>
+    [Theory]
+    [InlineData(false, 0, 0x12)]
+    [InlineData(false, 2, 0x12)]
+    [InlineData(false, 3, 0x0D)]
+    [InlineData(true, 0, 288)]
+    [InlineData(true, 1, 288)]
+    [InlineData(true, 2, 0x12)]
+    [InlineData(true, 3, 0x0D)]
+    [InlineData(true, 4, 0x0D)]
+    public void TheRestoredAttackFreesTheCompanionOnlyAfterAWonFight(bool restored, int result, int expected)
+    {
+        if (!CardHarness.Available)
+        {
+            return;
+        }
+        var state = InPrison(restored);
+        var screen = new FirstMenu(1, 4);
+        var context = Context(state, screen);
+        context.Battle = (_, _, _) => result;
+        var next = new PrisonCellsRescue().Run(context);
+        Assert.Equal(expected, next);
+        Assert.Equal(restored, screen.Log.Contains("text 7"));
+        // the original frees him first, whatever the fight; restored only card 288 does
+        Assert.Equal(restored, Imprisoned(state));
+    }
+
     private static int Teachers(GameState state) =>
         Enumerable.Range(0, EventLog.Capacity).Count(i => state.Events[i] is { Kind: EventKinds.Teacher } e && e.Location == state.CurrentLocation);
 }

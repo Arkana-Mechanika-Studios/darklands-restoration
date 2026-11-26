@@ -694,4 +694,32 @@ public sealed class OriginalBehaviour
     /// </summary>
     // orig: R054+0x1A78: line 5 is not among the enabled lines (Z-a901ed; handler R054+0x29F8, hint R054+0x2B8C)
     public bool RestoreGuardTraining { get => _on[RuleTable.RestoreGuardTraining]; set => _on[RuleTable.RestoreGuardTraining] = value; }
+
+    /// <summary>
+    /// The road table's rolls 19 to 22 of 29 meet card 0x104 everywhere; 483.04 to 483.06 first asked for the city nearest the party (into
+    /// the text slot of the place) and met the Hussite band (card 0x119) when it was St. Joachimsthal, Buerglitz, Prag, Kuttenberg or Bruenn
+    /// (locations 0x44 to 0x47 and 0x4A). 483.07 removed only that branch: the card, its texts and battle are in the program, and the wartime
+    /// state it sets (place flags 0x81, event 0x5E) is read by the gossip, the notices, the docks and the boat landing. Restored: the
+    /// branch is back. Restoration R-13ad91.
+    /// </summary>
+    // orig: 483.07 R030+0x0B52 returns 0x104; 483.06 R029+0x0AB4..0x0AE7 (closest-city(DS:DE97, DS:DE99) to DS:E259, then 0x119 or 0x104)
+    public bool RestoreHussiteRoadEncounter { get => _on[RuleTable.RestoreHussiteRoadEncounter]; set => _on[RuleTable.RestoreHussiteRoadEncounter] = value; }
+
+    /// <summary>
+    /// In the city prison (card 286) a bribe that works and the attack line free the companion at once, the attack before its fight (so a
+    /// lost fight frees him too), and a won fight after a failed bribe or potion frees nobody; card 288 (the freed companion) is reached by
+    /// nothing. 483.04 to 483.06 sent the bribe and every won fight to card 288 instead. Restored: as 483.06, and the attack first shows the
+    /// prison card's text 7 (the guards of every floor must fall first), which 483.07 wrote and never shows; a lost fight or a flight frees
+    /// nobody. Restoration R-b3f475 (the user's choice of 2026-11-25).
+    /// </summary>
+    // orig: 483.07 R115+0x1000 (bribe), R115+0x1090 (attack: rescue, then fight), R115+0x0EEC (fight); 483.06 R114+0x1014 (bribe -> 0x120), R114+0x10B8 (attack: fight only), R114+0x0EEC (won -> 0x120)
+    public bool RestorePrisonRescue { get => _on[RuleTable.RestorePrisonRescue]; set => _on[RuleTable.RestorePrisonRescue] = value; }
+
+    /// <summary>
+    /// The clothmakers' street by day (card 0x25) hides its shop line 0 (shop 8, the guild's non-metal armour), so the guild sells only to a
+    /// party that wakes somebody at night (card 0x26, line 0). Restored: the day line is offered, as the street's other lines are. Restoration
+    /// R-e0e0ff.
+    /// </summary>
+    // orig: R053+0x0EC4 sets option 0 hidden (Z-cb3c75); handler R053+0x117E (barter, shop 8, categories 0x04000000), the same in 483.04 to 483.07
+    public bool RestoreClothGuildShop { get => _on[RuleTable.RestoreClothGuildShop]; set => _on[RuleTable.RestoreClothGuildShop] = value; }
 }

@@ -694,6 +694,51 @@ public sealed class RcPlayTests
         Assert.Equal(recorded && startedWith != chosenNow ? 1 : 0, log.Count(l => l.Contains("keeps the rules", StringComparison.Ordinal)));
     }
 
+    /// <summary>
+    /// Pictures of what the Restored rules put on screen, for a person to look at (opt-in: DARKLANDS_RESTORED_SHOTS names a folder): a
+    /// Quick Start game with the Restored rules begins at the card and plays the keys; every frame that differs from the last one saved is
+    /// written, three times the game's size. The clothmakers' day menu and its shop, the prison's attack (text 7), the Hussite band.
+    /// </summary>
+    [Theory]
+    [InlineData("cloth-day", 0x25, new[] { "w:150", "k:space", "w:80", "k:1", "w:150", "k:space", "w:80" })]
+    [InlineData("prison-attack", 286, new[] { "w:150", "m:120,91", "w:20", "k:space", "w:200", "k:space", "w:120", "k:space", "w:80" })]
+    [InlineData("hussite-band", 0x119, new[] { "w:150", "k:space", "w:80" })]
+    [InlineData("companion-freed", 288, new[] { "w:150", "k:space", "w:80" })]
+    public void RestoredScreensArePictured(string name, int card, string[] keys)
+    {
+        if (GameFolder.Files is not { } files || Environment.GetEnvironmentVariable("DARKLANDS_RESTORED_SHOTS") is not { Length: > 0 } shots)
+        {
+            return;
+        }
+        var folder = Path.Combine(shots, name);
+        Directory.CreateDirectory(folder);
+        var host = new RcHost(["k:q", .. keys]);
+        var game = NewGame(files, host, TempFolder("restored-shots"), card: card, behaviour: OriginalBehaviour.Of(RulePreset.Restored));
+        byte[]? last = null;
+        var saved = 0;
+        host.OnPresent = screen =>
+        {
+            var (pixels, palette) = (screen.Pixels, screen.Palette);
+            if ((last is not null && pixels.AsSpan().SequenceEqual(last)) || saved >= 400)
+            {
+                return;
+            }
+            last = (byte[])pixels.Clone();
+            var argb = new uint[9 * pixels.Length];
+            for (var y = 0; y < 3 * Screen.Height; y++)
+            {
+                for (var x = 0; x < 3 * Screen.Width; x++)
+                {
+                    argb[y * 3 * Screen.Width + x] = palette[pixels[y / 3 * Screen.Width + x / 3]] | 0xFF000000u;
+                }
+            }
+            Presentation.Graphics.PngWriter.Write(argb, 3 * Screen.Width, 3 * Screen.Height, Path.Combine(folder, $"{name}-{host.Frames:D4}-{saved:D3}.png"));
+            saved++;
+        };
+        game.Run();
+        Assert.True(saved > 0);
+    }
+
     /// <summary>A save made before the rules presets (no record: here the game folder's own) loads as Original with Fixed chosen, quietly.</summary>
     [Fact]
     public void AnOldSaveLoadsAsOriginalWithoutANotice()

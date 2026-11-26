@@ -683,7 +683,10 @@ public sealed class DarklandsGame
             Core.World.CopyProtection.Draw(state.Random);
             state.Events.CreateHere(CopyProtectionEvent, CopyProtectionHours);
         }
-        return new OverlandScreen(_ui, panel, _map) { CharacterSheet = sheet, Camp = camp, Memory = _mapMemory }.Travel(state);
+        return new OverlandScreen(_ui, panel, _map)
+        {
+            CharacterSheet = sheet, Camp = camp, Memory = _mapMemory, PlaceNamed = place => _cardVariables.Location = place,
+        }.Travel(state);
     }
 
     /// <summary>Event 0x47 (a member has left; Type = member) shows card 0xF1 instead of the map.</summary>

@@ -226,6 +226,15 @@ public static partial class RuleTable
     /// <summary>The index of <c>fix.camp.empty-row-clean-up</c> (<see cref="OriginalBehaviour.FixCampEmptyRowCleanUp"/>).</summary>
     public const int FixCampEmptyRowCleanUp = 72;
 
+    /// <summary>The index of <c>restore.travel.hussite-road-encounter</c> (<see cref="OriginalBehaviour.RestoreHussiteRoadEncounter"/>).</summary>
+    public const int RestoreHussiteRoadEncounter = 73;
+
+    /// <summary>The index of <c>restore.city.prison-rescue</c> (<see cref="OriginalBehaviour.RestorePrisonRescue"/>).</summary>
+    public const int RestorePrisonRescue = 74;
+
+    /// <summary>The index of <c>restore.city.cloth-guild-shop</c> (<see cref="OriginalBehaviour.RestoreClothGuildShop"/>).</summary>
+    public const int RestoreClothGuildShop = 75;
+
     /// <summary>Every fix flag of the switch register, in its order (the index of each is its place here).</summary>
     public static IReadOnlyList<Rule> Flags { get; } =
     [
@@ -302,5 +311,8 @@ public static partial class RuleTable
         new("fix.cards.hussite-friendship", nameof(OriginalBehaviour.FixHussiteFriendship), "gameplay", false, true, true),
         new("fix.cards.peat-bog-rope", nameof(OriginalBehaviour.FixPeatBogRope), "gameplay", false, true, true),
         new("fix.camp.empty-row-clean-up", nameof(OriginalBehaviour.FixCampEmptyRowCleanUp), "gameplay", false, true, true),
+        new("restore.travel.hussite-road-encounter", nameof(OriginalBehaviour.RestoreHussiteRoadEncounter), "restoration", false, false, true),
+        new("restore.city.prison-rescue", nameof(OriginalBehaviour.RestorePrisonRescue), "restoration", false, false, true),
+        new("restore.city.cloth-guild-shop", nameof(OriginalBehaviour.RestoreClothGuildShop), "restoration", false, false, true),
     ];
 }

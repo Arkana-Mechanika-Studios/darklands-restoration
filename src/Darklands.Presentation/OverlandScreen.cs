@@ -65,6 +65,9 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
     /// <summary>The map's program globals (DarklandsGame keeps one); a fresh one for a screen made alone.</summary>
     public OverlandMemory Memory { get; init; } = new();
 
+    /// <summary>Puts a place into the cards' text slot of the place (the Restored rules' Hussite branch: <see cref="OverlandTravel.PlaceNamed"/>).</summary>
+    public Action<int>? PlaceNamed { get; init; }
+
     // ---- Walking on (the Interface switch on Comfort, GameUi.ComfortInterface). Not in the original. ----
     // A direction key tapped twice (two make codes within KeyboardDirections.DoubleTapMilliseconds, let go in between) or pressed with
     // Shift (the map's key cases do not tell Shift from no Shift: the BIOS gives the grey keys' same codes, the keyboard interrupt's
@@ -160,6 +163,7 @@ public sealed class OverlandScreen(GameUi ui, PartyPanel panel, WorldMap map)
             _mapDirty |= _background != background;
         };
         travel.PlayCue = tune => ui.PlayMusic(tune);
+        travel.PlaceNamed = PlaceNamed;
         travel.MapMessage = message =>
         {
             StopWalking("a map message");

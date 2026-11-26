@@ -72,6 +72,10 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
     /// <summary>Plays a music cue (<c>thunk 09C0:18F1</c>); the screen supplies it.</summary>
     public Action<int>? PlayCue { get; set; }
 
+    /// <summary>Puts a place into the cards' text slot of the place (<c>$LocName</c>); the game supplies it. Only the Restored rules' Hussite branch calls it.</summary>
+    // Not in the original 483.07: 483.04-.06 R029+0x0AC3 writes closest-city's answer to DS:E259 (the text slot of the place) before choosing 0x119 or 0x104.
+    public Action<int>? PlaceNamed { get; set; }
+
     /// <summary>The view's first column and first shown row (DS:286A, DS:286C), which the terrain read depends on at the map's borders (<see cref="WorldMap.BufferOffset"/>); the screen supplies it.</summary>
     public Func<(int Column, int Rows)> View { get; set; } = () => (1, 1);
 
@@ -357,6 +361,27 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         };
     }
 
+    /// <summary>The five Bohemian cities of the Hussite branch: St. Joachimsthal, Buerglitz, Prag, Kuttenberg (0x44 to 0x47) and Bruenn (0x4A).</summary>
+    private static readonly int[] HussiteCities = [0x44, 0x45, 0x46, 0x47, 0x4A];
+
+    /// <summary>
+    /// The road rolls 19 to 22: card 0x104 (merchants on the road). Under the Restored rules, as 483.04-.06: the city nearest the party goes to
+    /// the text slot of the place, and near one of the five Bohemian cities the Hussite band (card 0x119) is met instead.
+    /// </summary>
+    // orig: 483.07 R030+0x0B52 `mov ax, 0x104`; 483.06 R029+0x0AB4..0x0AE7: closest-city(DS:DE97, DS:DE99) (the party's map cell, no draw) to DS:E259,
+    //   0x46, 0x45, 0x44, 0x47, 0x4A -> 0x119, else 0x104 (R029+0x0912)
+    // Not in the original 483.07: the branch is OriginalBehaviour.RestoreHussiteRoadEncounter (restoration R-13ad91).
+    private int RoadBand()
+    {
+        if (!state.Behaviour.RestoreHussiteRoadEncounter)
+        {
+            return 0x104;
+        }
+        var city = LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y);
+        PlaceNamed?.Invoke(city);
+        return Array.IndexOf(HussiteCities, city) >= 0 ? 0x119 : 0x104;
+    }
+
     /// <summary>The encounter tables by terrain; 0 when the roll finds nothing.</summary>
     // orig: the switch (DS:D843) arm of the sel == 1000 branch: one roll-below(n) per table, the cases of the C in order (each range below was compared with its C case list); terrain 1, 2, 3 and anything not listed (25 to 28 and above) draw nothing and find nothing.
     // C: "Winter()" is the C's `if (month-now < 3 || month-now > 9) return 0x117; break;`: the winter encounter 0x117 is possible in months 0..2 and 10..11 (January to March, November and December); the highlands table (22, 23) uses months below 4 or above 8 instead.
@@ -411,7 +436,7 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
             Terrain.Road => r.Below(29) switch
             {
                 <= 1 => 0xA0, <= 3 => 0xA6, <= 5 => 0xA7, 6 => 0x3D, 7 => 0xC3, <= 9 => 0x102, <= 11 => 0x103,
-                <= 14 => 0x106, <= 16 => 0x107, <= 18 => 0x7F, <= 22 => 0x104, <= 24 => 0x105, 25 => 0x163,
+                <= 14 => 0x106, <= 16 => 0x107, <= 18 => 0x7F, <= 22 => RoadBand(), <= 24 => 0x105, 25 => 0x163,
                 26 => 0x108, _ => 0x24,
             },
             _ => 0,

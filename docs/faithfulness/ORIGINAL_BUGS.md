@@ -399,7 +399,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-e95c32** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/InnByDay.cs:178` `InnByDay.VisitTheStables`  
   original: `R051+0x0EE0` (18C9:05D0, matched)  
   why: the two stable texts look swapped: a party all of whose present members have a mount gets text 1, and any other party text 7, the only one in which the stablemaster asks whether the party's mounts are for sale (R051+0x0EE0).
-- **B-ba6123** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/ClothmakersStreet_Cloth00.cs:369` `ClothmakersStreet_Cloth00.SneakIn`  
+- **B-ba6123** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/ClothmakersStreet_Cloth00.cs:370` `ClothmakersStreet_Cloth00.SneakIn`  
   original: `R053+0x191E` (1924:0A5E, matched)  
   why: practices everybody (who −2) once per able member, as the original does.
 - **B-556a53** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S053/Footpads.cs:248` `Footpads.ThrowAPotion`  
@@ -639,7 +639,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a993d7** `bug`, no fix flag - `src/Darklands.Simulation/Overland/CellBuffer.cs:111` `CellBuffer.CampWatch`  
   original: `R030+0x25BE` (1462:25BE, draft)  
   why: the block is read through the buffer's flat layout with no bounds check (R030+0x261D..0x2639): a column past 18 is the next row's cell (col + i - 19 of row + j + 1: the west side of the window, one row down) and a row past 49 is the bytes after the buffer (zeros and the stale icons of Fill, then the party icon table). The marker's column is up to 16 and its row up to 47, so up to 9 columns wrap and up to 7 rows fall past the buffer. Reproduced: a settlement there changes the bonus; one in the true cells beyond is not seen.
-- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:154` `OverlandTravel.Step`  
+- **B-79b8e3** `bug`, no fix flag - `src/Darklands.Simulation/Overland/OverlandTravel.cs:158` `OverlandTravel.Step`  
   original: `R030+0x2AC8` (1462:2AC8, draft)  
   why: the place entered is the first record by index inside the reach (R030+0x1471..0x14CA, no distance test), not the nearest: with the shipped DARKLAND.LOC three places can never be entered by stepping, 149 Simmern (147 Geldern is taken), 197 Lauf (178 Rammelsburg, four tiles off) and 297 Putten (127 Putten, two rows off).
 - **B-b69cb8** `bug`, no fix flag - `src/Darklands.Simulation/Overland/RowBuffer.cs:54` `RowBuffer.Load`  
@@ -904,10 +904,10 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-14d327** `bug`, flag `FixLoadScreenEscape` - `src/Darklands.Presentation/DarklandsGame.cs:623` `DarklandsGame.LoadInGame`  
   original: `R037+0x8B76` (1C7D:09C6, matched)  
   why: OriginalBehaviour.FixLoadScreenEscape - Esc on the load screen goes on with the emptied slots and no events.
-- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:795` `DarklandsGame.FightTheBattle`  
+- **B-f7799c** `bug`, no fix flag - `src/Darklands.Presentation/DarklandsGame.cs:798` `DarklandsGame.FightTheBattle`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: party-member-erase-overlay-entry runs while the events are in events.tmp, so a member who died in the battle keeps the term and "has left" events (kinds 0x43/0x47) it would cancel: they come back with the table.
-- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:1011` `DarklandsGame.LoadShieldPictures`  
+- **B-7c20ca** `bug`, flag `FixLoadTwoSlotsOneRecord` - `src/Darklands.Presentation/DarklandsGame.cs:1014` `DarklandsGame.LoadShieldPictures`  
   original: `root 03A1:000A` (03A1:000A, matched)  
   why: OriginalBehaviour.FixLoadTwoSlotsOneRecord - after the read the load screen loads the party's shield pictures (R037+0x86DA..0x8754, every slot whose id is not -1): a slot the reader left without its record has the letter 0, "pics\shield.pic" does not open and the program ends (exit 99; lockstep session carry-dup-resave, R037+0x84BA+0x29F). Fixed (DataSafe): the game goes on with the slot empty.
 - **B-587744** `bug`, flag `FixPartyInfoBattleCycles` - `src/Darklands.Presentation/GameScreens2.cs:83` `GameScreens2.WithoutBattleCycles`  
@@ -916,14 +916,14 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-fe596a** `bug`, no fix flag - `src/Darklands.Presentation/Graphics/CardTextLayout.cs:156` `CardTextLayout.Lay`  
   original: `root 0265:0134` (0265:0134, draft)  
   why: the 0x01 / 0x13 branches advance the cursor twice, so a text that ends right after a conditional marker has its zero skipped and the loop runs on past the text's end (reachable in play: card $situa00 block 4 ends with 0x13); what is drawn then is undefined memory (D-0d3a38), so the rewrite registers it and stops at the text's end.
-- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:415` `OverlandScreen.FreeBuffer`  
+- **B-983895** `bug`, flag `FixMapQuitFreedBuffers` - `src/Darklands.Presentation/OverlandScreen.cs:419` `OverlandScreen.FreeBuffer`  
   original: `root 05BA:00C2` (05BA:00C2, matched), `root 0000:13A0` (0000:13A0, draft), `root 0000:0CAA` (0000:0CAA, draft) +2 more  
   why: OriginalBehaviour.FixMapQuitFreedBuffers - after the map's Alt-Q answered "no" the handles are 0, and the next free of one (a second Alt-Q "M", a portrait click or the camp "S", leaving the map "Map") fails root 05BA:00C2's check (root 044A:0164): root 0000:1354 (the drivers stopped, text mode), "<name> - Buffer dealloc error" by DOS function 9, exit(0) (session tk-map-altq-twice, local/batch/mapquit: the second Alt-Q). Fixed (DataSafe): the buffers are the map's as before.
-- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:576` `OverlandScreen.PlaceParty`  
+- **B-ae98e8** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:580` `OverlandScreen.PlaceParty`  
   original: `R030+0x00A8` (1462:00A8, draft)  
   why: R030+0x01EB..0x0220: with x - 8 < 0 the marker x is 0x82 - (x - 8), one pixel per missing tile instead of 16, and the view column is 0; the party that leaves a place whose column is below 8 stands 2 to 5 tiles east of it (a column of 3 gives 8, a column of 6 gives 8 as well: 0x82 + 5 and 0x82 + 2 pixels read as tile 8) once the map runs (each pass of R030+0x0C44 takes the party's cell from the marker). In the shipped data the places are Nancy and Elberg (their exit points, DARKLAND.CTY, columns 6 and 6) and Valkenberg, Tongeren, Gemert, Helmond, Limberg, Spa and Briey (DARKLAND.LOC columns 5, 5, 5, 3, 6, 3, 3); a column of exactly 8 (Moresnet) is exact. Reproduced as the original. Decision: later, an optional fixed rule after 1.0.
   decision: later: an optional fixed rule after 1.0
-- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:641` `OverlandScreen.Scroll`  
+- **B-adc5a4** `bug`, no fix flag - `src/Darklands.Presentation/OverlandScreen.cs:645` `OverlandScreen.Scroll`  
   original: `R030+0x0C44` (1462:0C44, draft)  
   why: R030+0x1133..0x1154 sets DS:286E to the last 0x83 rows without reading them (no call of R030+0x1DD4 on this path): when the buffer's top was not already there (a top of 0x318 from world-map-start, the party walking south), the row buffer keeps the rows from the old top and the map drawn (and the cells read) from it are (height - 0x83 - old top) rows north of the view's registers until a scroll reads the rows again. Reproduced (map.Rows is left as it is).
 - **B-0fd1d5** `bug`, flag `FixRosterMissingFigure` - `src/Darklands.Presentation/PartyRosterScreen.cs:236` `PartyRosterScreen.Arrow`  

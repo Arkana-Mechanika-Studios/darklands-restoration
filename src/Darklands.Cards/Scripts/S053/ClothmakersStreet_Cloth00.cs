@@ -5,7 +5,7 @@ namespace Darklands.Cards.Scripts;
 
 /// <summary>
 /// "$cloth00": Clothmakers' Street by day, the home of the clothmakers' guild. The party may
-/// shop (the line is never offered), ask about the guild's politics, ask for a meeting with the
+/// shop (the line is never offered; the Restored rules offer it), ask about the guild's politics, ask for a meeting with the
 /// guild's masters, reveal the guild leader's secret to his guild, sneak into the leader's home
 /// (with stealth and streetwise, or with an alchemical diversion), or leave. All of these depend
 /// on the city's politics (the guild is one of its factions).
@@ -40,7 +40,8 @@ public sealed class ClothmakersStreet_Cloth00 : Card
     public override int Run(CardContext c)
     {
         Show(c, Picture);
-        var shop = OptionState.Hidden;
+        // Not in the original: the Restored rules offer the shop line (OriginalBehaviour.RestoreClothGuildShop).
+        var shop = c.State.Behaviour.RestoreClothGuildShop ? OptionState.Enabled : OptionState.Hidden;
         var ask = OptionState.Enabled;
         var meeting = OptionState.Enabled;
         var secret = OptionState.Hidden;
@@ -87,7 +88,7 @@ public sealed class ClothmakersStreet_Cloth00 : Card
         c.Next = Number;
         return menu.Run(
             // orig: R053+0x117E (1924:02BE) matched (option 0: shop at the guild's street shops); hint R053+0x11B0 (1924:02F0) (success assured)
-            // DORMANT: the entry switches option 0 off.
+            // DORMANT: the entry switches option 0 off (the Restored rules offer it: RestoreClothGuildShop).
             new MenuLine(() =>
             {
                 c.Barter(8, 0x0400L << 16, null); // C: shop 8, no name, categories low word 0, high word 0x400
