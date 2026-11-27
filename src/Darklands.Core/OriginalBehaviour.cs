@@ -137,7 +137,8 @@ public sealed class OriginalBehaviour
     /// stores in CACHE.TMP) or end the program in play (the game since the last save lost, as a load crash loses it) are fixed, every
     /// other quirk stays. The fixed files are still read by the original. The player's game
     /// uses this; future data-safety fixes go here, and besides them only the evident display fixes the user chose for every player
-    /// game (<see cref="FixRosterFigurePreview"/>, <see cref="FixPartyInfoBattleCycles"/>, <see cref="FixSheetSkillValueColumn"/>).
+    /// game (<see cref="FixRosterFigurePreview"/>, <see cref="FixPartyInfoBattleCycles"/>, <see cref="FixSheetSkillValueColumn"/>,
+    /// <see cref="FixPartyInfoTownHover"/>).
     /// It is the <see cref="RulePreset.Original"/> preset: the flags whose presets in switches.csv include it.
     /// </summary>
     public static OriginalBehaviour DataSafe => Of(RulePreset.Original);
@@ -263,6 +264,16 @@ public sealed class OriginalBehaviour
     // orig: R031+0x39C6 box 7 prints "%02d" (DS:2EED) at the box's x + 3; boxes 4 and 5 at 0x10C (DS:2E73, DS:2E95); measured: the
     //   original's own sheet frame of vis10 comm-inn (live) is byte-identical to the Faithful C#'s
     public bool FixSheetSkillValueColumn { get => _on[RuleTable.FixSheetSkillValueColumn]; set => _on[RuleTable.FixSheetSkillValueColumn] = value; }
+
+    /// <summary>
+    /// The party information's small map reveals the town under the pointer with another scale than the party marker's and a few
+    /// pixels off the pointer, while the towns' dots are drawn by hand in the picture: the place that reveals a town drifts off its
+    /// dot (Erfurt and Wien are missed). Fixed (an evident display fix, every player game, GitHub issue 8): the dots are found in the
+    /// picture and the town whose dot is under the tip of the hand is shown.
+    /// </summary>
+    // orig: R034+0x0EE6 seeks R034+0x1A86 (the town within 10 of the map's distance) at (x - 3, y + 3) of the map, x × 327 / 118,
+    //   y × 931 / 106, where R034+0x19D0 places the marker at 116x / 327, 106y / 931; the dots are pics\ptystats.pic's own
+    public bool FixPartyInfoTownHover { get => _on[RuleTable.FixPartyInfoTownHover]; set => _on[RuleTable.FixPartyInfoTownHover] = value; }
 
     /// <summary>
     /// A saved game whose two party slots name one character record: the load reads the record into the first slot only, the second

@@ -37,6 +37,7 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
 
     private SavedScreen _back = null!;
     private int _nextTabCity;
+    private (int X, int Y)[]? _townDots;
 
     // orig: R034+0x0EE6 and R034+0x11BC (background, fonts 1)
     /// <summary>The F6 party information screen: the pointer over the small map names the nearest town, Tab and Shift-Tab step through the towns, any other key or the left button leaves.</summary>
@@ -50,6 +51,8 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
         var canvas = ui.Canvas;
         _nextTabCity = state.InCity ? state.CurrentLocation : LocationRules.NearestCity(state, state.MapPosition.X, state.MapPosition.Y);
         _back = ScreenDrawing.DrawBackground(ui, panel, state.Party, "ptystats");
+        // the towns' dots as the picture draws them (before the party marker covers one): the pointer's towns in the player's game
+        _townDots = state.Behaviour.FixPartyInfoTownHover ? TownDots(state) : null;
         DrawPartyMarker(state);
         DrawWealthAndPlace(state);
         DrawTitles(state.Party.Fame);
@@ -61,8 +64,16 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
             var mouse = ui.LaidMouse;
             if (mouse.X > MapLeft && mouse.X < MapRight && mouse.Y > MapTop && mouse.Y < MapBottom)
             {
-                // C: the nearest town is sought at (x - 3, y + 3) of the map, as the original.
-                var town = TownUnder(state, mouse.X - MapLeft - 3, mouse.Y - MapTop + 3);
+                // orig: R034+0x0EE6 the map's pointer test: R034+0x1A86 at (x - 3, y + 3) of the map, scaled x × 327 / 118, y × 931 / 106
+                // BUG: OriginalBehaviour.FixPartyInfoTownHover - the town under the pointer is sought with another scale than the
+                //   party marker's (118 against 116 across) and 3 pixels off the pointer, within 10 of the map's distance, while the
+                //   dots are part of the picture, drawn by hand: the small place that reveals a town drifts off its dot, and with the
+                //   tip of the hand on its dot 19 of the 92 towns show nothing or a neighbour (Erfurt, Wien, Muenchen, Strassburg...:
+                //   GitHub issue 8). PartyInfoTownHoverTests. Fixed (an evident display fix, every player game): the dots are found in
+                //   the picture (SmallMapDots), and the town whose dot is nearest the tip of the hand, within 4 pixels, is shown.
+                var town = _townDots is { } dots
+                    ? SmallMapDots.TownAt(dots, mouse.X + SmallMapDots.TipDx, mouse.Y + SmallMapDots.TipDy)
+                    : TownUnder(state, mouse.X - MapLeft - 3, mouse.Y - MapTop + 3);
                 if (town != shown && town != -1)
                 {
                     shown = town;
@@ -128,6 +139,11 @@ public sealed class PartyInfoScreen(GameUi ui, PartyPanel panel)
     /// <summary>The town near a point of the small map (pixels from its corner).</summary>
     private static int TownUnder(GameState state, int x, int y) =>
         PartyStanding.NearestTown(state, (int)((long)x * 327 / 118), (int)((long)y * 931 / 106));
+
+    /// <summary>Each town's dot on the small map as the screen's picture draws it (OriginalBehaviour.FixPartyInfoTownHover).</summary>
+    private (int X, int Y)[] TownDots(GameState state) =>
+        SmallMapDots.Match(SmallMapDots.Towns(state), SmallMapDots.FindDots(ui.Canvas, MapLeft, MapTop, MapRight, MapBottom),
+            116.0 / 327, 0xC8, 106.0 / 931, 0x46);
 
     // orig: R034+0x19D0 (1550:0AF0) matched: maploctr at (116x/327 + 0xC8, 106y/931 + 0x46), the location's place or the party's map position
     private void DrawPartyMarker(GameState state)

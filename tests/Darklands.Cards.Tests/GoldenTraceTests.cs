@@ -272,6 +272,8 @@ public sealed class GoldenTraceTests
             nameof(OriginalBehaviour.FixHealingKeepsBoosts), nameof(OriginalBehaviour.FixGreatPowerQuality), nameof(OriginalBehaviour.FixFootpadsPotionUsedUp),
             nameof(OriginalBehaviour.FixDismasForTheParty), nameof(OriginalBehaviour.FixChristopherTravelAndHealing), nameof(OriginalBehaviour.FixMichaelArmsQuality),
             nameof(OriginalBehaviour.FixAnthonyHealingOnly), nameof(OriginalBehaviour.FixAquinasReligion), nameof(OriginalBehaviour.FixNightWallsClimbers),
+            // GitHub issue 8 (2026-11-27): a display fix of the party information, no card reads it
+            nameof(OriginalBehaviour.FixPartyInfoTownHover),
         };
 
         private static PropertyInfo[] PropertiesOf(Type type)

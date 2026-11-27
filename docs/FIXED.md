@@ -482,3 +482,12 @@ Drawing glitches of the 1992 game, fixed in every rule set, Original included; t
   | Before (the 1992 game; 4x) | Now (4x) |
   |---|---|
   | ![The values from Healing down stand 3 pixels left of the others](screenshots/fixed/sheet-skill-column/before.png) | ![The values from Healing down in line with the others](screenshots/fixed/sheet-skill-column/after.png) |
+- **Finding towns on the party information's map.** On the party information's small map, the spot that named a town
+  lay a few pixels off its dot: with the tip of the hand on the dot, 19 of the 92 towns, Erfurt and Wien among them,
+  showed nothing or a neighbour. Now the town whose dot is under the tip of the hand is shown, for every town (GitHub
+  issue 8). *How you notice it:* pointing at the towns on the map (F6). *Rules:* Original, Fixed, Restored. *Since:*
+  1.2.0. *Register:* [B-63df1f](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game; 3x) | Now (3x) |
+  |---|---|
+  | ![The tip of the hand on Erfurt's dot, and the town box stays empty](screenshots/fixed/party-info-town-hover/before.png) | ![The tip of the hand on Erfurt's dot, and the town box names Erfurt](screenshots/fixed/party-info-town-hover/after.png) |

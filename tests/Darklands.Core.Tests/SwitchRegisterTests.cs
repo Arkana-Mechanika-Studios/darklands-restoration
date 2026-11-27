@@ -168,7 +168,7 @@ public sealed class SwitchRegisterTests
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
         Assert.Empty(OriginalBehaviour.Faithful.On);
         Assert.Equal(OriginalBehaviour.Original.On, OriginalBehaviour.DataSafe.On);
-        Assert.Equal(31, OriginalBehaviour.DataSafe.On.Count());
+        Assert.Equal(32, OriginalBehaviour.DataSafe.On.Count());
     }
 
     /// <summary>Every gameplay flag is on in Fixed (and Restored) and none is on in Original; the data-safety and visual flags are on in every player set.</summary>

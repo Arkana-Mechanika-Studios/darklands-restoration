@@ -289,6 +289,9 @@ public static partial class RuleTable
     /// <summary>The index of <c>fix.cards.night-walls-climbers</c> (<see cref="OriginalBehaviour.FixNightWallsClimbers"/>).</summary>
     public const int FixNightWallsClimbers = 93;
 
+    /// <summary>The index of <c>fix.party-info.town-hover</c> (<see cref="OriginalBehaviour.FixPartyInfoTownHover"/>).</summary>
+    public const int FixPartyInfoTownHover = 94;
+
     /// <summary>Every fix flag of the switch register, in its order (the index of each is its place here).</summary>
     public static IReadOnlyList<Rule> Flags { get; } =
     [
@@ -386,5 +389,6 @@ public static partial class RuleTable
         new("fix.saints.anthony-healing-only", nameof(OriginalBehaviour.FixAnthonyHealingOnly), "gameplay", false, true, true),
         new("fix.saints.aquinas-religion", nameof(OriginalBehaviour.FixAquinasReligion), "gameplay", false, true, true),
         new("fix.cards.night-walls-climbers", nameof(OriginalBehaviour.FixNightWallsClimbers), "gameplay", false, true, true),
+        new("fix.party-info.town-hover", nameof(OriginalBehaviour.FixPartyInfoTownHover), "visual", true, true, true),
     ];
 }

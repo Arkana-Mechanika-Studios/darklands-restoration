@@ -277,6 +277,14 @@ after 1.0.
     Woodwise, "%02d" DS:2EED) at the box's x + 3 = 0x109, three pixels left of the other two groups (0x10C). The original's own
     sheet frame (vis10 comm-inn, live) is byte-identical to the Faithful C#'s, so it is the original's drawing. Faithful keeps it
     (B-c26daf, test `CharacterSheetSkillColumnTests`; the oracle and every replay play Faithful); fixed: at 0x10C, nothing else moves.
+* Another evident display fix for every player game (2026-11-27, GitHub issue 8), in `DataSafe`:
+  * `FixPartyInfoTownHover`: the party information's small map (R034+0x0EE6) seeks the town under the pointer (R034+0x1A86, within 10
+    of the map's distance) at (x - 3, y + 3) of the map scaled x × 327 / 118, y × 931 / 106, where the party marker is placed at
+    116x / 327, 106y / 931 (R034+0x19D0), and the towns' dots are drawn by hand in pics\ptystats.pic: with the tip of the hand on its
+    dot, 19 of the 92 towns show nothing or a neighbour (Erfurt, Wien). Faithful keeps it (B-63df1f, test
+    `PartyInfoTownHoverTests.TheOriginalMissesErfurtAndWienOnTheirDots`); fixed: the screen finds the dots in its picture (lone red
+    pixels and 3 × 3 red rings, matched one to one to the towns with a least-squares scale, `SmallMapDots`) and shows the town whose
+    dot is nearest the tip of the hand, within 4 pixels (test `TheTipOfTheHandOnATownsDotShowsThatTown`, every town). Tab is unchanged.
   The two exits were kept as documented differences until round restart (the roster's as an undefined-memory divergence D-8e26e9, the
   load's as a deliberate fix D-3fba1b); a reachable end of the program is now treated as the load crashes are; the map's was found in the round.
 * The switches are not exposed in the settings; the player's host sets the profile.
