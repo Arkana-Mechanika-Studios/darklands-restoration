@@ -56,6 +56,11 @@ More of the same, also each with its entry in `docs/FIXED.md` and before / after
 - The potion thrown at footpads is used up.
 - Outside a city's walls at night, the grapple and everybody climbing have the climbers' own chances, as by day.
 
+## The Comfort interface
+
+- At a merchant's barter and at the inn's item store, F1 to F5 open the members' sheets, as a click on the party does
+  (GitHub issue 9). Classic keeps the 1992 pages, where only the click opens them.
+
 ## Translations
 
 - The untranslated-text audit came out in 1.1.4 (texts a pack never reached, letters lost in some texts, the pronouns):

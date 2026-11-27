@@ -179,6 +179,13 @@ public sealed class BarterScreen
         {
             throw new QuitGameException();
         }
+        // Comfort (not in the original): F1..F5 open a member's sheet, as a click on the party column does (MouseStep)
+        if (_page.SheetKeyMember(key, Party) is { } sheet)
+        {
+            _screens.CharacterSheet(sheet);
+            Redraw();
+            return;
+        }
         if (BuySellPage.Is(key, 'P'))
         {
             Purchase();

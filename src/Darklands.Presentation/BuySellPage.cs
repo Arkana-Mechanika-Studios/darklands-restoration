@@ -284,6 +284,20 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     /// <summary>A key code for a click on a menu line, using the screen's table (0: none).</summary>
     public static int MenuKey(int line, IReadOnlyList<int> keys) => line >= 0 && line < keys.Count ? keys[line] : 0;
 
+    /// <summary>
+    /// With the Comfort interface (GameUi.ComfortInterface; not in the original): the member whose sheet F1..F5 open, as a click on
+    /// the party column does (GitHub issue 9); null for any other key, an empty slot, or Classic.
+    /// </summary>
+    public int? SheetKeyMember(int key, Core.Characters.Party party)
+    {
+        if (!ui.ComfortInterface || key is < Keys.F1 or > Keys.F5 || (key & 0xFF) != 0)
+        {
+            return null;
+        }
+        var member = (key >> 8) - (Keys.F1 >> 8);
+        return party.OccupiedSlot(member) is null ? null : member;
+    }
+
     /// <summary>The key of a letter, typed in either case ('P': 0x1950 or 0x1970).</summary>
     public static bool Is(int key, char letter) =>
         key == Keys.ForCharacter(char.ToUpperInvariant(letter)) || key == Keys.ForCharacter(char.ToLowerInvariant(letter));

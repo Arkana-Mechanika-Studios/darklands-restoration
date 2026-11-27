@@ -338,6 +338,10 @@ games are the same, and the original game loads them):
   keyboard handler ignores Shift), so Shift with a direction did nothing of its own there. A recording of it (the keys, their
   presses and releases, the clock) plays back the same walk.
 
+* **The members' sheets from the trade pages** (since 1.2, GitHub issue 9): at a merchant's barter and at the inn's item store,
+  F1 to F5 open a member's sheet, as a click on the party column does (the original opens them only with the click); Esc comes
+  back to the page.
+
 `interface` is a section so that a feature could have its own key beside `mode`; there is none.
 
 ### Keys on other layouts

@@ -157,6 +157,13 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         {
             throw new QuitGameException();
         }
+        // Comfort (not in the original): F1..F5 open a member's sheet, as a click on the party column does (MouseStep)
+        if (page.SheetKeyMember(key, state.Party) is { } sheet)
+        {
+            screens.CharacterSheet(sheet);
+            Redraw();
+            return;
+        }
         if (BuySellPage.Is(key, 'P'))
         {
             Put();
