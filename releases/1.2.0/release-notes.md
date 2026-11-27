@@ -43,6 +43,19 @@ as the game's own texts say, and does what they describe (in Original nothing ch
 
 Potions and charms already in a saved game stay as they were.
 
+More of the same, also each with its entry in `docs/FIXED.md` and before / after pictures where it shows (and
+`docs/SAINTS.md`: what every saint the Fixed rules change gives, the gifts their descriptions leave out included):
+
+- Healing (Essence of Grace, a saint) no longer pulls down an attribute a boost has lifted above its maximum.
+- Great Power makes the weapon's quality 14, 22 or 30 points better for about a day, as the manual says, instead of
+  scrambling its damage and penetration.
+- St. Dismas helps the whole party; St. Christopher heals a little and speeds overland travel for a week; St. Michael
+  improves the party's weapons and armour in fights for about a day; St. Anthony heals Strength and Endurance instead of
+  lifting them for a day; St. Thomas Aquinas raises Religion, and the party's standing where there is a monastery or a
+  university.
+- The potion thrown at footpads is used up.
+- Outside a city's walls at night, the grapple and everybody climbing have the climbers' own chances, as by day.
+
 ## Translations
 
 - The untranslated-text audit came out in 1.1.4 (texts a pack never reached, letters lost in some texts, the pronouns):

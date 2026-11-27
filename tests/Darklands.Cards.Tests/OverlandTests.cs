@@ -522,4 +522,29 @@ public sealed class OverlandTests
         }
         Assert.True(met > 0, "no seed drew a road roll of 19 to 22");
     }
+
+    /// <summary>
+    /// FixChristopherTravelAndHealing (B-623452, F-1 set 2): while St. Christopher's week runs a step takes 2/3 of its minutes (a marsh
+    /// step 50 -> 33): four marsh steps are three hours in the original, two with the week running; without the flag the week changes nothing.
+    /// </summary>
+    [Theory]
+    [InlineData(false, 3)]
+    [InlineData(true, 2)]
+    public void ChristophersWeekMakesTheStepsShorter(bool fixedGame, int expectedHours)
+    {
+        var state = State();
+        state.Behaviour.FixChristopherTravelAndHealing = fixedGame;
+        Darklands.Core.Rules.DayProtections.Start(state, 0, Darklands.Core.Rules.DayProtections.ChristopherTravel, 1, 168);
+        var map = MapOf(60, 60, (_, _) => 4);
+        state.MapPosition = new MapPosition(20, 20);
+        var hours = 0;
+        var travel = new OverlandTravel(state, map, kind => false) { HourPassed = () => hours++ };
+        travel.Begin();
+        var (x, y) = PixelOf(20, 20);
+        for (var i = 0; i < 4; i++)
+        {
+            travel.Step(x, y);
+        }
+        Assert.Equal(expectedHours, hours);
+    }
 }

@@ -246,8 +246,14 @@ public sealed class Footpads : Card
 
     /// <summary>A potion scatters the robbers. (The potion is not used up: original.)</summary>
     // BUG: no pick-up-item here: the potion stays in the pack.
-    private static void ThrowAPotion(CardContext c)
+    //   Fixed (FixFootpadsPotionUsedUp): the potion is taken from the member's pack, as the card's text says ("The potion bottle bursts")
+    //   and as every other interaction pop-up does. Decision: fix, in Fixed (2026-11-27, F-1 set 2).
+    internal static void ThrowAPotion(CardContext c)
     {
+        if (c.State.Behaviour.FixFootpadsPotionUsedUp)
+        {
+            c.TakeItem(c.MenuMember, c.CardItems[c.MenuSlot]);
+        }
         ShowPicture(c, PotionPicture);
         c.Screen.Text(0x0D);
         c.PassHours(1);

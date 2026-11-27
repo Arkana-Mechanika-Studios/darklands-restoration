@@ -32,6 +32,8 @@ public sealed class BeforeTheCityWalls : Card
         // boat landing's $Enter00, the initial test card's $Initi00, the sally port's $CityW03 or $CityW05),
         // until the dawn wait's card-run-near, a member's sheet, the party information or a battle has
         // $CityE00 loaded (see NameTheCard).
+        //   Decision: covered, by the setting view.clean-drawing (Fixed, Restored: the card is loaded and shown at once, with its own
+        //   picture and texts); Original keeps the 1992 screen (the user's choice, 2026-11-27, F-1 set 2).
         // DIVERGENCE: a block the previous card's file does not have ($Initi00 has 1 block, $CityW05 11, $Enter00 11) is printed from
         //   text-bank-file + text-bank-index.ofs[n], an entry text-bank-read (R043+0x020E) did not set: undefined memory (what an earlier, longer file left;
         //   01 0a 0e under the oracle for block 5 after $Initi00); the C# prints an empty text.

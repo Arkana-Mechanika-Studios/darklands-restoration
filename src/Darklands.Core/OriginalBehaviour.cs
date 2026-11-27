@@ -701,6 +701,42 @@ public sealed class OriginalBehaviour
     // Not in the original: the Fixed rule set, F-1 set 1b (the user's choice, 2026-11-25); B-047d71
     public bool FixBankStandingsSaved { get => _on[RuleTable.FixBankStandingsSaved]; set => _on[RuleTable.FixBankStandingsSaved] = value; }
 
+    /// <summary>Healing pulls an attribute boosted above its maximum down; fixed: it leaves it alone and never heals past the maximum.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-308359
+    public bool FixHealingKeepsBoosts { get => _on[RuleTable.FixHealingKeepsBoosts]; set => _on[RuleTable.FixHealingKeepsBoosts] = value; }
+
+    /// <summary>Great Power adds to the damage-and-penetration byte; fixed: the manual's weapon quality, about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-555b7a
+    public bool FixGreatPowerQuality { get => _on[RuleTable.FixGreatPowerQuality]; set => _on[RuleTable.FixGreatPowerQuality] = value; }
+
+    /// <summary>The potion thrown at footpads stays in the pack; fixed: it is used up.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-556a53
+    public bool FixFootpadsPotionUsedUp { get => _on[RuleTable.FixFootpadsPotionUsedUp]; set => _on[RuleTable.FixFootpadsPotionUsedUp] = value; }
+
+    /// <summary>St. Dismas helps one member only; fixed: as his text says.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-5eb6aa
+    public bool FixDismasForTheParty { get => _on[RuleTable.FixDismasForTheParty]; set => _on[RuleTable.FixDismasForTheParty] = value; }
+
+    /// <summary>St. Christopher neither speeds travel nor heals; fixed: heals a little, faster travel for a week.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-623452
+    public bool FixChristopherTravelAndHealing { get => _on[RuleTable.FixChristopherTravelAndHealing]; set => _on[RuleTable.FixChristopherTravelAndHealing] = value; }
+
+    /// <summary>St. Michael does not improve the party's weapons and armour; fixed: +20 quality in combat for about a day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-723764
+    public bool FixMichaelArmsQuality { get => _on[RuleTable.FixMichaelArmsQuality]; set => _on[RuleTable.FixMichaelArmsQuality] = value; }
+
+    /// <summary>St. Anthony boosts Strength and Endurance for a day; fixed: he heals them, up to the maximum.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-747355
+    public bool FixAnthonyHealingOnly { get => _on[RuleTable.FixAnthonyHealingOnly]; set => _on[RuleTable.FixAnthonyHealingOnly] = value; }
+
+    /// <summary>St. Thomas Aquinas gives no Religion; fixed: Religion for a day and standing at places of learning.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-78a26c
+    public bool FixAquinasReligion { get => _on[RuleTable.FixAquinasReligion]; set => _on[RuleTable.FixAquinasReligion] = value; }
+
+    /// <summary>At the walls by night the grapple never works and everyone climbing always does; fixed: the climbers' own chances, as by day.</summary>
+    // Not in the original: the Fixed rule set, F-1 set 2 (the user's choice, 2026-11-27); B-79145e
+    public bool FixNightWallsClimbers { get => _on[RuleTable.FixNightWallsClimbers]; set => _on[RuleTable.FixNightWallsClimbers] = value; }
+
     /// <summary>A Hussite band's friendship succeeds only on a roll equal to the chance; fixed: at or below it.</summary>
     // Not in the original: the Fixed rule set, F-1 set 1 (the user's choice, 2026-11-25); B-7bfead
     public bool FixHussiteFriendship { get => _on[RuleTable.FixHussiteFriendship]; set => _on[RuleTable.FixHussiteFriendship] = value; }

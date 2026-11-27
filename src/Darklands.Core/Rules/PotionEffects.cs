@@ -96,8 +96,19 @@ public static class PotionEffects
                 break;
             // BUG: Great Power adds 14/22/30 to the whole damage-and-penetration byte (+14 penetration; +1 damage +6; +1 damage
             // +14, with the carries), where the manual has it raise the weapon's quality by that much, up to 99.
+            //   Replayed: grade 20 drunk twice, the byte 0x00 -> 0x0E -> 0x1C.
+            //   Fixed (FixGreatPowerQuality): the manual's quality, +14 / 22 / 30 up to 99 for impact weapons, flails and handguns, about a
+            //   day, a new dose replacing the old, counted at the blow; nothing stored. Decision: fix, in Fixed (the user's choice,
+            //   2026-11-27, F-1 set 2; it replaces set 1b's byte arithmetic).
             case GreatPower:
                 t = ThreeBands(14, 22, 30);
+                // Not in the original: Great Power as the manual has it (FixGreatPowerQuality, B-555b7a: the quality of an impact weapon,
+                //   flail or handgun +14 / 22 / 30, up to 99, about a day, counted at the blow: Attacks.HitDamage); the bonus byte untouched
+                if (s.Behaviour.FixGreatPowerQuality)
+                {
+                    DayProtections.Start(s, member, DayProtections.GreatPowerQuality, t);
+                    break;
+                }
                 if (s.Behaviour.FixWeaponPotionsWearOff)
                 {
                     DayProtections.Start(s, member, DayProtections.GreatPower, t);

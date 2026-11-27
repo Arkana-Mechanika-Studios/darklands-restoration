@@ -341,17 +341,41 @@ public static class Attacks
         var armour = ct.ArmourValue[location] + (ct.Protection & 0x7F);
         // Not in the original: the Fixed rules' day-long protections (F-1 set 1b, DayProtections): the weapon potions count with the
         //   weapons the manual names; the target's St. Patrick armour against missiles, St. Pantaleon armour against the four animals and
-        //   St. Dunstan quality on metal armour (read from the running events; no member record changes)
+        //   St. Dunstan quality on metal armour (read from the running events; no member record changes); F-1 set 2: Great Power's
+        //   and St. Michael's weapon quality, St. Michael's armour quality
         var weaponBonus = ca.WeaponBonus;
         var metalQuality = 0;
+        var strikeQuality = (int)ca.StrikeQuality;
         if (battle.DifficultyOf is { } game)
         {
+            var weapon = ca.Action.Has(CombatAction.Missile) ? ca.MissileWeapon : ca.DefaultWeapon;
             if (battle.Behaviour.FixWeaponPotionsWearOff && MemberSlot(game, ca) is var shooter and >= 0)
             {
-                weaponBonus = Darklands.Core.Rules.DayProtections.WeaponBonusFor(game, shooter, weaponBonus, ca.Action.Has(CombatAction.Missile) ? ca.MissileWeapon : ca.DefaultWeapon);
+                weaponBonus = Darklands.Core.Rules.DayProtections.WeaponBonusFor(game, shooter, weaponBonus, weapon);
+            }
+            // F-1 set 2: Great Power's quality on an impact weapon, flail or handgun and St. Michael's on any weapon, up to 99
+            if (MemberSlot(game, ca) is var striker and >= 0 && weapon >= 0)
+            {
+                var extra = 0;
+                if (battle.Behaviour.FixGreatPowerQuality && Darklands.Core.Rules.DayProtections.GreatPowerCounts(game, weapon))
+                {
+                    extra += Darklands.Core.Rules.DayProtections.Amount(game, striker, Darklands.Core.Rules.DayProtections.GreatPowerQuality);
+                }
+                if (battle.Behaviour.FixMichaelArmsQuality)
+                {
+                    extra += Darklands.Core.Rules.DayProtections.Amount(game, striker, Darklands.Core.Rules.DayProtections.MichaelWeaponQuality);
+                }
+                if (extra > 0)
+                {
+                    strikeQuality = Math.Max(strikeQuality, Math.Min(99, strikeQuality + extra));
+                }
             }
             if (MemberSlot(game, ct) is var member and >= 0)
             {
+                if (battle.Behaviour.FixMichaelArmsQuality && ct.ArmourType[location] >= 0)
+                {
+                    metalQuality += Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.MichaelArmourQuality);
+                }
                 if (battle.Behaviour.FixPatrickMissileArmour && ca.Action.Has(CombatAction.Missile))
                 {
                     armour += Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.MissileArmour);
@@ -362,7 +386,7 @@ public static class Attacks
                 }
                 if (battle.Behaviour.FixDunstanMetalArmour && Darklands.Core.Rules.DayProtections.IsMetalArmour(ct.ArmourType[location]))
                 {
-                    metalQuality = Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.MetalQuality);
+                    metalQuality += Darklands.Core.Rules.DayProtections.Amount(game, member, Darklands.Core.Rules.DayProtections.MetalQuality);
                 }
             }
         }
@@ -404,7 +428,7 @@ public static class Attacks
         {
             armourQuality = 99;
         }
-        return QueueDamage(battle, (ca.StrikeQuality - armourQuality) / 10 + bonus, t, penetration, armour);
+        return QueueDamage(battle, (strikeQuality - armourQuality) / 10 + bonus, t, penetration, armour);
     }
 
     // the party slot of a combatant's member (−1: an enemy, or none)

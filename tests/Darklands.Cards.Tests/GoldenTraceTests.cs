@@ -268,6 +268,10 @@ public sealed class GoldenTraceTests
             nameof(OriginalBehaviour.FixWeaponPotionsWearOff), nameof(OriginalBehaviour.FixArmourPotionsWearOff), nameof(OriginalBehaviour.FixPolycarpFireForADay),
             nameof(OriginalBehaviour.FixPatrickMissileArmour), nameof(OriginalBehaviour.FixCharityFire), nameof(OriginalBehaviour.FixErasmusFire),
             nameof(OriginalBehaviour.FixPantaleonFireAndAnimals), nameof(OriginalBehaviour.FixDunstanMetalArmour), nameof(OriginalBehaviour.FixBankStandingsSaved),
+            // F-1 set 2 (2026-11-27)
+            nameof(OriginalBehaviour.FixHealingKeepsBoosts), nameof(OriginalBehaviour.FixGreatPowerQuality), nameof(OriginalBehaviour.FixFootpadsPotionUsedUp),
+            nameof(OriginalBehaviour.FixDismasForTheParty), nameof(OriginalBehaviour.FixChristopherTravelAndHealing), nameof(OriginalBehaviour.FixMichaelArmsQuality),
+            nameof(OriginalBehaviour.FixAnthonyHealingOnly), nameof(OriginalBehaviour.FixAquinasReligion), nameof(OriginalBehaviour.FixNightWallsClimbers),
         };
 
         private static PropertyInfo[] PropertiesOf(Type type)

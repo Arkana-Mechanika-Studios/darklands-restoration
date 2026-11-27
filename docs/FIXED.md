@@ -131,6 +131,23 @@ row in the register; before / after pictures where it shows on the screen. What 
   | After the prayer | Loaded, before (Original) | Loaded, now (Fixed) |
   |---|---|---|
   | ![The chance shows 99% after the prayer](screenshots/fixed/bank-standings/1-after-the-prayer.png) | ![After the load the chance is 79% again: the standing was lost](screenshots/fixed/bank-standings/2-before-loaded.png) | ![After the load the chance is still 99%](screenshots/fixed/bank-standings/3-now-loaded.png) |
+- **The potion thrown at footpads.** In a city street, the potion that scattered the footpads stayed in the pack, ready
+  for the next ambush. Now it is used up, as the card says (the bottle bursts). *How you notice it:* in the
+  thrower's pack afterwards. *Rules:* Fixed, Restored. *Since:* 1.2.0. *Register:* [B-556a53](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game): the Noxious Aroma still in Albrecht's pack | Now: used up |
+  |---|---|
+  | ![The pack still holds the Noxious Aroma](screenshots/fixed/footpads-potion/before.png) | ![The Noxious Aroma is gone](screenshots/fixed/footpads-potion/after.png) |
+- **Climbing a city's walls by night.** Outside a city's walls at night, the grapple (one climber throws down a rope) had
+  no chance at all, and everybody climbing on his own always got over, whoever was in the party. Now, as by day, the
+  grapple's chance is the best climber's and everybody climbing is as hard as for the weakest climber. *How you notice
+  it:* the chances the two lines show. *Rules:* Fixed, Restored. *Since:* 1.2.0. *Register:*
+  [B-79145e](faithfulness/ORIGINAL_BUGS.md), [B-edab45](faithfulness/ORIGINAL_BUGS.md).
+
+  | | Before (the 1992 game) | Now |
+  |---|---|---|
+  | The grapple | ![The chance of success is hopeless](screenshots/fixed/night-walls-climbers/grapple-before.png) | ![The chance of success is good](screenshots/fixed/night-walls-climbers/grapple-after.png) |
+  | Everybody climbs | ![The chance of success is excellent](screenshots/fixed/night-walls-climbers/everyone-before.png) | ![The chance of success is good](screenshots/fixed/night-walls-climbers/everyone-after.png) |
 
 
 ## Potions and saints
@@ -144,6 +161,10 @@ by the harm done and taken, and after about a day, when the effect is gone. *Rul
   new dose replaces the old one, and each works with the weapons the manual names: Deadly Blade with every weapon but
   impact weapons and flails, Strongedge with edged weapons and polearms, Great Power with impact weapons, flails and
   handguns; with another weapon it does nothing. *Register:* [B-11a75a](faithfulness/ORIGINAL_BUGS.md).
+- **Great Power** scrambled the weapon's damage and penetration (a weapon could come out worse: "after Great Power my bows
+  only do 3-5 damage"). Now it does what the manual says: the weapon's quality is 14, 22 or 30 points better (by the
+  potion's quality), up to 99, for about a day, with impact weapons, flails and handguns. *Register:*
+  [B-555b7a](faithfulness/ORIGINAL_BUGS.md).
 - **Hardarmor and Firewall** lasted for good, and Firewall added armour against every blow. Now each lasts about a day, and
   Firewall guards against flame only (Arabian Fire, a dragon's breath), as the clue book says. *Register:* [B-d0b264](faithfulness/ORIGINAL_BUGS.md).
 - **St. Polycarp** gave a lasting charm (armour against every blow) instead of his protection from fire. Now: fire
@@ -158,6 +179,52 @@ by the harm done and taken, and after about a day, when the effect is gone. *Rul
   day. *Register:* [B-a19878](faithfulness/ORIGINAL_BUGS.md).
 - **St. Dunstan** added armour against every blow, for good. Now, as his text says, the party's metal armour (scale,
   chainmail, brigandine, plate) is 20 points better for about a day; enemies are not affected. *Register:* [B-243faa](faithfulness/ORIGINAL_BUGS.md).
+- **St. Michael** did not improve the party's weapons and armour, as his text says he does. Now, besides his other gifts,
+  every member's weapons and armour are 20 points better in a fight for about a day (up to 99). *Register:*
+  [B-723764](faithfulness/ORIGINAL_BUGS.md).
+
+The fixes below show on the character sheet. *Rules:* Fixed, Restored. *Since:* 1.2.0. What the saints the Fixed rules change
+give, the gifts their texts do not mention included: [SAINTS.md](SAINTS.md).
+
+- **Healing does not undo a boost.** Healing (Essence of Grace, a saint) pulled an attribute that a boost had lifted above
+  its maximum back down, and the boost then cost it again when it wore off. Now healing restores only what is lost, as the
+  clue book says, and never goes past the maximum. *How you notice it:* drink Ironarm, then Essence of Grace: the Strength
+  stays where Ironarm put it (the party panel's middle number). *Register:* [B-308359](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game; 4x): Strength 51 | Now (4x): Strength 55 |
+  |---|---|
+  | ![Ironarm lifts Strength to 55; Essence of Grace brings it down to 51](screenshots/fixed/healing-keeps-boosts/before.png) | ![After Essence of Grace the Strength is still 55](screenshots/fixed/healing-keeps-boosts/after.png) |
+- **St. Dismas** helped the one member prayed for. Now, as his text says, the whole party's Agility, Woodwise and Stealth
+  rise, and the one prayed for also gets Charisma and Speak Common. *How you notice it:* on another member's sheet after
+  the prayer. *Register:* [B-5eb6aa](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game): Ebhard's sheet after Albrecht's prayer | Now: Ebhard's Agility and Woodwise risen |
+  |---|---|
+  | ![Ebhard's Agility 24 and Woodwise 3 unchanged](screenshots/fixed/saint-dismas/before.png) | ![Ebhard's Agility 41 and Woodwise 18](screenshots/fixed/saint-dismas/after.png) |
+- **St. Christopher** neither sped the party's travel nor healed. Now he heals a little Strength (a fifth of what is lost)
+  and Endurance (three tenths), and for a week the party travels overland half again as fast (a step takes two thirds of
+  its time; encounters come per step as before). *How you notice it:* on the sheet after the prayer, and on the clock
+  while travelling. *Register:* [B-623452](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game): Strength 2 of 17 | Now: Strength 5 of 17 |
+  |---|---|
+  | ![Strength stays at 2](screenshots/fixed/saint-christopher/before.png) | ![Strength healed to 5](screenshots/fixed/saint-christopher/after.png) |
+- **St. Anthony** lifted Strength and Endurance above their maximum for a day and took it back afterwards (a member could
+  end lower than before). Now, as his text says (for these two, healing only), they are healed by the same amounts, up to the maximum,
+  and nothing is taken back. *How you notice it:* on the sheet after the prayer. *Register:*
+  [B-747355](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game): Endurance 18 of 14, Strength 26 of 17 | Now: 14 of 14, 17 of 17 |
+  |---|---|
+  | ![Endurance and Strength above their maximum](screenshots/fixed/saint-anthony/before.png) | ![Endurance and Strength at their maximum](screenshots/fixed/saint-anthony/after.png) |
+- **St. Thomas Aquinas** gave no Religion, though his text promises a large increase. Now his other gifts stay and
+  Religion rises by 20 to 39 for about a day; and where the city has a monastery or a university, the party's standing
+  there rises, as his text says. *How you notice it:* Religion on the sheet after the prayer. *Register:*
+  [B-78a26c](faithfulness/ORIGINAL_BUGS.md).
+
+  | Before (the 1992 game): Religion 60 | Now: Religion 95 |
+  |---|---|
+  | ![Religion stays at 60](screenshots/fixed/saint-aquinas/before.png) | ![Religion 95 after the prayer](screenshots/fixed/saint-aquinas/after.png) |
 
 ## Camp
 

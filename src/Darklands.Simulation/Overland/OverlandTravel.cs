@@ -150,6 +150,12 @@ public sealed class OverlandTravel(GameState state, WorldMap map, Func<int, bool
         // orig: DS:8672 += R030+0x2AC8(t) = Terrain.MinutesPerStep (checked: all 18 terrain cases and the default 9 of R030+0x2AC8 agree with the table)
         // the rules' step minutes (RuleParameters.StepMinutes): the original's at its default, a scaled step at least a minute
         var minutes = Terrain.MinutesPerStep(terrain);
+        // Not in the original: St. Christopher's week (FixChristopherTravelAndHealing, F-1 set 2): a step takes 2/3 of its minutes, rounded to
+        //   the nearest, at least one (the encounters are drawn per step, so their rate per step stays)
+        if (state.Behaviour.FixChristopherTravelAndHealing && DayProtections.RunsOnTheParty(state, DayProtections.ChristopherTravel))
+        {
+            minutes = Math.Max(1, (minutes * DayProtections.TravelPart + DayProtections.TravelWhole / 2) / DayProtections.TravelWhole);
+        }
         PassMinutes(state.Parameters.StepMinutes == RuleScale.One ? minutes : Math.Max(1, state.Parameters.StepMinutes.Apply(minutes)));
 
         // C: t >= 25 && t != 27 && t != 25 (castle 28, city 29 and the other place icons); the reach is 4 around a city (29), 1 around anything else.

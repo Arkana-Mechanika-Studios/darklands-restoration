@@ -15,10 +15,13 @@ namespace Darklands.Core.Rules;
 /// flame weapons (Arabian Fire, the dragon's breath), never the charm nibble nor the attacker's bit 7;</item>
 /// <item>St. Patrick: armour against missiles; St. Pantaleon: armour against Wolf, Boar, Bear and Spider; St. Dunstan: quality of
 /// the worn metal armour: read by the battle from the running events (<see cref="Amount"/>), nothing stored in the member.</item>
+/// <item>F-1 set 2 (2026-11-27): Great Power's weapon quality, St. Michael's quality of the party's weapons and armour (read at the
+/// blow, as St. Dunstan's), St. Christopher's week of faster travel (read by the overland step, <see cref="RunsOnTheParty"/>).</item>
 /// </list>
 /// Old saves' permanent bonuses, charms and strengths stay as they are: only events this code made (marked) are taken back.
 /// </summary>
-// Not in the original: the Fixed rule set, F-1 set 1b (B-11a75a, B-d0b264, B-44772a, B-a19878, B-315695, B-f32e0e, B-ce6144, B-243faa).
+// Not in the original: the Fixed rule set, F-1 set 1b (B-11a75a, B-d0b264, B-44772a, B-a19878, B-315695, B-f32e0e, B-ce6144, B-243faa) and set 2
+//   (B-555b7a, B-723764, B-623452).
 public static class DayProtections
 {
     // the event types: the potions' codes, a saint's fire 0x100 + its number, the battle amounts 0x200 / 0x300 + the saint's number
@@ -35,6 +38,18 @@ public static class DayProtections
 
     /// <summary>St. Dunstan's quality of the worn metal armour (39).</summary>
     public const int MetalQuality = 0x300 + 39;
+
+    /// <summary>St. Michael's quality of the party's weapons and of its armour (96; F-1 set 2).</summary>
+    public const int MichaelWeaponQuality = 0x300 + 96, MichaelArmourQuality = 0x500 + 96;
+
+    /// <summary>Great Power as the manual has it: the quality of an impact weapon, flail or handgun (F-1 set 2; the byte is not touched).</summary>
+    public const int GreatPowerQuality = 0x400 + GreatPower;
+
+    /// <summary>St. Christopher's faster travel, for a week (22; F-1 set 2): a step takes <see cref="TravelPart"/> of its time.</summary>
+    public const int ChristopherTravel = 0x600 + 22;
+
+    /// <summary>The part of a step's minutes a step takes while St. Christopher's travel runs: 2/3 (half again as fast).</summary>
+    public const int TravelPart = 2, TravelWhole = 3;
 
     // the mark of an event this code made (Data1): old saves' events of the same kind and type are the original's, left alone
     private const int Mark = 0x1B1B;
@@ -61,7 +76,10 @@ public static class DayProtections
     /// Starts protection <paramref name="type"/> of <paramref name="value"/> on member <paramref name="member"/> for about a day: the same
     /// protection running on the member is taken back first (a new dose replaces the old one), then this one is given and recorded.
     /// </summary>
-    public static void Start(GameState s, int member, int type, int value)
+    public static void Start(GameState s, int member, int type, int value) => Start(s, member, type, value, Hours);
+
+    /// <summary>As <see cref="Start(GameState, int, int, int)"/> for about <paramref name="hours"/> (the original's boost hours: rnd 3 + hours − 5).</summary>
+    public static void Start(GameState s, int member, int type, int value, int hours)
     {
         ArgumentNullException.ThrowIfNull(s);
         if (s.Party.OccupiedSlot(member) is null)
@@ -93,7 +111,7 @@ public static class DayProtections
                 break;
         }
         var created = s.Events.Create(member, s.CurrentLocation, extra, EventKinds.PotionBonus, type, value, (int)ExpiryHandler.UndoTemporaryBoost,
-            s.Random.Below(3) + Hours - 5, (int)EventFlags.CallExpiryHandler, 0);
+            s.Random.Below(3) + hours - 5, (int)EventFlags.CallExpiryHandler, 0);
         if (s.Events[created] is { } e2)
         {
             e2.Data1 = Mark;
@@ -148,6 +166,26 @@ public static class DayProtections
         return Running(s, member, type).Select(x => x.Event.Value).DefaultIfEmpty(0).Max();
     }
 
+    /// <summary>Whether protection <paramref name="type"/> runs on any present member (a party-wide effect: St. Christopher's travel).</summary>
+    public static bool RunsOnTheParty(GameState s, int type)
+    {
+        ArgumentNullException.ThrowIfNull(s);
+        return s.Events.All().Any(x => Ours(x.Event) && x.Event.Type == type && s.Party.OccupiedSlot(x.Event.Owner) is not null);
+    }
+
+    /// <summary>Whether Great Power counts with a weapon of type <paramref name="weapon"/>: impact weapons, flails and handguns (the manual).</summary>
+    public static bool GreatPowerCounts(GameState s, int weapon)
+    {
+        ArgumentNullException.ThrowIfNull(s);
+        var flags = WeaponFlags(s, weapon);
+        return (flags & 2) != 0 || (flags & 8) != 0 || HandgunTypes.Contains(weapon);
+    }
+
+    // the item flags of weapon type <weapon> (0: none or not a weapon)
+    private static uint WeaponFlags(GameState s, int weapon) =>
+        weapon < 0 ? 0u : s.Data.ItemDefinitions.Where(d => d.Type == weapon && (d.Flags & (ItemFlags.HandWeapon | ItemFlags.MissileWeapon)) != 0)
+            .Select(d => d.Flags).FirstOrDefault();
+
     /// <summary>
     /// The weapon potions' bonus byte as it counts for a blow with a weapon of type <paramref name="weapon"/> (−1: none): the part the
     /// running potions gave counts only with the weapons the manual names (Deadly Blade: every weapon but impact weapons and flails;
@@ -157,8 +195,7 @@ public static class DayProtections
     public static byte WeaponBonusFor(GameState s, int member, byte bonus, int weapon)
     {
         ArgumentNullException.ThrowIfNull(s);
-        var flags = weapon < 0 ? 0u : s.Data.ItemDefinitions.Where(d => d.Type == weapon && (d.Flags & (ItemFlags.HandWeapon | ItemFlags.MissileWeapon)) != 0)
-            .Select(d => d.Flags).FirstOrDefault();
+        var flags = WeaponFlags(s, weapon);
         var (edged, impact, polearm, flail) = ((flags & 1) != 0, (flags & 2) != 0, (flags & 4) != 0, (flags & 8) != 0);
         var isWeapon = (flags & (ItemFlags.HandWeapon | ItemFlags.MissileWeapon)) != 0;
         var result = (int)bonus;

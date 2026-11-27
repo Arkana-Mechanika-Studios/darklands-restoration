@@ -1,5 +1,6 @@
 using Darklands.Core.Characters;
 using Darklands.Core.Events;
+using Darklands.Core.World;
 using static Darklands.Core.Characters.Attribute;
 using static Darklands.Core.Characters.Skill;
 using Attribute = Darklands.Core.Characters.Attribute;
@@ -343,6 +344,81 @@ public static class SaintBook
         ForTheParty(DayProtections.AnimalArmour, 1)(s, who, given);
     };
 
+    // ---- F-1 set 2 (the user's decisions of 2026-11-27): the saints' help as their texts say. Not in the original. ----
+
+    /// <summary>No help (the original's side of a gift only the Fixed rules give).</summary>
+    private static readonly Boon None = (_, _, _) => { };
+
+    /// <summary>All of <paramref name="boons"/> in turn (as one boon).</summary>
+    private static Boon All(params Boon[] boons) => (s, who, given) =>
+    {
+        foreach (var b in boons)
+        {
+            b(s, who, given);
+        }
+    };
+
+    /// <summary>
+    /// Heals an attribute by <paramref name="least"/>..<paramref name="most"/> points, up to its maximum and never above it (an
+    /// attribute already at or above the maximum is left as it is): "healing only" (St. Anthony). No event: nothing is taken back.
+    /// </summary>
+    private static Boon HealBy(Attribute a, int least, int most) => (s, who, _) =>
+    {
+        var points = s.Random.Below(most - least + 1) + least;
+        var m = s.Party.Slot(who);
+        var max = m.AttributeMaximums[(int)a];
+        if (m.Attributes[(int)a] < max)
+        {
+            m.Attributes[(int)a] = Math.Min(m.Attributes[(int)a] + points, max);
+        }
+    };
+
+    // St. Dismas's skills in the original (R039+0x3C92)
+    private static readonly Boon[] DismasSkills =
+        [Boost(Woodwise, 10, 19), Boost(Streetwise, 20, 39), Boost(Artifice, 20, 39), Boost(Agility, 10, 19), Boost(Stealth, 10, 19)];
+
+    /// <summary>
+    /// St. Dismas as his text says: the one prayed for gets his five skills as in the original (the same draws, in the same order),
+    /// every other present member Woodwise, Agility and Stealth (own draws, slot order), then the one prayed for Charisma and Speak
+    /// Common +6..11.
+    /// </summary>
+    private static readonly Boon DismasForTheParty = (s, who, given) =>
+    {
+        var one = PrayedFor(s, who, given);
+        foreach (var b in DismasSkills)
+        {
+            b(s, one, one);
+        }
+        for (var i = 0; i < s.Party.Slots.Count; i++)
+        {
+            if (i != one && s.Party.OccupiedSlot(i) is not null)
+            {
+                Boost(Woodwise, 10, 19)(s, i, i);
+                Boost(Agility, 10, 19)(s, i, i);
+                Boost(Stealth, 10, 19)(s, i, i);
+            }
+        }
+        Boost(Charisma, 6, 11)(s, one, one);
+        Boost(SpeakCommon, 6, 11)(s, one, one);
+    };
+
+    /// <summary>St. Christopher's travel: a week in which an overland step takes 2/3 of its time (DayProtections.ChristopherTravel).</summary>
+    private static readonly Boon ChristophersTravel = (s, who, given) =>
+        DayProtections.Start(s, PrayedFor(s, who, given), DayProtections.ChristopherTravel, 1, 168);
+
+    /// <summary>The standing +<paramref name="a"/>/<paramref name="b"/> here (the nearest city in the open country) if that city has a monastery or a university.</summary>
+    private static Boon StandingAtLearning(int a, int b) => (s, _, _) =>
+    {
+        var where = s.CurrentLocation == GameState.Wilderness
+            ? LocationRules.NearestCity(s, s.MapPosition.X, s.MapPosition.Y)
+            : s.CurrentLocation;
+        if (where is >= 0 and < Location.CityCount
+            && (s.Data.LoadCity(where).Contents & (int)(CityContents.Monastery | CityContents.University)) != 0)
+        {
+            LocationRules.AdjustReputation(s, where, a, b);
+        }
+    };
+
     /// <summary>St.Polycarp: every present member gets the charm 0xB (high nibble) at a strength of 90.</summary>
     // orig: for (i = 0; i < 5; i++) if (party[i].status) { f41 = (f41 & 0xf) - 0x50; f10 = 0x5a; }
     private static readonly Boon FirewallForAll = (s, _, _) =>
@@ -491,7 +567,11 @@ public static class SaintBook
         // 9 St.Anthony
         // orig: R039+0x2732
         // BUG: Strength and Endurance "healing only" by the text (DARKLAND.SNT), a day's boost of each in the code (see St.Adrian).
-        new("R039+0x2732", [Boost(Endurance, 4, 9), Boost(Strength, 5, 10), Boost(Charisma, 1, 10), Boost(SpeakCommon, 10, 19),
+        //   Fixed (FixAnthonyHealingOnly): the same draws heal, up to the maximum and never above it, nothing taken back; the rest
+        //   as the original. Decision: fix, in Fixed (the user's choice, 2026-11-27, F-1 set 2; the same reading serves St. Adrian,
+        //   St. Agatha, St. Apollinarius and St. Edward when their rows come).
+        new("R039+0x2732", [Either(b => b.FixAnthonyHealingOnly, Boost(Endurance, 4, 9), HealBy(Endurance, 4, 9)),
+            Either(b => b.FixAnthonyHealingOnly, Boost(Strength, 5, 10), HealBy(Strength, 5, 10)), Boost(Charisma, 1, 10), Boost(SpeakCommon, 10, 19),
             Boost(SpeakLatin, 10, 19), Boost(ReadWrite, 20, 39)]),
         // 10 St.Anthony of Padua
         new("R039+0x2838", [Boost(Perception, 6, 11), Boost(Strength, 4, 7), Boost(Charisma, 15, 24), Boost(SpeakCommon, 20, 29),
@@ -537,7 +617,11 @@ public static class SaintBook
         // orig: R039+0x3374
         // BUG: the text (DARKLAND.SNT) "improves travel speeds" and restores a little Strength and Endurance; the code starts no
         // event and heals nothing.
-        new("R039+0x3374", [Boost(Streetwise, 10, 19), Boost(Woodwise, 20, 39), Boost(Riding, 25, 74), Boost(Bows, 6, 11)]),
+        //   Fixed (FixChristopherTravelAndHealing): after his skills, Strength healed 20 % and Endurance 30 % of what is lost (St.
+        //   Genevieve's amounts, the same words in her text), and for a week an overland step takes 2/3 of its time (half again as
+        //   fast; encounters stay per step). Decision: fix, in Fixed (the user's choice, 2026-11-27, F-1 set 2).
+        new("R039+0x3374", [Boost(Streetwise, 10, 19), Boost(Woodwise, 20, 39), Boost(Riding, 25, 74), Boost(Bows, 6, 11),
+            Either(b => b.FixChristopherTravelAndHealing, None, All(Heal(Strength, 20), Heal(Endurance, 30), ChristophersTravel))]),
         // 23 St.Clare
         new("R039+0x3448", [Heal(Endurance, 100), Heal(Strength, 100)]),
         // 24 St.Clotilda
@@ -573,8 +657,9 @@ public static class SaintBook
         // orig: R039+0x3C92
         // BUG: the text (DARKLAND.SNT) raises Agility, Woodwise and Stealth "for the entire party" and increases Charisma and Speak
         // Common; the code boosts the one member only and gives neither Charisma nor Speak Common.
-        new("R039+0x3C92", [Boost(Woodwise, 10, 19), Boost(Streetwise, 20, 39), Boost(Artifice, 20, 39), Boost(Agility, 10, 19),
-            Boost(Stealth, 10, 19)]),
+        //   Fixed (FixDismasForTheParty): as the SNT says: every present member Agility, Woodwise and Stealth; the one prayed for also
+        //   Streetwise and Artifice, and Charisma and Speak Common +6..11. Decision: fix, in Fixed (the user's choice, 2026-11-27, F-1 set 2).
+        new("R039+0x3C92", [Either(b => b.FixDismasForTheParty, All(DismasSkills), DismasForTheParty)]),
         // 36 St.Dominic
         new("R039+0x3D82", [Boost(SpeakCommon, 10, 19), Boost(SpeakLatin, 10, 19), Boost(ReadWrite, 20, 39), Boost(Intelligence, 10, 19)]),
         // 37 St.Dorothy of Montau
@@ -789,7 +874,11 @@ public static class SaintBook
         // orig: R039+0x72D4
         // BUG: the text (DARKLAND.SNT): "in combat, he may improve the party's weapons and armor"; the code changes no quality and
         // sets no charm.
-        new("R039+0x72D4", [WeaponSkillsBy(20), Boost(Healing, 20, 39), Boost(Charisma, 12, 19), Standing(20, 40)]),
+        //   Fixed (FixMichaelArmsQuality): his gifts stay; for about a day every present member's weapons and armour count 20 better
+        //   in quality in combat (up to 99), read at the blow, the items never change. Decision: fix, in Fixed (the user's choice,
+        //   2026-11-27, F-1 set 2).
+        new("R039+0x72D4", [WeaponSkillsBy(20), Boost(Healing, 20, 39), Boost(Charisma, 12, 19), Standing(20, 40),
+            Either(b => b.FixMichaelArmsQuality, None, All(ForTheParty(DayProtections.MichaelWeaponQuality, 20), ForTheParty(DayProtections.MichaelArmourQuality, 20)))]),
         // 97 St.Milburga
         new("R039+0x73AA", [Boost(Healing, 20, 39), Boost(Charisma, 10, 19), TravelBlessing]),
         // 98 St.Moses the Black
@@ -889,8 +978,11 @@ public static class SaintBook
         // orig: R039+0x8B58
         // BUG: the text (DARKLAND.SNT) gives "a very great increase to Religion"; the code gives none (Healing 10..19 instead, which
         // the text does not give).
+        //   Fixed (FixAquinasReligion): his gifts stay, then Religion +20..39 for a day and the standing +10..20 here (the nearest city in
+        //   the open country) when that city has a monastery or a university, as the text says. Decision: fix, in Fixed (the user's
+        //   choice, 2026-11-27, F-1 set 2).
         new("R039+0x8B58", [Boost(SpeakCommon, 12, 26), Boost(SpeakLatin, 12, 26), Boost(ReadWrite, 15, 29), Boost(Healing, 10, 19),
-            Boost(Intelligence, 12, 23)]),
+            Boost(Intelligence, 12, 23), Either(b => b.FixAquinasReligion, None, All(Boost(Religion, 20, 39), StandingAtLearning(10, 20)))]),
         // 126 St.Valentine
         new("R039+0x8C46", [Heal(Endurance, 10), Heal(Strength, 10), Boost(Stealth, 6, 11), Boost(Healing, 6, 11), Boost(SpeakCommon, 6, 11),
             Boost(Charisma, 10, 19)]),

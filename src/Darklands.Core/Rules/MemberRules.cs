@@ -187,7 +187,20 @@ public static class MemberRules
             var a = m.Attributes[attribute];
             // BUG: healing works from above the maximum too: an attribute boosted past it (Ironarm, New-wind, a saint) is brought
             // most of the way down to it, so Essence o'Grace drunk while Ironarm runs takes most of the boost away.
-            m.Attributes[attribute] = Math.Clamp(a + (m.AttributeMaximums[attribute] - a) * percent / 100, 1, 99);
+            //   Replayed: Ironarm grade 20 lifts Strength 45 -> 55 (maximum 45), Essence of Grace grade 20 then brings it to 51.
+            //   Fixed (FixHealingKeepsBoosts): an attribute at or above its maximum is left alone, and a heal never goes past the
+            //   maximum, as the clue book says ("restore lost strength and/or endurance, but never increase these beyond the initial
+            //   value"). Decision: fix, in Fixed (the user's choice, 2026-11-27, F-1 set 2).
+            var max = m.AttributeMaximums[attribute];
+            if (s.Behaviour.FixHealingKeepsBoosts)
+            {
+                if (a < max)
+                {
+                    m.Attributes[attribute] = Math.Clamp(Math.Min(a + (max - a) * percent / 100, max), 1, 99);
+                }
+                continue;
+            }
+            m.Attributes[attribute] = Math.Clamp(a + (max - a) * percent / 100, 1, 99);
         }
     }
 

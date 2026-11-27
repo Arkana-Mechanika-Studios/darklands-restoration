@@ -32,6 +32,11 @@ public sealed class CityWallsByNight : Card
     /// </summary>
     // BUG: the arrival finds the best climber with a local maximum but never stores his value, so the
     //   grapple option's chance is a stale value from the last time everybody climbed (0 at first).
+    //   Replayed (DKSAVE0, 22h, a grapple): the grapple line's climber falls (Endurance 50 -> 37); as the word stays 0, the line can
+    //   never succeed, and everybody climbing (EveryoneChance) is certain.
+    //   Fixed (FixNightWallsClimbers): as the walls by day: the best able climber, the first member included, and his value is the
+    //   grapple's chance; everybody climbing is the weakest able member's own value and leaves the word alone. Decision: fix, in
+    //   Fixed, with B-edab45 on one switch (the user's choice, 2026-11-27, F-1 set 2).
     private int _climbing;
 
     public override int Number => CardNumber;
@@ -50,8 +55,9 @@ public sealed class CityWallsByNight : Card
             states[1] = OptionState.Shown;
         }
         var best = 0;
+        var fixedClimb = c.State.Behaviour.FixNightWallsClimbers;
         // C: the search starts at member 1: the first member is never the climber.
-        for (var i = 1; i < c.PartySize; i++)
+        for (var i = fixedClimb ? 0 : 1; i < c.PartySize; i++)
         {
             if (c.Status(i) == CharacterStatus.Able)
             {
@@ -62,6 +68,10 @@ public sealed class CityWallsByNight : Card
                     best = value;
                 }
             }
+        }
+        if (fixedClimb)
+        {
+            _climbing = best;
         }
         c.Variables.Chosen[0] = _climber;
         if (c.EventAtHere(SewerWatched))
@@ -115,7 +125,7 @@ public sealed class CityWallsByNight : Card
 
     private static int WallsForTheHour(CardContext c) => c.IsDaylight ? WallsByDay : CardNumber;
 
-    private OptionHint ClimberChance() => OptionHint.ChanceOf(_climbing, _climber);
+    internal OptionHint ClimberChance() => OptionHint.ChanceOf(_climbing, _climber);
 
     private void SendUpTheClimber(CardContext c, int chance, Action close)
     {
@@ -144,7 +154,9 @@ public sealed class CityWallsByNight : Card
     /// able member below it wins. It also names him in the texts.
     /// </summary>
     // BUG: compares each member with DS:582A instead of the running minimum.
-    private OptionHint EveryoneChance(CardContext c)
+    //   Fixed (FixNightWallsClimbers): with the running minimum, as the walls by day. Decision: covered, by FixNightWallsClimbers, B-79145e's
+    //   switch (the user's choice, 2026-11-27, F-1 set 2).
+    internal OptionHint EveryoneChance(CardContext c)
     {
         var chance = 999;
         for (var i = 0; i < c.PartySize; i++)
@@ -152,7 +164,7 @@ public sealed class CityWallsByNight : Card
             if (c.Status(i) == CharacterStatus.Able)
             {
                 var value = (c.Skill(i, 0x0F) + (c.EffectiveAgility(i) << 1)) / 2;
-                if (_climbing > value)
+                if ((c.State.Behaviour.FixNightWallsClimbers ? chance : _climbing) > value)
                 {
                     c.Variables.Chosen[0] = i;
                     chance = value;
@@ -182,9 +194,13 @@ public sealed class CityWallsByNight : Card
         {
             if (c.Status(i) != CharacterStatus.Empty)
             {
-                // C: the module word keeps each member's value in turn (the last one stays).
-                _climbing = ClimbingValue(c, i);
-                if (roll >= _climbing)
+                // C: the module word keeps each member's value in turn (the last one stays); not with FixNightWallsClimbers.
+                var value = ClimbingValue(c, i);
+                if (!c.State.Behaviour.FixNightWallsClimbers)
+                {
+                    _climbing = value;
+                }
+                if (roll >= value)
                 {
                     c.Variables.Chosen[0] = i;
                     ShowPicture(c, FallPicture);

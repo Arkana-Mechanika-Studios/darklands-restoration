@@ -262,6 +262,33 @@ public static partial class RuleTable
     /// <summary>The index of <c>fix.saves.bank-standings</c> (<see cref="OriginalBehaviour.FixBankStandingsSaved"/>).</summary>
     public const int FixBankStandingsSaved = 84;
 
+    /// <summary>The index of <c>fix.rules.healing-keeps-boosts</c> (<see cref="OriginalBehaviour.FixHealingKeepsBoosts"/>).</summary>
+    public const int FixHealingKeepsBoosts = 85;
+
+    /// <summary>The index of <c>fix.potions.great-power-quality</c> (<see cref="OriginalBehaviour.FixGreatPowerQuality"/>).</summary>
+    public const int FixGreatPowerQuality = 86;
+
+    /// <summary>The index of <c>fix.cards.footpads-potion-used-up</c> (<see cref="OriginalBehaviour.FixFootpadsPotionUsedUp"/>).</summary>
+    public const int FixFootpadsPotionUsedUp = 87;
+
+    /// <summary>The index of <c>fix.saints.dismas-for-the-party</c> (<see cref="OriginalBehaviour.FixDismasForTheParty"/>).</summary>
+    public const int FixDismasForTheParty = 88;
+
+    /// <summary>The index of <c>fix.saints.christopher-travel</c> (<see cref="OriginalBehaviour.FixChristopherTravelAndHealing"/>).</summary>
+    public const int FixChristopherTravelAndHealing = 89;
+
+    /// <summary>The index of <c>fix.saints.michael-arms-quality</c> (<see cref="OriginalBehaviour.FixMichaelArmsQuality"/>).</summary>
+    public const int FixMichaelArmsQuality = 90;
+
+    /// <summary>The index of <c>fix.saints.anthony-healing-only</c> (<see cref="OriginalBehaviour.FixAnthonyHealingOnly"/>).</summary>
+    public const int FixAnthonyHealingOnly = 91;
+
+    /// <summary>The index of <c>fix.saints.aquinas-religion</c> (<see cref="OriginalBehaviour.FixAquinasReligion"/>).</summary>
+    public const int FixAquinasReligion = 92;
+
+    /// <summary>The index of <c>fix.cards.night-walls-climbers</c> (<see cref="OriginalBehaviour.FixNightWallsClimbers"/>).</summary>
+    public const int FixNightWallsClimbers = 93;
+
     /// <summary>Every fix flag of the switch register, in its order (the index of each is its place here).</summary>
     public static IReadOnlyList<Rule> Flags { get; } =
     [
@@ -350,5 +377,14 @@ public static partial class RuleTable
         new("fix.saints.pantaleon-fire-and-animals", nameof(OriginalBehaviour.FixPantaleonFireAndAnimals), "gameplay", false, true, true),
         new("fix.saints.dunstan-metal-armour", nameof(OriginalBehaviour.FixDunstanMetalArmour), "gameplay", false, true, true),
         new("fix.saves.bank-standings", nameof(OriginalBehaviour.FixBankStandingsSaved), "gameplay", false, true, true),
+        new("fix.rules.healing-keeps-boosts", nameof(OriginalBehaviour.FixHealingKeepsBoosts), "gameplay", false, true, true),
+        new("fix.potions.great-power-quality", nameof(OriginalBehaviour.FixGreatPowerQuality), "gameplay", false, true, true),
+        new("fix.cards.footpads-potion-used-up", nameof(OriginalBehaviour.FixFootpadsPotionUsedUp), "gameplay", false, true, true),
+        new("fix.saints.dismas-for-the-party", nameof(OriginalBehaviour.FixDismasForTheParty), "gameplay", false, true, true),
+        new("fix.saints.christopher-travel", nameof(OriginalBehaviour.FixChristopherTravelAndHealing), "gameplay", false, true, true),
+        new("fix.saints.michael-arms-quality", nameof(OriginalBehaviour.FixMichaelArmsQuality), "gameplay", false, true, true),
+        new("fix.saints.anthony-healing-only", nameof(OriginalBehaviour.FixAnthonyHealingOnly), "gameplay", false, true, true),
+        new("fix.saints.aquinas-religion", nameof(OriginalBehaviour.FixAquinasReligion), "gameplay", false, true, true),
+        new("fix.cards.night-walls-climbers", nameof(OriginalBehaviour.FixNightWallsClimbers), "gameplay", false, true, true),
     ];
 }
