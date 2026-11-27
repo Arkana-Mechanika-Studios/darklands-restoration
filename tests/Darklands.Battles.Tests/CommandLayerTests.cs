@@ -239,8 +239,10 @@ public sealed partial class CommandLayerTests
         Assert.Equal(1, byPlayer.Value.Option);
         Assert.Equal(byPlayer, byDigit);
         Assert.Equal(0, byDown.Value.Option);
-        // the pointer stands where the original's cursor keys put it: the column's x + 1, the line's y + 2
-        Assert.Equal((first!.Value.X, first.Value.Y + 1), (down.Mouse.X, down.Mouse.Y));
+        // the pointer stands on the line's y + 2, as the original's cursor keys put it, but just past the end of the widest line (GitHub
+        //   issue 11: at the column's x + 1 the hand covered the line's first words), and the line is still lit and chosen
+        Assert.Equal(first!.Value.Y + 1, down.Mouse.Y);
+        Assert.True(down.Mouse.X > first.Value.X + 40, $"pointer at {down.Mouse.X}, the lines start at {first.Value.X}");
         Assert.False(digit.QuitRequested);
         Assert.False(down.QuitRequested);
     }

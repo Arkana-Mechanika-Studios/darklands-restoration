@@ -65,6 +65,8 @@ More of the same, also each with its entry in `docs/FIXED.md` and before / after
 - In the pack lists of the barter, the item store and the loot page, an asterisk before a line marks an item the member has
   equipped, so a quick key does not sell or put away a worn weapon or armour unseen (GitHub issue 4). The mark only shows; Classic
   keeps the 1992 lists, which mark nothing.
+- At a card menu, ↑ / ↓ (and the mouse wheel) with the pointer off the lines now put the pointer just past the end of the
+  widest line, so the hand no longer covers the start of the line it lights (GitHub issue 11). Classic is unchanged.
 
 ## Translations
 

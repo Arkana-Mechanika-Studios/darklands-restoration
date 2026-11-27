@@ -15,7 +15,12 @@ public enum OptionKind
 /// <summary>The screen area of a choosable option line (all option areas share x and width).</summary>
 // orig: struct hotspots (DS:E96E, 0xf6 bytes): count, width, x, y[20], height[20], enabled[20], index[20], type[20] — one entry per ENABLED option line (`enabled == 1`); a line shown but not choosable (2) records nothing and a hidden one (0) is skipped
 // C: an option line's height is the sum of its wrapped lines: each line adds `spacing`, the last (at the newline or end of text) adds `leading + spacing`.
-public sealed record OptionArea(int Option, OptionKind Kind, int Y, int Height);
+public sealed record OptionArea(int Option, OptionKind Kind, int Y, int Height)
+{
+    /// <summary>The screen x where the line's text ends (its widest row; 0: nothing drawn).</summary>
+    // Not in the original: the Comfort interface's card menu keys put the pointer past the menu's widest line (GitHub issue 11).
+    public int Right { get; init; }
+}
 
 /// <summary>
 /// Lays out and draws card text the way the game does: word wrapping at spaces and hyphens,
@@ -144,6 +149,20 @@ public sealed class CardTextLayout(TextPainter painter)
             }
         }
 
+        // the option line whose text is being drawn (an index of areas; -1: none), and how far right its text reaches
+        var drawing = -1;
+        void Reach(int right)
+        {
+            if (drawing >= 0 && right > areas[drawing].Right)
+            {
+                areas[drawing] = areas[drawing] with { Right = right };
+                if (open is not null && drawing == areas.Count - 1)
+                {
+                    open = areas[drawing];
+                }
+            }
+        }
+
         void GrowArea(int extra)
         {
             if (open is not null)
@@ -212,10 +231,12 @@ public sealed class CardTextLayout(TextPainter painter)
                     color = settings.OptionColor ?? color;
                     mode = settings.OptionColor is null ? mode : settings.OptionMode;
                     var state = optionNumber < settings.Options.Count ? settings.Options[optionNumber] : OptionState.Enabled;
+                    drawing = -1;
                     if (state == OptionState.Enabled)
                     {
                         open = new OptionArea(optionNumber, KindOf(c), y, 0);
                         areas.Add(open);
+                        drawing = areas.Count - 1;
                     }
                     else if (state == OptionState.Hidden)
                     {
@@ -299,6 +320,7 @@ public sealed class CardTextLayout(TextPainter painter)
                     _ => lineX,
                 };
                 text.DrawLine(canvas, lineLeft, y, lineStart, count, color, mode);
+                Reach(lineLeft + text.MeasureLine(lineStart, count));
                 GrowArea(spacing);
                 y += settings.Leading + spacing;
             }

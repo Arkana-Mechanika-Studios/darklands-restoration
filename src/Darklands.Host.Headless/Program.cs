@@ -39,7 +39,7 @@ using Darklands.Rendering;
 //   banner, intro                run the program start (the BANNER.DAT banner and its checks) and the opening
 //   datasafe                     plays with the data-safety fixes of the player's game (OriginalBehaviour.DataSafe); without it the game is Faithful, as the oracles play it
 //   rules:original|fixed|restored   plays a new or loaded game with that rules preset (the players' documents' shots: docs/restored/)
-//   interface:comfort            the Interface switch on Comfort (GameUi.ComfortInterface: the comfort features); without it Classic, as the oracles play it
+//   interface:comfort            the Interface switch on Comfort (GameUi.ComfortInterface: the comfort features, the card menu keys among them); without it Classic, as the oracles play it
 //   arg:<text>                   adds a word to the game's DOS command line (-Q, -O, -A<letter>)
 //   sound:config|adlib|sb|sbpro2|mt32|cm32l   runs the game's sound drivers in step with the script's clock (the game timer is
 //                                then the sound's, as in the SDL host); mt32roms:<folder> (default MT32_ROMS next to the program)
@@ -527,6 +527,8 @@ var game = new DarklandsGame(recording?.Host ?? (Darklands.Platform.IHost)host, 
 //   (fontpack:) their fonts
 UsePacks(game.Ui);
 game.Ui.ComfortInterface = comfortInterface;
+// the card menu keys come with Comfort, as on the player's host (ResolvedSettings.CardMenuKeys; GitHub issue 11's pictures)
+game.Ui.KeyboardCardMenus = comfortInterface;
 // the settings screen (settings: steps): its rows over this game, its changes logged (no window, no settings file written)
 HeadlessSettings.Offer(host, game.Ui, rules => game.Behaviour = rules, comfortInterface, SettingsLine(steps));
 if (startAtStep is not null)

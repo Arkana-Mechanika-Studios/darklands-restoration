@@ -36,6 +36,21 @@ public sealed partial class CardScreen
         public int At(int mx, int my) => Lines.FindIndex(a => X <= mx && mx <= X + Width && a.Y <= my && my <= a.Y + a.Height);
     }
 
+    /// <summary>
+    /// The column the Comfort interface's card menu keys put the pointer at: just past the end of the list's widest line, so the
+    /// hand covers none of the lines' words, and still inside the lines (the menu lights the line under it); the column's start
+    /// when no line's end is known.
+    /// </summary>
+    // Not in the original: the original's keys move the pointer only while it is over a line, and keep its column (GitHub issue 11).
+    private static int PastTheWidestLine(OptionLayout list)
+    {
+        var right = list.Lines.Count == 0 ? 0 : list.Lines.Max(l => l.Right);
+        return right <= 0 ? list.X + 1 : Math.Clamp(right + PointerGap, list.X + 1, list.X + list.Width);
+    }
+
+    /// <summary>Pixels between the end of the widest line and the tip of the hand.</summary>
+    private const int PointerGap = 3;
+
     /// <summary>An item or saint box on the screen: its rectangle, what it covers and its own option list.</summary>
     private sealed record PopupBox(int X, int Y, int Width, int Height, SavedRegion Under, OptionLayout Layout, int MainWidth, Cards.PopupBox Kind)
     {
@@ -54,7 +69,7 @@ public sealed partial class CardScreen
     // orig: card-choice-menu: fight-clock = 0, key-buffer-clear, DS:EE41 = DS:EE42 = 0, popup-menu-box = DS:8DDE = 0, menu-line-highlight = -1; then per pass: menu-bar-loop (GameUi), the party-icons-stale redraw (not needed), a left press on a portrait -> 13a0, card-mouse-handler (hover, box, hint, click), and a waiting key: Enter / Space with a highlighted line choose it (in the box: menu-owner-member = opt / 4, menu-choice-index = opt % 4, the line is the main line the box belongs to, DS:A7BA[DS:A779]), Alt-Q quits (HotKeys), card-hotkeys (HotKeys), Up / Down while the pointer is over a line move the highlight (wrapping) and the pointer onto it
     // C: a choice by Enter in the box sets menu-owner-member and menu-choice-index but not popup-menu-box: the card rates the line with card-option-handler[k], which is then the box's table (DS:E96E holds the box's layout; CardMenu.Run).
     // C: Up from no highlight cannot happen in the original (the cursor keys need the pointer over a line, which card-mouse-handler has just highlighted).
-    // DIVERGENCE: on a host that cannot move the pointer (MovePointer does nothing there), the pointer stays off the line Up / Down select; the menu acts as if it were on it until the mouse moves. GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on) adds nothing a hand could not do: off the lines Up / Down put the pointer onto the line they name (from no highlight: the last or first line) and the digits 1..9 choose the line of that number by a ChooseLine command, the box's while one is up (docs/COMMANDS.md); on a host that cannot move the pointer those Up / Down do nothing.
+    // DIVERGENCE: on a host that cannot move the pointer (MovePointer does nothing there), the pointer stays off the line Up / Down select; the menu acts as if it were on it until the mouse moves. GameUi.KeyboardCardMenus (an interface convenience, off unless a host turns it on) adds nothing a hand could not do: off the lines Up / Down put the pointer onto the line they name (from no highlight: the last or first line), just past the end of the list's widest line (PastTheWidestLine, GitHub issue 11), and the digits 1..9 choose the line of that number by a ChooseLine command, the box's while one is up (docs/COMMANDS.md); on a host that cannot move the pointer those Up / Down do nothing.
     // DORMANT: the battle option kind (-1, marker 0x06): highlighting it calls R043+0x29CE, which does nothing (its message "Enemy stats will be displayed here" is never shown); leaving it redraws the panel, as here.
     private int Select(List<OptionArea> areas, Func<int, OptionHint>? hint, Func<int, OptionHint>? popupHint, Func<List<OptionArea>>? relaid = null)
     {
@@ -299,7 +314,7 @@ public sealed partial class CardScreen
                     // orig: R043+0x1CE5 (Up, 0x4800) and R043+0x1D46 (Down, 0x5000): only with DS:ED6C == 1, which card-mouse-handler R043+0x21D4 sets when the
                     // pointer is inside a line of the list shown (R043+0x2232); else the key is dropped (R043+0x1DEB)
                     // The keyboard convenience (GameUi.KeyboardCardMenus), off the lines: the key is dropped there as in the original, and the
-                    //   pointer is put onto the line the key names (a PointAt command, carried out in the next pass): the menu then lights it
+                    //   pointer is put onto the line the key names, past the widest line's end (a PointAt command, carried out in the next pass): the menu then lights it
                     //   from the pointer, as for a player's hand (docs/COMMANDS.md).
                     case MoveHighlight move when !over && ui.KeyboardCardMenus:
                     {
@@ -307,7 +322,7 @@ public sealed partial class CardScreen
                         var from = current.Highlight;
                         var to = move.Step > 0 ? (from + 1) % n : from <= 0 ? n - 1 : from - 1;
                         var line = current.Lines[to];
-                        ui.Commands.PutFirst(new PointAt(current.X + 1, line.Y + 2));
+                        ui.Commands.PutFirst(new PointAt(PastTheWidestLine(current), line.Y + 2));
                         break;
                     }
                     case MoveHighlight move when over:

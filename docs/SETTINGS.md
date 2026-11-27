@@ -285,7 +285,9 @@ It has no row of its own on the launcher or the settings screen: the Interface r
 
 The original's card menus take ↑ / ↓ only while the pointer is over one of the menu's lines; elsewhere it drops them, and so
 drops the wheel's notches too. With the Comfort interface (since 1.2), ↑ / ↓ with the pointer off the lines put the pointer
-on the line they name (from no highlight ↓ the first line, ↑ the last), which the menu then lights as it does for the mouse; and
+on the line they name (from no highlight ↓ the first line, ↑ the last),
+just past the end of the menu's widest line so the hand covers none of the words (since 1.2.0, GitHub issue 11), which the
+menu then lights as it does for the mouse; and
 the digits 1..9 choose the line of that number as a click on it does (in an item or saint box, the box's lines). With the
 pointer over a line the keys are the original's. Everything is made of a player's own moves and clicks ([COMMANDS.md](COMMANDS.md)),
 so the game plays the same. It has no row of its own on the launcher or the settings screen: the Interface row turns it on and
