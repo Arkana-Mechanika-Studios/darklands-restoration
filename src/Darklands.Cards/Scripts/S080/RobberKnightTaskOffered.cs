@@ -77,7 +77,8 @@ public sealed class RobberKnightTaskOffered : Card
 
     private static void TakeTheGuideAlong(CardContext c, int patron)
     {
-        c.RandomName(c.Here, 0, 0);
+        // the name the member keeps (the saved game's): the tables' words, whatever the pack (GitHub issue 5)
+        c.RandomName(c.Here, 0, 0, kept: true);
         // The Schulz joins for 90 days, the merchant for a year (shield picture "F01").
         if (patron == 0x86)
         {

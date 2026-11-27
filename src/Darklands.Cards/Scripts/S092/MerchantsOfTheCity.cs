@@ -67,7 +67,7 @@ public sealed class MerchantsOfTheCity : Card
         var price = c.Hostile() ? c.LocalPrice(0x1E, 4) : 0;
         // C: _fstrcpy(2E38:1A96, the far pointer at 290E:2107) (R092+0x07B1, segment word DS:8104): $NamedOneName is the first
         //   title, "goods merchant" (without the EXE's tables the slot keeps its text).
-        c.Variables.Named[0] = c.PersonalNames.Count(NameTable.Titles) > 0 ? c.PersonalNames.Name(NameTable.Titles, 0) : c.Variables.Named[0];
+        c.Variables.Named[0] = c.TableName(NameTable.Titles, 0, c.Variables.Named[0]);
         c.Variables.Chosen[0] = c.Leader;
         // C: the roll is drawn first, whatever the price.
         if (c.Random(100) >= chance && price != 0)

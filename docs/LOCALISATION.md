@@ -131,7 +131,10 @@ EXE's word tables) and its formula and saint names, the party information's town
 details, the saved games' place names and month names on the load screen, the battle's potion names, its "(Ldr)" and
 "(All)" and its members' messages, the store's "no room" message (`id:rw.store.no-room`), the shop names cards open barter
 with, the guild master's "rebel" and "conservative", and the names cards copy (items, saints, formulae, and the dragons',
-dwarfs' and titles' names of the EXE); in 1.2 also the rules-kept notice's preset name. A pack's text in a card's hint, its tell
+dwarfs' and titles' names of the EXE); in 1.2 also the rules-kept notice's preset name, the docks' destinations
+(`loc:<n>.name`, GitHub issue 5), the traders' titles and the personal names the cards make up (the EXE's first names,
+surnames and merchant families; a member who joins keeps the original's name, which the saved game stores; the only name
+still out of reach is "Lydwina" on the burnt ship, a word of the card's own overlay that has no key yet). A pack's text in a card's hint, its tell
 line, the battle's place notes and member messages is drawn by its letters, so a letter outside the game's 8-bit set
 (a Chinese character, a Cyrillic letter) is no longer lost there.
 

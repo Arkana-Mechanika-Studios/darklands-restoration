@@ -692,7 +692,7 @@ Where the original reads or writes outside its defined data, the outcome can sti
   original: `R136+0xA9EF` (290E:235F, data), `R136+0xABA7` (290E:2517, data), `R136+0xAD0F` (290E:267F, data) +6 more  
   divergence: a pointer that leads outside the data image (an index far outside) gives "".  
   deterministic: **n/a** (checked against the original); action: **document** - Only an index far outside the pointer block (more than the 357 static far pointers) reaches a pointer outside the data image; no card's index gets there (the card oracle's quest-less runs read index -1, inside the block).
-- **D-c8338f** `undefined-memory` - `src/Darklands.Cards/CardContext.Memory.cs:268` `CardContext.RandomName`  
+- **D-c8338f** `undefined-memory` - `src/Darklands.Cards/CardContext.Memory.cs:271` `CardContext.RandomName`  
   original: `R029+0x5CC4` (1367:0DB4, matched)  
   divergence: a slot past $NamedFiveName ($Snuck00 asks for slot 0x27) makes the original write beyond text-slot-named; here the name is drawn but not stored.  
   deterministic: **partly** (checked against the original); action: **keep** - $Snuck00 (R071: made-up-name(seed,1,0x27)) stores the name at text-slot-named[0x27] = 2E38:1A96+39*30 = 2E38:1F28, which is events[255..~261] (the events table starts at 1B2C); the name text is deterministic (seeded) but it overwrites those event pointers with ASCII, and every later event scan (slots 0..299) dereferences them, i.e. reads fixed-but-unmodelled DOS memory at seg:off built from letters. 0x27 is the $-variable number of NamedOne (39), mistaken for a slot, so $NamedOneName keeps its old text. Keep the C# skip: faithful reproduction would need those 5-7 'garbage events' whose fields come from physical memory.

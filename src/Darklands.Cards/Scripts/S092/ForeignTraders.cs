@@ -52,7 +52,7 @@ public sealed class ForeignTraders : Card
     {
         // C: _fstrcpy(2E38:1A96, the far pointer at 290E:2117) (R092+0x10A4, segment word DS:810A): $NamedOneName is the fifth
         //   title, "foreign trader" (without the EXE's tables the slot keeps its text).
-        c.Variables.Named[0] = c.PersonalNames.Count(NameTable.Titles) > 0 ? c.PersonalNames.Name(NameTable.Titles, 4) : c.Variables.Named[0];
+        c.Variables.Named[0] = c.TableName(NameTable.Titles, 4, c.Variables.Named[0]);
         c.Variables.Chosen[0] = c.Leader;
         c.Screens.Barter(-1, c.ExeText("exe:DS:629F"), 0x3843F);  // "Foreign Trader"
     }

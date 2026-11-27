@@ -298,12 +298,7 @@ public sealed partial class CardContext
     public void NameToSlot(int kind, int index, int slot)
     {
         string Bell(int band) => Word(Darklands.Content.Formats.Text.Strings.OriginalWords.BellNames, band);
-        // C: the tables are read unchecked (IPersonalNames.Name reads the neighbouring pointers); without the EXE's tables the slot keeps its text
-        // with a translation pack an entry of the table in its words (the 1.2 translations); no pack, or an index outside: as the original
-        string Table(NameTable table, Darklands.Content.Formats.Text.Strings.WordTable words) =>
-            PersonalNames.Count(table) is var count && count == 0 ? Variables.Named[slot]
-            : Translation is not null && index >= 0 && index < count ? Word(words, index)
-            : PersonalNames.Name(table, index);
+        string Table(NameTable table) => TableName(table, index, Variables.Named[slot]);
         Variables.Named[slot] = kind switch
         {
             // the names in the pack's words when it has them (the 1.2 translations; no pack: the list's, as the original)
@@ -313,12 +308,34 @@ public sealed partial class CardContext
             // C: bell-time-label(time-of-day-band(index), slot) (R029+0x5756 matched: _fstrcpy(dst, bell-time-labels[i])).
             3 or 4 => Bell(TimeOfDay.Band(index)),
             5 => Bell(TimeOfDay.Band(index) + 1 > 7 ? 0 : TimeOfDay.Band(index) + 1),
-            6 => Table(NameTable.Dragons, Darklands.Content.Formats.Text.Strings.OriginalWords.DragonNames),
-            7 => Table(NameTable.Dwarfs, Darklands.Content.Formats.Text.Strings.OriginalWords.DwarfNames),
-            8 => Table(NameTable.Titles, Darklands.Content.Formats.Text.Strings.OriginalWords.TitleNames),
+            6 => Table(NameTable.Dragons),
+            7 => Table(NameTable.Dwarfs),
+            8 => Table(NameTable.Titles),
             _ => Variables.Named[slot],
         };
     }
+
+    /// <summary>
+    /// Entry <paramref name="index"/> of one of the program's personal-name tables as the cards put it into their texts: the pack's
+    /// words when it has them, else the table's; <paramref name="otherwise"/> when the EXE's tables are not loaded.
+    /// </summary>
+    // C: the tables are read unchecked (IPersonalNames.Name reads the neighbouring pointers); without the EXE's tables the slot keeps its text
+    // with a translation pack an entry of the table in its words (the 1.2 translations, GitHub issue 5); no pack, or an index outside: as the original
+    public string TableName(NameTable table, int index, string otherwise) =>
+        PersonalNames.Count(table) is var count && count == 0 ? otherwise
+        : Translation is not null && index >= 0 && index < count ? Word(WordsOf(table), index)
+        : PersonalNames.Name(table, index);
+
+    private static Darklands.Content.Formats.Text.Strings.WordTable WordsOf(NameTable table) => table switch
+    {
+        NameTable.MenFirstNames => Darklands.Content.Formats.Text.Strings.OriginalWords.MenFirstNames,
+        NameTable.WomenFirstNames => Darklands.Content.Formats.Text.Strings.OriginalWords.WomenFirstNames,
+        NameTable.Surnames => Darklands.Content.Formats.Text.Strings.OriginalWords.Surnames,
+        NameTable.MerchantFamilies => Darklands.Content.Formats.Text.Strings.OriginalWords.MerchantFamilies,
+        NameTable.Dragons => Darklands.Content.Formats.Text.Strings.OriginalWords.DragonNames,
+        NameTable.Dwarfs => Darklands.Content.Formats.Text.Strings.OriginalWords.DwarfNames,
+        _ => Darklands.Content.Formats.Text.Strings.OriginalWords.TitleNames,
+    };
 
     /// <summary>2E38:1736 (virtue-label-table) is 0x5F far pointers after 2E38:15BA, the base <c>label-to-slot</c> kind 2 addresses.</summary>
     private const int FormulaTableBase = 0x5F;

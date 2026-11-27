@@ -403,7 +403,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-86c8e5** `bug`, flag `FixWelcomeAppointment` - `src/Darklands.Cards/Scripts/S050/FortressByDay.cs:237` `FortressByDay.SeekService`  
   original: `R050+0x2298` (1A06:05B8, matched)  
   why: OriginalBehaviour.FixWelcomeAppointment - the "come back" appointment is never kept: the event names expiry handler 4 (a one-day welcome, event 0x3B) but its flags are 0, so the handler never runs (R029+0x3F30, R050+0x2298).
-- **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:153` `Docks.PassageHint`  
+- **B-a73a8e** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/Docks.cs:154` `Docks.PassageHint`  
   original: `R051+0x2332` (19F2:0792, matched), `R051+0x2546` (19F2:09A6, matched), `R051+0x275A` (19F2:0BBA, matched) +2 more  
   why: the hint shows R136+0x8690+0x1E5F ("You need a missile weapon") where "Not enough money" was surely meant.
 - **B-e95c32** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S051/InnByDay.cs:178` `InnByDay.VisitTheStables`  
@@ -504,7 +504,7 @@ reproduced only. Quirks that are documented only in the remarks of `OriginalBeha
 - **B-a36b44** `bug`, flag `FixVillageSchulzReward` - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:58` `VillageSchulz.AskForInformation`  
   original: `R077+0x178E` (1996:01AE, matched), `R077+0x1920` (1996:0340, matched)  
   why: OriginalBehaviour.FixVillageSchulzReward - the Schulz's robber-knight task (quest 3, owner 9) is never paid: the reward card ($Raubi01, R080) has this card among its patrons with its own text, but no card tests for the finished task and sends the party there (R077, $Villa02). Not in the original: the Fixed rules pay a finished task here first (the five florins a size of the village he promised).
-- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:132` `VillageSchulz.AskForHelp`  
+- **B-23f155** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S077/VillageSchulz.cs:133` `VillageSchulz.AskForHelp`  
   original: `R077+0x1958` (1996:0378, matched), `R077+0x1A64` (1996:0484, matched)  
   why: a full party gets text 6 ("Please accept this florin") but no florin; the low-standing branch adds it.
 - **B-132edf** `bug`, no fix flag - `src/Darklands.Cards/Scripts/S080/RobberKnightTaskRewarded.cs:50` `RobberKnightTaskRewarded.Run`  

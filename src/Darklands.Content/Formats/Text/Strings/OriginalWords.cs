@@ -143,6 +143,17 @@ public sealed class OriginalWords(DarklandsExecutable exe)
 
     public static readonly WordTable TitleNames = WordTable.Far("title-names", 0x2107, 31);
 
+    // orig: 290E:235F (0x6C drawn), 290E:2517 (0x58), 290E:267F (0x92) and 290E:28CB (0x10): the men's and women's first names, the
+    //   surnames and the merchant families made-up-name draws from (R029+0x5CC4, PersonalNamesDecoder); Not in the original: their keys
+    //   for the 1.2 translations (GitHub issue 5: the names the cards put into their texts)
+    public static readonly WordTable MenFirstNames = WordTable.Far("men-first-names", 0x235F, 0x6C);
+
+    public static readonly WordTable WomenFirstNames = WordTable.Far("women-first-names", 0x2517, 0x58);
+
+    public static readonly WordTable Surnames = WordTable.Far("surnames", 0x267F, 0x92);
+
+    public static readonly WordTable MerchantFamilies = WordTable.Far("merchant-families", 0x28CB, 0x10);
+
     // orig: party-defaults R001+0x0000 copies each Quickstart member's full and short name from DS:0E50 / 0E61, 0E68 / 0E77, 0E7F / 0E8B,
     //   0E90 / 0EA2 (DefaultParty)
     public static readonly WordTable QuickstartNames = WordTable.Data("quickstart-names", 0x0E50, 0x0E61, 0x0E68, 0x0E77, 0x0E7F, 0x0E8B, 0x0E90, 0x0EA2);

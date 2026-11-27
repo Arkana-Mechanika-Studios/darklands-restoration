@@ -50,7 +50,8 @@ public sealed class Docks : Card
             var port = city.Word(PortWords[k]);
             if (port != -1)
             {
-                c.Variables.Named[k] = c.State.Locations[port].Name;
+                // the destination in the pack's words when it has them (GitHub issue 5; no pack: the location's name, as the original)
+                c.Variables.Named[k] = c.LocationName(port);
             }
         }
         // C: 16-bit int arithmetic; the size is asked twice (no side effect).

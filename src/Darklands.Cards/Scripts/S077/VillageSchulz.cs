@@ -123,7 +123,8 @@ public sealed class VillageSchulz : Card
                 ShowPicture(c, SchulzPicture);
                 c.Screen.Text(4);
                 ShowPicture(c, Picture);
-                c.RandomName(c.Here + 2000, 0, 0);
+                // the name the member keeps (the saved game's): the tables' words, whatever the pack (GitHub issue 5)
+                c.RandomName(c.Here + 2000, 0, 0, kept: true);
                 // The Schulz joins for 90 days (shield picture "F01" in the original).
                 c.AddMember(c.Variables.Named[0], "Schulz", "F01", 0x870, 9);
             }

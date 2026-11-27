@@ -244,17 +244,20 @@ public sealed partial class CardContext
     /// A random personal name into $Named1..5 (R029 <c>made-up-name</c>): the generator is
     /// seeded with the party seed + <paramref name="seed"/> so the same person keeps the same
     /// name, kind 0..5 picks the tables (men's or women's first names, with a surname, a
-    /// merchant family name or alone), and the generator is then reseeded from the clock.
+    /// merchant family name or alone), and the generator is then reseeded from the clock. With a translation pack the name is in
+    /// its words, unless <paramref name="kept"/>: the name of a member who joins (join-party-member), kept in the saved game in
+    /// the tables' own words.
     /// </summary>
     // orig: R029+0x5CC4 made-up-name R029+0x5CC4 (1367:0DB4) matched
     // C: srand takes an unsigned 16-bit seed; strcpy/strcat order draws the first name before the surname.
     // DIVERGENCE: srand(time(0)) at the end is the injected ClockSeed (no reseed when there is none); the name tables come from PersonalNames (TablePersonalNames over the EXE's tables; none loaded: empty names).
-    public void RandomName(int seed, int kind, int slot)
+    public void RandomName(int seed, int kind, int slot, bool kept = false)
     {
         var random = State.Random;
         random.Seed((ushort)(State.Party.Seed + seed));
         random.Scaled(1000);
-        string Pick(NameTable table, int count) => PersonalNames.Name(table, random.Scaled(count));
+        // the names in the pack's words when it has them (the 1.2 translations, GitHub issue 5; no pack: the tables', as the original)
+        string Pick(NameTable table, int count) => random.Scaled(count) is var k && kept ? PersonalNames.Name(table, k) : TableName(table, k, "");
         var name = kind switch
         {
             0 => Pick(NameTable.MenFirstNames, 0x6C) + " " + Pick(NameTable.Surnames, 0x92),

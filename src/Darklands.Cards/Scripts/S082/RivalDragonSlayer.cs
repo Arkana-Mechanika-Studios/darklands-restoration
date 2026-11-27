@@ -133,7 +133,8 @@ public sealed class RivalDragonSlayer : Card
     // orig: R082+0x12A2 (1922:0402) matched; R082+0x12F6 (1922:0456) matched; tests: CardSmokeTests
     private static void TakeHimAlong(CardContext c)
     {
-        c.RandomName(c.Random(1000), 0, 0);
+        // the name the member keeps (the saved game's): the tables' words, whatever the pack (GitHub issue 5)
+        c.RandomName(c.Random(1000), 0, 0, kept: true);
         // The knight joins for good (shield picture "F01").
         c.AddMember(c.Variables.Named[0], "Knight", "F01", 9999, 7);
         c.State.CurrentLocation = -1;
