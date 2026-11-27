@@ -344,6 +344,10 @@ games are the same, and the original game loads them):
 * **The members' sheets from the loot page** (since 1.2, GitHub issue 10): when the party shares out what it found, a click on
   the party column or F1 to F5 open a member's sheet, so you can see who can carry what before you take it (the original has no way
   to open a sheet there); Esc comes back to the loot.
+* **Equipped items marked in the pack lists** (since 1.2, GitHub issue 4): at the barter, the item store and the loot page, an
+  asterisk in the margin before a line shows a stack the member has equipped (its item and quality are those of the weapon, missile
+  weapon, armour or shield the member uses), so that one key pressed too often does not sell or put away a worn item unseen. The lines
+  do not move, and the mark only shows: selling the last of a worn item still takes it off, as in the original, which marks nothing.
 
 `interface` is a section so that a feature could have its own key beside `mode`; there is none.
 

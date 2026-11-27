@@ -328,7 +328,7 @@ public sealed class LootScreen
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, 0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i]), BuySellPage.Ink);
+            _page.PackText(0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i]), Inventory.IsWorn(_state, Member, pack[i]));
         }
         for (var i = 0; i < _pile.Count && i < 4; i++)
         {
@@ -357,7 +357,7 @@ public sealed class LootScreen
         var pack = PackOf(Member);
         for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, ItemLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
+            _page.PackText((i - _s.PackTop) * 8 + 0x93, ItemLine(RedrawTexts.PackItem, pack[i]), Inventory.IsWorn(_state, Member, pack[i]));
         }
         for (var i = _s.PileTop; i < _s.PileTop + 4 && i < _pile.Count; i++)
         {
@@ -383,11 +383,11 @@ public sealed class LootScreen
     // orig: R040+0x1372 (1462:1372) draft (byte-matched function)
     private void DrawPackItems()
     {
-        _page.Restore(0x72, 0x93, 0xB6, 0x20);
+        _page.RestorePackList();
         var pack = PackOf(Member);
         for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, ItemLine(PackListItem, pack[i]), BuySellPage.Ink);
+            _page.PackText((i - _s.PackTop) * 8 + 0x93, ItemLine(PackListItem, pack[i]), Inventory.IsWorn(_state, Member, pack[i]));
         }
     }
 

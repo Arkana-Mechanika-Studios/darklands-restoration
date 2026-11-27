@@ -69,6 +69,41 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
         }
     }
 
+    // the Comfort interface's mark on the pack lists (GitHub issue 4): an asterisk in the margin left of the line, which the light
+    //   (from x 0x72) does not reach, so the lines do not move
+    private const int MarkX = 0x6B;
+    private const int PackListX = 0x72;
+
+    /// <summary>
+    /// A line of the member's pack list (x 0x75) in the ink colour; with the Comfort interface (not in the original) an asterisk in the
+    /// margin before it when the member has the stack equipped (<paramref name="worn"/>, Inventory.IsWorn), so that a worn item is not
+    /// sold or put away by a key pressed once too often.
+    /// </summary>
+    public void PackText(int y, string line, bool worn)
+    {
+        Text(0x75, y, line, Ink);
+        if (!ui.ComfortInterface)
+        {
+            return;
+        }
+        Restore(MarkX, y, PackListX - MarkX, 8);
+        if (worn)
+        {
+            Text(MarkX, y, "*", Ink);
+        }
+    }
+
+    /// <summary>The pack list's four lines cleared to the picture before they are drawn again (with Comfort, their marks too).</summary>
+    // orig: gfx-rect-copy(backdrop, 0x72, 0x93, 0xB6, 0x20, screen) in the list redraws of R032, R035 and R040
+    public void RestorePackList()
+    {
+        if (ui.ComfortInterface)
+        {
+            Restore(MarkX, 0x93, PackListX - MarkX, 0x20);
+        }
+        Restore(PackListX, 0x93, 0xB6, 0x20);
+    }
+
     /// <summary>The party column (the original's party panel frames and rows).</summary>
     // orig: party-panel-frame-set(0x100) and party-panel-row-set(0x100) (root, resident) as PartyPanel; the argument 0x100 is the mask 0x1F (all five rows: root 0000:1591 `cmp bx,0x100` then `mov dx,0x1f`, and 0000:171F the same in party-panel-row-set), as the panel draws
     public void DrawParty(Party party) => panel.Draw(ui.Canvas, party);

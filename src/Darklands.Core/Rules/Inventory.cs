@@ -482,6 +482,20 @@ public static class Inventory
         return found != -1 ? m.Pack[found].Code : -1;
     }
 
+    /// <summary>
+    /// Whether <paramref name="stack"/> of member <paramref name="who"/>'s pack is one the member has equipped: its item and quality
+    /// are those of an equipment slot, the test <see cref="Unequip"/> makes when a stack leaves the pack (the Comfort interface's mark
+    /// on the pack lists, GitHub issue 4; not in the original).
+    /// </summary>
+    public static bool IsWorn(GameState s, int who, ItemStack stack)
+    {
+        var m = s.Party.Slot(who);
+        var flags = s.Item(CodeOf(stack)).Flags;
+        bool Is(EquippedItem e) => !e.IsEmpty && e.Type == stack.Type && e.Quality == stack.Quality;
+        return ((flags & ItemFlags.HandWeapon) != 0 && Is(m.Weapon)) || ((flags & ItemFlags.MissileWeapon) != 0 && Is(m.MissileWeapon))
+            || Is(m.VitalArmor) || Is(m.LimbArmor) || Is(m.Shield);
+    }
+
     /// <summary>Takes stack <paramref name="index"/> out of its equipment slot if it is the equipped one.</summary>
     // orig: item-unwear R031+0x5B38 (18E7:12E8) matched; tests: PracticeAndItemsTests
     // C: slot 6 (hand-over-one/hand-over-stack: idx is an equipment slot) is not used by these rules; flags of the masked code 0xF hand weapon, 0x8000030 missile weapon.

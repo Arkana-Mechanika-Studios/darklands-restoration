@@ -347,7 +347,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, 0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
+            page.PackText(0x93 + i * 8, ItemLine(FullDrawing.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), Inventory.IsWorn(state, Member, pack[i]));
         }
         // C: the pack lines are drawn from row 0 (not from the kept top) and the store's lines at (i − kept top), as the original does with its persistent statics.
         _s.Open(place);
@@ -374,7 +374,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, 0x93 + i * 8, ItemLine(RedrawTexts.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
+            page.PackText(0x93 + i * 8, ItemLine(RedrawTexts.PackItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), Inventory.IsWorn(state, Member, pack[i]));
         }
         for (var i = 0; i < _s.Store.Count && i < 4; i++)
         {
@@ -401,11 +401,11 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     // orig: member-items-paint R035+0x11AC (1462:11AC) matched (its lines say "q", the others "-Qual")
     private void DrawPackItems()
     {
-        page.Restore(0x72, 0x93, 0xB6, 0x20);
+        page.RestorePackList();
         var pack = PackOf(Member);
         for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, ItemLine(PackListItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), BuySellPage.Ink);
+            page.PackText((i - _s.PackTop) * 8 + 0x93, ItemLine(PackListItem, pack[i].Code & 0xFFF, pack[i].Count, pack[i].Quality), Inventory.IsWorn(state, Member, pack[i]));
         }
     }
 

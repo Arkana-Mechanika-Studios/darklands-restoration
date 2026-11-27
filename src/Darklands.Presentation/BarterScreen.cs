@@ -382,7 +382,7 @@ public sealed class BarterScreen
         var pack = PackOf(Member);
         for (var i = 0; i < 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, 0x93 + i * 8, PackLine(FullDrawing.PackItem, pack[i]), BuySellPage.Ink);
+            _page.PackText(0x93 + i * 8, PackLine(FullDrawing.PackItem, pack[i]), Inventory.IsWorn(_state, Member, pack[i]));
         }
         // C: the pack lines above were priced before the stock listing seeds the generator (price-to-sell draws under the clock seed, in a flag-8 place).
         // orig: R032+0x0ACD: DS:86A2[DS:8850] = k for every item for sale (BarterSession.ListStock)
@@ -419,7 +419,7 @@ public sealed class BarterScreen
         var pack = PackOf(Member);
         for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, PackLine(RedrawTexts.PackItem, pack[i]), BuySellPage.Ink);
+            _page.PackText((i - _s.PackTop) * 8 + 0x93, PackLine(RedrawTexts.PackItem, pack[i]), Inventory.IsWorn(_state, Member, pack[i]));
         }
         for (var i = _s.ShopTop; i < _s.ShopTop + 4 && i < _s.Stock.Codes.Count; i++)
         {
@@ -448,11 +448,11 @@ public sealed class BarterScreen
     // orig: member-items-paint R032+0x1770 (1462:1770) draft (byte-matched function)
     private void DrawPackItems()
     {
-        _page.Restore(0x72, 0x93, 0xB6, 0x20);
+        _page.RestorePackList();
         var pack = PackOf(Member);
         for (var i = _s.PackTop; i < _s.PackTop + 4 && i < pack.Count; i++)
         {
-            _page.Text(0x75, (i - _s.PackTop) * 8 + 0x93, PackLine(PackListItem, pack[i]), BuySellPage.Ink);
+            _page.PackText((i - _s.PackTop) * 8 + 0x93, PackLine(PackListItem, pack[i]), Inventory.IsWorn(_state, Member, pack[i]));
         }
     }
 
