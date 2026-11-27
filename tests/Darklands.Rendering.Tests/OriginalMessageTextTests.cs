@@ -74,7 +74,7 @@ public sealed class OriginalMessageTextTests
             .SelectMany(f => System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(f), "\"(exe:(?:DS|[0-9A-F]{4}):[0-9A-F]{4})\"")
                 .Select(m => m.Groups[1].Value))
             .Distinct().Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(82, keys.Count);
+        Assert.Equal(83, keys.Count);
         foreach (var key in keys)
         {
             var entry = table.Find(key);
@@ -82,9 +82,9 @@ public sealed class OriginalMessageTextTests
             Assert.Equal(entry!.Text, text.Text(GameText.Of(key)));
         }
         // SHA-256 of "key=text" (the game's bytes) over the sorted keys: each text was checked against the literal it replaced
-        // (152 sites, scratch check of 2026-11-19; the 36 words the scripts fill in and the two deposit questions, CardWordsTests), so this pins the 1.0 card texts; 1.2 added the six shop and guild words the scripts wrote out (each the same word as its literal, PackRoutesTests).
+        // (152 sites, scratch check of 2026-11-19; the 36 words the scripts fill in and the two deposit questions, CardWordsTests), so this pins the 1.0 card texts; 1.2 added the six shop and guild words the scripts wrote out (each the same word as its literal, PackRoutesTests) and the burnt ship's name for its saint (DS:6967, PackPlaceNamesTests).
         var joined = string.Join('\n', keys.Select(k => k + "=" + Encoding.Latin1.GetString(GameTextCodec.Encode(text.Text(GameText.Of(k))))));
-        Assert.Equal("6335EA70C427A7B194985DC2C11BF946E76E2F9D36BD54094E09DCD45077A109",
+        Assert.Equal("4532DF75CD5EB1BBE9ED9963993E3FF11CD09ED0CD14F7702333D57D7B99F2BD",
             Convert.ToHexString(SHA256.HashData(Encoding.Latin1.GetBytes(joined))));
     }
 

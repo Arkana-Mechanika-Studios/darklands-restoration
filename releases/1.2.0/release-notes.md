@@ -74,6 +74,7 @@ More of the same, also each with its entry in `docs/FIXED.md` and before / after
   see its notes. In 1.2 a pack also names the rules in the notice a saved game with other rules gives.
 - The docks' destinations ("boat to …") are in the pack's words: they were the only place names a card put into its
   text without the pack (GitHub issue 5). The foreign traders' and the merchants' titles and the names of the people the
-  cards make up (a hermit, a village's Schulz, a rival dragon slayer) are in the pack's words too; a member who joins keeps
+  cards make up (a hermit, a village's Schulz, a rival dragon slayer) and the saint's name on the burnt ship are in the
+  pack's words too; a member who joins keeps
   the original's name, as the saved game stores it. A test now fails if a card fills a name into its text without the pack.
 - Without a pack every screen is the original's, as before.

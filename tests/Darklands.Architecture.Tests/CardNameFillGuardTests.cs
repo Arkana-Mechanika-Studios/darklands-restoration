@@ -17,12 +17,8 @@ public sealed class CardNameFillGuardTests
 
     private static readonly string[] RawCalls = ["PersonalNames.Name", "World.ItemName", "World.Words.Text", "World.FileLocationName"];
 
-    // the slots' fills a pack cannot reach yet, each with its reason
-    private static readonly Dictionary<string, string> Known = new(StringComparer.Ordinal)
-    {
-        // the original copies it from its own overlay (R130), which has no key of the text table: a pack cannot name her yet
-        ["BurntShipOfLydwina.cs: \"Lydwina\""] = "overlay literal, no pack key",
-    };
+    // the slots' fills a pack cannot reach yet, each with its reason (none since the burnt ship's name, DS:6967, has its key)
+    private static readonly Dictionary<string, string> Known = new(StringComparer.Ordinal);
 
     private static string Root()
     {

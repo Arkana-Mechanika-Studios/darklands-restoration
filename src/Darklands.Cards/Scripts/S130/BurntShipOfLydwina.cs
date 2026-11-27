@@ -22,7 +22,8 @@ public sealed class BurntShipOfLydwina : Card
     {
         Show(c, 283);
         c.Next = Number;
-        c.Variables.Named[0] = "Lydwina";
+        // orig: R130+0x199F copies DS:6967 into the first named slot; the pack's words when it has them (GitHub issue 5)
+        c.Variables.Named[0] = c.ExeText("exe:DS:6967");
         // No option menu: the card's item and saint lists are left as they are.
         // DORMANT: the file's table set-up R130+0x183C (and its "screwed up." default handler
         //   R130+0x1874) is never called; it would only clear the option table and the item/saint lists.

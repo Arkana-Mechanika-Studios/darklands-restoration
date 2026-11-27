@@ -108,4 +108,23 @@ public sealed class PackPlaceNamesTests
         var last = Enumerable.Range(0, c.PersonalNames.Count(NameTable.Surnames)).First(i => c.PersonalNames.Name(NameTable.Surnames, i) == parts[1]);
         Assert.Equal($"名{first} 姓{last}", c.Variables.Named[1]);
     }
+
+    [Fact]
+    public void TheBurntShipsNameForItsSaintIsAKnownKeyAndThePacksWordsWhenItHasThem()
+    {
+        if (!CardHarness.Available || Exe() is null)
+        {
+            return;
+        }
+        // R130+0x199F copies DS:6967 into $NamedOneName: the extractor lists it as a known word (the translator's template has it)
+        var folder = Darklands.Platform.LocalPaths.Get("game", "DARKLANDS_DIR")!;
+        var entry = Assert.Single(OriginalTextExtractor.Extract(new GameFiles(folder)).Entries, e => e.Key == "exe:DS:6967");
+        Assert.Equal(StringOrigin.Known, entry.Origin);
+        Assert.NotEmpty(entry.Text);
+
+        var c = new CardContext(CardHarness.NewGame(1, 3), CardHarness.World!, new ScriptedScreen(-1)) { PersonalNames = CardHarness.PersonalNames };
+        Assert.Equal(entry.Text, c.ExeText("exe:DS:6967"));
+        c.Translation = key => key == "exe:DS:6967" ? "利德维娜" : null;
+        Assert.Equal("利德维娜", c.ExeText("exe:DS:6967"));
+    }
 }
