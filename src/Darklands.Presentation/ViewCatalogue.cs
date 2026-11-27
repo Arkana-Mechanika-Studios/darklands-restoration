@@ -23,7 +23,14 @@ public enum ViewKind
 /// <param name="Commands">The player commands it takes (docs/COMMANDS.md), as the types' names.</param>
 /// <param name="Announced">Whether the screen announces itself (OnScreen): false for the card screen and the text input box (the recorded
 /// sessions name them by their type, ScreenNames).</param>
-public sealed record ViewEntry(string Id, ViewKind Kind, string? Model, IReadOnlyList<string> Commands, bool Announced = true);
+public sealed record ViewEntry(string Id, ViewKind Kind, string? Model, IReadOnlyList<string> Commands, bool Announced = true)
+{
+    /// <summary>
+    /// The lists and areas the screen declares (a classic screen's drawing and hit tests read them: the 1.2 view registry, step 9; none: a
+    /// screen still on its constants, or a registry view, whose layout is its own).
+    /// </summary>
+    public IReadOnlyList<DeclaredSlot> Declared => ScreenLayouts.Of(Id);
+}
 
 /// <summary>
 /// The view registry's catalogue (1.2, the modular UI's grounds): an entry for every screen the game can show. It is what a 1.3

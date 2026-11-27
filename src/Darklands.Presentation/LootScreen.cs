@@ -103,7 +103,7 @@ public sealed class LootScreen
     private int MouseStep(ref int lit)
     {
         var key = _page.MenuStep(ref lit, MenuKeys, 8);
-        if (_page.HeldRow(BuySellPage.LowerRowAt) is { } packRow)
+        if (_page.HeldRow(_page.LowerRow) is { } packRow)
         {
             _s.ChoosePackRow(packRow);
             ShowPacking();
@@ -111,7 +111,7 @@ public sealed class LootScreen
             _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
             _page.WaitForRelease();
         }
-        if (_page.HeldRow(BuySellPage.UpperRowAt) is { } pileRow)
+        if (_page.HeldRow(_page.UpperRow) is { } pileRow)
         {
             _s.ChoosePileRow(pileRow);
             ShowGetting();
@@ -119,25 +119,25 @@ public sealed class LootScreen
             _page.Light(0x52, _s.PileRow * 8 + 0x55, 0xFA);
             _page.WaitForRelease();
         }
-        if (_page.Held(BuySellPage.OnLowerUpArrow))
+        if (_page.Held(_page.LowerUp))
         {
             _page.WaitForRelease();
             key = Keys.Up;
             _s.UseList(pile: false);
         }
-        if (_page.Held(BuySellPage.OnLowerDownArrow))
+        if (_page.Held(_page.LowerDown))
         {
             _page.WaitForRelease();
             key = Keys.Down;
             _s.UseList(pile: false);
         }
-        if (_page.Held(BuySellPage.OnUpperUpArrow))
+        if (_page.Held(_page.UpperUp))
         {
             _page.WaitForRelease();
             key = Keys.Up;
             _s.UseList(pile: true);
         }
-        if (_page.Held(BuySellPage.OnUpperDownArrow))
+        if (_page.Held(_page.UpperDown))
         {
             _page.WaitForRelease();
             key = Keys.Down;

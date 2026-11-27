@@ -81,6 +81,53 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
         new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
     ];
 
+    /// <summary>The screen's id in the view catalogue.</summary>
+    public const string ScreenId = "CharacterSheetScreen";
+
+    /// <summary>
+    /// The sheet's declared slots (the 1.2 view registry, step 9), from the box table: the party column (x up to 60, rows of 40); each
+    /// box an area (the table's tests take both edges: width and height one more); each scrolling list's panel, its lines (from 9
+    /// below the panel's top to 14 above its foot), its up and down arrows and its rows (8 pixels, from x + 8, 15 narrower); and the
+    /// age and "(F)/(M)" column of box 1 (issue 5: the age ends at x 299, "(F)" starts at x 302: they move as one column).
+    /// </summary>
+    // orig: R031+0x0124 (the click tests), R031+0x1E42 (the list lines), the box table R136+0xBBE7
+    public static IReadOnlyList<DeclaredSlot> DeclaredSlots { get; } = SlotsOfTheTable();
+
+    private static readonly Dictionary<string, DeclaredSlot> SlotsByName = DeclaredSlots.ToDictionary(s => s.Name, StringComparer.Ordinal);
+
+    private static List<DeclaredSlot> SlotsOfTheTable()
+    {
+        var slots = new List<DeclaredSlot> { DeclaredSlot.List("party.rows", 0, 0, PartyPanel.Width + 1, 5, PartyPanel.RowHeight) };
+        for (var i = 0; i < Boxes.Length; i++)
+        {
+            var b = Boxes[i];
+            slots.Add(DeclaredSlot.Area($"box.{i}", b.X, b.Y, b.W + 1, b.H + 1));
+            if (b.IsList)
+            {
+                slots.Add(DeclaredSlot.Area($"box.{i}.panel", b.PanelX, b.PanelY, b.PanelW + 1, b.PanelH + 1));
+                slots.Add(DeclaredSlot.Area($"box.{i}.lines", b.PanelX, b.PanelY + 9, b.PanelW + 1, b.PanelH - 23 + 1));
+                slots.Add(DeclaredSlot.Area($"box.{i}.up", b.PanelX, b.PanelY, b.PanelW + 1, 10));
+                slots.Add(DeclaredSlot.Area($"box.{i}.down", b.PanelX, b.PanelY + b.PanelH - 14, b.PanelW + 1, 15));
+                slots.Add(DeclaredSlot.List($"box.{i}.rows", b.PanelX + 8, b.PanelY + 9, b.PanelW - 15, b.Lines, 8,
+                    "16a: the row height (8, the font's) a pack's line height would set"));
+            }
+        }
+        slots.Add(DeclaredSlot.Area("age.column", Boxes[1].X + 0x19, Boxes[1].Y, Boxes[1].X + Boxes[1].W + 1 - (Boxes[1].X + 0x19), Boxes[1].H + 1,
+            "16a (issue 5): the age (x 287) and \"(F)\" / \"(M)\" (x 302) move together as one column"));
+        return slots;
+    }
+
+    /// <summary>The box table as the original has it (each box's rectangle and its panel's; whether the panel is a scrolling list): what the declared slots are made from.</summary>
+    public static IReadOnlyList<(int X, int Y, int W, int H, int PanelX, int PanelY, int PanelW, int PanelH, bool IsList)> BoxTable { get; } =
+        [.. Boxes.Select(b => (b.X, b.Y, b.W, b.H, b.PanelX, b.PanelY, b.PanelW, b.PanelH, b.IsList))];
+
+    // a list line's highlight: its row of the panel's rows, the rows' width, a row high
+    private static (int X, int Y, int Width, int Height) LineBox(Darklands.Localization.SlotLayout rows, int line) =>
+        (rows.X ?? 0, (rows.Y ?? 0) + line * (rows.RowHeight ?? 0), rows.Width ?? 0, rows.RowHeight ?? 0);
+
+    // a declared slot as laid out now (a pack's of the same kind, else the table's numbers)
+    private Darklands.Localization.SlotLayout Slot(string name) => ui.Slot(ScreenId, SlotsByName[name]);
+
     /// <summary>The brush pictures of the boxes that open (index <see cref="Box.Picture"/>).</summary>
     private static readonly string[] Brushes = ["armbrs13", "armbrsh1", "armbrsh2", "armbrsh3", "armbrsh4", "armbrsh5"];
 
@@ -208,13 +255,13 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private bool Click(int x, int y)
     {
         var b = Current;
-        if (x > PartyPanel.Width)
+        if (Slot("party.rows").RowAt(x, y) < 0)
         {
-            if (_s.IsOpen && b.IsList && b.PanelX <= x && b.PanelW + b.PanelX >= x && b.PanelY + 9 <= y && b.PanelH + b.PanelY - 14 >= y)
+            if (_s.IsOpen && b.IsList && Slot($"box.{_s.Cursor}.lines").Contains(x, y))
             {
                 ClickListLine(_s.Cursor, y);
             }
-            else if (_s.IsOpen && b.IsList && b.PanelX <= x && b.PanelW + b.PanelX >= x && b.PanelY <= y && b.PanelY + 9 >= y)
+            else if (_s.IsOpen && b.IsList && Slot($"box.{_s.Cursor}.up").Contains(x, y))
             {
                 // orig: the scroll's up arrow: `while (mouse-button-state & 1) { step; R030+0x3096(200); }` (R031+0x0286, R031+0x036A): the
                 // button is tested before each step, and the 200 ms wait follows every step, the last one too
@@ -231,7 +278,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     ui.Delay(200);
                 }
             }
-            else if (_s.IsOpen && b.IsList && b.PanelX <= x && b.PanelW + b.PanelX >= x && b.PanelH + b.PanelY - 14 <= y && b.PanelH + b.PanelY >= y)
+            else if (_s.IsOpen && b.IsList && Slot($"box.{_s.Cursor}.down").Contains(x, y))
             {
                 // orig: the down arrow (R031+0x03E8, R031+0x04FD): the same loop; the end of the list breaks out before the wait
                 while (ui.LaidMouse.Left)
@@ -278,7 +325,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             }
             return false;
         }
-        var m = y / PartyPanel.RowHeight;
+        var m = Slot("party.rows").RowOf(y);
         if (m == _s.Who)
         {
             // orig: R031+0x0635 to the clean-up (R031+0x08E1: R031+0x08F6, DS:9920 = DS:9934 = 1)
@@ -558,27 +605,28 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     {
         var b = Boxes[k];
         var shift = ui.ShiftHeld;
-        var line = (y - b.PanelY - 9) / 8;
+        var rows = Slot($"box.{k}.rows");
+        var line = rows.RowOf(y);
         if (!_s.HasLine(k, line))
         {
             return;
         }
-        ui.Recolor(b.PanelX + 8, b.PanelY + _s.Selected(k) * 8 + 9, b.PanelW - 15, 8, ListSelected, ListColor);
+        ui.Recolor(LineBox(rows, _s.Selected(k)), ListSelected, ListColor);
         _s.SelectLine(line);
-        ui.Recolor(b.PanelX + 8, b.PanelY + _s.Selected(k) * 8 + 9, b.PanelW - 15, 8, ListColor, ListSelected);
+        ui.Recolor(LineBox(rows, _s.Selected(k)), ListColor, ListSelected);
         ScreenDrawing.WaitForRelease(ui);
         var (mx, my) = (ui.LaidMouse.X, ui.LaidMouse.Y);
         var index = line + _s.Top(k);
-        if (mx > PartyPanel.Width)
+        if (Slot("party.rows").RowAt(mx, my) < 0)
         {
-            if (b.PanelX <= mx && b.PanelW + b.PanelX >= mx && b.PanelY <= my && b.PanelH + b.PanelY >= my)
+            if (Slot($"box.{k}.panel").Contains(mx, my))
             {
                 if (k == PackBox)
                 {
-                    // C: the drop line is (y − top − k) / 8 with k = 9, the same as the pick line's 9.
-                    var to = Math.Max(0, (my - b.PanelY - k) / 8);
+                    // C: the drop line is (y − top − k) / 8 with k = 9, the same as the pick line's 9 (the rows' top: the panel's + 9).
+                    var to = Math.Max(0, rows.RowOf(my));
                     // orig: R031+0x5922 (item-relocate) via SheetSession.MovePackLine (moved when line `to` holds a stack)
-                    if (_s.MovePackLine(k, (y - b.PanelY - k) / 8, to))
+                    if (_s.MovePackLine(k, rows.RowOf(y), to))
                     {
                         DrawListPanel(k);
                     }
@@ -607,7 +655,7 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
             }
         }
         // orig: the drop on the party panel (SheetSession.GiveTo tests the member's status)
-        else if (b.HoldsItems && _s.GiveTo(my / PartyPanel.RowHeight, index, shift))
+        else if (b.HoldsItems && _s.GiveTo(Slot("party.rows").RowOf(my), index, shift))
         {
             // DORMANT: the original also redraws for a drag from the equipment box (k == 6), which is no list and never gets here.
             if (k == PackBox)
@@ -675,12 +723,12 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     // ---- boxes ----------------------------------------------------------------------
 
     /// <summary>The first box (of <paramref name="limit"/>) containing the point, or <paramref name="limit"/>.</summary>
-    private static int BoxAt(int x, int y, int limit)
+    private int BoxAt(int x, int y, int limit)
     {
         for (var i = 0; i < limit; i++)
         {
             // C: the original scans 18 (19 when dropping) table entries; entries 17 and 18 are zero rectangles at (0, 0).
-            if (Boxes[i].Contains(x, y))
+            if (Slot($"box.{i}").Contains(x, y))
             {
                 return i;
             }
@@ -914,8 +962,10 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                 break;
             case 1:
                 t.Draw(c, b.X + 5, b.Y + 3, ui.Words("exe:DS:2DE3"), TextColor);
-                t.Draw(c, b.X + 0x19, b.Y + 3, ui.Format("exe:DS:2DE7", m.Age), TextColor);
-                t.Draw(c, b.X + 0x28, b.Y + 3, ui.Words(m.IsFemale ? "exe:DS:2DF0" : "exe:DS:2DEC"), TextColor);
+                // the age and (F) / (M): one column (its declared slot; at x b.X + 0x19, the sex 0x0F to its right)
+                var ageX = Slot("age.column").X ?? b.X + 0x19;
+                t.Draw(c, ageX, b.Y + 3, ui.Format("exe:DS:2DE7", m.Age), TextColor);
+                t.Draw(c, ageX + 0x28 - 0x19, b.Y + 3, ui.Words(m.IsFemale ? "exe:DS:2DF0" : "exe:DS:2DEC"), TextColor);
                 break;
             case 2:
                 c.CopyFrom(BackPage, b.X, b.Y, b.W, b.H);

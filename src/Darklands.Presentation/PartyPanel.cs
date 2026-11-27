@@ -64,14 +64,25 @@ public sealed class PartyPanel(GameAssets assets)
     /// <summary>The frame around one row: an edge left and right, a line above and below (the lit pieces for the member selected in a battle).</summary>
     // orig: party-panel-frame-set root 0000:1588: for row i at y = 0x28 * i: the side piece at (0, y) and (0x39, y), the top at (3, y), the bottom at (3, y + 0x27); fighter-selected[i] 0 takes DS:A2E9 / DS:A3D6 / DS:A3E5, 1 takes DS:A33B / DS:A33E / DS:A392
     // C: the pieces go to both pages (DS:0168 off-screen, DS:0190 the screen); here to the one screen. A fighter-selected value other than 0 or 1 draws nothing.
-    public static void DrawFrame(Canvas canvas, CommonSprites sprites, int row, bool lit)
+    public static void DrawFrame(Canvas canvas, CommonSprites sprites, int row, bool lit) => DrawFrame(canvas, sprites, 0, row * RowHeight, lit);
+
+    /// <summary>
+    /// The frame of row <paramref name="row"/> of a screen's party-column list <paramref name="rows"/> (a declared slot: the original's
+    /// rows at x 0, 40 pixels each, unless a layout moves them; the 1.2 view registry).
+    /// </summary>
+    public static void DrawFrame(Canvas canvas, CommonSprites sprites, Darklands.Localization.SlotLayout rows, int row, bool lit)
     {
-        var y = row * RowHeight;
+        ArgumentNullException.ThrowIfNull(rows);
+        DrawFrame(canvas, sprites, rows.X ?? 0, (rows.Y ?? 0) + row * (rows.RowHeight ?? RowHeight), lit);
+    }
+
+    private static void DrawFrame(Canvas canvas, CommonSprites sprites, int x, int y, bool lit)
+    {
         var side = lit ? sprites.PanelSideLit : sprites.PanelSide;
-        SpriteDrawing.Draw(canvas, side, 0, y);
-        SpriteDrawing.Draw(canvas, side, 0x39, y);
-        SpriteDrawing.Draw(canvas, lit ? sprites.PanelTopLit : sprites.PanelTop, 3, y);
-        SpriteDrawing.Draw(canvas, lit ? sprites.PanelBottomLit : sprites.PanelBottom, 3, y + 0x27);
+        SpriteDrawing.Draw(canvas, side, x, y);
+        SpriteDrawing.Draw(canvas, side, x + 0x39, y);
+        SpriteDrawing.Draw(canvas, lit ? sprites.PanelTopLit : sprites.PanelTop, x + 3, y);
+        SpriteDrawing.Draw(canvas, lit ? sprites.PanelBottomLit : sprites.PanelBottom, x + 3, y + 0x27);
     }
 
     /// <summary>Every row drawn as the panel rows (root 0000:1716) put them on the screen: drawn on the page, then 0x36 x 0x26 pixels of each copied.</summary>

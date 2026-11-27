@@ -151,17 +151,18 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             var fromMouse = false;
             var mouse = ui.LaidMouse;
             var (mx, my) = (mouse.X, mouse.Y);
-            var inBox = _box is not null && mx > 250 && mx < 310 && my > 142 && my < 192;
-            var inMenu = mx > 148 && mx < 318 && my > 158 && my < 190;
+            // (the screen's declared slots: the 1.2 view registry, step 9, the original's numbers)
+            var inBox = _box is not null && Slot(SaintPrayerLayout.MemberBox).Contains(mx, my);
+            var inMenu = Slot(SaintPrayerLayout.Menu).Contains(mx, my);
             if (inBox && !mouse.Left)
             {
                 // orig: rows (y − 142) / 9, highlighted at (0xFB, (row + 16) × 9), 0x3B × 9
-                var row = (my - 142) / BoxRow;
+                var row = Slot(SaintPrayerLayout.MemberRows).RowOf(my);
                 if (row != boxRow)
                 {
-                    Recolor(0xFB, (boxRow + 16) * BoxRow, 0x3B, BoxRow, HighlightColor, TextColor);
+                    Recolor(MemberRow(boxRow), HighlightColor, TextColor);
                     boxRow = row;
-                    Recolor(0xFB, (row + 16) * BoxRow, 0x3B, BoxRow, TextColor, HighlightColor);
+                    Recolor(MemberRow(row), TextColor, HighlightColor);
                 }
             }
             else if (inBox)
@@ -171,7 +172,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 // C: the row is a slot number, not a list position: with an empty slot before a member, the list
                 //   and the slots disagree, as in the original.
                 ui.WaitForButtonRelease();
-                var slot = Math.Clamp((ui.LaidMouse.Y - 142) / BoxRow, 0, 4);
+                var slot = Math.Clamp(Slot(SaintPrayerLayout.MemberRows).RowOf(ui.LaidMouse.Y), 0, 4);
                 if (slot < party.Slots.Count && party.Slots[slot].OccupiesSlot)
                 {
                     CloseMemberList();
@@ -180,14 +181,14 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             }
             else if (inMenu && !mouse.Left)
             {
-                var row = (my - 158) / MenuStep;
+                var row = Slot(SaintPrayerLayout.MenuRows).RowOf(my);
                 if (row != menuRow)
                 {
-                    Recolor(MenuX, menuRow * MenuStep + 158, MenuWidth, MenuStep, HighlightColor, TextColor);
+                    Recolor(MenuRow(menuRow, 0), HighlightColor, TextColor);
                     menuRow = row;
                     if (row == PrayLine && prayer.ChoosesMember && _box is null && prayer.CanPray)
                     {
-                        Recolor(MenuX, row * MenuStep + 158, MenuWidth, MenuStep, TextColor, HighlightColor);
+                        Recolor(MenuRow(row, 0), TextColor, HighlightColor);
                         OpenMemberList(party);
                         boxRow = -1;
                     }
@@ -198,7 +199,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                             CloseMemberList();
                         }
                         // C: the original highlights from x 0x95 here (0x94 above): the first pixel column keeps its colour.
-                        Recolor(MenuX + 1, row * MenuStep + 158, MenuWidth, MenuStep, TextColor, HighlightColor);
+                        Recolor(MenuRow(row, 1), TextColor, HighlightColor);
                     }
                 }
             }
@@ -207,7 +208,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 // C: the row after the release, (y − 158) / 8 truncated toward zero: a row outside 0..3 gives no key
                 ui.WaitForButtonRelease();
                 fromMouse = true;
-                key = ((ui.LaidMouse.Y - 158) / MenuStep) switch
+                key = Slot(SaintPrayerLayout.MenuRows).RowOf(ui.LaidMouse.Y) switch
                 {
                     0 => 0x324D,   // M
                     1 => 0x264C,   // L
@@ -221,7 +222,7 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
                 CloseMemberList();
             }
             mouse = ui.LaidMouse;
-            if (mouse.Left && mouse.X < 60 && mouse.Y / 40 == prayer.Member)
+            if (mouse.Left && Slot(SaintPrayerLayout.PartyRows).RowAt(mouse.X, mouse.Y) is var own and >= 0 && own == prayer.Member)
             {
                 CloseMemberList();
                 return null;
@@ -449,6 +450,24 @@ public sealed class SaintPrayerScreen(GameUi ui, PartyPanel panel)
             ui.Present();
         }
     }
+
+    private Darklands.Localization.SlotLayout Slot(DeclaredSlot slot) => ui.Slot(SaintPrayerLayout.Screen, slot);
+
+    // a member's row in the box: two pixels into the row, the highlight's width, a row high
+    private (int X, int Y, int Width, int Height) MemberRow(int row)
+    {
+        var rows = Slot(SaintPrayerLayout.MemberRows);
+        return (rows.X ?? 0, (rows.Y ?? 0) + row * (rows.RowHeight ?? 0) + 2, rows.Width ?? 0, rows.RowHeight ?? 0);
+    }
+
+    // a menu row, from the rows' left edge (+ dx: the original's one-pixel shift of one highlight)
+    private (int X, int Y, int Width, int Height) MenuRow(int row, int dx)
+    {
+        var rows = Slot(SaintPrayerLayout.MenuRows);
+        return ((rows.X ?? 0) + dx, (rows.Y ?? 0) + row * (rows.RowHeight ?? 0), rows.Width ?? 0, rows.RowHeight ?? 0);
+    }
+
+    private void Recolor((int X, int Y, int Width, int Height) box, byte from, byte to) => Recolor(box.X, box.Y, box.Width, box.Height, from, to);
 
     private void Recolor(int x, int y, int width, int height, byte from, byte to)
     {

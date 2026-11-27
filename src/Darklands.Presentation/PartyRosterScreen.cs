@@ -151,23 +151,26 @@ public sealed class PartyRosterScreen
     // ----- input -----
 
     // orig: R038+0x0000, the click areas (the button is waited out before the row is taken)
+    // (the screen's declared slots: the 1.2 view registry, step 9, the original's numbers)
     private int Click(int x, int y)
     {
-        if (x > 0x46 && x < 0xC8 && y > 0x2D && y < 0xA5)
+        if (Slot(PartyRosterLayout.Buttons).Contains(x, y))
         {
             ScreenDrawing.WaitForRelease(_ui);
-            var row = (y - 0x2D) / 15;
+            var row = Slot(PartyRosterLayout.ButtonRows).RowOf(y);
             return row < Commands.Length ? Commands[row].Key : 0;
         }
-        if (x > 0xC5 && x < 0x138 && y > 0x14 && y < 0xB4)
+        if (Slot(PartyRosterLayout.Names).Contains(x, y))
         {
             ScreenDrawing.WaitForRelease(_ui);
-            var row = (y - 0x14) / 8;
+            var row = Slot(PartyRosterLayout.NameRows).RowOf(y);
             if (Menu.Count > row)
             {
-                _ui.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
+                var (hx, hy, hw, hh) = NameRow(Menu.Selected);
+                _ui.Recolor(hx, hy, hw, hh, Highlight, NameColor);
                 Menu.Selected = row;
-                _ui.Recolor(0xC6, (row << 3) + 0x16, 0x71, 8, NameColor, Highlight);
+                (hx, hy, hw, hh) = NameRow(row);
+                _ui.Recolor(hx, hy, hw, hh, NameColor, Highlight);
                 if (FixedPreview)
                 {
                     ShowPreview();
@@ -175,6 +178,15 @@ public sealed class PartyRosterScreen
             }
         }
         return 0;
+    }
+
+    private Darklands.Localization.SlotLayout Slot(DeclaredSlot slot) => _ui.Slot(PartyRosterLayout.Screen, slot);
+
+    // a name's highlight box: its row of the names' rows, two pixels in, the highlight's width, a row high
+    private (int X, int Y, int Width, int Height) NameRow(int row)
+    {
+        var rows = Slot(PartyRosterLayout.NameRows);
+        return (rows.X ?? 0, (rows.Y ?? 0) + row * (rows.RowHeight ?? 0) + 2, rows.Width ?? 0, rows.RowHeight ?? 0);
     }
 
     /// <summary>One key (R038+0x02F8); returns what the handler leaves in AX, which ends the screen when it is 0x11B.</summary>
@@ -248,7 +260,7 @@ public sealed class PartyRosterScreen
     //   roster-figure, rows 1-4: the original's screen is the C#'s at 0 px).
     private int Arrow(bool up)
     {
-        _ui.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, Highlight, NameColor);
+        _ui.Recolor(NameRow(Menu.Selected), Highlight, NameColor);
         if (up)
         {
             InnRoster.SelectPrevious(Menu);
@@ -257,7 +269,7 @@ public sealed class PartyRosterScreen
         {
             InnRoster.SelectNext(Menu);
         }
-        _ui.Recolor(0xC6, 8 * Menu.Selected + 0x16, 0x71, 8, NameColor, Highlight);
+        _ui.Recolor(NameRow(Menu.Selected), NameColor, Highlight);
         CopyBack(0x46, 0xA5, 0x23, 0x23);
         if (FixedPreview)
         {
@@ -480,7 +492,7 @@ public sealed class PartyRosterScreen
             _ui.Text.Draw(on, 0xD0, y - 1, row.Record.Name, NameShadow);
             _ui.Text.Draw(on, 0xCF, y - 2, row.Record.Name, NameColor);
         }
-        on.Recolor(0xC6, (Menu.Selected << 3) + 0x16, 0x71, 8, NameColor, Highlight);
+        on.Recolor(NameRow(Menu.Selected), NameColor, Highlight);
     }
 
     /// <summary>A command's button pressed: the button picture and its label in colour 8 on the screen.</summary>

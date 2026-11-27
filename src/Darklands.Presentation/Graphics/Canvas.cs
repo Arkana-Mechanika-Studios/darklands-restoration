@@ -255,6 +255,9 @@ public sealed class Canvas(Screen screen)
     public void SetColor(int index, Rgb24 rgb) =>
         screen.Palette[index] = 0xFF000000u | (uint)rgb.R << 16 | (uint)rgb.G << 8 | rgb.B;
 
+    /// <summary>Replaces one colour by another inside a box (x, y, width, height).</summary>
+    public void Recolor((int X, int Y, int Width, int Height) box, byte from, byte to) => Recolor(box.X, box.Y, box.Width, box.Height, from, to);
+
     /// <summary>Replaces one colour by another inside a rectangle (used to grey or highlight text); the owners stay.</summary>
     public void Recolor(int x, int y, int width, int height, byte from, byte to)
     {

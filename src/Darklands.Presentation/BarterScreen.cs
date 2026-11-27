@@ -116,7 +116,7 @@ public sealed class BarterScreen
     private int MouseStep(ref int lit)
     {
         var key = _page.MenuStep(ref lit, MenuKeys, 9);
-        if (_page.HeldRow(BuySellPage.LowerRowAt) is { } packRow)
+        if (_page.HeldRow(_page.LowerRow) is { } packRow)
         {
             _s.ChoosePackRow(packRow);
             ShowSelling();
@@ -124,7 +124,7 @@ public sealed class BarterScreen
             _page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
             _page.WaitForRelease();
         }
-        if (_page.HeldRow(BuySellPage.UpperRowAt) is { } shopRow)
+        if (_page.HeldRow(_page.UpperRow) is { } shopRow)
         {
             _s.ChooseShopRow(shopRow);
             ShowBuying();
@@ -132,28 +132,28 @@ public sealed class BarterScreen
             _page.Light(0x52, _s.ShopRow * 8 + 0x55, 0xFA);
             _page.WaitForRelease();
         }
-        if (_page.Held(BuySellPage.OnLowerUpArrow))
+        if (_page.Held(_page.LowerUp))
         {
             _page.WaitForRelease();
             key = Keys.Up;
             _s.UseList(buying: false);
             ShowSelling();
         }
-        if (_page.Held(BuySellPage.OnLowerDownArrow))
+        if (_page.Held(_page.LowerDown))
         {
             _page.WaitForRelease();
             key = Keys.Down;
             _s.UseList(buying: false);
             ShowSelling();
         }
-        if (_page.Held(BuySellPage.OnUpperUpArrow))
+        if (_page.Held(_page.UpperUp))
         {
             _page.WaitForRelease();
             key = Keys.Up;
             _s.UseList(buying: true);
             ShowBuying();
         }
-        if (_page.Held(BuySellPage.OnUpperDownArrow))
+        if (_page.Held(_page.UpperDown))
         {
             _page.WaitForRelease();
             key = Keys.Down;
@@ -161,7 +161,7 @@ public sealed class BarterScreen
             ShowBuying();
         }
         // C: member-sheet-overlay-entry(row) returns the member to show next; barter ignores it and redraws (pic, palette, panel, the lists).
-        if (_page.HeldRow(BuySellPage.MemberAt) is { } member)
+        if (_page.HeldRow(_page.Member) is { } member)
         {
             _screens.CharacterSheet(member);
             Redraw();

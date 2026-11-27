@@ -96,7 +96,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
     private int MouseStep(ref int lit)
     {
         var key = page.MenuStep(ref lit, MenuKeys, 8);
-        if (page.HeldRow(BuySellPage.LowerRowAt) is { } packRow)
+        if (page.HeldRow(page.LowerRow) is { } packRow)
         {
             _s.ChoosePackRow(packRow);
             ShowPacking();
@@ -104,7 +104,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
             page.Light(0x72, _s.PackRow * 8 + 0x93, 0xFA);
             page.WaitForRelease();
         }
-        if (page.HeldRow(BuySellPage.UpperRowAt) is { } storeRow)
+        if (page.HeldRow(page.UpperRow) is { } storeRow)
         {
             _s.ChooseStoreRow(storeRow);
             ShowGetting();
@@ -112,25 +112,25 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
             page.Light(0x52, _s.StoreRow * 8 + 0x55, 0xFA);
             page.WaitForRelease();
         }
-        if (page.Held(BuySellPage.OnLowerUpArrow))
+        if (page.Held(page.LowerUp))
         {
             page.WaitForRelease();
             key = Keys.Up;
             _s.UseList(store: false);
         }
-        if (page.Held(BuySellPage.OnLowerDownArrow))
+        if (page.Held(page.LowerDown))
         {
             page.WaitForRelease();
             key = Keys.Down;
             _s.UseList(store: false);
         }
-        if (page.Held(BuySellPage.OnUpperUpArrow))
+        if (page.Held(page.UpperUp))
         {
             page.WaitForRelease();
             key = Keys.Up;
             _s.UseList(store: true);
         }
-        if (page.Held(BuySellPage.OnUpperDownArrow))
+        if (page.Held(page.UpperDown))
         {
             page.WaitForRelease();
             key = Keys.Down;
@@ -139,7 +139,7 @@ public sealed class ItemStoreScreen(BuySellPage page, GameState state, IGameScre
         // C: the original loops `row = pointer-row / 0x28; while (row != -1) { row = member-sheet-overlay-entry(row); panel redrawn }`; member-sheet-screen returns -1 on every
         //   path (its only two returns give -1), the member shown changing inside the sheet: the loop runs once, as here, and IGameScreens.CharacterSheet
         //   needs no result.
-        if (page.HeldRow(BuySellPage.MemberAt) is { } member)
+        if (page.HeldRow(page.Member) is { } member)
         {
             screens.CharacterSheet(member);
             Redraw();

@@ -168,24 +168,52 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
     // ---- where the pointer is ------------------------------------------------------------
 
     /// <summary>Over the menu: the line 0..4, or null.</summary>
-    public static int? MenuLineAt(int x, int y) => x > 0x50 && x < 0xE6 && y > 0x1B && y < 0x43 ? (y - 0x1B) / 8 : null;
+    public static int? MenuLineAt(int x, int y) => LineIn(BuySellLayout.Menu.Layout, BuySellLayout.MenuRows.Layout, x, y);
 
     /// <summary>Over the upper list: the row, or null.</summary>
-    public static int? UpperRowAt(int x, int y) => x > 0x52 && x < 0x10B && y > 0x55 && y < 0x75 ? (y - 0x55) >> 3 : null;
+    public static int? UpperRowAt(int x, int y) => LineIn(BuySellLayout.Upper.Layout, BuySellLayout.UpperRows.Layout, x, y);
 
     /// <summary>Over the lower list: the row, or null.</summary>
-    public static int? LowerRowAt(int x, int y) => x > 0x72 && x < 0x11C && y > 0x93 && y < 0xB3 ? (y - 0x93) >> 3 : null;
+    public static int? LowerRowAt(int x, int y) => LineIn(BuySellLayout.Lower.Layout, BuySellLayout.LowerRows.Layout, x, y);
 
-    public static bool OnUpperUpArrow(int x, int y) => y > 0x4C && y < 0x55 && x > 0x52 && x < 0x10B;
+    public static bool OnUpperUpArrow(int x, int y) => BuySellLayout.UpperUp.Layout.Contains(x, y);
 
-    public static bool OnUpperDownArrow(int x, int y) => y > 0x75 && y < 0x7E && x > 0x52 && x < 0x10B;
+    public static bool OnUpperDownArrow(int x, int y) => BuySellLayout.UpperDown.Layout.Contains(x, y);
 
-    public static bool OnLowerUpArrow(int x, int y) => y > 0x8A && y < 0x93 && x > 0x72 && x < 0x12B;
+    public static bool OnLowerUpArrow(int x, int y) => BuySellLayout.LowerUp.Layout.Contains(x, y);
 
-    public static bool OnLowerDownArrow(int x, int y) => y > 0xB3 && y < 0xBC && x > 0x72 && x < 0x12B;
+    public static bool OnLowerDownArrow(int x, int y) => BuySellLayout.LowerDown.Layout.Contains(x, y);
 
     /// <summary>Over the party column: the member's row.</summary>
-    public static int? MemberAt(int x, int y) => x < 0x3C ? y / 40 : null;
+    public static int? MemberAt(int x, int y) => BuySellLayout.PartyRows.Layout.RowAt(x, y) is var r and >= 0 ? r : null;
+
+    // a line of a list or the menu: the area's test, then the row by the original's arithmetic (the declared slots, the 1.2 view registry)
+    private static int? LineIn(Darklands.Localization.SlotLayout area, Darklands.Localization.SlotLayout rows, int x, int y) =>
+        area.Contains(x, y) ? rows.RowOf(y) : null;
+
+    // ---- The same tests on the screen's slots as laid out now (GameUi.Slot: a pack's of the same kind, else these). ----
+
+    private Darklands.Localization.SlotLayout Slot(DeclaredSlot slot) => ui.Slot(Screen, slot);
+
+    /// <summary>The menu line at (x, y), or null.</summary>
+    public int? MenuLine(int x, int y) => LineIn(Slot(BuySellLayout.Menu), Slot(BuySellLayout.MenuRows), x, y);
+
+    /// <summary>The upper list's row at (x, y), or null.</summary>
+    public int? UpperRow(int x, int y) => LineIn(Slot(BuySellLayout.Upper), Slot(BuySellLayout.UpperRows), x, y);
+
+    /// <summary>The lower list's row at (x, y), or null.</summary>
+    public int? LowerRow(int x, int y) => LineIn(Slot(BuySellLayout.Lower), Slot(BuySellLayout.LowerRows), x, y);
+
+    public bool UpperUp(int x, int y) => Slot(BuySellLayout.UpperUp).Contains(x, y);
+
+    public bool UpperDown(int x, int y) => Slot(BuySellLayout.UpperDown).Contains(x, y);
+
+    public bool LowerUp(int x, int y) => Slot(BuySellLayout.LowerUp).Contains(x, y);
+
+    public bool LowerDown(int x, int y) => Slot(BuySellLayout.LowerDown).Contains(x, y);
+
+    /// <summary>The party column's member at (x, y), or null.</summary>
+    public int? Member(int x, int y) => Slot(BuySellLayout.PartyRows).RowAt(x, y) is var r and >= 0 ? r : null;
 
     /// <summary>
     /// The menu's part of one pass of the screen's loop, on the button's state (not its press): with the button up, the line
@@ -205,25 +233,27 @@ public sealed class BuySellPage(GameUi ui, PartyPanel panel)
         var mouse = ui.Mouse;
         // the pointer as the original's tests see it: a laid-out line answers where it is drawn (LaidOutAreas)
         var (mx, my) = Laid.Map(mouse.X, mouse.Y);
-        var over = MenuLineAt(mx, my) is not null;
+        var over = MenuLine(mx, my) is not null;
+        var rows = Slot(BuySellLayout.MenuRows);
+        var (rx, ry, rw, rh) = (rows.X ?? 0, rows.Y ?? 0, rows.Width ?? 0, rows.RowHeight ?? 0);
         if (!mouse.Left && over)
         {
-            var row = (my - MenuY) / 8;
+            var row = rows.RowOf(my);
             if (row != lit)
             {
-                Recolor(MenuX, lit * 8 + MenuY, 0x96, 8, Lit, Ink);
+                Recolor(rx, lit * rh + ry, rw, rh, Lit, Ink);
                 lit = row;
-                Recolor(MenuX, row * 8 + MenuY, 0x96, 8, Ink, Lit);
+                Recolor(rx, row * rh + ry, rw, rh, Ink, Lit);
             }
         }
         else if (mouse.Left && over)
         {
             WaitForRelease();
-            return MenuKey((Laid.Map(ui.Mouse.X, ui.Mouse.Y).Y - MenuY) / 8, keys);
+            return MenuKey(rows.RowOf(Laid.Map(ui.Mouse.X, ui.Mouse.Y).Y), keys);
         }
         else if (!mouse.Left && lit != -1)
         {
-            Recolor(MenuX, lit * 8 + MenuY, 0x96, leaveHeight, Lit, Ink);
+            Recolor(rx, lit * rh + ry, rw, leaveHeight, Lit, Ink);
             lit = -1;
         }
         return 0;

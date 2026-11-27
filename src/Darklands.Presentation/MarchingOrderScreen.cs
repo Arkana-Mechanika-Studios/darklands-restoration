@@ -33,18 +33,20 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
     {
         // its texts as a translation pack lays them out (interface/layout.json), its hit tests and highlights with them
         using var laidOut = ui.OnScreen("MarchingOrderScreen");
+        // the party column's rows: drawn and clicked as the screen's declared list (the 1.2 view registry; the original's numbers)
+        var rows = ui.Slot(MarchingOrderLayout.Screen, MarchingOrderLayout.PartyRows);
         var canvas = ui.Canvas;
         var sprites = ui.Assets.CommonSprites;
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            PartyPanel.DrawFrame(canvas, sprites, i, lit: false);
+            PartyPanel.DrawFrame(canvas, sprites, rows, i, lit: false);
         }
         var choice = new MarchingOrderChoice(state.MarchingOrder, i => state.Party.Slot(i).Status == CharacterStatus.Able);
         for (var i = 0; i < Party.MaxMembers; i++)
         {
             if (choice.Selected[i])
             {
-                PartyPanel.DrawFrame(canvas, sprites, i, lit: true);
+                PartyPanel.DrawFrame(canvas, sprites, rows, i, lit: true);
             }
         }
         var box = new MessageBox(ui);
@@ -76,9 +78,8 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
                     // orig: DS:C62A / DS:C4FE, the release count and place of the driver (as the battle's picker): x < 0x3C: row = y / 40
                     // (signed); the row's status byte 1 and selection byte 1; a release elsewhere is used up (no hot spots outside a battle)
                     releases = 0;
-                    if (releaseX < PartyPanel.Width)
+                    if (rows.RowAt(releaseX, releaseY) is var row and >= 0)
                     {
-                        var row = releaseY / PartyPanel.RowHeight;
                         if (choice.CanClick(row, state.Party.Slot(row).Status == CharacterStatus.Able))
                         {
                             taken = row;
@@ -90,7 +91,7 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
                 {
                     if (taken < Party.MaxMembers)
                     {
-                        PartyPanel.DrawFrame(canvas, sprites, taken, lit: false);
+                        PartyPanel.DrawFrame(canvas, sprites, rows, taken, lit: false);
                     }
                     break;
                 }
@@ -100,11 +101,11 @@ public sealed class MarchingOrderScreen(GameUi ui, PartyPanel panel, Func<int, s
         }
         foreach (var slot in choice.Finish())
         {
-            PartyPanel.DrawFrame(canvas, sprites, slot, lit: false);
+            PartyPanel.DrawFrame(canvas, sprites, rows, slot, lit: false);
         }
         for (var i = 0; i < Party.MaxMembers; i++)
         {
-            PartyPanel.DrawFrame(canvas, sprites, i, lit: ui.PanelSelection[i]);
+            PartyPanel.DrawFrame(canvas, sprites, rows, i, lit: ui.PanelSelection[i]);
         }
         ui.Present();
         _ = panel;

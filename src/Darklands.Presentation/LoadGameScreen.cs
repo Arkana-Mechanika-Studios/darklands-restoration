@@ -65,23 +65,23 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
             var action = ui.PollFrame();
             var mouse = ui.LaidMouse;
             var key = Keys.None;
-            if (action is null && (mouse.Buttons & MouseButtons.Left) == 0 && InButtons(mouse.X, mouse.Y))
+            if (action is null && (mouse.Buttons & MouseButtons.Left) == 0 && ButtonsArea.Contains(mouse.X, mouse.Y))
             {
-                var row = (mouse.Y - 0x2D) / 15;
+                var row = ButtonRowsSlot.RowOf(mouse.Y);
                 if (row != lit)
                 {
                     if (lit != -1)
                     {
-                        ui.Recolor(0x45, lit * 15 + 0x2F, LabelWidth, 8, LabelHighlight, LabelColor);
+                        RecolorLabel(lit, LabelHighlight, LabelColor);
                     }
                     lit = row;
-                    ui.Recolor(0x45, row * 15 + 0x2F, LabelWidth, 8, LabelColor, LabelHighlight);
+                    RecolorLabel(row, LabelColor, LabelHighlight);
                 }
             }
-            else if (action is { IsLeftClick: true } click && InButtons(ui.Laid.Map(click.X, click.Y).X, ui.Laid.Map(click.X, click.Y).Y))
+            else if (action is { IsLeftClick: true } click && ButtonsArea.Contains(ui.Laid.Map(click.X, click.Y).X, ui.Laid.Map(click.X, click.Y).Y))
             {
                 ScreenDrawing.WaitForRelease(ui);
-                key = ((ui.LaidMouse.Y - 0x2D) / 15) switch
+                key = ButtonRowsSlot.RowOf(ui.LaidMouse.Y) switch
                 {
                     0 => LoadKey,
                     1 => DeleteKey,
@@ -90,7 +90,7 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
                     _ => Keys.None,
                 };
             }
-            else if (action is { IsLeftClick: true } pick && ui.Laid.Map(pick.X, pick.Y) is var (px, py) && InList(px, py))
+            else if (action is { IsLeftClick: true } pick && ui.Laid.Map(pick.X, pick.Y) is var (px, py) && ListArea.Contains(px, py))
             {
                 ScreenDrawing.WaitForRelease(ui);
                 var row = RowAt(ui.LaidMouse.Y);
@@ -120,20 +120,39 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     private const int LoadKey = 0x264C;
     private const int DeleteKey = 0x2044;
 
-    private bool InButtons(int x, int y) => x > 0x44 && x < ButtonsRight && y > 0x2D && y < 0x5A;
+    // the screen's declared slots (the 1.2 view registry, step 9: the original's numbers; the comfort screen's left edges and widths
+    //   from its plates and panel as drawn)
+    private Darklands.Localization.SlotLayout Slot(DeclaredSlot slot) => ui.Slot(LoadGameLayout.Screen, slot);
 
-    // the buttons' right end: the picture's (0xc6), or the comfort screen's narrowed plates'
-    private int ButtonsRight => Comfort ? _plateRight : 0xC6;
+    // the buttons' area: its right end the picture's (0xc6), or the comfort screen's narrowed plates'
+    private Darklands.Localization.SlotLayout ButtonsArea => Comfort
+        ? Slot(LoadGameLayout.Buttons) with { Width = _plateRight - (Slot(LoadGameLayout.Buttons).X ?? 0) }
+        : Slot(LoadGameLayout.Buttons);
+
+    private Darklands.Localization.SlotLayout ButtonRowsSlot => Slot(LoadGameLayout.ButtonRows);
+
+    // a button's label lit or put back: two pixels into its row, eight high
+    private void RecolorLabel(int row, byte from, byte to)
+    {
+        var rows = ButtonRowsSlot;
+        ui.Recolor(rows.X ?? 0, (rows.Y ?? 0) + row * (rows.RowHeight ?? 0) + 2, LabelWidth, 8, from, to);
+    }
 
     // the width of a button label's hover highlight: the original's 0x80, or as far as the narrowed plates
     private int LabelWidth => Comfort ? _plateRight - 0x47 : 0x80;
 
-    // the list's place: the original's (0xc3 < x < 0x140, 0x14 < y < 0xa5, rows of 16 from y 0x14), or the comfort list's
-    private bool InList(int x, int y) => Comfort
-        ? x > _panelLeft && x < PanelRight && y > PanelTop + 1 && y < PanelBottom - 1
-        : x > 0xC3 && x < 0x140 && y > 0x14 && y < 0xA5;
+    // the list's place: the original's (0xc3 < x < 0x140, 0x14 < y < 0xa5, rows of 16 from y 0x14), or the comfort list's (its left
+    //   edge the panel's)
+    private Darklands.Localization.SlotLayout ListArea => Comfort
+        ? Slot(LoadGameLayout.ComfortList) with { X = _panelLeft + 1, Width = PanelRight - _panelLeft - 1 }
+        : Slot(LoadGameLayout.List);
 
-    private int RowAt(int y) => Comfort ? Math.Max(0, y - RowsTop) / RowHeight : (y - 0x14) / 16;
+    private Darklands.Localization.SlotLayout ListRows => Comfort
+        ? Slot(LoadGameLayout.ComfortRows) with { X = _panelLeft + 2, Width = PanelRight - _panelLeft - 3 }
+        : Slot(LoadGameLayout.ListRows);
+
+    // the row under y: the original's (y - 0x14) / 16, or the comfort list's from its top (the pixels above its first row are row 0)
+    private int RowAt(int y) => Comfort ? ListRows.RowOf(Math.Max(y, ListRows.Y ?? 0)) : ListRows.RowOf(y);
 
     // ---- The comfort screen (the Interface switch on Comfort, GameUi.ComfortInterface). Not in the original. ----
     // Every saved game on one line, the newest first. The three buttons are narrowed to their labels (the short English ones, "Load
@@ -453,8 +472,9 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
     {
         if (Comfort)
         {
-            var y = RowsTop + _cursorRow * RowHeight;
-            ui.Recolor(_panelLeft + 2, y, PanelRight - _panelLeft - 3, RowHeight, on ? LineColor : LineHighlight, on ? LineHighlight : LineColor);
+            var rows = ListRows;
+            var y = (rows.Y ?? 0) + _cursorRow * (rows.RowHeight ?? 0);
+            ui.Recolor(rows.X ?? 0, y, rows.Width ?? 0, rows.RowHeight ?? 0, on ? LineColor : LineHighlight, on ? LineHighlight : LineColor);
             if (on)
             {
                 DrawDetails();
@@ -464,11 +484,11 @@ public sealed class LoadGameScreen(GameUi ui, SaveFolder folder, IReadOnlyList<s
         }
         if (on)
         {
-            ui.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineColor, LineHighlight);
+            ui.Recolor(ListRows.X ?? 0, (ListRows.Y ?? 0) + _cursorRow * (ListRows.RowHeight ?? 0) + 2, ListRows.Width ?? 0, ListRows.RowHeight ?? 0, LineColor, LineHighlight);
         }
         else
         {
-            ui.Recolor(0xC4, (_cursorRow << 4) + 0x16, 0x7B, 0x10, LineHighlight, LineColor);
+            ui.Recolor(ListRows.X ?? 0, (ListRows.Y ?? 0) + _cursorRow * (ListRows.RowHeight ?? 0) + 2, ListRows.Width ?? 0, ListRows.RowHeight ?? 0, LineHighlight, LineColor);
         }
         ui.Present();
     }

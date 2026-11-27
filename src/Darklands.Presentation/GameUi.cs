@@ -370,6 +370,9 @@ public sealed class GameUi
         }
     }
 
+    /// <summary>A highlight in a box (x, y, width, height), as <see cref="Recolor(int, int, int, int, byte, byte)"/>.</summary>
+    public void Recolor((int X, int Y, int Width, int Height) box, byte from, byte to) => Recolor(box.X, box.Y, box.Width, box.Height, from, to);
+
     /// <summary>A highlight: <paramref name="from"/> becomes <paramref name="to"/> in the box, and in the drawn box of a laid-out text whose place it is.</summary>
     public void Recolor(int x, int y, int width, int height, byte from, byte to)
     {
@@ -438,6 +441,19 @@ public sealed class GameUi
     public Darklands.Localization.SlotLayout? LayoutOf(string words, string screen) =>
         _laid.Count == 0 || !_laid.TryGetValue(words, out var key) ? null
         : Language!.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(key) is { IsText: true } layout ? layout : null;
+
+    /// <summary>
+    /// A slot of <paramref name="screen"/> as it is laid out now: a pack's entry of the same name and kind (a list, an area) when it has
+    /// one, else the screen's own (the original's numbers). The screen's drawing and its hit tests both read it (the 1.2 view registry,
+    /// step 9).
+    /// </summary>
+    // Not in the original: the 1.2 view registry (the L-9 guard: hit tests within the screen's slots).
+    public Darklands.Localization.SlotLayout Slot(string screen, DeclaredSlot slot)
+    {
+        ArgumentNullException.ThrowIfNull(slot);
+        return Language?.Layouts.GetValueOrDefault(screen)?.GetValueOrDefault(slot.Name) is { } laid && laid.KindOrText == slot.Layout.KindOrText
+            && laid.Rectangle is not null ? laid : slot.Layout;
+    }
 
     /// <summary>
     /// Uses the fonts of the font pack in <paramref name="folder"/> (a font-only pack, <c>{"fonts": true}</c>: high-resolution text for
