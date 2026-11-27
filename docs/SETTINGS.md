@@ -341,6 +341,9 @@ games are the same, and the original game loads them):
 * **The members' sheets from the trade pages** (since 1.2, GitHub issue 9): at a merchant's barter and at the inn's item store,
   F1 to F5 open a member's sheet, as a click on the party column does (the original opens them only with the click); Esc comes
   back to the page.
+* **The members' sheets from the loot page** (since 1.2, GitHub issue 10): when the party shares out what it found, a click on
+  the party column or F1 to F5 open a member's sheet, so you can see who can carry what before you take it (the original has no way
+  to open a sheet there); Esc comes back to the loot.
 
 `interface` is a section so that a feature could have its own key beside `mode`; there is none.
 

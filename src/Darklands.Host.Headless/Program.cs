@@ -353,6 +353,8 @@ if (battleStep is not null)
     var screens = new BattleScreens(ui, () => state, (items, money) => { Console.WriteLine($"loot: {items.Count} items"); lootScreens.Loot(items, money); }) { CharacterSheet = sheets.CharacterSheet, PartyInfo = sheets.PartyInfo };
     sheets.CannotView = screens.CannotViewMember;
     lootScreens.CannotView = screens.LootSkipsMember;
+    // the loot page opens the sheet from its party column with the Comfort interface (GitHub issue 10), as in the game (DarklandsGame: shops.Sheet)
+    lootScreens.Sheet = sheets.CharacterSheet;
     // with saves:<folder>, Alt-S in the battle saves the game there (as the game does inside a battle)
     if (savesStep is not null)
     {

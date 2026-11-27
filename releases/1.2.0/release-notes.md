@@ -60,6 +60,8 @@ More of the same, also each with its entry in `docs/FIXED.md` and before / after
 
 - At a merchant's barter and at the inn's item store, F1 to F5 open the members' sheets, as a click on the party does
   (GitHub issue 9). Classic keeps the 1992 pages, where only the click opens them.
+- On the loot page, a click on a member or F1 to F5 open the members' sheets, so you can see who can carry what before you take it
+  (GitHub issue 10). The original has no way to open a sheet there, and Classic keeps it so.
 
 ## Translations
 

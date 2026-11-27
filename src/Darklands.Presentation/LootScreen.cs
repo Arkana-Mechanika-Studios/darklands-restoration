@@ -1,3 +1,4 @@
+using Darklands.Cards;
 using Darklands.Core;
 using Darklands.Core.Characters;
 using Darklands.Core.Economy;
@@ -16,7 +17,7 @@ namespace Darklands.Presentation;
 // orig: loot overlay R040 = R040 (linked paragraph 1462, payload = offset) draft (the byte match 9/10); rules in LootSharing; checked visually with Darklands.Host.Headless screen:loot
 public sealed class LootScreen
 {
-    // C: menu rows give G, P, D, Esc; row 4 gives no key. There is no party-column click on this screen.
+    // C: menu rows give G, P, D, Esc; row 4 gives no key. There is no party-column click on this screen (the Comfort interface adds one, SheetStep).
     private static readonly int[] MenuKeys = [0x2247, 0x1950, 0x2044, Keys.Escape];
 
     // the menu lines (DS:4C42.. of R040), the key letter after 0x8C in colour 12
@@ -54,6 +55,9 @@ public sealed class LootScreen
 
     /// <summary>The battle's test of D for a slot gone from the battlefield: shows the "can't view" message and answers true (BattleScreens.LootSkipsMember).</summary>
     public Func<int, bool>? CannotView { get; init; }
+
+    /// <summary>The screens that show a member's sheet: with the Comfort interface, a click on the party column and F1..F5 open it (GitHub issue 10).</summary>
+    public IGameScreens? Screens { get; init; }
 
     private int Member => _s.Member;
 
@@ -143,7 +147,27 @@ public sealed class LootScreen
             key = Keys.Down;
             _s.UseList(pile: true);
         }
+        if (_page.Ui.ComfortInterface && _page.HeldRow(_page.Member) is { } member && Party.OccupiedSlot(member) is not null)
+        {
+            ShowSheet(member);
+            _page.WaitForRelease();
+        }
         return key;
+    }
+
+    /// <summary>
+    /// Comfort (not in the original): a member's sheet, from a click on the party column or F1..F5, as on the barter and item store
+    /// pages; the page comes back as it was (the screen under the sheet is kept, so the party column too), then the lists again, which the
+    /// sheet may have changed.
+    /// </summary>
+    private void ShowSheet(int member)
+    {
+        if (Screens is not { } screens)
+        {
+            return;
+        }
+        screens.CharacterSheet(member);
+        Redraw();
     }
 
     // orig: R040+0x0C22 (1462:0C22) draft (unmatched: cross-jumped tails; behaviour checked against asm); every case kept (Alt-Q, P/p, D/d, G/g, Up, Left/Right, Down); other keys do nothing
@@ -154,6 +178,12 @@ public sealed class LootScreen
         if (key == Keys.AltQ)
         {
             throw new QuitGameException();
+        }
+        // Comfort (not in the original): F1..F5 open a member's sheet, as a click on the party column does (MouseStep)
+        if (_page.SheetKeyMember(key, Party) is { } sheet)
+        {
+            ShowSheet(sheet);
+            return;
         }
         if (BuySellPage.Is(key, 'P'))
         {

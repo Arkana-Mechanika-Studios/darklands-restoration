@@ -43,7 +43,7 @@ public sealed class GameScreens : IGameScreens
     public void Loot(IList<ItemStack> items, Money money)
     {
         _page.Screen = "LootScreen";
-        new LootScreen(_page, _state, items) { CannotView = CannotView }.Run(money);
+        new LootScreen(_page, _state, items) { CannotView = CannotView, Screens = this }.Run(money);
     }
 
     /// <summary>The battle's test of the loot screen's D (BattleScreens.LootSkipsMember): true skips the slot after the "can't view" message.</summary>
