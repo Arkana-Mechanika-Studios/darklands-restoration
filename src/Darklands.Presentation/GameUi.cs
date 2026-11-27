@@ -873,6 +873,13 @@ public sealed class GameUi
     public int EdgeScrollMilliseconds { get; set; }
 
     /// <summary>
+    /// A host's pace for the battle's keyboard scroll (Shift with an arrow, the keypad's digits): at most one step this often, the
+    /// edge scroll's steps counted with it, in the host clock's milliseconds. 0 (the default, the original's): a step each key.
+    /// </summary>
+    // Not in the original: the keys repeat every 33 ms (the typematic), three times the edge scroll's pace (GitHub issue 12).
+    public int KeyScrollMilliseconds { get; set; }
+
+    /// <summary>
     /// True while the screen up has a selection that the cursor keys ↑ / ↓ move (a card menu and its item or saint box, an open list or pack
     /// of the character sheet, the shop, barter and loot lists, the load list, the camp, the inn's roster, the alchemy list, the creation
     /// menus, the menu bar's pull-downs); null or false elsewhere (the map, a battle, a card's text, the sheet with no list open). A screen

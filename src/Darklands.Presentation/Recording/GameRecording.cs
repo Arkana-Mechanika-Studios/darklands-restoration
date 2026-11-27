@@ -99,6 +99,7 @@ public sealed class GameRecording : IDisposable
         StartSettings["settingsLine"] = game.Ui.OpenSettings is null ? "0" : "1";
         StartSettings["pressedButtonMilliseconds"] = game.Ui.PressedButtonMilliseconds.ToString(CultureInfo.InvariantCulture);
         StartSettings["edgeScrollMilliseconds"] = game.Ui.EdgeScrollMilliseconds.ToString(CultureInfo.InvariantCulture);
+        StartSettings["keyScrollMilliseconds"] = game.Ui.KeyScrollMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
     /// <summary>The settings that change what the game does at the start (by name; packs and mods by their folders' names).</summary>

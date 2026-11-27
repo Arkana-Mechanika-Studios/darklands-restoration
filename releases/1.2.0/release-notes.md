@@ -26,6 +26,12 @@ tower, a monastery, a village, a cave, a mine and a ruin is loaded and the place
 and then the place's choices taken; and games the original itself saved at those places are loaded from the start
 screen. All 14 agree with the original and are now part of every release's check.
 
+## Battles
+
+- Shift with an arrow now scrolls the battle view at the same steady speed as Shift with the pointer at an edge, ten steps
+  a second at most (GitHub issue 12). It followed the keys' repeat: one step, a pause, then three times faster. In the
+  original both go at the speed of its drawing, which is why they matched there.
+
 ## Fixed rules: potions, saints and the banks
 
 In the Fixed rules (the default for new games; Restored too), what the potions and the saints give now lasts about a day,

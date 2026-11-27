@@ -383,8 +383,22 @@ public sealed partial class BattleScreen
 
     // orig: R016+0x02A0.. (the arrows' scrolling parts): DS:C866 / DS:C886 moved, then R016+0x0B92 (1EF8:0B92) matched: the view centre kept
     // within 1..0x27, then floor-view-paint
+    // DIVERGENCE: the original scrolls once a key, its whole view redrawn after each step: the keys' repeats (DOSBox's typematic, a key
+    //   every 33 ms) wait in the keyboard's buffer while it draws, so Shift with an arrow and the edge scroll (once a pass) both go at
+    //   the speed of the drawing. Here the view draws at once: GameUi.KeyScrollMilliseconds 0 (the default: the oracle tools, the
+    //   headless host, a recording made before 1.2) here too, a step each key; the SDL host paces it as the edge scroll (at most one
+    //   step each 100 ms, the two counted together), so the two go at one steady speed (GitHub issue 12).
     private void ScrollView(int direction)
     {
+        if (_ui.KeyScrollMilliseconds > 0)
+        {
+            var now = _ui.Clock.Milliseconds;
+            if (now - _edgeScrolledAt < _ui.KeyScrollMilliseconds)
+            {
+                return;
+            }
+            _edgeScrolledAt = now;
+        }
         int[] dx = [-1, 0, 1, 2, 1, 0, -1, -2], dy = [-1, -1, 0, 1, 1, 1, 0, -1];
         _view.CentreColumn = Math.Clamp(_view.CentreColumn + dx[direction], 1, 0x27);
         _view.CentreRow = Math.Clamp(_view.CentreRow + dy[direction], 1, 0x27);
@@ -596,7 +610,7 @@ public sealed partial class BattleScreen
     //   machine draws, its whole view redrawn after each step (a few steps a second on the machines of its day). With
     //   GameUi.EdgeScrollMilliseconds 0 (the default: the oracle tools, the headless host) here too, once a pass; the SDL host sets a
     //   pace (at most one step each 100 ms of the host's clock, whatever the frame rate: a step every frame, 60 a second, was far faster
-    //   than the original's). Shift with an arrow scrolls at the keyboard's repeat either way.
+    //   than the original's). Shift with an arrow goes at the same pace (GameUi.KeyScrollMilliseconds, ScrollView).
     private void EdgeScroll()
     {
         if (!_ui.ShiftHeld)

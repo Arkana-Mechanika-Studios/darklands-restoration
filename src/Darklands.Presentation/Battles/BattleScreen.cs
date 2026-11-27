@@ -25,7 +25,7 @@ public sealed partial class BattleScreen : ITacticalView
 {
     private const int FrameMilliseconds = 16;
 
-    // when the edge scroll last stepped (the host's clock)
+    // when the edge scroll or the keyboard scroll last stepped (the host's clock)
     private long _edgeScrolledAt = long.MinValue / 2;
 
     /// <summary>The callbacks the original had after the last sheet in its pass (SheetCallbacks), for the pass's end.</summary>

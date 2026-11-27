@@ -113,6 +113,8 @@ public static class GameReplay
         GameSettingsNote.Apply(game, Setting("game"));
         game.Ui.PressedButtonMilliseconds = int.Parse(Setting("pressedButtonMilliseconds") is { Length: > 0 } p ? p : "0", CultureInfo.InvariantCulture);
         game.Ui.EdgeScrollMilliseconds = int.Parse(Setting("edgeScrollMilliseconds") is { Length: > 0 } edge ? edge : "0", CultureInfo.InvariantCulture);
+        // a recording made before 1.2 has none: each key scrolled then
+        game.Ui.KeyScrollMilliseconds = int.Parse(Setting("keyScrollMilliseconds") is { Length: > 0 } keys ? keys : "0", CultureInfo.InvariantCulture);
         if (Setting("settingsLine") == "1")
         {
             // the settings screen is the host's (it ran paused, inside a pump): its changes come as notes; the menu line is there as in the recording

@@ -520,6 +520,8 @@ static int Play(SdlHost host, ResolvedSettings settings, string folder, string v
     game.Ui.SettingsKeyLabel = SettingsScreen.KeyLabel;
     // the battle's edge scroll at ten steps a second at most, whatever the frame rate (the original's: a step each pass of its loop)
     game.Ui.EdgeScrollMilliseconds = 100;
+    // and Shift with an arrow at the same pace, its steps counted together with the edge's (GitHub issue 12)
+    game.Ui.KeyScrollMilliseconds = 100;
     // a translation test: its saves in the pack's own scratch folder (never the player's), the game at the text or screen asked for
     if (startAt is not null && settings.LanguagePack is { } testedPack)
     {
