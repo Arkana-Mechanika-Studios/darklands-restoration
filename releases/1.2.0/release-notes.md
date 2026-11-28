@@ -69,8 +69,8 @@ More of the same, also each with its entry in `docs/FIXED.md` and before / after
 - On the loot page, a click on a member or F1 to F5 open the members' sheets, so you can see who can carry what before you take it
   (GitHub issue 10). The original has no way to open a sheet there, and Classic keeps it so.
 - In the pack lists of the barter, the item store and the loot page, an asterisk before a line marks an item the member has
-  equipped, so a quick key does not sell or put away a worn weapon or armour unseen (GitHub issue 4). The mark only shows; Classic
-  keeps the 1992 lists, which mark nothing.
+  equipped, so a quick key does not sell or put away a worn weapon or armour unseen (GitHub issue 4). The character sheet's Pack
+  list marks them too, which also shows what the sign means. The mark only shows; Classic keeps the 1992 lists, which mark nothing.
 - At a card menu, ↑ / ↓ (and the mouse wheel) with the pointer off the lines now put the pointer just past the end of the
   widest line, so the hand no longer covers the start of the line it lights (GitHub issue 11). Classic is unchanged.
 

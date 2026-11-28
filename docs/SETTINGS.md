@@ -350,6 +350,8 @@ games are the same, and the original game loads them):
   asterisk in the margin before a line shows a stack the member has equipped (its item and quality are those of the weapon, missile
   weapon, armour or shield the member uses), so that one key pressed too often does not sell or put away a worn item unseen. The lines
   do not move, and the mark only shows: selling the last of a worn item still takes it off, as in the original, which marks nothing.
+  The character sheet's Pack list marks them the same way, so the sign means one thing everywhere (its Equipment box names the worn
+  items but not which pack line, of two of a kind, is the one worn).
 
 `interface` is a section so that a feature could have its own key beside `mode`; there is none.
 

@@ -43,6 +43,9 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
     private const int NameBox = 0;
     private const int EquipmentBox = 6;
     private const int PackBox = 9;
+
+    /// <summary>The pack list's margin mark of an equipped stack (Comfort): its x in the panel, before the lines' x + 9.</summary>
+    private const int WornMarkX = 3;
     private const int FormulaeBox = 10;
     private const int SaintsBox = 11;
     private const int FirstMemberBox = 12;
@@ -1082,6 +1085,12 @@ public sealed class CharacterSheetScreen(GameUi ui, PartyPanel panel, IReadOnlyL
                     {
                         var st = m.Pack[_s.Top(k) + j];
                         t.Draw(c, x + 9, j * 8 + y + 9, ui.Format("exe:DS:2DC2", ui.ItemNameArg(st.Code & 0xFFF, _state.Item(st.Code & 0xFFF).Name), st.Quality, st.Count), ListColor);  // "%Fs %02dq (%d)"
+                        // Not in the original: with the Comfort interface an asterisk in the margin marks a stack the member has equipped
+                        //   (Inventory.IsWorn, as the trade pages' pack lists: GitHub issue 4); the panel's brush is laid again under each redraw
+                        if (ui.ComfortInterface && Inventory.IsWorn(_state, _s.Who, st))
+                        {
+                            t.Draw(c, x + WornMarkX, j * 8 + y + 9, "*", ListColor);
+                        }
                     }
                 }
                 HighlightLine(k);
